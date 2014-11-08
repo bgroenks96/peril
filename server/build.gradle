@@ -9,13 +9,18 @@ sourceSets.main.resources.srcDirs = ["src/res/"]
 sourceSets.test.java.srcDirs = ["test/"]
 sourceSets.test.resources.srcDirs = ["test/res/"]
 
-project.ext.mainClassName = "com.forerunnergames.peril.server.Main"
+project.ext.mainClassName = "com.forerunnergames.peril.server.main.Main"
+
+classes.dependsOn clean
 
 task run (dependsOn: classes, type: JavaExec) {
   main = project.mainClassName
   classpath = sourceSets.main.runtimeClasspath
   standardInput = System.in
   ignoreExitValue = true
+  if(project.hasProperty('args')){
+    args project.args.split('\\s+')
+  }
 }
 
 task dist (type: Jar) {
@@ -31,6 +36,7 @@ task dist (type: Jar) {
 }
 
 dist.dependsOn classes
+
 task release (dependsOn: dist) << {
   copy {
     from 'build/libs'

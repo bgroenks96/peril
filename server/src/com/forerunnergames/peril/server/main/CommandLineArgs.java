@@ -1,5 +1,8 @@
 package com.forerunnergames.peril.server.main;
 
+import com.forerunnergames.peril.core.model.settings.GameSettings;
+import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
+
 import com.beust.jcommander.Parameter;
 
 public final class CommandLineArgs
