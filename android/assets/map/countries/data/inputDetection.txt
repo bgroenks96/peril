@@ -1,0 +1,51 @@
+// Country Name, Red Value
+
+"Alaska",                255
+"Northwest Territory",   254
+"Greenland",             253
+"Alberta",               252
+"Ontario",               251
+"Quebec",                250
+"Hawaii",                249
+"Western United States", 248
+"Eastern United States", 247
+"Central America",       246
+"Caribbean Islands",     245
+"Svalbard",              244
+"Iceland",               243
+"Scandinavia",           242
+"Great Britain",         241
+"Northern Europe",       240
+"Ukraine",               239
+"Western Europe",        238
+"Southern Europe",       237
+"Ural",                  236
+"Siberia",               235
+"Yakutsk",               234
+"Kamchatka",             233
+"Afghanistan",           232
+"Irkutsk",               231
+"Mongolia",              230
+"Japan",                 229
+"Middle East",           228
+"India",                 227
+"China",                 226
+"Siam",                  225
+"Venezuela",             224
+"Peru",                  223
+"Brazil",                222
+"Argentina",             221
+"Falkland Islands",      220
+"North Africa",          219
+"Egypt",                 218
+"Congo",                 217
+"East Africa",           216
+"South Africa",          215
+"Madagascar",            214
+"Philippines",           213
+"Indonesia",             212
+"New Guinea",            211
+"Western Australia",     210
+"Eastern Australia",     209
+"New Zealand",           208
+"Antarctica",            207

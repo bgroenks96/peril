@@ -1,0 +1,64 @@
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
+# http://davidlaing.com/2012/09/19/customise-your-gitattributes-to-become-a-git-ninja/
+* text=auto
+
+#
+# The above will handle all files NOT found below
+#
+# These files are text and should be normalized (Convert crlf => lf)
+*.java       text
+*.xml        text
+*.txt        text
+*.htm        text
+*.html       text
+*.js         text
+*.json       text
+*.jsp        text
+*.jspf       text
+*.css        text
+*.php        text
+*.fnt        text
+*.gradle     text
+*.bat        text
+*.sh         text
+*.ini        text
+*.properties text
+*.glsl       text
+.htaccess    text
+
+# These files are binary and should be left untouched
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.mov    binary
+*.mp4    binary
+*.mp3    binary
+*.flv    binary
+*.fla    binary
+*.swf    binary
+*.gz     binary
+*.zip    binary
+*.7z     binary
+*.ttf    binary
+*.pyc    binary
+*.dll    binary
+*.class  binary
+*.jar    binary
+*.ear    binary
+*.war    binary
+*.so     binary
+
+# Documents
+*.doc diff=astextplain
+*.DOC diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot diff=astextplain
+*.DOT diff=astextplain
+*.pdf diff=astextplain
+*.PDF diff=astextplain
+*.rtf diff=astextplain
+*.RTF diff=astextplain

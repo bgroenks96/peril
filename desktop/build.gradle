@@ -1,0 +1,71 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.7
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = ["src/"]
+sourceSets.main.resources.srcDirs = ["src/res/"]
+sourceSets.test.java.srcDirs = ["test/"]
+sourceSets.test.resources.srcDirs = ["test/res/"]
+
+project.ext.mainClassName = "com.forerunnergames.peril.desktop.DesktopLauncher"
+project.ext.assetsDir = new File ("../android/assets");
+
+classes.dependsOn clean
+
+task run (dependsOn: classes, type: JavaExec) {
+  main = project.mainClassName
+  classpath = sourceSets.main.runtimeClasspath
+  standardInput = System.in
+  workingDir = project.assetsDir
+  ignoreExitValue = true
+}
+
+task dist (type: Jar) {
+  baseName = appName + '-client'
+
+  from files (sourceSets.main.output.classesDir)
+  from files (sourceSets.main.output.resourcesDir)
+  from {configurations.compile.collect {zipTree (it)}}
+  from files (project.assetsDir);
+
+  manifest {
+    attributes 'Main-Class': project.mainClassName
+  }
+}
+
+dist.dependsOn classes
+
+task release (dependsOn: dist) << {
+  copy {
+    from files (project.assetsDir)
+    into '/Users/Aaron/Documents/Spaces/peril/assets'
+  }
+  copy {
+    from 'build/libs'
+    exclude project.name + '*.jar'
+    into '/Users/Aaron/Documents/Spaces/peril/test/Jar'
+  }
+}
+
+eclipse {
+  project {
+    name = appName + "-desktop"
+    linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/android/assets'
+  }
+}
+
+task afterEclipseImport (description: "Post processing after project generation", group: "IDE") {
+  doLast {
+    def classpath = new XmlParser().parse (file (".classpath"))
+    new Node (classpath, "classpathentry", [kind: 'src', path: 'assets']);
+    def writer = new FileWriter (file (".classpath"))
+    def printer = new XmlNodePrinter (new PrintWriter (writer))
+    printer.setPreserveWhitespace (true)
+    printer.print (classpath)
+  }
+}
+
+dependencies {
+}

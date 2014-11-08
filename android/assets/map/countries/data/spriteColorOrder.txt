@@ -1,0 +1,12 @@
+Blue,      0
+Brown,     1
+Cyan,      2
+Gold,      3
+Green,     4
+Orange,    5
+Pink,      6
+Purple,    7
+Red,       8
+Silver,    9
+Hovered,  10
+Selected, 11
