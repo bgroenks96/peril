@@ -4,8 +4,8 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 
-import com.forerunnergames.peril.client.Assets;
-import com.forerunnergames.peril.client.screens.menus.main.MainMenuScreen;
+import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.core.shared.application.EventBasedApplication;
 import com.forerunnergames.tools.common.Controller;
 

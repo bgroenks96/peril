@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.screens.menus.main;
+package com.forerunnergames.peril.client.ui.screens.menus.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import com.forerunnergames.peril.client.Assets;
+import com.forerunnergames.peril.client.ui.Assets;
 
 public final class MainMenuScreen extends InputAdapter implements Screen
 {

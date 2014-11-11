@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client;
+package com.forerunnergames.peril.client.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
