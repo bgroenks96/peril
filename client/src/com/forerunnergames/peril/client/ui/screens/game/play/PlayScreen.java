@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
@@ -31,6 +32,14 @@ public final class PlayScreen extends InputAdapter implements Screen
     rootStack.setFillParent (true);
     rootStack.add (new Image (Assets.playScreenBackground));
 
+    // Layer 1 - map background image
+    final Table tableL1 = new Table();
+    tableL1.debugAll();
+    rootStack.add (tableL1);
+    tableL1.add().top().left();//.width (1704.0f).height (804.0f);//.padTop (14.0f).padLeft (14.0f);
+    //tableL1.add (new Image (Assets.playScreenMapBackground)).expandY().fillY();
+    //tableL1.add().expandX();
+
     stage = new Stage();
     stage.addActor (rootStack);
     stage.getViewport().setCamera (new OrthographicCamera (Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -41,15 +50,19 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     switch (keycode)
     {
-      case Input.Keys.ESCAPE:
+      case Input.Keys.LEFT:
       {
         screenChanger.previous();
         return true;
       }
-      case Input.Keys.ENTER:
+      case Input.Keys.RIGHT:
       {
         screenChanger.next();
         return true;
+      }
+      case Input.Keys.ESCAPE:
+      {
+        Gdx.app.exit();
       }
       default:
       {

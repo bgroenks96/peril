@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.server.application;
 
-import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.model.player.PlayerModel;
+import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.application.EventBasedApplication;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
@@ -9,7 +9,7 @@ import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Controller;
+import com.forerunnergames.tools.common.controllers.Controller;
 import com.forerunnergames.tools.common.net.Server;
 import com.forerunnergames.tools.common.net.ServerController;
 

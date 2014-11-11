@@ -83,14 +83,19 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   {
     switch (keycode)
     {
-      case Input.Keys.ESCAPE:
+      case Input.Keys.LEFT:
       {
         screenChanger.previous();
         return true;
       }
-      case Input.Keys.ENTER:
+      case Input.Keys.RIGHT:
       {
         screenChanger.next();
+        return true;
+      }
+      case Input.Keys.ESCAPE:
+      {
+        Gdx.app.exit();
         return true;
       }
       default:

@@ -1,8 +1,6 @@
 package com.forerunnergames.peril.client.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.withAddressFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.withNameFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.withTcpPortFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
 import static com.forerunnergames.tools.common.net.events.EventInterpreter.answerFrom;
 import static com.forerunnergames.tools.common.net.events.EventInterpreter.serverFrom;
 
@@ -13,8 +11,8 @@ import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerS
 import com.forerunnergames.peril.core.shared.net.events.success.CloseMultiplayerServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Controller;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ServerCommunicator;
 import com.forerunnergames.tools.common.net.ServerConnector;
 import com.forerunnergames.tools.common.net.ServerCreator;
@@ -30,7 +28,7 @@ import org.bushe.swing.event.annotation.EventSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MultiplayerController implements Controller
+public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final ServerCreator serverCreator;
@@ -56,12 +54,6 @@ public final class MultiplayerController implements Controller
   public void initialize()
   {
     AnnotationProcessor.process (this);
-  }
-
-  @Override
-  public boolean shouldShutDown()
-  {
-    return false;
   }
 
   @Override

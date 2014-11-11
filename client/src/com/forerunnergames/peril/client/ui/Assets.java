@@ -20,6 +20,8 @@ public final class Assets
   public static Texture leftMenuBarShadow;
   public static Texture rightMenuBarShadow;
   public static Texture playScreenBackground;
+  public static Texture playScreenMapBackground;
+  public static Texture playScreenMapForeground;
 
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
@@ -42,6 +44,8 @@ public final class Assets
     leftMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/leftMenuBarShadow.png"));
     rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"));
     playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"));
+    playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"));
+    playScreenMapForeground = new Texture (Gdx.files.internal ("map/foreground.png"));
 
     isLoaded = true;
   }
@@ -62,6 +66,8 @@ public final class Assets
     leftMenuBarShadow.dispose();
     rightMenuBarShadow.dispose();
     playScreenBackground.dispose();
+    playScreenMapBackground.dispose();
+    playScreenMapForeground.dispose();
 
     isLoaded = false;
   }

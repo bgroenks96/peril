@@ -43,9 +43,9 @@ import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
-import com.forerunnergames.tools.common.Controller;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ClientCommunicator;
 import com.forerunnergames.tools.common.net.ClientConnector;
 import com.forerunnergames.tools.common.net.Remote;
@@ -61,7 +61,7 @@ import org.bushe.swing.event.annotation.EventSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MultiplayerController implements Controller
+public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Map <Id, Remote> playerIdsToClients = newHashMap();

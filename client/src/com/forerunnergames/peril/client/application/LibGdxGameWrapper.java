@@ -1,11 +1,7 @@
 package com.forerunnergames.peril.client.application;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 
-import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.screens.ScreenManager;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -20,7 +16,6 @@ import com.forerunnergames.tools.common.Arguments;
 public final class LibGdxGameWrapper extends Game
 {
   private final Application application;
-  private ScreenManager screenManager;
 
   LibGdxGameWrapper (final Application application)
   {
@@ -33,25 +28,21 @@ public final class LibGdxGameWrapper extends Game
   public void create()
   {
     application.initialize();
-    Assets.load();
-    screenManager = new ScreenManager (this);
-    setScreen (screenManager.get (ScreenSettings.START_SCREEN));
   }
 
   @Override
   public void render()
   {
-    if (application.shouldShutDown()) Gdx.app.exit();
-
     super.render();
+
+    application.update();
   }
 
   @Override
   public void dispose()
   {
     super.dispose();
-    screenManager.dispose();
-    Assets.dispose();
+
     application.shutDown();
   }
 }

@@ -1,26 +1,19 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
-import com.badlogic.gdx.Game;
-
 import com.forerunnergames.peril.client.ui.screens.AbstractScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
-import com.forerunnergames.peril.client.ui.screens.ScreenManager;
+import com.forerunnergames.peril.client.ui.screens.ScreenController;
 
 public final class PlayScreenChanger extends AbstractScreenChanger
 {
-  public PlayScreenChanger (final Game game, final ScreenManager screenManager)
+  public PlayScreenChanger (final ScreenController screenController)
   {
-    super (game, screenManager);
-  }
-
-  @Override
-  public void next()
-  {
+    super (screenController);
   }
 
   @Override
   public void previous()
   {
-    setScreen (ScreenId.MAIN_MENU);
+    setScreenTo (ScreenId.MAIN_MENU);
   }
 }

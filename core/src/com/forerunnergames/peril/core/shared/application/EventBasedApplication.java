@@ -2,8 +2,8 @@ package com.forerunnergames.peril.core.shared.application;
 
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.CompositeController;
-import com.forerunnergames.tools.common.Controller;
+import com.forerunnergames.tools.common.controllers.CompositeController;
+import com.forerunnergames.tools.common.controllers.Controller;
 
 import org.bushe.swing.event.EventServiceExistsException;
 import org.bushe.swing.event.EventServiceLocator;
@@ -12,17 +12,17 @@ import org.bushe.swing.event.ThreadSafeEventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class EventBasedApplication implements Application
+public class EventBasedApplication implements Application
 {
   private static final Logger log = LoggerFactory.getLogger (EventBasedApplication.class);
-  private final Controller controller;
+  private final CompositeController compositeController;
 
   public EventBasedApplication (final Controller... controllers)
   {
     Arguments.checkIsNotNull (controllers, "controllers");
     Arguments.checkHasNoNullElements (controllers, "controllers");
 
-    controller = new CompositeController (controllers);
+    compositeController = new CompositeController (controllers);
   }
 
   @Override
@@ -30,7 +30,29 @@ public final class EventBasedApplication implements Application
   {
     initializeEventBus();
 
-    controller.initialize();
+    compositeController.initialize();
+  }
+
+  @Override
+  public void add (final Controller controller)
+  {
+    Arguments.checkIsNotNull (controller, "controller");
+
+    compositeController.add (controller);
+  }
+
+  @Override
+  public void remove (final Controller controller)
+  {
+    Arguments.checkIsNotNull (controller, "controller");
+
+    compositeController.remove (controller);
+  }
+
+  @Override
+  public void update()
+  {
+    compositeController.update();
   }
 
   private void initializeEventBus()
@@ -48,11 +70,12 @@ public final class EventBasedApplication implements Application
   @Override
   public void shutDown()
   {
-    controller.shutDown();
+    compositeController.shutDown();
   }
 
+  @Override
   public boolean shouldShutDown()
   {
-    return controller.shouldShutDown();
+    return compositeController.shouldShutDown();
   }
 }
