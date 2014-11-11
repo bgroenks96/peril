@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.menus.main;
+package com.forerunnergames.peril.client.ui.screens.game.play;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -10,68 +10,26 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class MainMenuScreen extends InputAdapter implements Screen
+public final class PlayScreen extends InputAdapter implements Screen
 {
   private final ScreenChanger screenChanger;
   private final Stage stage;
 
-  public MainMenuScreen (final ScreenChanger screenChanger)
+  public PlayScreen (final ScreenChanger screenChanger)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
 
     this.screenChanger = screenChanger;
 
-    // Layer 0 - menu background image
+    // Layer 0 - background image
     final Stack rootStack = new Stack();
     rootStack.setFillParent (true);
-    rootStack.add (new Image (Assets.menuBackground));
-
-    // Layer 1 - right menu background shadow
-    final Table tableL1 = new Table();
-    rootStack.add (tableL1);
-    tableL1.add().width (666.0f);
-    tableL1.add (new Image (Assets.rightMenuBackgroundShadow)).expandY().fillY();
-    tableL1.add().expandX();
-
-    // Layer 2 - text
-    final Table tableL2 = new Table();
-    rootStack.add (tableL2);
-    tableL2.add().width (294.0f);
-    tableL2.add (new Image (Assets.mainMenuText));
-    tableL2.add().expandX();
-
-    // Layer 3 - top & bottom menu bar extension shadows
-    final Table tableL3 = new Table();
-    rootStack.add (tableL3);
-    tableL3.add().width (666.0f);
-    tableL3.add (new Image (Assets.topMenuBarExtensionShadow)).width (288.0f).fillX().top();
-    tableL3.add().expandX();
-    tableL3.row();
-    tableL3.add().expandY();
-    tableL3.row();
-    tableL3.add().width (666.0f);
-    tableL3.add (new Image (Assets.bottomMenuBarExtensionShadow)).width(288.0f).fillX().bottom();
-    tableL3.add().expandX();
-
-    // Layer 4 - left & right menu bar shadows
-    final Table tableL4 = new Table();
-    rootStack.add (tableL4);
-    tableL4.add().width (294.0f);
-    tableL4.add (new Image (Assets.leftMenuBarShadow)).expandY().fillY();
-    tableL4.add().width (330.0f);
-    tableL4.add (new Image (Assets.rightMenuBarShadow)).expandY().fillY();
-    tableL4.add().expandX();
-
-    // Layer 5 - buttons
-    final Table tableL5 = new Table();
-    rootStack.add (tableL5);
-    tableL5.add().width (294.0f);
+    rootStack.add (new Image (Assets.playScreenBackground));
 
     stage = new Stage();
     stage.addActor (rootStack);

@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 // TODO: Use TextureAtlas.
 public final class Assets
 {
-  private static final Logger log = LoggerFactory.getLogger (Assets.class);
   public static Texture menuBackground;
   public static NinePatch rightMenuBackgroundShadow;
   public static Texture mainMenuText;
@@ -20,6 +19,9 @@ public final class Assets
   public static Texture bottomMenuBarExtensionShadow;
   public static Texture leftMenuBarShadow;
   public static Texture rightMenuBarShadow;
+  public static Texture playScreenBackground;
+
+  private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
   private static boolean isLoaded = false;
 
@@ -39,6 +41,7 @@ public final class Assets
     bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/bottomMenuBarExtensionShadow.png"));
     leftMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/leftMenuBarShadow.png"));
     rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"));
+    playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"));
 
     isLoaded = true;
   }
@@ -58,6 +61,7 @@ public final class Assets
     bottomMenuBarExtensionShadow.dispose();
     leftMenuBarShadow.dispose();
     rightMenuBarShadow.dispose();
+    playScreenBackground.dispose();
 
     isLoaded = false;
   }

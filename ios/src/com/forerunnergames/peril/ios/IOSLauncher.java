@@ -13,7 +13,7 @@ public final class IOSLauncher extends IOSApplication.Delegate
   @Override
   protected IOSApplication createApplication()
   {
-    return new IOSApplication (LibGdxGameFactory.create (), new IOSApplicationConfiguration());
+    return new IOSApplication (LibGdxGameFactory.create(), new IOSApplicationConfiguration());
   }
 
   public static void main (final String... args)

@@ -19,6 +19,6 @@ public final class DesktopLauncher
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;
 
-		new LwjglApplication (LibGdxGameFactory.create (), config);
+		new LwjglApplication (LibGdxGameFactory.create(), config);
 	}
 }
