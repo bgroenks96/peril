@@ -7,6 +7,7 @@ import com.forerunnergames.peril.client.controllers.EventBasedClientController;
 import com.forerunnergames.peril.client.controllers.MultiplayerController;
 import com.forerunnergames.peril.client.kryonet.KryonetClient;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
+import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Controller;
 import com.forerunnergames.tools.common.net.Client;
 import com.forerunnergames.tools.common.net.ClientController;
@@ -22,5 +23,10 @@ public final class ClientApplicationFactory
     final Controller multiplayerController = new MultiplayerController (serverCreator, clientController, clientController);
 
     return new ClientApplication (clientController, multiplayerController);
+  }
+
+  private ClientApplicationFactory()
+  {
+    Classes.instantiationNotAllowed();
   }
 }
