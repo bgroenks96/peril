@@ -3,7 +3,7 @@ package com.forerunnergames.peril.android;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-import com.forerunnergames.peril.client.application.ClientApplication;
+import com.forerunnergames.peril.client.application.ClientApplicationFactory;
 
 import android.os.Bundle;
 
@@ -14,6 +14,6 @@ public final class AndroidLauncher extends AndroidApplication
   {
 		super.onCreate (savedInstanceState);
 
-		initialize (new ClientApplication(), new AndroidApplicationConfiguration());
+		initialize (ClientApplicationFactory.create(), new AndroidApplicationConfiguration());
 	}
 }
