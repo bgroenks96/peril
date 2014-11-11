@@ -4,7 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 
-import com.forerunnergames.peril.client.application.ClientApplicationFactory;
+import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 
 public final class HtmlLauncher extends GwtApplication
 {
@@ -17,6 +17,6 @@ public final class HtmlLauncher extends GwtApplication
   @Override
   public ApplicationListener getApplicationListener()
   {
-    return ClientApplicationFactory.create();
+    return LibGdxGameFactory.create();
   }
 }

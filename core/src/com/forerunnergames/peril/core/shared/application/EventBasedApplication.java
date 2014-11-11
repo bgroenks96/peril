@@ -12,7 +12,7 @@ import org.bushe.swing.event.ThreadSafeEventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventBasedApplication implements Application
+public final class EventBasedApplication implements Application
 {
   private static final Logger log = LoggerFactory.getLogger (EventBasedApplication.class);
   private final Controller controller;
@@ -49,5 +49,10 @@ public class EventBasedApplication implements Application
   public void shutDown()
   {
     controller.shutDown();
+  }
+
+  public boolean shouldShutDown()
+  {
+    return controller.shouldShutDown();
   }
 }

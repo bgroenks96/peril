@@ -3,7 +3,7 @@ package com.forerunnergames.peril.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import com.forerunnergames.peril.client.application.ClientApplicationFactory;
+import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 
 public final class DesktopLauncher
@@ -19,6 +19,6 @@ public final class DesktopLauncher
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;
 
-		new LwjglApplication (ClientApplicationFactory.create(), config);
+		new LwjglApplication (LibGdxGameFactory.create (), config);
 	}
 }
