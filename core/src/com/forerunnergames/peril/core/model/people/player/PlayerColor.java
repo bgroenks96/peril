@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.player;
+package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;

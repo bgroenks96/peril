@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
-import com.forerunnergames.peril.core.model.player.Player;
+import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;

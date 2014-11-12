@@ -1,7 +1,7 @@
-package com.forerunnergames.peril.core.model.player;
+package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.person.AbstractPerson;
-import com.forerunnergames.peril.core.model.person.PersonIdentity;
+import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
+import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.territory;
+package com.forerunnergames.peril.core.model.map.territory;
 
 public interface TerritoryName
 {

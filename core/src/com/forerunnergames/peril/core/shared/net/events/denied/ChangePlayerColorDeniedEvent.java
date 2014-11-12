@@ -4,8 +4,8 @@ import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.
 import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.playerFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.previousColorFrom;
 
-import com.forerunnergames.peril.core.model.player.Player;
-import com.forerunnergames.peril.core.model.player.PlayerColor;
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;

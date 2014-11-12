@@ -4,8 +4,8 @@ import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.
 import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.playerFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.previousTurnOrderFrom;
 
-import com.forerunnergames.peril.core.model.player.Player;
-import com.forerunnergames.peril.core.model.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerTurnOrderEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerTurnOrderRequestEvent;

@@ -1,6 +1,6 @@
-package com.forerunnergames.peril.core.model.player;
+package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.person.Person;
+import com.forerunnergames.peril.core.model.people.person.Person;
 
 public interface Player extends Person
 {

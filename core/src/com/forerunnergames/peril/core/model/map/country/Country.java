@@ -1,6 +1,6 @@
-package com.forerunnergames.peril.core.model.country;
+package com.forerunnergames.peril.core.model.map.country;
 
-import com.forerunnergames.peril.core.model.territory.Territory;
+import com.forerunnergames.peril.core.model.map.territory.Territory;
 
 public interface Country extends Territory
 {

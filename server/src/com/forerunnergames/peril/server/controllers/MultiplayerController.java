@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.controllers;
 
-import static com.forerunnergames.peril.core.model.player.PlayerInterpreter.idOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.idOf;
 import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
 import static com.forerunnergames.tools.common.net.RemoteInterpreter.addressOf;
 import static com.forerunnergames.tools.common.net.events.EventInterpreter.clientFrom;
@@ -8,12 +8,12 @@ import static com.forerunnergames.tools.common.net.events.EventInterpreter.quest
 
 import static com.google.common.collect.Maps.newHashMap;
 
-import com.forerunnergames.peril.core.model.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.player.Player;
-import com.forerunnergames.peril.core.model.player.PlayerColor;
-import com.forerunnergames.peril.core.model.player.PlayerFactory;
-import com.forerunnergames.peril.core.model.player.PlayerModel;
-import com.forerunnergames.peril.core.model.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerColor;
+import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.KickPlayerFromGameDeniedEvent;

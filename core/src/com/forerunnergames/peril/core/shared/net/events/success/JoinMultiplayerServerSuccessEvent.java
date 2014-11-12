@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
-import com.forerunnergames.peril.core.model.player.Player;
+import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinServerEvent;
 import com.forerunnergames.tools.common.Arguments;

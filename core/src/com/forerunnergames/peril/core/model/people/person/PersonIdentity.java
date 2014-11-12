@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.person;
+package com.forerunnergames.peril.core.model.people.person;
 
 public enum PersonIdentity
 {

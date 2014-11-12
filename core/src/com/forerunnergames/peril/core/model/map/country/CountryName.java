@@ -1,6 +1,6 @@
-package com.forerunnergames.peril.core.model.country;
+package com.forerunnergames.peril.core.model.map.country;
 
-import com.forerunnergames.peril.core.model.territory.TerritoryName;
+import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;

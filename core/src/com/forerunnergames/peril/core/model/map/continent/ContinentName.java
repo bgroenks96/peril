@@ -1,6 +1,6 @@
-package com.forerunnergames.peril.core.model.continent;
+package com.forerunnergames.peril.core.model.map.continent;
 
-import com.forerunnergames.peril.core.model.territory.TerritoryName;
+import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class ContinentName implements TerritoryName

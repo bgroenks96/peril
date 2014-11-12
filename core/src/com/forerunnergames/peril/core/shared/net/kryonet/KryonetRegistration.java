@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.shared.net.kryonet;
 
-import com.forerunnergames.peril.core.model.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.player.DefaultPlayer;
-import com.forerunnergames.peril.core.model.player.PlayerColor;
-import com.forerunnergames.peril.core.model.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
+import com.forerunnergames.peril.core.model.people.player.DefaultPlayer;
+import com.forerunnergames.peril.core.model.people.player.PlayerColor;
+import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDefaultMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultCommandMessageEvent;

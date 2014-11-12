@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.application;
 
-import com.forerunnergames.peril.core.model.player.PlayerModel;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.application.EventBasedApplication;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;

@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events;
 
-import com.forerunnergames.peril.core.model.player.Player;
-import com.forerunnergames.peril.core.model.player.PlayerColor;
-import com.forerunnergames.peril.core.model.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerColor;
+import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinServerEvent;

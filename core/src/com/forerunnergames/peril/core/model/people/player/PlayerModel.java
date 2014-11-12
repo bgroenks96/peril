@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.player;
+package com.forerunnergames.peril.core.model.people.player;
 
 import static com.google.common.collect.Maps.newHashMap;
 
