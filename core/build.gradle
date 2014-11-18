@@ -1,13 +1,42 @@
 apply plugin: "java"
+apply plugin: "groovy" // Add test task
 
 sourceCompatibility = 1.7
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = ["src/"]
+sourceSets.main.java.srcDirs = ["src/", "src-gen/"]
 sourceSets.main.resources.srcDirs = ["src/res/"]
 sourceSets.test.java.srcDirs = ["test/"]
 sourceSets.test.resources.srcDirs = ["test/res/"]
+
+configurations {
+  stateBuilderAntTask
+}
+
+dependencies {
+  stateBuilderAntTask files ("libs/statebuilder-ant-task-2.4.jar")
+  stateBuilderAntTask ("com.stateforge.statebuilder:statebuilder-java:2.4") {
+    exclude module: "junit"
+  }
+}
+
+task generateJava << {
+  ant.taskdef (name: "stateBuilder",
+          classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",
+          classpath: configurations.stateBuilderAntTask.asPath)
+  ant.stateBuilder (input: "core/src/res", output: "core/src-gen") {}
+}
+
+clean.delete "core/src-gen"
+generateJava.dependsOn (clean)
+compileJava.dependsOn (generateJava)
+
+test {
+  testLogging {
+    showStandardStreams = true; // Show any test output
+  }
+}
 
 eclipse.project {
   name = appName + "-core"

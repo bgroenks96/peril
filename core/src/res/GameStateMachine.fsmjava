@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sm:StateMachine xmlns:sm="http://www.stateforge.com/StateMachineJava-v1"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.stateforge.com/StateMachineJava-v1
+                                     http://www.stateforge.com/xsd/StateMachineJava-v1.xsd
+                                     http://www.stateforge.com/StateMachineJava-v1">
+    <!-- General settings -->
+    <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
+        <object instance="model" class="GameModel"/>
+    </settings>
+
+    <!-- Events -->
+    <events>
+        <eventSource name="Game">
+            <event id="onCreateNewGameEvent"/>
+            <event id="onDeterminePlayerTurnOrderComplete"/>
+        </eventSource>
+        <eventSource name="Players">
+            <event id="onPlayerJoinGameRequestEvent"/>
+            <event id="onPlayerJoinGameSuccessEvent"/>
+            <event id="onPlayerJoinGameDeniedEvent"/>
+        </eventSource>
+    </events>
+
+    <!-- States -->
+    <state name="Root">
+        <state name="Initial">
+            <transition event="onCreateNewGameEvent" nextState="WaitForPlayerJoinGameRequest"/>
+        </state>
+        <state name="WaitForPlayerJoinGameRequest">
+            <onEntry action="model.waitForPlayerJoinGameRequest()"/>
+            <transition event="onPlayerJoinGameRequestEvent" nextState="HandlePlayerJoinGameRequest"/>
+        </state>
+        <state name="HandlePlayerJoinGameRequest">
+            <onEntry action="model.handlePlayerJoinGameRequest()"/>
+            <transition event="onPlayerJoinGameRequestEvent" nextState="HandlePlayerJoinGameRequest"/>
+            <transition event="onPlayerJoinGameSuccessEvent" condition="model.isGameFull()" nextState="DeterminePlayerTurnOrder"/>
+            <transition event="onPlayerJoinGameSuccessEvent" nextState="WaitForPlayerJoinGameRequest"/>
+            <transition event="onPlayerJoinGameDeniedEvent" nextState="WaitForPlayerJoinGameRequest"/>
+        </state>
+        <state name="DeterminePlayerTurnOrder">
+            <onEntry action="model.determinePlayerTurnOrder()"/>
+            <transition event="onDeterminePlayerTurnOrderComplete" nextState="End"/>
+        </state>
+        <state name="End" kind="final"/>
+    </state>
+</sm:StateMachine>
