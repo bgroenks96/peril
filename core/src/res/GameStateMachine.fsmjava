@@ -32,7 +32,7 @@
             <transition event="onPlayerJoinGameRequestEvent" nextState="HandlePlayerJoinGameRequest"/>
         </state>
         <state name="HandlePlayerJoinGameRequest">
-            <onEntry action="model.handlePlayerJoinGameRequest()"/>
+            <onEntry action ="model.handlePlayerJoinGameRequest()"/>
             <transition event="onPlayerJoinGameRequestEvent" nextState="HandlePlayerJoinGameRequest"/>
             <transition event="onPlayerJoinGameSuccessEvent" condition="model.isGameFull()" nextState="DeterminePlayerTurnOrder"/>
             <transition event="onPlayerJoinGameSuccessEvent" nextState="WaitForPlayerJoinGameRequest"/>

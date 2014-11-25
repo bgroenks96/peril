@@ -115,6 +115,7 @@ project (":core") {
       exclude module: "junit"
     }
     compile "org.bushe:eventbus:1.4"
+    compile "net.engio:mbassador:1.2.0"
     compile "com.google.code.findbugs:jsr305:2.0.3"
     runtime "ch.qos.logback:logback-classic:1.0.13"
     testCompile "org.mockito:mockito-core:1.9.5"

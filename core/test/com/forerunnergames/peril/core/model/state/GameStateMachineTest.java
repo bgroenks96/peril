@@ -1,21 +1,52 @@
 package com.forerunnergames.peril.core.model.state;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import com.forerunnergames.peril.core.model.events.CreateNewGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.tools.common.Event;
 
 import java.util.concurrent.CountDownLatch;
+
+import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.config.BusConfiguration;
+import net.engio.mbassy.bus.config.Feature;
+import net.engio.mbassy.bus.config.IBusConfiguration;
+import net.engio.mbassy.bus.error.IPublicationErrorHandler;
+import net.engio.mbassy.bus.error.PublicationError;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GameStateMachineTest
 {
+  private static final Logger log = LoggerFactory.getLogger (GameStateMachineTest.class);
   private static final CountDownLatch countDownLatch = new CountDownLatch (1);
   private static GameStateMachine gameStateMachine;
 
   @BeforeClass
   public static void setUpClass()
   {
-    final GameModel model = new GameModel();
+    final IBusConfiguration eventBusConfiguration = new BusConfiguration()
+            .addFeature (Feature.SyncPubSub.Default())
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default());
+
+    final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
+
+    eventBus.addErrorHandler (new IPublicationErrorHandler()
+    {
+      @Override
+      public void handleError (PublicationError error)
+      {
+        log.error (error.toString(), error.getCause());
+      }
+    });
+
+    final GameModel model = new GameModel (eventBus);
 
     gameStateMachine = new GameStateMachine (model, new GameStateMachineListener()
     {
@@ -26,29 +57,32 @@ public class GameStateMachineTest
       }
     });
 
-    model.setGameStateEventListener (gameStateMachine);
+    eventBus.subscribe (gameStateMachine);
   }
 
   @Test
   public void testAll()
   {
-    gameStateMachine.onCreateNewGameEvent();
+    // Simulate creating a new game.
+    gameStateMachine.onEvent (new CreateNewGameEvent());
 
-    // Simulate filling up the game with players
+    // Simulate filling up the game with players.
     for (int i = 0; i < GameModel.MAX_PLAYER_COUNT; ++i)
     {
-      gameStateMachine.onPlayerJoinGameRequestEvent();
+      gameStateMachine.onEvent (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
 
     try
     {
       countDownLatch.await();
     }
-    catch (InterruptedException e)
+    catch (final InterruptedException e)
     {
-      e.printStackTrace();
+      final String errorMessage = "The test was interrupted.";
 
-      assertTrue (false);
+      log.error (errorMessage, e);
+
+      fail (errorMessage);
     }
   }
 }

@@ -41,6 +41,3 @@ test {
 eclipse.project {
   name = appName + "-core"
 }
-
-dependencies {
-}

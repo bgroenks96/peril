@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.google.common.collect.Maps.newHashMap;
-
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
@@ -10,6 +8,7 @@ import com.forerunnergames.tools.common.Strings;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public final class PlayerModel
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerModel.class);
-  private final Map <Id, Player> players = newHashMap();
+  private final Map <Id, Player> players = new HashMap<>();
   private final int maxPlayers;
   private int playerLimit;
   private int nextAvailableIdValue;

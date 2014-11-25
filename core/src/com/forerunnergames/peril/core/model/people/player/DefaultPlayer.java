@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 
-public final class DefaultPlayer extends AbstractPerson implements Player
+public class DefaultPlayer extends AbstractPerson implements Player
 {
   private PlayerColor color;
   private PlayerTurnOrder turnOrder;
