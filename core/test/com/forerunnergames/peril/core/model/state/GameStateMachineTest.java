@@ -3,10 +3,13 @@ package com.forerunnergames.peril.core.model.state;
 import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.core.model.events.CreateNewGameEvent;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.config.BusConfiguration;
@@ -24,7 +27,9 @@ import org.junit.Test;
 public class GameStateMachineTest
 {
   private static final Logger log = LoggerFactory.getLogger (GameStateMachineTest.class);
-  private static final CountDownLatch countDownLatch = new CountDownLatch (1);
+  private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch (1);
+  private static final long COUNT_DOWN_LATCH_WAIT_TIME = 5;
+  private static final TimeUnit COUNT_DOWN_LATCH_WAIT_TIME_UNIT = TimeUnit.SECONDS;
   private static GameStateMachine gameStateMachine;
 
   @BeforeClass
@@ -46,14 +51,15 @@ public class GameStateMachineTest
       }
     });
 
-    final GameModel model = new GameModel (eventBus);
+    final int initialPlayerLimit = GameSettings.MAX_PLAYERS;
+    final GameModel model = new GameModel (new PlayerModel (initialPlayerLimit), eventBus);
 
     gameStateMachine = new GameStateMachine (model, new GameStateMachineListener()
     {
       @Override
       public void onEnd()
       {
-        countDownLatch.countDown();
+        COUNT_DOWN_LATCH.countDown ();
       }
     });
 
@@ -66,15 +72,15 @@ public class GameStateMachineTest
     // Simulate creating a new game.
     gameStateMachine.onEvent (new CreateNewGameEvent());
 
-    // Simulate filling up the game with players.
-    for (int i = 0; i < GameModel.MAX_PLAYER_COUNT; ++i)
+    // Simulate many players attempting to join the game.
+    for (int i = 0; i < 50; ++i)
     {
       gameStateMachine.onEvent (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
 
     try
     {
-      countDownLatch.await();
+      COUNT_DOWN_LATCH.await (COUNT_DOWN_LATCH_WAIT_TIME, COUNT_DOWN_LATCH_WAIT_TIME_UNIT);
     }
     catch (final InterruptedException e)
     {

@@ -7,14 +7,24 @@ import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRe
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 
+import com.stateforge.statemachine.context.IContextEnd;
+import com.stateforge.statemachine.listener.ObserverConsole;
+
 import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.stateforge.statemachine.context.IContextEnd;
-import com.stateforge.statemachine.listener.ObserverConsole;
-
+/**
+ * This is the outermost layer of the core game logic state machine.
+ *
+ * It's sole purpose is to feed external events into the internal game state machine context.
+ *
+ * This is accomplished in the following manner:
+ *
+ * First, subscribe to (listen for) relevant external events on the event bus.
+ * Then, when an external even is received, delegate to the corresponding state machine context method.
+ */
 public final class GameStateMachine
 {
   private static final Logger log = LoggerFactory.getLogger (GameStateMachine.class);

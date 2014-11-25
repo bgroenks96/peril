@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
+import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
@@ -18,18 +19,20 @@ public final class PlayerModel
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerModel.class);
   private final Map <Id, Player> players = new HashMap<>();
-  private final int maxPlayers;
   private int playerLimit;
   private int nextAvailableIdValue;
 
-  public PlayerModel (final int maxPlayers, final int initialPlayerLimit)
+  public PlayerModel (final int initialPlayerLimit)
   {
-    Arguments.checkLowerInclusiveBound (maxPlayers, 1, "maxPlayers");
     Arguments.checkIsNotNegative (initialPlayerLimit, "initialPlayerLimit");
-    Arguments.checkUpperInclusiveBound (initialPlayerLimit, maxPlayers, "initialPlayerLimit", "maxPlayers");
+    Arguments.checkUpperInclusiveBound (initialPlayerLimit, GameSettings.MAX_PLAYERS, "initialPlayerLimit", "GameSettings.MAX_PLAYERS");
 
-    this.maxPlayers = maxPlayers;
     playerLimit = initialPlayerLimit;
+  }
+
+  public int count()
+  {
+    return players.size();
   }
 
   public ImmutableSet <Player> getPlayers()
@@ -230,10 +233,10 @@ public final class PlayerModel
     {
       throw new IllegalStateException ("Cannot change player limit [" + playerLimit + "] by delta [" + delta + "].");
     }
-    else if (playerLimit + delta > maxPlayers)
+    else if (playerLimit + delta > GameSettings.MAX_PLAYERS)
     {
       throw new IllegalStateException ("Cannot increase player limit [" + playerLimit + "] by delta [" + delta +
-              "] because player limit cannot increase beyond max players [" + maxPlayers + "].");
+              "] because player limit cannot increase beyond max players [" + GameSettings.MAX_PLAYERS + "].");
     }
     else if (playerLimit + delta < 0)
     {
