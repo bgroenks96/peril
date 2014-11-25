@@ -61,6 +61,34 @@ import org.bushe.swing.event.annotation.EventSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/* TODO Refactor:
+ *
+ * - This class should not be directly modifying game state.
+ *
+ * - It's only purpose is to facilitate communication between multiple network clients and the game state machine.
+ *
+ * - This effectively hides the existence of a remote network from the game state machine, so that the state machine
+ *   doesn't know or care if its players are local or remote, or some combination of both.
+ *
+ * - This class should be refactored until it accurately reflects that purpose.
+ *
+ * - The main way to accomplish this refactoring is by focusing on communicating with the state machine via the
+ *   event bus only.
+ *
+ * - This class receives questions from clients in the form of *RequestEvent's, which should be forwarded to the
+ *   state machine via the event bus, NOT handled directly in this class, and NOT directly delegated to the PlayerModel,
+ *   which is what currently happens.
+ *
+ * - Then this class should subscribe to (listen for) *AnswerEvent's on the event bus, which should be forwarded back
+ *   to the clients.
+ *
+ * - If you want to see a better example of how this class should look, see the client version of MultiplayerController
+ *   in the client module at peril/client/src/com/forerunnergames/peril/client/controllers/MultiplayerController.java.
+ *   It facilitates communication between the server and the client's UI logic via the event bus by subscribing to
+ *   *RequestEvent's from the client UI logic, passing them on to the server, and then listening for *AnswerEvent's
+ *   from the server, and finally passing them on to the client UI logic, so that the UI can update it's state to
+ *   accurately reflect the current state of the server.
+ */
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);

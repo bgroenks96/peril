@@ -28,6 +28,18 @@ import org.bushe.swing.event.annotation.EventSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Facilitates communication between the server and the client UI logic.
+ *
+ * This is accomplished in the following manner:
+ *
+ * 1) Subscribe to *RequestEvent's from the client UI logic.
+ * 2) Send *RequestEvent's to the server wrapped in ClientCommunicationEvent's.
+ * 3) Listen for ServerCommunicationEvent's from the server.
+ * 4) Unwrap ServerCommunicationEvent's and publish the *AnswerEvent's (*SuccessEvent or *DeniedEvent) to the
+ *    client UI logic via the event bus, so that the UI can update it's state to accurately reflect the current state
+ *    of the server.
+ */
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
