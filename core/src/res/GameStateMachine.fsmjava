@@ -4,44 +4,85 @@
                  xsi:schemaLocation="http://www.stateforge.com/StateMachineJava-v1
                                      http://www.stateforge.com/xsd/StateMachineJava-v1.xsd
                                      http://www.stateforge.com/StateMachineJava-v1">
-    <!-- General settings -->
-    <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
-        <object instance="model" class="GameModel"/>
-    </settings>
+  <!-- General settings -->
+  <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
+    <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model" />
+  </settings>
 
-    <!-- Events -->
-    <events>
-        <eventSource name="Game">
-            <event id="onCreateNewGameEvent"/>
-            <event id="onDeterminePlayerTurnOrderComplete"/>
-        </eventSource>
-        <eventSource name="Players">
-            <event id="onPlayerJoinGameRequestEvent"/>
-            <event id="onPlayerJoinGameSuccessEvent"/>
-            <event id="onPlayerJoinGameDeniedEvent"/>
-        </eventSource>
-    </events>
+  <!-- Events -->
+  <events>
+    <eventSource name="Game">
+      <event id="onCreateGameEvent">
+        <parameter type="com.forerunnergames.peril.core.model.events.CreateGameEvent" name="event"/>
+      </event>
+      <event id="onDestroyGameEvent">
+        <parameter type="com.forerunnergames.peril.core.model.events.DestroyGameEvent" name="event"/>
+      </event>
+      <event id="onEndGameEvent">
+        <parameter type="com.forerunnergames.peril.core.model.events.EndGameEvent" name="event"/>
+      </event>
+    </eventSource>
+    <eventSource name="Players">
+      <event id="onPlayerJoinGameRequestEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent" name="event"/>
+      </event>
+      <event id="onPlayerJoinGameSuccessEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent" name="event"/>
+      </event>
+      <event id="onPlayerJoinGameDeniedEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent" name="event"/>
+      </event>
+      <event id="onChangePlayerLimitRequestEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent" name="event"/>
+      </event>
+      <event id="onChangePlayerColorRequestEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent" name="event"/>
+      </event>
+    </eventSource>
+  </events>
 
-    <!-- States -->
-    <state name="Root">
-        <state name="Initial">
-            <transition event="onCreateNewGameEvent" nextState="WaitForPlayerJoinGameRequest"/>
-        </state>
-        <state name="WaitForPlayerJoinGameRequest">
-            <onEntry action="model.waitForPlayerJoinGameRequest()"/>
-            <transition event="onPlayerJoinGameRequestEvent" nextState="HandlePlayerJoinGameRequest"/>
-        </state>
-        <state name="HandlePlayerJoinGameRequest">
-            <onEntry action ="model.handlePlayerJoinGameRequest()"/>
-            <transition event="onPlayerJoinGameRequestEvent" nextState="HandlePlayerJoinGameRequest"/>
-            <transition event="onPlayerJoinGameSuccessEvent" condition="model.isGameFull()" nextState="DeterminePlayerTurnOrder"/>
-            <transition event="onPlayerJoinGameSuccessEvent" nextState="WaitForPlayerJoinGameRequest"/>
-            <transition event="onPlayerJoinGameDeniedEvent" nextState="WaitForPlayerJoinGameRequest"/>
-        </state>
-        <state name="DeterminePlayerTurnOrder">
-            <onEntry action="model.determinePlayerTurnOrder()"/>
-            <transition event="onDeterminePlayerTurnOrderComplete" nextState="End"/>
-        </state>
-        <state name="End" kind="final"/>
+  <!-- States -->
+  <state name="Root">
+
+    <state name="Initial">
+      <transition event="onCreateGameEvent" nextState="Operating"/>
     </state>
+
+    <state name="Operating">
+      <transition event="onDestroyGameEvent" nextState="End"/>
+
+      <!-- Parallel sections function independently of each other. -->
+      <parallel nextState="End">
+
+        <!-- First parallel section -->
+        <state name="PlayerHandler">
+          <state name="WaitForPlayerRequest">
+            <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)" nextState="WaitForPlayerRequest"/>
+            <transition event="onChangePlayerLimitRequestEvent" action="gameModel.handleChangePlayerLimitRequest (event)" nextState="WaitForPlayerRequest"/>
+            <transition event="onChangePlayerColorRequestEvent" action="gameModel.handleChangePlayerColorRequest (event)" nextState="WaitForPlayerRequest"/>
+          </state>
+        </state>
+
+        <!-- Second parallel section -->
+        <state name="GameHandler">
+          <state name="WaitForGameToBegin">
+            <onEntry action="gameModel.waitForGameToBegin()"/>
+            <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isGameFull()" nextState="DeterminePlayerTurnOrder"/>
+          </state>
+          <state name="DeterminePlayerTurnOrder">
+            <onEntry action="gameModel.determinePlayerTurnOrder()"/>
+            <transition event="onEndGameEvent" nextState="EndGame"/>
+          </state>
+          <state name="EndGame">
+            <onEntry action="gameModel.endGame()"/>
+            <transition event="onCreateGameEvent" nextState="WaitForGameToBegin"/>
+          </state>
+        </state>
+
+      </parallel>
+    </state>
+
+    <state name="End" kind="final"/>
+
+  </state>
 </sm:StateMachine>

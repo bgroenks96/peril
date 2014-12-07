@@ -1,25 +1,32 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent, KickEvent
+public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <String>, KickEvent
 {
-  private final PlayerDeniedEvent playerDeniedEvent;
+  private final PlayerDeniedEvent <String> playerDeniedEvent;
   private final KickEvent kickEvent;
 
-  public KickPlayerFromGameDeniedEvent (final Player player, final String reasonForKick, final String reasonForDenial)
+  public KickPlayerFromGameDeniedEvent (final Player player, final String reasonForKick, final String reason)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (reasonForKick, "reasonForKick");
-    Arguments.checkIsNotNull (reasonForDenial, "reasonForDenial");
+    Arguments.checkIsNotNull (reason, "reason");
 
-    playerDeniedEvent = new DefaultPlayerDeniedEvent (player, reasonForDenial);
+    playerDeniedEvent = new DefaultPlayerDeniedEvent (player, reason);
     kickEvent = new DefaultKickEvent (reasonForKick);
+  }
+
+  @Override
+  public String getReason()
+  {
+    return playerDeniedEvent.getReason();
   }
 
   @Override
@@ -41,19 +48,12 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent, K
   }
 
   @Override
-  public String getReasonForDenial()
-  {
-    return playerDeniedEvent.getReasonForDenial();
-  }
-
-  @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s | %3$s",
-            getClass().getSimpleName(), kickEvent.toString(), playerDeniedEvent.toString());
+    return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), kickEvent, playerDeniedEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private KickPlayerFromGameDeniedEvent()
   {
     kickEvent = null;

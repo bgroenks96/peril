@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -26,7 +27,7 @@ public final class DefaultKickEvent implements KickEvent
     return String.format ("Reason for kick: %1$s", reasonForKick);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultKickEvent()
   {
     reasonForKick = null;

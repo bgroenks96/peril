@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinServerEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -74,7 +75,7 @@ public final class JoinMultiplayerServerSuccessEvent implements JoinServerEvent,
             getClass().getSimpleName(), serverName, joinServerEvent, Strings.toString (playersInGame), playerLimit);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private JoinMultiplayerServerSuccessEvent()
   {
     serverName = null;

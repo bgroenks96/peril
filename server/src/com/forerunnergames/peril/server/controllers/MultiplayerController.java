@@ -1,62 +1,18 @@
 package com.forerunnergames.peril.server.controllers;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.idOf;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
-import static com.forerunnergames.tools.common.net.RemoteInterpreter.addressOf;
-import static com.forerunnergames.tools.common.net.events.EventInterpreter.clientFrom;
-import static com.forerunnergames.tools.common.net.events.EventInterpreter.questionFrom;
-
 import static com.google.common.collect.Maps.newHashMap;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
-import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.KickPlayerFromGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerTurnOrderRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.JoinMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.KickPlayerFromGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.QuitMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerColorSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerTurnOrderSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.CloseMultiplayerServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.JoinMultiplayerServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.KickPlayerFromGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.OpenMultiplayerServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.PlayerLeaveGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.StatusMessageSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Id;
-import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ClientCommunicator;
 import com.forerunnergames.tools.common.net.ClientConnector;
 import com.forerunnergames.tools.common.net.Remote;
-import com.forerunnergames.tools.common.net.events.ClientCommunicationEvent;
-import com.forerunnergames.tools.common.net.events.ClientConnectionEvent;
-import com.forerunnergames.tools.common.net.events.ClientDisconnectionEvent;
 
 import java.util.Map;
 
 import org.bushe.swing.event.annotation.AnnotationProcessor;
-import org.bushe.swing.event.annotation.EventSubscriber;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,6 +95,7 @@ public final class MultiplayerController extends ControllerAdapter
     AnnotationProcessor.unprocess (this);
   }
 
+  /*
   @EventSubscriber (eventClass = ClientConnectionEvent.class)
   public void onClientConnectionEvent (ClientConnectionEvent event)
   {
@@ -264,7 +221,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    Player player = createPlayer (withNameFrom (requestEvent));
+    Player player = createPlayer (withPlayerNameFrom (requestEvent));
     result = addPlayerToGame (player);
 
     if (result.isFailure())
@@ -291,9 +248,11 @@ public final class MultiplayerController extends ControllerAdapter
     return host != null && ! existsPlayerWith (host) && joiningClient.isNot (host);
   }
 
-  private void playerJoinGameDenied (final String playerName, final String reasonForDenial, final Remote sender)
+  private void playerJoinGameDenied (final String playerName,
+                                     final PlayerJoinGameDeniedEvent.REASON reason,
+                                     final Remote sender)
   {
-    PlayerJoinGameDeniedEvent deniedEvent = new PlayerJoinGameDeniedEvent (playerName, reasonForDenial);
+    PlayerJoinGameDeniedEvent deniedEvent = new PlayerJoinGameDeniedEvent (playerName, reason);
     sendTo (sender, deniedEvent);
     if (isHost (sender)) sendTo (sender, new CloseMultiplayerServerSuccessEvent());
     disconnect (sender);
@@ -415,8 +374,8 @@ public final class MultiplayerController extends ControllerAdapter
     Result result =
             playerModel.changeColorOf (
                     idOf (playerFrom (requestEvent)),
-                    currentColorFrom (requestEvent),
-                    previousColorFrom (requestEvent));
+                    previousColorFrom (requestEvent),
+                    currentColorFrom (requestEvent));
 
     if (result.isFailure())
     {
@@ -429,11 +388,11 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void changePlayerColorDenied (final ChangePlayerColorRequestEvent requestEvent,
                                         final Remote sender,
-                                        final String reasonForDenial)
+                                        final String reason)
   {
-    ChangePlayerColorDeniedEvent deniedEvent = new ChangePlayerColorDeniedEvent (requestEvent, reasonForDenial);
+    ChangePlayerColorDeniedEvent deniedEvent = new ChangePlayerColorDeniedEvent (requestEvent, reason);
     sendTo (sender, deniedEvent);
-    sendTo (sender, statusMessage (reasonForDenial));
+    sendTo (sender, statusMessage (reason));
   }
 
   private void changePlayerColorSuccess (final PlayerColor currentColor,
@@ -466,9 +425,9 @@ public final class MultiplayerController extends ControllerAdapter
     changePlayerLimitSuccess (deltaFrom (requestEvent), sender);
   }
 
-  private void changePlayerLimitDenied (final int playerLimitDelta, final Remote sender, final String reasonForDenial)
+  private void changePlayerLimitDenied (final int playerLimitDelta, final Remote sender, final String reason)
   {
-    ChangePlayerLimitDeniedEvent deniedEvent = new ChangePlayerLimitDeniedEvent (playerLimitDelta, reasonForDenial);
+    ChangePlayerLimitDeniedEvent deniedEvent = new ChangePlayerLimitDeniedEvent (playerLimitDelta, reason);
     sendTo (sender, deniedEvent);
   }
 
@@ -561,9 +520,9 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event,
                                             final Remote sender,
-                                            final String reasonForDenial)
+                                            final String reason)
   {
-    sendTo (sender, new OpenMultiplayerServerDeniedEvent (event, reasonForDenial));
+    sendTo (sender, new OpenMultiplayerServerDeniedEvent (event, reason));
   }
 
   private void openMultiplayerServerSuccess (final Remote sender)
@@ -607,4 +566,5 @@ public final class MultiplayerController extends ControllerAdapter
     clientConnector.disconnectAll();
     shouldShutDown = true;
   }
+  */
 }

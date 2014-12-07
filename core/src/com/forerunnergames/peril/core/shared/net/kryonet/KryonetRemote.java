@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.kryonet;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.Remote;
 
 import java.net.InetSocketAddress;
@@ -82,7 +83,7 @@ public final class KryonetRemote implements Remote
     return String.format ("%1$s: Connection Id: %2$s | Address: %3$s", getClass().getSimpleName(), connectionId, address);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private KryonetRemote()
   {
     connectionId = -1;

@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.defaults;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -53,10 +54,10 @@ public final class DefaultPlayerTurnOrderEvent implements PlayerTurnOrderEvent
   public String toString()
   {
     return String.format ("%1$s | Current turn order: %2$s | Previous turn order: %3$s",
-            playerEvent.toString(), currentTurnOrder, previousTurnOrder);
+            playerEvent, currentTurnOrder, previousTurnOrder);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultPlayerTurnOrderEvent()
   {
     playerEvent = null;

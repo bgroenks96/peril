@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.defaults;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -53,7 +54,7 @@ public final class DefaultPlayerColorEvent implements PlayerColorEvent
     return String.format ("Current color: %1$s | Previous color: %2$s | %3$s", currentColor, previousColor, playerEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultPlayerColorEvent()
   {
     playerEvent = null;

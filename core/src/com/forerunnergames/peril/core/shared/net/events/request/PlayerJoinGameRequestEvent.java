@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.net.events.RequestEvent;
 
@@ -25,7 +26,7 @@ public final class PlayerJoinGameRequestEvent implements RequestEvent
     return String.format ("%1$s: Player name: %2$s", getClass().getSimpleName(), playerName);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private PlayerJoinGameRequestEvent()
   {
     playerName = null;

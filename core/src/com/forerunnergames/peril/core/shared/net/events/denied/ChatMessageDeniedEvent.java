@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
@@ -10,18 +11,24 @@ import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEvent
+public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEvent <String>
 {
   private final ChatMessageEvent chatMessageEvent;
-  private final DeniedEvent deniedEvent;
+  private final DeniedEvent <String> deniedEvent;
 
-  public ChatMessageDeniedEvent (final ChatMessage message, final String reasonForDenial)
+  public ChatMessageDeniedEvent (final ChatMessage message, final String reason)
   {
     Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (reasonForDenial, "reasonForDenial");
+    Arguments.checkIsNotNull (reason, "reason");
 
     chatMessageEvent = new DefaultChatMessageEvent (message);
-    deniedEvent = new DefaultDeniedEvent (reasonForDenial);
+    deniedEvent = new DefaultDeniedEvent (reason);
+  }
+
+  @Override
+  public String getReason()
+  {
+    return deniedEvent.getReason();
   }
 
   @Override
@@ -34,12 +41,6 @@ public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEve
   public String getMessageText()
   {
     return chatMessageEvent.getMessageText();
-  }
-
-  @Override
-  public String getReasonForDenial()
-  {
-    return deniedEvent.getReasonForDenial();
   }
 
   @Override
@@ -61,7 +62,7 @@ public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEve
     return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), chatMessageEvent, deniedEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private ChatMessageDeniedEvent()
   {
     chatMessageEvent = null;

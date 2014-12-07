@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.client.controllers;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
-import static com.forerunnergames.tools.common.net.events.EventInterpreter.answerFrom;
-import static com.forerunnergames.tools.common.net.events.EventInterpreter.serverFrom;
+import static com.forerunnergames.tools.common.net.events.EventFluency.answerFrom;
+import static com.forerunnergames.tools.common.net.events.EventFluency.serverFrom;
 
 import com.forerunnergames.peril.core.shared.net.events.denied.JoinMultiplayerServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
@@ -110,9 +110,9 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event [{}] received.", event);
 
-    final Result result = openMultiplayerServer (withNameFrom (event), withTcpPortFrom (event));
+    final Result <String> result = openMultiplayerServer (withNameFrom (event), withTcpPortFrom (event));
 
-    if (result.isFailure()) openMultiplayerServerDenied (event, result.getMessage());
+    if (result.isFailure()) openMultiplayerServerDenied (event, result.getFailureReason());
   }
 
   @EventSubscriber (priority = CALL_FIRST)
@@ -122,9 +122,9 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event [{}] received.", event);
 
-    final Result result = joinMultiplayerServer (withAddressFrom (event), withTcpPortFrom (event));
+    final Result <String> result = joinMultiplayerServer (withAddressFrom (event), withTcpPortFrom (event));
 
-    if (result.isFailure()) joinMultiplayerServerDenied (event, result.getMessage());
+    if (result.isFailure()) joinMultiplayerServerDenied (event, result.getFailureReason());
   }
 
   @EventSubscriber (priority = CALL_LAST)
@@ -160,9 +160,9 @@ public final class MultiplayerController extends ControllerAdapter
     serverCommunicator.send (event);
   }
 
-  private Result openMultiplayerServer (final String name, final int tcpPort)
+  private Result <String> openMultiplayerServer (final String name, final int tcpPort)
   {
-    Result result = createServer (name, tcpPort);
+    Result <String> result = createServer (name, tcpPort);
 
     if (result.isFailure()) return result;
 
@@ -173,23 +173,23 @@ public final class MultiplayerController extends ControllerAdapter
     return result;
   }
 
-  private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event, final String reasonForDenial)
+  private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event, final String reason)
   {
     destroyServer();
-    EventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reasonForDenial));
+    EventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reason));
   }
 
-  private Result joinMultiplayerServer (final String address, final int tcpPort)
+  private Result <String> joinMultiplayerServer (final String address, final int tcpPort)
   {
     return connectToServer (address, tcpPort);
   }
 
-  private void joinMultiplayerServerDenied (final JoinMultiplayerServerRequestEvent event, final String reasonForDenial)
+  private void joinMultiplayerServerDenied (final JoinMultiplayerServerRequestEvent event, final String reason)
   {
-    EventBus.publish (new JoinMultiplayerServerDeniedEvent (event, reasonForDenial));
+    EventBus.publish (new JoinMultiplayerServerDeniedEvent (event, reason));
   }
 
-  private Result createServer (final String name, final int tcpPort)
+  private Result <String> createServer (final String name, final int tcpPort)
   {
     return serverCreator.create (name, tcpPort);
   }
@@ -204,12 +204,12 @@ public final class MultiplayerController extends ControllerAdapter
     return serverCreator.resolveAddress();
   }
 
-  private Result connectToServer (final String address, final int tcpPort)
+  private Result <String> connectToServer (final String address, final int tcpPort)
   {
     return connectToServer (address, tcpPort, NetworkSettings.CONNECTION_TIMEOUT_MS, NetworkSettings.MAX_CONNECTION_ATTEMPTS);
   }
 
-  private Result connectToServer (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
+  private Result <String> connectToServer (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
   {
     return serverConnector.connect (address, tcpPort, timeoutMs, maxAttempts);
   }

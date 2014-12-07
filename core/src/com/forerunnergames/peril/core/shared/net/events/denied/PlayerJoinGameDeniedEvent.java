@@ -1,27 +1,30 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
-public final class PlayerJoinGameDeniedEvent implements DeniedEvent
+public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.REASON>
 {
-  private final String playerName;
-  private final DeniedEvent deniedEvent;
-
-  public PlayerJoinGameDeniedEvent (final String playerName, final String reasonForDenial)
+  public enum REASON
   {
-    Arguments.checkIsNotNull (playerName, "playerName");
-    Arguments.checkIsNotNull (reasonForDenial, "reasonForDenial");
-
-    this.playerName = playerName;
-    deniedEvent = new DefaultDeniedEvent (reasonForDenial);
+    GAME_IS_FULL,
+    DUPLICATE_SELF_IDENTITY,
+    DUPLICATE_ID,
+    DUPLICATE_NAME,
+    DUPLICATE_COLOR,
+    DUPLICATE_TURN_ORDER
   }
 
-  @Override
-  public String getReasonForDenial()
+  private final String playerName;
+
+  public PlayerJoinGameDeniedEvent (final String playerName, final PlayerJoinGameDeniedEvent.REASON reason)
   {
-    return deniedEvent.getReasonForDenial();
+    super (reason);
+
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    this.playerName = playerName;
   }
 
   public String getPlayerName()
@@ -32,14 +35,12 @@ public final class PlayerJoinGameDeniedEvent implements DeniedEvent
   @Override
   public String toString()
   {
-    return String.format ("%1$s: Player name: %2$s | %3$s",
-            getClass().getSimpleName(), playerName, deniedEvent.toString());
+    return String.format ("%1$s: Player name: %2$s | %3$s", getClass().getSimpleName(), playerName, super.toString());
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private PlayerJoinGameDeniedEvent()
   {
     playerName = null;
-    deniedEvent = null;
   }
 }

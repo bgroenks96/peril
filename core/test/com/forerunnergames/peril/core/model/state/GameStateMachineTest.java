@@ -2,12 +2,16 @@ package com.forerunnergames.peril.core.model.state;
 
 import static org.junit.Assert.fail;
 
-import com.forerunnergames.peril.core.model.events.CreateNewGameEvent;
+import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Randomness;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -18,11 +22,11 @@ import net.engio.mbassy.bus.config.IBusConfiguration;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GameStateMachineTest
 {
@@ -52,14 +56,15 @@ public class GameStateMachineTest
     });
 
     final int initialPlayerLimit = GameSettings.MAX_PLAYERS;
-    final GameModel model = new GameModel (new PlayerModel (initialPlayerLimit), eventBus);
+    final PlayerModel playerModel = new PlayerModel (initialPlayerLimit);
+    final GameModel gameModel = new GameModel (playerModel, eventBus);
 
-    gameStateMachine = new GameStateMachine (model, new GameStateMachineListener()
+    gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener()
     {
       @Override
       public void onEnd()
       {
-        COUNT_DOWN_LATCH.countDown ();
+        COUNT_DOWN_LATCH.countDown();
       }
     });
 
@@ -70,12 +75,12 @@ public class GameStateMachineTest
   public void testAll()
   {
     // Simulate creating a new game.
-    gameStateMachine.onEvent (new CreateNewGameEvent());
+    gameStateMachine.onEvent (new CreateGameEvent());
 
     // Simulate many players attempting to join the game.
     for (int i = 0; i < 50; ++i)
     {
-      gameStateMachine.onEvent (new PlayerJoinGameRequestEvent ("Test Player " + i));
+      gameStateMachine.onEvent (new PlayerJoinGameRequestEvent (getRandomPlayerName()));
     }
 
     try
@@ -90,5 +95,13 @@ public class GameStateMachineTest
 
       fail (errorMessage);
     }
+  }
+
+  private static String getRandomPlayerName()
+  {
+    final String[] names = {"Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy", "Brittany", "Jonathan", "Adam", "Brian"};
+    final List <String> shuffledNames = Randomness.shuffle (Arrays.asList (names));
+
+    return shuffledNames.get (0);
   }
 }

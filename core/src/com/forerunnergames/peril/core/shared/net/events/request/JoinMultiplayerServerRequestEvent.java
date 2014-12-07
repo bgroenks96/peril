@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinServerEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -32,10 +33,10 @@ public final class JoinMultiplayerServerRequestEvent implements JoinServerEvent,
   @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), joinServerEvent.toString());
+    return String.format ("%1$s: %2$s", getClass().getSimpleName(), joinServerEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private JoinMultiplayerServerRequestEvent()
   {
     joinServerEvent = null;

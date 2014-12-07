@@ -1,44 +1,45 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerLimitEvent;
 
-public final class ChangePlayerLimitDeniedEvent implements DeniedEvent
+public final class ChangePlayerLimitDeniedEvent extends AbstractDeniedEvent <ChangePlayerLimitDeniedEvent.REASON>
+        implements PlayerLimitEvent
 {
-  private final int playerLimitDelta;
-  private final DeniedEvent deniedEvent;
-
-  public ChangePlayerLimitDeniedEvent (final int playerLimitDelta, final String reasonForDenial)
+  public enum REASON
   {
-    Arguments.checkIsNotNull (reasonForDenial, "reasonForDenial");
-
-    this.playerLimitDelta = playerLimitDelta;
-    deniedEvent = new DefaultDeniedEvent (reasonForDenial);
+    REQUESTED_LIMIT_EQUALS_EXISTING_LIMIT,
+    CANNOT_INCREASE_ABOVE_MAX_PLAYERS,
+    CANNOT_DECREASE_BELOW_ZERO,
+    CANNOT_DECREASE_BELOW_CURRENT_PLAYER_COUNT
   }
 
+  private final int playerLimitDelta;
+
+  public ChangePlayerLimitDeniedEvent (final int playerLimitDelta, final REASON reason)
+  {
+    super (reason);
+
+    this.playerLimitDelta = playerLimitDelta;
+  }
+
+  @Override
   public int getPlayerLimitDelta()
   {
     return playerLimitDelta;
   }
 
   @Override
-  public String getReasonForDenial()
-  {
-    return deniedEvent.getReasonForDenial();
-  }
-
-  @Override
   public String toString()
   {
     return String.format ("%1$s: Player limit delta: %2$s | %3$s",
-            getClass().getSimpleName(), playerLimitDelta, deniedEvent);
+            getClass().getSimpleName(), playerLimitDelta, super.toString());
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private ChangePlayerLimitDeniedEvent()
   {
     playerLimitDelta = 0;
-    deniedEvent = null;
   }
 }

@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
@@ -51,7 +52,7 @@ public final class ChatMessageSuccessEvent implements ChatMessageEvent, SuccessE
     return String.format ("%1$s: %2$s", getClass().getSimpleName(), event);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private ChatMessageSuccessEvent()
   {
     event = null;

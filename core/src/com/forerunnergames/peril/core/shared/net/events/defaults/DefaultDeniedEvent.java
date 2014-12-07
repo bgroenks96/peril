@@ -1,34 +1,16 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultDeniedEvent implements DeniedEvent
+public final class DefaultDeniedEvent extends AbstractDeniedEvent <String>
 {
-  private final String reasonForDenial;
-
-  public DefaultDeniedEvent (final String reasonForDenial)
+  public DefaultDeniedEvent (final String reason)
   {
-    Arguments.checkIsNotNull (reasonForDenial, "reasonForDenial");
-
-    this.reasonForDenial = reasonForDenial;
+    super (reason);
   }
 
-  @Override
-  public String getReasonForDenial()
-  {
-    return reasonForDenial;
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format ("Reason for denial: %1$s", reasonForDenial);
-  }
-
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultDeniedEvent()
   {
-    reasonForDenial = null;
   }
 }

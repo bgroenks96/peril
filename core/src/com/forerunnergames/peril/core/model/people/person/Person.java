@@ -6,6 +6,6 @@ import com.forerunnergames.tools.common.Author;
 public interface Person extends Asset, Author
 {
   public PersonIdentity getIdentity();
-  public boolean is (PersonIdentity identity);
+  public boolean has (PersonIdentity identity);
   public void setIdentity (final PersonIdentity identity);
 }

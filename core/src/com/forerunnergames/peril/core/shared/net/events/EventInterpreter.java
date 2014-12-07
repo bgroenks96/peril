@@ -4,17 +4,9 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.OpenServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.ServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.*;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.JoinMultiplayerServerSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
@@ -49,7 +41,7 @@ public final class EventInterpreter
     return event.getPlayerName();
   }
 
-  public static String withNameFrom (final PlayerJoinGameRequestEvent event)
+  public static String withPlayerNameFrom (final PlayerJoinGameRequestEvent event)
   {
     return playerNameFrom (event);
   }
@@ -89,11 +81,11 @@ public final class EventInterpreter
     return event.getPreviousTurnOrder();
   }
 
-  public static String reasonForDenialFrom (final DeniedEvent event)
+  public static <T> T reasonFrom (final DeniedEvent <T> event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getReasonForDenial();
+    return event.getReason();
   }
 
   public static String reasonForKickFrom (final KickEvent event)
@@ -103,7 +95,14 @@ public final class EventInterpreter
     return event.getReasonForKick();
   }
 
-  public static int deltaFrom (final ChangePlayerLimitRequestEvent event)
+  public static int newPlayerLimitFrom (final ChangePlayerLimitSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getNewPlayerLimit();
+  }
+
+  public static int deltaFrom (final PlayerLimitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -191,7 +190,7 @@ public final class EventInterpreter
     return event.getAdditionalPlayersAllowed();
   }
 
-  public static <T extends Message> T messageFrom (final MessageEvent<T> event)
+  public static <T extends Message> T messageFrom (final MessageEvent <T> event)
   {
     Arguments.checkIsNotNull (event, "event");
 

@@ -1,6 +1,7 @@
 
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 
 public class GameStateMachineInitialState
     extends GameStateMachineRootState
@@ -44,16 +45,16 @@ public class GameStateMachineInitialState
     }
 
     /**
-     * Event id: onCreateNewGameEvent
+     * Event id: onCreateGameEvent
      * 
      */
-    public void onCreateNewGameEvent(GameStateMachineContext context) {
-        GameModel model = context.getGameModel();
-        // Transition from Initial to WaitForPlayerJoinGameRequest triggered by onCreateNewGameEvent
-        // The next state is within the context GameStateMachineContext
-        context.setTransitionName("onCreateNewGameEvent");
-        com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineWaitForPlayerJoinGameRequestState.getInstance());
-        com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineWaitForPlayerJoinGameRequestState.getInstance());
+    public void onCreateGameEvent(GameStateMachineContext context, CreateGameEvent event) {
+        com.forerunnergames.peril.core.model.GameModel gameModel = context.getGameModel();
+        // Transition from Initial to Operating triggered by onCreateGameEvent
+        // The next state belonging to context GameStateMachineContext is outside the current context GameStateMachineContext
+        context.setTransitionName("onCreateGameEvent");
+        com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineOperatingState.getInstance());
+        com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineOperatingState.getInstance());
         return ;
     }
 

@@ -4,46 +4,10 @@ import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayer;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDefaultMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultCommandMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultOpenServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerTurnOrderEvent;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerTurnOrderDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChatMessageDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.JoinMultiplayerServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.KickPlayerFromGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerTurnOrderRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.JoinMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.KickPlayerFromGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.QuitMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerColorSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerTurnOrderSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.CloseMultiplayerServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.JoinMultiplayerServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.KickPlayerFromGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.OpenMultiplayerServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.PlayerLeaveGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.StatusMessageSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.defaults.*;
+import com.forerunnergames.peril.core.shared.net.events.denied.*;
+import com.forerunnergames.peril.core.shared.net.events.request.*;
+import com.forerunnergames.peril.core.shared.net.events.success.*;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultCommandMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
@@ -60,7 +24,11 @@ import java.util.HashMap;
 public final class KryonetRegistration
 {
   public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.of (
-          AbstractDefaultMessageEvent.class,
+          AbstractDeniedEvent.class,
+          AbstractMessageEvent.class,
+          AttackCountryDeniedEvent.class,
+          AttackCountryRequestEvent.class,
+          AttackCountrySuccessEvent.class,
           ChangePlayerColorDeniedEvent.class,
           ChangePlayerColorRequestEvent.class,
           ChangePlayerColorSuccessEvent.class,
@@ -79,12 +47,15 @@ public final class KryonetRegistration
           DefaultDeniedEvent.class,
           DefaultJoinServerEvent.class,
           DefaultKickEvent.class,
-          DefaultStatusMessageEvent.class,
           DefaultOpenServerEvent.class,
           DefaultPlayerColorEvent.class,
           DefaultPlayerDeniedEvent.class,
           DefaultPlayerEvent.class,
           DefaultPlayerTurnOrderEvent.class,
+          DefaultStatusMessageEvent.class,
+          DefendCountryDeniedEvent.class,
+          DefendCountryRequestEvent.class,
+          DefendCountrySuccessEvent.class,
           JoinMultiplayerServerDeniedEvent.class,
           JoinMultiplayerServerRequestEvent.class,
           JoinMultiplayerServerSuccessEvent.class,

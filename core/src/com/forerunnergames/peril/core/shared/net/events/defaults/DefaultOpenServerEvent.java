@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.OpenServerEvent;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -34,7 +35,7 @@ public final class DefaultOpenServerEvent implements OpenServerEvent
     return String.format ("Server name: %1$s | Server port: %2$s (TCP)", serverName, serverTcpPort);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultOpenServerEvent()
   {
     serverName = null;

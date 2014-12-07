@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CommandMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.CommandMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -33,7 +34,7 @@ public final class DefaultCommandMessageEvent implements CommandMessageEvent
     return String.format ("%1$s: %2$s", getClass().getSimpleName(), message);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultCommandMessageEvent()
   {
     message = null;

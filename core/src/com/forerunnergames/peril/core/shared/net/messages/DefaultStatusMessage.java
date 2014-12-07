@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.messages;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
@@ -27,7 +28,7 @@ public final class DefaultStatusMessage implements StatusMessage
     return String.format ("%1$s: Message: %2$s", getClass().getSimpleName(), message);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultStatusMessage()
   {
     message = null;

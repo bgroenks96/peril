@@ -1,27 +1,37 @@
 
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.core.model.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.events.EndGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.stateforge.statemachine.context.AbstractContext;
 
 public class GameStateMachineContext
     extends AbstractContext<GameStateMachineRootState, GameStateMachineContext>
 {
 
-    private GameModel _model;
+    private com.forerunnergames.peril.core.model.GameModel _gameModel;
+    private GameStateMachineOperatingParallel _parallelOperating;
 
     /**
      * Context constructor
      * 
      */
-    public GameStateMachineContext(GameModel model) {
+    public GameStateMachineContext(com.forerunnergames.peril.core.model.GameModel gameModel) {
         super();
-        _model = model;
+        _gameModel = gameModel;
         setName("GameStateMachineContext");
         setInitialState(GameStateMachineInitialState.getInstance());
+        _parallelOperating = new GameStateMachineOperatingParallel(this, gameModel);
     }
 
-    public GameModel getGameModel() {
-        return _model;
+    public com.forerunnergames.peril.core.model.GameModel getGameModel() {
+        return _gameModel;
     }
 
     /**
@@ -41,17 +51,17 @@ public class GameStateMachineContext
     }
 
     /**
-     * Asynchronous event onCreateNewGameEvent
+     * Asynchronous event onCreateGameEvent
      * 
      */
-    public void onCreateNewGameEvent() {
+    public void onCreateGameEvent(final CreateGameEvent event) {
         final GameStateMachineContext me = this;
         getExecutorService().execute(new Runnable() {
 
 
             public void run() {
                 try {
-                    getStateCurrent().onCreateNewGameEvent(me);
+                    getStateCurrent().onCreateGameEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }
@@ -62,17 +72,38 @@ public class GameStateMachineContext
     }
 
     /**
-     * Asynchronous event onDeterminePlayerTurnOrderComplete
+     * Asynchronous event onDestroyGameEvent
      * 
      */
-    public void onDeterminePlayerTurnOrderComplete() {
+    public void onDestroyGameEvent(final DestroyGameEvent event) {
         final GameStateMachineContext me = this;
         getExecutorService().execute(new Runnable() {
 
 
             public void run() {
                 try {
-                    getStateCurrent().onDeterminePlayerTurnOrderComplete(me);
+                    getStateCurrent().onDestroyGameEvent(me, event);
+                } catch (Exception exception) {
+                    onEnd(exception);
+                }
+            }
+
+        }
+        );
+    }
+
+    /**
+     * Asynchronous event onEndGameEvent
+     * 
+     */
+    public void onEndGameEvent(final EndGameEvent event) {
+        final GameStateMachineContext me = this;
+        getExecutorService().execute(new Runnable() {
+
+
+            public void run() {
+                try {
+                    getStateCurrent().onEndGameEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }
@@ -86,14 +117,14 @@ public class GameStateMachineContext
      * Asynchronous event onPlayerJoinGameRequestEvent
      * 
      */
-    public void onPlayerJoinGameRequestEvent() {
+    public void onPlayerJoinGameRequestEvent(final PlayerJoinGameRequestEvent event) {
         final GameStateMachineContext me = this;
         getExecutorService().execute(new Runnable() {
 
 
             public void run() {
                 try {
-                    getStateCurrent().onPlayerJoinGameRequestEvent(me);
+                    getStateCurrent().onPlayerJoinGameRequestEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }
@@ -107,14 +138,14 @@ public class GameStateMachineContext
      * Asynchronous event onPlayerJoinGameSuccessEvent
      * 
      */
-    public void onPlayerJoinGameSuccessEvent() {
+    public void onPlayerJoinGameSuccessEvent(final PlayerJoinGameSuccessEvent event) {
         final GameStateMachineContext me = this;
         getExecutorService().execute(new Runnable() {
 
 
             public void run() {
                 try {
-                    getStateCurrent().onPlayerJoinGameSuccessEvent(me);
+                    getStateCurrent().onPlayerJoinGameSuccessEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }
@@ -128,14 +159,14 @@ public class GameStateMachineContext
      * Asynchronous event onPlayerJoinGameDeniedEvent
      * 
      */
-    public void onPlayerJoinGameDeniedEvent() {
+    public void onPlayerJoinGameDeniedEvent(final PlayerJoinGameDeniedEvent event) {
         final GameStateMachineContext me = this;
         getExecutorService().execute(new Runnable() {
 
 
             public void run() {
                 try {
-                    getStateCurrent().onPlayerJoinGameDeniedEvent(me);
+                    getStateCurrent().onPlayerJoinGameDeniedEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }
@@ -143,6 +174,52 @@ public class GameStateMachineContext
 
         }
         );
+    }
+
+    /**
+     * Asynchronous event onChangePlayerLimitRequestEvent
+     * 
+     */
+    public void onChangePlayerLimitRequestEvent(final ChangePlayerLimitRequestEvent event) {
+        final GameStateMachineContext me = this;
+        getExecutorService().execute(new Runnable() {
+
+
+            public void run() {
+                try {
+                    getStateCurrent().onChangePlayerLimitRequestEvent(me, event);
+                } catch (Exception exception) {
+                    onEnd(exception);
+                }
+            }
+
+        }
+        );
+    }
+
+    /**
+     * Asynchronous event onChangePlayerColorRequestEvent
+     * 
+     */
+    public void onChangePlayerColorRequestEvent(final ChangePlayerColorRequestEvent event) {
+        final GameStateMachineContext me = this;
+        getExecutorService().execute(new Runnable() {
+
+
+            public void run() {
+                try {
+                    getStateCurrent().onChangePlayerColorRequestEvent(me, event);
+                } catch (Exception exception) {
+                    onEnd(exception);
+                }
+            }
+
+        }
+        );
+    }
+
+    public GameStateMachineOperatingParallel getGameStateMachineOperatingParallel() {
+        return _parallelOperating;
     }
 
 }

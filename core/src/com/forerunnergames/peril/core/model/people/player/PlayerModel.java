@@ -1,10 +1,16 @@
 package com.forerunnergames.peril.core.model.people.player;
 
+import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.*;
+
+import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
+import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
-import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -12,15 +18,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class PlayerModel
 {
-  private static final Logger log = LoggerFactory.getLogger (PlayerModel.class);
   private final Map <Id, Player> players = new HashMap<>();
   private int playerLimit;
-  private int nextAvailableIdValue;
 
   public PlayerModel (final int initialPlayerLimit)
   {
@@ -30,14 +31,20 @@ public final class PlayerModel
     playerLimit = initialPlayerLimit;
   }
 
-  public int count()
+  public Result <PlayerJoinGameDeniedEvent.REASON> requestToAdd (final Player player)
   {
-    return players.size();
-  }
+    Arguments.checkIsNotNull (player, "player");
 
-  public ImmutableSet <Player> getPlayers()
-  {
-    return ImmutableSet.copyOf (players.values());
+    if (isFull()) return Result.failure (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL);
+    if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_ID);
+    if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_NAME);
+    if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_COLOR);
+    if (existsPlayerWith (turnOrderOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER);
+    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY);
+
+    add (player);
+
+    return Result.success();
   }
 
   public boolean isFull()
@@ -45,50 +52,34 @@ public final class PlayerModel
     return players.size() > 0 && players.size() >= playerLimit;
   }
 
-  public boolean isEmpty()
+  public boolean existsPlayerWith (final PersonIdentity identity)
   {
-    return players.size() == 0;
+    Arguments.checkIsNotNull (identity, "identity");
+
+    for (final Player player : players())
+    {
+      if (player.has (identity)) return true;
+    }
+
+    return false;
   }
 
-  public Result add (final Player player)
+  private Collection <Player> players()
   {
-    Arguments.checkIsNotNull (player, "player");
-
-    if (isFull())
-    {
-      return Result.failure ("The game is full.");
-    }
-    else if (existsPlayerWith (PlayerInterpreter.idOf (player)))
-    {
-      return Result.failure ("You are already in the game.");
-    }
-    else if (existsPlayerWith (PlayerInterpreter.nameOf (player)))
-    {
-      return Result.failure ("The name \"" + PlayerInterpreter.nameOf (player) + "\" is already taken.");
-    }
-    else if (existsPlayerWith (PlayerInterpreter.colorOf (player)))
-    {
-      return Result.failure ("The color " + PlayerInterpreter.colorOf (player).toLowerCase() + " is already taken.");
-    }
-    else if (existsPlayerWith (PlayerInterpreter.turnOrderOf (player)))
-    {
-      return Result.failure (Strings.toProperCase (PlayerInterpreter.turnOrderOf (player).toMixedOrdinal()) + " place is already taken.");
-    }
-
-    player.setColor (nextAvailableColor());
-    player.setTurnOrder (nextAvailableTurnOrder());
-    register (player);
-
-    return Result.success();
+    return players.values();
   }
 
   public boolean existsPlayerWith (final Id id)
   {
+    Arguments.checkIsNotNull (id, "id");
+
     return players.containsKey (id);
   }
 
-  private boolean existsPlayerWith (final String name)
+  public boolean existsPlayerWith (final String name)
   {
+    Arguments.checkIsNotNull (name, "name");
+
     for (final Player player : players())
     {
       if (player.has (name)) return true;
@@ -97,9 +88,9 @@ public final class PlayerModel
     return false;
   }
 
-  private boolean existsPlayerWith (final PlayerColor color)
+  public boolean existsPlayerWith (final PlayerColor color)
   {
-    if (color.is (PlayerColor.UNKNOWN)) return false;
+    Arguments.checkIsNotNull (color, "color");
 
     for (final Player player : players())
     {
@@ -109,9 +100,9 @@ public final class PlayerModel
     return false;
   }
 
-  private boolean existsPlayerWith (final PlayerTurnOrder turnOrder)
+  public boolean existsPlayerWith (final PlayerTurnOrder turnOrder)
   {
-    if (turnOrder.is (PlayerTurnOrder.UNKNOWN)) return false;
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
     for (final Player player : players())
     {
@@ -121,46 +112,176 @@ public final class PlayerModel
     return false;
   }
 
+  private void add (final Player player)
+  {
+    if (player.has (PlayerColor.UNKNOWN)) player.setColor (nextAvailableColor());
+    if (player.has (PlayerTurnOrder.UNKNOWN)) player.setTurnOrder (nextAvailableTurnOrder());
+
+    register (player);
+  }
+
   private void register (final Player player)
   {
     assert ! players.containsValue (player);
-    assert ! player.has (PlayerColor.UNKNOWN);
-    assert ! player.has (PlayerTurnOrder.UNKNOWN);
+    assert player.doesNotHave (PlayerColor.UNKNOWN);
+    assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
 
-    players.put (PlayerInterpreter.idOf (player), player);
+    players.put (idOf (player), player);
   }
 
-  private Collection <Player> players()
+  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToSetPlayerLimitTo (final int limit)
   {
-    return players.values();
+    if (limit < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
+    if (limit > GameSettings.MAX_PLAYERS) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+
+    return requestToChangePlayerLimitBy (limit - playerLimit);
   }
 
-  public void remove (final Player player)
+  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToChangePlayerLimitBy (final int delta)
+  {
+    if (delta == 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.REQUESTED_LIMIT_EQUALS_EXISTING_LIMIT);
+    if (delta < -GameSettings.MAX_PLAYERS) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
+    if (delta > GameSettings.MAX_PLAYERS) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+    if (playerLimit + delta < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
+    if (playerLimit + delta > GameSettings.MAX_PLAYERS) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+    if (playerLimit + delta < players.size()) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_CURRENT_PLAYER_COUNT);
+
+    playerLimit += delta;
+
+    return Result.success();
+  }
+
+  public Result <ChangePlayerColorDeniedEvent.REASON> requestToChangeColorOfPlayer (final Id playerId, final PlayerColor toColor)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (toColor, "toColor");
+
+    final Player player = playerWith (playerId);
+
+    if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
+    if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN);
+
+    player.setColor (toColor);
+
+    return Result.success();
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByName (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    if (! existsPlayerWith (name)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWithName (name));
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemove (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (! existsPlayerWith (PlayerInterpreter.idOf (player)))
-    {
-      log.warn ("Prevented attempt to remove non-existent player [{}].", player);
-      return;
-    }
+    if (! existsPlayerWith (idOf (player))) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
 
     deregister (player);
+
+    return Result.success();
   }
 
   private void deregister (final Player player)
   {
     assert players.containsValue (player);
-    players.remove (PlayerInterpreter.idOf (player));
+
+    players.remove (idOf (player));
   }
 
-  public void reset()
+  public Player playerWithName (final String name)
   {
-    players.clear();
-    playerLimit = 0;
+    return playerWith (name);
   }
 
-  public PlayerColor nextAvailableColor()
+  public Player playerWith (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    for (final Player player : players())
+    {
+      if (player.has (name)) return player;
+    }
+
+    throw new IllegalStateException ("Cannot find any player named: [" + name + "].");
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveById (final Id id)
+  {
+    Arguments.checkIsNotNull (id, "id");
+
+    if (! existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (id));
+  }
+
+  public Player playerWith (final Id id)
+  {
+    Arguments.checkIsNotNull (id, "id");
+
+    final Player player = players.get (id);
+
+    if (player == null) throw new IllegalStateException ("Cannot find any player with id [" + id + "].");
+
+    return player;
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByColor (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
+
+    if (! existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (color));
+  }
+
+  public Player playerWith (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
+
+    for (final Player player : getPlayers())
+    {
+      if (player.has (color)) return player;
+    }
+
+    throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
+  }
+
+  public ImmutableSet <Player> getPlayers()
+  {
+    return ImmutableSet.copyOf (players.values());
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByTurnOrder (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+    Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
+
+    if (! existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (turnOrder));
+  }
+
+  public Player playerWith (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+    Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
+
+    for (final Player player : getPlayers())
+    {
+      if (player.has (turnOrder)) return player;
+    }
+
+    throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
+  }
+
+  private PlayerColor nextAvailableColor()
   {
     for (final PlayerColor color : playerColors())
     {
@@ -180,7 +301,7 @@ public final class PlayerModel
    return ! existsPlayerWith (color) && color.isNot (PlayerColor.UNKNOWN);
   }
 
-  public PlayerTurnOrder nextAvailableTurnOrder()
+  private PlayerTurnOrder nextAvailableTurnOrder()
   {
     for (final PlayerTurnOrder turnOrder : playerTurnOrders())
     {
@@ -200,23 +321,11 @@ public final class PlayerModel
     return ! existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
   }
 
-  public Id nextAvailableId()
-  {
-    nextAvailableIdValue = 0;
-
-    while (existsPlayerWith (nextAvailableIdValue))
-    {
-      ++nextAvailableIdValue;
-    }
-
-    return new Id (nextAvailableIdValue);
-  }
-
   private boolean existsPlayerWith (final int idValue)
   {
     for (final Player player : players())
     {
-      if (PlayerInterpreter.idValueOf (player) == idValue) return true;
+      if (idValueOf (player) == idValue) return true;
     }
 
     return false;
@@ -227,88 +336,33 @@ public final class PlayerModel
     return playerLimit;
   }
 
-  public void changePlayerLimitBy (final int delta)
+  public boolean playerLimitIs (final int limit)
   {
-    if (delta == 0)
-    {
-      throw new IllegalStateException ("Cannot change player limit [" + playerLimit + "] by delta [" + delta + "].");
-    }
-    else if (playerLimit + delta > GameSettings.MAX_PLAYERS)
-    {
-      throw new IllegalStateException ("Cannot increase player limit [" + playerLimit + "] by delta [" + delta +
-              "] because player limit cannot increase beyond max players [" + GameSettings.MAX_PLAYERS + "].");
-    }
-    else if (playerLimit + delta < 0)
-    {
-      throw new IllegalStateException ("Cannot decrease player limit [" + playerLimit + "] by delta [" + delta +
-              "] because player limit cannot decrease below 0.");
-    }
-    else if (playerLimit + delta < players.size())
-    {
-      throw new IllegalStateException ("Cannot decrease player limit [" + playerLimit + "] by delta [" + delta +
-              "] because player limit cannot decrease below current player count [" + players.size() + "].");
-    }
-
-    playerLimit += delta;
+    return playerLimit == limit;
   }
 
-  public Result changeColorOf (final Id playerId, final PlayerColor toColor, final PlayerColor fromColor)
+  public int getPlayerCount()
   {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (toColor, "toColor");
-    Arguments.checkIsNotNull (fromColor, "fromColor");
-
-    if (! existsPlayerWith (playerId))
-    {
-      throw new IllegalStateException ("Cannot change color of player with id [" + playerId + "] from [" +
-              fromColor + "] to [" + toColor + "] because a player with that id does not exist.");
-    }
-
-    if (anyPlayerHasColorExcept (playerId, toColor))
-    {
-      return Result.failure ("Bummer! " + nameOfPlayerWith (toColor) + " actually grabbed the color " +
-              toColor.toLowerCase() + " just before you did.");
-    }
-
-    playerWith(playerId).setColor (toColor);
-
-    return Result.success();
+    return players.size();
   }
 
-  private boolean anyPlayerHasColorExcept (final Id playerId, final PlayerColor color)
+  public boolean playerCountIs (final int count)
   {
-    for (final Player otherPlayer : getPlayers())
-    {
-      if (otherPlayer.has (color) && otherPlayer.doesNotHave (playerId)) return true;
-    }
-
-    return false;
+    return players.size() == count;
   }
 
-  private Player playerWith (final PlayerColor color)
+  public boolean playerCountIsNot (final int count)
   {
-    for (final Player player : getPlayers())
-    {
-      if (player.has (color)) return player;
-    }
-
-    throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
+    return ! playerCountIs (count);
   }
 
-  private String nameOfPlayerWith (final PlayerColor color)
+  public boolean isEmpty()
   {
-    return PlayerInterpreter.nameOf (playerWith (color));
+    return players.size() == 0;
   }
 
-  public Player playerWith (final Id id)
+  public boolean existsPlayerWithName (final String name)
   {
-    Arguments.checkIsNotNull (id, "id");
-
-    if (! players.containsKey (id))
-    {
-      throw new IllegalStateException ("Cannot find player with id [" + id + "].");
-    }
-
-    return players.get (id);
+    return existsPlayerWith (name);
   }
 }

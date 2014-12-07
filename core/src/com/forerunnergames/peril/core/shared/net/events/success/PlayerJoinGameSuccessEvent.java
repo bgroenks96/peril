@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -32,10 +33,10 @@ public final class PlayerJoinGameSuccessEvent implements PlayerEvent, SuccessEve
   @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), playerEvent.toString());
+    return String.format ("%1$s: %2$s", getClass().getSimpleName(), playerEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private PlayerJoinGameSuccessEvent()
   {
     playerEvent = null;

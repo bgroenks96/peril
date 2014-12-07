@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public final class KryonetClient extends com.esotericsoftware.kryonet.Client implements Client
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
-  private final Map <NetworkListener, Listener> listeners = new HashMap <NetworkListener, Listener>();
+  private final Map <NetworkListener, Listener> listeners = new HashMap<>();
   private final Kryo kryo;
   private boolean isRunning = false;
 
@@ -71,7 +71,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
   }
 
   @Override
-  public Result connect (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
+  public Result <String> connect (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
   {
     Arguments.checkIsNotNull (address, "address");
     Arguments.checkIsNotNegative (tcpPort, "tcpPort");
@@ -88,7 +88,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
     log.info ("Connecting to server at address [{}] & port [{}] (TCP)...", address, tcpPort);
 
     int connectionAttempts = 0;
-    Result result = Result.failure ("No connection attempt was made.");
+    Result <String> result = Result.failure ("No connection attempt was made.");
 
     while (! isConnected() && connectionAttempts < maxAttempts)
     {
@@ -104,7 +104,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
     return result;
   }
 
-  private Result connect (final String address, final int tcpPort, final int timeoutMs)
+  private Result <String> connect (final String address, final int tcpPort, final int timeoutMs)
   {
     log.info ("Attempting to connect to server with address [{}] on port [{}] (TCP).", address, tcpPort);
 
@@ -112,7 +112,8 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
     {
       connect (timeoutMs, address, tcpPort);
 
-      return isConnected() ? Result.success() : Result.failure ("Unknown");
+      // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <String> type.
+      return isConnected() ? Result.<String>success() : Result.failure ("Unknown");
     }
     catch (final IOException e)
     {
@@ -139,7 +140,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 
     kryo.register (type);
 
-    log.debug ("Registered class [{}] with the server for network serialization", type);
+    log.debug ("Registered class [{}] with the server for network serialization.", type);
   }
 
   @Override

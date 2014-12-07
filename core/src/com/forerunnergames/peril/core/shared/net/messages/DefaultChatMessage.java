@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.messages;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -51,7 +52,7 @@ public final class DefaultChatMessage implements ChatMessage
     return String.format ("%1$s: Author: %2$s Message: %3$s", getClass().getSimpleName(), author, message);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private DefaultChatMessage()
   {
     author = null;

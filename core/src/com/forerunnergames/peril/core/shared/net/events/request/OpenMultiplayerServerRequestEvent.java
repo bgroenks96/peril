@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultOpenServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.OpenServerEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -32,10 +33,10 @@ public final class OpenMultiplayerServerRequestEvent implements OpenServerEvent,
   @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), openServerEvent.toString());
+    return String.format ("%1$s: %2$s", getClass().getSimpleName(), openServerEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private OpenMultiplayerServerRequestEvent()
   {
     openServerEvent = null;

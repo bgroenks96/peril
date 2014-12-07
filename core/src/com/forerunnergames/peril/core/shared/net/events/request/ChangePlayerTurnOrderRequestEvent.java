@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.request;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerTurnOrderEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -49,10 +50,10 @@ public final class ChangePlayerTurnOrderRequestEvent implements PlayerTurnOrderE
   @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), playerTurnOrderEvent.toString());
+    return String.format ("%1$s: %2$s", getClass().getSimpleName(), playerTurnOrderEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private ChangePlayerTurnOrderRequestEvent()
   {
     playerTurnOrderEvent = null;

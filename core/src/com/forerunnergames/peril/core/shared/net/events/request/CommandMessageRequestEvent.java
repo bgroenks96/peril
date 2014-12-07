@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultCommandMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CommandMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.CommandMessage;
@@ -35,7 +36,7 @@ public final class CommandMessageRequestEvent implements CommandMessageEvent, Re
     return String.format ("%1$s: %2$s", getClass().getSimpleName(), event);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private CommandMessageRequestEvent()
   {
     event = null;

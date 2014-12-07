@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
@@ -43,10 +44,10 @@ public final class KickPlayerFromGameRequestEvent implements PlayerEvent, KickEv
   @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), kickEvent.toString());
+    return String.format ("%1$s: %2$s", getClass().getSimpleName(), kickEvent);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private KickPlayerFromGameRequestEvent()
   {
     playerEvent = null;

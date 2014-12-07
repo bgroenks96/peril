@@ -18,7 +18,7 @@ public final class LocalServerCreator implements ServerCreator
   private boolean isCreated = false;
 
   @Override
-  public Result create (final String name, final int tcpPort)
+  public Result <String> create (final String name, final int tcpPort)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNegative (tcpPort, "tcpPort");

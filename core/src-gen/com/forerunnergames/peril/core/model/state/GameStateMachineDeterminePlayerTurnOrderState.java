@@ -1,9 +1,10 @@
 
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.core.model.events.EndGameEvent;
 
 public class GameStateMachineDeterminePlayerTurnOrderState
-    extends GameStateMachineRootState
+    extends GameStateMachineGameHandlerState
 {
 
     private final static GameStateMachineDeterminePlayerTurnOrderState instance = new GameStateMachineDeterminePlayerTurnOrderState();
@@ -14,14 +15,14 @@ public class GameStateMachineDeterminePlayerTurnOrderState
      */
     protected GameStateMachineDeterminePlayerTurnOrderState() {
         setName("DeterminePlayerTurnOrder");
-        setStateParent(GameStateMachineRootState.getInstance());
+        setStateParent(GameStateMachineGameHandlerState.getInstance());
     }
 
     /**
      * Get the State Instance
      * 
      */
-    public static GameStateMachineRootState getInstance() {
+    public static GameStateMachineGameHandlerState getInstance() {
         return instance;
     }
 
@@ -30,10 +31,10 @@ public class GameStateMachineDeterminePlayerTurnOrderState
      * 
      */
     @Override
-    public void onEntry(GameStateMachineContext context) {
+    public void onEntry(GameStateMachineGameHandlerContext context) {
         context.getObserver().onEntry(context.getName(), this.getName());
-        GameModel model = context.getGameModel();
-        model.determinePlayerTurnOrder();
+        com.forerunnergames.peril.core.model.GameModel gameModel = context.getGameModel();
+        gameModel.determinePlayerTurnOrder();
     }
 
     /**
@@ -41,22 +42,21 @@ public class GameStateMachineDeterminePlayerTurnOrderState
      * 
      */
     @Override
-    public void onExit(GameStateMachineContext context) {
+    public void onExit(GameStateMachineGameHandlerContext context) {
         context.getObserver().onExit(context.getName(), this.getName());
     }
 
     /**
-     * Event id: onDeterminePlayerTurnOrderComplete
+     * Event id: onEndGameEvent
      * 
      */
-    public void onDeterminePlayerTurnOrderComplete(GameStateMachineContext context) {
-        GameModel model = context.getGameModel();
-        // Transition from DeterminePlayerTurnOrder to End triggered by onDeterminePlayerTurnOrderComplete
-        // The next state is within the context GameStateMachineContext
-        context.setTransitionName("onDeterminePlayerTurnOrderComplete");
-        com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineEndState.getInstance());
-        com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineEndState.getInstance());
-        context.onEnd();
+    public void onEndGameEvent(GameStateMachineGameHandlerContext context, EndGameEvent event) {
+        com.forerunnergames.peril.core.model.GameModel gameModel = context.getGameModel();
+        // Transition from DeterminePlayerTurnOrder to EndGame triggered by onEndGameEvent
+        // The next state is within the context GameStateMachineGameHandlerContext
+        context.setTransitionName("onEndGameEvent");
+        com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineEndGameState.getInstance());
+        com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineEndGameState.getInstance());
         return ;
     }
 

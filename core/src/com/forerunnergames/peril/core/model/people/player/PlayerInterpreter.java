@@ -19,6 +19,11 @@ public final class PlayerInterpreter
     return player.getId();
   }
 
+  public static Id withIdOf (final Player player)
+  {
+    return idOf (player);
+  }
+
   public static int idValueOf (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");

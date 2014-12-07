@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.people.person;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.AbstractAsset;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
@@ -25,7 +26,7 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
   }
 
   @Override
-  public boolean is (final PersonIdentity identity)
+  public boolean has (final PersonIdentity identity)
   {
     Arguments.checkIsNotNull (identity, "identity");
 
@@ -40,7 +41,7 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
     this.identity = identity;
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   protected AbstractPerson()
   {
   }

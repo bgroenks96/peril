@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 
@@ -46,11 +47,23 @@ public class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public boolean doesNotHave (final PlayerColor color)
+  {
+    return ! has (color);
+  }
+
+  @Override
   public boolean has (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
     return this.turnOrder.equals (turnOrder);
+  }
+
+  @Override
+  public boolean doesNotHave (final PlayerTurnOrder turnOrder)
+  {
+    return ! has (turnOrder);
   }
 
   @Override
@@ -75,7 +88,7 @@ public class DefaultPlayer extends AbstractPerson implements Player
     return String.format ("%1$s | Color: %2$s | Turn order: %3$s", super.toString(), color, turnOrder);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   protected DefaultPlayer()
   {
   }

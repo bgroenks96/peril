@@ -1,6 +1,14 @@
 
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.core.model.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.events.EndGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.stateforge.statemachine.state.AbstractState;
 
 public class GameStateMachineRootState
@@ -44,38 +52,59 @@ public class GameStateMachineRootState
     }
 
     /**
-     * Event id: onCreateNewGameEvent
+     * Event id: onCreateGameEvent
      * 
      */
-    public void onCreateNewGameEvent(GameStateMachineContext context) {
+    public void onCreateGameEvent(GameStateMachineContext context, CreateGameEvent event) {
     }
 
     /**
-     * Event id: onDeterminePlayerTurnOrderComplete
+     * Event id: onDestroyGameEvent
      * 
      */
-    public void onDeterminePlayerTurnOrderComplete(GameStateMachineContext context) {
+    public void onDestroyGameEvent(GameStateMachineContext context, DestroyGameEvent event) {
+    }
+
+    /**
+     * Event id: onEndGameEvent
+     * 
+     */
+    public void onEndGameEvent(GameStateMachineContext context, EndGameEvent event) {
     }
 
     /**
      * Event id: onPlayerJoinGameRequestEvent
      * 
      */
-    public void onPlayerJoinGameRequestEvent(GameStateMachineContext context) {
+    public void onPlayerJoinGameRequestEvent(GameStateMachineContext context, PlayerJoinGameRequestEvent event) {
     }
 
     /**
      * Event id: onPlayerJoinGameSuccessEvent
      * 
      */
-    public void onPlayerJoinGameSuccessEvent(GameStateMachineContext context) {
+    public void onPlayerJoinGameSuccessEvent(GameStateMachineContext context, PlayerJoinGameSuccessEvent event) {
     }
 
     /**
      * Event id: onPlayerJoinGameDeniedEvent
      * 
      */
-    public void onPlayerJoinGameDeniedEvent(GameStateMachineContext context) {
+    public void onPlayerJoinGameDeniedEvent(GameStateMachineContext context, PlayerJoinGameDeniedEvent event) {
+    }
+
+    /**
+     * Event id: onChangePlayerLimitRequestEvent
+     * 
+     */
+    public void onChangePlayerLimitRequestEvent(GameStateMachineContext context, ChangePlayerLimitRequestEvent event) {
+    }
+
+    /**
+     * Event id: onChangePlayerColorRequestEvent
+     * 
+     */
+    public void onChangePlayerColorRequestEvent(GameStateMachineContext context, ChangePlayerColorRequestEvent event) {
     }
 
 }

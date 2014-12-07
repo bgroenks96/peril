@@ -1,42 +1,45 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.currentColorFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.playerFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.previousColorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
-public final class ChangePlayerColorDeniedEvent implements PlayerColorEvent, DeniedEvent
+public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.REASON>
+        implements PlayerColorEvent
 {
-  private final PlayerColorEvent playerColorEvent;
-  private final DeniedEvent deniedEvent;
-
-  public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final String reasonForDenial)
+  public enum REASON
   {
-    this (playerFrom (event), currentColorFrom (event), previousColorFrom (event), reasonForDenial);
+    REQUESTED_COLOR_EQUALS_EXISTING_COLOR,
+    COLOR_ALREADY_TAKEN
+  }
+
+  private final PlayerColorEvent playerColorEvent;
+
+  public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final REASON reason)
+  {
+    this (playerFrom (event), currentColorFrom (event), previousColorFrom (event), reason);
   }
 
   public ChangePlayerColorDeniedEvent (final Player player,
                                        final PlayerColor currentColor,
                                        final PlayerColor previousColor,
-                                       final String reasonForDenial)
+                                       final REASON reason)
   {
+    super (reason);
+
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (currentColor, "color");
     Arguments.checkIsNotNull (previousColor, "previousColor");
-    Arguments.checkIsNotNull (reasonForDenial, "reasonForDenial");
 
     playerColorEvent = new DefaultPlayerColorEvent (player, currentColor, previousColor);
-    deniedEvent = new DefaultDeniedEvent (reasonForDenial);
   }
-
   @Override
   public Player getPlayer()
   {
@@ -62,22 +65,14 @@ public final class ChangePlayerColorDeniedEvent implements PlayerColorEvent, Den
   }
 
   @Override
-  public String getReasonForDenial()
-  {
-    return deniedEvent.getReasonForDenial();
-  }
-
-  @Override
   public String toString()
   {
-    return String.format ("%1$s: %2$s | %3$s",
-            getClass().getSimpleName(), playerColorEvent.toString(), deniedEvent.toString());
+    return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), playerColorEvent, super.toString());
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private ChangePlayerColorDeniedEvent()
   {
-    deniedEvent = null;
     playerColorEvent = null;
   }
 }

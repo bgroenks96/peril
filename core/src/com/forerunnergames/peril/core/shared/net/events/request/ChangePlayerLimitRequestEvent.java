@@ -1,8 +1,10 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
+import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerLimitEvent;
 import com.forerunnergames.tools.common.net.events.RequestEvent;
 
-public final class ChangePlayerLimitRequestEvent implements RequestEvent
+public final class ChangePlayerLimitRequestEvent implements RequestEvent, PlayerLimitEvent
 {
   private final int playerLimitDelta;
 
@@ -11,6 +13,7 @@ public final class ChangePlayerLimitRequestEvent implements RequestEvent
     this.playerLimitDelta = playerLimitDelta;
   }
 
+  @Override
   public int getPlayerLimitDelta()
   {
     return playerLimitDelta;
@@ -22,7 +25,7 @@ public final class ChangePlayerLimitRequestEvent implements RequestEvent
     return String.format ("%1$s: Player limit delta: %2$s", getClass().getSimpleName(), playerLimitDelta);
   }
 
-  // Required for network serialization
+  @RequiredForNetworkSerialization
   private ChangePlayerLimitRequestEvent()
   {
     playerLimitDelta = 0;
