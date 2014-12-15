@@ -74,6 +74,3 @@ sourceSets.test.resources.srcDirs = ["test/res/"]
 eclipse.project {
   name = appName + "-html"
 }
-
-dependencies {
-}

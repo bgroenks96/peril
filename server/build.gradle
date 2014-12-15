@@ -50,6 +50,3 @@ eclipse {
     name = appName + "-server"
   }
 }
-
-dependencies {
-}

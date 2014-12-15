@@ -66,6 +66,3 @@ task afterEclipseImport (description: "Post processing after project generation"
     printer.print (classpath)
   }
 }
-
-dependencies {
-}
