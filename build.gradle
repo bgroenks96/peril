@@ -50,7 +50,7 @@ project (":desktop") {
 project (":android") {
   apply plugin: "android"
 
-  configurations {natives}
+  configurations { natives }
 
   dependencies {
     compile project (":client")
@@ -69,7 +69,7 @@ project (":ios") {
   apply plugin: "java"
   apply plugin: "robovm"
 
-  configurations {natives}
+  configurations { natives }
 
   dependencies {
     compile project (":client")
