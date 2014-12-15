@@ -16,9 +16,7 @@ configurations {
 
 dependencies {
   stateBuilderAntTask files ("libs/statebuilder-ant-task-2.4.jar")
-  stateBuilderAntTask ("com.stateforge.statebuilder:statebuilder-java:2.4") {
-    exclude module: "junit"
-  }
+  stateBuilderAntTask files ("libs/statebuilder-java-2.4.jar")
 }
 
 task generateJava << {
