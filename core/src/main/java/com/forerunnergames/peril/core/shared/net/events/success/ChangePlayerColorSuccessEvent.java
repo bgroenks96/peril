@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.currentColorFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.playerFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.previousColorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.currentColorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.previousColorFrom;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;

@@ -3,7 +3,7 @@ package com.forerunnergames.peril.core.model.people.player;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 
-public final class PlayerInterpreter
+public final class PlayerFluency
 {
   public static String nameOf (final Player player)
   {

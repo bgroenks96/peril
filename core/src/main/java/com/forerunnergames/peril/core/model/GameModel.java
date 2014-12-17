@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.nameOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.withIdOf;
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.nameOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.withIdOf;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;

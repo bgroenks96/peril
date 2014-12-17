@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.*;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
 
 import static org.hamcrest.core.Is.is;
 

@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
 
-public final class EventInterpreter
+public final class EventFluency
 {
   public static Player playerFrom (final PlayerEvent event)
   {
@@ -224,7 +224,7 @@ public final class EventInterpreter
     return event.getAuthor();
   }
 
-  private EventInterpreter()
+  private EventFluency()
   {
     Classes.instantiationNotAllowed();
   }

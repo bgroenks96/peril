@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
 import static com.forerunnergames.tools.common.net.events.EventFluency.answerFrom;
 import static com.forerunnergames.tools.common.net.events.EventFluency.serverFrom;
 

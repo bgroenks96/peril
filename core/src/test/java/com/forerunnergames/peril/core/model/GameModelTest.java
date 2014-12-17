@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

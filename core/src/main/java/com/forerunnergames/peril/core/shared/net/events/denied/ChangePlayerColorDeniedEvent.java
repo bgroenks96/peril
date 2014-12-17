@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventInterpreter.*;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;

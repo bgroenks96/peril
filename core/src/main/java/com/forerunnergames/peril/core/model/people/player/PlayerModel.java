@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerInterpreter.*;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
