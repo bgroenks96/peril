@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 public final class KryonetRegistration
 {
-  public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.of (
+  public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.<Class<?>> of (
           AbstractDeniedEvent.class,
           AbstractMessageEvent.class,
           AttackCountryDeniedEvent.class,
