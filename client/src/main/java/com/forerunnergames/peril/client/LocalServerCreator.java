@@ -48,9 +48,6 @@ public final class LocalServerCreator implements ServerCreator
 
       addShutDownHook();
 
-      // TODO Java 7: Use ProcessBuilder#inheritIO() to redirect subprocess io to the parent process.
-      //redirectProcessOutput (serverProcess.getInputStream());
-
       isCreated = true;
 
       return Result.success();
@@ -82,25 +79,6 @@ public final class LocalServerCreator implements ServerCreator
   {
     if (serverProcess != null) serverProcess.destroy();
   }
-
-  /*
-  private void redirectProcessOutput (final InputStream processOutput)
-  {
-    new Thread (new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        Scanner scanner = new Scanner (processOutput);
-
-        while (scanner.hasNextLine())
-        {
-          System.out.println (scanner.nextLine());
-        }
-      }
-    }).start();
-  }
-  */
 
   @Override
   public String resolveAddress()
