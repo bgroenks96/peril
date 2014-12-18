@@ -118,7 +118,7 @@ project (":core") {
   dependencies {
     compile ("com.forerunnergames.tools:common:1.0-SNAPSHOT")
     compile ("com.stateforge:statemachine:2.4") {
-      exclude module: "junit"
+      exclude group: "junit"
     }
     compile "org.bushe:eventbus:1.4"
     compile "net.engio:mbassador:1.2.0"
