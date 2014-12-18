@@ -49,7 +49,7 @@ public class GameStateMachineTest
     eventBus.addErrorHandler (new IPublicationErrorHandler()
     {
       @Override
-      public void handleError (PublicationError error)
+      public void handleError (final PublicationError error)
       {
         log.error (error.toString(), error.getCause());
       }
