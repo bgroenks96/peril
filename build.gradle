@@ -5,7 +5,6 @@ buildscript {
   }
 
   dependencies {
-    classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.5'
     classpath 'com.android.tools.build:gradle:0.14.4'
     classpath 'org.robovm:robovm-gradle-plugin:1.0.0-beta-01'
   }
@@ -80,21 +79,6 @@ project (":ios") {
     compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
     natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-    runtime "ch.qos.logback:logback-classic:1.1.2"
-  }
-}
-
-project (":html") {
-  apply plugin: "java"
-  apply plugin: "gwt"
-  apply plugin: "war"
-  apply plugin: "jetty"
-
-  dependencies {
-    compile project (":client")
-    compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-    compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
     runtime "ch.qos.logback:logback-classic:1.1.2"
   }
 }

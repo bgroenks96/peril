@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Creates the {@link com.badlogic.gdx.ApplicationListener} instance to be passed to all of the executable
- * sub-projects (android, desktop, html, & ios).
+ * sub-projects (android, desktop, & ios).
  */
 public final class LibGdxGameFactory
 {
