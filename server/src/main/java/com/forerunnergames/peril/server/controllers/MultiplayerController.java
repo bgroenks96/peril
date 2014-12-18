@@ -12,8 +12,6 @@ import com.forerunnergames.tools.common.net.Remote;
 
 import java.util.Map;
 
-import org.bushe.swing.event.annotation.AnnotationProcessor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,21 +76,9 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Override
-  public void initialize()
-  {
-    AnnotationProcessor.process (this);
-  }
-
-  @Override
   public boolean shouldShutDown()
   {
     return shouldShutDown;
-  }
-
-  @Override
-  public void shutDown()
-  {
-    AnnotationProcessor.unprocess (this);
   }
 
   /*

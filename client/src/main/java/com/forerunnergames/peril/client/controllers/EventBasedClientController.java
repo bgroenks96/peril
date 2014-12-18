@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.controllers;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.net.AbstractClientController;
 import com.forerunnergames.tools.common.net.Client;
 import com.forerunnergames.tools.common.net.Remote;
@@ -11,7 +12,7 @@ import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
 
 import com.google.common.collect.ImmutableSet;
 
-import org.bushe.swing.event.EventBus;
+import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,17 @@ import org.slf4j.LoggerFactory;
 public final class EventBasedClientController extends AbstractClientController
 {
   private static final Logger log = LoggerFactory.getLogger (EventBasedClientController.class);
+  private final MBassador <Event> eventBus;
 
   public EventBasedClientController (final Client client,
-                                     final ImmutableSet <Class <?>> classesToRegisterForNetworkSerialization)
+                                     final ImmutableSet <Class <?>> classesToRegisterForNetworkSerialization,
+                                     final MBassador <Event> eventBus)
   {
     super (client, classesToRegisterForNetworkSerialization);
+
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+
+    this.eventBus = eventBus;
   }
 
   @Override
@@ -33,7 +40,7 @@ public final class EventBasedClientController extends AbstractClientController
 
     log.info ("Connected to server [{}].", server);
 
-    EventBus.publish (new ServerConnectionEvent (server));
+    eventBus.publish (new ServerConnectionEvent (server));
   }
 
   @Override
@@ -43,7 +50,7 @@ public final class EventBasedClientController extends AbstractClientController
 
     log.info ("Disconnected from server [{}].", server);
 
-    EventBus.publish (new ServerDisconnectionEvent (server));
+    eventBus.publish (new ServerDisconnectionEvent (server));
   }
 
   @Override
@@ -60,6 +67,6 @@ public final class EventBasedClientController extends AbstractClientController
       return;
     }
 
-    EventBus.publish (new ServerCommunicationEvent ((AnswerEvent) object, server));
+    eventBus.publish (new ServerCommunicationEvent ((AnswerEvent) object, server));
   }
 }

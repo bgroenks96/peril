@@ -11,6 +11,7 @@ import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerS
 import com.forerunnergames.peril.core.shared.net.events.success.CloseMultiplayerServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ServerCommunicator;
@@ -21,9 +22,8 @@ import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
 import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
 import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
 
-import org.bushe.swing.event.EventBus;
-import org.bushe.swing.event.annotation.AnnotationProcessor;
-import org.bushe.swing.event.annotation.EventSubscriber;
+import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,39 +43,44 @@ import org.slf4j.LoggerFactory;
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
+  private static final int CALL_FIRST = 10;
+  private static final int CALL_LAST = 0;
   private final ServerCreator serverCreator;
   private final ServerConnector serverConnector;
   private final ServerCommunicator serverCommunicator;
-  private final int CALL_FIRST = -1;
-  private final int CALL_LAST = 1;
+  private final MBassador <Event> eventBus;
 
   public MultiplayerController (final ServerCreator serverCreator,
                                 final ServerConnector serverConnector,
-                                final ServerCommunicator serverCommunicator)
+                                final ServerCommunicator serverCommunicator,
+                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (serverCreator, "serverCreator");
     Arguments.checkIsNotNull (serverConnector, "serverConnector");
     Arguments.checkIsNotNull (serverCommunicator, "serverCommunicator");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.serverCreator = serverCreator;
     this.serverConnector = serverConnector;
     this.serverCommunicator = serverCommunicator;
+    this.eventBus = eventBus;
   }
 
   @Override
   public void initialize()
   {
-    AnnotationProcessor.process (this);
+    eventBus.subscribe (this);
   }
 
   @Override
   public void shutDown()
   {
+    eventBus.unsubscribe (this);
     serverConnector.disconnect();
     destroyServer();
   }
 
-  @EventSubscriber
+  @Handler
   public void onEvent (final ServerConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -84,7 +89,7 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Successfully connected to server [{}].", serverFrom (event));
   }
 
-  @EventSubscriber
+  @Handler
   public void onEvent (final ServerDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -93,17 +98,17 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Disconnected from server [{}].", serverFrom (event));
   }
 
-  @EventSubscriber
+  @Handler
   public void onEvent (final ServerCommunicationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
 
-    EventBus.publish (answerFrom (event));
+    eventBus.publish (answerFrom (event));
   }
 
-  @EventSubscriber (priority = CALL_FIRST)
+  @Handler (priority = CALL_FIRST)
   public void onEvent (final OpenMultiplayerServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -115,7 +120,7 @@ public final class MultiplayerController extends ControllerAdapter
     if (result.isFailure()) openMultiplayerServerDenied (event, result.getFailureReason());
   }
 
-  @EventSubscriber (priority = CALL_FIRST)
+  @Handler (priority = CALL_FIRST)
   public void onEvent (final JoinMultiplayerServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -127,7 +132,7 @@ public final class MultiplayerController extends ControllerAdapter
     if (result.isFailure()) joinMultiplayerServerDenied (event, result.getFailureReason());
   }
 
-  @EventSubscriber (priority = CALL_LAST)
+  @Handler (priority = CALL_LAST)
   public void onEvent (final RequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -137,7 +142,7 @@ public final class MultiplayerController extends ControllerAdapter
     sendToServer (event);
   }
 
-  @EventSubscriber
+  @Handler
   public void onEvent (final CloseMultiplayerServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -176,7 +181,7 @@ public final class MultiplayerController extends ControllerAdapter
   private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event, final String reason)
   {
     destroyServer();
-    EventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reason));
+    eventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reason));
   }
 
   private Result <String> joinMultiplayerServer (final String address, final int tcpPort)
@@ -186,7 +191,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void joinMultiplayerServerDenied (final JoinMultiplayerServerRequestEvent event, final String reason)
   {
-    EventBus.publish (new JoinMultiplayerServerDeniedEvent (event, reason));
+    eventBus.publish (new JoinMultiplayerServerDeniedEvent (event, reason));
   }
 
   private Result <String> createServer (final String name, final int tcpPort)

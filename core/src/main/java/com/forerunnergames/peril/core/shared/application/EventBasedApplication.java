@@ -5,16 +5,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.CompositeController;
 import com.forerunnergames.tools.common.controllers.Controller;
 
-import org.bushe.swing.event.EventServiceExistsException;
-import org.bushe.swing.event.EventServiceLocator;
-import org.bushe.swing.event.ThreadSafeEventService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class EventBasedApplication implements Application
 {
-  private static final Logger log = LoggerFactory.getLogger (EventBasedApplication.class);
   private final CompositeController compositeController;
 
   public EventBasedApplication (final Controller... controllers)
@@ -28,8 +20,6 @@ public class EventBasedApplication implements Application
   @Override
   public void initialize()
   {
-    initializeEventBus();
-
     compositeController.initialize();
   }
 
@@ -53,18 +43,6 @@ public class EventBasedApplication implements Application
   public void update()
   {
     compositeController.update();
-  }
-
-  private void initializeEventBus()
-  {
-    try
-    {
-      EventServiceLocator.setEventService (EventServiceLocator.SERVICE_NAME_SWING_EVENT_SERVICE, new ThreadSafeEventService());
-    }
-    catch (final EventServiceExistsException e)
-    {
-      log.error ("Could not initialize EventBus.", e);
-    }
   }
 
   @Override
