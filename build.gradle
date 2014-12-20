@@ -14,10 +14,11 @@ allprojects {
   apply plugin: "eclipse"
   apply plugin: "idea"
 
-  version = '0.1-SNAPSHOT'
+  group = projectGroup
+  version = projectVersion
 
   ext {
-    appName = 'peril'
+    appName = projectName
     gdxVersion = '1.5.1-SNAPSHOT'
     roboVMVersion = '1.0.0-beta-01'
     box2DLightsVersion = '1.4-SNAPSHOT'
@@ -26,7 +27,7 @@ allprojects {
   }
 
   repositories {
-    maven { url "${System.env.HOME}/.m2/repository" }
+    maven { url "${System.env.HOME}/.m2/repository/" }
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -36,6 +37,9 @@ allprojects {
 
 project (":desktop") {
   apply plugin: "java"
+
+  sourceCompatibility = projectSourceCompatibility
+  targetCompatibility = projectTargetCompatibility
 
   dependencies {
     compile project (":client")
@@ -70,6 +74,9 @@ project (":ios") {
   apply plugin: "java"
   apply plugin: "robovm"
 
+  sourceCompatibility = projectSourceCompatibility
+  targetCompatibility = projectTargetCompatibility
+
   configurations { natives }
 
   dependencies {
@@ -86,6 +93,9 @@ project (":ios") {
 project (":client") {
   apply plugin: "java"
 
+  sourceCompatibility = projectSourceCompatibility
+  targetCompatibility = projectTargetCompatibility
+
   dependencies {
     compile project (":core")
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -98,6 +108,9 @@ project (":client") {
 project (":core") {
   apply plugin: "java"
   apply plugin: "groovy"
+
+  sourceCompatibility = projectSourceCompatibility
+  targetCompatibility = projectTargetCompatibility
 
   dependencies {
     compile ("com.forerunnergames.tools:common:1.0-SNAPSHOT")
@@ -117,11 +130,25 @@ project (":core") {
 project (":server") {
   apply plugin: "java"
 
+  sourceCompatibility = projectSourceCompatibility
+  targetCompatibility = projectTargetCompatibility
+
   dependencies {
     compile project (":core")
     compile "com.esotericsoftware:kryonet:2.22.0-RC1"
     compile "com.beust:jcommander:1.35"
     runtime "ch.qos.logback:logback-classic:1.1.2"
+  }
+}
+
+idea {
+  project {
+    languageLevel = "${projectSourceCompatibility}"
+  }
+
+  module {
+    downloadJavadoc = true
+    downloadSources = true
   }
 }
 

@@ -1,5 +1,3 @@
-sourceCompatibility = 1.7
-
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = ["src/main/java/"]
@@ -8,8 +6,6 @@ sourceSets.test.java.srcDirs = ["src/test/java/"]
 sourceSets.test.resources.srcDirs = ["src/test/res/"]
 
 project.ext.mainClassName = "com.forerunnergames.peril.server.main.Main"
-
-classes.dependsOn clean
 
 task run (dependsOn: classes, type: JavaExec) {
   main = project.mainClassName
@@ -21,7 +17,7 @@ task run (dependsOn: classes, type: JavaExec) {
   }
 }
 
-task dist (type: Jar) {
+task dist (type: Jar, dependsOn: classes) {
   baseName = appName + '-' + project.name
 
   from files (sourceSets.main.output.classesDir)
@@ -31,16 +27,6 @@ task dist (type: Jar) {
 
   manifest {
     attributes 'Main-Class': project.mainClassName
-  }
-}
-
-dist.dependsOn classes
-
-task release (dependsOn: dist) << {
-  copy {
-    from 'build/libs'
-    exclude project.name + '*.jar'
-    into '/Users/Aaron/Documents/Spaces/peril/test/Jar'
   }
 }
 
