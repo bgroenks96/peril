@@ -1,10 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,19 +9,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
+import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.client.ui.screens.ScreenId;
+import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class PlayScreen extends InputAdapter implements Screen
 {
-  private final ScreenChanger screenChanger;
+  private final ScreenController screenController;
+  private final ScreenMusic music;
   private final Stage stage;
 
-  public PlayScreen (final ScreenChanger screenChanger)
+  public PlayScreen (final ScreenController screenController, final ScreenMusic music)
   {
-    Arguments.checkIsNotNull (screenChanger, "screenChanger");
+    Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (music, "music");
 
-    this.screenChanger = screenChanger;
+    this.screenController = screenController;
+    this.music = music;
 
     // Layer 0 - background image
     final Stack rootStack = new Stack();
@@ -52,12 +53,9 @@ public final class PlayScreen extends InputAdapter implements Screen
     {
       case Input.Keys.LEFT:
       {
-        screenChanger.previous();
-        return true;
-      }
-      case Input.Keys.RIGHT:
-      {
-        screenChanger.next();
+        music.stop();
+        screenController.previousScreenOrDefaultTo (ScreenId.MAIN_MENU);
+
         return true;
       }
       case Input.Keys.ESCAPE:
@@ -75,6 +73,8 @@ public final class PlayScreen extends InputAdapter implements Screen
   public void show()
   {
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
+
+    music.start();
   }
 
   @Override

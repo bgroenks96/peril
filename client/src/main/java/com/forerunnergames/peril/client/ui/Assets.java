@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 
@@ -19,9 +20,11 @@ public final class Assets
   public static Texture bottomMenuBarExtensionShadow;
   public static Texture leftMenuBarShadow;
   public static Texture rightMenuBarShadow;
+  public static Music menuMusic;
   public static Texture playScreenBackground;
   public static Texture playScreenMapBackground;
   public static Texture playScreenMapForeground;
+  public static Music playScreenMusic;
 
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
@@ -43,9 +46,11 @@ public final class Assets
     bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/bottomMenuBarExtensionShadow.png"));
     leftMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/leftMenuBarShadow.png"));
     rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"));
+    menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/menuScreens.mp3"));
     playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"));
     playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"));
     playScreenMapForeground = new Texture (Gdx.files.internal ("map/foreground.png"));
+    playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
 
     isLoaded = true;
   }

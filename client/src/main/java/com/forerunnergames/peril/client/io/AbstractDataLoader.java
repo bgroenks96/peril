@@ -4,7 +4,7 @@ import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableMap;
 
-public abstract class AbstractDataLoader <T, U> implements DataLoader<T, U>
+public abstract class AbstractDataLoader <T, U> implements DataLoader <T, U>
 {
   protected abstract void initializeData (final String fileName);
   protected abstract boolean readData();
