@@ -53,8 +53,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     {
       case Input.Keys.LEFT:
       {
-        music.stop();
-        screenController.previousScreenOrDefaultTo (ScreenId.MAIN_MENU);
+        screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
 
         return true;
       }
@@ -81,6 +80,8 @@ public final class PlayScreen extends InputAdapter implements Screen
   public void hide()
   {
     Gdx.input.setInputProcessor (null);
+
+    music.stop();
   }
 
   @Override

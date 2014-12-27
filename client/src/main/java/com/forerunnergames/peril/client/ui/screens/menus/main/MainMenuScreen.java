@@ -86,8 +86,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     {
       case Input.Keys.RIGHT:
       {
-        music.stop();
-        screenController.setScreenTo (ScreenId.PLAY);
+        screenController.toScreen (ScreenId.PLAY);
         return true;
       }
       case Input.Keys.ESCAPE:
@@ -114,6 +113,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   public void hide()
   {
     Gdx.input.setInputProcessor (null);
+
+    music.stop();
   }
 
   @Override

@@ -38,10 +38,10 @@ public final class ScreenController extends ControllerAdapter
       screens.put (screenId, ScreenFactory.create (screenId, this));
     }
 
-    setScreenTo (ScreenSettings.START_SCREEN);
+    toScreen (ScreenSettings.START_SCREEN);
   }
 
-  public void setScreenTo (final ScreenId id)
+  public void toScreen (final ScreenId id)
   {
     Arguments.checkIsNotNull (id, "id");
     Arguments.checkIsTrue (screens.containsKey (id), "Cannot find " + Screen.class.getSimpleName() + " with " + id.getClass().getSimpleName() + " [" + id + "].");
@@ -60,11 +60,11 @@ public final class ScreenController extends ControllerAdapter
     return screens.inverse().get (game.getScreen());
   }
 
-  public void previousScreenOrDefaultTo (final ScreenId defaultScreenId)
+  public void toPreviousScreenOr (final ScreenId defaultScreenId)
   {
     Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
 
-    setScreenTo (previousScreenId != null ? previousScreenId : defaultScreenId);
+    toScreen (previousScreenId != null ? previousScreenId : defaultScreenId);
   }
 
   @Override
