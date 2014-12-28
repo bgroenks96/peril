@@ -15,7 +15,7 @@ dependencies {
 }
 
 task generateJava << {
-  clean.delete "core/src-gen"
+  clean.delete "${projectDir}/src-gen"
   ant.taskdef (name: "stateBuilder",
           classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",
           classpath: configurations.stateBuilderAntTask.asPath)
