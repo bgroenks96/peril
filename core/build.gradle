@@ -26,6 +26,13 @@ compileJava.dependsOn (generateJava)
 jar.exclude ("*.fsmjava")
 test.testLogging.showStandardStreams = true;
 
+idea {
+  module {
+    downloadJavadoc = true
+    downloadSources = true
+  }
+}
+
 eclipse.project {
   name = appName + "-core"
 }

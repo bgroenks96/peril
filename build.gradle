@@ -145,11 +145,6 @@ idea {
   project {
     languageLevel = "${projectSourceCompatibility}"
   }
-
-  module {
-    downloadJavadoc = true
-    downloadSources = true
-  }
 }
 
 tasks.eclipse.doLast {
