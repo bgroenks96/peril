@@ -30,13 +30,6 @@ task dist (type: Jar, dependsOn: classes) {
   }
 }
 
-idea {
-  module {
-    downloadJavadoc = true
-    downloadSources = true
-  }
-}
-
 eclipse {
   project {
     name = appName + "-server"
