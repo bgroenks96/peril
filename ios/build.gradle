@@ -61,13 +61,6 @@ launchIPadSimulator.dependsOn build
 launchIOSDevice.dependsOn build
 createIPA.dependsOn build
 
-idea {
-  module {
-    downloadJavadoc = true
-    downloadSources = true
-  }
-}
-
 eclipse.project {
   name = appName + "-ios"
   natures 'org.robovm.eclipse.RoboVMNature'

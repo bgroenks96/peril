@@ -115,7 +115,7 @@ project (":core") {
   dependencies {
     compile ("com.forerunnergames.tools:common:1.0-SNAPSHOT")
     compile ("com.stateforge:statemachine:2.4") {
-      exclude group: "junit"
+      exclude module: "commons-io"
     }
     compile "net.engio:mbassador:1.2.0"
     compile "com.google.code.findbugs:jsr305:2.0.3"
@@ -144,6 +144,11 @@ project (":server") {
 idea {
   project {
     languageLevel = "${projectSourceCompatibility}"
+  }
+
+  module {
+    downloadJavadoc = true
+    downloadSources = true
   }
 }
 

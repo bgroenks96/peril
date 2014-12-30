@@ -5,13 +5,6 @@ sourceSets.main.resources.srcDirs = ["src/main/res/"]
 sourceSets.test.java.srcDirs = ["src/test/java/"]
 sourceSets.test.resources.srcDirs = ["src/test/res/"]
 
-idea {
-  module {
-    downloadJavadoc = true
-    downloadSources = true
-  }
-}
-
 eclipse.project {
   name = appName + "-client"
 }

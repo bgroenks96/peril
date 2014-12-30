@@ -113,8 +113,6 @@ idea {
   module {
     sourceDirs += file ("src");
     scopes = [COMPILE: [plus: [project.configurations.compile]]]
-    downloadJavadoc = true
-    downloadSources = true
 
     iml {
       withXml {
