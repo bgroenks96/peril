@@ -1,4 +1,4 @@
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 
 sourceSets.main.java.srcDirs = ["src/main/java/"]
 sourceSets.main.resources.srcDirs = ["src/main/res/"]
@@ -29,7 +29,7 @@ task copyNatives << {
 
 // Updates a robovm.xml file.
 task updateRoboVMXML << {
-  def xml = file ('robovm.xml')
+  def xml = file ("robovm.xml")
 
   if (!xml.exists())
   {
@@ -37,13 +37,13 @@ task updateRoboVMXML << {
   }
 
   // Find all native (*.a) libraries beneath libs
-  def libtree = fileTree (dir: 'build/libs', include: '**/*.a')
+  def libtree = fileTree (dir: "build/libs", include: "**/*.a")
 
   def config = new groovy.util.XmlParser().parse (xml)
   config.libs.each {libs ->
     libs.children().clear()
     libtree.each {File file ->
-      libs.appendNode ('lib', 'build/libs/ios/' + file.getName())
+      libs.appendNode ("lib", "build/libs/ios/" + file.getName())
     }
   }
 
@@ -63,5 +63,5 @@ createIPA.dependsOn build
 
 eclipse.project {
   name = appName + "-ios"
-  natures 'org.robovm.eclipse.RoboVMNature'
+  natures "org.robovm.eclipse.RoboVMNature"
 }
