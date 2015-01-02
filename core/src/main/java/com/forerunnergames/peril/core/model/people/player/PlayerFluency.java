@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Id;
 
 public final class PlayerFluency
@@ -48,5 +49,10 @@ public final class PlayerFluency
     Arguments.checkIsNotNull (player, "player");
 
     return player.getTurnOrder();
+  }
+
+  private PlayerFluency()
+  {
+    Classes.instantiationNotAllowed();
   }
 }
