@@ -7,7 +7,7 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessage
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class StatusMessageSuccessEvent implements StatusMessageEvent, MessageSuccessEvent<StatusMessage>
+public final class StatusMessageSuccessEvent implements StatusMessageEvent, MessageSuccessEvent <StatusMessage>
 {
   private final StatusMessageEvent event;
 

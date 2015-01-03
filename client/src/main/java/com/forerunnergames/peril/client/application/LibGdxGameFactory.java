@@ -42,7 +42,7 @@ public final class LibGdxGameFactory
             .addFeature (Feature.AsynchronousHandlerInvocation.Default())
             .addFeature (Feature.AsynchronousMessageDispatch.Default());
 
-    final MBassador<Event> eventBus = new MBassador <> (eventBusConfiguration);
+    final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 
     eventBus.addErrorHandler (new IPublicationErrorHandler()
     {
