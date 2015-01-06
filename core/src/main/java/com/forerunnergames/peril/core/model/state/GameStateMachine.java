@@ -60,7 +60,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final CreateGameEvent event)
+  public void onCreateGameEvent (final CreateGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -70,7 +70,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final DestroyGameEvent event)
+  public void onDestroyGameEvent (final DestroyGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -80,7 +80,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final PlayerJoinGameRequestEvent event)
+  public void onPlayerJoinGameRequestEvent (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -90,7 +90,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final PlayerJoinGameSuccessEvent event)
+  public void onPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -100,7 +100,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final PlayerJoinGameDeniedEvent event)
+  public void onPlayerJoinGameDeniedEvent (final PlayerJoinGameDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -110,7 +110,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final ChangePlayerLimitRequestEvent event)
+  public void onChangePlayerLimitRequestEvent (final ChangePlayerLimitRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -120,7 +120,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final ChangePlayerColorRequestEvent event)
+  public void onChangePlayerColorRequestEvent (final ChangePlayerColorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -130,7 +130,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onEvent (final EndGameEvent event)
+  public void onEndGameEvent (final EndGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

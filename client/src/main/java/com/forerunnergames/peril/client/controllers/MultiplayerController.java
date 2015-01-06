@@ -1,11 +1,19 @@
 package com.forerunnergames.peril.client.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
-import static com.forerunnergames.tools.common.net.events.EventFluency.answerFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withAddressFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withNameFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withTcpPortFrom;
+import static com.forerunnergames.tools.common.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.common.net.events.EventFluency.serverFrom;
+import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.forerunnergames.peril.core.shared.net.events.denied.JoinMultiplayerServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.JoinMultiplayerServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.CloseMultiplayerServerSuccessEvent;
@@ -17,16 +25,11 @@ import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ServerCommunicator;
 import com.forerunnergames.tools.common.net.ServerConnector;
 import com.forerunnergames.tools.common.net.ServerCreator;
+import com.forerunnergames.tools.common.net.events.AnswerEvent;
 import com.forerunnergames.tools.common.net.events.RequestEvent;
 import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
 import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
 import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
-
-import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.listener.Handler;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Facilitates communication between the server and the client UI logic.
@@ -81,7 +84,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ServerConnectionEvent event)
+  public void onSeverConnectionEvent (final ServerConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -90,7 +93,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ServerDisconnectionEvent event)
+  public void onServerDisconnectEvent (final ServerDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -99,17 +102,26 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ServerCommunicationEvent event)
+  public void onServerCommunicationEvent (final ServerCommunicationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
 
-    eventBus.publish (answerFrom (event));
+    Event message = messageFrom (event);
+    
+    if (message instanceof AnswerEvent)
+    {
+      eventBus.publish ((AnswerEvent) message);
+    }
+    else if (message instanceof GameNotificationEvent)
+    {
+      eventBus.publish ((GameNotificationEvent) message);
+    }
   }
 
   @Handler (priority = CALL_FIRST)
-  public void onEvent (final OpenMultiplayerServerRequestEvent event)
+  public void onOpenMultiplayerServerRequestEvent (final OpenMultiplayerServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -121,7 +133,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler (priority = CALL_FIRST)
-  public void onEvent (final JoinMultiplayerServerRequestEvent event)
+  public void onJoinMultiplayerServerRequestEvent (final JoinMultiplayerServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -133,7 +145,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler (priority = CALL_LAST)
-  public void onEvent (final RequestEvent event)
+  public void onRequestEvent (final RequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -143,7 +155,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final CloseMultiplayerServerSuccessEvent event)
+  public void onCloseMultiplayerServerSuccessEvent (final CloseMultiplayerServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

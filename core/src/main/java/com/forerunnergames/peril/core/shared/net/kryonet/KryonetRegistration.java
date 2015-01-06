@@ -5,7 +5,16 @@ import com.forerunnergames.peril.core.model.people.player.DefaultPlayer;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.defaults.*;
-import com.forerunnergames.peril.core.shared.net.events.denied.*;
+import com.forerunnergames.peril.core.shared.net.events.denied.AttackCountryDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.ChatMessageDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.DefendCountryDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.JoinMultiplayerServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.KickPlayerFromGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.*;
 import com.forerunnergames.peril.core.shared.net.events.success.*;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
@@ -26,6 +35,7 @@ public final class KryonetRegistration
   public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.<Class<?>> of (
           AbstractDeniedEvent.class,
           AbstractMessageEvent.class,
+          ArrayList.class,
           AttackCountryDeniedEvent.class,
           AttackCountryRequestEvent.class,
           AttackCountrySuccessEvent.class,
@@ -35,14 +45,13 @@ public final class KryonetRegistration
           ChangePlayerLimitDeniedEvent.class,
           ChangePlayerLimitRequestEvent.class,
           ChangePlayerLimitSuccessEvent.class,
-          ChangePlayerTurnOrderDeniedEvent.class,
-          ChangePlayerTurnOrderRequestEvent.class,
-          ChangePlayerTurnOrderSuccessEvent.class,
           ChatMessageDeniedEvent.class,
           ChatMessageRequestEvent.class,
           ChatMessageSuccessEvent.class,
           CloseMultiplayerServerSuccessEvent.class,
+          DefaultChatMessage.class,
           DefaultChatMessageEvent.class,
+          DefaultCommandMessage.class,
           DefaultCommandMessageEvent.class,
           DefaultDeniedEvent.class,
           DefaultJoinServerEvent.class,
@@ -52,39 +61,37 @@ public final class KryonetRegistration
           DefaultPlayerDeniedEvent.class,
           DefaultPlayerEvent.class,
           DefaultPlayerTurnOrderEvent.class,
+          DefaultMessage.class,
+          DefaultStatusMessage.class,
+          DefaultPlayer.class,
           DefaultStatusMessageEvent.class,
           DefendCountryDeniedEvent.class,
           DefendCountryRequestEvent.class,
           DefendCountrySuccessEvent.class,
+          DeterminePlayerTurnOrderCompleteEvent.class,
+          HashMap.class,
+          Id.class,
+          ImmutableSet.class,
+          InetSocketAddress.class,
           JoinMultiplayerServerDeniedEvent.class,
           JoinMultiplayerServerRequestEvent.class,
           JoinMultiplayerServerSuccessEvent.class,
           KickPlayerFromGameDeniedEvent.class,
           KickPlayerFromGameRequestEvent.class,
           KickPlayerFromGameSuccessEvent.class,
+          KryonetRemote.class,
           OpenMultiplayerServerDeniedEvent.class,
           OpenMultiplayerServerRequestEvent.class,
           OpenMultiplayerServerSuccessEvent.class,
+          PersonIdentity.class,
+          PlayerColor.class,
+          PlayerTurnOrder.class,
           PlayerJoinGameDeniedEvent.class,
           PlayerJoinGameRequestEvent.class,
           PlayerJoinGameSuccessEvent.class,
           PlayerLeaveGameSuccessEvent.class,
           QuitMultiplayerServerRequestEvent.class,
-          StatusMessageSuccessEvent.class,
-          ArrayList.class,
-          DefaultChatMessage.class,
-          DefaultCommandMessage.class,
-          DefaultMessage.class,
-          DefaultStatusMessage.class,
-          DefaultPlayer.class,
-          HashMap.class,
-          Id.class,
-          ImmutableSet.class,
-          InetSocketAddress.class,
-          KryonetRemote.class,
-          PersonIdentity.class,
-          PlayerColor.class,
-          PlayerTurnOrder.class);
+          StatusMessageSuccessEvent.class);
 
   private KryonetRegistration()
   {

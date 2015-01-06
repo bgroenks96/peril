@@ -33,8 +33,6 @@ public class GameStateMachineWaitForGameToBeginState
     @Override
     public void onEntry(GameStateMachineGameHandlerContext context) {
         context.getObserver().onEntry(context.getName(), this.getName());
-        com.forerunnergames.peril.core.model.GameModel gameModel = context.getGameModel();
-        gameModel.waitForGameToBegin();
     }
 
     /**

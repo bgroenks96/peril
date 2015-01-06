@@ -1,13 +1,10 @@
 package com.forerunnergames.peril.core.model.state;
 
-// This is ancient code, but is here as a reference to help implement the state machine.
 // This is a work in progress and should be modified as needed.
-public enum GameStates
+public enum GameState
 {
   WAITING_FOR_PLAYERS_TO_JOIN_GAME,
   DETERMINE_PLAYER_TURN_ORDER,
-  BREAK_PLAYER_TURN_ORDER_TIES,
-  WAITING_FOR_PLAYER_TO_ROLL_DICE_TO_DETERMINE_TURN_ORDER,
   RECEIVE_INITIAL_ARMIES_IN_HAND,
   ASSIGN_INITIAL_COUNTRIES_RANDOMLY,
   ASSIGN_INITIAL_COUNTRIES_MANUALLY,
@@ -18,10 +15,12 @@ public enum GameStates
   // Begin looping states
   BEGIN_ROUND,
     BEGIN_REINFORCEMENT_PHASE,
-      CHOOSE_CARDS_TO_TRADE_IN,
-      CANCEL_TRADE_IN,
-      TRADE_IN_CARDS,
-      RECEIVE_ARMIES_ON_OWN_TRADE_IN_COUNTRIES,
+      BEGIN_TRADE_IN,
+        CHOOSE_CARDS_TO_TRADE_IN,
+        CANCEL_TRADE_IN,
+        TRADE_IN_CARDS,
+        RECEIVE_BONUS_ARMIES_ON_OWN_TRADE_IN_COUNTRIES,
+      END_TRADE_IN,
       RECEIVE_ARMIES_IN_HAND,
       WAITING_FOR_PLAYER_TO_CHOOSE_COUNTRY_TO_REINFORCE,
       ADD_ARMIES_TO_OWN_COUNTRY,
