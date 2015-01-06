@@ -1,10 +1,5 @@
 package com.forerunnergames.peril.client.controllers;
 
-import net.engio.mbassy.bus.MBassador;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -15,7 +10,13 @@ import com.forerunnergames.tools.common.net.events.AnswerEvent;
 import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
 import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
 import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
+
 import com.google.common.collect.ImmutableSet;
+
+import net.engio.mbassy.bus.MBassador;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class EventBasedClientController extends AbstractClientController
 {

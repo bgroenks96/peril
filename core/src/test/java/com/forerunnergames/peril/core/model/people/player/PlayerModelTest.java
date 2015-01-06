@@ -1,16 +1,11 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.idOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.withIdOf;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import static org.junit.Assert.*;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
@@ -20,7 +15,11 @@ import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDen
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
+
 import com.google.common.collect.ImmutableSet;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class PlayerModelTest
 {
@@ -75,7 +74,7 @@ public class PlayerModelTest
   {
     playerModel.requestToSetPlayerLimitTo (GameSettings.MAX_PLAYERS);
 
-    Result <PlayerJoinGameDeniedEvent.REASON> result;
+    Result<PlayerJoinGameDeniedEvent.REASON> result;
     Player player;
 
     for (int i = 1; i <= playerModel.getPlayerLimit(); ++i)
@@ -166,7 +165,7 @@ public class PlayerModelTest
   @Test
   public void testGetPlayers()
   {
-    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (
+    final ImmutableSet<Player> expectedPlayers = ImmutableSet.of (
             PlayerFactory.create ("Test Player 1"),
             PlayerFactory.create ("Test Player 2"),
             PlayerFactory.create ("Test Player 3"));
@@ -751,13 +750,13 @@ public class PlayerModelTest
   public void testPlayerWithTurnOrder()
   {
     final PlayerTurnOrder player1TurnOrder = PlayerTurnOrder.NINTH;
-    final Player player1 = PlayerFactory.builder("Test Player 1").withTurnOrder (player1TurnOrder).build();
-    final Player player2 = PlayerFactory.builder("Test Player 2").withTurnOrder (PlayerTurnOrder.SEVENTH).build();
+    final Player player1 = PlayerFactory.builder("Test Player 1").withTurnOrder(player1TurnOrder).build();
+    final Player player2 = PlayerFactory.builder("Test Player 2").withTurnOrder(PlayerTurnOrder.SEVENTH).build();
 
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
 
-    assertTrue (playerModel.playerWith (player1TurnOrder).is (player1));
+    assertTrue (playerModel.playerWith(player1TurnOrder).is (player1));
   }
 
   @Test (expected = IllegalStateException.class)

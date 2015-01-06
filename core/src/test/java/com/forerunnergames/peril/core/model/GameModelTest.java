@@ -136,7 +136,7 @@ public class GameModelTest
 
     assertTrue (gameModel.isGameFull());
   }
-  
+
   @Test
   public void testIsGameEmpty()
   {
@@ -146,7 +146,7 @@ public class GameModelTest
     
     assertFalse (gameModel.isGameEmpty());
   }
-  
+
   @Test
   public void testDeterminePlayerTurnOrderZeroPlayersNoException()
   {
@@ -156,7 +156,7 @@ public class GameModelTest
     
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
-  
+
   @Test
   public void testDeterminePlayerTurnOrderOnePlayerNoException()
   {

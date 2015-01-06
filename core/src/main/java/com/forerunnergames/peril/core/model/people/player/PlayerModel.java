@@ -1,13 +1,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.idOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.nameOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
@@ -18,11 +11,16 @@ import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDe
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
+
 import com.google.common.collect.ImmutableSet;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class PlayerModel
 {
-  private final Map <Id, Player> players = new HashMap<>();
+  private final Map<Id, Player> players = new HashMap<> ();
   private int playerLimit;
 
   public PlayerModel (final int initialPlayerLimit)
@@ -227,7 +225,7 @@ public final class PlayerModel
     throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
   }
 
-  public ImmutableSet <Player> getPlayers()
+  public ImmutableSet<Player> getPlayers()
   {
     return ImmutableSet.copyOf (players.values());
   }
@@ -337,7 +335,7 @@ public final class PlayerModel
     players.remove (idOf (player));
   }
   
-  private Collection <Player> players()
+  private Collection<Player> players()
   {
     return players.values();
   }

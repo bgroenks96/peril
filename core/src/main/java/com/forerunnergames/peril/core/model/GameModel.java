@@ -132,7 +132,7 @@ public final class GameModel
     log.info ("Determining player turn order...");
     
     final ImmutableSet <Player> players = playerModel.getPlayers();
-    List <PlayerTurnOrder> validTurnOrders = new ArrayList <PlayerTurnOrder> (Arrays.asList (PlayerTurnOrder.values()));
+    List <PlayerTurnOrder> validTurnOrders = new ArrayList<> (Arrays.asList (PlayerTurnOrder.values()));
     validTurnOrders.remove (PlayerTurnOrder.UNKNOWN);
     validTurnOrders = Randomness.shuffle (validTurnOrders);
     
@@ -142,7 +142,7 @@ public final class GameModel
       playerModel.changeTurnOrderOfPlayer (idOf (player), turnOrderItr.next());
     }
     
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent(playerModel.getPlayers()));
+    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayers()));
   }
 
   @StateMachineAction

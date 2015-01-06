@@ -25,6 +25,7 @@ import net.engio.mbassy.bus.error.PublicationError;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
