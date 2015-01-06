@@ -1,16 +1,20 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
-
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.deltaFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.newPlayerLimitFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.reasonFrom;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
@@ -29,7 +33,6 @@ import net.engio.mbassy.listener.Handler;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,12 +125,46 @@ public class GameModelTest
   @Test
   public void testIsGameFull()
   {
+    final int delta = 2;
+    
+    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
+    
     for (int i = 1; i <= INITIAL_PLAYER_LIMIT; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
 
     assertTrue (gameModel.isGameFull());
+  }
+  
+  @Test
+  public void testIsGameEmpty()
+  {
+    assertTrue (gameModel.isGameEmpty());
+    
+    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + 0));
+    
+    assertFalse (gameModel.isGameEmpty());
+  }
+  
+  @Test
+  public void testDeterminePlayerTurnOrderZeroPlayersNoException()
+  {
+    assertTrue (gameModel.isGameEmpty());
+    
+    gameModel.determinePlayerTurnOrder();
+    
+    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
+  }
+  
+  @Test
+  public void testDeterminePlayerTurnOrderOnePlayerNoException()
+  {
+    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + 0));
+    
+    gameModel.determinePlayerTurnOrder();
+    
+    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
 
   private final class EventBusHandler

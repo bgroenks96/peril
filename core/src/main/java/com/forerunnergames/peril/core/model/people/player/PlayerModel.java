@@ -1,6 +1,13 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.idOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.nameOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
@@ -11,12 +18,7 @@ import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDe
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
-
 import com.google.common.collect.ImmutableSet;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class PlayerModel
 {
@@ -64,11 +66,6 @@ public final class PlayerModel
     return false;
   }
 
-  private Collection <Player> players()
-  {
-    return players.values();
-  }
-
   public boolean existsPlayerWith (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
@@ -112,23 +109,6 @@ public final class PlayerModel
     return false;
   }
 
-  private void add (final Player player)
-  {
-    if (player.has (PlayerColor.UNKNOWN)) player.setColor (nextAvailableColor());
-    if (player.has (PlayerTurnOrder.UNKNOWN)) player.setTurnOrder (nextAvailableTurnOrder());
-
-    register (player);
-  }
-
-  private void register (final Player player)
-  {
-    assert ! players.containsValue (player);
-    assert player.doesNotHave (PlayerColor.UNKNOWN);
-    assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
-
-    players.put (idOf (player), player);
-  }
-
   public Result <ChangePlayerLimitDeniedEvent.REASON> requestToSetPlayerLimitTo (final int limit)
   {
     if (limit < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
@@ -160,6 +140,7 @@ public final class PlayerModel
 
     if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
     if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN);
+    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_INALID);
 
     player.setColor (toColor);
 
@@ -184,13 +165,6 @@ public final class PlayerModel
     deregister (player);
 
     return Result.success();
-  }
-
-  private void deregister (final Player player)
-  {
-    assert players.containsValue (player);
-
-    players.remove (idOf (player));
   }
 
   public Player playerWithName (final String name)
@@ -268,6 +242,29 @@ public final class PlayerModel
     return requestToRemove (playerWith (turnOrder));
   }
 
+  public void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (toTurnOrder, "turnOrder");
+    Arguments.checkIsFalse (toTurnOrder.is (PlayerTurnOrder.UNKNOWN), "Invalid player turn order.");
+
+    final Player player = playerWith (playerId);
+    
+    if (player.has (toTurnOrder)) return;
+    
+    if (existsPlayerWith (toTurnOrder))
+    {
+      final Player old = playerWith (toTurnOrder);
+      old.setTurnOrder (PlayerTurnOrder.UNKNOWN);
+      player.setTurnOrder (toTurnOrder);
+      old.setTurnOrder (nextAvailableTurnOrder());
+    }
+    else
+    {
+      player.setTurnOrder (toTurnOrder);
+    }
+  }
+  
   public Player playerWith (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
@@ -279,56 +276,6 @@ public final class PlayerModel
     }
 
     throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
-  }
-
-  private PlayerColor nextAvailableColor()
-  {
-    for (final PlayerColor color : playerColors())
-    {
-      if (isAvailable (color)) return color;
-    }
-
-    throw new IllegalStateException ("There are no available player colors.");
-  }
-
-  private PlayerColor[] playerColors()
-  {
-    return PlayerColor.values();
-  }
-
-  private boolean isAvailable (final PlayerColor color)
-  {
-   return ! existsPlayerWith (color) && color.isNot (PlayerColor.UNKNOWN);
-  }
-
-  private PlayerTurnOrder nextAvailableTurnOrder()
-  {
-    for (final PlayerTurnOrder turnOrder : playerTurnOrders())
-    {
-      if (isAvailable (turnOrder)) return turnOrder;
-    }
-
-    throw new IllegalStateException ("There are no available player turn orders.");
-  }
-
-  private PlayerTurnOrder[] playerTurnOrders()
-  {
-    return PlayerTurnOrder.values();
-  }
-
-  private boolean isAvailable (final PlayerTurnOrder turnOrder)
-  {
-    return ! existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
-  }
-
-  private boolean existsPlayerWith (final int idValue)
-  {
-    for (final Player player : players())
-    {
-      if (idValueOf (player) == idValue) return true;
-    }
-
-    return false;
   }
 
   public int getPlayerLimit()
@@ -364,5 +311,74 @@ public final class PlayerModel
   public boolean existsPlayerWithName (final String name)
   {
     return existsPlayerWith (name);
+  }
+  
+  private void add (final Player player)
+  {
+    if (player.has (PlayerColor.UNKNOWN)) player.setColor (nextAvailableColor());
+    if (player.has (PlayerTurnOrder.UNKNOWN)) player.setTurnOrder (nextAvailableTurnOrder());
+
+    register (player);
+  }
+
+  private void register (final Player player)
+  {
+    assert ! players.containsValue (player);
+    assert player.doesNotHave (PlayerColor.UNKNOWN);
+    assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
+
+    players.put (idOf (player), player);
+  }
+  
+  private void deregister (final Player player)
+  {
+    assert players.containsValue (player);
+
+    players.remove (idOf (player));
+  }
+  
+  private Collection <Player> players()
+  {
+    return players.values();
+  }
+  
+  private PlayerColor nextAvailableColor()
+  {
+    for (final PlayerColor color : playerColors())
+    {
+      if (isAvailable (color)) return color;
+    }
+
+    throw new IllegalStateException ("There are no available player colors.");
+  }
+  
+  private PlayerTurnOrder nextAvailableTurnOrder()
+  {
+    for (final PlayerTurnOrder turnOrder : playerTurnOrders())
+    {
+      if (isAvailable (turnOrder)) return turnOrder;
+    }
+
+    throw new IllegalStateException ("There are no available player turn orders.");
+  }
+
+  private PlayerColor[] playerColors()
+  {
+    return PlayerColor.values();
+  }
+
+  private boolean isAvailable (final PlayerColor color)
+  {
+    return ! existsPlayerWith (color) && color.isNot (PlayerColor.UNKNOWN);
+  }
+
+  private PlayerTurnOrder[] playerTurnOrders()
+  {
+    return PlayerTurnOrder.values();
+  }
+
+  private boolean isAvailable (final PlayerTurnOrder turnOrder)
+  {
+    return ! existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
   }
 }

@@ -1,5 +1,11 @@
 package com.forerunnergames.peril.client.controllers;
 
+import net.engio.mbassy.bus.MBassador;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.net.AbstractClientController;
@@ -9,13 +15,7 @@ import com.forerunnergames.tools.common.net.events.AnswerEvent;
 import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
 import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
 import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
-
 import com.google.common.collect.ImmutableSet;
-
-import net.engio.mbassy.bus.MBassador;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class EventBasedClientController extends AbstractClientController
 {
@@ -60,13 +60,18 @@ public final class EventBasedClientController extends AbstractClientController
 
     log.debug ("Received object [{}] from server [{}].", object, server);
 
-    if (! (object instanceof AnswerEvent))
+    if (! isValidCommunicationEvent (object))
     {
       log.warn ("Received unrecognized object [{}] from server [{}].", object, server);
 
       return;
     }
 
-    eventBus.publish (new ServerCommunicationEvent ((AnswerEvent) object, server));
+    eventBus.publish (new ServerCommunicationEvent ((Event) object, server));
+  }
+  
+  private boolean isValidCommunicationEvent (final Object eventObject)
+  {
+	  return eventObject instanceof AnswerEvent || eventObject instanceof GameNotificationEvent;
   }
 }

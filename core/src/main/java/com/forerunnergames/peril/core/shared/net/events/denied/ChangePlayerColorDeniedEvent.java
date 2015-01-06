@@ -17,7 +17,8 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
   public enum REASON
   {
     REQUESTED_COLOR_EQUALS_EXISTING_COLOR,
-    COLOR_ALREADY_TAKEN
+    COLOR_ALREADY_TAKEN,
+    REQUESTED_COLOR_INALID,
   }
 
   private final PlayerColorEvent playerColorEvent;

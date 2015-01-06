@@ -1,10 +1,16 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
-
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.idOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.withIdOf;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
@@ -14,11 +20,7 @@ import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDen
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
-
 import com.google.common.collect.ImmutableSet;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class PlayerModelTest
 {
@@ -57,6 +59,16 @@ public class PlayerModelTest
         assertTrue (idOf(player2).isNot (idOf (player1)));
       }
     }
+  }
+  
+  @Test
+  public void testChangeTurnOrderOfPlayer()
+  {
+    addMaxPlayers();
+    Player player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    Player player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    playerModel.changeTurnOrderOfPlayer (player1.getId(), PlayerTurnOrder.SECOND);
+    assertTrue (player2.getTurnOrder().is (PlayerTurnOrder.FIRST) && player1.getTurnOrder().is (PlayerTurnOrder.SECOND));
   }
 
   private void addMaxPlayers()

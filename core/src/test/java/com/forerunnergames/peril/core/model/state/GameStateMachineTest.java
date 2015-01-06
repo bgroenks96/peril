@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
@@ -24,7 +25,6 @@ import net.engio.mbassy.bus.error.PublicationError;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +75,15 @@ public class GameStateMachineTest
   public void testAll()
   {
     // Simulate creating a new game.
-    gameStateMachine.onEvent (new CreateGameEvent());
+    gameStateMachine.onCreateGameEvent (new CreateGameEvent());
 
     // Simulate many players attempting to join the game.
     for (int i = 0; i < 50; ++i)
     {
-      gameStateMachine.onEvent (new PlayerJoinGameRequestEvent (getRandomPlayerName()));
+      gameStateMachine.onPlayerJoinGameRequestEvent (new PlayerJoinGameRequestEvent (getRandomPlayerName()));
     }
+    
+    gameStateMachine.onEndGameEvent (new EndGameEvent());
 
     try
     {
