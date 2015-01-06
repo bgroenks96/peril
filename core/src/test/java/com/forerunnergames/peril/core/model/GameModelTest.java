@@ -126,9 +126,9 @@ public class GameModelTest
   public void testIsGameFull()
   {
     final int delta = 2;
-    
+
     gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-    
+
     for (int i = 1; i <= INITIAL_PLAYER_LIMIT; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
@@ -141,9 +141,9 @@ public class GameModelTest
   public void testIsGameEmpty()
   {
     assertTrue (gameModel.isGameEmpty());
-    
+
     gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + 0));
-    
+
     assertFalse (gameModel.isGameEmpty());
   }
 
@@ -151,9 +151,9 @@ public class GameModelTest
   public void testDeterminePlayerTurnOrderZeroPlayersNoException()
   {
     assertTrue (gameModel.isGameEmpty());
-    
+
     gameModel.determinePlayerTurnOrder();
-    
+
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
 
@@ -161,9 +161,9 @@ public class GameModelTest
   public void testDeterminePlayerTurnOrderOnePlayerNoException()
   {
     gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + 0));
-    
+
     gameModel.determinePlayerTurnOrder();
-    
+
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
 

@@ -247,9 +247,9 @@ public final class PlayerModel
     Arguments.checkIsFalse (toTurnOrder.is (PlayerTurnOrder.UNKNOWN), "Invalid player turn order.");
 
     final Player player = playerWith (playerId);
-    
+
     if (player.has (toTurnOrder)) return;
-    
+
     if (existsPlayerWith (toTurnOrder))
     {
       final Player old = playerWith (toTurnOrder);
@@ -262,7 +262,7 @@ public final class PlayerModel
       player.setTurnOrder (toTurnOrder);
     }
   }
-  
+
   public Player playerWith (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
@@ -310,7 +310,7 @@ public final class PlayerModel
   {
     return existsPlayerWith (name);
   }
-  
+
   private void add (final Player player)
   {
     if (player.has (PlayerColor.UNKNOWN)) player.setColor (nextAvailableColor());
@@ -327,19 +327,19 @@ public final class PlayerModel
 
     players.put (idOf (player), player);
   }
-  
+
   private void deregister (final Player player)
   {
     assert players.containsValue (player);
 
     players.remove (idOf (player));
   }
-  
+
   private Collection<Player> players()
   {
     return players.values();
   }
-  
+
   private PlayerColor nextAvailableColor()
   {
     for (final PlayerColor color : playerColors())
@@ -349,7 +349,7 @@ public final class PlayerModel
 
     throw new IllegalStateException ("There are no available player colors.");
   }
-  
+
   private PlayerTurnOrder nextAvailableTurnOrder()
   {
     for (final PlayerTurnOrder turnOrder : playerTurnOrders())

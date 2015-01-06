@@ -104,7 +104,7 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event [{}] received.", event);
 
     Event message = messageFrom (event);
-    
+
     if (message instanceof AnswerEvent)
     {
       eventBus.publish ((AnswerEvent) message);

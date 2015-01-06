@@ -83,7 +83,7 @@ public class GameStateMachineTest
     {
       gameStateMachine.onPlayerJoinGameRequestEvent (new PlayerJoinGameRequestEvent (getRandomPlayerName()));
     }
-    
+
     gameStateMachine.onEndGameEvent (new EndGameEvent());
 
     try

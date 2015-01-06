@@ -59,7 +59,7 @@ public class PlayerModelTest
       }
     }
   }
-  
+
   @Test
   public void testChangeTurnOrderOfPlayer()
   {
