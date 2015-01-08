@@ -50,10 +50,10 @@ public class GameStateMachineWaitForGameToBeginState
      */
     public void onPlayerJoinGameSuccessEvent(GameStateMachineGameHandlerContext context, PlayerJoinGameSuccessEvent event) {
         com.forerunnergames.peril.core.model.GameModel gameModel = context.getGameModel();
-        // Transition from WaitForGameToBegin to DeterminePlayerTurnOrder triggered by onPlayerJoinGameSuccessEvent[gameModel.isGameFull()]
+        // Transition from WaitForGameToBegin to DeterminePlayerTurnOrder triggered by onPlayerJoinGameSuccessEvent[gameModel.isFull()]
         // The next state is within the context GameStateMachineGameHandlerContext
-        if ((gameModel.isGameFull())) {
-            context.setTransitionName("onPlayerJoinGameSuccessEvent[gameModel.isGameFull()]");
+        if ((gameModel.isFull())) {
+            context.setTransitionName("onPlayerJoinGameSuccessEvent[gameModel.isFull()]");
             com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineDeterminePlayerTurnOrderState.getInstance());
             com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineDeterminePlayerTurnOrderState.getInstance());
             return ;

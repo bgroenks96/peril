@@ -33,6 +33,7 @@ import net.engio.mbassy.listener.Handler;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,10 +86,7 @@ public class GameModelTest
   @Test
   public void testHandlePlayerJoinGameRequestFailed()
   {
-    for (int i = 1; i <= INITIAL_PLAYER_LIMIT; ++i)
-    {
-      gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
-    }
+    addMaxPlayers();
 
     final String name = "Test Player X";
 
@@ -123,48 +121,76 @@ public class GameModelTest
   }
 
   @Test
-  public void testIsGameFull()
+  public void testIsFull()
   {
     final int delta = 2;
 
     gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
 
-    for (int i = 1; i <= INITIAL_PLAYER_LIMIT; ++i)
+    addMaxPlayers();
+
+    assertTrue (gameModel.isFull());
+  }
+
+  @Test
+  public void testIsEmpty()
+  {
+    assertTrue (gameModel.isEmpty());
+
+    addSinglePlayer();
+
+    assertFalse (gameModel.isEmpty());
+  }
+
+  @Test
+  public void testDeterminePlayerTurnOrderZeroPlayers()
+  {
+    assertTrue (gameModel.isEmpty());
+
+    gameModel.determinePlayerTurnOrder();
+
+    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
+  }
+
+  @Test
+  public void testDeterminePlayerTurnOrderOnePlayer()
+  {
+    addSinglePlayer();
+
+    gameModel.determinePlayerTurnOrder();
+
+    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
+  }
+
+  @Test
+  public void testDeterminePlayerTurnOrderMaxPlayers()
+  {
+    addMaxPlayers();
+
+    gameModel.determinePlayerTurnOrder();
+
+    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
+  }
+
+  private void addSinglePlayer()
+  {
+    assertTrue (gameModel.isEmpty());
+    assertTrue (gameModel.isNotFull());
+
+    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player"));
+
+    assertTrue (gameModel.playerCountIs (1));
+    assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
+  }
+
+  private void addMaxPlayers()
+  {
+    for (int i = 1; i <= GameSettings.MAX_PLAYERS; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
 
-    assertTrue (gameModel.isGameFull());
-  }
-
-  @Test
-  public void testIsGameEmpty()
-  {
-    assertTrue (gameModel.isGameEmpty());
-
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + 0));
-
-    assertFalse (gameModel.isGameEmpty());
-  }
-
-  @Test
-  public void testDeterminePlayerTurnOrderZeroPlayersNoException()
-  {
-    assertTrue (gameModel.isGameEmpty());
-
-    gameModel.determinePlayerTurnOrder();
-
-    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
-  }
-
-  @Test
-  public void testDeterminePlayerTurnOrderOnePlayerNoException()
-  {
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + 0));
-
-    gameModel.determinePlayerTurnOrder();
-
-    assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
+    assertTrue (gameModel.isFull());
   }
 
   private final class EventBusHandler

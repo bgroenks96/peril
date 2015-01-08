@@ -20,7 +20,7 @@ import java.util.Map;
 
 public final class PlayerModel
 {
-  private final Map<Id, Player> players = new HashMap<> ();
+  private final Map <Id, Player> players = new HashMap<>();
   private int playerLimit;
 
   public PlayerModel (final int initialPlayerLimit)
@@ -50,6 +50,11 @@ public final class PlayerModel
   public boolean isFull()
   {
     return players.size() > 0 && players.size() >= playerLimit;
+  }
+
+  public boolean isNotFull()
+  {
+    return ! isFull();
   }
 
   public boolean existsPlayerWith (final PersonIdentity identity)
@@ -165,6 +170,25 @@ public final class PlayerModel
     return Result.success();
   }
 
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveById (final Id id)
+  {
+    Arguments.checkIsNotNull (id, "id");
+
+    if (! existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (id));
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByColor (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
+
+    if (! existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (color));
+  }
+
   public Player playerWithName (final String name)
   {
     return playerWith (name);
@@ -182,15 +206,6 @@ public final class PlayerModel
     throw new IllegalStateException ("Cannot find any player named: [" + name + "].");
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveById (final Id id)
-  {
-    Arguments.checkIsNotNull (id, "id");
-
-    if (! existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
-
-    return requestToRemove (playerWith (id));
-  }
-
   public Player playerWith (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
@@ -200,16 +215,6 @@ public final class PlayerModel
     if (player == null) throw new IllegalStateException ("Cannot find any player with id [" + id + "].");
 
     return player;
-  }
-
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByColor (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
-
-    if (! existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
-
-    return requestToRemove (playerWith (color));
   }
 
   public Player playerWith (final PlayerColor color)
@@ -225,7 +230,7 @@ public final class PlayerModel
     throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
   }
 
-  public ImmutableSet<Player> getPlayers()
+  public ImmutableSet <Player> getPlayers()
   {
     return ImmutableSet.copyOf (players.values());
   }
@@ -286,6 +291,11 @@ public final class PlayerModel
     return playerLimit == limit;
   }
 
+  public boolean playerLimitIsAtLeast (final int limit)
+  {
+    return playerLimit >= limit;
+  }
+
   public int getPlayerCount()
   {
     return players.size();
@@ -304,6 +314,11 @@ public final class PlayerModel
   public boolean isEmpty()
   {
     return players.size() == 0;
+  }
+
+  public boolean isNotEmpty()
+  {
+    return ! isEmpty();
   }
 
   public boolean existsPlayerWithName (final String name)
@@ -335,7 +350,7 @@ public final class PlayerModel
     players.remove (idOf (player));
   }
 
-  private Collection<Player> players()
+  private Collection <Player> players()
   {
     return players.values();
   }

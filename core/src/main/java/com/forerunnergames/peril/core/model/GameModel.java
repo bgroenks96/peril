@@ -155,18 +155,53 @@ public final class GameModel
   }
 
   @StateMachineCondition
-  public boolean isGameFull()
+  public boolean isFull()
   {
     return playerModel.isFull();
   }
 
-  public boolean isGameEmpty()
+  public boolean isNotFull()
+  {
+    return playerModel.isNotFull();
+  }
+
+  public boolean isEmpty()
   {
     return playerModel.isEmpty();
+  }
+
+  public boolean isNotEmpty()
+  {
+    return playerModel.isNotEmpty();
   }
 
   public int getPlayerCount()
   {
     return playerModel.getPlayerCount();
+  }
+
+  public boolean playerCountIs (final int count)
+  {
+    return playerModel.playerCountIs (count);
+  }
+
+  public boolean playerCountIsNot (final int count)
+  {
+    return playerModel.playerCountIsNot (count);
+  }
+
+  public int getPlayerLimit()
+  {
+    return playerModel.getPlayerLimit();
+  }
+
+  public boolean playerLimitIs (final int limit)
+  {
+    return playerModel.playerLimitIs (limit);
+  }
+
+  public boolean playerLimitIsAtLeast (final int limit)
+  {
+    return playerModel.playerLimitIsAtLeast (limit);
   }
 }
