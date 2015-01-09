@@ -4,7 +4,7 @@ import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Id;
+import com.forerunnergames.tools.common.id.Id;
 
 public class DefaultPlayer extends AbstractPerson implements Player
 {

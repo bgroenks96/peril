@@ -13,8 +13,8 @@ import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColor
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
-import com.forerunnergames.tools.common.Id;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
 
