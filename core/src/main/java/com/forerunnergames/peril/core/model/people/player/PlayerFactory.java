@@ -2,7 +2,7 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Id;
+import com.forerunnergames.tools.common.id.Id;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -4,7 +4,7 @@ import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForN
 import com.forerunnergames.tools.common.AbstractAsset;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
-import com.forerunnergames.tools.common.Id;
+import com.forerunnergames.tools.common.id.Id;
 
 public abstract class AbstractPerson extends AbstractAsset implements Person, Author
 {
