@@ -13,8 +13,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
-import com.forerunnergames.peril.core.model.strategy.DefaultGameStrategy;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
@@ -71,7 +71,7 @@ public class GameModelTest
   @Before
   public void setup ()
   {
-    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), new DefaultGameStrategy (), eventBus);
+    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), new ClassicGameRules (), eventBus);
     eventHandler = new EventBusHandler ().subscribe ();
   }
 
