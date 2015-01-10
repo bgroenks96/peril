@@ -15,9 +15,9 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
-import com.forerunnergames.peril.core.model.strategy.GameStrategy;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
@@ -50,17 +50,17 @@ public final class GameModel
 {
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private final PlayerModel playerModel;
-  private final GameStrategy strategy;
+  private final GameRules rules;
   private final MBassador <Event> eventBus;
 
-  public GameModel (final PlayerModel playerModel, final GameStrategy strategy, final MBassador <Event> eventBus)
+  public GameModel (final PlayerModel playerModel, final GameRules rules, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (strategy, "strategy");
+    Arguments.checkIsNotNull (rules, "strategy");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
-    this.strategy = strategy;
+    this.rules = rules;
     this.eventBus = eventBus;
   }
 
@@ -158,7 +158,7 @@ public final class GameModel
 
     for (final Player player : playerModel.getPlayers ())
     {
-      final int armyCount = strategy.computeInitialArmyCount (playerModel.getPlayerCount ());
+      final int armyCount = rules.computeInitialArmyCount (playerModel.getPlayerCount ());
       playerModel.addArmiesToHandOf (idOf (player), ArmyFactory.create (armyCount));
     }
 

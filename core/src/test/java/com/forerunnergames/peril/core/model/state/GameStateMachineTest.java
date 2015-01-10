@@ -5,9 +5,9 @@ import static org.junit.Assert.fail;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
+import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
-import com.forerunnergames.peril.core.model.strategy.DefaultGameStrategy;
-import com.forerunnergames.peril.core.model.strategy.GameStrategy;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -58,7 +58,7 @@ public class GameStateMachineTest
 
     final int initialPlayerLimit = GameSettings.MAX_PLAYERS;
     final PlayerModel playerModel = new PlayerModel (initialPlayerLimit);
-    final GameStrategy strategy = new DefaultGameStrategy ();
+    final GameRules strategy = new ClassicGameRules ();
     final GameModel gameModel = new GameModel (playerModel, strategy, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.strategy;
+package com.forerunnergames.peril.core.model.rules;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -8,6 +8,8 @@ import com.forerunnergames.peril.core.model.armies.ArmyFactory;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
+import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 
 import com.google.common.collect.ImmutableSet;
@@ -15,7 +17,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 import org.junit.Test;
 
-public class DefaultGameStrategyTest
+public class ClassicGameRulesTest
 {
   @Test
   public void testComputeInitialArmiesForMinPlayers ()
@@ -45,7 +47,7 @@ public class DefaultGameStrategyTest
   {
     final PlayerModel playerModel = createPlayerModel (numPlayers, createPlayers (numPlayers));
 
-    final GameStrategy strategy = new DefaultGameStrategy ();
+    final GameRules strategy = new ClassicGameRules ();
     ImmutableSet <Army> initialArmySet;
 
     for (int i = 0; i < playerModel.getPlayerCount (); i++)

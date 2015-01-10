@@ -1,12 +1,12 @@
-package com.forerunnergames.peril.core.model.strategy;
+package com.forerunnergames.peril.core.model.rules;
 
 import com.forerunnergames.tools.common.Arguments;
 
-public final class DefaultGameStrategy implements GameStrategy
+public final class ClassicGameRules implements GameRules
 {
   // @formatter:off
   /**
-   * Defined in DefaultGameStrategy by the following piecewise function:
+   * Defined in ClassicGameRules by the following piecewise function:
    *
    * P(n) = | 1               if n = 10
    *        | 40 - 5*(n - 2)  if n < 10
