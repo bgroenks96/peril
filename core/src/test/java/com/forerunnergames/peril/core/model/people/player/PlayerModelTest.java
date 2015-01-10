@@ -11,8 +11,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.forerunnergames.peril.core.model.armies.Army;
-import com.forerunnergames.peril.core.model.armies.ArmyFactory;
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
@@ -27,12 +25,8 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class PlayerModelTest
 {
-  private static final Logger log = LoggerFactory.getLogger (PlayerModelTest.class);
   private static final int INITIAL_PLAYER_LIMIT = 3;
 
   private PlayerModel playerModel;
@@ -43,13 +37,13 @@ public class PlayerModelTest
     playerModel = new PlayerModel (INITIAL_PLAYER_LIMIT);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test (expected = IllegalArgumentException.class)
   public void testNegativeInitialPlayerLimitFails ()
   {
     new PlayerModel (- 1);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test (expected = IllegalArgumentException.class)
   public void testInitialPlayerLimitBeyondMaxPlayersFails ()
   {
     new PlayerModel (GameSettings.MAX_PLAYERS + 1);
@@ -104,7 +98,7 @@ public class PlayerModelTest
     if (playerModel.playerCountIsNot (GameSettings.MAX_PLAYERS))
     {
       throw new IllegalStateException ("Could not add max players.\nCurrent player count: "
-          + playerModel.getPlayerCount () + "\nPlayers:\n" + playerModel.getPlayers ());
+              + playerModel.getPlayerCount () + "\nPlayers:\n" + playerModel.getPlayers ());
     }
   }
 
@@ -660,7 +654,7 @@ public class PlayerModelTest
                 .failedBecauseOf (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test (expected = IllegalArgumentException.class)
   public void testRequestToRemovePlayerByColorFailedWithIllegalArgumentException ()
   {
     playerModel.requestToRemoveByColor (PlayerColor.UNKNOWN);
@@ -683,7 +677,7 @@ public class PlayerModelTest
                 .failedBecauseOf (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test (expected = IllegalArgumentException.class)
   public void testRequestToRemovePlayerByTurnOrderFailedWithIllegalArgumentException ()
   {
     playerModel.requestToRemoveByTurnOrder (PlayerTurnOrder.UNKNOWN);
@@ -751,7 +745,7 @@ public class PlayerModelTest
     assertTrue (playerModel.playerWith (player1Id).is (player1));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test (expected = IllegalStateException.class)
   public void testNonExistentPlayerWithIdThrowsException ()
   {
     playerModel.playerWith (new Id (5));
@@ -770,13 +764,13 @@ public class PlayerModelTest
     assertTrue (playerModel.playerWith (player1Color).is (player1));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test (expected = IllegalStateException.class)
   public void testNonExistentPlayerWithColorThrowsException ()
   {
     playerModel.playerWith (PlayerColor.RED);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test (expected = IllegalArgumentException.class)
   public void testPlayerWithUnknownColorThrowsException ()
   {
     assertTrue (playerModel.requestToAdd (PlayerFactory.create ("Test Player")).succeeded ());
@@ -797,13 +791,13 @@ public class PlayerModelTest
     assertTrue (playerModel.playerWith (player1TurnOrder).is (player1));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test (expected = IllegalStateException.class)
   public void testNonExistentPlayerWithTurnOrderThrowsException ()
   {
     playerModel.playerWith (PlayerTurnOrder.FOURTH);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test (expected = IllegalArgumentException.class)
   public void testPlayerWithUnknownTurnOrderThrowsException ()
   {
     assertTrue (playerModel.requestToAdd (PlayerFactory.create ("Test Player")).succeeded ());
@@ -814,102 +808,113 @@ public class PlayerModelTest
   @Test
   public void testAddArmiesToHandOfPlayer ()
   {
-    final Player player = PlayerFactory.create ("Test Player");
-
-    assertTrue (playerModel.requestToAdd (player).succeeded ());
+    final Player player = addSinglePlayer ();
 
     final int armyCount = 10;
-    playerModel.addArmiesToHandOf (player.getId (), ArmyFactory.create (armyCount));
+    playerModel.addArmiesToHandOf (player.getId (), armyCount);
 
-    assertTrue (playerModel.getArmiesInHandOf (player.getId ()).size () == armyCount);
+    assertTrue (playerModel.getArmiesInHandOf (idOf (player)) == armyCount);
   }
 
-  @Test
-  public void testAddArmyToHandOfPlayer ()
+  @Test (expected = IllegalStateException.class)
+  public void testAddArmiesToHandOfPlayerFailsWhenMaxArmiesInHand ()
   {
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = addSinglePlayer ();
 
-    assertTrue (playerModel.requestToAdd (player).succeeded ());
-
-    playerModel.addArmyToHandOf (player.getId (), ArmyFactory.create ());
-
-    assertTrue (playerModel.getArmiesInHandOf (player.getId ()).size () == 1);
+    playerModel.addArmiesToHandOf (idOf (player), GameSettings.MAX_ARMIES_IN_PLAYER_HAND);
+    playerModel.addArmiesToHandOf (idOf (player), 1);
   }
 
   @Test
   public void testRemoveArmiesFromHandOfPlayer ()
   {
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = addSinglePlayer ();
 
-    assertTrue (playerModel.requestToAdd (player).succeeded ());
+    final int armies = 3;
 
-    final Army army1 = ArmyFactory.create (), army2 = ArmyFactory.create (), army3 = ArmyFactory.create ();
+    playerModel.addArmiesToHandOf (idOf (player), armies);
+    playerModel.removeArmiesFromHandOf (idOf (player), armies);
 
-    playerModel.addArmiesToHandOf (player.getId (), ImmutableSet.of (army1, army2, army3));
-    playerModel.removeArmiesFromHandOf (player.getId (), ImmutableSet.of (army1, army2));
+    assertTrue (playerModel.getArmiesInHandOf (idOf (player)) == 0);
+  }
 
-    final ImmutableSet <Army> playerArmiesInHand = playerModel.getArmiesInHandOf (player.getId ());
+  @Test (expected = IllegalStateException.class)
+  public void testRemoveArmiesFromHandOfPlayerFailsWhenMinArmiesInHand ()
+  {
+    final Player player = addSinglePlayer ();
 
-    assertTrue (playerArmiesInHand.contains (army3) && playerArmiesInHand.size () == 1);
+    playerModel.addArmiesToHandOf (idOf (player), GameSettings.MIN_ARMIES_IN_PLAYER_HAND);
+    playerModel.removeArmiesFromHandOf (idOf (player), GameSettings.MIN_ARMIES_IN_PLAYER_HAND + 1);
   }
 
   @Test
-  public void testRemoveArmyFromHandOfPlayer ()
+  public void testCanAddArmiesToHandOfPlayerOneArmy ()
   {
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = addSinglePlayer ();
 
-    assertTrue (playerModel.requestToAdd (player).succeeded ());
+    playerModel.addArmiesToHandOf (idOf (player), 1);
 
-    final Army army1 = ArmyFactory.create ();
-
-    playerModel.addArmyToHandOf (player.getId (), army1);
-    playerModel.removeArmyFromHandOf (player.getId (), army1);
-
-    final ImmutableSet <Army> playerArmiesInHand = playerModel.getArmiesInHandOf (player.getId ());
-
-    assertTrue (! playerArmiesInHand.contains (army1) && playerArmiesInHand.size () == 0);
+    assertTrue (playerModel.canAddArmiesToHandOf (idOf (player), 1));
   }
 
   @Test
-  public void testRemoveNonexistentArmyFromHandOfPlayer ()
+  public void testCannotAddArmiesToHandOfPlayerMaxArmiesInHand ()
   {
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = addSinglePlayer ();
 
-    assertTrue (playerModel.requestToAdd (player).succeeded ());
+    playerModel.addArmiesToHandOf (idOf (player), GameSettings.MAX_ARMIES_IN_PLAYER_HAND);
 
-    final Army army1 = ArmyFactory.create ();
-
-    log.info ("[testRemoveNonexistentArmyFromHandOfPlayer] expecting log warning from Player");
-    playerModel.removeArmyFromHandOf (player.getId (), army1);
-
-    final ImmutableSet <Army> playerArmiesInHand = playerModel.getArmiesInHandOf (player.getId ());
-
-    assertTrue (! playerArmiesInHand.contains (army1) && playerArmiesInHand.size () == 0);
+    assertFalse (playerModel.canAddArmiesToHandOf (idOf (player), 1));
   }
 
   @Test
-  public void testGetArmiesInHandCount ()
+  public void testCanRemoveAddArmiesFromHandOfPlayerOneArmy ()
   {
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = addSinglePlayer ();
 
-    assertTrue (playerModel.requestToAdd (player).succeeded ());
+    playerModel.addArmiesToHandOf (idOf (player), 1);
+
+    assertTrue (playerModel.canRemoveArmiesFromHandOf (idOf (player), 1));
+  }
+
+  @Test
+  public void testCannotRemoveArmiesFromHandOfPlayerMinArmiesInHand ()
+  {
+    final Player player = addSinglePlayer ();
+
+    playerModel.addArmiesToHandOf (idOf (player), GameSettings.MIN_ARMIES_IN_PLAYER_HAND);
+
+    assertFalse (playerModel.canRemoveArmiesFromHandOf (idOf (player), GameSettings.MIN_ARMIES_IN_PLAYER_HAND + 1));
+  }
+
+  @Test
+  public void testGetArmiesInHandOf ()
+  {
+    final Player player = addSinglePlayer ();
 
     final int armyCount = 10;
-    playerModel.addArmiesToHandOf (player.getId (), ArmyFactory.create (armyCount));
+    playerModel.addArmiesToHandOf (idOf (player), armyCount);
 
-    assertTrue (playerModel.getArmiesInHandCount (player.getId ()) == armyCount);
+    assertTrue (playerModel.getArmiesInHandOf (idOf (player)) == armyCount);
   }
 
   @Test
-  public void testHasArmiesInHandCount ()
+  public void testHasArmiesInHandOf ()
+  {
+    final Player player = addSinglePlayer ();
+
+    final int armyCount = 10;
+    playerModel.addArmiesToHandOf (idOf (player), armyCount);
+
+    assertTrue (playerModel.hasArmiesInHandOf (idOf (player), armyCount));
+  }
+
+  private Player addSinglePlayer ()
   {
     final Player player = PlayerFactory.create ("Test Player");
 
     assertTrue (playerModel.requestToAdd (player).succeeded ());
 
-    final int armyCount = 10;
-    playerModel.addArmiesToHandOf (player.getId (), ArmyFactory.create (armyCount));
-
-    assertTrue (playerModel.hasArmiesInHandCount (player.getId (), armyCount));
+    return player;
   }
 }

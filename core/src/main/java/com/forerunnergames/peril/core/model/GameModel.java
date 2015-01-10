@@ -9,7 +9,6 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.prev
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 
-import com.forerunnergames.peril.core.model.armies.ArmyFactory;
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -154,12 +153,13 @@ public final class GameModel
   @StateMachineAction
   public void distributeInitialArmies ()
   {
-    log.info ("Distributing initial player armies...");
+    final int armies = rules.calculateInitialArmies (playerModel.getPlayerCount ());
+
+    log.info ("Distributing {} armies each to {} players...", armies, playerModel.getPlayerCount ());
 
     for (final Player player : playerModel.getPlayers ())
     {
-      final int armyCount = rules.computeInitialArmyCount (playerModel.getPlayerCount ());
-      playerModel.addArmiesToHandOf (idOf (player), ArmyFactory.create (armyCount));
+      playerModel.addArmiesToHandOf (idOf (player), armies);
     }
 
     eventBus.publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayers ()));

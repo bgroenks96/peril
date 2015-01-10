@@ -1,27 +1,18 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.armies.Army;
 import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
+import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DefaultPlayer extends AbstractPerson implements Player
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultPlayer.class);
-
   private PlayerColor color;
   private PlayerTurnOrder turnOrder;
-  private Set <Army> armiesInHand;
+  private int armiesInHand;
 
   public DefaultPlayer (final String name,
                         final Id id,
@@ -36,7 +27,6 @@ public class DefaultPlayer extends AbstractPerson implements Player
 
     this.color = color;
     this.turnOrder = turnOrder;
-    this.armiesInHand = new HashSet <Army> ();
   }
 
   @Override
@@ -96,72 +86,82 @@ public class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
-  public void addArmiesToHand (final ImmutableSet <Army> armies)
+  public void addArmiesToHand (final int armies)
   {
     Arguments.checkIsNotNull (armies, "armies");
-    Arguments.checkHasNoNullElements (armies, "armies");
+    Arguments.checkIsNotNegative (armies, "armies");
+    Preconditions.checkIsTrue (canAddNArmiesToHand (armies), getCannotAddNArmiesToHandErrorMessage (armies));
 
-    armiesInHand.addAll (armies);
+    armiesInHand += armies;
   }
 
   @Override
-  public void addArmyToHand (final Army army)
+  public boolean canAddArmiesToHand (final int armies)
   {
-    Arguments.checkIsNotNull (army, "army");
+    Arguments.checkIsNotNegative (armies, "armies");
 
-    armiesInHand.add (army);
+    return canAddNArmiesToHand (armies);
   }
 
   @Override
-  public void removeArmyFromHand (final Army army)
-  {
-    Arguments.checkIsNotNull (army, "army");
-
-    if (! armiesInHand.remove (army))
-    {
-      log.warn ("Attempt to remove Army [id={}] from hand of player [{}] failed because it is not present.",
-                army.getId (), getName ());
-    }
-  }
-
-  @Override
-  public void removeArmiesFromHand (final ImmutableSet <Army> armies)
+  public void removeArmiesFromHand (final int armies)
   {
     Arguments.checkIsNotNull (armies, "armies");
-    Arguments.checkHasNoNullElements (armies, "armies");
+    Arguments.checkIsNotNegative (armies, "armies");
+    Preconditions.checkIsTrue (canRemoveNArmiesFromHand (armies), getCannotRemoveNArmiesFromHandErrorMessage (armies));
 
-    if (! armiesInHand.removeAll (armies))
-    {
-      log.warn ("Attempt to remove {} Armies from hand of player [{}] failed because they are not present.",
-                armies.size (), getName ());
-    }
+    armiesInHand -= armies;
   }
 
   @Override
-  public int getArmiesInHandCount ()
+  public boolean canRemoveArmiesFromHand (final int armies)
   {
-    return armiesInHand.size ();
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    return canRemoveNArmiesFromHand (armies);
   }
 
   @Override
-  public boolean hasArmiesInHandCount (final int count)
+  public int getArmiesInHand ()
   {
-    Arguments.checkIsNotNegative (count, "count");
-
-    return armiesInHand.size () == count;
+    return armiesInHand;
   }
 
   @Override
-  public ImmutableSet <Army> getArmiesInHand ()
+  public boolean hasArmiesInHand (final int armies)
   {
-    return ImmutableSet.copyOf (armiesInHand);
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    return armiesInHand >= armies;
+  }
+
+  private boolean canAddNArmiesToHand (final int armies)
+  {
+    return GameSettings.MAX_ARMIES_IN_PLAYER_HAND - armies >= armiesInHand;
+  }
+
+  private String getCannotAddNArmiesToHandErrorMessage (final int armies)
+  {
+    return "Can't add " + armies + " armies to hand: reached maximum value [" + GameSettings.MAX_ARMIES_IN_PLAYER_HAND
+            + "].";
+  }
+
+  private boolean canRemoveNArmiesFromHand (final int armies)
+  {
+    return GameSettings.MIN_ARMIES_IN_PLAYER_HAND + armies <= armiesInHand;
+  }
+
+  private String getCannotRemoveNArmiesFromHandErrorMessage (final int armies)
+  {
+    return "Can't remove " + armies + " armies from hand: reached minimum value ["
+            + GameSettings.MIN_ARMIES_IN_PLAYER_HAND + "].";
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand count: %4$s", super.toString (),
-                          color, turnOrder, getArmiesInHandCount ());
+    return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand: %4$s", super.toString (), color,
+                          turnOrder, getArmiesInHand ());
   }
 
   @RequiredForNetworkSerialization

@@ -1,9 +1,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.armies.Army;
 import com.forerunnergames.peril.core.model.people.person.Person;
-
-import com.google.common.collect.ImmutableSet;
 
 public interface Player extends Person
 {
@@ -23,17 +20,15 @@ public interface Player extends Person
 
   public void setTurnOrder (final PlayerTurnOrder turnOrder);
 
-  public void addArmyToHand (final Army army);
+  public void addArmiesToHand (final int armies);
 
-  public void addArmiesToHand (final ImmutableSet <Army> armies);
+  public boolean canAddArmiesToHand (final int armies);
 
-  public void removeArmyFromHand (final Army army);
+  public void removeArmiesFromHand (final int armies);
 
-  public void removeArmiesFromHand (final ImmutableSet <Army> armies);
+  public boolean canRemoveArmiesFromHand (final int armies);
 
-  public int getArmiesInHandCount ();
+  public int getArmiesInHand ();
 
-  public boolean hasArmiesInHandCount (final int count);
-
-  public ImmutableSet <Army> getArmiesInHand ();
+  public boolean hasArmiesInHand (final int armies);
 }

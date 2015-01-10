@@ -42,8 +42,8 @@ public class GameStateMachineTest
   public static void setUpClass ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-        .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-        .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 
@@ -58,8 +58,8 @@ public class GameStateMachineTest
 
     final int initialPlayerLimit = GameSettings.MAX_PLAYERS;
     final PlayerModel playerModel = new PlayerModel (initialPlayerLimit);
-    final GameRules strategy = new ClassicGameRules ();
-    final GameModel gameModel = new GameModel (playerModel, strategy, eventBus);
+    final GameRules rules = new ClassicGameRules ();
+    final GameModel gameModel = new GameModel (playerModel, rules, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()
     {
@@ -88,7 +88,8 @@ public class GameStateMachineTest
     try
     {
       COUNT_DOWN_LATCH.await (COUNT_DOWN_LATCH_WAIT_TIME, COUNT_DOWN_LATCH_WAIT_TIME_UNIT);
-    } catch (final InterruptedException e)
+    }
+    catch (final InterruptedException e)
     {
       final String errorMessage = "The test was interrupted.";
 
@@ -101,7 +102,7 @@ public class GameStateMachineTest
   private static String getRandomPlayerName ()
   {
     final String[] names = { "Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy", "Brittany",
-        "Jonathan", "Adam", "Brian" };
+            "Jonathan", "Adam", "Brian" };
     final List <String> shuffledNames = Randomness.shuffle (Arrays.asList (names));
 
     return shuffledNames.get (0);
