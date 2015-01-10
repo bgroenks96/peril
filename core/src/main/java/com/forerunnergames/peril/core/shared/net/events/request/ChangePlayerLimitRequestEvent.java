@@ -14,19 +14,19 @@ public final class ChangePlayerLimitRequestEvent implements RequestEvent, Player
   }
 
   @Override
-  public int getPlayerLimitDelta()
+  public int getPlayerLimitDelta ()
   {
     return playerLimitDelta;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Player limit delta: %2$s", getClass().getSimpleName(), playerLimitDelta);
+    return String.format ("%1$s: Player limit delta: %2$s", getClass ().getSimpleName (), playerLimitDelta);
   }
 
   @RequiredForNetworkSerialization
-  private ChangePlayerLimitRequestEvent()
+  private ChangePlayerLimitRequestEvent ()
   {
     playerLimitDelta = 0;
   }

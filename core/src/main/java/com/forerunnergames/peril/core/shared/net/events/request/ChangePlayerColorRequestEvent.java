@@ -24,37 +24,37 @@ public final class ChangePlayerColorRequestEvent implements PlayerColorEvent, Re
   }
 
   @Override
-  public Player getPlayer()
+  public PlayerColor getCurrentColor ()
   {
-    return playerColorEvent.getPlayer();
+    return playerColorEvent.getCurrentColor ();
   }
 
   @Override
-  public String getPlayerName()
+  public PlayerColor getPreviousColor ()
   {
-    return playerColorEvent.getPlayerName();
+    return playerColorEvent.getPreviousColor ();
   }
 
   @Override
-  public PlayerColor getCurrentColor()
+  public Player getPlayer ()
   {
-    return playerColorEvent.getCurrentColor();
+    return playerColorEvent.getPlayer ();
   }
 
   @Override
-  public PlayerColor getPreviousColor()
+  public String getPlayerName ()
   {
-    return playerColorEvent.getPreviousColor();
+    return playerColorEvent.getPlayerName ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), playerColorEvent);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), playerColorEvent);
   }
 
   @RequiredForNetworkSerialization
-  private ChangePlayerColorRequestEvent()
+  private ChangePlayerColorRequestEvent ()
   {
     playerColorEvent = null;
   }

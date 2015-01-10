@@ -34,27 +34,20 @@ public final class LocalServerCreator implements ServerCreator
 
     try
     {
-      serverProcess = new ProcessBuilder (
-              "java",
-              "-jar",
-              "-ea", // TODO Remove -ea in production?
-              NetworkSettings.SERVER_JAR_NAME,
-              "-title", name,
-              "-port", String.valueOf (tcpPort),
-              "-players", String.valueOf (0))
-              .redirectErrorStream (true)
-              .inheritIO()
-              .start();
+      serverProcess = new ProcessBuilder ("java", "-jar",
+                      "-ea", // TODO Remove -ea in production?
+                      NetworkSettings.SERVER_JAR_NAME, "-title", name, "-port", String.valueOf (tcpPort), "-players",
+                      String.valueOf (0)).redirectErrorStream (true).inheritIO ().start ();
 
-      addShutDownHook();
+      addShutDownHook ();
 
       isCreated = true;
 
-      return Result.success();
+      return Result.success ();
     }
     catch (IOException e)
     {
-      destroyServerProcess();
+      destroyServerProcess ();
 
       log.warn ("Failed to launch local server on port [{}] (TCP).", tcpPort);
       log.warn ("Failure reason: [{}]", Strings.toString (e));
@@ -63,25 +56,8 @@ public final class LocalServerCreator implements ServerCreator
     }
   }
 
-  private void addShutDownHook()
-  {
-    Runtime.getRuntime().addShutdownHook (new Thread (new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        destroyServerProcess();
-      }
-    }));
-  }
-
-  private void destroyServerProcess()
-  {
-    if (serverProcess != null) serverProcess.destroy();
-  }
-
   @Override
-  public String resolveAddress()
+  public String resolveAddress ()
   {
     // TODO Resolve external ip address instead of using localhost.
 
@@ -89,14 +65,31 @@ public final class LocalServerCreator implements ServerCreator
   }
 
   @Override
-  public void destroy()
+  public void destroy ()
   {
-    if (! isCreated) return;
+    if (!isCreated) return;
 
     log.info ("Destroying your local host & play server...");
 
-    serverProcess.destroy();
+    serverProcess.destroy ();
 
     isCreated = false;
+  }
+
+  private void addShutDownHook ()
+  {
+    Runtime.getRuntime ().addShutdownHook (new Thread (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        destroyServerProcess ();
+      }
+    }));
+  }
+
+  private void destroyServerProcess ()
+  {
+    if (serverProcess != null) serverProcess.destroy ();
   }
 }

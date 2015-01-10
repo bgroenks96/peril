@@ -17,9 +17,14 @@ public enum PlayerColor
   SILVER,
   UNKNOWN;
 
-  public static int count()
+  public static int count ()
   {
-    return values().length;
+    return values ().length;
+  }
+
+  public boolean hasNext ()
+  {
+    return (ordinal () < values ().length - 1);
   }
 
   public boolean is (final PlayerColor color)
@@ -33,39 +38,35 @@ public enum PlayerColor
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return ! is (color);
+    return !is (color);
   }
 
-  public boolean hasNext()
+  public PlayerColor next ()
   {
-    return (ordinal() < values().length - 1);
-  }
-
-  public PlayerColor next()
-  {
-    if (hasNext())
+    if (hasNext ())
     {
-      return values()[ordinal() + 1];
+      return values ()[ordinal () + 1];
     }
     else
     {
-      throw new IllegalStateException ("Cannot get next " + getClass().getSimpleName() + " value because " + toString() + " is the last value.");
+      throw new IllegalStateException ("Cannot get next " + getClass ().getSimpleName () + " value because "
+                      + toString () + " is the last value.");
     }
   }
 
-  public String toProperCase()
+  public String toLowerCase ()
   {
-    return Strings.toProperCase (name());
+    return name ().toLowerCase ();
   }
 
-  public String toLowerCase()
+  public String toProperCase ()
   {
-    return name().toLowerCase();
+    return Strings.toProperCase (name ());
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return name();
+    return name ();
   }
 }

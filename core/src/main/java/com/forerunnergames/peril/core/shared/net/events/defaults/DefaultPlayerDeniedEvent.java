@@ -22,31 +22,31 @@ public final class DefaultPlayerDeniedEvent implements PlayerDeniedEvent <String
   }
 
   @Override
-  public String getReason()
+  public Player getPlayer ()
   {
-    return deniedEvent.getReason();
+    return playerEvent.getPlayer ();
   }
 
   @Override
-  public Player getPlayer()
+  public String getPlayerName ()
   {
-    return playerEvent.getPlayer();
+    return playerEvent.getPlayerName ();
   }
 
   @Override
-  public String getPlayerName()
+  public String getReason ()
   {
-    return playerEvent.getPlayerName();
+    return deniedEvent.getReason ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     return String.format ("%1$s | %2$s", playerEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultPlayerDeniedEvent()
+  private DefaultPlayerDeniedEvent ()
   {
     playerEvent = null;
     deniedEvent = null;

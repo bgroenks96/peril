@@ -15,21 +15,21 @@ public abstract class AbstractDeniedEvent <T> implements DeniedEvent <T>
     this.reason = reason;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractDeniedEvent ()
+  {
+    reason = null;
+  }
+
   @Override
-  public final T getReason()
+  public final T getReason ()
   {
     return reason;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     return String.format ("Reason for denial: %1$s", reason);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractDeniedEvent()
-  {
-    reason = null;
   }
 }

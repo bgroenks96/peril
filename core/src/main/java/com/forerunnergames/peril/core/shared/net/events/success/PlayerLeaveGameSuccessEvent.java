@@ -19,25 +19,25 @@ public final class PlayerLeaveGameSuccessEvent implements PlayerEvent, SuccessEv
   }
 
   @Override
-  public Player getPlayer()
+  public Player getPlayer ()
   {
-    return playerEvent.getPlayer();
+    return playerEvent.getPlayer ();
   }
 
   @Override
-  public String getPlayerName()
+  public String getPlayerName ()
   {
-    return playerEvent.getPlayerName();
+    return playerEvent.getPlayerName ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), playerEvent);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), playerEvent);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerLeaveGameSuccessEvent()
+  private PlayerLeaveGameSuccessEvent ()
   {
     playerEvent = null;
   }

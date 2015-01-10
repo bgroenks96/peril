@@ -38,12 +38,21 @@ public class GameStateMachineTest
   private static final TimeUnit COUNT_DOWN_LATCH_WAIT_TIME_UNIT = TimeUnit.SECONDS;
   private static GameStateMachine gameStateMachine;
 
+  private static String getRandomPlayerName ()
+  {
+    final String[] names = { "Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy", "Brittany",
+        "Jonathan", "Adam", "Brian" };
+    final List <String> shuffledNames = Randomness.shuffle (Arrays.asList (names));
+
+    return shuffledNames.get (0);
+  }
+
   @BeforeClass
   public static void setUpClass ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 
@@ -97,14 +106,5 @@ public class GameStateMachineTest
 
       fail (errorMessage);
     }
-  }
-
-  private static String getRandomPlayerName ()
-  {
-    final String[] names = { "Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy", "Brittany",
-            "Jonathan", "Adam", "Brian" };
-    final List <String> shuffledNames = Randomness.shuffle (Arrays.asList (names));
-
-    return shuffledNames.get (0);
   }
 }

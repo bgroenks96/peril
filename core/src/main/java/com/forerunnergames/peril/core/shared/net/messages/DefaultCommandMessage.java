@@ -17,19 +17,19 @@ public final class DefaultCommandMessage implements CommandMessage
   }
 
   @Override
-  public String getText()
+  public String getText ()
   {
-    return message.getText();
+    return message.getText ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Message: %2$s", getClass().getSimpleName(), message);
+    return String.format ("%1$s: Message: %2$s", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultCommandMessage()
+  private DefaultCommandMessage ()
   {
     message = null;
   }

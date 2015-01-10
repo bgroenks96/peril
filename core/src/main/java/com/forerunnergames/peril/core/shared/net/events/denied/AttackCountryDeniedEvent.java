@@ -17,13 +17,13 @@ public final class AttackCountryDeniedEvent implements DeniedEvent <String>
   }
 
   @Override
-  public String getReason()
+  public String getReason ()
   {
-    return deniedEvent.getReason();
+    return deniedEvent.getReason ();
   }
 
   @RequiredForNetworkSerialization
-  private AttackCountryDeniedEvent()
+  private AttackCountryDeniedEvent ()
   {
     deniedEvent = null;
   }

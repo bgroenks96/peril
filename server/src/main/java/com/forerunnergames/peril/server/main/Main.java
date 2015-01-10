@@ -17,33 +17,33 @@ public final class Main
   {
     try
     {
-      final CommandLineArgs jArgs = new CommandLineArgs();
+      final CommandLineArgs jArgs = new CommandLineArgs ();
       new JCommander (jArgs, args);
       final Application application = ServerApplicationFactory.create (jArgs.title, jArgs.tcpPort, jArgs.playerLimit);
 
-      application.initialize();
+      application.initialize ();
 
-      Runtime.getRuntime().addShutdownHook (new Thread (new Runnable()
+      Runtime.getRuntime ().addShutdownHook (new Thread (new Runnable ()
       {
         @Override
-        public void run()
+        public void run ()
         {
-          application.shutDown();
+          application.shutDown ();
         }
       }));
     }
     catch (final Throwable e)
     {
-      log.error ("\n\n\nOh no! The server has crashed!\n\nFor help, please send this log, along with an explanation " +
-              "of exactly what you were doing when it crashed, to support@forerunnergames.com.\n\nWe WILL get back " +
-              "to you because we actually care ;-)\n\n\n", e);
+      log.error ("\n\n\nOh no! The server has crashed!\n\nFor help, please send this log, along with an explanation "
+                      + "of exactly what you were doing when it crashed, to support@forerunnergames.com.\n\nWe WILL get back "
+                      + "to you because we actually care ;-)\n\n\n", e);
 
       System.exit (1);
     }
   }
 
-  private Main()
+  private Main ()
   {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
 }

@@ -5,6 +5,7 @@ import com.forerunnergames.tools.common.Event;
 
 public interface PlayerEvent extends Event
 {
-  public Player getPlayer();
-  public String getPlayerName();
+  public Player getPlayer ();
+
+  public String getPlayerName ();
 }

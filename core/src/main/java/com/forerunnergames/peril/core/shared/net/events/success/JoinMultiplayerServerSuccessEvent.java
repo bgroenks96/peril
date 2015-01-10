@@ -36,47 +36,47 @@ public final class JoinMultiplayerServerSuccessEvent implements JoinServerEvent,
     joinServerEvent = new DefaultJoinServerEvent (serverAddress, serverTcpPort);
   }
 
-  public String getServerName()
+  public int getAdditionalPlayersAllowed ()
+  {
+    return playerLimit - playersInGame.size ();
+  }
+
+  public int getPlayerLimit ()
+  {
+    return playerLimit;
+  }
+
+  public ImmutableSet <Player> getPlayersInGame ()
+  {
+    return playersInGame;
+  }
+
+  @Override
+  public String getServerAddress ()
+  {
+    return joinServerEvent.getServerAddress ();
+  }
+
+  @Override
+  public int getServerTcpPort ()
+  {
+    return joinServerEvent.getServerTcpPort ();
+  }
+
+  public String getServerName ()
   {
     return serverName;
   }
 
   @Override
-  public String getServerAddress()
+  public String toString ()
   {
-    return joinServerEvent.getServerAddress();
-  }
-
-  @Override
-  public int getServerTcpPort()
-  {
-    return joinServerEvent.getServerTcpPort();
-  }
-
-  public ImmutableSet <Player> getPlayersInGame()
-  {
-    return playersInGame;
-  }
-
-  public int getPlayerLimit()
-  {
-    return playerLimit;
-  }
-
-  public int getAdditionalPlayersAllowed()
-  {
-    return playerLimit - playersInGame.size();
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format ("%1$s: Server name: %2$s | %3$s | Players in game: %4$s | Player limit: %5$s",
-            getClass().getSimpleName(), serverName, joinServerEvent, Strings.toString (playersInGame), playerLimit);
+    return String.format ("%1$s: Server name: %2$s | %3$s | Players in game: %4$s | Player limit: %5$s", getClass ()
+                    .getSimpleName (), serverName, joinServerEvent, Strings.toString (playersInGame), playerLimit);
   }
 
   @RequiredForNetworkSerialization
-  private JoinMultiplayerServerSuccessEvent()
+  private JoinMultiplayerServerSuccessEvent ()
   {
     serverName = null;
     joinServerEvent = null;

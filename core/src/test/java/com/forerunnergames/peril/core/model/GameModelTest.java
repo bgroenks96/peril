@@ -61,8 +61,8 @@ public class GameModelTest
   public static void setupClass ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     eventBus = new MBassador <> (eventBusConfiguration);
 
@@ -86,82 +86,9 @@ public class GameModelTest
   }
 
   @Test
-  public void testHandlePlayerJoinGameRequestSucceeded ()
-  {
-    final String name = "Test Player";
-
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
-
-    assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
-    assertTrue (playerFrom (eventHandler.lastEvent (PlayerJoinGameSuccessEvent.class)).has (name));
-  }
-
-  @Test
-  public void testHandlePlayerJoinGameRequestFailed ()
+  public void testDeterminePlayerTurnOrderMaxPlayers ()
   {
     addMaxPlayers ();
-
-    final String name = "Test Player X";
-
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
-
-    assertTrue (eventHandler.lastEventWasType (PlayerJoinGameDeniedEvent.class));
-    assertThat (playerNameFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)), is (name));
-    assertThat (reasonFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)),
-                is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
-  }
-
-  @Test
-  public void testHandleChangePlayerLimitRequestSucceeded ()
-  {
-    final int delta = - 2;
-
-    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-
-    assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitSuccessEvent.class));
-    assertThat (newPlayerLimitFrom (eventHandler.lastEvent (ChangePlayerLimitSuccessEvent.class)),
-                is (INITIAL_PLAYER_LIMIT + delta));
-  }
-
-  @Test
-  public void testHandleChangePlayerLimitRequestFailed ()
-  {
-    final int delta = 2;
-
-    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-
-    assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitDeniedEvent.class));
-    assertThat (deltaFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)), is (delta));
-    assertThat (reasonFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)),
-                is (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS));
-  }
-
-  @Test
-  public void testIsFull ()
-  {
-    final int delta = 2;
-
-    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-
-    addMaxPlayers ();
-
-    assertTrue (gameModel.isFull ());
-  }
-
-  @Test
-  public void testIsEmpty ()
-  {
-    assertTrue (gameModel.isEmpty ());
-
-    addSinglePlayer ();
-
-    assertFalse (gameModel.isEmpty ());
-  }
-
-  @Test
-  public void testDeterminePlayerTurnOrderZeroPlayers ()
-  {
-    assertTrue (gameModel.isEmpty ());
 
     gameModel.determinePlayerTurnOrder ();
 
@@ -179,13 +106,31 @@ public class GameModelTest
   }
 
   @Test
-  public void testDeterminePlayerTurnOrderMaxPlayers ()
+  public void testDeterminePlayerTurnOrderZeroPlayers ()
   {
-    addMaxPlayers ();
+    assertTrue (gameModel.isEmpty ());
 
     gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
+  }
+
+  @Test
+  public void testDistributeInitialArmiesMaxPlayers ()
+  {
+    addMaxPlayers ();
+
+    gameModel.distributeInitialArmies ();
+
+    final ImmutableSet <Player> players = eventHandler.lastEvent (DistributeInitialArmiesCompleteEvent.class)
+                    .getPlayers ();
+
+    for (final Player player : players)
+    {
+      assertTrue (player.hasArmiesInHand (INITIAL_ARMIES));
+    }
+
+    assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
   }
 
   @Test
@@ -199,21 +144,86 @@ public class GameModelTest
   }
 
   @Test
-  public void testDistributeInitialArmiesMaxPlayers ()
+  public void testHandleChangePlayerLimitRequestFailed ()
+  {
+    final int delta = 2;
+
+    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
+
+    assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitDeniedEvent.class));
+    assertThat (deltaFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)), is (delta));
+    assertThat (reasonFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)),
+                    is (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS));
+  }
+
+  @Test
+  public void testHandleChangePlayerLimitRequestSucceeded ()
+  {
+    final int delta = -2;
+
+    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
+
+    assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitSuccessEvent.class));
+    assertThat (newPlayerLimitFrom (eventHandler.lastEvent (ChangePlayerLimitSuccessEvent.class)),
+                    is (INITIAL_PLAYER_LIMIT + delta));
+  }
+
+  @Test
+  public void testHandlePlayerJoinGameRequestFailed ()
   {
     addMaxPlayers ();
 
-    gameModel.distributeInitialArmies ();
+    final String name = "Test Player X";
 
-    final ImmutableSet <Player> players = eventHandler.lastEvent (DistributeInitialArmiesCompleteEvent.class)
-            .getPlayers ();
+    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
 
-    for (final Player player : players)
+    assertTrue (eventHandler.lastEventWasType (PlayerJoinGameDeniedEvent.class));
+    assertThat (playerNameFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)), is (name));
+    assertThat (reasonFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)),
+                    is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
+  }
+
+  @Test
+  public void testHandlePlayerJoinGameRequestSucceeded ()
+  {
+    final String name = "Test Player";
+
+    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
+
+    assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
+    assertTrue (playerFrom (eventHandler.lastEvent (PlayerJoinGameSuccessEvent.class)).has (name));
+  }
+
+  @Test
+  public void testIsEmpty ()
+  {
+    assertTrue (gameModel.isEmpty ());
+
+    addSinglePlayer ();
+
+    assertFalse (gameModel.isEmpty ());
+  }
+
+  @Test
+  public void testIsFull ()
+  {
+    final int delta = 2;
+
+    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
+
+    addMaxPlayers ();
+
+    assertTrue (gameModel.isFull ());
+  }
+
+  private void addMaxPlayers ()
+  {
+    for (int i = 1; i <= GameSettings.MAX_PLAYERS; ++i)
     {
-      assertTrue (player.hasArmiesInHand (INITIAL_ARMIES));
+      gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
 
-    assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
+    assertTrue (gameModel.isFull ());
   }
 
   private void addSinglePlayer ()
@@ -227,31 +237,15 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
   }
 
-  private void addMaxPlayers ()
-  {
-    for (int i = 1; i <= GameSettings.MAX_PLAYERS; ++i)
-    {
-      gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
-    }
-
-    assertTrue (gameModel.isFull ());
-  }
-
   private final class EventBusHandler
   {
     private Event lastEvent;
 
-    public EventBusHandler subscribe ()
+    public <T> T lastEvent (final Class <T> type)
     {
-      eventBus.subscribe (this);
+      Arguments.checkIsNotNull (type, "type");
 
-      return this;
-    }
-
-    @Handler
-    public void onEvent (final Event event)
-    {
-      lastEvent = event;
+      return type.cast (lastEvent);
     }
 
     public <T> boolean lastEventWasType (final Class <T> type)
@@ -261,11 +255,17 @@ public class GameModelTest
       return type.isInstance (lastEvent);
     }
 
-    public <T> T lastEvent (final Class <T> type)
+    @Handler
+    public void onEvent (final Event event)
     {
-      Arguments.checkIsNotNull (type, "type");
+      lastEvent = event;
+    }
 
-      return type.cast (lastEvent);
+    public EventBusHandler subscribe ()
+    {
+      eventBus.subscribe (this);
+
+      return this;
     }
   }
 }

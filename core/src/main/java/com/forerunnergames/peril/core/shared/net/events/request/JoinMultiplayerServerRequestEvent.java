@@ -19,25 +19,25 @@ public final class JoinMultiplayerServerRequestEvent implements JoinServerEvent,
   }
 
   @Override
-  public String getServerAddress()
+  public String getServerAddress ()
   {
-    return joinServerEvent.getServerAddress();
+    return joinServerEvent.getServerAddress ();
   }
 
   @Override
-  public int getServerTcpPort()
+  public int getServerTcpPort ()
   {
-    return joinServerEvent.getServerTcpPort();
+    return joinServerEvent.getServerTcpPort ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), joinServerEvent);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), joinServerEvent);
   }
 
   @RequiredForNetworkSerialization
-  private JoinMultiplayerServerRequestEvent()
+  private JoinMultiplayerServerRequestEvent ()
   {
     joinServerEvent = null;
   }

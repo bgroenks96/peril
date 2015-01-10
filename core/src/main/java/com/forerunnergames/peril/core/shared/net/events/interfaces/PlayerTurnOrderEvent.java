@@ -4,6 +4,7 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 
 public interface PlayerTurnOrderEvent extends PlayerEvent
 {
-  public PlayerTurnOrder getCurrentTurnOrder();
-  public PlayerTurnOrder getPreviousTurnOrder();
+  public PlayerTurnOrder getCurrentTurnOrder ();
+
+  public PlayerTurnOrder getPreviousTurnOrder ();
 }

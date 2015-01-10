@@ -18,24 +18,24 @@ public final class DefaultJoinServerEvent implements JoinServerEvent
     this.serverTcpPort = serverTcpPort;
   }
 
-  public String getServerAddress()
+  public String getServerAddress ()
   {
     return serverAddress;
   }
 
-  public int getServerTcpPort()
+  public int getServerTcpPort ()
   {
     return serverTcpPort;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     return String.format ("Server address: %1$s | Server port: %2$s (TCP)", serverAddress, serverTcpPort);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultJoinServerEvent()
+  private DefaultJoinServerEvent ()
   {
     serverAddress = null;
     serverTcpPort = 0;

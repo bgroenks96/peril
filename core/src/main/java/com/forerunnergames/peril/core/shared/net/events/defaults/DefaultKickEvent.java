@@ -16,19 +16,19 @@ public final class DefaultKickEvent implements KickEvent
   }
 
   @Override
-  public String getReasonForKick()
+  public String getReasonForKick ()
   {
     return reasonForKick;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     return String.format ("Reason for kick: %1$s", reasonForKick);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultKickEvent()
+  private DefaultKickEvent ()
   {
     reasonForKick = null;
   }

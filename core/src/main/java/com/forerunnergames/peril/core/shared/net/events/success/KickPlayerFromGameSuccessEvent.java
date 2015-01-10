@@ -24,31 +24,31 @@ public final class KickPlayerFromGameSuccessEvent implements PlayerEvent, KickEv
   }
 
   @Override
-  public Player getPlayer()
+  public Player getPlayer ()
   {
-    return playerEvent.getPlayer();
+    return playerEvent.getPlayer ();
   }
 
   @Override
-  public String getPlayerName()
+  public String getPlayerName ()
   {
-    return playerEvent.getPlayerName();
+    return playerEvent.getPlayerName ();
   }
 
   @Override
-  public String getReasonForKick()
+  public String getReasonForKick ()
   {
-    return kickEvent.getReasonForKick();
+    return kickEvent.getReasonForKick ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: | %2$s | %3$s", getClass().getSimpleName(), playerEvent, kickEvent);
+    return String.format ("%1$s: | %2$s | %3$s", getClass ().getSimpleName (), playerEvent, kickEvent);
   }
 
   @RequiredForNetworkSerialization
-  private KickPlayerFromGameSuccessEvent()
+  private KickPlayerFromGameSuccessEvent ()
   {
     playerEvent = null;
     kickEvent = null;

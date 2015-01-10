@@ -16,27 +16,27 @@ public abstract class AbstractMessageEvent <T extends Message> implements Messag
     this.message = message;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractMessageEvent ()
+  {
+    message = null;
+  }
+
   @Override
-  public final T getMessage()
+  public final T getMessage ()
   {
     return message;
   }
 
   @Override
-  public final String getMessageText()
+  public final String getMessageText ()
   {
-    return message.getText();
+    return message.getText ();
   }
 
   @Override
-  public final String toString()
+  public final String toString ()
   {
     return String.format ("%1$s", message);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractMessageEvent()
-  {
-    message = null;
   }
 }

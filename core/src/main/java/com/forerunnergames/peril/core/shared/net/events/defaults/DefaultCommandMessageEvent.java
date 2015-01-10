@@ -17,25 +17,25 @@ public final class DefaultCommandMessageEvent implements CommandMessageEvent
   }
 
   @Override
-  public CommandMessage getMessage()
+  public CommandMessage getMessage ()
   {
     return message;
   }
 
   @Override
-  public String getMessageText()
+  public String getMessageText ()
   {
-    return message.getText();
+    return message.getText ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), message);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultCommandMessageEvent()
+  private DefaultCommandMessageEvent ()
   {
     message = null;
   }

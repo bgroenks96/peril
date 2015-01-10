@@ -5,6 +5,7 @@ import com.forerunnergames.tools.common.Message;
 
 public interface MessageEvent <T extends Message> extends Event
 {
-  public T getMessage();
-  public String getMessageText();
+  public T getMessage ();
+
+  public String getMessageText ();
 }

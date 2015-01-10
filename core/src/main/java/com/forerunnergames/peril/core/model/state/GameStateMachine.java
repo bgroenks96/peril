@@ -21,6 +21,7 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// @formatter:off
 /**
  * This is the outermost layer of the core game logic state machine.
  *
@@ -28,11 +29,12 @@ import org.slf4j.LoggerFactory;
  *
  * This is accomplished in the following manner:
  *
- * First, subscribe to (listen for) relevant external events on the event bus. Then, when an external even is received,
- * delegate to the corresponding state machine context method.
+ * First, subscribe to (listen for) relevant external events on the event bus.
+ * Then, when an external even is received, delegate to the corresponding state machine context method.
  *
  * "External" events can come from anywhere, including inside the state machine's action-handling classes.
  */
+// @formatter:on
 public final class GameStateMachine
 {
   private static final Logger log = LoggerFactory.getLogger (GameStateMachine.class);
@@ -62,6 +64,26 @@ public final class GameStateMachine
   }
 
   @Handler
+  public void onChangePlayerColorRequestEvent (final ChangePlayerColorRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onChangePlayerColorRequestEvent (event);
+  }
+
+  @Handler
+  public void onChangePlayerLimitRequestEvent (final ChangePlayerLimitRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onChangePlayerLimitRequestEvent (event);
+  }
+
+  @Handler
   public void onCreateGameEvent (final CreateGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -79,36 +101,6 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onDestroyGameEvent (event);
-  }
-
-  @Handler
-  public void onPlayerJoinGameRequestEvent (final PlayerJoinGameRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onPlayerJoinGameRequestEvent (event);
-  }
-
-  @Handler
-  public void onPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onPlayerJoinGameSuccessEvent (event);
-  }
-
-  @Handler
-  public void onPlayerJoinGameDeniedEvent (final PlayerJoinGameDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onPlayerJoinGameDeniedEvent (event);
   }
 
   @Handler
@@ -132,26 +124,6 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onChangePlayerLimitRequestEvent (final ChangePlayerLimitRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onChangePlayerLimitRequestEvent (event);
-  }
-
-  @Handler
-  public void onChangePlayerColorRequestEvent (final ChangePlayerColorRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onChangePlayerColorRequestEvent (event);
-  }
-
-  @Handler
   public void onEndGameEvent (final EndGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -159,5 +131,35 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onEndGameEvent (event);
+  }
+
+  @Handler
+  public void onPlayerJoinGameDeniedEvent (final PlayerJoinGameDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onPlayerJoinGameDeniedEvent (event);
+  }
+
+  @Handler
+  public void onPlayerJoinGameRequestEvent (final PlayerJoinGameRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onPlayerJoinGameRequestEvent (event);
+  }
+
+  @Handler
+  public void onPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onPlayerJoinGameSuccessEvent (event);
   }
 }

@@ -22,31 +22,32 @@ public final class OpenMultiplayerServerDeniedEvent implements DeniedEvent <Stri
   }
 
   @Override
-  public String getReason()
+  public String getReason ()
   {
-    return deniedEvent.getReason();
+    return deniedEvent.getReason ();
   }
 
   @Override
-  public String getServerName()
+  public String getServerName ()
   {
-    return requestEvent.getServerName();
+    return requestEvent.getServerName ();
   }
 
   @Override
-  public int getServerTcpPort()
+  public int getServerTcpPort ()
   {
-    return requestEvent.getServerTcpPort();
+    return requestEvent.getServerTcpPort ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Original request: %2$s | %3$s", getClass().getSimpleName(), requestEvent, deniedEvent);
+    return String.format ("%1$s: Original request: %2$s | %3$s", getClass ().getSimpleName (), requestEvent,
+                    deniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private OpenMultiplayerServerDeniedEvent()
+  private OpenMultiplayerServerDeniedEvent ()
   {
     requestEvent = null;
     deniedEvent = null;

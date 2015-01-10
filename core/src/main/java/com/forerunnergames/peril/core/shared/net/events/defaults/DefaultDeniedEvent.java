@@ -10,7 +10,7 @@ public final class DefaultDeniedEvent extends AbstractDeniedEvent <String>
   }
 
   @RequiredForNetworkSerialization
-  private DefaultDeniedEvent()
+  private DefaultDeniedEvent ()
   {
   }
 }

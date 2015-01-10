@@ -19,18 +19,15 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
     this.identity = identity;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractPerson ()
+  {
+  }
+
   @Override
   public PersonIdentity getIdentity ()
   {
     return identity;
-  }
-
-  @Override
-  public boolean has (final PersonIdentity identity)
-  {
-    Arguments.checkIsNotNull (identity, "identity");
-
-    return this.identity.equals (identity);
   }
 
   @Override
@@ -41,8 +38,11 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
     this.identity = identity;
   }
 
-  @RequiredForNetworkSerialization
-  protected AbstractPerson ()
+  @Override
+  public boolean has (final PersonIdentity identity)
   {
+    Arguments.checkIsNotNull (identity, "identity");
+
+    return this.identity.equals (identity);
   }
 }

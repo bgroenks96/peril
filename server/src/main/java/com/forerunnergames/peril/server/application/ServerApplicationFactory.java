@@ -33,26 +33,27 @@ public final class ServerApplicationFactory
     Arguments.checkIsNotNegative (serverTcpPort, "serverTcpPort");
     Arguments.checkIsNotNegative (playerLimit, "playerLimit");
 
-    final IBusConfiguration eventBusConfiguration = new BusConfiguration()
-            .addFeature (Feature.SyncPubSub.Default())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default());
+    final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
+                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 
-    eventBus.addErrorHandler (new IPublicationErrorHandler()
+    eventBus.addErrorHandler (new IPublicationErrorHandler ()
     {
       @Override
       public void handleError (final PublicationError error)
       {
-        log.error (error.toString(), error.getCause());
+        log.error (error.toString (), error.getCause ());
       }
     });
 
-    final Server server = new KryonetServer();
+    // @formatter:off
+    final Server server = new KryonetServer ();
     final ServerController serverController = new EventBasedServerController (server, serverTcpPort, KryonetRegistration.CLASSES, eventBus);
     final PlayerModel playerModel = new PlayerModel (playerLimit);
     final Controller multiplayerController = new MultiplayerController (playerModel, serverName, serverTcpPort, serverController, serverController);
+    // @formatter:on
 
     return new EventBasedApplication (serverController, multiplayerController);
   }

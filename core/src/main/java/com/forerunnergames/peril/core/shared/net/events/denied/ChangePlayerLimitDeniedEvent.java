@@ -5,8 +5,10 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerLimitEv
 import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public final class ChangePlayerLimitDeniedEvent extends AbstractDeniedEvent <ChangePlayerLimitDeniedEvent.REASON>
-        implements PlayerLimitEvent
+                implements PlayerLimitEvent
 {
+  private final int playerLimitDelta;
+
   public enum REASON
   {
     REQUESTED_LIMIT_EQUALS_EXISTING_LIMIT,
@@ -14,8 +16,6 @@ public final class ChangePlayerLimitDeniedEvent extends AbstractDeniedEvent <Cha
     CANNOT_DECREASE_BELOW_ZERO,
     CANNOT_DECREASE_BELOW_CURRENT_PLAYER_COUNT
   }
-
-  private final int playerLimitDelta;
 
   public ChangePlayerLimitDeniedEvent (final int playerLimitDelta, final REASON reason)
   {
@@ -25,20 +25,20 @@ public final class ChangePlayerLimitDeniedEvent extends AbstractDeniedEvent <Cha
   }
 
   @Override
-  public int getPlayerLimitDelta()
+  public int getPlayerLimitDelta ()
   {
     return playerLimitDelta;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Player limit delta: %2$s | %3$s",
-            getClass().getSimpleName(), playerLimitDelta, super.toString());
+    return String.format ("%1$s: Player limit delta: %2$s | %3$s", getClass ().getSimpleName (), playerLimitDelta,
+                    super.toString ());
   }
 
   @RequiredForNetworkSerialization
-  private ChangePlayerLimitDeniedEvent()
+  private ChangePlayerLimitDeniedEvent ()
   {
     playerLimitDelta = 0;
   }

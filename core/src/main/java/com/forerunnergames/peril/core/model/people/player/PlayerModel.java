@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.*;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
+import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
 import static com.forerunnergames.tools.common.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.AssetFluency.nameOf;
 
@@ -29,51 +30,64 @@ public final class PlayerModel
   {
     Arguments.checkIsNotNegative (initialPlayerLimit, "initialPlayerLimit");
     Arguments.checkUpperInclusiveBound (initialPlayerLimit, GameSettings.MAX_PLAYERS, "initialPlayerLimit",
-            "GameSettings.MAX_PLAYERS");
+                    "GameSettings.MAX_PLAYERS");
     Arguments.checkLowerInclusiveBound (initialPlayerLimit, GameSettings.MIN_PLAYERS, "initialPlayerLimit",
-            "GameSettings.MIN_PLAYERS");
+                    "GameSettings.MIN_PLAYERS");
 
     playerLimit = initialPlayerLimit;
   }
 
-  public Result <PlayerJoinGameDeniedEvent.REASON> requestToAdd (final Player player)
+  public void addArmiesToHandOf (final Id playerId, final int armies)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (armies, "armies");
 
-    if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL);
-    if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_ID);
-    if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_NAME);
-    if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_COLOR);
-    if (existsPlayerWith (turnOrderOf (player))) return Result
-            .failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER);
-    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result
-            .failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY);
+    final Player player = playerWith (playerId);
 
-    add (player);
-
-    return Result.success ();
+    player.addArmiesToHand (armies);
   }
 
-  public boolean isFull ()
+  public boolean canAddArmiesToHandOf (final Id playerId, final int armies)
   {
-    return players.size () > 0 && players.size () >= playerLimit;
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    final Player player = playerWith (playerId);
+
+    return player.canAddArmiesToHand (armies);
   }
 
-  public boolean isNotFull ()
+  public boolean canRemoveArmiesFromHandOf (final Id playerId, final int armies)
   {
-    return ! isFull ();
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    final Player player = playerWith (playerId);
+
+    return player.canRemoveArmiesFromHand (armies);
   }
 
-  public boolean existsPlayerWith (final PersonIdentity identity)
+  public void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder)
   {
-    Arguments.checkIsNotNull (identity, "identity");
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (toTurnOrder, "turnOrder");
+    Arguments.checkIsFalse (toTurnOrder.is (PlayerTurnOrder.UNKNOWN), "Invalid player turn order.");
 
-    for (final Player player : players ())
+    final Player player = playerWith (playerId);
+
+    if (player.has (toTurnOrder)) return;
+
+    if (existsPlayerWith (toTurnOrder))
     {
-      if (player.has (identity)) return true;
+      final Player old = playerWith (toTurnOrder);
+      old.setTurnOrder (PlayerTurnOrder.UNKNOWN);
+      player.setTurnOrder (toTurnOrder);
+      old.setTurnOrder (nextAvailableTurnOrder ());
     }
-
-    return false;
+    else
+    {
+      player.setTurnOrder (toTurnOrder);
+    }
   }
 
   public boolean existsPlayerWith (final Id id)
@@ -119,95 +133,106 @@ public final class PlayerModel
     return false;
   }
 
-  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToSetPlayerLimitTo (final int limit)
+  public boolean existsPlayerWith (final PersonIdentity identity)
   {
-    if (limit < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
-    if (limit > GameSettings.MAX_PLAYERS) return Result
-            .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+    Arguments.checkIsNotNull (identity, "identity");
 
-    return requestToChangePlayerLimitBy (limit - playerLimit);
+    for (final Player player : players ())
+    {
+      if (player.has (identity)) return true;
+    }
+
+    return false;
   }
 
-  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToChangePlayerLimitBy (final int delta)
+  public boolean existsPlayerWithName (final String name)
   {
-    if (delta == 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.REQUESTED_LIMIT_EQUALS_EXISTING_LIMIT);
-    if (delta < - GameSettings.MAX_PLAYERS) return Result
-            .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
-    if (delta > GameSettings.MAX_PLAYERS) return Result
-            .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
-    if (playerLimit + delta < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
-    if (playerLimit + delta > GameSettings.MAX_PLAYERS) return Result
-            .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
-    if (playerLimit + delta < players.size ()) return Result
-            .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_CURRENT_PLAYER_COUNT);
-
-    playerLimit += delta;
-
-    return Result.success ();
+    return existsPlayerWith (name);
   }
 
-  public Result <ChangePlayerColorDeniedEvent.REASON> requestToChangeColorOfPlayer (final Id playerId,
-                                                                                    final PlayerColor toColor)
-                                                                                    {
+  public int getArmiesInHandOf (final Id playerId)
+  {
     Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (toColor, "toColor");
 
     final Player player = playerWith (playerId);
 
-    if (player.has (toColor)) return Result
-            .failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
-    if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN);
-    if (toColor == PlayerColor.UNKNOWN) return Result
-            .failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_INALID);
-
-    player.setColor (toColor);
-
-    return Result.success ();
-                                                                                    }
-
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByName (final String name)
-  {
-    Arguments.checkIsNotNull (name, "name");
-
-    if (! existsPlayerWith (name)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
-
-    return requestToRemove (playerWithName (name));
+    return player.getArmiesInHand ();
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemove (final Player player)
+  public int getPlayerCount ()
   {
-    Arguments.checkIsNotNull (player, "player");
-
-    if (! existsPlayerWith (idOf (player))) return Result
-            .failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
-
-    deregister (player);
-
-    return Result.success ();
+    return players.size ();
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveById (final Id id)
+  public int getPlayerLimit ()
+  {
+    return playerLimit;
+  }
+
+  public ImmutableSet <Player> getPlayers ()
+  {
+    return ImmutableSet.copyOf (players.values ());
+  }
+
+  public boolean hasArmiesInHandOf (final Id playerId, final int armies)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    final Player player = playerWith (playerId);
+
+    return player.hasArmiesInHand (armies);
+  }
+
+  public boolean isEmpty ()
+  {
+    return players.size () == 0;
+  }
+
+  public boolean isFull ()
+  {
+    return players.size () > 0 && players.size () >= playerLimit;
+  }
+
+  public boolean isNotEmpty ()
+  {
+    return !isEmpty ();
+  }
+
+  public boolean isNotFull ()
+  {
+    return !isFull ();
+  }
+
+  public boolean playerCountIs (final int count)
+  {
+    return players.size () == count;
+  }
+
+  public boolean playerCountIsNot (final int count)
+  {
+    return !playerCountIs (count);
+  }
+
+  public boolean playerLimitIs (final int limit)
+  {
+    return playerLimit == limit;
+  }
+
+  public boolean playerLimitIsAtLeast (final int limit)
+  {
+    return playerLimit >= limit;
+  }
+
+  public Player playerWith (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
 
-    if (! existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+    final Player player = players.get (id);
 
-    return requestToRemove (playerWith (id));
-  }
+    if (player == null) throw new IllegalStateException ("Cannot find any player with id [" + id + "].");
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByColor (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
-
-    if (! existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
-
-    return requestToRemove (playerWith (color));
-  }
-
-  public Player playerWithName (final String name)
-  {
-    return playerWith (name);
+    return player;
   }
 
   public Player playerWith (final String name)
@@ -220,17 +245,6 @@ public final class PlayerModel
     }
 
     throw new IllegalStateException ("Cannot find any player named: [" + name + "].");
-  }
-
-  public Player playerWith (final Id id)
-  {
-    Arguments.checkIsNotNull (id, "id");
-
-    final Player player = players.get (id);
-
-    if (player == null) throw new IllegalStateException ("Cannot find any player with id [" + id + "].");
-
-    return player;
   }
 
   public Player playerWith (final PlayerColor color)
@@ -246,103 +260,6 @@ public final class PlayerModel
     throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
   }
 
-  public ImmutableSet <Player> getPlayers ()
-  {
-    return ImmutableSet.copyOf (players.values ());
-  }
-
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByTurnOrder (final PlayerTurnOrder turnOrder)
-  {
-    Arguments.checkIsNotNull (turnOrder, "turnOrder");
-    Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
-
-    if (! existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
-
-    return requestToRemove (playerWith (turnOrder));
-  }
-
-  public void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (toTurnOrder, "turnOrder");
-    Arguments.checkIsFalse (toTurnOrder.is (PlayerTurnOrder.UNKNOWN), "Invalid player turn order.");
-
-    final Player player = playerWith (playerId);
-
-    if (player.has (toTurnOrder)) return;
-
-    if (existsPlayerWith (toTurnOrder))
-    {
-      final Player old = playerWith (toTurnOrder);
-      old.setTurnOrder (PlayerTurnOrder.UNKNOWN);
-      player.setTurnOrder (toTurnOrder);
-      old.setTurnOrder (nextAvailableTurnOrder ());
-    }
-    else
-    {
-      player.setTurnOrder (toTurnOrder);
-    }
-  }
-
-  public void addArmiesToHandOf (final Id playerId, final int armies)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    final Player player = playerWith (playerId);
-
-    player.addArmiesToHand (armies);
-  }
-
-  public boolean canAddArmiesToHandOf (final Id playerId, final int armies)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    final Player player = playerWith (playerId);
-
-    return player.canAddArmiesToHand (armies);
-  }
-
-  public void removeArmiesFromHandOf (final Id playerId, final int armies)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    final Player player = playerWith (playerId);
-
-    player.removeArmiesFromHand (armies);
-  }
-
-  public boolean canRemoveArmiesFromHandOf (final Id playerId, final int armies)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    final Player player = playerWith (playerId);
-
-    return player.canRemoveArmiesFromHand (armies);
-  }
-
-  public int getArmiesInHandOf (final Id playerId)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-
-    final Player player = playerWith (playerId);
-
-    return player.getArmiesInHand ();
-  }
-
-  public boolean hasArmiesInHandOf (final Id playerId, final int armies)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    final Player player = playerWith (playerId);
-
-    return player.hasArmiesInHand (armies);
-  }
-
   public Player playerWith (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
@@ -356,49 +273,133 @@ public final class PlayerModel
     throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
   }
 
-  public int getPlayerLimit ()
+  public Player playerWithName (final String name)
   {
-    return playerLimit;
+    return playerWith (name);
   }
 
-  public boolean playerLimitIs (final int limit)
+  public void removeArmiesFromHandOf (final Id playerId, final int armies)
   {
-    return playerLimit == limit;
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    final Player player = playerWith (playerId);
+
+    player.removeArmiesFromHand (armies);
   }
 
-  public boolean playerLimitIsAtLeast (final int limit)
+  public Result <PlayerJoinGameDeniedEvent.REASON> requestToAdd (final Player player)
   {
-    return playerLimit >= limit;
+    Arguments.checkIsNotNull (player, "player");
+
+    if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL);
+    if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_ID);
+    if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_NAME);
+    if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_COLOR);
+    if (existsPlayerWith (turnOrderOf (player))) return Result
+                    .failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER);
+    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result
+                    .failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY);
+
+    add (player);
+
+    return Result.success ();
   }
 
-  public int getPlayerCount ()
+  public Result <ChangePlayerColorDeniedEvent.REASON> requestToChangeColorOfPlayer (final Id playerId,
+                                                                                    final PlayerColor toColor)
   {
-    return players.size ();
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (toColor, "toColor");
+
+    final Player player = playerWith (playerId);
+
+    if (player.has (toColor)) return Result
+                    .failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
+    if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN);
+    if (toColor == PlayerColor.UNKNOWN) return Result
+                    .failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_INALID);
+
+    player.setColor (toColor);
+
+    return Result.success ();
   }
 
-  public boolean playerCountIs (final int count)
+  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToChangePlayerLimitBy (final int delta)
   {
-    return players.size () == count;
+    if (delta == 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.REQUESTED_LIMIT_EQUALS_EXISTING_LIMIT);
+    if (delta < -GameSettings.MAX_PLAYERS) return Result
+                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
+    if (delta > GameSettings.MAX_PLAYERS) return Result
+                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+    if (playerLimit + delta < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
+    if (playerLimit + delta > GameSettings.MAX_PLAYERS) return Result
+                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+    if (playerLimit + delta < players.size ()) return Result
+                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_CURRENT_PLAYER_COUNT);
+
+    playerLimit += delta;
+
+    return Result.success ();
   }
 
-  public boolean playerCountIsNot (final int count)
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemove (final Player player)
   {
-    return ! playerCountIs (count);
+    Arguments.checkIsNotNull (player, "player");
+
+    if (!existsPlayerWith (idOf (player))) return Result
+                    .failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    deregister (player);
+
+    return Result.success ();
   }
 
-  public boolean isEmpty ()
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByColor (final PlayerColor color)
   {
-    return players.size () == 0;
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
+
+    if (!existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (color));
   }
 
-  public boolean isNotEmpty ()
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveById (final Id id)
   {
-    return ! isEmpty ();
+    Arguments.checkIsNotNull (id, "id");
+
+    if (!existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (id));
   }
 
-  public boolean existsPlayerWithName (final String name)
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByName (final String name)
   {
-    return existsPlayerWith (name);
+    Arguments.checkIsNotNull (name, "name");
+
+    if (!existsPlayerWith (name)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWithName (name));
+  }
+
+  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByTurnOrder (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+    Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
+
+    if (!existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+
+    return requestToRemove (playerWith (turnOrder));
+  }
+
+  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToSetPlayerLimitTo (final int limit)
+  {
+    if (limit < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
+    if (limit > GameSettings.MAX_PLAYERS) return Result
+                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
+
+    return requestToChangePlayerLimitBy (limit - playerLimit);
   }
 
   private void add (final Player player)
@@ -409,15 +410,6 @@ public final class PlayerModel
     register (player);
   }
 
-  private void register (final Player player)
-  {
-    assert ! players.containsValue (player);
-    assert player.doesNotHave (PlayerColor.UNKNOWN);
-    assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
-
-    players.put (idOf (player), player);
-  }
-
   private void deregister (final Player player)
   {
     assert players.containsValue (player);
@@ -425,9 +417,14 @@ public final class PlayerModel
     players.remove (idOf (player));
   }
 
-  private Collection <Player> players ()
+  private boolean isAvailable (final PlayerColor color)
   {
-    return players.values ();
+    return !existsPlayerWith (color) && color.isNot (PlayerColor.UNKNOWN);
+  }
+
+  private boolean isAvailable (final PlayerTurnOrder turnOrder)
+  {
+    return !existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
   }
 
   private PlayerColor nextAvailableColor ()
@@ -455,18 +452,22 @@ public final class PlayerModel
     return PlayerColor.values ();
   }
 
-  private boolean isAvailable (final PlayerColor color)
-  {
-    return ! existsPlayerWith (color) && color.isNot (PlayerColor.UNKNOWN);
-  }
-
   private PlayerTurnOrder[] playerTurnOrders ()
   {
     return PlayerTurnOrder.values ();
   }
 
-  private boolean isAvailable (final PlayerTurnOrder turnOrder)
+  private Collection <Player> players ()
   {
-    return ! existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
+    return players.values ();
+  }
+
+  private void register (final Player player)
+  {
+    assert !players.containsValue (player);
+    assert player.doesNotHave (PlayerColor.UNKNOWN);
+    assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
+
+    players.put (idOf (player), player);
   }
 }

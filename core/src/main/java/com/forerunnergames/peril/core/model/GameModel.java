@@ -64,68 +64,6 @@ public final class GameModel
   }
 
   @StateMachineAction
-  public void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final Player player = PlayerFactory.create (withPlayerNameFrom (event));
-    final Result <PlayerJoinGameDeniedEvent.REASON> result;
-
-    result = playerModel.requestToAdd (player);
-
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
-    }
-    else
-    {
-      eventBus.publish (new PlayerJoinGameDeniedEvent (nameOf (player), failureReasonFrom (result)));
-    }
-  }
-
-  @StateMachineAction
-  public void handleChangePlayerLimitRequest (final ChangePlayerLimitRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final int oldLimit = playerModel.getPlayerLimit ();
-
-    final Result <ChangePlayerLimitDeniedEvent.REASON> result;
-    result = playerModel.requestToChangePlayerLimitBy (deltaFrom (event));
-
-    final int newLimit = playerModel.getPlayerLimit ();
-
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new ChangePlayerLimitSuccessEvent (newLimit, oldLimit, deltaFrom (event)));
-    }
-    else
-    {
-      eventBus.publish (new ChangePlayerLimitDeniedEvent (deltaFrom (event), failureReasonFrom (result)));
-    }
-  }
-
-  @StateMachineAction
-  public void handleChangePlayerColorRequest (final ChangePlayerColorRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final Player player = playerModel.playerWith (previousColorFrom (event));
-
-    final Result <ChangePlayerColorDeniedEvent.REASON> result;
-    result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), currentColorFrom (event));
-
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new ChangePlayerColorSuccessEvent (event));
-    }
-    else
-    {
-      eventBus.publish (new ChangePlayerColorDeniedEvent (event, failureReasonFrom (result)));
-    }
-  }
-
-  @StateMachineAction
   public void beginGame ()
   {
     log.info ("Starting the game...");
@@ -174,15 +112,76 @@ public final class GameModel
     eventBus.publish (new DestroyGameEvent ());
   }
 
-  @StateMachineCondition
-  public boolean isFull ()
+  public int getPlayerCount ()
   {
-    return playerModel.isFull ();
+    return playerModel.getPlayerCount ();
   }
 
-  public boolean isNotFull ()
+  public int getPlayerLimit ()
   {
-    return playerModel.isNotFull ();
+    return playerModel.getPlayerLimit ();
+  }
+
+  @StateMachineAction
+  public void handleChangePlayerColorRequest (final ChangePlayerColorRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final Player player = playerModel.playerWith (previousColorFrom (event));
+
+    final Result <ChangePlayerColorDeniedEvent.REASON> result;
+    result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), currentColorFrom (event));
+
+    if (result.isSuccessful ())
+    {
+      eventBus.publish (new ChangePlayerColorSuccessEvent (event));
+    }
+    else
+    {
+      eventBus.publish (new ChangePlayerColorDeniedEvent (event, failureReasonFrom (result)));
+    }
+  }
+
+  @StateMachineAction
+  public void handleChangePlayerLimitRequest (final ChangePlayerLimitRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final int oldLimit = playerModel.getPlayerLimit ();
+
+    final Result <ChangePlayerLimitDeniedEvent.REASON> result;
+    result = playerModel.requestToChangePlayerLimitBy (deltaFrom (event));
+
+    final int newLimit = playerModel.getPlayerLimit ();
+
+    if (result.isSuccessful ())
+    {
+      eventBus.publish (new ChangePlayerLimitSuccessEvent (newLimit, oldLimit, deltaFrom (event)));
+    }
+    else
+    {
+      eventBus.publish (new ChangePlayerLimitDeniedEvent (deltaFrom (event), failureReasonFrom (result)));
+    }
+  }
+
+  @StateMachineAction
+  public void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final Player player = PlayerFactory.create (withPlayerNameFrom (event));
+    final Result <PlayerJoinGameDeniedEvent.REASON> result;
+
+    result = playerModel.requestToAdd (player);
+
+    if (result.isSuccessful ())
+    {
+      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
+    }
+    else
+    {
+      eventBus.publish (new PlayerJoinGameDeniedEvent (nameOf (player), failureReasonFrom (result)));
+    }
   }
 
   public boolean isEmpty ()
@@ -190,14 +189,20 @@ public final class GameModel
     return playerModel.isEmpty ();
   }
 
+  @StateMachineCondition
+  public boolean isFull ()
+  {
+    return playerModel.isFull ();
+  }
+
   public boolean isNotEmpty ()
   {
     return playerModel.isNotEmpty ();
   }
 
-  public int getPlayerCount ()
+  public boolean isNotFull ()
   {
-    return playerModel.getPlayerCount ();
+    return playerModel.isNotFull ();
   }
 
   public boolean playerCountIs (final int count)
@@ -208,11 +213,6 @@ public final class GameModel
   public boolean playerCountIsNot (final int count)
   {
     return playerModel.playerCountIsNot (count);
-  }
-
-  public int getPlayerLimit ()
-  {
-    return playerModel.getPlayerLimit ();
   }
 
   public boolean playerLimitIs (final int limit)

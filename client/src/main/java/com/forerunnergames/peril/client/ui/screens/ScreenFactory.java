@@ -20,11 +20,11 @@ public final class ScreenFactory
     {
       case MAIN_MENU:
       {
-        return new MainMenuScreen (screenController, new MainMenuScreenMusic());
+        return new MainMenuScreen (screenController, new MainMenuScreenMusic ());
       }
       case PLAY:
       {
-        return new PlayScreen (screenController, new PlayScreenMusic());
+        return new PlayScreen (screenController, new PlayScreenMusic ());
       }
       default:
       {
@@ -33,8 +33,8 @@ public final class ScreenFactory
     }
   }
 
-  private ScreenFactory()
+  private ScreenFactory ()
   {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
 }

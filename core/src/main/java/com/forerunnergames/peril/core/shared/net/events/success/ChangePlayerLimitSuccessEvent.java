@@ -21,31 +21,31 @@ public final class ChangePlayerLimitSuccessEvent implements SuccessEvent, Player
     this.playerLimitDelta = playerLimitDelta;
   }
 
-  @Override
-  public final int getPlayerLimitDelta()
-  {
-    return playerLimitDelta;
-  }
-
-  public final int getNewPlayerLimit()
+  public final int getNewPlayerLimit ()
   {
     return newPlayerLimit;
   }
 
-  public final int getOldPlayerLimit()
+  public final int getOldPlayerLimit ()
   {
     return oldPlayerLimit;
   }
 
   @Override
-  public String toString()
+  public final int getPlayerLimitDelta ()
+  {
+    return playerLimitDelta;
+  }
+
+  @Override
+  public String toString ()
   {
     return String.format ("%1$s: New Player Limit: %2$s | Old Player Limit: %3$s | Player limit delta: %4$s",
-            getClass().getSimpleName(), newPlayerLimit, oldPlayerLimit, playerLimitDelta);
+                    getClass ().getSimpleName (), newPlayerLimit, oldPlayerLimit, playerLimitDelta);
   }
 
   @RequiredForNetworkSerialization
-  private ChangePlayerLimitSuccessEvent()
+  private ChangePlayerLimitSuccessEvent ()
   {
     newPlayerLimit = 0;
     oldPlayerLimit = 0;

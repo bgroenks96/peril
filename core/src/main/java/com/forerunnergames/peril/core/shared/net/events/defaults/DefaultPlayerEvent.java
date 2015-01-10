@@ -17,25 +17,25 @@ public final class DefaultPlayerEvent implements PlayerEvent
   }
 
   @Override
-  public Player getPlayer()
+  public Player getPlayer ()
   {
     return player;
   }
 
   @Override
-  public String getPlayerName()
+  public String getPlayerName ()
   {
-    return player.getName();
+    return player.getName ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     return String.format ("Player: %1$s", player);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultPlayerEvent()
+  private DefaultPlayerEvent ()
   {
     player = null;
   }

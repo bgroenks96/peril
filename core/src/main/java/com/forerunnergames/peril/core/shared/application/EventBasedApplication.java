@@ -18,9 +18,9 @@ public class EventBasedApplication implements Application
   }
 
   @Override
-  public void initialize()
+  public void initialize ()
   {
-    compositeController.initialize();
+    compositeController.initialize ();
   }
 
   @Override
@@ -40,20 +40,20 @@ public class EventBasedApplication implements Application
   }
 
   @Override
-  public void update()
+  public void update ()
   {
-    compositeController.update();
+    compositeController.update ();
   }
 
   @Override
-  public void shutDown()
+  public void shutDown ()
   {
-    compositeController.shutDown();
+    compositeController.shutDown ();
   }
 
   @Override
-  public boolean shouldShutDown()
+  public boolean shouldShutDown ()
   {
-    return compositeController.shouldShutDown();
+    return compositeController.shouldShutDown ();
   }
 }

@@ -8,17 +8,19 @@ import com.forerunnergames.tools.common.io.StreamParser;
 
 public final class StreamParserFactory
 {
+  // @formatter:off
   public static StreamParser create (final String fileName)
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    return new StreamParser (Gdx.files.internal(fileName).reader())
-            .withComments (StreamParser.CommentType.SLASH_SLASH, StreamParser.CommentStatus.ENABLED)
-            .withCSVSyntax();
+    return new StreamParser (Gdx.files.internal (fileName).reader ())
+                    .withComments (StreamParser.CommentType.SLASH_SLASH, StreamParser.CommentStatus.ENABLED)
+                    .withCSVSyntax ();
   }
 
-  private StreamParserFactory()
+  private StreamParserFactory ()
   {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
+  // @formatter:on
 }

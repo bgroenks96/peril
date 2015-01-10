@@ -15,22 +15,28 @@ public final class ContinentName implements TerritoryName
   }
 
   @Override
-  public String getName()
+  public String getName ()
   {
     return name;
   }
 
   @Override
-  public boolean isUnknown()
+  public boolean isUnknown ()
   {
-    return name.isEmpty();
+    return name.isEmpty ();
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return name.hashCode ();
   }
 
   @Override
   public boolean equals (final Object o)
   {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass () != o.getClass ()) return false;
 
     final ContinentName that = (ContinentName) o;
 
@@ -38,14 +44,8 @@ public final class ContinentName implements TerritoryName
   }
 
   @Override
-  public int hashCode()
+  public String toString ()
   {
-    return name.hashCode();
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), name);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), name);
   }
 }

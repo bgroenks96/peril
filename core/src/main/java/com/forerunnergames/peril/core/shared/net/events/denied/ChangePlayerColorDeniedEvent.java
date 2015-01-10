@@ -14,16 +14,16 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.REASON>
-        implements PlayerColorEvent
+                implements PlayerColorEvent
 {
+  private final PlayerColorEvent playerColorEvent;
+
   public enum REASON
   {
     REQUESTED_COLOR_EQUALS_EXISTING_COLOR,
     COLOR_ALREADY_TAKEN,
     REQUESTED_COLOR_INALID,
   }
-
-  private final PlayerColorEvent playerColorEvent;
 
   public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final REASON reason)
   {
@@ -43,38 +43,39 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
 
     playerColorEvent = new DefaultPlayerColorEvent (player, currentColor, previousColor);
   }
+
   @Override
-  public Player getPlayer()
+  public PlayerColor getCurrentColor ()
   {
-    return playerColorEvent.getPlayer();
+    return playerColorEvent.getCurrentColor ();
   }
 
   @Override
-  public String getPlayerName()
+  public PlayerColor getPreviousColor ()
   {
-    return playerColorEvent.getPlayerName();
+    return playerColorEvent.getPreviousColor ();
   }
 
   @Override
-  public PlayerColor getCurrentColor()
+  public Player getPlayer ()
   {
-    return playerColorEvent.getCurrentColor();
+    return playerColorEvent.getPlayer ();
   }
 
   @Override
-  public PlayerColor getPreviousColor()
+  public String getPlayerName ()
   {
-    return playerColorEvent.getPreviousColor();
+    return playerColorEvent.getPlayerName ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), playerColorEvent, super.toString());
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), playerColorEvent, super.toString ());
   }
 
   @RequiredForNetworkSerialization
-  private ChangePlayerColorDeniedEvent()
+  private ChangePlayerColorDeniedEvent ()
   {
     playerColorEvent = null;
   }

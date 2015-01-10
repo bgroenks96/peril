@@ -23,31 +23,31 @@ public final class CommandMessageDeniedEvent implements CommandMessageEvent, Den
   }
 
   @Override
-  public String getReason()
+  public CommandMessage getMessage ()
   {
-    return deniedEvent.getReason();
+    return commandMessageEvent.getMessage ();
   }
 
   @Override
-  public CommandMessage getMessage()
+  public String getMessageText ()
   {
-    return commandMessageEvent.getMessage();
+    return commandMessageEvent.getMessageText ();
   }
 
   @Override
-  public String getMessageText()
+  public String getReason ()
   {
-    return commandMessageEvent.getMessageText();
+    return deniedEvent.getReason ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), commandMessageEvent, deniedEvent);
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), commandMessageEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private CommandMessageDeniedEvent()
+  private CommandMessageDeniedEvent ()
   {
     commandMessageEvent = null;
     deniedEvent = null;

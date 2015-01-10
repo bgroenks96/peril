@@ -27,33 +27,33 @@ public final class DefaultChatMessage implements ChatMessage
     message = new DefaultMessage (messageText);
   }
 
-  @Override
-  public boolean hasAuthor()
-  {
-    return author != null;
-  }
-
   @Nullable
   @Override
-  public Author getAuthor()
+  public Author getAuthor ()
   {
     return author;
   }
 
   @Override
-  public String getText()
+  public boolean hasAuthor ()
   {
-    return message.getText();
+    return author != null;
   }
 
   @Override
-  public String toString()
+  public String getText ()
   {
-    return String.format ("%1$s: Author: %2$s Message: %3$s", getClass().getSimpleName(), author, message);
+    return message.getText ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s: Author: %2$s Message: %3$s", getClass ().getSimpleName (), author, message);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultChatMessage()
+  private DefaultChatMessage ()
   {
     author = null;
     message = null;

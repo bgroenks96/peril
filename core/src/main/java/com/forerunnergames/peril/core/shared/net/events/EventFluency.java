@@ -20,112 +20,158 @@ import javax.annotation.Nullable;
 
 public final class EventFluency
 {
-  public static Player playerFrom (final PlayerEvent event)
+  public static int additionalPlayersAllowedFrom (final JoinMultiplayerServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getPlayer();
-  }
-
-  public static String playerNameFrom (final PlayerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayerName();
-  }
-
-  public static String playerNameFrom (final PlayerJoinGameRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayerName();
-  }
-
-  public static String withPlayerNameFrom (final PlayerJoinGameRequestEvent event)
-  {
-    return playerNameFrom (event);
-  }
-
-  public static String playerNameFrom (final PlayerJoinGameDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayerName();
+    return event.getAdditionalPlayersAllowed ();
   }
 
   public static PlayerColor currentColorFrom (final PlayerColorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getCurrentColor();
-  }
-
-  public static PlayerColor previousColorFrom (final PlayerColorEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPreviousColor();
+    return event.getCurrentColor ();
   }
 
   public static PlayerTurnOrder currentTurnOrderFrom (final PlayerTurnOrderEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getCurrentTurnOrder();
-  }
-
-  public static PlayerTurnOrder previousTurnOrderFrom (final PlayerTurnOrderEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPreviousTurnOrder();
-  }
-
-  public static <T> T reasonFrom (final DeniedEvent <T> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getReason();
-  }
-
-  public static String reasonForKickFrom (final KickEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getReasonForKick();
-  }
-
-  public static int newPlayerLimitFrom (final ChangePlayerLimitSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getNewPlayerLimit();
+    return event.getCurrentTurnOrder ();
   }
 
   public static int deltaFrom (final PlayerLimitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getPlayerLimitDelta();
+    return event.getPlayerLimitDelta ();
   }
 
-  public static String serverNameFrom (final OpenServerEvent event)
+  public static boolean hasAuthorFrom (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getServerName();
+    return event.hasAuthor ();
   }
 
-  public static String withNameFrom (final OpenServerEvent event)
+  public static <T extends Message> T messageFrom (final MessageEvent <T> event)
   {
-    return serverNameFrom (event);
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getMessage ();
+  }
+
+  public static int newPlayerLimitFrom (final ChangePlayerLimitSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getNewPlayerLimit ();
+  }
+
+  public static Player playerFrom (final PlayerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayer ();
+  }
+
+  public static String playerNameFrom (final PlayerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayerName ();
+  }
+
+  public static String playerNameFrom (final PlayerJoinGameRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayerName ();
+  }
+
+  public static String playerNameFrom (final PlayerJoinGameDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayerName ();
+  }
+
+  public static ImmutableSet <Player> playersInGameFrom (final JoinMultiplayerServerSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayersInGame ();
+  }
+
+  public static PlayerColor previousColorFrom (final PlayerColorEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPreviousColor ();
+  }
+
+  public static PlayerTurnOrder previousTurnOrderFrom (final PlayerTurnOrderEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPreviousTurnOrder ();
+  }
+
+  public static String reasonForKickFrom (final KickEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getReasonForKick ();
+  }
+
+  public static <T> T reasonFrom (final DeniedEvent <T> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getReason ();
   }
 
   public static String serverAddressFrom (final ServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getServerAddress();
+    return event.getServerAddress ();
+  }
+
+  public static String serverAddressFrom (final JoinServerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerAddress ();
+  }
+
+  public static String serverNameFrom (final OpenServerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerName ();
+  }
+
+  public static String serverNameFrom (final JoinMultiplayerServerSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerName ();
+  }
+
+  public static int serverTcpPortFrom (final OpenServerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerTcpPort ();
+  }
+
+  public static int serverTcpPortFrom (final JoinServerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerTcpPort ();
   }
 
   public static String withAddressFrom (final ServerRequestEvent event)
@@ -133,68 +179,17 @@ public final class EventFluency
     return serverAddressFrom (event);
   }
 
-  public static int serverTcpPortFrom (final OpenServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerTcpPort();
-  }
-
-  public static int withTcpPortFrom (final OpenServerEvent event)
-  {
-    return serverTcpPortFrom (event);
-  }
-
-  public static String serverAddressFrom (final JoinServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerAddress();
-  }
-
   public static String withAddressFrom (final JoinServerEvent event)
   {
     return serverAddressFrom (event);
   }
 
-  public static int serverTcpPortFrom (final JoinServerEvent event)
+  @Nullable
+  public static Author withAuthorFrom (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getServerTcpPort();
-  }
-
-  public static int withTcpPortFrom (final JoinServerEvent event)
-  {
-    return serverTcpPortFrom (event);
-  }
-
-  public static String serverNameFrom (final JoinMultiplayerServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerName();
-  }
-
-  public static ImmutableSet <Player> playersInGameFrom (final JoinMultiplayerServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayersInGame();
-  }
-
-  public static int additionalPlayersAllowedFrom (final JoinMultiplayerServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getAdditionalPlayersAllowed();
-  }
-
-  public static <T extends Message> T messageFrom (final MessageEvent <T> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getMessage();
+    return event.getAuthor ();
   }
 
   public static <T extends Message> T withMessageFrom (final MessageEvent <T> event)
@@ -206,26 +201,31 @@ public final class EventFluency
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getMessageText();
+    return event.getMessageText ();
   }
 
-  public static boolean hasAuthorFrom (final ChatMessageEvent event)
+  public static String withNameFrom (final OpenServerEvent event)
   {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.hasAuthor();
+    return serverNameFrom (event);
   }
 
-  @Nullable
-  public static Author withAuthorFrom (final ChatMessageEvent event)
+  public static String withPlayerNameFrom (final PlayerJoinGameRequestEvent event)
   {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getAuthor();
+    return playerNameFrom (event);
   }
 
-  private EventFluency()
+  public static int withTcpPortFrom (final OpenServerEvent event)
   {
-    Classes.instantiationNotAllowed();
+    return serverTcpPortFrom (event);
+  }
+
+  public static int withTcpPortFrom (final JoinServerEvent event)
+  {
+    return serverTcpPortFrom (event);
+  }
+
+  private EventFluency ()
+  {
+    Classes.instantiationNotAllowed ();
   }
 }

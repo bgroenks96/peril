@@ -19,25 +19,25 @@ public final class OpenMultiplayerServerSuccessEvent implements OpenServerEvent,
   }
 
   @Override
-  public String getServerName()
+  public String getServerName ()
   {
-    return openServerEvent.getServerName();
+    return openServerEvent.getServerName ();
   }
 
   @Override
-  public int getServerTcpPort()
+  public int getServerTcpPort ()
   {
-    return openServerEvent.getServerTcpPort();
+    return openServerEvent.getServerTcpPort ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), openServerEvent);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), openServerEvent);
   }
 
   @RequiredForNetworkSerialization
-  private OpenMultiplayerServerSuccessEvent()
+  private OpenMultiplayerServerSuccessEvent ()
   {
     openServerEvent = null;
   }

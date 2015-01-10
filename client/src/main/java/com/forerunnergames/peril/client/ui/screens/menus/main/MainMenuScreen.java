@@ -1,6 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.menus.main;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -29,54 +33,54 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     this.music = music;
 
     // Layer 0 - menu background image
-    final Stack rootStack = new Stack();
+    final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     rootStack.add (new Image (Assets.menuBackground));
 
     // Layer 1 - right menu background shadow
-    final Table tableL1 = new Table();
+    final Table tableL1 = new Table ();
     rootStack.add (tableL1);
-    tableL1.add().width (666.0f);
-    tableL1.add (new Image (Assets.rightMenuBackgroundShadow)).expandY().fillY();
-    tableL1.add().expandX();
+    tableL1.add ().width (666.0f);
+    tableL1.add (new Image (Assets.rightMenuBackgroundShadow)).expandY ().fillY ();
+    tableL1.add ().expandX ();
 
     // Layer 2 - text
-    final Table tableL2 = new Table();
+    final Table tableL2 = new Table ();
     rootStack.add (tableL2);
-    tableL2.add().width (294.0f);
+    tableL2.add ().width (294.0f);
     tableL2.add (new Image (Assets.mainMenuText));
-    tableL2.add().expandX();
+    tableL2.add ().expandX ();
 
     // Layer 3 - top & bottom menu bar extension shadows
-    final Table tableL3 = new Table();
+    final Table tableL3 = new Table ();
     rootStack.add (tableL3);
-    tableL3.add().width (666.0f);
-    tableL3.add (new Image (Assets.topMenuBarExtensionShadow)).width (288.0f).fillX().top();
-    tableL3.add().expandX();
-    tableL3.row();
-    tableL3.add().expandY();
-    tableL3.row();
-    tableL3.add().width (666.0f);
-    tableL3.add (new Image (Assets.bottomMenuBarExtensionShadow)).width(288.0f).fillX().bottom();
-    tableL3.add().expandX();
+    tableL3.add ().width (666.0f);
+    tableL3.add (new Image (Assets.topMenuBarExtensionShadow)).width (288.0f).fillX ().top ();
+    tableL3.add ().expandX ();
+    tableL3.row ();
+    tableL3.add ().expandY ();
+    tableL3.row ();
+    tableL3.add ().width (666.0f);
+    tableL3.add (new Image (Assets.bottomMenuBarExtensionShadow)).width (288.0f).fillX ().bottom ();
+    tableL3.add ().expandX ();
 
     // Layer 4 - left & right menu bar shadows
-    final Table tableL4 = new Table();
+    final Table tableL4 = new Table ();
     rootStack.add (tableL4);
-    tableL4.add().width (294.0f);
-    tableL4.add (new Image (Assets.leftMenuBarShadow)).expandY().fillY();
-    tableL4.add().width (330.0f);
-    tableL4.add (new Image (Assets.rightMenuBarShadow)).expandY().fillY();
-    tableL4.add().expandX();
+    tableL4.add ().width (294.0f);
+    tableL4.add (new Image (Assets.leftMenuBarShadow)).expandY ().fillY ();
+    tableL4.add ().width (330.0f);
+    tableL4.add (new Image (Assets.rightMenuBarShadow)).expandY ().fillY ();
+    tableL4.add ().expandX ();
 
     // Layer 5 - buttons
-    final Table tableL5 = new Table();
+    final Table tableL5 = new Table ();
     rootStack.add (tableL5);
-    tableL5.add().width (294.0f);
+    tableL5.add ().width (294.0f);
 
-    stage = new Stage();
+    stage = new Stage ();
     stage.addActor (rootStack);
-    stage.getViewport().setCamera (new OrthographicCamera (Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+    stage.getViewport ().setCamera (new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ()));
   }
 
   @Override
@@ -91,7 +95,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
       }
       case Input.Keys.ESCAPE:
       {
-        Gdx.app.exit();
+        Gdx.app.exit ();
         return true;
       }
       default:
@@ -102,19 +106,11 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   }
 
   @Override
-  public void show()
+  public void show ()
   {
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
 
-    music.start();
-  }
-
-  @Override
-  public void hide()
-  {
-    Gdx.input.setInputProcessor (null);
-
-    music.stop();
+    music.start ();
   }
 
   @Override
@@ -124,28 +120,36 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
     stage.act (delta);
-    stage.draw();
+    stage.draw ();
   }
 
   @Override
   public void resize (final int width, final int height)
   {
-    stage.getViewport().update (width, height, true);
+    stage.getViewport ().update (width, height, true);
   }
 
   @Override
-  public void pause()
+  public void pause ()
   {
   }
 
   @Override
-  public void resume()
+  public void resume ()
   {
   }
 
   @Override
-  public void dispose()
+  public void hide ()
   {
-    stage.dispose();
+    Gdx.input.setInputProcessor (null);
+
+    music.stop ();
+  }
+
+  @Override
+  public void dispose ()
+  {
+    stage.dispose ();
   }
 }

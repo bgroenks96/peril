@@ -4,6 +4,7 @@ import com.forerunnergames.tools.common.net.events.RequestEvent;
 
 public interface ServerRequestEvent extends RequestEvent
 {
-  public String getServerAddress();
-  public int getServerTcpPort();
+  public String getServerAddress ();
+
+  public int getServerTcpPort ();
 }

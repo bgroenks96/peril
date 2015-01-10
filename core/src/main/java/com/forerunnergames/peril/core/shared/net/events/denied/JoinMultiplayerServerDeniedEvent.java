@@ -22,31 +22,32 @@ public final class JoinMultiplayerServerDeniedEvent implements DeniedEvent <Stri
   }
 
   @Override
-  public String getReason()
+  public String getReason ()
   {
-    return deniedEvent.getReason();
+    return deniedEvent.getReason ();
   }
 
   @Override
-  public String getServerAddress()
+  public String getServerAddress ()
   {
-    return requestEvent.getServerAddress();
+    return requestEvent.getServerAddress ();
   }
 
   @Override
-  public int getServerTcpPort()
+  public int getServerTcpPort ()
   {
-    return requestEvent.getServerTcpPort();
+    return requestEvent.getServerTcpPort ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Original request: %2$s | %3$s", getClass().getSimpleName(), requestEvent, deniedEvent);
+    return String.format ("%1$s: Original request: %2$s | %3$s", getClass ().getSimpleName (), requestEvent,
+                    deniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private JoinMultiplayerServerDeniedEvent()
+  private JoinMultiplayerServerDeniedEvent ()
   {
     requestEvent = null;
     deniedEvent = null;

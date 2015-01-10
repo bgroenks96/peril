@@ -15,19 +15,19 @@ public final class PlayerJoinGameRequestEvent implements RequestEvent
     this.playerName = playerName;
   }
 
-  public String getPlayerName()
+  public String getPlayerName ()
   {
     return playerName;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Player name: %2$s", getClass().getSimpleName(), playerName);
+    return String.format ("%1$s: Player name: %2$s", getClass ().getSimpleName (), playerName);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerJoinGameRequestEvent()
+  private PlayerJoinGameRequestEvent ()
   {
     playerName = null;
   }

@@ -9,11 +9,11 @@ import android.os.Bundle;
 
 public final class AndroidLauncher extends AndroidApplication
 {
-	@Override
-	protected void onCreate (final Bundle savedInstanceState)
+  @Override
+  protected void onCreate (final Bundle savedInstanceState)
   {
-		super.onCreate (savedInstanceState);
+    super.onCreate (savedInstanceState);
 
-		initialize (LibGdxGameFactory.create(), new AndroidApplicationConfiguration());
-	}
+    initialize (LibGdxGameFactory.create (), new AndroidApplicationConfiguration ());
+  }
 }

@@ -14,26 +14,26 @@ public final class ClientApplication extends EventBasedApplication
   }
 
   @Override
-  public void initialize()
+  public void initialize ()
   {
-    Assets.load();
+    Assets.load ();
 
-    super.initialize();
+    super.initialize ();
   }
 
   @Override
-  public void update()
+  public void update ()
   {
-    super.update();
+    super.update ();
 
-    if (shouldShutDown()) Gdx.app.exit();
+    if (shouldShutDown ()) Gdx.app.exit ();
   }
 
   @Override
-  public void shutDown()
+  public void shutDown ()
   {
-    super.shutDown();
+    super.shutDown ();
 
-    Assets.dispose();
+    Assets.dispose ();
   }
 }

@@ -4,5 +4,5 @@ import com.forerunnergames.tools.common.Event;
 
 public interface KickEvent extends Event
 {
-  public String getReasonForKick();
+  public String getReasonForKick ();
 }

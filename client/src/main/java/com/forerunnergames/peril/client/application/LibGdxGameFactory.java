@@ -28,38 +28,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates the {@link com.badlogic.gdx.ApplicationListener} instance to be passed to all of the executable
- * sub-projects (android, desktop, & ios).
+ * Creates the {@link com.badlogic.gdx.ApplicationListener} instance to be passed to all of the executable sub-projects
+ * (android, desktop, & ios).
  */
 public final class LibGdxGameFactory
 {
   private static final Logger log = LoggerFactory.getLogger (LibGdxGameFactory.class);
 
-  public static ApplicationListener create()
+  public static ApplicationListener create ()
   {
-    final IBusConfiguration eventBusConfiguration = new BusConfiguration()
-            .addFeature (Feature.SyncPubSub.Default())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default());
+    final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
+                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 
-    eventBus.addErrorHandler (new IPublicationErrorHandler()
+    eventBus.addErrorHandler (new IPublicationErrorHandler ()
     {
       @Override
       public void handleError (final PublicationError error)
       {
-        log.error (error.toString(), error.getCause());
+        log.error (error.toString (), error.getCause ());
       }
     });
 
-    final Client client = new KryonetClient();
+    // @formatter:off
+    final Client client = new KryonetClient ();
     final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES, eventBus);
-    final ServerCreator serverCreator = new LocalServerCreator();
+    final ServerCreator serverCreator = new LocalServerCreator ();
     final Controller multiplayerController = new MultiplayerController (serverCreator, clientController, clientController, eventBus);
     final Application application = new ClientApplication (clientController, multiplayerController);
     final Game libGdxGame = new LibGdxGameWrapper (application);
     final Controller screenController = new ScreenController (libGdxGame);
+    // @formatter:on
 
     // We must use setter injection here because constructor injection won't work due to circular dependencies:
     // ScreenController depends on Game, Game depends on Application, & Application depends on ScreenController.
@@ -69,8 +70,8 @@ public final class LibGdxGameFactory
     return libGdxGame;
   }
 
-  private LibGdxGameFactory()
+  private LibGdxGameFactory ()
   {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
 }

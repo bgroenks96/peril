@@ -17,7 +17,7 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
-  public int getConnectionId()
+  public int getConnectionId ()
   {
     return connectionId;
   }
@@ -29,7 +29,7 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
-  public boolean hasAddress()
+  public boolean hasAddress ()
   {
     return address != null;
   }
@@ -49,13 +49,19 @@ public final class KryonetRemote implements Remote
   @Override
   public boolean isNot (final Remote remote)
   {
-    return ! is (remote);
+    return !is (remote);
   }
 
   @Override
-  public String getAddress()
+  public String getAddress ()
   {
-    return address != null ? address.getAddress().getHostAddress() : "";
+    return address != null ? address.getAddress ().getHostAddress () : "";
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return connectionId;
   }
 
   @Override
@@ -72,19 +78,14 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
-  public int hashCode()
+  public String toString ()
   {
-    return connectionId;
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format ("%1$s: Connection Id: %2$s | Address: %3$s", getClass().getSimpleName(), connectionId, address);
+    return String.format ("%1$s: Connection Id: %2$s | Address: %3$s", getClass ().getSimpleName (), connectionId,
+                    address);
   }
 
   @RequiredForNetworkSerialization
-  private KryonetRemote()
+  private KryonetRemote ()
   {
     connectionId = -1;
     address = null;

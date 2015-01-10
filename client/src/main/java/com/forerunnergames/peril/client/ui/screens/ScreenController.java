@@ -19,7 +19,7 @@ public final class ScreenController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
   private final Game game;
-  private BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values().length);
+  private BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
   private ScreenId previousScreenId;
 
@@ -31,9 +31,9 @@ public final class ScreenController extends ControllerAdapter
   }
 
   @Override
-  public void initialize()
+  public void initialize ()
   {
-    for (final ScreenId screenId : ScreenId.values())
+    for (final ScreenId screenId : ScreenId.values ())
     {
       screens.put (screenId, ScreenFactory.create (screenId, this));
     }
@@ -41,23 +41,15 @@ public final class ScreenController extends ControllerAdapter
     toScreen (ScreenSettings.START_SCREEN);
   }
 
-  public void toScreen (final ScreenId id)
+  @Override
+  public void shutDown ()
   {
-    Arguments.checkIsNotNull (id, "id");
-    Arguments.checkIsTrue (screens.containsKey (id), "Cannot find " + Screen.class.getSimpleName() + " with " + id.getClass().getSimpleName() + " [" + id + "].");
+    for (final Screen screen : screens.values ())
+    {
+      screen.dispose ();
+    }
 
-    if (id.equals (getCurrentScreenId())) return;
-
-    previousScreenId = getCurrentScreenId();
-
-    game.setScreen (screens.get (id));
-
-    log.info ("Changed from {} [{}] to {} [{}].", Screen.class.getSimpleName(), previousScreenId, Screen.class.getSimpleName(), id);
-  }
-
-  private ScreenId getCurrentScreenId()
-  {
-    return screens.inverse().get (game.getScreen());
+    screens.clear ();
   }
 
   public void toPreviousScreenOr (final ScreenId defaultScreenId)
@@ -67,14 +59,24 @@ public final class ScreenController extends ControllerAdapter
     toScreen (previousScreenId != null ? previousScreenId : defaultScreenId);
   }
 
-  @Override
-  public void shutDown()
+  public void toScreen (final ScreenId id)
   {
-    for (final Screen screen : screens.values())
-    {
-      screen.dispose();
-    }
+    Arguments.checkIsNotNull (id, "id");
+    Arguments.checkIsTrue (screens.containsKey (id), "Cannot find " + Screen.class.getSimpleName () + " with "
+                    + id.getClass ().getSimpleName () + " [" + id + "].");
 
-    screens.clear();
+    if (id.equals (getCurrentScreenId ())) return;
+
+    previousScreenId = getCurrentScreenId ();
+
+    game.setScreen (screens.get (id));
+
+    log.info ("Changed from {} [{}] to {} [{}].", Screen.class.getSimpleName (), previousScreenId,
+                    Screen.class.getSimpleName (), id);
+  }
+
+  private ScreenId getCurrentScreenId ()
+  {
+    return screens.inverse ().get (game.getScreen ());
   }
 }

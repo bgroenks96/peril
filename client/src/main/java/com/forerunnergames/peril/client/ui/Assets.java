@@ -25,12 +25,33 @@ public final class Assets
   public static Texture playScreenMapBackground;
   public static Texture playScreenMapForeground;
   public static Music playScreenMusic;
-
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
   private static boolean isLoaded = false;
 
-  public static void load()
+  public static void dispose ()
+  {
+    if (!isLoaded)
+    {
+      log.warn ("Cannot dispose assets: Assets are not loaded!");
+      return;
+    }
+
+    menuBackground.dispose ();
+    menuRightBackgroundShadowTexture.dispose ();
+    mainMenuText.dispose ();
+    topMenuBarExtensionShadow.dispose ();
+    bottomMenuBarExtensionShadow.dispose ();
+    leftMenuBarShadow.dispose ();
+    rightMenuBarShadow.dispose ();
+    playScreenBackground.dispose ();
+    playScreenMapBackground.dispose ();
+    playScreenMapForeground.dispose ();
+
+    isLoaded = false;
+  }
+
+  public static void load ()
   {
     if (isLoaded)
     {
@@ -38,6 +59,7 @@ public final class Assets
       return;
     }
 
+    // @formatter:off
     menuBackground = new Texture (Gdx.files.internal ("ui/screens/menus/shared/background.png"));
     menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightBackgroundShadow.png"));
     rightMenuBackgroundShadow = new NinePatch (menuRightBackgroundShadowTexture);
@@ -51,34 +73,13 @@ public final class Assets
     playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"));
     playScreenMapForeground = new Texture (Gdx.files.internal ("map/foreground.png"));
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
+    // @formatter:on
 
     isLoaded = true;
   }
 
-  public static void dispose()
+  private Assets ()
   {
-    if (! isLoaded)
-    {
-      log.warn ("Cannot dispose assets: Assets are not loaded!");
-      return;
-    }
-
-    menuBackground.dispose();
-    menuRightBackgroundShadowTexture.dispose();
-    mainMenuText.dispose();
-    topMenuBarExtensionShadow.dispose();
-    bottomMenuBarExtensionShadow.dispose();
-    leftMenuBarShadow.dispose();
-    rightMenuBarShadow.dispose();
-    playScreenBackground.dispose();
-    playScreenMapBackground.dispose();
-    playScreenMapForeground.dispose();
-
-    isLoaded = false;
-  }
-
-  private Assets()
-  {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
 }

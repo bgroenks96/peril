@@ -19,24 +19,24 @@ public final class DefaultOpenServerEvent implements OpenServerEvent
   }
 
   @Override
-  public final String getServerName()
+  public final String getServerName ()
   {
     return serverName;
   }
 
-  public final int getServerTcpPort()
+  public final int getServerTcpPort ()
   {
     return serverTcpPort;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     return String.format ("Server name: %1$s | Server port: %2$s (TCP)", serverName, serverTcpPort);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultOpenServerEvent()
+  private DefaultOpenServerEvent ()
   {
     serverName = null;
     serverTcpPort = 0;

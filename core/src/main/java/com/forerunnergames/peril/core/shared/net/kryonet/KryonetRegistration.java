@@ -88,9 +88,10 @@ public final class KryonetRegistration
           PlayerLeaveGameSuccessEvent.class,
           QuitMultiplayerServerRequestEvent.class,
           StatusMessageSuccessEvent.class);
+          // @formatter:on
 
-  private KryonetRegistration()
+  private KryonetRegistration ()
   {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
 }

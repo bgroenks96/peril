@@ -17,25 +17,25 @@ public final class DefaultStatusMessageEvent implements StatusMessageEvent
   }
 
   @Override
-  public StatusMessage getMessage()
+  public StatusMessage getMessage ()
   {
     return message;
   }
 
   @Override
-  public String getMessageText()
+  public String getMessageText ()
   {
-    return message.getText();
+    return message.getText ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Message: %2$s", getClass().getSimpleName(), message);
+    return String.format ("%1$s: Message: %2$s", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultStatusMessageEvent()
+  private DefaultStatusMessageEvent ()
   {
     message = null;
   }

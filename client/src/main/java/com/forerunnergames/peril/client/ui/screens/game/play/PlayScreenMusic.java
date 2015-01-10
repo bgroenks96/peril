@@ -6,16 +6,16 @@ import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 public final class PlayScreenMusic implements ScreenMusic
 {
   @Override
-  public void start()
+  public void start ()
   {
     Assets.playScreenMusic.setVolume (1.0f);
     Assets.playScreenMusic.setLooping (true);
-    Assets.playScreenMusic.play();
+    Assets.playScreenMusic.play ();
   }
 
   @Override
-  public void stop()
+  public void stop ()
   {
-    Assets.playScreenMusic.stop();
+    Assets.playScreenMusic.stop ();
   }
 }

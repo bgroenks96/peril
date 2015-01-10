@@ -61,7 +61,7 @@ public final class EventBasedClientController extends AbstractClientController
 
     log.debug ("Received object [{}] from server [{}].", object, server);
 
-    if (! isValidCommunicationEvent (object))
+    if (!isValidCommunicationEvent (object))
     {
       log.warn ("Received unrecognized object [{}] from server [{}].", object, server);
 
@@ -73,6 +73,6 @@ public final class EventBasedClientController extends AbstractClientController
 
   private boolean isValidCommunicationEvent (final Object eventObject)
   {
-	  return eventObject instanceof AnswerEvent || eventObject instanceof GameNotificationEvent;
+    return eventObject instanceof AnswerEvent || eventObject instanceof GameNotificationEvent;
   }
 }

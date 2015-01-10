@@ -6,11 +6,6 @@ import com.google.common.collect.ImmutableMap;
 
 public abstract class AbstractDataLoader <T, U> implements DataLoader <T, U>
 {
-  protected abstract void initializeData (final String fileName);
-  protected abstract boolean readData();
-  protected abstract void saveData();
-  protected abstract ImmutableMap <T, U> finalizeData();
-
   @Override
   public final ImmutableMap <T, U> load (final String fileName)
   {
@@ -18,11 +13,19 @@ public abstract class AbstractDataLoader <T, U> implements DataLoader <T, U>
 
     initializeData (fileName);
 
-    while (readData())
+    while (readData ())
     {
-      saveData();
+      saveData ();
     }
 
-    return finalizeData();
+    return finalizeData ();
   }
+
+  protected abstract ImmutableMap <T, U> finalizeData ();
+
+  protected abstract void initializeData (final String fileName);
+
+  protected abstract boolean readData ();
+
+  protected abstract void saveData ();
 }

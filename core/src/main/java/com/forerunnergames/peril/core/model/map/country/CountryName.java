@@ -16,27 +16,15 @@ public final class CountryName implements TerritoryName
     this.name = name;
   }
 
-  @Override
-  public String getName()
-  {
-    return name;
-  }
-
-  @Override
-  public boolean isUnknown()
-  {
-    return name.isEmpty();
-  }
-
   public String asFileName (final String fileExtension)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (fileExtension, "fileExtension");
-    Preconditions.checkIsFalse (name.isEmpty(), "Cannot convert empty country name to file name.");
+    Preconditions.checkIsFalse (name.isEmpty (), "Cannot convert empty country name to file name.");
     Preconditions.checkIsFalse (Strings.isWhitespace (name), "Cannot convert blank country name to file name.");
 
     final String[] words = name.split (" ");
 
-    final StringBuilder fileNameBuilder = new StringBuilder();
+    final StringBuilder fileNameBuilder = new StringBuilder ();
 
     boolean isFirstWord = true;
 
@@ -46,7 +34,7 @@ public final class CountryName implements TerritoryName
       {
         final String firstLetter = word.substring (0, 1);
 
-        fileNameBuilder.append ((word.replaceFirst (firstLetter, firstLetter.toLowerCase())));
+        fileNameBuilder.append ((word.replaceFirst (firstLetter, firstLetter.toLowerCase ())));
 
         isFirstWord = false;
       }
@@ -58,14 +46,32 @@ public final class CountryName implements TerritoryName
 
     fileNameBuilder.append (".").append (fileExtension);
 
-    return fileNameBuilder.toString();
+    return fileNameBuilder.toString ();
+  }
+
+  @Override
+  public String getName ()
+  {
+    return name;
+  }
+
+  @Override
+  public boolean isUnknown ()
+  {
+    return name.isEmpty ();
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return name.hashCode ();
   }
 
   @Override
   public boolean equals (final Object o)
   {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass () != o.getClass ()) return false;
 
     final CountryName that = (CountryName) o;
 
@@ -73,14 +79,8 @@ public final class CountryName implements TerritoryName
   }
 
   @Override
-  public int hashCode()
+  public String toString ()
   {
-    return name.hashCode();
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), name);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), name);
   }
 }

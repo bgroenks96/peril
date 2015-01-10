@@ -6,6 +6,8 @@ import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerial
 
 public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.REASON>
 {
+  private final String playerName;
+
   public enum REASON
   {
     GAME_IS_FULL,
@@ -16,8 +18,6 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     DUPLICATE_TURN_ORDER
   }
 
-  private final String playerName;
-
   public PlayerJoinGameDeniedEvent (final String playerName, final PlayerJoinGameDeniedEvent.REASON reason)
   {
     super (reason);
@@ -27,19 +27,19 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     this.playerName = playerName;
   }
 
-  public String getPlayerName()
+  public String getPlayerName ()
   {
     return playerName;
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: Player name: %2$s | %3$s", getClass().getSimpleName(), playerName, super.toString());
+    return String.format ("%1$s: Player name: %2$s | %3$s", getClass ().getSimpleName (), playerName, super.toString ());
   }
 
   @RequiredForNetworkSerialization
-  private PlayerJoinGameDeniedEvent()
+  private PlayerJoinGameDeniedEvent ()
   {
     playerName = null;
   }

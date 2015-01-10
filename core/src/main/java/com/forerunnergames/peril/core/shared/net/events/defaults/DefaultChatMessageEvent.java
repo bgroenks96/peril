@@ -19,39 +19,39 @@ public final class DefaultChatMessageEvent implements ChatMessageEvent
     this.message = message;
   }
 
+  @Nullable
   @Override
-  public ChatMessage getMessage()
+  public Author getAuthor ()
+  {
+    return message.getAuthor ();
+  }
+
+  @Override
+  public boolean hasAuthor ()
+  {
+    return message.hasAuthor ();
+  }
+
+  @Override
+  public ChatMessage getMessage ()
   {
     return message;
   }
 
   @Override
-  public String getMessageText()
+  public String getMessageText ()
   {
-    return message.getText();
+    return message.getText ();
   }
 
   @Override
-  public boolean hasAuthor()
+  public String toString ()
   {
-    return message.hasAuthor();
-  }
-
-  @Nullable
-  @Override
-  public Author getAuthor()
-  {
-    return message.getAuthor();
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format ("%1$s : Message: %2$s", getClass().getSimpleName(), message);
+    return String.format ("%1$s : Message: %2$s", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultChatMessageEvent()
+  private DefaultChatMessageEvent ()
   {
     message = null;
   }

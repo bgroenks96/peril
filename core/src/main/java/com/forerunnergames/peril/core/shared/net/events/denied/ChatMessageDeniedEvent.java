@@ -25,45 +25,45 @@ public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEve
     deniedEvent = new DefaultDeniedEvent (reason);
   }
 
-  @Override
-  public String getReason()
-  {
-    return deniedEvent.getReason();
-  }
-
-  @Override
-  public ChatMessage getMessage()
-  {
-    return chatMessageEvent.getMessage();
-  }
-
-  @Override
-  public String getMessageText()
-  {
-    return chatMessageEvent.getMessageText();
-  }
-
-  @Override
-  public boolean hasAuthor()
-  {
-    return chatMessageEvent.hasAuthor();
-  }
-
   @Nullable
   @Override
-  public Author getAuthor()
+  public Author getAuthor ()
   {
-    return chatMessageEvent.getAuthor();
+    return chatMessageEvent.getAuthor ();
   }
 
   @Override
-  public String toString()
+  public boolean hasAuthor ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), chatMessageEvent, deniedEvent);
+    return chatMessageEvent.hasAuthor ();
+  }
+
+  @Override
+  public ChatMessage getMessage ()
+  {
+    return chatMessageEvent.getMessage ();
+  }
+
+  @Override
+  public String getMessageText ()
+  {
+    return chatMessageEvent.getMessageText ();
+  }
+
+  @Override
+  public String getReason ()
+  {
+    return deniedEvent.getReason ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), chatMessageEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private ChatMessageDeniedEvent()
+  private ChatMessageDeniedEvent ()
   {
     chatMessageEvent = null;
     deniedEvent = null;

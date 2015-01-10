@@ -19,25 +19,25 @@ public final class CommandMessageRequestEvent implements CommandMessageEvent, Re
   }
 
   @Override
-  public CommandMessage getMessage()
+  public CommandMessage getMessage ()
   {
-    return event.getMessage();
+    return event.getMessage ();
   }
 
   @Override
-  public String getMessageText()
+  public String getMessageText ()
   {
-    return event.getMessageText();
+    return event.getMessageText ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), event);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), event);
   }
 
   @RequiredForNetworkSerialization
-  private CommandMessageRequestEvent()
+  private CommandMessageRequestEvent ()
   {
     event = null;
   }

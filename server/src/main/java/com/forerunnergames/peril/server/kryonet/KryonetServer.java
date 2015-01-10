@@ -24,14 +24,14 @@ import org.slf4j.LoggerFactory;
 public final class KryonetServer extends com.esotericsoftware.kryonet.Server implements Server
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetServer.class);
-  private final Map <NetworkListener, Listener> listeners = new HashMap<>();
+  private final Map <NetworkListener, Listener> listeners = new HashMap <> ();
   private final Kryo kryo;
   private boolean isRunning = false;
 
-  public KryonetServer()
+  public KryonetServer ()
   {
-    kryo = getKryo();
-    kryo.setInstantiatorStrategy (new StdInstantiatorStrategy());
+    kryo = getKryo ();
+    kryo.setInstantiatorStrategy (new StdInstantiatorStrategy ());
   }
 
   @Override
@@ -39,14 +39,14 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Listener kryonetListener = new Listener()
+    final Listener kryonetListener = new Listener ()
     {
       @Override
       public void connected (final Connection connection)
       {
         if (connection == null) return;
 
-        listener.connected (new KryonetRemote (connection.getID(), connection.getRemoteAddressTCP()));
+        listener.connected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
 
       @Override
@@ -54,7 +54,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       {
         if (connection == null) return;
 
-        listener.disconnected (new KryonetRemote (connection.getID(), connection.getRemoteAddressTCP()));
+        listener.disconnected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
 
       @Override
@@ -62,7 +62,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       {
         if (object == null || object instanceof FrameworkMessage) return;
 
-        listener.received (object, new KryonetRemote (connection.getID(), connection.getRemoteAddressTCP()));
+        listener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
     };
 
@@ -101,7 +101,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       return;
     }
 
-    start();
+    start ();
 
     try
     {
@@ -113,31 +113,19 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     }
     catch (final IOException e)
     {
-      stop();
+      stop ();
 
       log.error ("Could not start the server on port [{}] (TCP). Reason: [{}].", tcpPort, Strings.toString (e));
     }
   }
 
   @Override
-  public void stop()
+  public void shutDown ()
   {
-    if (! isRunning) return;
+    if (!isRunning) return;
 
-    super.stop();
-
-    isRunning = false;
-
-    log.info ("Stopped the server.");
-  }
-
-  @Override
-  public void shutDown()
-  {
-    if (! isRunning) return;
-
-    close();
-    stop();
+    close ();
+    stop ();
 
     log.info ("Shut down the server.");
   }
@@ -145,9 +133,9 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
   @Override
   public boolean isConnected (final Remote client)
   {
-    if (! isRunning) return false;
+    if (!isRunning) return false;
 
-    for (final Connection connection : getConnections())
+    for (final Connection connection : getConnections ())
     {
       if (isMatch (connection, client)) return true;
     }
@@ -155,40 +143,25 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     return false;
   }
 
-  private boolean isMatch (final Connection connection, final Remote client)
-  {
-    return idMatches (connection.getID(), client) && addressMatches (connection, client);
-  }
-
-  private boolean idMatches (final int connectionId, final Remote client)
-  {
-    return client.has (connectionId);
-  }
-
-  private boolean addressMatches (final Connection connection, final Remote client)
-  {
-    return client.has (connection.getRemoteAddressTCP()) || client.has (connection.getRemoteAddressUDP());
-  }
-
   @Override
   public void disconnect (final Remote client)
   {
-    if (! isRunning) return;
+    if (!isRunning) return;
 
-    for (final Connection connection : getConnections())
+    for (final Connection connection : getConnections ())
     {
-      if (isMatch (connection, client)) connection.close();
+      if (isMatch (connection, client)) connection.close ();
     }
 
     log.info ("Disconnected client [{}] from server.", client);
   }
 
   @Override
-  public void disconnectAll()
+  public void disconnectAll ()
   {
-    if (! isRunning) return;
+    if (!isRunning) return;
 
-    close();
+    close ();
 
     log.info ("Disconnected all clients.");
   }
@@ -199,21 +172,22 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
 
-    if (! isRunning)
+    if (!isRunning)
     {
       log.warn ("Prevented sending object [{}] to client [{}] because the server isn't running.", object, client);
 
       return;
     }
 
-    if (! isConnected (client))
+    if (!isConnected (client))
     {
-      log.warn ("Prevented sending object [{}] to client [{}] because that client isn't connected to the server.", object, client);
+      log.warn ("Prevented sending object [{}] to client [{}] because that client isn't connected to the server.",
+                      object, client);
 
       return;
     }
 
-    sendToTCP (client.getConnectionId(), object);
+    sendToTCP (client.getConnectionId (), object);
 
     log.debug ("Sent object [{}] to client [{}].", object, client);
   }
@@ -223,7 +197,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
   {
     Arguments.checkIsNotNull (object, "object");
 
-    if (! isRunning)
+    if (!isRunning)
     {
       log.warn ("Prevented sending object [{}] to all clients because the server isn't running.", object);
 
@@ -241,15 +215,43 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
 
-    if (! isRunning)
+    if (!isRunning)
     {
-      log.warn ("Prevented sending object [{}] to all clients except [{}] because the server isn't running.", object, client);
+      log.warn ("Prevented sending object [{}] to all clients except [{}] because the server isn't running.", object,
+                      client);
 
       return;
     }
 
-    sendToAllExceptTCP (client.getConnectionId(), object);
+    sendToAllExceptTCP (client.getConnectionId (), object);
 
     log.debug ("Sent object [{}] to all clients except [{}].", object, client);
+  }
+
+  @Override
+  public void stop ()
+  {
+    if (!isRunning) return;
+
+    super.stop ();
+
+    isRunning = false;
+
+    log.info ("Stopped the server.");
+  }
+
+  private boolean addressMatches (final Connection connection, final Remote client)
+  {
+    return client.has (connection.getRemoteAddressTCP ()) || client.has (connection.getRemoteAddressUDP ());
+  }
+
+  private boolean idMatches (final int connectionId, final Remote client)
+  {
+    return client.has (connectionId);
+  }
+
+  private boolean isMatch (final Connection connection, final Remote client)
+  {
+    return idMatches (connection.getID (), client) && addressMatches (connection, client);
   }
 }

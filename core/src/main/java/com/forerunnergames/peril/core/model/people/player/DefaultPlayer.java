@@ -29,60 +29,9 @@ public class DefaultPlayer extends AbstractPerson implements Player
     this.turnOrder = turnOrder;
   }
 
-  @Override
-  public PlayerColor getColor ()
+  @RequiredForNetworkSerialization
+  protected DefaultPlayer ()
   {
-    return color;
-  }
-
-  @Override
-  public PlayerTurnOrder getTurnOrder ()
-  {
-    return turnOrder;
-  }
-
-  @Override
-  public boolean has (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    return this.color.equals (color);
-  }
-
-  @Override
-  public boolean doesNotHave (final PlayerColor color)
-  {
-    return ! has (color);
-  }
-
-  @Override
-  public boolean has (final PlayerTurnOrder turnOrder)
-  {
-    Arguments.checkIsNotNull (turnOrder, "turnOrder");
-
-    return this.turnOrder.equals (turnOrder);
-  }
-
-  @Override
-  public boolean doesNotHave (final PlayerTurnOrder turnOrder)
-  {
-    return ! has (turnOrder);
-  }
-
-  @Override
-  public void setColor (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    this.color = color;
-  }
-
-  @Override
-  public void setTurnOrder (final PlayerTurnOrder turnOrder)
-  {
-    Arguments.checkIsNotNull (turnOrder, "turnOrder");
-
-    this.turnOrder = turnOrder;
   }
 
   @Override
@@ -104,16 +53,6 @@ public class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
-  public void removeArmiesFromHand (final int armies)
-  {
-    Arguments.checkIsNotNull (armies, "armies");
-    Arguments.checkIsNotNegative (armies, "armies");
-    Preconditions.checkIsTrue (canRemoveNArmiesFromHand (armies), getCannotRemoveNArmiesFromHandErrorMessage (armies));
-
-    armiesInHand -= armies;
-  }
-
-  @Override
   public boolean canRemoveArmiesFromHand (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
@@ -122,9 +61,65 @@ public class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public boolean doesNotHave (final PlayerColor color)
+  {
+    return !has (color);
+  }
+
+  @Override
+  public boolean doesNotHave (final PlayerTurnOrder turnOrder)
+  {
+    return !has (turnOrder);
+  }
+
+  @Override
   public int getArmiesInHand ()
   {
     return armiesInHand;
+  }
+
+  @Override
+  public PlayerColor getColor ()
+  {
+    return color;
+  }
+
+  @Override
+  public void setColor (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+
+    this.color = color;
+  }
+
+  @Override
+  public PlayerTurnOrder getTurnOrder ()
+  {
+    return turnOrder;
+  }
+
+  @Override
+  public void setTurnOrder (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+
+    this.turnOrder = turnOrder;
+  }
+
+  @Override
+  public boolean has (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+
+    return this.color.equals (color);
+  }
+
+  @Override
+  public boolean has (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+
+    return this.turnOrder.equals (turnOrder);
   }
 
   @Override
@@ -135,15 +130,26 @@ public class DefaultPlayer extends AbstractPerson implements Player
     return armiesInHand >= armies;
   }
 
+  @Override
+  public void removeArmiesFromHand (final int armies)
+  {
+    Arguments.checkIsNotNull (armies, "armies");
+    Arguments.checkIsNotNegative (armies, "armies");
+    Preconditions.checkIsTrue (canRemoveNArmiesFromHand (armies), getCannotRemoveNArmiesFromHandErrorMessage (armies));
+
+    armiesInHand -= armies;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand: %4$s", super.toString (), color,
+                    turnOrder, getArmiesInHand ());
+  }
+
   private boolean canAddNArmiesToHand (final int armies)
   {
     return GameSettings.MAX_ARMIES_IN_PLAYER_HAND - armies >= armiesInHand;
-  }
-
-  private String getCannotAddNArmiesToHandErrorMessage (final int armies)
-  {
-    return "Can't add " + armies + " armies to hand: reached maximum value [" + GameSettings.MAX_ARMIES_IN_PLAYER_HAND
-            + "].";
   }
 
   private boolean canRemoveNArmiesFromHand (final int armies)
@@ -151,21 +157,15 @@ public class DefaultPlayer extends AbstractPerson implements Player
     return GameSettings.MIN_ARMIES_IN_PLAYER_HAND + armies <= armiesInHand;
   }
 
+  private String getCannotAddNArmiesToHandErrorMessage (final int armies)
+  {
+    return "Can't add " + armies + " armies to hand: reached maximum value [" + GameSettings.MAX_ARMIES_IN_PLAYER_HAND
+                    + "].";
+  }
+
   private String getCannotRemoveNArmiesFromHandErrorMessage (final int armies)
   {
     return "Can't remove " + armies + " armies from hand: reached minimum value ["
-            + GameSettings.MIN_ARMIES_IN_PLAYER_HAND + "].";
-  }
-
-  @Override
-  public String toString ()
-  {
-    return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand: %4$s", super.toString (), color,
-                          turnOrder, getArmiesInHand ());
-  }
-
-  @RequiredForNetworkSerialization
-  protected DefaultPlayer ()
-  {
+                    + GameSettings.MIN_ARMIES_IN_PLAYER_HAND + "].";
   }
 }

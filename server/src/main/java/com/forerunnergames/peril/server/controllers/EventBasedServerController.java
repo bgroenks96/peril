@@ -61,7 +61,7 @@ public final class EventBasedServerController extends AbstractServerController
 
     log.debug ("Received object [{}] from client [{}].", object, client);
 
-    if (! (object instanceof QuestionEvent))
+    if (!(object instanceof QuestionEvent))
     {
       log.debug ("Ignoring unrecognized object [{}] from client [{}].", object, client);
 

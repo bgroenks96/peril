@@ -15,12 +15,6 @@ import org.junit.Test;
 public class ClassicGameRulesTest
 {
   @Test
-  public void testCalculateInitialArmiesForMinPlayers ()
-  {
-    testCalculateInitialArmiesForNPlayers (GameSettings.MIN_PLAYERS, 40);
-  }
-
-  @Test
   public void testCalculateInitialArmiesForEightPlayers ()
   {
     testCalculateInitialArmiesForNPlayers (8, 10);
@@ -32,23 +26,16 @@ public class ClassicGameRulesTest
     testCalculateInitialArmiesForNPlayers (GameSettings.MAX_PLAYERS, 5);
   }
 
+  @Test
+  public void testCalculateInitialArmiesForMinPlayers ()
+  {
+    testCalculateInitialArmiesForNPlayers (GameSettings.MIN_PLAYERS, 40);
+  }
+
   @Test (expected = IllegalArgumentException.class)
   public void testCalculateInitialArmiesTooFewPlayers ()
   {
     testCalculateInitialArmiesForNPlayers (1, 0);
-  }
-
-  private void testCalculateInitialArmiesForNPlayers (final int numPlayers, final int expectedArmies)
-  {
-    final PlayerModel playerModel = createPlayerModel (numPlayers, createPlayers (numPlayers));
-
-    final GameRules strategy = new ClassicGameRules ();
-
-    for (int i = 0; i < playerModel.getPlayerCount (); i++)
-    {
-      final int initialArmies = strategy.calculateInitialArmies (playerModel.getPlayerCount ());
-      assertTrue (initialArmies == expectedArmies);
-    }
   }
 
   private PlayerModel createPlayerModel (final int playerLimit, final ImmutableSet <Player> players)
@@ -76,5 +63,18 @@ public class ClassicGameRulesTest
     }
 
     return playerSetBuilder.build ();
+  }
+
+  private void testCalculateInitialArmiesForNPlayers (final int numPlayers, final int expectedArmies)
+  {
+    final PlayerModel playerModel = createPlayerModel (numPlayers, createPlayers (numPlayers));
+
+    final GameRules strategy = new ClassicGameRules ();
+
+    for (int i = 0; i < playerModel.getPlayerCount (); i++)
+    {
+      final int initialArmies = strategy.calculateInitialArmies (playerModel.getPlayerCount ());
+      assertTrue (initialArmies == expectedArmies);
+    }
   }
 }

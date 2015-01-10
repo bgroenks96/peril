@@ -25,37 +25,37 @@ public final class DefaultPlayerColorEvent implements PlayerColorEvent
   }
 
   @Override
-  public Player getPlayer()
-  {
-    return playerEvent.getPlayer();
-  }
-
-  @Override
-  public String getPlayerName()
-  {
-    return playerEvent.getPlayerName();
-  }
-
-  @Override
-  public PlayerColor getCurrentColor()
+  public PlayerColor getCurrentColor ()
   {
     return currentColor;
   }
 
   @Override
-  public PlayerColor getPreviousColor()
+  public PlayerColor getPreviousColor ()
   {
     return previousColor;
   }
 
   @Override
-  public String toString()
+  public Player getPlayer ()
+  {
+    return playerEvent.getPlayer ();
+  }
+
+  @Override
+  public String getPlayerName ()
+  {
+    return playerEvent.getPlayerName ();
+  }
+
+  @Override
+  public String toString ()
   {
     return String.format ("Current color: %1$s | Previous color: %2$s | %3$s", currentColor, previousColor, playerEvent);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultPlayerColorEvent()
+  private DefaultPlayerColorEvent ()
   {
     playerEvent = null;
     currentColor = null;

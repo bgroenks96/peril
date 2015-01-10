@@ -7,24 +7,6 @@ import com.forerunnergames.tools.common.id.IdGenerator;
 
 public final class PlayerFactory
 {
-
-  public static Player create (final String name)
-  {
-    return builder(name).build();
-  }
-
-  public static Player create (final String name,
-                               final PersonIdentity identity,
-                               final PlayerColor color,
-                               final PlayerTurnOrder turnOrder)
-  {
-    return builder (name)
-            .withIdentity (identity)
-            .withColor (color)
-            .withTurnOrder (turnOrder)
-            .build();
-  }
-
   /**
    * Convenience method for obtaining an instance of PlayerBuilder
    */
@@ -33,9 +15,22 @@ public final class PlayerFactory
     return new PlayerBuilder (playerName);
   }
 
+  public static Player create (final String name)
+  {
+    return builder (name).build ();
+  }
+
+  public static Player create (final String name,
+                               final PersonIdentity identity,
+                               final PlayerColor color,
+                               final PlayerTurnOrder turnOrder)
+  {
+    return builder (name).withIdentity (identity).withColor (color).withTurnOrder (turnOrder).build ();
+  }
+
   /*
-   * PlayerBuilder is public and static so that the type is visible both to the PlayerFactory.builder
-   * convenience method and to external callers of the builder method.
+   * PlayerBuilder is public and static so that the type is visible both to the PlayerFactory.builder convenience method
+   * and to external callers of the builder method.
    */
   public static final class PlayerBuilder
   {
@@ -50,16 +45,12 @@ public final class PlayerFactory
       Arguments.checkIsNotNull (name, "name");
 
       this.name = name;
-      this.id = IdGenerator.generateUniqueId();
+      this.id = IdGenerator.generateUniqueId ();
     }
 
-    public PlayerBuilder withIdentity (final PersonIdentity identity)
+    public Player build ()
     {
-      Arguments.checkIsNotNull (identity, "identity");
-
-      this.identity = identity;
-
-      return this;
+      return new DefaultPlayer (name, id, identity, color, turnOrder);
     }
 
     public PlayerBuilder withColor (final PlayerColor color)
@@ -71,6 +62,15 @@ public final class PlayerFactory
       return this;
     }
 
+    public PlayerBuilder withIdentity (final PersonIdentity identity)
+    {
+      Arguments.checkIsNotNull (identity, "identity");
+
+      this.identity = identity;
+
+      return this;
+    }
+
     public PlayerBuilder withTurnOrder (final PlayerTurnOrder turnOrder)
     {
       Arguments.checkIsNotNull (turnOrder, "turnOrder");
@@ -78,11 +78,6 @@ public final class PlayerFactory
       this.turnOrder = turnOrder;
 
       return this;
-    }
-
-    public Player build()
-    {
-      return new DefaultPlayer (name, id, identity, color, turnOrder);
     }
   }
 }

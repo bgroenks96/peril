@@ -17,17 +17,27 @@ public enum PlayerTurnOrder
   NINTH,
   TENTH;
 
-  public static int count()
+  public static int count ()
   {
-    return values().length;
+    return values ().length;
   }
 
   public static PlayerTurnOrder getNthTurnOrder (final int nthPlayerTurnOrder)
   {
     Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
-    Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count() - 1, "nthPlayerTurnOrder");
+    Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");
 
-    return PlayerTurnOrder.values() [nthPlayerTurnOrder];
+    return PlayerTurnOrder.values ()[nthPlayerTurnOrder];
+  }
+
+  public int asInt ()
+  {
+    return ordinal ();
+  }
+
+  public boolean hasNext ()
+  {
+    return (ordinal () < values ().length - 1);
   }
 
   public boolean is (final PlayerTurnOrder turnOrder)
@@ -41,49 +51,40 @@ public enum PlayerTurnOrder
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
-    return ! this.equals (turnOrder);
+    return !this.equals (turnOrder);
   }
 
-  public boolean hasNext()
+  public PlayerTurnOrder next ()
   {
-    return (ordinal() < values().length - 1);
-  }
-
-  public PlayerTurnOrder next()
-  {
-    if (hasNext())
+    if (hasNext ())
     {
-      return values()[ordinal() + 1];
+      return values ()[ordinal () + 1];
     }
     else
     {
-      throw new IllegalStateException ("Cannot get next " + getClass().getSimpleName() + " value because " + toString() + " is the last value.");
+      throw new IllegalStateException ("Cannot get next " + getClass ().getSimpleName () + " value because "
+                      + toString () + " is the last value.");
     }
   }
 
-  public int asInt()
+  public String toLowerCase ()
   {
-    return ordinal();
+    return name ().toLowerCase ();
+  }
+
+  public String toMixedOrdinal ()
+  {
+    return Strings.toMixedOrdinal (asInt ());
+  }
+
+  public String toProperCase ()
+  {
+    return Strings.toProperCase (name ());
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return name();
-  }
-
-  public String toMixedOrdinal()
-  {
-    return Strings.toMixedOrdinal (asInt());
-  }
-
-  public String toProperCase()
-  {
-    return Strings.toProperCase (name());
-  }
-
-  public String toLowerCase()
-  {
-    return name().toLowerCase();
+    return name ();
   }
 }

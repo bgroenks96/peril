@@ -15,6 +15,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// @formatter:off
 /* TODO Refactor:
  *
  * - This class should not be directly modifying game state.
@@ -43,11 +44,12 @@ import org.slf4j.LoggerFactory;
  *   from the server, and finally passing them on to the client UI logic, so that the UI can update it's state to
  *   accurately reflect the current state of the server.
  */
+// @formatter:on
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
-  private final Map <Id, Remote> playerIdsToClients = newHashMap();
-  private final Map <Remote, Id> clientsToPlayerIds = newHashMap();
+  private final Map <Id, Remote> playerIdsToClients = newHashMap ();
+  private final Map <Remote, Id> clientsToPlayerIds = newHashMap ();
   private final ClientConnector clientConnector;
   private final ClientCommunicator clientCommunicator;
   private final PlayerModel playerModel;
@@ -76,11 +78,12 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Override
-  public boolean shouldShutDown()
+  public boolean shouldShutDown ()
   {
     return shouldShutDown;
   }
 
+  // @formatter:off
   /*
   @EventSubscriber (eventClass = ClientConnectionEvent.class)
   public void onClientConnectionEvent (ClientConnectionEvent event)
@@ -553,4 +556,5 @@ public final class MultiplayerController extends ControllerAdapter
     shouldShutDown = true;
   }
   */
+  // @formatter:on
 }

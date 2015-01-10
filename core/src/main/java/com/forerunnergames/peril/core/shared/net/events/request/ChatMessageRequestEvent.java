@@ -21,39 +21,39 @@ public final class ChatMessageRequestEvent implements ChatMessageEvent, RequestE
     event = new DefaultChatMessageEvent (chatMessage);
   }
 
-  @Override
-  public ChatMessage getMessage()
-  {
-    return event.getMessage();
-  }
-
-  @Override
-  public String getMessageText()
-  {
-    return event.getMessageText();
-  }
-
-  @Override
-  public boolean hasAuthor()
-  {
-    return event.hasAuthor();
-  }
-
   @Nullable
   @Override
-  public Author getAuthor()
+  public Author getAuthor ()
   {
-    return event.getAuthor();
+    return event.getAuthor ();
   }
 
   @Override
-  public String toString()
+  public boolean hasAuthor ()
   {
-    return String.format ("%1$s: %2$s", getClass().getSimpleName(), event);
+    return event.hasAuthor ();
+  }
+
+  @Override
+  public ChatMessage getMessage ()
+  {
+    return event.getMessage ();
+  }
+
+  @Override
+  public String getMessageText ()
+  {
+    return event.getMessageText ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), event);
   }
 
   @RequiredForNetworkSerialization
-  private ChatMessageRequestEvent()
+  private ChatMessageRequestEvent ()
   {
     event = null;
   }

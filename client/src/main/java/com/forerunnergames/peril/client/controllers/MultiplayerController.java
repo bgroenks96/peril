@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.client.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.*;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withAddressFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withNameFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withTcpPortFrom;
 import static com.forerunnergames.tools.common.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.common.net.events.EventFluency.serverFrom;
 
@@ -18,7 +20,11 @@ import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ServerCommunicator;
 import com.forerunnergames.tools.common.net.ServerConnector;
 import com.forerunnergames.tools.common.net.ServerCreator;
-import com.forerunnergames.tools.common.net.events.*;
+import com.forerunnergames.tools.common.net.events.AnswerEvent;
+import com.forerunnergames.tools.common.net.events.RequestEvent;
+import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
+import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
+import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -26,6 +32,7 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// @formatter:off
 /**
  * Facilitates communication between the server and the client UI logic.
  *
@@ -34,10 +41,10 @@ import org.slf4j.LoggerFactory;
  * 1) Subscribe to *RequestEvent's from the client UI logic.
  * 2) Send *RequestEvent's to the server wrapped in ClientCommunicationEvent's.
  * 3) Listen for ServerCommunicationEvent's from the server.
- * 4) Unwrap ServerCommunicationEvent's and publish the *AnswerEvent's (*SuccessEvent or *DeniedEvent) to the
- *    client UI logic via the event bus, so that the UI can update it's state to accurately reflect the current state
- *    of the server.
+ * 4) Unwrap ServerCommunicationEvent's and publish the *AnswerEvent's (*SuccessEvent or *DeniedEvent) to the client UI
+ * logic via the event bus, so that the UI can update it's state to accurately reflect the current state of the server.
  */
+// @formatter:on
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
@@ -65,35 +72,61 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Override
-  public void initialize()
+  public void initialize ()
   {
     eventBus.subscribe (this);
   }
 
   @Override
-  public void shutDown()
+  public void shutDown ()
   {
     eventBus.unsubscribe (this);
-    serverConnector.disconnect();
-    destroyServer();
+    serverConnector.disconnect ();
+    destroyServer ();
   }
 
   @Handler
-  public void onSeverConnectionEvent (final ServerConnectionEvent event)
+  public void onCloseMultiplayerServerSuccessEvent (final CloseMultiplayerServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
-    log.info ("Successfully connected to server [{}].", serverFrom (event));
+
+    destroyServer ();
   }
 
-  @Handler
-  public void onServerDisconnectEvent (final ServerDisconnectionEvent event)
+  @Handler (priority = CALL_FIRST)
+  public void onJoinMultiplayerServerRequestEvent (final JoinMultiplayerServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
-    log.info ("Disconnected from server [{}].", serverFrom (event));
+
+    final Result <String> result = joinMultiplayerServer (withAddressFrom (event), withTcpPortFrom (event));
+
+    if (result.isFailure ()) joinMultiplayerServerDenied (event, result.getFailureReason ());
+  }
+
+  @Handler (priority = CALL_FIRST)
+  public void onOpenMultiplayerServerRequestEvent (final OpenMultiplayerServerRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event [{}] received.", event);
+
+    final Result <String> result = openMultiplayerServer (withNameFrom (event), withTcpPortFrom (event));
+
+    if (result.isFailure ()) openMultiplayerServerDenied (event, result.getFailureReason ());
+  }
+
+  @Handler (priority = CALL_LAST)
+  public void onRequestEvent (final RequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event [{}] received.", event);
+
+    sendToServer (event);
   }
 
   @Handler
@@ -115,80 +148,46 @@ public final class MultiplayerController extends ControllerAdapter
     }
   }
 
-  @Handler (priority = CALL_FIRST)
-  public void onOpenMultiplayerServerRequestEvent (final OpenMultiplayerServerRequestEvent event)
+  @Handler
+  public void onServerDisconnectEvent (final ServerDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
-
-    final Result <String> result = openMultiplayerServer (withNameFrom (event), withTcpPortFrom (event));
-
-    if (result.isFailure()) openMultiplayerServerDenied (event, result.getFailureReason());
-  }
-
-  @Handler (priority = CALL_FIRST)
-  public void onJoinMultiplayerServerRequestEvent (final JoinMultiplayerServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event [{}] received.", event);
-
-    final Result <String> result = joinMultiplayerServer (withAddressFrom (event), withTcpPortFrom (event));
-
-    if (result.isFailure()) joinMultiplayerServerDenied (event, result.getFailureReason());
-  }
-
-  @Handler (priority = CALL_LAST)
-  public void onRequestEvent (final RequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event [{}] received.", event);
-
-    sendToServer (event);
+    log.info ("Disconnected from server [{}].", serverFrom (event));
   }
 
   @Handler
-  public void onCloseMultiplayerServerSuccessEvent (final CloseMultiplayerServerSuccessEvent event)
+  public void onSeverConnectionEvent (final ServerConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
-
-    destroyServer();
+    log.info ("Successfully connected to server [{}].", serverFrom (event));
   }
 
-  private void sendToServer (final RequestEvent event)
+  private Result <String> connectToServer (final String address, final int tcpPort)
   {
-    if (! serverConnector.isConnected())
-    {
-      log.warn ("Prevented sending request [{}] to the server while disconnected.", event);
-      return;
-    }
-
-    log.debug ("Sending request [{}] to the server.", event);
-
-    serverCommunicator.send (event);
+    return connectToServer (address, tcpPort, NetworkSettings.CONNECTION_TIMEOUT_MS,
+                    NetworkSettings.MAX_CONNECTION_ATTEMPTS);
   }
 
-  private Result <String> openMultiplayerServer (final String name, final int tcpPort)
+  private Result <String> connectToServer (final String address,
+                                           final int tcpPort,
+                                           final int timeoutMs,
+                                           final int maxAttempts)
   {
-    Result <String> result = createServer (name, tcpPort);
-
-    if (result.isFailure()) return result;
-
-    result = connectToServer (resolveServerAddress(), tcpPort);
-
-    if (result.isFailure()) destroyServer();
-
-    return result;
+    return serverConnector.connect (address, tcpPort, timeoutMs, maxAttempts);
   }
 
-  private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event, final String reason)
+  private Result <String> createServer (final String name, final int tcpPort)
   {
-    destroyServer();
-    eventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reason));
+    return serverCreator.create (name, tcpPort);
+  }
+
+  private void destroyServer ()
+  {
+    serverCreator.destroy ();
   }
 
   private Result <String> joinMultiplayerServer (final String address, final int tcpPort)
@@ -201,28 +200,40 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (new JoinMultiplayerServerDeniedEvent (event, reason));
   }
 
-  private Result <String> createServer (final String name, final int tcpPort)
+  private Result <String> openMultiplayerServer (final String name, final int tcpPort)
   {
-    return serverCreator.create (name, tcpPort);
+    Result <String> result = createServer (name, tcpPort);
+
+    if (result.isFailure ()) return result;
+
+    result = connectToServer (resolveServerAddress (), tcpPort);
+
+    if (result.isFailure ()) destroyServer ();
+
+    return result;
   }
 
-  private void destroyServer()
+  private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event, final String reason)
   {
-    serverCreator.destroy();
+    destroyServer ();
+    eventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reason));
   }
 
-  private String resolveServerAddress()
+  private String resolveServerAddress ()
   {
-    return serverCreator.resolveAddress();
+    return serverCreator.resolveAddress ();
   }
 
-  private Result <String> connectToServer (final String address, final int tcpPort)
+  private void sendToServer (final RequestEvent event)
   {
-    return connectToServer (address, tcpPort, NetworkSettings.CONNECTION_TIMEOUT_MS, NetworkSettings.MAX_CONNECTION_ATTEMPTS);
-  }
+    if (!serverConnector.isConnected ())
+    {
+      log.warn ("Prevented sending request [{}] to the server while disconnected.", event);
+      return;
+    }
 
-  private Result <String> connectToServer (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
-  {
-    return serverConnector.connect (address, tcpPort, timeoutMs, maxAttempts);
+    log.debug ("Sending request [{}] to the server.", event);
+
+    serverCommunicator.send (event);
   }
 }

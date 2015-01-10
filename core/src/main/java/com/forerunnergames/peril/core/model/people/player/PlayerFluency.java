@@ -12,16 +12,16 @@ public final class PlayerFluency
     return player.getColor ();
   }
 
-  public static PlayerColor withColorOf (final Player player)
-  {
-    return colorOf (player);
-  }
-
   public static PlayerTurnOrder turnOrderOf (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
     return player.getTurnOrder ();
+  }
+
+  public static PlayerColor withColorOf (final Player player)
+  {
+    return colorOf (player);
   }
 
   private PlayerFluency ()

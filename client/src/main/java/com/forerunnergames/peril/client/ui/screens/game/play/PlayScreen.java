@@ -1,6 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -29,21 +33,21 @@ public final class PlayScreen extends InputAdapter implements Screen
     this.music = music;
 
     // Layer 0 - background image
-    final Stack rootStack = new Stack();
+    final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     rootStack.add (new Image (Assets.playScreenBackground));
 
     // Layer 1 - map background image
-    final Table tableL1 = new Table();
-    tableL1.debugAll();
+    final Table tableL1 = new Table ();
+    tableL1.debugAll ();
     rootStack.add (tableL1);
-    tableL1.add().top().left();//.width (1704.0f).height (804.0f);//.padTop (14.0f).padLeft (14.0f);
-    //tableL1.add (new Image (Assets.playScreenMapBackground)).expandY().fillY();
-    //tableL1.add().expandX();
+    tableL1.add ().top ().left ();// .width (1704.0f).height (804.0f);//.padTop (14.0f).padLeft (14.0f);
+    // tableL1.add (new Image (Assets.playScreenMapBackground)).expandY().fillY();
+    // tableL1.add().expandX();
 
-    stage = new Stage();
+    stage = new Stage ();
     stage.addActor (rootStack);
-    stage.getViewport().setCamera (new OrthographicCamera (Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+    stage.getViewport ().setCamera (new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ()));
   }
 
   @Override
@@ -59,7 +63,7 @@ public final class PlayScreen extends InputAdapter implements Screen
       }
       case Input.Keys.ESCAPE:
       {
-        Gdx.app.exit();
+        Gdx.app.exit ();
       }
       default:
       {
@@ -69,19 +73,11 @@ public final class PlayScreen extends InputAdapter implements Screen
   }
 
   @Override
-  public void show()
+  public void show ()
   {
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
 
-    music.start();
-  }
-
-  @Override
-  public void hide()
-  {
-    Gdx.input.setInputProcessor (null);
-
-    music.stop();
+    music.start ();
   }
 
   @Override
@@ -91,28 +87,36 @@ public final class PlayScreen extends InputAdapter implements Screen
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
     stage.act (delta);
-    stage.draw();
+    stage.draw ();
   }
 
   @Override
   public void resize (final int width, final int height)
   {
-    stage.getViewport().update (width, height, true);
+    stage.getViewport ().update (width, height, true);
   }
 
   @Override
-  public void pause()
+  public void pause ()
   {
   }
 
   @Override
-  public void resume()
+  public void resume ()
   {
   }
 
   @Override
-  public void dispose()
+  public void hide ()
   {
-    stage.dispose();
+    Gdx.input.setInputProcessor (null);
+
+    music.stop ();
+  }
+
+  @Override
+  public void dispose ()
+  {
+    stage.dispose ();
   }
 }

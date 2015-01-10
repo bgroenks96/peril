@@ -8,9 +8,9 @@ import com.forerunnergames.peril.client.settings.GraphicsSettings;
 
 public final class DesktopLauncher
 {
-	public static void main (final String... args)
+  public static void main (final String... args)
   {
-    final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+    final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration ();
 
     config.width = GraphicsSettings.REFERENCE_RESOLUTION_WIDTH;
     config.height = GraphicsSettings.REFERENCE_RESOLUTION_HEIGHT;
@@ -19,6 +19,6 @@ public final class DesktopLauncher
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;
 
-		new LwjglApplication (LibGdxGameFactory.create(), config);
-	}
+    new LwjglApplication (LibGdxGameFactory.create (), config);
+  }
 }

@@ -27,38 +27,38 @@ public final class DefaultPlayerTurnOrderEvent implements PlayerTurnOrderEvent
   }
 
   @Override
-  public Player getPlayer()
-  {
-    return playerEvent.getPlayer();
-  }
-
-  @Override
-  public String getPlayerName()
-  {
-    return playerEvent.getPlayerName();
-  }
-
-  @Override
-  public PlayerTurnOrder getCurrentTurnOrder()
+  public PlayerTurnOrder getCurrentTurnOrder ()
   {
     return currentTurnOrder;
   }
 
   @Override
-  public PlayerTurnOrder getPreviousTurnOrder()
+  public PlayerTurnOrder getPreviousTurnOrder ()
   {
     return previousTurnOrder;
   }
 
   @Override
-  public String toString()
+  public Player getPlayer ()
   {
-    return String.format ("%1$s | Current turn order: %2$s | Previous turn order: %3$s",
-            playerEvent, currentTurnOrder, previousTurnOrder);
+    return playerEvent.getPlayer ();
+  }
+
+  @Override
+  public String getPlayerName ()
+  {
+    return playerEvent.getPlayerName ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | Current turn order: %2$s | Previous turn order: %3$s", playerEvent, currentTurnOrder,
+                    previousTurnOrder);
   }
 
   @RequiredForNetworkSerialization
-  private DefaultPlayerTurnOrderEvent()
+  private DefaultPlayerTurnOrderEvent ()
   {
     playerEvent = null;
     currentTurnOrder = null;

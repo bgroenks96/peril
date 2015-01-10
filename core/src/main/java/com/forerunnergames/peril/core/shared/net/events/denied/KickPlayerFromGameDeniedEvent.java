@@ -24,37 +24,37 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   }
 
   @Override
-  public String getReason()
+  public Player getPlayer ()
   {
-    return playerDeniedEvent.getReason();
+    return playerDeniedEvent.getPlayer ();
   }
 
   @Override
-  public Player getPlayer()
+  public String getPlayerName ()
   {
-    return playerDeniedEvent.getPlayer();
+    return playerDeniedEvent.getPlayerName ();
   }
 
   @Override
-  public String getPlayerName()
+  public String getReason ()
   {
-    return playerDeniedEvent.getPlayerName();
+    return playerDeniedEvent.getReason ();
   }
 
   @Override
-  public String getReasonForKick()
+  public String getReasonForKick ()
   {
-    return kickEvent.getReasonForKick();
+    return kickEvent.getReasonForKick ();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass().getSimpleName(), kickEvent, playerDeniedEvent);
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), kickEvent, playerDeniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private KickPlayerFromGameDeniedEvent()
+  private KickPlayerFromGameDeniedEvent ()
   {
     kickEvent = null;
     playerDeniedEvent = null;
