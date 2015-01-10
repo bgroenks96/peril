@@ -33,7 +33,7 @@ public final class JoinMultiplayerServerRequestEvent implements JoinServerEvent,
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), joinServerEvent);
+    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), joinServerEvent);
   }
 
   @RequiredForNetworkSerialization

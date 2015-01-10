@@ -49,7 +49,7 @@ public final class ChatMessageRequestEvent implements ChatMessageEvent, RequestE
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), event);
+    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), event);
   }
 
   @RequiredForNetworkSerialization

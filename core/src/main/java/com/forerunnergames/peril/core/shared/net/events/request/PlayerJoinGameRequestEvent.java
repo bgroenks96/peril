@@ -23,7 +23,7 @@ public final class PlayerJoinGameRequestEvent implements RequestEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player name: %2$s", getClass ().getSimpleName (), playerName);
+    return String.format ("%1$s: Player name: %2$s", ((Object) this).getClass ().getSimpleName (), playerName);
   }
 
   @RequiredForNetworkSerialization

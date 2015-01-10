@@ -49,7 +49,7 @@ public final class DefaultChatMessage implements ChatMessage
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Author: %2$s Message: %3$s", getClass ().getSimpleName (), author, message);
+    return String.format ("%1$s: Author: %2$s Message: %3$s", ((Object) this).getClass ().getSimpleName (), author, message);
   }
 
   @RequiredForNetworkSerialization

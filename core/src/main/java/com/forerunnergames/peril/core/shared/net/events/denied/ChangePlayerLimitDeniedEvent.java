@@ -33,7 +33,7 @@ public final class ChangePlayerLimitDeniedEvent extends AbstractDeniedEvent <Cha
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player limit delta: %2$s | %3$s", getClass ().getSimpleName (), playerLimitDelta,
+    return String.format ("%1$s: Player limit delta: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerLimitDelta,
                     super.toString ());
   }
 

@@ -22,7 +22,7 @@ public final class ChangePlayerLimitRequestEvent implements RequestEvent, Player
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player limit delta: %2$s", getClass ().getSimpleName (), playerLimitDelta);
+    return String.format ("%1$s: Player limit delta: %2$s", ((Object) this).getClass ().getSimpleName (), playerLimitDelta);
   }
 
   @RequiredForNetworkSerialization

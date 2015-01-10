@@ -71,7 +71,7 @@ public final class JoinMultiplayerServerSuccessEvent implements JoinServerEvent,
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Server name: %2$s | %3$s | Players in game: %4$s | Player limit: %5$s", getClass ()
+    return String.format ("%1$s: Server name: %2$s | %3$s | Players in game: %4$s | Player limit: %5$s", ((Object) this).getClass ()
                     .getSimpleName (), serverName, joinServerEvent, Strings.toString (playersInGame), playerLimit);
   }
 

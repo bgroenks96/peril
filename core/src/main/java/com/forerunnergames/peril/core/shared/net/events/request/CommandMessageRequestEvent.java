@@ -33,7 +33,7 @@ public final class CommandMessageRequestEvent implements CommandMessageEvent, Re
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), event);
+    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), event);
   }
 
   @RequiredForNetworkSerialization

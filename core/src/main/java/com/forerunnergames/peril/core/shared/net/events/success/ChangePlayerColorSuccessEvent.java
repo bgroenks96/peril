@@ -60,7 +60,7 @@ public final class ChangePlayerColorSuccessEvent implements PlayerColorEvent, Su
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), playerColorEvent);
+    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), playerColorEvent);
   }
 
   @RequiredForNetworkSerialization

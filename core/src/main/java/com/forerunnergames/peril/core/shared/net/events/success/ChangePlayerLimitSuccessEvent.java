@@ -41,7 +41,7 @@ public final class ChangePlayerLimitSuccessEvent implements SuccessEvent, Player
   public String toString ()
   {
     return String.format ("%1$s: New Player Limit: %2$s | Old Player Limit: %3$s | Player limit delta: %4$s",
-                    getClass ().getSimpleName (), newPlayerLimit, oldPlayerLimit, playerLimitDelta);
+                    ((Object) this).getClass ().getSimpleName (), newPlayerLimit, oldPlayerLimit, playerLimitDelta);
   }
 
   @RequiredForNetworkSerialization

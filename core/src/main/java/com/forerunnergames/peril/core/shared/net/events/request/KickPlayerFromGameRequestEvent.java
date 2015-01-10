@@ -44,7 +44,7 @@ public final class KickPlayerFromGameRequestEvent implements PlayerEvent, KickEv
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), kickEvent);
+    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), kickEvent);
   }
 
   @RequiredForNetworkSerialization

@@ -41,7 +41,7 @@ public final class PlayerLeaveGameDeniedEvent extends AbstractDeniedEvent <Playe
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), playerEvent, super.toString ());
+    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerEvent, super.toString ());
   }
 
   @RequiredForNetworkSerialization

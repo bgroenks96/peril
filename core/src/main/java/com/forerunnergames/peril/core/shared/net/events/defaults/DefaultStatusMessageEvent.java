@@ -31,7 +31,7 @@ public final class DefaultStatusMessageEvent implements StatusMessageEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Message: %2$s", getClass ().getSimpleName (), message);
+    return String.format ("%1$s: Message: %2$s", ((Object) this).getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization

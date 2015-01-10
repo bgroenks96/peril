@@ -71,7 +71,7 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), playerColorEvent, super.toString ());
+    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerColorEvent, super.toString ());
   }
 
   @RequiredForNetworkSerialization
