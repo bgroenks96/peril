@@ -8,7 +8,7 @@ import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
-public class DefaultPlayer extends AbstractPerson implements Player
+public final class DefaultPlayer extends AbstractPerson implements Player
 {
   private PlayerColor color;
   private PlayerTurnOrder turnOrder;
