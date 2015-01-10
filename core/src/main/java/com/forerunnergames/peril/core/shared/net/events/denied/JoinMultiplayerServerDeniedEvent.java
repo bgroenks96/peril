@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.JoinMultiplayerServerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
 public final class JoinMultiplayerServerDeniedEvent implements DeniedEvent <String>, JoinServerEvent

@@ -3,12 +3,10 @@ package com.forerunnergames.peril.core.model.people.player;
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import com.forerunnergames.tools.common.id.IdGenerator;
 
 public final class PlayerFactory
 {
-  private static AtomicInteger globallyUniqueIdValue = new AtomicInteger (Integer.MIN_VALUE + 1);
 
   public static Player create (final String name)
   {
@@ -27,20 +25,18 @@ public final class PlayerFactory
             .build();
   }
 
-  public static PlayerBuilder builder (final String name)
+  /**
+   * Convenience method for obtaining an instance of PlayerBuilder
+   */
+  public static PlayerBuilder builder (final String playerName)
   {
-    return new PlayerBuilder (name);
+    return new PlayerBuilder (playerName);
   }
 
-  private static Id uniqueId()
-  {
-    final Id id = new Id (globallyUniqueIdValue.getAndIncrement());
-
-    if (id.hasValue (Integer.MIN_VALUE)) throw new IllegalStateException ("Ran out of unique id's!");
-
-    return id;
-  }
-
+  /*
+   * PlayerBuilder is public and static so that the type is visible both to the PlayerFactory.builder
+   * convenience method and to external callers of the builder method.
+   */
   public static final class PlayerBuilder
   {
     private final String name;
@@ -54,7 +50,7 @@ public final class PlayerFactory
       Arguments.checkIsNotNull (name, "name");
 
       this.name = name;
-      this.id = uniqueId();
+      this.id = IdGenerator.generateUniqueId();
     }
 
     public PlayerBuilder withIdentity (final PersonIdentity identity)

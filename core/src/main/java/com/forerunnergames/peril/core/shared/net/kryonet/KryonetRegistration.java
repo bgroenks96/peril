@@ -5,16 +5,9 @@ import com.forerunnergames.peril.core.model.people.player.DefaultPlayer;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.defaults.*;
-import com.forerunnergames.peril.core.shared.net.events.denied.AttackCountryDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChatMessageDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.DefendCountryDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.JoinMultiplayerServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.KickPlayerFromGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.*;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.*;
 import com.forerunnergames.peril.core.shared.net.events.success.*;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
@@ -32,7 +25,9 @@ import java.util.HashMap;
 
 public final class KryonetRegistration
 {
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
   public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.<Class <?>> of (
+          // @formatter:off
           AbstractDeniedEvent.class,
           AbstractMessageEvent.class,
           ArrayList.class,
@@ -69,6 +64,7 @@ public final class KryonetRegistration
           DefendCountryRequestEvent.class,
           DefendCountrySuccessEvent.class,
           DeterminePlayerTurnOrderCompleteEvent.class,
+          DistributeInitialArmiesCompleteEvent.class,
           HashMap.class,
           Id.class,
           ImmutableSet.class,

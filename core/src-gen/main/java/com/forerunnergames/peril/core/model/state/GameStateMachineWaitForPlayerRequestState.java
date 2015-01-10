@@ -55,7 +55,7 @@ public class GameStateMachineWaitForPlayerRequestState
         // Self transition triggered by onPlayerJoinGameRequestEvent
         context.setTransitionName("onPlayerJoinGameRequestEvent");
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineWaitForPlayerRequestState.getInstance());
-        gameModel.handlePlayerJoinGameRequest (event);
+        gameModel.handlePlayerJoinGameRequest               (event);
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineWaitForPlayerRequestState.getInstance());
         return ;
     }
@@ -69,7 +69,7 @@ public class GameStateMachineWaitForPlayerRequestState
         // Self transition triggered by onChangePlayerLimitRequestEvent
         context.setTransitionName("onChangePlayerLimitRequestEvent");
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineWaitForPlayerRequestState.getInstance());
-        gameModel.handleChangePlayerLimitRequest (event);
+        gameModel.handleChangePlayerLimitRequest               (event);
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineWaitForPlayerRequestState.getInstance());
         return ;
     }
@@ -83,7 +83,7 @@ public class GameStateMachineWaitForPlayerRequestState
         // Self transition triggered by onChangePlayerColorRequestEvent
         context.setTransitionName("onChangePlayerColorRequestEvent");
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineWaitForPlayerRequestState.getInstance());
-        gameModel.handleChangePlayerColorRequest (event);
+        gameModel.handleChangePlayerColorRequest               (event);
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineWaitForPlayerRequestState.getInstance());
         return ;
     }

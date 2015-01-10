@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultPlayerEvent implements PlayerEvent
 {

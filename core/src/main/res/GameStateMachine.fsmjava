@@ -1,68 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sm:StateMachine xmlns:sm="http://www.stateforge.com/StateMachineJava-v1"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.stateforge.com/StateMachineJava-v1
-                                     http://www.stateforge.com/xsd/StateMachineJava-v1.xsd
-                                     http://www.stateforge.com/StateMachineJava-v1">
+<sm:StateMachine xmlns:sm="http://www.stateforge.com/StateMachineJava-v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.stateforge.com/StateMachineJava-v1 http://www.stateforge.com/xsd/StateMachineJava-v1.xsd
+  http://www.stateforge.com/StateMachineJava-v1">
   <!-- General settings -->
   <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
-    <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model" />
+    <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model"
+      />
   </settings>
-
+  
   <!-- Events -->
   <events>
     <eventSource name="Game">
       <event id="onCreateGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.events.CreateGameEvent" name="event"/>
       </event>
-      <event id="onDestroyGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.events.DestroyGameEvent" name="event"/>
+      <event id="onDeterminePlayerTurnOrderCompleteEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent"
+          name="event"/>
+      </event>
+      <event id="onDistributeInitialArmiesCompleteEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent"
+          name="event"/>
       </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.events.EndGameEvent" name="event"/>
       </event>
+      <event id="onDestroyGameEvent">
+        <parameter type="com.forerunnergames.peril.core.model.events.DestroyGameEvent" name="event"/>
+      </event>
     </eventSource>
     <eventSource name="Players">
       <event id="onPlayerJoinGameRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent"
+          name="event"/>
       </event>
       <event id="onPlayerJoinGameSuccessEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent"
+          name="event"/>
       </event>
       <event id="onPlayerJoinGameDeniedEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent"
+          name="event"/>
       </event>
       <event id="onChangePlayerLimitRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent"
+          name="event"/>
       </event>
       <event id="onChangePlayerColorRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent"
+          name="event"/>
       </event>
     </eventSource>
   </events>
-
+  
   <!-- States -->
   <state name="Root">
-
+    
     <state name="Initial">
       <transition event="onCreateGameEvent" nextState="Operating"/>
     </state>
-
+    
     <state name="Operating">
       <transition event="onDestroyGameEvent" nextState="End"/>
-
+      
       <!-- Parallel sections function independently of each other. -->
       <parallel nextState="End">
-
+        
         <!-- First parallel section -->
         <state name="PlayerHandler">
           <state name="WaitForPlayerRequest">
-            <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)" nextState="WaitForPlayerRequest"/>
-            <transition event="onChangePlayerLimitRequestEvent" action="gameModel.handleChangePlayerLimitRequest (event)" nextState="WaitForPlayerRequest"/>
-            <transition event="onChangePlayerColorRequestEvent" action="gameModel.handleChangePlayerColorRequest (event)" nextState="WaitForPlayerRequest"/>
+            <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest
+              (event)" nextState="WaitForPlayerRequest"/>
+            <transition event="onChangePlayerLimitRequestEvent" action="gameModel.handleChangePlayerLimitRequest
+              (event)" nextState="WaitForPlayerRequest"/>
+            <transition event="onChangePlayerColorRequestEvent" action="gameModel.handleChangePlayerColorRequest
+              (event)" nextState="WaitForPlayerRequest"/>
           </state>
         </state>
-
+        
         <!-- Second parallel section -->
         <state name="GameHandler">
           <state name="WaitForGameToBegin">
@@ -70,18 +85,22 @@
           </state>
           <state name="DeterminePlayerTurnOrder">
             <onEntry action="gameModel.determinePlayerTurnOrder()"/>
-            <transition event="onEndGameEvent" nextState="EndGame"/>
+            <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies"/>
+          </state>
+          <state name="DistributeInitialArmies">
+            <onEntry action="gameModel.distributeInitialArmies()"/>
+            <transition event="onDistributeInitialArmiesCompleteEvent" nextState="EndGame"/>
           </state>
           <state name="EndGame">
             <onEntry action="gameModel.endGame()"/>
             <transition event="onCreateGameEvent" nextState="WaitForGameToBegin"/>
           </state>
         </state>
-
+        
       </parallel>
     </state>
-
+    
     <state name="End" kind="final"/>
-
+    
   </state>
 </sm:StateMachine>

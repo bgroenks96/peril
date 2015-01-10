@@ -5,16 +5,20 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.newP
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.reasonFrom;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
+import com.forerunnergames.peril.core.model.strategy.DefaultGameStrategy;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
@@ -46,34 +50,33 @@ public class GameModelTest
   private EventBusHandler eventHandler;
 
   @BeforeClass
-  public static void setupClass()
+  public static void setupClass ()
   {
-    final IBusConfiguration eventBusConfiguration = new BusConfiguration()
-            .addFeature (Feature.SyncPubSub.Default())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default());
+    final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
+        .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+        .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     eventBus = new MBassador <> (eventBusConfiguration);
 
-    eventBus.addErrorHandler (new IPublicationErrorHandler()
+    eventBus.addErrorHandler (new IPublicationErrorHandler ()
     {
       @Override
-      public void handleError (PublicationError error)
+      public void handleError (final PublicationError error)
       {
-        log.error (error.toString(), error.getCause());
+        log.error (error.toString (), error.getCause ());
       }
     });
   }
 
   @Before
-  public void setup()
+  public void setup ()
   {
-    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), eventBus);
-    eventHandler = new EventBusHandler().subscribe();
+    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), new DefaultGameStrategy (), eventBus);
+    eventHandler = new EventBusHandler ().subscribe ();
   }
 
   @Test
-  public void testHandlePlayerJoinGameRequestSucceeded()
+  public void testHandlePlayerJoinGameRequestSucceeded ()
   {
     final String name = "Test Player";
 
@@ -84,9 +87,9 @@ public class GameModelTest
   }
 
   @Test
-  public void testHandlePlayerJoinGameRequestFailed()
+  public void testHandlePlayerJoinGameRequestFailed ()
   {
-    addMaxPlayers();
+    addMaxPlayers ();
 
     final String name = "Test Player X";
 
@@ -94,22 +97,24 @@ public class GameModelTest
 
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameDeniedEvent.class));
     assertThat (playerNameFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)), is (name));
-    assertThat (reasonFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)), is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
+    assertThat (reasonFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)),
+                is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
   }
 
   @Test
-  public void testHandleChangePlayerLimitRequestSucceeded()
+  public void testHandleChangePlayerLimitRequestSucceeded ()
   {
-    final int delta = -2;
+    final int delta = - 2;
 
     gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
 
     assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitSuccessEvent.class));
-    assertThat (newPlayerLimitFrom (eventHandler.lastEvent (ChangePlayerLimitSuccessEvent.class)), is (INITIAL_PLAYER_LIMIT + delta));
+    assertThat (newPlayerLimitFrom (eventHandler.lastEvent (ChangePlayerLimitSuccessEvent.class)),
+                is (INITIAL_PLAYER_LIMIT + delta));
   }
 
   @Test
-  public void testHandleChangePlayerLimitRequestFailed()
+  public void testHandleChangePlayerLimitRequestFailed ()
   {
     final int delta = 2;
 
@@ -117,65 +122,86 @@ public class GameModelTest
 
     assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitDeniedEvent.class));
     assertThat (deltaFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)), is (delta));
-    assertThat (reasonFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)), is (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS));
+    assertThat (reasonFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)),
+                is (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS));
   }
 
   @Test
-  public void testIsFull()
+  public void testIsFull ()
   {
     final int delta = 2;
 
     gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
 
-    addMaxPlayers();
+    addMaxPlayers ();
 
-    assertTrue (gameModel.isFull());
+    assertTrue (gameModel.isFull ());
   }
 
   @Test
-  public void testIsEmpty()
+  public void testIsEmpty ()
   {
-    assertTrue (gameModel.isEmpty());
+    assertTrue (gameModel.isEmpty ());
 
-    addSinglePlayer();
+    addSinglePlayer ();
 
-    assertFalse (gameModel.isEmpty());
+    assertFalse (gameModel.isEmpty ());
   }
 
   @Test
-  public void testDeterminePlayerTurnOrderZeroPlayers()
+  public void testDeterminePlayerTurnOrderZeroPlayers ()
   {
-    assertTrue (gameModel.isEmpty());
+    assertTrue (gameModel.isEmpty ());
 
-    gameModel.determinePlayerTurnOrder();
+    gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
 
   @Test
-  public void testDeterminePlayerTurnOrderOnePlayer()
+  public void testDeterminePlayerTurnOrderOnePlayer ()
   {
-    addSinglePlayer();
+    addSinglePlayer ();
 
-    gameModel.determinePlayerTurnOrder();
+    gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
 
   @Test
-  public void testDeterminePlayerTurnOrderMaxPlayers()
+  public void testDeterminePlayerTurnOrderMaxPlayers ()
   {
-    addMaxPlayers();
+    addMaxPlayers ();
 
-    gameModel.determinePlayerTurnOrder();
+    gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.lastEventWasType (DeterminePlayerTurnOrderCompleteEvent.class));
   }
 
-  private void addSinglePlayer()
+  @Test
+  public void testDistributeInitialArmiesZeroPlayersNoException ()
   {
-    assertTrue (gameModel.isEmpty());
-    assertTrue (gameModel.isNotFull());
+    assertTrue (gameModel.isEmpty ());
+
+    gameModel.distributeInitialArmies ();
+
+    assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
+  }
+
+  @Test
+  public void testDistributeInitialArmiesMaxPlayers ()
+  {
+    addMaxPlayers ();
+
+    gameModel.distributeInitialArmies ();
+
+    assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
+  }
+
+  private void addSinglePlayer ()
+  {
+    assertTrue (gameModel.isEmpty ());
+    assertTrue (gameModel.isNotFull ());
 
     gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player"));
 
@@ -183,21 +209,21 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
   }
 
-  private void addMaxPlayers()
+  private void addMaxPlayers ()
   {
     for (int i = 1; i <= GameSettings.MAX_PLAYERS; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
 
-    assertTrue (gameModel.isFull());
+    assertTrue (gameModel.isFull ());
   }
 
   private final class EventBusHandler
   {
     private Event lastEvent;
 
-    public EventBusHandler subscribe()
+    public EventBusHandler subscribe ()
     {
       eventBus.subscribe (this);
 

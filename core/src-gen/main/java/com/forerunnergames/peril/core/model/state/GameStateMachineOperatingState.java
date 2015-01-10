@@ -5,6 +5,8 @@ import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.events.EndGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
@@ -71,6 +73,36 @@ public class GameStateMachineOperatingState
     }
 
     /**
+     * Event id: onDeterminePlayerTurnOrderCompleteEvent
+     * 
+     */
+    public void onDeterminePlayerTurnOrderCompleteEvent(GameStateMachineContext context, DeterminePlayerTurnOrderCompleteEvent event) {
+        GameStateMachineOperatingParallel parallelOperating = context.getGameStateMachineOperatingParallel();
+        parallelOperating.getGameStateMachinePlayerHandlerContext().onDeterminePlayerTurnOrderCompleteEvent(event);
+        parallelOperating.getGameStateMachineGameHandlerContext().onDeterminePlayerTurnOrderCompleteEvent(event);
+    }
+
+    /**
+     * Event id: onDistributeInitialArmiesCompleteEvent
+     * 
+     */
+    public void onDistributeInitialArmiesCompleteEvent(GameStateMachineContext context, DistributeInitialArmiesCompleteEvent event) {
+        GameStateMachineOperatingParallel parallelOperating = context.getGameStateMachineOperatingParallel();
+        parallelOperating.getGameStateMachinePlayerHandlerContext().onDistributeInitialArmiesCompleteEvent(event);
+        parallelOperating.getGameStateMachineGameHandlerContext().onDistributeInitialArmiesCompleteEvent(event);
+    }
+
+    /**
+     * Event id: onEndGameEvent
+     * 
+     */
+    public void onEndGameEvent(GameStateMachineContext context, EndGameEvent event) {
+        GameStateMachineOperatingParallel parallelOperating = context.getGameStateMachineOperatingParallel();
+        parallelOperating.getGameStateMachinePlayerHandlerContext().onEndGameEvent(event);
+        parallelOperating.getGameStateMachineGameHandlerContext().onEndGameEvent(event);
+    }
+
+    /**
      * Event id: onDestroyGameEvent
      * 
      */
@@ -86,16 +118,6 @@ public class GameStateMachineOperatingState
         com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineEndState.getInstance());
         context.onEnd();
         return ;
-    }
-
-    /**
-     * Event id: onEndGameEvent
-     * 
-     */
-    public void onEndGameEvent(GameStateMachineContext context, EndGameEvent event) {
-        GameStateMachineOperatingParallel parallelOperating = context.getGameStateMachineOperatingParallel();
-        parallelOperating.getGameStateMachinePlayerHandlerContext().onEndGameEvent(event);
-        parallelOperating.getGameStateMachineGameHandlerContext().onEndGameEvent(event);
     }
 
     /**

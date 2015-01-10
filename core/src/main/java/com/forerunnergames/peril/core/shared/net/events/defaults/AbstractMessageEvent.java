@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public abstract class AbstractMessageEvent <T extends Message> implements MessageEvent <T>
 {
