@@ -12,8 +12,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
+import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
@@ -25,6 +30,8 @@ import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimi
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+
+import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.config.BusConfiguration;
@@ -45,6 +52,7 @@ public class GameModelTest
 {
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private static final int INITIAL_PLAYER_LIMIT = GameSettings.MAX_PLAYERS;
+  private static final int INITIAL_ARMIES = 5;
   private static MBassador <Event> eventBus;
   private GameModel gameModel;
   private EventBusHandler eventHandler;
@@ -53,8 +61,8 @@ public class GameModelTest
   public static void setupClass ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-        .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-        .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     eventBus = new MBassador <> (eventBusConfiguration);
 
@@ -71,7 +79,9 @@ public class GameModelTest
   @Before
   public void setup ()
   {
-    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), new ClassicGameRules (), eventBus);
+    final GameRules rules = mock (GameRules.class);
+    when (rules.calculateInitialArmies (anyInt ())).thenReturn (INITIAL_ARMIES);
+    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), rules, eventBus);
     eventHandler = new EventBusHandler ().subscribe ();
   }
 
@@ -179,7 +189,7 @@ public class GameModelTest
   }
 
   @Test
-  public void testDistributeInitialArmiesZeroPlayersNoException ()
+  public void testDistributeInitialArmiesZeroPlayers ()
   {
     assertTrue (gameModel.isEmpty ());
 
@@ -194,6 +204,14 @@ public class GameModelTest
     addMaxPlayers ();
 
     gameModel.distributeInitialArmies ();
+
+    final ImmutableSet <Player> players = eventHandler.lastEvent (DistributeInitialArmiesCompleteEvent.class)
+            .getPlayers ();
+
+    for (final Player player : players)
+    {
+      assertTrue (player.hasArmiesInHand (INITIAL_ARMIES));
+    }
 
     assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
   }

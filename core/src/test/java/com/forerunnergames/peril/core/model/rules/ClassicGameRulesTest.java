@@ -1,15 +1,10 @@
 package com.forerunnergames.peril.core.model.rules;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.forerunnergames.peril.core.model.armies.Army;
-import com.forerunnergames.peril.core.model.armies.ArmyFactory;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
-import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 
 import com.google.common.collect.ImmutableSet;
@@ -20,42 +15,39 @@ import org.junit.Test;
 public class ClassicGameRulesTest
 {
   @Test
-  public void testComputeInitialArmiesForMinPlayers ()
+  public void testCalculateInitialArmiesForMinPlayers ()
   {
-    testComputeInitialArmiesForNPlayers (GameSettings.MIN_PLAYERS, 40);
+    testCalculateInitialArmiesForNPlayers (GameSettings.MIN_PLAYERS, 40);
   }
 
   @Test
-  public void testComputeInitialArmiesForEightPlayers ()
+  public void testCalculateInitialArmiesForEightPlayers ()
   {
-    testComputeInitialArmiesForNPlayers (8, 10);
+    testCalculateInitialArmiesForNPlayers (8, 10);
   }
 
   @Test
-  public void testComputeInitialArmiesForMaxPlayers ()
+  public void testCalculateInitialArmiesForMaxPlayers ()
   {
-    testComputeInitialArmiesForNPlayers (GameSettings.MAX_PLAYERS, 5);
+    testCalculateInitialArmiesForNPlayers (GameSettings.MAX_PLAYERS, 5);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testComputeInitialArmiesTooFewPlayers ()
+  @Test (expected = IllegalArgumentException.class)
+  public void testCalculateInitialArmiesTooFewPlayers ()
   {
-    testComputeInitialArmiesForNPlayers (1, 0);
+    testCalculateInitialArmiesForNPlayers (1, 0);
   }
 
-  private void testComputeInitialArmiesForNPlayers (final int numPlayers, final int expectedArmyCount)
+  private void testCalculateInitialArmiesForNPlayers (final int numPlayers, final int expectedArmies)
   {
     final PlayerModel playerModel = createPlayerModel (numPlayers, createPlayers (numPlayers));
 
     final GameRules strategy = new ClassicGameRules ();
-    ImmutableSet <Army> initialArmySet;
 
     for (int i = 0; i < playerModel.getPlayerCount (); i++)
     {
-      final int initialArmyCount = strategy.computeInitialArmyCount (playerModel.getPlayerCount ());
-      initialArmySet = ArmyFactory.create (initialArmyCount);
-      assertNotNull (initialArmySet);
-      assertTrue (initialArmySet.size () == expectedArmyCount);
+      final int initialArmies = strategy.calculateInitialArmies (playerModel.getPlayerCount ());
+      assertTrue (initialArmies == expectedArmies);
     }
   }
 

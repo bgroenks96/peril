@@ -16,7 +16,7 @@ public final class ClassicGameRules implements GameRules
    */
   // @formatter:on
   @Override
-  public int computeInitialArmyCount (final int playerCount)
+  public int calculateInitialArmies (final int playerCount)
   {
     Arguments.checkIsNotNegative (playerCount, "playerCount");
 
