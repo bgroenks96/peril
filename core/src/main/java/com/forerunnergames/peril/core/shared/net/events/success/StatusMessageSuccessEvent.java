@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public final class StatusMessageSuccessEvent implements StatusMessageEvent, MessageSuccessEvent <StatusMessage>
 {

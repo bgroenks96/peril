@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.kryonet;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.Remote;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 import java.net.InetSocketAddress;
 

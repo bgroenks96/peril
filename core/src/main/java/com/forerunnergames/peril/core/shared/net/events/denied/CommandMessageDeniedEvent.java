@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultCommandMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CommandMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.CommandMessage;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
 public final class CommandMessageDeniedEvent implements CommandMessageEvent, DeniedEvent <String>

@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerLimitEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.events.SuccessEvent;
 
 public final class ChangePlayerLimitSuccessEvent implements SuccessEvent, PlayerLimitEvent

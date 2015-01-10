@@ -9,6 +9,7 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.prev
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 
+import com.forerunnergames.peril.core.model.armies.ArmyFactory;
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -16,10 +17,12 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
+import com.forerunnergames.peril.core.model.strategy.GameStrategy;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
@@ -47,14 +50,17 @@ public final class GameModel
 {
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private final PlayerModel playerModel;
+  private final GameStrategy strategy;
   private final MBassador <Event> eventBus;
 
-  public GameModel (final PlayerModel playerModel, final MBassador <Event> eventBus)
+  public GameModel (final PlayerModel playerModel, final GameStrategy strategy, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (strategy, "strategy");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
+    this.strategy = strategy;
     this.eventBus = eventBus;
   }
 
@@ -68,7 +74,7 @@ public final class GameModel
 
     result = playerModel.requestToAdd (player);
 
-    if (result.isSuccessful())
+    if (result.isSuccessful ())
     {
       eventBus.publish (new PlayerJoinGameSuccessEvent (player));
     }
@@ -83,14 +89,14 @@ public final class GameModel
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final int oldLimit = playerModel.getPlayerLimit();
+    final int oldLimit = playerModel.getPlayerLimit ();
 
     final Result <ChangePlayerLimitDeniedEvent.REASON> result;
     result = playerModel.requestToChangePlayerLimitBy (deltaFrom (event));
 
-    final int newLimit = playerModel.getPlayerLimit();
+    final int newLimit = playerModel.getPlayerLimit ();
 
-    if (result.isSuccessful())
+    if (result.isSuccessful ())
     {
       eventBus.publish (new ChangePlayerLimitSuccessEvent (newLimit, oldLimit, deltaFrom (event)));
     }
@@ -110,7 +116,7 @@ public final class GameModel
     final Result <ChangePlayerColorDeniedEvent.REASON> result;
     result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), currentColorFrom (event));
 
-    if (result.isSuccessful())
+    if (result.isSuccessful ())
     {
       eventBus.publish (new ChangePlayerColorSuccessEvent (event));
     }
@@ -121,63 +127,77 @@ public final class GameModel
   }
 
   @StateMachineAction
-  public void beginGame()
+  public void beginGame ()
   {
     log.info ("Starting the game...");
   }
 
   @StateMachineAction
-  public void determinePlayerTurnOrder()
+  public void determinePlayerTurnOrder ()
   {
     log.info ("Determining player turn order...");
 
-    final ImmutableSet <Player> players = playerModel.getPlayers();
-    List <PlayerTurnOrder> validTurnOrders = new ArrayList<> (Arrays.asList (PlayerTurnOrder.values()));
+    final ImmutableSet <Player> players = playerModel.getPlayers ();
+    List <PlayerTurnOrder> validTurnOrders = new ArrayList <> (Arrays.asList (PlayerTurnOrder.values ()));
     validTurnOrders.remove (PlayerTurnOrder.UNKNOWN);
     validTurnOrders = Randomness.shuffle (validTurnOrders);
 
-    final Iterator <PlayerTurnOrder> turnOrderItr = validTurnOrders.iterator();
+    final Iterator <PlayerTurnOrder> turnOrderItr = validTurnOrders.iterator ();
     for (final Player player : players)
     {
-      playerModel.changeTurnOrderOfPlayer (idOf (player), turnOrderItr.next());
+      playerModel.changeTurnOrderOfPlayer (idOf (player), turnOrderItr.next ());
     }
 
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayers()));
+    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayers ()));
   }
 
   @StateMachineAction
-  public void endGame()
+  public void distributeInitialArmies ()
+  {
+    log.info ("Distributing initial player armies...");
+
+    for (final Player player : playerModel.getPlayers ())
+    {
+      final int armyCount = strategy.computeInitialArmyCount (playerModel.getPlayerCount ());
+      playerModel.addArmiesToHandOf (idOf (player), ArmyFactory.create (armyCount));
+    }
+
+    eventBus.publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayers ()));
+  }
+
+  @StateMachineAction
+  public void endGame ()
   {
     log.info ("Game over.");
 
     // TODO Production: Remove
-    eventBus.publish (new DestroyGameEvent());
+    eventBus.publish (new DestroyGameEvent ());
   }
 
   @StateMachineCondition
-  public boolean isFull()
+  public boolean isFull ()
   {
-    return playerModel.isFull();
+    return playerModel.isFull ();
   }
 
-  public boolean isNotFull()
+  public boolean isNotFull ()
   {
-    return playerModel.isNotFull();
+    return playerModel.isNotFull ();
   }
 
-  public boolean isEmpty()
+  public boolean isEmpty ()
   {
-    return playerModel.isEmpty();
+    return playerModel.isEmpty ();
   }
 
-  public boolean isNotEmpty()
+  public boolean isNotEmpty ()
   {
-    return playerModel.isNotEmpty();
+    return playerModel.isNotEmpty ();
   }
 
-  public int getPlayerCount()
+  public int getPlayerCount ()
   {
-    return playerModel.getPlayerCount();
+    return playerModel.getPlayerCount ();
   }
 
   public boolean playerCountIs (final int count)
@@ -190,9 +210,9 @@ public final class GameModel
     return playerModel.playerCountIsNot (count);
   }
 
-  public int getPlayerLimit()
+  public int getPlayerLimit ()
   {
-    return playerModel.getPlayerLimit();
+    return playerModel.getPlayerLimit ();
   }
 
   public boolean playerLimitIs (final int limit)

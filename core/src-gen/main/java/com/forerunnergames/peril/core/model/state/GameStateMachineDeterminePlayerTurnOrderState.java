@@ -1,7 +1,7 @@
 
 package com.forerunnergames.peril.core.model.state;
 
-import com.forerunnergames.peril.core.model.events.EndGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 
 public class GameStateMachineDeterminePlayerTurnOrderState
     extends GameStateMachineGameHandlerState
@@ -47,16 +47,16 @@ public class GameStateMachineDeterminePlayerTurnOrderState
     }
 
     /**
-     * Event id: onEndGameEvent
+     * Event id: onDeterminePlayerTurnOrderCompleteEvent
      * 
      */
-    public void onEndGameEvent(GameStateMachineGameHandlerContext context, EndGameEvent event) {
+    public void onDeterminePlayerTurnOrderCompleteEvent(GameStateMachineGameHandlerContext context, DeterminePlayerTurnOrderCompleteEvent event) {
         com.forerunnergames.peril.core.model.GameModel gameModel = context.getGameModel();
-        // Transition from DeterminePlayerTurnOrder to EndGame triggered by onEndGameEvent
+        // Transition from DeterminePlayerTurnOrder to DistributeInitialArmies triggered by onDeterminePlayerTurnOrderCompleteEvent
         // The next state is within the context GameStateMachineGameHandlerContext
-        context.setTransitionName("onEndGameEvent");
-        com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineEndGameState.getInstance());
-        com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineEndGameState.getInstance());
+        context.setTransitionName("onDeterminePlayerTurnOrderCompleteEvent");
+        com.stateforge.statemachine.algorithm.StateOperation.processTransitionBegin(context, GameStateMachineDistributeInitialArmiesState.getInstance());
+        com.stateforge.statemachine.algorithm.StateOperation.processTransitionEnd(context, GameStateMachineDistributeInitialArmiesState.getInstance());
         return ;
     }
 

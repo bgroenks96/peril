@@ -1,12 +1,12 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
 import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.events.RequestEvent;
 
 public final class KickPlayerFromGameRequestEvent implements PlayerEvent, KickEvent, RequestEvent

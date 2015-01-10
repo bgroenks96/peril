@@ -5,6 +5,8 @@ import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.events.EndGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
@@ -72,17 +74,38 @@ public class GameStateMachineContext
     }
 
     /**
-     * Asynchronous event onDestroyGameEvent
+     * Asynchronous event onDeterminePlayerTurnOrderCompleteEvent
      * 
      */
-    public void onDestroyGameEvent(final DestroyGameEvent event) {
+    public void onDeterminePlayerTurnOrderCompleteEvent(final DeterminePlayerTurnOrderCompleteEvent event) {
         final GameStateMachineContext me = this;
         getExecutorService().execute(new Runnable() {
 
 
             public void run() {
                 try {
-                    getStateCurrent().onDestroyGameEvent(me, event);
+                    getStateCurrent().onDeterminePlayerTurnOrderCompleteEvent(me, event);
+                } catch (Exception exception) {
+                    onEnd(exception);
+                }
+            }
+
+        }
+        );
+    }
+
+    /**
+     * Asynchronous event onDistributeInitialArmiesCompleteEvent
+     * 
+     */
+    public void onDistributeInitialArmiesCompleteEvent(final DistributeInitialArmiesCompleteEvent event) {
+        final GameStateMachineContext me = this;
+        getExecutorService().execute(new Runnable() {
+
+
+            public void run() {
+                try {
+                    getStateCurrent().onDistributeInitialArmiesCompleteEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }
@@ -104,6 +127,27 @@ public class GameStateMachineContext
             public void run() {
                 try {
                     getStateCurrent().onEndGameEvent(me, event);
+                } catch (Exception exception) {
+                    onEnd(exception);
+                }
+            }
+
+        }
+        );
+    }
+
+    /**
+     * Asynchronous event onDestroyGameEvent
+     * 
+     */
+    public void onDestroyGameEvent(final DestroyGameEvent event) {
+        final GameStateMachineContext me = this;
+        getExecutorService().execute(new Runnable() {
+
+
+            public void run() {
+                try {
+                    getStateCurrent().onDestroyGameEvent(me, event);
                 } catch (Exception exception) {
                     onEnd(exception);
                 }

@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerLimitEvent;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public final class ChangePlayerLimitDeniedEvent extends AbstractDeniedEvent <ChangePlayerLimitDeniedEvent.REASON>
         implements PlayerLimitEvent

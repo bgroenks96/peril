@@ -5,6 +5,8 @@ import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.events.EndGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
@@ -59,10 +61,17 @@ public class GameStateMachineGameHandlerState
     }
 
     /**
-     * Event id: onDestroyGameEvent
+     * Event id: onDeterminePlayerTurnOrderCompleteEvent
      * 
      */
-    public void onDestroyGameEvent(GameStateMachineGameHandlerContext context, DestroyGameEvent event) {
+    public void onDeterminePlayerTurnOrderCompleteEvent(GameStateMachineGameHandlerContext context, DeterminePlayerTurnOrderCompleteEvent event) {
+    }
+
+    /**
+     * Event id: onDistributeInitialArmiesCompleteEvent
+     * 
+     */
+    public void onDistributeInitialArmiesCompleteEvent(GameStateMachineGameHandlerContext context, DistributeInitialArmiesCompleteEvent event) {
     }
 
     /**
@@ -70,6 +79,13 @@ public class GameStateMachineGameHandlerState
      * 
      */
     public void onEndGameEvent(GameStateMachineGameHandlerContext context, EndGameEvent event) {
+    }
+
+    /**
+     * Event id: onDestroyGameEvent
+     * 
+     */
+    public void onDestroyGameEvent(GameStateMachineGameHandlerContext context, DestroyGameEvent event) {
     }
 
     /**

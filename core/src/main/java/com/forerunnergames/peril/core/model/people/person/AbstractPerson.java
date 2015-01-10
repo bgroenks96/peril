@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.core.model.people.person;
 
-import com.forerunnergames.peril.core.shared.net.events.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.AbstractAsset;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 
 public abstract class AbstractPerson extends AbstractAsset implements Person, Author
 {
@@ -20,7 +20,7 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
   }
 
   @Override
-  public PersonIdentity getIdentity()
+  public PersonIdentity getIdentity ()
   {
     return identity;
   }
@@ -42,7 +42,7 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
   }
 
   @RequiredForNetworkSerialization
-  protected AbstractPerson()
+  protected AbstractPerson ()
   {
   }
 }
