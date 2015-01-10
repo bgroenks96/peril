@@ -5,6 +5,9 @@
 *.ear
 hs_err_pid*
 
+# Auto-generated Java
+core/src-gen/
+
 ## GWT
 war/
 html/war/gwt_bree/
@@ -63,5 +66,5 @@ build/
 ## OS Specific
 .DS_Store
 
-# Clover
+## Clover
 .clover
