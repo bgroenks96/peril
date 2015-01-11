@@ -1,0 +1,26 @@
+#Organize Import Order
+#Sat Jan 10 21:13:18 EST 2015
+19=org.objenesis
+18=org.junit
+17=net.engio
+16=javax
+15=java
+14=de.lessvoid
+13=com.stateforge
+12=com.google
+11=com.forerunnergames
+10=com.esotericsoftware
+9=com.badlogic
+8=\#org
+7=\#com
+6=\#org.mockito
+5=\#org.junit
+4=\#org.hamcrest
+3=\#javax
+23=org
+2=\#java
+22=com
+1=\#com.google
+21=org.slf4j
+0=\#com.forerunnergames
+20=org.robovm
