@@ -7,7 +7,6 @@ import com.forerunnergames.peril.core.model.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -65,9 +64,8 @@ public class GameStateMachineTest
       }
     });
 
-    final int initialPlayerLimit = GameSettings.MAX_PLAYERS;
-    final PlayerModel playerModel = new PlayerModel (initialPlayerLimit);
-    final GameRules rules = new ClassicGameRules ();
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
+    final PlayerModel playerModel = new PlayerModel (rules);
     final GameModel gameModel = new GameModel (playerModel, rules, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()

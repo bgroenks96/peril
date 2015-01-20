@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.core.model;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.currentColorFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.deltaFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.previousColorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.AssetFluency.idOf;
@@ -18,15 +17,12 @@ import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerColorSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -55,7 +51,7 @@ public final class GameModel
   public GameModel (final PlayerModel playerModel, final GameRules rules, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (rules, "strategy");
+    Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
@@ -91,7 +87,7 @@ public final class GameModel
   @StateMachineAction
   public void distributeInitialArmies ()
   {
-    final int armies = rules.calculateInitialArmies (playerModel.getPlayerCount ());
+    final int armies = rules.getInitialArmies ();
 
     log.info ("Distributing {} armies each to {} players...", armies, playerModel.getPlayerCount ());
 
@@ -139,28 +135,6 @@ public final class GameModel
     else
     {
       eventBus.publish (new ChangePlayerColorDeniedEvent (event, failureReasonFrom (result)));
-    }
-  }
-
-  @StateMachineAction
-  public void handleChangePlayerLimitRequest (final ChangePlayerLimitRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final int oldLimit = playerModel.getPlayerLimit ();
-
-    final Result <ChangePlayerLimitDeniedEvent.REASON> result;
-    result = playerModel.requestToChangePlayerLimitBy (deltaFrom (event));
-
-    final int newLimit = playerModel.getPlayerLimit ();
-
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new ChangePlayerLimitSuccessEvent (newLimit, oldLimit, deltaFrom (event)));
-    }
-    else
-    {
-      eventBus.publish (new ChangePlayerLimitDeniedEvent (deltaFrom (event), failureReasonFrom (result)));
     }
   }
 

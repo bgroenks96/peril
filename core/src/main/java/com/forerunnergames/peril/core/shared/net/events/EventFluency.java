@@ -3,15 +3,16 @@ package com.forerunnergames.peril.core.shared.net.events;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.*;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.JoinMultiplayerServerSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.net.ServerConfiguration;
 import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
 import com.google.common.collect.ImmutableSet;
@@ -20,13 +21,6 @@ import javax.annotation.Nullable;
 
 public final class EventFluency
 {
-  public static int additionalPlayersAllowedFrom (final JoinMultiplayerServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getAdditionalPlayersAllowed ();
-  }
-
   public static PlayerColor currentColorFrom (final PlayerColorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -41,13 +35,6 @@ public final class EventFluency
     return event.getCurrentTurnOrder ();
   }
 
-  public static int deltaFrom (final PlayerLimitEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayerLimitDelta ();
-  }
-
   public static boolean hasAuthorFrom (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -60,13 +47,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getMessage ();
-  }
-
-  public static int newPlayerLimitFrom (final ChangePlayerLimitSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getNewPlayerLimit ();
   }
 
   public static Player playerFrom (final PlayerEvent event)
@@ -97,7 +77,7 @@ public final class EventFluency
     return event.getPlayerName ();
   }
 
-  public static ImmutableSet <Player> playersInGameFrom (final JoinMultiplayerServerSuccessEvent event)
+  public static ImmutableSet <Player> playersInGameFrom (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -132,58 +112,6 @@ public final class EventFluency
     return event.getReason ();
   }
 
-  public static String serverAddressFrom (final ServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerAddress ();
-  }
-
-  public static String serverAddressFrom (final JoinServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerAddress ();
-  }
-
-  public static String serverNameFrom (final OpenServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerName ();
-  }
-
-  public static String serverNameFrom (final JoinMultiplayerServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerName ();
-  }
-
-  public static int serverTcpPortFrom (final OpenServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerTcpPort ();
-  }
-
-  public static int serverTcpPortFrom (final JoinServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerTcpPort ();
-  }
-
-  public static String withAddressFrom (final ServerRequestEvent event)
-  {
-    return serverAddressFrom (event);
-  }
-
-  public static String withAddressFrom (final JoinServerEvent event)
-  {
-    return serverAddressFrom (event);
-  }
-
   @Nullable
   public static Author withAuthorFrom (final ChatMessageEvent event)
   {
@@ -204,24 +132,23 @@ public final class EventFluency
     return event.getMessageText ();
   }
 
-  public static String withNameFrom (final OpenServerEvent event)
-  {
-    return serverNameFrom (event);
-  }
-
   public static String withPlayerNameFrom (final PlayerJoinGameRequestEvent event)
   {
     return playerNameFrom (event);
   }
 
-  public static int withTcpPortFrom (final OpenServerEvent event)
+  public static GameServerConfiguration withGameServerConfigurationFrom (final CreateGameServerEvent event)
   {
-    return serverTcpPortFrom (event);
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getConfiguration ();
   }
 
-  public static int withTcpPortFrom (final JoinServerEvent event)
+  public static ServerConfiguration withServerConfigurationFrom (final JoinGameServerEvent event)
   {
-    return serverTcpPortFrom (event);
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getConfiguration ();
   }
 
   private EventFluency ()

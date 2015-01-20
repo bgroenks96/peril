@@ -19,7 +19,8 @@ public final class Main
     {
       final CommandLineArgs jArgs = new CommandLineArgs ();
       new JCommander (jArgs, args);
-      final Application application = ServerApplicationFactory.create (jArgs.title, jArgs.tcpPort, jArgs.playerLimit);
+
+      final Application application = ServerApplicationFactory.create (jArgs);
 
       application.initialize ();
 

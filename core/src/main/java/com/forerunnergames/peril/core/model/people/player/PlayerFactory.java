@@ -7,9 +7,6 @@ import com.forerunnergames.tools.common.id.IdGenerator;
 
 public final class PlayerFactory
 {
-  /**
-   * Convenience method for obtaining an instance of PlayerBuilder
-   */
   public static PlayerBuilder builder (final String playerName)
   {
     return new PlayerBuilder (playerName);
@@ -25,7 +22,7 @@ public final class PlayerFactory
                                final PlayerColor color,
                                final PlayerTurnOrder turnOrder)
   {
-    return builder (name).withIdentity (identity).withColor (color).withTurnOrder (turnOrder).build ();
+    return builder (name).identity (identity).color (color).turnOrder (turnOrder).build ();
   }
 
   /*
@@ -53,7 +50,7 @@ public final class PlayerFactory
       return new DefaultPlayer (name, id, identity, color, turnOrder);
     }
 
-    public PlayerBuilder withColor (final PlayerColor color)
+    public PlayerBuilder color (final PlayerColor color)
     {
       Arguments.checkIsNotNull (color, "color");
 
@@ -62,7 +59,7 @@ public final class PlayerFactory
       return this;
     }
 
-    public PlayerBuilder withIdentity (final PersonIdentity identity)
+    public PlayerBuilder identity (final PersonIdentity identity)
     {
       Arguments.checkIsNotNull (identity, "identity");
 
@@ -71,7 +68,7 @@ public final class PlayerFactory
       return this;
     }
 
-    public PlayerBuilder withTurnOrder (final PlayerTurnOrder turnOrder)
+    public PlayerBuilder turnOrder (final PlayerTurnOrder turnOrder)
     {
       Arguments.checkIsNotNull (turnOrder, "turnOrder");
 

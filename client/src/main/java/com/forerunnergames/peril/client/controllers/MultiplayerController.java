@@ -1,25 +1,26 @@
 package com.forerunnergames.peril.client.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withAddressFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withNameFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withTcpPortFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withGameServerConfigurationFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withServerConfigurationFrom;
 import static com.forerunnergames.tools.common.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.common.net.events.EventFluency.serverFrom;
 
-import com.forerunnergames.peril.core.shared.net.events.denied.JoinMultiplayerServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.OpenMultiplayerServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.GameServerCreator;
+import com.forerunnergames.peril.core.shared.net.events.denied.CreateGameServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.JoinMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.CloseMultiplayerServerSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.DestroyGameServerEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.CreateGameServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.net.ServerCommunicator;
+import com.forerunnergames.tools.common.net.ServerConfiguration;
 import com.forerunnergames.tools.common.net.ServerConnector;
-import com.forerunnergames.tools.common.net.ServerCreator;
 import com.forerunnergames.tools.common.net.events.AnswerEvent;
 import com.forerunnergames.tools.common.net.events.RequestEvent;
 import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
@@ -50,22 +51,22 @@ public final class MultiplayerController extends ControllerAdapter
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private static final int CALL_FIRST = 10;
   private static final int CALL_LAST = 0;
-  private final ServerCreator serverCreator;
+  private final GameServerCreator gameServerCreator;
   private final ServerConnector serverConnector;
   private final ServerCommunicator serverCommunicator;
   private final MBassador <Event> eventBus;
 
-  public MultiplayerController (final ServerCreator serverCreator,
+  public MultiplayerController (final GameServerCreator gameServerCreator,
                                 final ServerConnector serverConnector,
                                 final ServerCommunicator serverCommunicator,
                                 final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (serverCreator, "serverCreator");
+    Arguments.checkIsNotNull (gameServerCreator, "gameServerCreator");
     Arguments.checkIsNotNull (serverConnector, "serverConnector");
     Arguments.checkIsNotNull (serverCommunicator, "serverCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.serverCreator = serverCreator;
+    this.gameServerCreator = gameServerCreator;
     this.serverConnector = serverConnector;
     this.serverCommunicator = serverCommunicator;
     this.eventBus = eventBus;
@@ -86,7 +87,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onCloseMultiplayerServerSuccessEvent (final CloseMultiplayerServerSuccessEvent event)
+  public void onDestroyGameServerEvent (final DestroyGameServerEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -96,27 +97,27 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler (priority = CALL_FIRST)
-  public void onJoinMultiplayerServerRequestEvent (final JoinMultiplayerServerRequestEvent event)
+  public void onJoinGameServerRequestEvent (final JoinGameServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
 
-    final Result <String> result = joinMultiplayerServer (withAddressFrom (event), withTcpPortFrom (event));
+    final Result <String> result = joinGameServer (withServerConfigurationFrom (event));
 
-    if (result.isFailure ()) joinMultiplayerServerDenied (event, result.getFailureReason ());
+    if (result.isFailure ()) joinGameServerDenied (event, result.getFailureReason ());
   }
 
   @Handler (priority = CALL_FIRST)
-  public void onOpenMultiplayerServerRequestEvent (final OpenMultiplayerServerRequestEvent event)
+  public void onCreateGameServerRequestEvent (final CreateGameServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event [{}] received.", event);
 
-    final Result <String> result = openMultiplayerServer (withNameFrom (event), withTcpPortFrom (event));
+    final Result <String> result = createAndJoinGameServer (withGameServerConfigurationFrom (event));
 
-    if (result.isFailure ()) openMultiplayerServerDenied (event, result.getFailureReason ());
+    if (result.isFailure ()) createGameServerDenied (event, result.getFailureReason ());
   }
 
   @Handler (priority = CALL_LAST)
@@ -166,10 +167,10 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Successfully connected to server [{}].", serverFrom (event));
   }
 
-  private Result <String> connectToServer (final String address, final int tcpPort)
+  private Result <String> joinGameServer (final ServerConfiguration config)
   {
-    return connectToServer (address, tcpPort, NetworkSettings.CONNECTION_TIMEOUT_MS,
-                    NetworkSettings.MAX_CONNECTION_ATTEMPTS);
+    return connectToServer (config.getServerAddress (), config.getServerTcpPort (),
+                    NetworkSettings.CONNECTION_TIMEOUT_MS, NetworkSettings.MAX_CONNECTION_ATTEMPTS);
   }
 
   private Result <String> connectToServer (final String address,
@@ -180,48 +181,39 @@ public final class MultiplayerController extends ControllerAdapter
     return serverConnector.connect (address, tcpPort, timeoutMs, maxAttempts);
   }
 
-  private Result <String> createServer (final String name, final int tcpPort)
+  private Result <String> createGameServer (final GameServerConfiguration config)
   {
-    return serverCreator.create (name, tcpPort);
+    return gameServerCreator.create (config);
   }
 
   private void destroyServer ()
   {
-    serverCreator.destroy ();
+    gameServerCreator.destroy ();
   }
 
-  private Result <String> joinMultiplayerServer (final String address, final int tcpPort)
+  private void joinGameServerDenied (final JoinGameServerRequestEvent event, final String reason)
   {
-    return connectToServer (address, tcpPort);
+    eventBus.publish (new JoinGameServerDeniedEvent (event, reason));
   }
 
-  private void joinMultiplayerServerDenied (final JoinMultiplayerServerRequestEvent event, final String reason)
+  private Result <String> createAndJoinGameServer (final GameServerConfiguration config)
   {
-    eventBus.publish (new JoinMultiplayerServerDeniedEvent (event, reason));
-  }
-
-  private Result <String> openMultiplayerServer (final String name, final int tcpPort)
-  {
-    Result <String> result = createServer (name, tcpPort);
+    Result <String> result = createGameServer (config);
 
     if (result.isFailure ()) return result;
 
-    result = connectToServer (resolveServerAddress (), tcpPort);
+    result = joinGameServer (config);
 
     if (result.isFailure ()) destroyServer ();
 
     return result;
   }
 
-  private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event, final String reason)
+  private void createGameServerDenied (final CreateGameServerRequestEvent event, final String reason)
   {
     destroyServer ();
-    eventBus.publish (new OpenMultiplayerServerDeniedEvent (event, reason));
-  }
 
-  private String resolveServerAddress ()
-  {
-    return serverCreator.resolveAddress ();
+    eventBus.publish (new CreateGameServerDeniedEvent (event, reason));
   }
 
   private void sendToServer (final RequestEvent event)

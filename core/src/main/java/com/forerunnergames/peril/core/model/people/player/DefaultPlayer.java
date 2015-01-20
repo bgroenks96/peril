@@ -2,11 +2,12 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+
+import com.google.common.math.IntMath;
 
 public final class DefaultPlayer extends AbstractPerson implements Player
 {
@@ -29,35 +30,13 @@ public final class DefaultPlayer extends AbstractPerson implements Player
     this.turnOrder = turnOrder;
   }
 
-  @RequiredForNetworkSerialization
-  protected DefaultPlayer ()
-  {
-  }
-
   @Override
   public void addArmiesToHand (final int armies)
   {
     Arguments.checkIsNotNull (armies, "armies");
     Arguments.checkIsNotNegative (armies, "armies");
-    Preconditions.checkIsTrue (canAddNArmiesToHand (armies), getCannotAddNArmiesToHandErrorMessage (armies));
 
-    armiesInHand += armies;
-  }
-
-  @Override
-  public boolean canAddArmiesToHand (final int armies)
-  {
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    return canAddNArmiesToHand (armies);
-  }
-
-  @Override
-  public boolean canRemoveArmiesFromHand (final int armies)
-  {
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    return canRemoveNArmiesFromHand (armies);
+    armiesInHand = IntMath.checkedAdd (armiesInHand, armies);
   }
 
   @Override
@@ -135,7 +114,8 @@ public final class DefaultPlayer extends AbstractPerson implements Player
   {
     Arguments.checkIsNotNull (armies, "armies");
     Arguments.checkIsNotNegative (armies, "armies");
-    Preconditions.checkIsTrue (canRemoveNArmiesFromHand (armies), getCannotRemoveNArmiesFromHandErrorMessage (armies));
+    Preconditions.checkIsTrue (armies <= armiesInHand, "Cannot remove more armies [" + armies
+                    + "] than are currently in hand [" + armiesInHand + "].");
 
     armiesInHand -= armies;
   }
@@ -144,28 +124,11 @@ public final class DefaultPlayer extends AbstractPerson implements Player
   public String toString ()
   {
     return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand: %4$s", super.toString (), color,
-                    turnOrder, getArmiesInHand ());
+                    turnOrder, armiesInHand);
   }
 
-  private boolean canAddNArmiesToHand (final int armies)
+  @RequiredForNetworkSerialization
+  private DefaultPlayer ()
   {
-    return GameSettings.MAX_ARMIES_IN_PLAYER_HAND - armies >= armiesInHand;
-  }
-
-  private boolean canRemoveNArmiesFromHand (final int armies)
-  {
-    return GameSettings.MIN_ARMIES_IN_PLAYER_HAND + armies <= armiesInHand;
-  }
-
-  private String getCannotAddNArmiesToHandErrorMessage (final int armies)
-  {
-    return "Can't add " + armies + " armies to hand: reached maximum value [" + GameSettings.MAX_ARMIES_IN_PLAYER_HAND
-                    + "].";
-  }
-
-  private String getCannotRemoveNArmiesFromHandErrorMessage (final int armies)
-  {
-    return "Can't remove " + armies + " armies from hand: reached minimum value ["
-                    + GameSettings.MIN_ARMIES_IN_PLAYER_HAND + "].";
   }
 }

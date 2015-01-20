@@ -6,16 +6,17 @@ import static com.forerunnergames.tools.common.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.AssetFluency.nameOf;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.settings.GameSettings;
+import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.math.IntMath;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,27 +25,27 @@ import java.util.Map;
 public final class PlayerModel
 {
   private final Map <Id, Player> players = new HashMap <> ();
-  private int playerLimit;
+  private final GameRules rules;
 
-  public PlayerModel (final int initialPlayerLimit)
+  public PlayerModel (final GameRules rules)
   {
-    Arguments.checkIsNotNegative (initialPlayerLimit, "initialPlayerLimit");
-    Arguments.checkUpperInclusiveBound (initialPlayerLimit, GameSettings.MAX_PLAYERS, "initialPlayerLimit",
-                    "GameSettings.MAX_PLAYERS");
-    Arguments.checkLowerInclusiveBound (initialPlayerLimit, GameSettings.MIN_PLAYERS, "initialPlayerLimit",
-                    "GameSettings.MIN_PLAYERS");
+    Arguments.checkIsNotNull (rules, "rules");
 
-    playerLimit = initialPlayerLimit;
+    this.rules = rules;
   }
 
   public void addArmiesToHandOf (final Id playerId, final int armies)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
+    Preconditions.checkIsTrue (
+                    canAddArmiesToHandOf (playerId, armies),
+                    "Cannot add " + armies + " armies to hand of player with id: [" + playerId
+                                    + "]. That player already has " + getArmiesInHandOf (playerId)
+                                    + " armies in hand. The maximum armies allowed in a player's hand is "
+                                    + rules.getMaxArmiesInHand () + ".");
 
-    final Player player = playerWith (playerId);
-
-    player.addArmiesToHand (armies);
+    playerWith (playerId).addArmiesToHand (armies);
   }
 
   public boolean canAddArmiesToHandOf (final Id playerId, final int armies)
@@ -52,9 +53,7 @@ public final class PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    final Player player = playerWith (playerId);
-
-    return player.canAddArmiesToHand (armies);
+    return playerWith (playerId).getArmiesInHand () <= IntMath.checkedSubtract (rules.getMaxArmiesInHand (), armies);
   }
 
   public boolean canRemoveArmiesFromHandOf (final Id playerId, final int armies)
@@ -62,9 +61,7 @@ public final class PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    final Player player = playerWith (playerId);
-
-    return player.canRemoveArmiesFromHand (armies);
+    return playerWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
   }
 
   public void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder)
@@ -154,9 +151,7 @@ public final class PlayerModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    final Player player = playerWith (playerId);
-
-    return player.getArmiesInHand ();
+    return playerWith (playerId).getArmiesInHand ();
   }
 
   public int getPlayerCount ()
@@ -166,7 +161,7 @@ public final class PlayerModel
 
   public int getPlayerLimit ()
   {
-    return playerLimit;
+    return rules.getPlayerLimit ();
   }
 
   public ImmutableSet <Player> getPlayers ()
@@ -179,9 +174,7 @@ public final class PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    final Player player = playerWith (playerId);
-
-    return player.hasArmiesInHand (armies);
+    return playerWith (playerId).hasArmiesInHand (armies);
   }
 
   public boolean isEmpty ()
@@ -191,7 +184,7 @@ public final class PlayerModel
 
   public boolean isFull ()
   {
-    return players.size () > 0 && players.size () >= playerLimit;
+    return players.size () > 0 && players.size () >= rules.getPlayerLimit ();
   }
 
   public boolean isNotEmpty ()
@@ -216,12 +209,12 @@ public final class PlayerModel
 
   public boolean playerLimitIs (final int limit)
   {
-    return playerLimit == limit;
+    return rules.getPlayerLimit () == limit;
   }
 
   public boolean playerLimitIsAtLeast (final int limit)
   {
-    return playerLimit >= limit;
+    return rules.getPlayerLimit () >= limit;
   }
 
   public Player playerWith (final Id id)
@@ -282,24 +275,28 @@ public final class PlayerModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
+    Preconditions.checkIsTrue (
+                    canRemoveArmiesFromHandOf (playerId, armies),
+                    "Cannot remove " + armies + " armies from hand of player with id: [" + playerId
+                                    + "]. That player only has " + getArmiesInHandOf (playerId)
+                                    + " armies in hand. The minimum armies allowed in a player's hand is "
+                                    + rules.getMinArmiesInHand () + ".");
 
-    final Player player = playerWith (playerId);
-
-    player.removeArmiesFromHand (armies);
+    playerWith (playerId).removeArmiesFromHand (armies);
   }
 
   public Result <PlayerJoinGameDeniedEvent.REASON> requestToAdd (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
+    // @formatter:off
     if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL);
     if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_ID);
     if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_NAME);
     if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_COLOR);
-    if (existsPlayerWith (turnOrderOf (player))) return Result
-                    .failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER);
-    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result
-                    .failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY);
+    if (existsPlayerWith (turnOrderOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER);
+    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY);
+    // @formatter:on
 
     add (player);
 
@@ -314,31 +311,13 @@ public final class PlayerModel
 
     final Player player = playerWith (playerId);
 
-    if (player.has (toColor)) return Result
-                    .failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
+    // @formatter:off
+    if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
     if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN);
-    if (toColor == PlayerColor.UNKNOWN) return Result
-                    .failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_INALID);
+    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_INALID);
+    // @formatter:on
 
     player.setColor (toColor);
-
-    return Result.success ();
-  }
-
-  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToChangePlayerLimitBy (final int delta)
-  {
-    if (delta == 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.REQUESTED_LIMIT_EQUALS_EXISTING_LIMIT);
-    if (delta < -GameSettings.MAX_PLAYERS) return Result
-                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
-    if (delta > GameSettings.MAX_PLAYERS) return Result
-                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
-    if (playerLimit + delta < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
-    if (playerLimit + delta > GameSettings.MAX_PLAYERS) return Result
-                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
-    if (playerLimit + delta < players.size ()) return Result
-                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_CURRENT_PLAYER_COUNT);
-
-    playerLimit += delta;
 
     return Result.success ();
   }
@@ -391,15 +370,6 @@ public final class PlayerModel
     if (!existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
 
     return requestToRemove (playerWith (turnOrder));
-  }
-
-  public Result <ChangePlayerLimitDeniedEvent.REASON> requestToSetPlayerLimitTo (final int limit)
-  {
-    if (limit < 0) return Result.failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_DECREASE_BELOW_ZERO);
-    if (limit > GameSettings.MAX_PLAYERS) return Result
-                    .failure (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS);
-
-    return requestToChangePlayerLimitBy (limit - playerLimit);
   }
 
   private void add (final Player player)

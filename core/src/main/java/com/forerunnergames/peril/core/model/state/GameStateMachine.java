@@ -8,7 +8,6 @@ import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDen
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -71,16 +70,6 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onChangePlayerColorRequestEvent (event);
-  }
-
-  @Handler
-  public void onChangePlayerLimitRequestEvent (final ChangePlayerLimitRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onChangePlayerLimitRequestEvent (event);
   }
 
   @Handler

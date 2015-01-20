@@ -4,8 +4,11 @@ import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayer;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
+import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.*;
 import com.forerunnergames.peril.core.shared.net.events.denied.*;
+import com.forerunnergames.peril.core.shared.net.events.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.*;
@@ -16,6 +19,7 @@ import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.common.net.DefaultServerConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -37,21 +41,21 @@ public final class KryonetRegistration
           ChangePlayerColorDeniedEvent.class,
           ChangePlayerColorRequestEvent.class,
           ChangePlayerColorSuccessEvent.class,
-          ChangePlayerLimitDeniedEvent.class,
-          ChangePlayerLimitRequestEvent.class,
-          ChangePlayerLimitSuccessEvent.class,
           ChatMessageDeniedEvent.class,
           ChatMessageRequestEvent.class,
           ChatMessageSuccessEvent.class,
-          CloseMultiplayerServerSuccessEvent.class,
+          CreateGameServerDeniedEvent.class,
+          CreateGameServerRequestEvent.class,
+          CreateGameServerSuccessEvent.class,
           DefaultChatMessage.class,
           DefaultChatMessageEvent.class,
           DefaultCommandMessage.class,
           DefaultCommandMessageEvent.class,
           DefaultDeniedEvent.class,
-          DefaultJoinServerEvent.class,
+          DefaultGameConfiguration.class,
+          DefaultGameServerConfiguration.class,
+          DefaultJoinGameServerEvent.class,
           DefaultKickEvent.class,
-          DefaultOpenServerEvent.class,
           DefaultPlayerColorEvent.class,
           DefaultPlayerDeniedEvent.class,
           DefaultPlayerEvent.class,
@@ -59,26 +63,25 @@ public final class KryonetRegistration
           DefaultMessage.class,
           DefaultStatusMessage.class,
           DefaultPlayer.class,
+          DefaultServerConfiguration.class,
           DefaultStatusMessageEvent.class,
           DefendCountryDeniedEvent.class,
           DefendCountryRequestEvent.class,
           DefendCountrySuccessEvent.class,
+          DestroyGameServerEvent.class,
           DeterminePlayerTurnOrderCompleteEvent.class,
           DistributeInitialArmiesCompleteEvent.class,
           HashMap.class,
           Id.class,
           ImmutableSet.class,
           InetSocketAddress.class,
-          JoinMultiplayerServerDeniedEvent.class,
-          JoinMultiplayerServerRequestEvent.class,
-          JoinMultiplayerServerSuccessEvent.class,
+          JoinGameServerDeniedEvent.class,
+          JoinGameServerRequestEvent.class,
+          JoinGameServerSuccessEvent.class,
           KickPlayerFromGameDeniedEvent.class,
           KickPlayerFromGameRequestEvent.class,
           KickPlayerFromGameSuccessEvent.class,
           KryonetRemote.class,
-          OpenMultiplayerServerDeniedEvent.class,
-          OpenMultiplayerServerRequestEvent.class,
-          OpenMultiplayerServerSuccessEvent.class,
           PersonIdentity.class,
           PlayerColor.class,
           PlayerTurnOrder.class,
@@ -86,7 +89,6 @@ public final class KryonetRegistration
           PlayerJoinGameRequestEvent.class,
           PlayerJoinGameSuccessEvent.class,
           PlayerLeaveGameSuccessEvent.class,
-          QuitMultiplayerServerRequestEvent.class,
           StatusMessageSuccessEvent.class);
           // @formatter:on
 

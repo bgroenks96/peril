@@ -1,18 +1,19 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.OpenServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.OpenMultiplayerServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.CreateGameServerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.common.net.events.DeniedEvent;
 
-public final class OpenMultiplayerServerDeniedEvent implements DeniedEvent <String>, OpenServerEvent
+public final class CreateGameServerDeniedEvent implements CreateGameServerEvent, DeniedEvent <String>
 {
-  private final OpenMultiplayerServerRequestEvent requestEvent;
+  private final CreateGameServerRequestEvent requestEvent;
   private final DeniedEvent <String> deniedEvent;
 
-  public OpenMultiplayerServerDeniedEvent (final OpenMultiplayerServerRequestEvent event, final String reason)
+  public CreateGameServerDeniedEvent (final CreateGameServerRequestEvent event, final String reason)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (reason, "reason");
@@ -28,26 +29,20 @@ public final class OpenMultiplayerServerDeniedEvent implements DeniedEvent <Stri
   }
 
   @Override
-  public String getServerName ()
+  public GameServerConfiguration getConfiguration ()
   {
-    return requestEvent.getServerName ();
-  }
-
-  @Override
-  public int getServerTcpPort ()
-  {
-    return requestEvent.getServerTcpPort ();
+    return requestEvent.getConfiguration ();
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Original request: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), requestEvent,
-                    deniedEvent);
+    return String.format ("%1$s: Original request: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (),
+                    requestEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization
-  private OpenMultiplayerServerDeniedEvent ()
+  private CreateGameServerDeniedEvent ()
   {
     requestEvent = null;
     deniedEvent = null;

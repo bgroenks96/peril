@@ -36,9 +36,6 @@
       <event id="onPlayerJoinGameDeniedEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent" name="event"/>
       </event>
-      <event id="onChangePlayerLimitRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent" name="event"/>
-      </event>
       <event id="onChangePlayerColorRequestEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent" name="event"/>
       </event>
@@ -62,7 +59,6 @@
         <state name="PlayerHandler">
           <state name="WaitForPlayerRequest">
             <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)" nextState="WaitForPlayerRequest"/>
-            <transition event="onChangePlayerLimitRequestEvent" action="gameModel.handleChangePlayerLimitRequest (event)" nextState="WaitForPlayerRequest"/>
             <transition event="onChangePlayerColorRequestEvent" action="gameModel.handleChangePlayerColorRequest (event)" nextState="WaitForPlayerRequest"/>
           </state>
         </state>

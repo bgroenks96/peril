@@ -3,11 +3,12 @@ package com.forerunnergames.peril.client.application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 
-import com.forerunnergames.peril.client.LocalServerCreator;
+import com.forerunnergames.peril.client.LocalGameServerCreator;
 import com.forerunnergames.peril.client.controllers.EventBasedClientController;
 import com.forerunnergames.peril.client.controllers.MultiplayerController;
 import com.forerunnergames.peril.client.kryonet.KryonetClient;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
@@ -15,7 +16,6 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
 import com.forerunnergames.tools.common.net.Client;
 import com.forerunnergames.tools.common.net.ClientController;
-import com.forerunnergames.tools.common.net.ServerCreator;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.config.BusConfiguration;
@@ -55,8 +55,8 @@ public final class LibGdxGameFactory
     // @formatter:off
     final Client client = new KryonetClient ();
     final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES, eventBus);
-    final ServerCreator serverCreator = new LocalServerCreator ();
-    final Controller multiplayerController = new MultiplayerController (serverCreator, clientController, clientController, eventBus);
+    final GameServerCreator gameServerCreator = new LocalGameServerCreator ();
+    final Controller multiplayerController = new MultiplayerController (gameServerCreator, clientController, clientController, eventBus);
     final Application application = new ClientApplication (clientController, multiplayerController);
     final Game libGdxGame = new LibGdxGameWrapper (application);
     final Controller screenController = new ScreenController (libGdxGame);

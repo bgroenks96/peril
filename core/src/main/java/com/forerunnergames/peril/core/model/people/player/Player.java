@@ -6,10 +6,6 @@ public interface Player extends Person
 {
   public void addArmiesToHand (final int armies);
 
-  public boolean canAddArmiesToHand (final int armies);
-
-  public boolean canRemoveArmiesFromHand (final int armies);
-
   public boolean doesNotHave (final PlayerColor color);
 
   public boolean doesNotHave (final PlayerTurnOrder turnOrder);

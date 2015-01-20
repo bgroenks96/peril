@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.deltaFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.newPlayerLimitFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.reasonFrom;
@@ -12,21 +10,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.settings.GameSettings;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerLimitDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerLimitRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerLimitSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -51,9 +42,10 @@ import org.slf4j.LoggerFactory;
 public class GameModelTest
 {
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
-  private static final int INITIAL_PLAYER_LIMIT = GameSettings.MAX_PLAYERS;
-  private static final int INITIAL_ARMIES = 5;
   private static MBassador <Event> eventBus;
+  private int playerLimit;
+  private int initialArmies;
+  private int maxPlayers;
   private GameModel gameModel;
   private EventBusHandler eventHandler;
 
@@ -79,9 +71,13 @@ public class GameModelTest
   @Before
   public void setup ()
   {
-    final GameRules rules = mock (GameRules.class);
-    when (rules.calculateInitialArmies (anyInt ())).thenReturn (INITIAL_ARMIES);
-    gameModel = new GameModel (new PlayerModel (INITIAL_PLAYER_LIMIT), rules, eventBus);
+    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
+    final PlayerModel playerModel = new PlayerModel (gameRules);
+
+    initialArmies = gameRules.getInitialArmies ();
+    playerLimit = playerModel.getPlayerLimit ();
+    maxPlayers = gameRules.getMaxPlayers ();
+    gameModel = new GameModel (playerModel, gameRules, eventBus);
     eventHandler = new EventBusHandler ().subscribe ();
   }
 
@@ -127,7 +123,7 @@ public class GameModelTest
 
     for (final Player player : players)
     {
-      assertTrue (player.hasArmiesInHand (INITIAL_ARMIES));
+      assertTrue (player.hasArmiesInHand (initialArmies));
     }
 
     assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
@@ -141,31 +137,6 @@ public class GameModelTest
     gameModel.distributeInitialArmies ();
 
     assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
-  }
-
-  @Test
-  public void testHandleChangePlayerLimitRequestFailed ()
-  {
-    final int delta = 2;
-
-    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-
-    assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitDeniedEvent.class));
-    assertThat (deltaFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)), is (delta));
-    assertThat (reasonFrom (eventHandler.lastEvent (ChangePlayerLimitDeniedEvent.class)),
-                    is (ChangePlayerLimitDeniedEvent.REASON.CANNOT_INCREASE_ABOVE_MAX_PLAYERS));
-  }
-
-  @Test
-  public void testHandleChangePlayerLimitRequestSucceeded ()
-  {
-    final int delta = -2;
-
-    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-
-    assertTrue (eventHandler.lastEventWasType (ChangePlayerLimitSuccessEvent.class));
-    assertThat (newPlayerLimitFrom (eventHandler.lastEvent (ChangePlayerLimitSuccessEvent.class)),
-                    is (INITIAL_PLAYER_LIMIT + delta));
   }
 
   @Test
@@ -207,10 +178,6 @@ public class GameModelTest
   @Test
   public void testIsFull ()
   {
-    final int delta = 2;
-
-    gameModel.handleChangePlayerLimitRequest (new ChangePlayerLimitRequestEvent (delta));
-
     addMaxPlayers ();
 
     assertTrue (gameModel.isFull ());
@@ -218,7 +185,9 @@ public class GameModelTest
 
   private void addMaxPlayers ()
   {
-    for (int i = 1; i <= GameSettings.MAX_PLAYERS; ++i)
+    assertTrue (gameModel.playerLimitIs (maxPlayers));
+
+    for (int i = 1; i <= playerLimit; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
     }
