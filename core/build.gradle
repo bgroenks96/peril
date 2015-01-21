@@ -15,11 +15,13 @@ dependencies {
 }
 
 task generateJava << {
+  System.setProperty ("user.name", "forerunnergames")
   clean.delete "${projectDir}/src-gen"
   ant.taskdef (name: "stateBuilder",
           classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",
           classpath: configurations.stateBuilderAntTask.asPath)
   ant.stateBuilder (input: "${projectDir}/src/main/res", output: "${projectDir}/src-gen/main/java") {}
+  System.clearProperty ("user.name")
 }
 
 compileJava.dependsOn (generateJava)
