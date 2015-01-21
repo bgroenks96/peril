@@ -11,7 +11,7 @@ configurations {
 
 dependencies {
   stateBuilderAntTask files ("libs/statebuilder-ant-task-2.4.jar")
-  stateBuilderAntTask files ("libs/statebuilder-java-2.4.jar")
+  stateBuilderAntTask "com.stateforge.statebuilder:statebuilder-java:2.4"
 }
 
 task generateJava << {
