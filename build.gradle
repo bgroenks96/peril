@@ -118,6 +118,7 @@ project (":core") {
       exclude module: "commons-io"
     }
     compile "net.engio:mbassador:1.2.0"
+    compile "com.google.guava:guava:18.0"
     compile "com.google.code.findbugs:jsr305:2.0.3"
     compile "org.slf4j:slf4j-api:1.7.6"
     testCompile "junit:junit:4.11"
