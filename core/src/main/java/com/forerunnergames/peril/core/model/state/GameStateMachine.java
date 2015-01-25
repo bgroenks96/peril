@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.model.state;
 
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.events.CreateGameEvent;
-import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
-import com.forerunnergames.peril.core.model.events.EndGameEvent;
+import com.forerunnergames.peril.core.model.state.events.status.CreateGameEvent;
+import com.forerunnergames.peril.core.model.state.events.status.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.state.events.status.EndGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
