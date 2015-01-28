@@ -10,7 +10,7 @@
 "Western United States", 144, 100, 208, 170, 12, 250, 200
 "Eastern United States", 141, 107, 339, 170, 12, 400, 200
 "Central America", 188, 116, 244, 243, 12, 300, 275
-"Caribbean Islands", 119, 64, 398, 267, 12, 450, 300
+"Caribbean Islands", 119, 64, 398, 268, 12, 450, 300
 "Svalbard", 78, 19, 848, 22, 12, 875, 30
 "Iceland", 52, 14, 682, 87, 12, 700, 95
 "Scandinavia", 123, 76, 821, 65, 12, 850, 100
