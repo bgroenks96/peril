@@ -13,15 +13,14 @@ import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class PlayMapActor extends Actor
 {
@@ -301,20 +300,10 @@ public final class PlayMapActor extends Actor
   public void randomizeCountryColorsUsingNRandomColors (final int n)
   {
     Arguments.checkLowerInclusiveBound (n, 1, "n");
-
-    final Collection <PlayerColor> validColors = Collections2.filter (EnumSet.allOf (PlayerColor.class),
-                    new Predicate <PlayerColor> ()
-                    {
-                      @Override
-                      public boolean apply (final PlayerColor color)
-                      {
-                        return color.isNot (PlayerColor.UNKNOWN);
-                      }
-                    });
-
-    Arguments.checkUpperInclusiveBound (n, validColors.size(), "n");
+    Arguments.checkUpperInclusiveBound (n, PlayerColor.validValues ().size (), "n");
 
     final ImmutableSet.Builder <PlayerColor> nColorsBuilder = ImmutableSet.builder ();
+    final Set <PlayerColor> validColors = new HashSet <> (PlayerColor.validValues ());
 
     for (int i = 0; i < n; ++i)
     {
@@ -323,7 +312,7 @@ public final class PlayMapActor extends Actor
       validColors.remove (randomColor);
     }
 
-    randomizeCountryColorsUsingOnly (nColorsBuilder.build());
+    randomizeCountryColorsUsingOnly (nColorsBuilder.build ());
   }
 
   public void randomizeCountryColorsUsingOnly (final Collection <PlayerColor> colors)
