@@ -11,7 +11,7 @@
   <events>
     <eventSource name="Game">
       <event id="onCreateGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.events.CreateGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.model.state.events.status.CreateGameEvent" name="event"/>
       </event>
       <event id="onDeterminePlayerTurnOrderCompleteEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent" name="event"/>
@@ -20,10 +20,10 @@
         <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent" name="event"/>
       </event>
       <event id="onEndGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.events.EndGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.model.state.events.status.EndGameEvent" name="event"/>
       </event>
       <event id="onDestroyGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.events.DestroyGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.model.state.events.status.DestroyGameEvent" name="event"/>
       </event>
     </eventSource>
     <eventSource name="Players">
