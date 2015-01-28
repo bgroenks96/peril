@@ -5,8 +5,8 @@ import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 
-import java.util.Collection;
 import java.util.EnumSet;
 
 public enum PlayerTurnOrder
@@ -23,22 +23,22 @@ public enum PlayerTurnOrder
   NINTH,
   TENTH;
 
-  private static Collection <PlayerTurnOrder> validValues = Collections2.filter (EnumSet.allOf (PlayerTurnOrder.class),
-                  new Predicate <PlayerTurnOrder> ()
+  private static ImmutableSet <PlayerTurnOrder> validValues = ImmutableSet.copyOf (Collections2.filter (
+                  EnumSet.allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
                   {
                     @Override
                     public boolean apply (final PlayerTurnOrder turnOrder)
                     {
                       return turnOrder.isNot (UNKNOWN);
                     }
-                  });
+                  }));
 
   public static int count ()
   {
     return values ().length;
   }
 
-  public static Collection <PlayerTurnOrder> validValues ()
+  public static ImmutableSet <PlayerTurnOrder> validValues ()
   {
     return validValues;
   }

@@ -5,8 +5,8 @@ import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 
-import java.util.Collection;
 import java.util.EnumSet;
 
 public enum PlayerColor
@@ -23,22 +23,22 @@ public enum PlayerColor
   SILVER,
   UNKNOWN;
 
-  private static Collection <PlayerColor> validValues = Collections2.filter (EnumSet.allOf (PlayerColor.class),
-                  new Predicate <PlayerColor> ()
+  private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (
+                  EnumSet.allOf (PlayerColor.class), new Predicate <PlayerColor> ()
                   {
                     @Override
                     public boolean apply (final PlayerColor color)
                     {
                       return color.isNot (UNKNOWN);
                     }
-                  });
+                  }));
 
   public static int count ()
   {
     return values ().length;
   }
 
-  public static Collection <PlayerColor> validValues ()
+  public static ImmutableSet <PlayerColor> validValues ()
   {
     return validValues;
   }
