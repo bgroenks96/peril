@@ -9,7 +9,6 @@ import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.events.denied.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.JoinGameServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.JoinGameServerRequestEvent;
@@ -21,7 +20,6 @@ import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.net.ServerCommunicator;
 import com.forerunnergames.tools.net.ServerConfiguration;
 import com.forerunnergames.tools.net.ServerConnector;
-import com.forerunnergames.tools.net.events.AnswerEvent;
 import com.forerunnergames.tools.net.events.RequestEvent;
 import com.forerunnergames.tools.net.events.ServerCommunicationEvent;
 import com.forerunnergames.tools.net.events.ServerConnectionEvent;
@@ -137,16 +135,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event [{}] received.", event);
 
-    Event message = messageFrom (event);
-
-    if (message instanceof AnswerEvent)
-    {
-      eventBus.publish ((AnswerEvent) message);
-    }
-    else if (message instanceof GameNotificationEvent)
-    {
-      eventBus.publish ((GameNotificationEvent) message);
-    }
+    eventBus.publish (messageFrom (event));
   }
 
   @Handler
