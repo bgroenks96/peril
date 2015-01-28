@@ -2,6 +2,7 @@ package com.forerunnergames.peril.client.controllers;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withGameServerConfigurationFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withServerConfigurationFrom;
+import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
@@ -103,7 +104,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     final Result <String> result = joinGameServer (withServerConfigurationFrom (event));
 
-    if (result.isFailure ()) joinGameServerDenied (event, result.getFailureReason ());
+    if (result.isFailure ()) joinGameServerDenied (event, failureReasonFrom (result));
   }
 
   @Handler (priority = CALL_FIRST)
@@ -115,7 +116,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     final Result <String> result = createAndJoinGameServer (withGameServerConfigurationFrom (event));
 
-    if (result.isFailure ()) createGameServerDenied (event, result.getFailureReason ());
+    if (result.isFailure ()) createGameServerDenied (event, failureReasonFrom (result));
   }
 
   @Handler (priority = CALL_LAST)
