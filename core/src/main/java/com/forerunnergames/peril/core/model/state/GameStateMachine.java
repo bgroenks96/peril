@@ -39,6 +39,17 @@ public final class GameStateMachine
   private static final Logger log = LoggerFactory.getLogger (GameStateMachine.class);
   private final GameStateMachineContext context;
 
+  public GameStateMachine (final GameModel gameModel)
+  {
+    this (gameModel, new GameStateMachineListener ()
+    {
+      @Override
+      public void onEnd ()
+      {
+      }
+    });
+  }
+
   public GameStateMachine (final GameModel gameModel, final GameStateMachineListener listener)
   {
     Arguments.checkIsNotNull (gameModel, "gameModel");

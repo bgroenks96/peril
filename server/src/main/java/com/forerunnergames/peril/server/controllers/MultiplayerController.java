@@ -2,8 +2,8 @@ package com.forerunnergames.peril.server.controllers;
 
 import static com.google.common.collect.Maps.newHashMap;
 
-import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.ClientCommunicator;
@@ -11,6 +11,8 @@ import com.forerunnergames.tools.net.ClientConnector;
 import com.forerunnergames.tools.net.Remote;
 
 import java.util.Map;
+
+import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,29 +54,33 @@ public final class MultiplayerController extends ControllerAdapter
   private final Map <Remote, Id> clientsToPlayerIds = newHashMap ();
   private final ClientConnector clientConnector;
   private final ClientCommunicator clientCommunicator;
-  private final PlayerModel playerModel;
+  private final MBassador <Event> eventBus;
   private String serverName;
   private int serverTcpPort;
   private Remote host;
   private boolean shouldShutDown = false;
 
-  public MultiplayerController (final PlayerModel playerModel,
-                                final String serverName,
+  public MultiplayerController (final String serverName,
                                 final int serverTcpPort,
                                 final ClientConnector clientConnector,
-                                final ClientCommunicator clientCommunicator)
+                                final ClientCommunicator clientCommunicator,
+                                final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (serverName, "serverName");
     Arguments.checkIsNotNegative (serverTcpPort, "serverTcpPort");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
     Arguments.checkIsNotNull (clientCommunicator, "clientCommunicator");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.playerModel = playerModel;
-    this.serverName = serverName;
-    this.serverTcpPort = serverTcpPort;
     this.clientConnector = clientConnector;
     this.clientCommunicator = clientCommunicator;
+    this.eventBus = eventBus;
+  }
+
+  @Override
+  public void initialize()
+  {
+    eventBus.subscribe (this);
   }
 
   @Override

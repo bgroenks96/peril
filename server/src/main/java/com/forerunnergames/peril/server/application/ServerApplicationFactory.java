@@ -1,8 +1,10 @@
 package com.forerunnergames.peril.server.application;
 
+import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
+import com.forerunnergames.peril.core.model.state.GameStateMachine;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
@@ -68,8 +70,10 @@ public final class ServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort, KryonetRegistration.CLASSES, eventBus);
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage, jArgs.totalCountryCount, jArgs.initialCountryAssignment);
     final PlayerModel playerModel = new PlayerModel (gameRules);
-    final Controller multiplayerController = new MultiplayerController (playerModel, jArgs.serverName, jArgs.serverTcpPort, serverController, serverController);
+    final GameModel gameModel = new GameModel (playerModel, gameRules, eventBus);
+    final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
+    final Controller multiplayerController = new MultiplayerController (jArgs.serverName, jArgs.serverTcpPort, serverController, serverController, eventBus);
 
-    return new ServerApplication (serverController, multiplayerController);
+    return new ServerApplication (gameStateMachine, eventBus, serverController, multiplayerController);
   }
 }
