@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -110,7 +111,15 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   {
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
 
-    music.start ();
+    if (MusicSettings.IS_ENABLED) music.start ();
+  }
+
+  @Override
+  public void hide ()
+  {
+    Gdx.input.setInputProcessor (null);
+
+    if (MusicSettings.IS_ENABLED) music.stop ();
   }
 
   @Override
@@ -137,14 +146,6 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   @Override
   public void resume ()
   {
-  }
-
-  @Override
-  public void hide ()
-  {
-    Gdx.input.setInputProcessor (null);
-
-    music.stop ();
   }
 
   @Override

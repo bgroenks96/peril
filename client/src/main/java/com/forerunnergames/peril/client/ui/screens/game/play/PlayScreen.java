@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -77,7 +78,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
 
-    music.start ();
+    if (MusicSettings.IS_ENABLED) music.start ();
   }
 
   @Override
@@ -111,7 +112,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Gdx.input.setInputProcessor (null);
 
-    music.stop ();
+    if (MusicSettings.IS_ENABLED) music.stop ();
   }
 
   @Override
