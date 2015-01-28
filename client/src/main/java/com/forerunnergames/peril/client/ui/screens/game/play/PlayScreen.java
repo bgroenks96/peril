@@ -48,7 +48,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
-    Arguments.checkIsNotNull (territoryTextActor, "territoryNameTextActor");
+    Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (music, "music");
 
     this.screenController = screenController;

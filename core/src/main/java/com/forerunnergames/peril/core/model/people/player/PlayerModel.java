@@ -67,7 +67,7 @@ public final class PlayerModel
   public void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (toTurnOrder, "turnOrder");
+    Arguments.checkIsNotNull (toTurnOrder, "toTurnOrder");
     Arguments.checkIsFalse (toTurnOrder.is (PlayerTurnOrder.UNKNOWN), "Invalid player turn order.");
 
     final Player player = playerWith (playerId);

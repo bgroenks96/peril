@@ -17,7 +17,7 @@ public final class ChangePlayerColorRequestEvent implements PlayerColorEvent, Re
                                         final PlayerColor previousColor)
   {
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (currentColor, "color");
+    Arguments.checkIsNotNull (currentColor, "currentColor");
     Arguments.checkIsNotNull (previousColor, "previousColor");
 
     playerColorEvent = new DefaultPlayerColorEvent (player, currentColor, previousColor);

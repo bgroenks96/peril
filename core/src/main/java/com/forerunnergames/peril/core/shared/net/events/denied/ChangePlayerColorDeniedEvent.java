@@ -38,7 +38,7 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
     super (reason);
 
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (currentColor, "color");
+    Arguments.checkIsNotNull (currentColor, "currentColor");
     Arguments.checkIsNotNull (previousColor, "previousColor");
 
     playerColorEvent = new DefaultPlayerColorEvent (player, currentColor, previousColor);
