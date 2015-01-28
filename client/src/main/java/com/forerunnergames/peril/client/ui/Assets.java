@@ -2,9 +2,12 @@ package com.forerunnergames.peril.client.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GLTexture;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 
+import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.tools.common.Classes;
 
 import org.slf4j.Logger;
@@ -24,6 +27,7 @@ public final class Assets
   public static Texture playScreenBackground;
   public static Texture playScreenMapBackground;
   public static Texture playScreenMapForeground;
+  public static Pixmap playScreenMapInputDetection;
   public static Music playScreenMusic;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
@@ -47,6 +51,7 @@ public final class Assets
     playScreenBackground.dispose ();
     playScreenMapBackground.dispose ();
     playScreenMapForeground.dispose ();
+    playScreenMapInputDetection.dispose ();
 
     isLoaded = false;
   }
@@ -60,22 +65,39 @@ public final class Assets
     }
 
     // @formatter:off
-    menuBackground = new Texture (Gdx.files.internal ("ui/screens/menus/shared/background.png"));
-    menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightBackgroundShadow.png"));
+    menuBackground = new Texture (Gdx.files.internal ("ui/screens/menus/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightBackgroundShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     rightMenuBackgroundShadow = new NinePatch (menuRightBackgroundShadowTexture);
-    mainMenuText = new Texture (Gdx.files.internal ("ui/screens/menus/main/text.png"));
-    topMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/topMenuBarExtensionShadow.png"));
-    bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/bottomMenuBarExtensionShadow.png"));
-    leftMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/leftMenuBarShadow.png"));
-    rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"));
+    mainMenuText = new Texture (Gdx.files.internal ("ui/screens/menus/main/text.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    topMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/topMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/bottomMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    leftMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/leftMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/menuScreens.mp3"));
-    playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"));
-    playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"));
-    playScreenMapForeground = new Texture (Gdx.files.internal ("map/foreground.png"));
+    playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playScreenMapForeground = new Texture (Gdx.files.internal ("map/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("map/inputDetection.png"));
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
     // @formatter:on
 
+    setFilter (menuBackground);
+    setFilter (menuRightBackgroundShadowTexture);
+    setFilter (mainMenuText);
+    setFilter (topMenuBarExtensionShadow);
+    setFilter (bottomMenuBarExtensionShadow);
+    setFilter (leftMenuBarShadow);
+    setFilter (rightMenuBarShadow);
+    setFilter (playScreenBackground);
+    setFilter (playScreenMapBackground);
+    setFilter (playScreenMapForeground);
+
     isLoaded = true;
+  }
+
+  private static void setFilter (final GLTexture texture)
+  {
+    texture.setFilter (GraphicsSettings.TEXTURE_MINIFICATION_FILTER, GraphicsSettings.TEXTURE_MAGNIFICATION_FILTER);
   }
 
   private Assets ()

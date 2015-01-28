@@ -1,8 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
+import com.forerunnergames.peril.client.input.LibGdxMouseInput;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
@@ -35,7 +37,7 @@ public final class ScreenController extends ControllerAdapter
   {
     for (final ScreenId screenId : ScreenId.values ())
     {
-      screens.put (screenId, ScreenFactory.create (screenId, this));
+      screens.put (screenId, ScreenFactory.create (screenId, this, new LibGdxMouseInput (Gdx.input)));
     }
 
     toScreen (ScreenSettings.START_SCREEN);

@@ -12,8 +12,8 @@ public final class DesktopLauncher
   {
     final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration ();
 
-    config.width = GraphicsSettings.REFERENCE_RESOLUTION_WIDTH;
-    config.height = GraphicsSettings.REFERENCE_RESOLUTION_HEIGHT;
+    config.width = GraphicsSettings.INITIAL_WINDOW_WIDTH;
+    config.height = GraphicsSettings.INITIAL_WINDOW_HEIGHT;
     config.fullscreen = GraphicsSettings.IS_FULLSCREEN;
     config.vSyncEnabled = GraphicsSettings.IS_VSYNC_ENABLED;
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
