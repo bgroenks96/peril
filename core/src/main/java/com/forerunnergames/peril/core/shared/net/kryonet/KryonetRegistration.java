@@ -88,8 +88,7 @@ public final class KryonetRegistration
           PlayerJoinGameDeniedEvent.class,
           PlayerJoinGameRequestEvent.class,
           PlayerJoinGameSuccessEvent.class,
-          PlayerLeaveGameSuccessEvent.class,
-          StatusMessageSuccessEvent.class);
+          PlayerLeaveGameSuccessEvent.class);
           // @formatter:on
 
   private KryonetRegistration ()

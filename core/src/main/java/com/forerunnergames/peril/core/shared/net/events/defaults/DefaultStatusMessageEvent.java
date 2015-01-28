@@ -1,11 +1,12 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
+import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultStatusMessageEvent implements StatusMessageEvent
+public final class DefaultStatusMessageEvent implements StatusMessageEvent, GameNotificationEvent
 {
   private final StatusMessage message;
 

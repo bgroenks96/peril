@@ -402,9 +402,9 @@ public final class MultiplayerController extends ControllerAdapter
             previousColorFrom(successEvent).toLowerCase() + " to " + currentColorFrom(successEvent).toLowerCase() + "."));
   }
 
-  private StatusMessageSuccessEvent statusMessage (final String text)
+  private StatusMessageEvent statusMessage (final String text)
   {
-    return new StatusMessageSuccessEvent (new DefaultStatusMessage (text));
+    return new DefaultStatusMessage (text);
   }
 
   private void onEvent (final ChangePlayerLimitRequestEvent requestEvent, final Remote sender)
