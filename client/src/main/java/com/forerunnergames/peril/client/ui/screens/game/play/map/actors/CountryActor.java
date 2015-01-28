@@ -103,22 +103,9 @@ public final class CountryActor extends Actor
 
   public void nextColor ()
   {
-    PlayerColor color = colorOrder.getColorOf (currentSpriteIndex);
+    final PlayerColor color = colorOrder.getColorOf (currentSpriteIndex);
 
-    do
-    {
-      if (color.hasNext ())
-      {
-        color = color.next ();
-      }
-      else
-      {
-        color = PlayerColor.BLUE;
-      }
-    }
-    while (color.is (PlayerColor.UNKNOWN));
-
-    changeColorTo (color);
+    changeColorTo (color.hasNext() ? color.next() : PlayerColor.BLUE);
   }
 
   public void clearColor ()

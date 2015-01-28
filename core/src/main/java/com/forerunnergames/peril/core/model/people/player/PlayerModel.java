@@ -387,11 +387,6 @@ public final class PlayerModel
     players.remove (idOf (player));
   }
 
-  private boolean isAvailable (final PlayerColor color)
-  {
-    return !existsPlayerWith (color) && color.isNot (PlayerColor.UNKNOWN);
-  }
-
   private boolean isAvailable (final PlayerTurnOrder turnOrder)
   {
     return !existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
@@ -399,9 +394,9 @@ public final class PlayerModel
 
   private PlayerColor nextAvailableColor ()
   {
-    for (final PlayerColor color : playerColors ())
+    for (final PlayerColor color : PlayerColor.validValues ())
     {
-      if (isAvailable (color)) return color;
+      if (! existsPlayerWith (color)) return color;
     }
 
     throw new IllegalStateException ("There are no available player colors.");
@@ -415,11 +410,6 @@ public final class PlayerModel
     }
 
     throw new IllegalStateException ("There are no available player turn orders.");
-  }
-
-  private PlayerColor[] playerColors ()
-  {
-    return PlayerColor.values ();
   }
 
   private PlayerTurnOrder[] playerTurnOrders ()

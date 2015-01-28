@@ -3,6 +3,12 @@ package com.forerunnergames.peril.core.model.people.player;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
+import java.util.Collection;
+import java.util.EnumSet;
+
 public enum PlayerColor
 {
   BLUE,
@@ -17,14 +23,29 @@ public enum PlayerColor
   SILVER,
   UNKNOWN;
 
+  private static Collection <PlayerColor> validValues = Collections2.filter (EnumSet.allOf (PlayerColor.class),
+                  new Predicate <PlayerColor> ()
+                  {
+                    @Override
+                    public boolean apply (final PlayerColor color)
+                    {
+                      return color.isNot (PlayerColor.UNKNOWN);
+                    }
+                  });
+
   public static int count ()
   {
     return values ().length;
   }
 
+  public static Collection <PlayerColor> validValues ()
+  {
+    return validValues;
+  }
+
   public boolean hasNext ()
   {
-    return (ordinal () < values ().length - 1);
+    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (PlayerColor.UNKNOWN);
   }
 
   public boolean is (final PlayerColor color)
