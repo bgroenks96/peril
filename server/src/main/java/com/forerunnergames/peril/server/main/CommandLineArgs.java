@@ -14,7 +14,7 @@ public final class CommandLineArgs
   public GameMode gameMode;
   // @formatter:on
 
-  @Parameter (names = { "-c", "--countries" }, description = "Total number of playable countries present on the game map")
+  @Parameter (names = { "-c", "--countries" }, description = "Total number of playable countries present on the game map", required = true)
   public Integer totalCountryCount;
 
   @Parameter (names = { "-t", "--title" }, description = "Server title", required = true)
