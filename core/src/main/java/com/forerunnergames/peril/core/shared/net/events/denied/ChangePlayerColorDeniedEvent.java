@@ -11,7 +11,7 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerCo
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.REASON>
                 implements PlayerColorEvent

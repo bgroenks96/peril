@@ -6,9 +6,9 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.net.ClientCommunicator;
-import com.forerunnergames.tools.common.net.ClientConnector;
-import com.forerunnergames.tools.common.net.Remote;
+import com.forerunnergames.tools.net.ClientCommunicator;
+import com.forerunnergames.tools.net.ClientConnector;
+import com.forerunnergames.tools.net.Remote;
 
 import java.util.Map;
 

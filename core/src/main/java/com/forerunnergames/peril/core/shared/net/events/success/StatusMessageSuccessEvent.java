@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageSucces
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class StatusMessageSuccessEvent implements StatusMessageEvent, MessageSuccessEvent <StatusMessage>
 {

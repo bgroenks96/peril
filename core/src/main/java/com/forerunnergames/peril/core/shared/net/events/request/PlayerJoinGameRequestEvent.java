@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.RequestEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.RequestEvent;
 
 public final class PlayerJoinGameRequestEvent implements RequestEvent
 {

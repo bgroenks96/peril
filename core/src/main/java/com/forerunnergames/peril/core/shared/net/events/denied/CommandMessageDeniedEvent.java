@@ -5,10 +5,10 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEv
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CommandMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.CommandMessage;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.DeniedEvent;
 
-public final class CommandMessageDeniedEvent implements CommandMessageEvent, DeniedEvent <String>
+public final class CommandMessageDeniedEvent implements CommandMessageEvent, DeniedEvent<String>
 {
   private final CommandMessageEvent commandMessageEvent;
   private final DeniedEvent <String> deniedEvent;

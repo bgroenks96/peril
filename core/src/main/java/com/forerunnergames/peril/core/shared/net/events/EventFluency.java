@@ -12,8 +12,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Message;
-import com.forerunnergames.tools.common.net.ServerConfiguration;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.ServerConfiguration;
+import com.forerunnergames.tools.net.events.DeniedEvent;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -105,7 +105,7 @@ public final class EventFluency
     return event.getReasonForKick ();
   }
 
-  public static <T> T reasonFrom (final DeniedEvent <T> event)
+  public static <T> T reasonFrom (final DeniedEvent<T> event)
   {
     Arguments.checkIsNotNull (event, "event");
 

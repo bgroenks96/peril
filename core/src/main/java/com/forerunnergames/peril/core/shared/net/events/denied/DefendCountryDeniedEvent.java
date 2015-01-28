@@ -2,10 +2,10 @@ package com.forerunnergames.peril.core.shared.net.events.denied;
 
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.DeniedEvent;
 
-public final class DefendCountryDeniedEvent implements DeniedEvent <String>
+public final class DefendCountryDeniedEvent implements DeniedEvent<String>
 {
   private final DeniedEvent <String> deniedEvent;
 

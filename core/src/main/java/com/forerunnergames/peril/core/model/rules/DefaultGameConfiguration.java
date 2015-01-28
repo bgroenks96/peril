@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.model.rules;
 
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultGameConfiguration implements GameConfiguration
 {

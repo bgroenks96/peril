@@ -3,7 +3,6 @@ package com.forerunnergames.peril.server.application;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
-
 import com.forerunnergames.peril.core.shared.application.EventBasedApplication;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
@@ -14,8 +13,8 @@ import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
-import com.forerunnergames.tools.common.net.Server;
-import com.forerunnergames.tools.common.net.ServerController;
+import com.forerunnergames.tools.net.Server;
+import com.forerunnergames.tools.net.ServerController;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.config.BusConfiguration;

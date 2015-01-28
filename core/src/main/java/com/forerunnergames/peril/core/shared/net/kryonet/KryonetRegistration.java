@@ -19,7 +19,7 @@ import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.net.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.DefaultServerConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 

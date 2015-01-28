@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.math.IntMath;
 

@@ -11,8 +11,8 @@ import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.Time;
 import com.forerunnergames.tools.common.Utils;
-import com.forerunnergames.tools.common.net.Client;
-import com.forerunnergames.tools.common.net.NetworkListener;
+import com.forerunnergames.tools.net.Client;
+import com.forerunnergames.tools.net.NetworkListener;
 
 import java.io.IOException;
 import java.util.HashMap;

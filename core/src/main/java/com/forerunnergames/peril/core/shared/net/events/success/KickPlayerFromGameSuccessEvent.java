@@ -6,8 +6,8 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEv
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.SuccessEvent;
 
 public final class KickPlayerFromGameSuccessEvent implements PlayerEvent, KickEvent, SuccessEvent
 {

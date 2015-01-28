@@ -8,9 +8,9 @@ import com.esotericsoftware.kryonet.Listener;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.net.NetworkListener;
-import com.forerunnergames.tools.common.net.Remote;
-import com.forerunnergames.tools.common.net.Server;
+import com.forerunnergames.tools.net.NetworkListener;
+import com.forerunnergames.tools.net.Remote;
+import com.forerunnergames.tools.net.Server;
 
 import java.io.IOException;
 import java.util.HashMap;

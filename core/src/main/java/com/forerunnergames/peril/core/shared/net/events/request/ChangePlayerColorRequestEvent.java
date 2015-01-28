@@ -5,8 +5,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.RequestEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.RequestEvent;
 
 public final class ChangePlayerColorRequestEvent implements PlayerColorEvent, RequestEvent
 {

@@ -2,9 +2,9 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
-import static com.forerunnergames.tools.common.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.AssetFluency.nameOf;
-import static com.forerunnergames.tools.common.AssetFluency.withIdOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

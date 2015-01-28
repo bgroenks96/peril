@@ -4,8 +4,8 @@ import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.ServerConfiguration;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.ServerConfiguration;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultGameServerConfiguration implements GameServerConfiguration
 {

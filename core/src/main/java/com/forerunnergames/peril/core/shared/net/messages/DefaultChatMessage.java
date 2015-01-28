@@ -4,7 +4,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import javax.annotation.Nullable;
 

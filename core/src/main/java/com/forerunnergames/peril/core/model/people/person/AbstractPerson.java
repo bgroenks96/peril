@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.core.model.people.person;
 
-import com.forerunnergames.tools.common.AbstractAsset;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
+import com.forerunnergames.tools.common.assets.AbstractAsset;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public abstract class AbstractPerson extends AbstractAsset implements Person, Author
 {

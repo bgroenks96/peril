@@ -3,10 +3,10 @@ package com.forerunnergames.peril.core.model;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.currentColorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.previousColorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
-import static com.forerunnergames.tools.common.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.AssetFluency.nameOf;
-import static com.forerunnergames.tools.common.AssetFluency.withIdOf;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
 import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.people.player.Player;

@@ -6,7 +6,7 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerDe
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <String>, KickEvent
 {

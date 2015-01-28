@@ -4,11 +4,11 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultDeniedEv
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.JoinGameServerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.ServerConfiguration;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.ServerConfiguration;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.DeniedEvent;
 
-public final class JoinGameServerDeniedEvent implements JoinGameServerEvent, DeniedEvent <String>
+public final class JoinGameServerDeniedEvent implements JoinGameServerEvent, DeniedEvent<String>
 {
   private final JoinGameServerRequestEvent requestEvent;
   private final DeniedEvent <String> deniedEvent;

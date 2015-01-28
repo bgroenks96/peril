@@ -2,8 +2,8 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
-import static com.forerunnergames.tools.common.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.AssetFluency.nameOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;

@@ -3,7 +3,7 @@ package com.forerunnergames.peril.core.shared.net.messages;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultCommandMessage implements CommandMessage
 {

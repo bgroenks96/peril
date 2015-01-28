@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultPlayerTurnOrderEvent implements PlayerTurnOrderEvent
 {

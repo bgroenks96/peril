@@ -14,8 +14,8 @@ import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
-import com.forerunnergames.tools.common.net.Client;
-import com.forerunnergames.tools.common.net.ClientController;
+import com.forerunnergames.tools.net.Client;
+import com.forerunnergames.tools.net.ClientController;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.config.BusConfiguration;

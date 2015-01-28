@@ -2,7 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.denied;
 
 import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.REASON>
 {

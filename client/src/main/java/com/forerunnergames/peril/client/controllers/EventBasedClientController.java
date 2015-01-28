@@ -3,13 +3,13 @@ package com.forerunnergames.peril.client.controllers;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.net.AbstractClientController;
-import com.forerunnergames.tools.common.net.Client;
-import com.forerunnergames.tools.common.net.Remote;
-import com.forerunnergames.tools.common.net.events.AnswerEvent;
-import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
-import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
-import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
+import com.forerunnergames.tools.net.AbstractClientController;
+import com.forerunnergames.tools.net.Client;
+import com.forerunnergames.tools.net.Remote;
+import com.forerunnergames.tools.net.events.AnswerEvent;
+import com.forerunnergames.tools.net.events.ServerCommunicationEvent;
+import com.forerunnergames.tools.net.events.ServerConnectionEvent;
+import com.forerunnergames.tools.net.events.ServerDisconnectionEvent;
 
 import com.google.common.collect.ImmutableSet;
 

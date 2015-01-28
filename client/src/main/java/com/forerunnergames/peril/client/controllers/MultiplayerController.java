@@ -2,8 +2,8 @@ package com.forerunnergames.peril.client.controllers;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withGameServerConfigurationFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withServerConfigurationFrom;
-import static com.forerunnergames.tools.common.net.events.EventFluency.messageFrom;
-import static com.forerunnergames.tools.common.net.events.EventFluency.serverFrom;
+import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
+import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
@@ -18,14 +18,14 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
-import com.forerunnergames.tools.common.net.ServerCommunicator;
-import com.forerunnergames.tools.common.net.ServerConfiguration;
-import com.forerunnergames.tools.common.net.ServerConnector;
-import com.forerunnergames.tools.common.net.events.AnswerEvent;
-import com.forerunnergames.tools.common.net.events.RequestEvent;
-import com.forerunnergames.tools.common.net.events.ServerCommunicationEvent;
-import com.forerunnergames.tools.common.net.events.ServerConnectionEvent;
-import com.forerunnergames.tools.common.net.events.ServerDisconnectionEvent;
+import com.forerunnergames.tools.net.ServerCommunicator;
+import com.forerunnergames.tools.net.ServerConfiguration;
+import com.forerunnergames.tools.net.ServerConnector;
+import com.forerunnergames.tools.net.events.AnswerEvent;
+import com.forerunnergames.tools.net.events.RequestEvent;
+import com.forerunnergames.tools.net.events.ServerCommunicationEvent;
+import com.forerunnergames.tools.net.events.ServerConnectionEvent;
+import com.forerunnergames.tools.net.events.ServerDisconnectionEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;

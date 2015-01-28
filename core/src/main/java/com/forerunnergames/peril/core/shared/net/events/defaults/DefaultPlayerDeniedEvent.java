@@ -4,13 +4,13 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.DeniedEvent;
 
 public final class DefaultPlayerDeniedEvent implements PlayerDeniedEvent <String>
 {
   private final PlayerEvent playerEvent;
-  private final DeniedEvent <String> deniedEvent;
+  private final DeniedEvent<String> deniedEvent;
 
   public DefaultPlayerDeniedEvent (final Player player, final String reason)
   {

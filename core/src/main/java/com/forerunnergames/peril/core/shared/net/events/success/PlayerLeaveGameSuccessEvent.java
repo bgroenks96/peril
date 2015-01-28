@@ -4,8 +4,8 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.SuccessEvent;
 
 public final class PlayerLeaveGameSuccessEvent implements PlayerEvent, SuccessEvent
 {

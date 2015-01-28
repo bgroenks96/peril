@@ -5,8 +5,8 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEv
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
-import com.forerunnergames.tools.common.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.common.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.SuccessEvent;
 
 import javax.annotation.Nullable;
 
