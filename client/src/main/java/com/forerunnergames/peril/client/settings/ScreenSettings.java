@@ -6,7 +6,7 @@ import com.forerunnergames.tools.common.Classes;
 public final class ScreenSettings
 {
   // @formatter:off
-  public static final ScreenId START_SCREEN = ScreenId.MAIN_MENU;
+  public static final ScreenId START_SCREEN = ScreenId.PLAY;
   // @formatter:on
 
   private ScreenSettings ()
