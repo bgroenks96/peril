@@ -3,6 +3,12 @@ package com.forerunnergames.peril.core.model.people.player;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
+import java.util.Collection;
+import java.util.EnumSet;
+
 public enum PlayerTurnOrder
 {
   UNKNOWN,
@@ -17,9 +23,24 @@ public enum PlayerTurnOrder
   NINTH,
   TENTH;
 
+  private static Collection <PlayerTurnOrder> validValues = Collections2.filter (EnumSet.allOf (PlayerTurnOrder.class),
+                  new Predicate <PlayerTurnOrder> ()
+                  {
+                    @Override
+                    public boolean apply (final PlayerTurnOrder turnOrder)
+                    {
+                      return turnOrder.isNot (UNKNOWN);
+                    }
+                  });
+
   public static int count ()
   {
     return values ().length;
+  }
+
+  public static Collection <PlayerTurnOrder> validValues ()
+  {
+    return validValues;
   }
 
   public static PlayerTurnOrder getNthTurnOrder (final int nthPlayerTurnOrder)
@@ -37,7 +58,7 @@ public enum PlayerTurnOrder
 
   public boolean hasNext ()
   {
-    return (ordinal () < values ().length - 1);
+    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (UNKNOWN);
   }
 
   public boolean is (final PlayerTurnOrder turnOrder)

@@ -387,16 +387,11 @@ public final class PlayerModel
     players.remove (idOf (player));
   }
 
-  private boolean isAvailable (final PlayerTurnOrder turnOrder)
-  {
-    return !existsPlayerWith (turnOrder) && turnOrder.isNot (PlayerTurnOrder.UNKNOWN);
-  }
-
   private PlayerColor nextAvailableColor ()
   {
     for (final PlayerColor color : PlayerColor.validValues ())
     {
-      if (! existsPlayerWith (color)) return color;
+      if (!existsPlayerWith (color)) return color;
     }
 
     throw new IllegalStateException ("There are no available player colors.");
@@ -404,17 +399,12 @@ public final class PlayerModel
 
   private PlayerTurnOrder nextAvailableTurnOrder ()
   {
-    for (final PlayerTurnOrder turnOrder : playerTurnOrders ())
+    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validValues ())
     {
-      if (isAvailable (turnOrder)) return turnOrder;
+      if (!existsPlayerWith (turnOrder)) return turnOrder;
     }
 
     throw new IllegalStateException ("There are no available player turn orders.");
-  }
-
-  private PlayerTurnOrder[] playerTurnOrders ()
-  {
-    return PlayerTurnOrder.values ();
   }
 
   private Collection <Player> players ()

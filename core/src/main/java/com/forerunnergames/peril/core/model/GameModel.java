@@ -31,8 +31,6 @@ import com.forerunnergames.tools.common.Result;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -71,14 +69,12 @@ public final class GameModel
     log.info ("Determining player turn order...");
 
     final ImmutableSet <Player> players = playerModel.getPlayers ();
-    List <PlayerTurnOrder> validTurnOrders = new ArrayList <> (Arrays.asList (PlayerTurnOrder.values ()));
-    validTurnOrders.remove (PlayerTurnOrder.UNKNOWN);
-    validTurnOrders = Randomness.shuffle (validTurnOrders);
+    final List <PlayerTurnOrder> randomTurnOrders = Randomness.shuffle (PlayerTurnOrder.validValues ());
+    final Iterator <PlayerTurnOrder> randomTurnOrderItr = randomTurnOrders.iterator ();
 
-    final Iterator <PlayerTurnOrder> turnOrderItr = validTurnOrders.iterator ();
     for (final Player player : players)
     {
-      playerModel.changeTurnOrderOfPlayer (idOf (player), turnOrderItr.next ());
+      playerModel.changeTurnOrderOfPlayer (idOf (player), randomTurnOrderItr.next ());
     }
 
     eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayers ()));
