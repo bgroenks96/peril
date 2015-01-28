@@ -2,12 +2,12 @@ package com.forerunnergames.peril.client.io;
 
 import com.forerunnergames.tools.common.Arguments;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableBiMap;
 
 public abstract class AbstractDataLoader <T, U> implements DataLoader <T, U>
 {
   @Override
-  public final ImmutableMap <T, U> load (final String fileName)
+  public final ImmutableBiMap <T, U> load (final String fileName)
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
@@ -21,7 +21,7 @@ public abstract class AbstractDataLoader <T, U> implements DataLoader <T, U>
     return finalizeData ();
   }
 
-  protected abstract ImmutableMap <T, U> finalizeData ();
+  protected abstract ImmutableBiMap <T, U> finalizeData ();
 
   protected abstract void initializeData (final String fileName);
 
