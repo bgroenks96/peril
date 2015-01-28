@@ -8,5 +8,3 @@ Pink,      6
 Purple,    7
 Red,       8
 Silver,    9
-Hovered,  10
-Selected, 11
