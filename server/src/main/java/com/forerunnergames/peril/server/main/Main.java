@@ -1,13 +1,11 @@
 package com.forerunnergames.peril.server.main;
 
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
-import com.forerunnergames.tools.common.Application;
+import com.forerunnergames.peril.server.settings.ServerSettings;
 import com.forerunnergames.tools.common.Classes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.beust.jcommander.JCommander;
 
 public final class Main
 {
@@ -17,27 +15,11 @@ public final class Main
   {
     try
     {
-      final CommandLineArgs jArgs = new CommandLineArgs ();
-      new JCommander (jArgs, args);
-
-      final Application application = ServerApplicationFactory.create (jArgs);
-
-      application.initialize ();
-
-      Runtime.getRuntime ().addShutdownHook (new Thread (new Runnable ()
-      {
-        @Override
-        public void run ()
-        {
-          application.shutDown ();
-        }
-      }));
+      ServerApplicationFactory.create (args).initialize ();
     }
     catch (final Throwable e)
     {
-      log.error ("\n\n\nOh no! The server has crashed!\n\nFor help, please send this log, along with an explanation "
-                      + "of exactly what you were doing when it crashed, to support@forerunnergames.com.\n\nWe WILL get back "
-                      + "to you because we actually care ;-)\n\n\n", e);
+      log.error (ServerSettings.CRASH_MESSAGE, e);
 
       System.exit (1);
     }
