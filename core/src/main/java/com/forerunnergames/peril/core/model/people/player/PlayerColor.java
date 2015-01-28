@@ -29,7 +29,7 @@ public enum PlayerColor
                     @Override
                     public boolean apply (final PlayerColor color)
                     {
-                      return color.isNot (PlayerColor.UNKNOWN);
+                      return color.isNot (UNKNOWN);
                     }
                   });
 
@@ -45,7 +45,7 @@ public enum PlayerColor
 
   public boolean hasNext ()
   {
-    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (PlayerColor.UNKNOWN);
+    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (UNKNOWN);
   }
 
   public boolean is (final PlayerColor color)
