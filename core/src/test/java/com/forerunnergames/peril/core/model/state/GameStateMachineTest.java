@@ -11,8 +11,6 @@ import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRe
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -39,11 +37,8 @@ public class GameStateMachineTest
 
   private static String getRandomPlayerName ()
   {
-    final String[] names = { "Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy", "Brittany",
-        "Jonathan", "Adam", "Brian" };
-    final List <String> shuffledNames = Randomness.shuffle (Arrays.asList (names));
-
-    return shuffledNames.get (0);
+    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron",
+                    "Maddy", "Brittany", "Jonathan", "Adam", "Brian");
   }
 
   @BeforeClass
