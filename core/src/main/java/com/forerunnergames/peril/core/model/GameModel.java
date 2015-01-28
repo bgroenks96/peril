@@ -8,7 +8,6 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
-import com.forerunnergames.peril.core.model.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -16,6 +15,7 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
+import com.forerunnergames.peril.core.model.state.events.status.DestroyGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
