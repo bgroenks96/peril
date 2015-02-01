@@ -8,6 +8,8 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
+import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -15,9 +17,12 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
-import com.forerunnergames.peril.core.model.state.events.status.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
+import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
@@ -31,8 +36,10 @@ import com.forerunnergames.tools.common.Result;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -43,18 +50,30 @@ public final class GameModel
 {
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private final PlayerModel playerModel;
+  private final PlayMapModel playMapModel;
   private final GameRules rules;
   private final MBassador <Event> eventBus;
 
-  public GameModel (final PlayerModel playerModel, final GameRules rules, final MBassador <Event> eventBus)
+  public GameModel (final PlayerModel playerModel,
+                    final PlayMapModel playMapModel,
+                    final GameRules rules,
+                    final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (playMapModel, "playMapModel");
     Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
+    this.playMapModel = playMapModel;
     this.rules = rules;
     this.eventBus = eventBus;
+  }
+
+  // temporary debug constructor to prevent shit from breaking
+  public GameModel (final PlayerModel playerModel, final GameRules rules, final MBassador <Event> eventBus)
+  {
+    this (playerModel, new PlayMapModel (ImmutableSet.<Country> of (), rules), rules, eventBus);
   }
 
   @StateMachineAction
@@ -93,6 +112,48 @@ public final class GameModel
     }
 
     eventBus.publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayers ()));
+  }
+
+  @StateMachineAction
+  public void waitForCountrySelectionToBegin ()
+  {
+    switch (rules.getInitialCountryAssignment ())
+    {
+    case RANDOM:
+      log.info ("Initial country assignment = RANDOM");
+      eventBus.publish (new RandomlyAssignPlayerCountriesEvent ());
+      break;
+    case MANUAL:
+      log.info ("Initial country assignment = MANUAL");
+      eventBus.publish (new BeginManualCountrySelectionEvent ());
+    default:
+      log.info ("Unrecognized value for InitialCountryAssignment.");
+    }
+  }
+
+  @StateMachineAction
+  public void randomlyAssignPlayerCountries ()
+  {
+    log.info ("Randomly assigning player countries...");
+
+    Set <Country> countries = new HashSet <> (playMapModel.getCountries ());
+    ImmutableSet <Player> players = playerModel.getPlayers ();
+    // TODO: this should be done more accordingly with GameRules or something
+    final int countriesPerPlayer = countries.size () / players.size () + 1;
+    for (Player player : players)
+    {
+      int count = 0;
+      Iterator <Country> itr = countries.iterator ();
+      while (itr.hasNext () && count < countriesPerPlayer)
+      {
+        Country toAssign = itr.next ();
+        playMapModel.assignCountryOwner (toAssign.getId (), player.getId ());
+        itr.remove ();
+        count++;
+      }
+    }
+
+    eventBus.publish (new CountrySelectionCompleteEvent ());
   }
 
   @StateMachineAction
