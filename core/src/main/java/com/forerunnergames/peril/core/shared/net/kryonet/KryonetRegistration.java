@@ -8,6 +8,7 @@ import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.*;
 import com.forerunnergames.peril.core.shared.net.events.denied.*;
+import com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
@@ -44,6 +45,7 @@ public final class KryonetRegistration
           ChatMessageDeniedEvent.class,
           ChatMessageRequestEvent.class,
           ChatMessageSuccessEvent.class,
+          CountrySelectionCompleteEvent.class,
           CreateGameServerDeniedEvent.class,
           CreateGameServerRequestEvent.class,
           CreateGameServerSuccessEvent.class,

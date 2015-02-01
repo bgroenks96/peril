@@ -10,19 +10,26 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.config.BusConfiguration;
@@ -38,6 +45,8 @@ import org.junit.Test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.mockito.Mockito;
 
 public class GameModelTest
 {
@@ -73,11 +82,12 @@ public class GameModelTest
   {
     final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
     final PlayerModel playerModel = new PlayerModel (gameRules);
+    final PlayMapModel playMapModel = new PlayMapModel (mockCountries (), gameRules);
 
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxPlayers ();
-    gameModel = new GameModel (playerModel, gameRules, eventBus);
+    gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
     eventHandler = new EventBusHandler ().subscribe ();
   }
 
@@ -137,6 +147,16 @@ public class GameModelTest
     gameModel.distributeInitialArmies ();
 
     assertTrue (eventHandler.lastEventWasType (DistributeInitialArmiesCompleteEvent.class));
+  }
+
+  @Test
+  public void testRandomlyAssignPlayerCountries ()
+  {
+    addMaxPlayers ();
+
+    gameModel.randomlyAssignPlayerCountries ();
+
+    assertTrue (eventHandler.lastEventWasType (CountrySelectionCompleteEvent.class));
   }
 
   @Test
@@ -204,6 +224,20 @@ public class GameModelTest
 
     assertTrue (gameModel.playerCountIs (1));
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
+  }
+
+  private ImmutableSet <Country> mockCountries ()
+  {
+    Builder <Country> countrySetBuilder = ImmutableSet.builder ();
+    for (int i = 0; i < 20; i++)
+    {
+      Country mockedCountry = Mockito.mock (Country.class);
+      Id mockedCountryId = IdGenerator.generateUniqueId ();
+      Mockito.when (mockedCountry.getCountryName ()).thenReturn (new CountryName ("Country-" + i));
+      Mockito.when (mockedCountry.getId ()).thenReturn (mockedCountryId);
+      countrySetBuilder.add (mockedCountry);
+    }
+    return countrySetBuilder.build ();
   }
 
   private final class EventBusHandler

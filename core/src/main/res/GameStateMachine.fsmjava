@@ -11,7 +11,7 @@
   <events>
     <eventSource name="Game">
       <event id="onCreateGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.status.CreateGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.model.state.events.CreateGameEvent" name="event"/>
       </event>
       <event id="onDeterminePlayerTurnOrderCompleteEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent" name="event"/>
@@ -19,11 +19,20 @@
       <event id="onDistributeInitialArmiesCompleteEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent" name="event"/>
       </event>
+      <event id="onRandomlyAssignPlayerCountriesEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent" name="event"/>
+      </event>
+      <event id="onBeginManualCountrySelectionEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent" name="event"/>
+      </event>
+      <event id="onCountrySelectionCompleteEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent" name="event"/>
+      </event>
       <event id="onEndGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.status.EndGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event"/>
       </event>
       <event id="onDestroyGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.status.DestroyGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.model.state.events.DestroyGameEvent" name="event"/>
       </event>
     </eventSource>
     <eventSource name="Players">
@@ -74,7 +83,18 @@
           </state>
           <state name="DistributeInitialArmies">
             <onEntry action="gameModel.distributeInitialArmies()"/>
-            <transition event="onDistributeInitialArmiesCompleteEvent" nextState="EndGame"/>
+            <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries"/>
+          </state>
+          <state name="AssignPlayerCountries">
+            <state name="WaitForCountrySelectionToBegin">
+              <onEntry action="gameModel.waitForCountrySelectionToBegin()"/>
+              <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries"/>
+              <transition event="onBeginManualCountrySelectionEvent" nextState="EndGame"/>
+            </state>
+            <state name="RandomlyAssignPlayerCountries">
+              <onEntry action="gameModel.randomlyAssignPlayerCountries()"/>
+              <transition event="onCountrySelectionCompleteEvent" nextState="EndGame"/>
+            </state>
           </state>
           <state name="EndGame">
             <onEntry action="gameModel.endGame()"/>
