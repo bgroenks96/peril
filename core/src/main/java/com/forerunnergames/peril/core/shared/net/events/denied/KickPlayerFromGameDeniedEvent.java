@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
@@ -13,26 +12,13 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   private final PlayerDeniedEvent <String> playerDeniedEvent;
   private final KickEvent kickEvent;
 
-  public KickPlayerFromGameDeniedEvent (final Player player, final String reasonForKick, final String reason)
+  public KickPlayerFromGameDeniedEvent (final String reasonForKick, final String reason)
   {
-    Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (reasonForKick, "reasonForKick");
     Arguments.checkIsNotNull (reason, "reason");
 
-    playerDeniedEvent = new DefaultPlayerDeniedEvent (player, reason);
+    playerDeniedEvent = new DefaultPlayerDeniedEvent (reason);
     kickEvent = new DefaultKickEvent (reasonForKick);
-  }
-
-  @Override
-  public Player getPlayer ()
-  {
-    return playerDeniedEvent.getPlayer ();
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return playerDeniedEvent.getPlayerName ();
   }
 
   @Override

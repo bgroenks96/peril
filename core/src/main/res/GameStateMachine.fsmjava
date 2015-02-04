@@ -25,8 +25,8 @@
       <event id="onBeginManualCountrySelectionEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent" name="event"/>
       </event>
-      <event id="onCountrySelectionCompleteEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent" name="event"/>
+      <event id="onPlayerCountryAssignmentCompleteEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent" name="event"/>
       </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event"/>
@@ -93,7 +93,7 @@
             </state>
             <state name="RandomlyAssignPlayerCountries">
               <onEntry action="gameModel.randomlyAssignPlayerCountries()"/>
-              <transition event="onCountrySelectionCompleteEvent" nextState="EndGame"/>
+              <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame"/>
             </state>
           </state>
           <state name="EndGame">

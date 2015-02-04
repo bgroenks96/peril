@@ -5,7 +5,13 @@ import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.*;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -21,18 +27,11 @@ import javax.annotation.Nullable;
 
 public final class EventFluency
 {
-  public static PlayerColor currentColorFrom (final PlayerColorEvent event)
+  public static PlayerColor colorFrom (final PlayerColorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getCurrentColor ();
-  }
-
-  public static PlayerTurnOrder currentTurnOrderFrom (final PlayerTurnOrderEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getCurrentTurnOrder ();
+    return event.getRequestedColor ();
   }
 
   public static boolean hasAuthorFrom (final ChatMessageEvent event)
@@ -47,20 +46,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getMessage ();
-  }
-
-  public static Player playerFrom (final PlayerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayer ();
-  }
-
-  public static String playerNameFrom (final PlayerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayerName ();
   }
 
   public static String playerNameFrom (final PlayerJoinGameRequestEvent event)
@@ -84,18 +69,11 @@ public final class EventFluency
     return event.getPlayersInGame ();
   }
 
-  public static PlayerColor previousColorFrom (final PlayerColorEvent event)
+  public static PlayerTurnOrder turnOrderFrom (final PlayerTurnOrderEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getPreviousColor ();
-  }
-
-  public static PlayerTurnOrder previousTurnOrderFrom (final PlayerTurnOrderEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPreviousTurnOrder ();
+    return event.getRequestedTurnOrder ();
   }
 
   public static String reasonForKickFrom (final KickEvent event)

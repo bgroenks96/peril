@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.reasonFrom;
 
@@ -18,7 +17,7 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
@@ -156,7 +155,7 @@ public class GameModelTest
 
     gameModel.randomlyAssignPlayerCountries ();
 
-    assertTrue (eventHandler.lastEventWasType (CountrySelectionCompleteEvent.class));
+    assertTrue (eventHandler.lastEventWasType (PlayerCountryAssignmentCompleteEvent.class));
   }
 
   @Test
@@ -182,7 +181,7 @@ public class GameModelTest
     gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
 
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
-    assertTrue (playerFrom (eventHandler.lastEvent (PlayerJoinGameSuccessEvent.class)).has (name));
+    assertTrue (eventHandler.lastEvent (PlayerJoinGameSuccessEvent.class).getPlayerName ().equals (name));
   }
 
   @Test
