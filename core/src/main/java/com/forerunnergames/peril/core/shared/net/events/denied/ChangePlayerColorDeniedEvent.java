@@ -1,10 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.denied;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.currentColorFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.previousColorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
@@ -27,45 +24,23 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
 
   public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final REASON reason)
   {
-    this (playerFrom (event), currentColorFrom (event), previousColorFrom (event), reason);
+    this (colorFrom (event), reason);
   }
 
-  public ChangePlayerColorDeniedEvent (final Player player,
-                                       final PlayerColor currentColor,
-                                       final PlayerColor previousColor,
+  public ChangePlayerColorDeniedEvent (final PlayerColor color,
                                        final REASON reason)
   {
     super (reason);
 
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (currentColor, "currentColor");
-    Arguments.checkIsNotNull (previousColor, "previousColor");
+    Arguments.checkIsNotNull (color, "currentColor");
 
-    playerColorEvent = new DefaultPlayerColorEvent (player, currentColor, previousColor);
+    playerColorEvent = new DefaultPlayerColorEvent (color);
   }
 
   @Override
-  public PlayerColor getCurrentColor ()
+  public PlayerColor getRequestedColor ()
   {
-    return playerColorEvent.getCurrentColor ();
-  }
-
-  @Override
-  public PlayerColor getPreviousColor ()
-  {
-    return playerColorEvent.getPreviousColor ();
-  }
-
-  @Override
-  public Player getPlayer ()
-  {
-    return playerColorEvent.getPlayer ();
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return playerColorEvent.getPlayerName ();
+    return playerColorEvent.getRequestedColor ();
   }
 
   @Override

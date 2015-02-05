@@ -1,44 +1,34 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.SuccessEvent;
 
-public final class PlayerLeaveGameSuccessEvent implements PlayerEvent, SuccessEvent
+public final class PlayerLeaveGameSuccessEvent implements SuccessEvent
 {
-  private final PlayerEvent playerEvent;
+  private final String playerName;
 
-  public PlayerLeaveGameSuccessEvent (final Player player)
+  public PlayerLeaveGameSuccessEvent (final String playerName)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playerName, "playerName");
 
-    playerEvent = new DefaultPlayerEvent (player);
+    this.playerName = playerName;
   }
 
-  @Override
-  public Player getPlayer ()
-  {
-    return playerEvent.getPlayer ();
-  }
-
-  @Override
   public String getPlayerName ()
   {
-    return playerEvent.getPlayerName ();
+    return playerName;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), playerEvent);
+    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), playerName);
   }
 
   @RequiredForNetworkSerialization
   private PlayerLeaveGameSuccessEvent ()
   {
-    playerEvent = null;
+    playerName = null;
   }
 }

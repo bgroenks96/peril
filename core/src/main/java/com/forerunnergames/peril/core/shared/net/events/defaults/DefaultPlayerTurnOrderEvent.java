@@ -1,67 +1,36 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultPlayerTurnOrderEvent implements PlayerTurnOrderEvent
 {
-  private final PlayerEvent playerEvent;
-  private final PlayerTurnOrder currentTurnOrder;
-  private final PlayerTurnOrder previousTurnOrder;
+  private final PlayerTurnOrder requestedTurnOrder;
 
-  public DefaultPlayerTurnOrderEvent (final Player player,
-                                      final PlayerTurnOrder currentTurnOrder,
-                                      final PlayerTurnOrder previousTurnOrder)
+  public DefaultPlayerTurnOrderEvent (final PlayerTurnOrder requestedTurnOrder)
   {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (currentTurnOrder, "currentTurnOrder");
-    Arguments.checkIsNotNull (previousTurnOrder, "previousTurnOrder");
+    Arguments.checkIsNotNull (requestedTurnOrder, "requestedTurnOrder");
 
-    playerEvent = new DefaultPlayerEvent (player);
-    this.currentTurnOrder = currentTurnOrder;
-    this.previousTurnOrder = previousTurnOrder;
+    this.requestedTurnOrder = requestedTurnOrder;
   }
 
   @Override
-  public PlayerTurnOrder getCurrentTurnOrder ()
+  public PlayerTurnOrder getRequestedTurnOrder ()
   {
-    return currentTurnOrder;
-  }
-
-  @Override
-  public PlayerTurnOrder getPreviousTurnOrder ()
-  {
-    return previousTurnOrder;
-  }
-
-  @Override
-  public Player getPlayer ()
-  {
-    return playerEvent.getPlayer ();
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return playerEvent.getPlayerName ();
+    return requestedTurnOrder;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Current turn order: %2$s | Previous turn order: %3$s", playerEvent, currentTurnOrder,
-                    previousTurnOrder);
+    return String.format ("Requested turn order: %1$s", requestedTurnOrder);
   }
 
   @RequiredForNetworkSerialization
   private DefaultPlayerTurnOrderEvent ()
   {
-    playerEvent = null;
-    currentTurnOrder = null;
-    previousTurnOrder = null;
+    requestedTurnOrder = null;
   }
 }

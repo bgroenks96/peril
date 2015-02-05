@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.currentColorFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.previousColorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
@@ -22,7 +21,7 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
@@ -153,7 +152,7 @@ public final class GameModel
       }
     }
 
-    eventBus.publish (new CountrySelectionCompleteEvent ());
+    eventBus.publish (new PlayerCountryAssignmentCompleteEvent ());
   }
 
   @StateMachineAction
@@ -180,10 +179,10 @@ public final class GameModel
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final Player player = playerModel.playerWith (previousColorFrom (event));
+    final Player player = playerModel.playerWith (colorFrom (event));
 
     final Result <ChangePlayerColorDeniedEvent.REASON> result;
-    result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), currentColorFrom (event));
+    result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), colorFrom (event));
 
     if (result.isSuccessful ())
     {
@@ -207,7 +206,7 @@ public final class GameModel
 
     if (result.isSuccessful ())
     {
-      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
+      eventBus.publish (new PlayerJoinGameSuccessEvent (player.getName ()));
     }
     else
     {

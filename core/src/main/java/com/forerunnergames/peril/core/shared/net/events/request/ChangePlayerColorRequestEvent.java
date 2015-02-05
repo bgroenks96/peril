@@ -20,32 +20,15 @@ public final class ChangePlayerColorRequestEvent implements PlayerColorEvent, Re
     Arguments.checkIsNotNull (currentColor, "currentColor");
     Arguments.checkIsNotNull (previousColor, "previousColor");
 
-    playerColorEvent = new DefaultPlayerColorEvent (player, currentColor, previousColor);
+    playerColorEvent = new DefaultPlayerColorEvent (currentColor);
   }
 
   @Override
-  public PlayerColor getCurrentColor ()
+  public PlayerColor getRequestedColor ()
   {
-    return playerColorEvent.getCurrentColor ();
+    return playerColorEvent.getRequestedColor ();
   }
 
-  @Override
-  public PlayerColor getPreviousColor ()
-  {
-    return playerColorEvent.getPreviousColor ();
-  }
-
-  @Override
-  public Player getPlayer ()
-  {
-    return playerColorEvent.getPlayer ();
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return playerColorEvent.getPlayerName ();
-  }
 
   @Override
   public String toString ()

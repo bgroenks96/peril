@@ -6,7 +6,7 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.CountrySelectionCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
@@ -136,7 +136,7 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onCountrySelectionCompleteEvent (final CountrySelectionCompleteEvent event)
+  public void onCountrySelectionCompleteEvent (final PlayerCountryAssignmentCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
