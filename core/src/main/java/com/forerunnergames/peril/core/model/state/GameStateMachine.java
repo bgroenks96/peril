@@ -136,13 +136,13 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onCountrySelectionCompleteEvent (final PlayerCountryAssignmentCompleteEvent event)
+  public void onPlayerCountryAssignmentCompleteEvent (final PlayerCountryAssignmentCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Received event {}", event);
 
-    context.onCountrySelectionCompleteEvent (event);
+    context.onPlayerCountryAssignmentCompleteEvent (event);
   }
 
   @Handler
