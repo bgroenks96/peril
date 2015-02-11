@@ -1,34 +1,52 @@
 package com.forerunnergames.peril.core.shared.net.events.success;
 
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerColor;
+import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.SuccessEvent;
 
 public final class PlayerJoinGameSuccessEvent implements SuccessEvent
 {
-  private final String playerName;
+  private final Player player;
 
-  public PlayerJoinGameSuccessEvent (final String playerName)
+  public PlayerJoinGameSuccessEvent (final Player player)
   {
-    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (player, "player");
 
-    this.playerName = playerName;
+    this.player = player;
+  }
+
+  public Player getPlayer ()
+  {
+    return player;
   }
 
   public String getPlayerName ()
   {
-    return playerName;
+    return player.getName ();
+  }
+
+  public PlayerColor getPlayerColor ()
+  {
+    return player.getColor ();
+  }
+
+  public PlayerTurnOrder getPlayerTurnOrder ()
+  {
+    return player.getTurnOrder ();
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName ());
+    return String.format ("%1$s: Player: %2$s", ((Object) this).getClass ().getSimpleName (), player);
   }
 
   @RequiredForNetworkSerialization
   private PlayerJoinGameSuccessEvent ()
   {
-    playerName = null;
+    player = null;
   }
 }

@@ -206,7 +206,7 @@ public final class GameModel
 
     if (result.isSuccessful ())
     {
-      eventBus.publish (new PlayerJoinGameSuccessEvent (player.getName ()));
+      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
     }
     else
     {
