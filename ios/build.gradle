@@ -37,7 +37,7 @@ task updateRoboVMXML << {
   }
 
   // Find all native (*.a) libraries beneath libs
-  def libtree = fileTree (dir: "build/libs", include: "**/*.a")
+  def libtree = fileTree (dir: "build/libs", include: "**/*.a").files.sort()
 
   def config = new groovy.util.XmlParser().parse (xml)
   config.libs.each {libs ->

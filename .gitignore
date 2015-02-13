@@ -8,13 +8,6 @@ hs_err_pid*
 # Auto-generated Java
 core/src-gen/
 
-# RoboVM
-# Note: The xml file should still be committed to source control. It is being
-# ignored because every build causes whitespace changes.  It is safe to ignore
-# because it doesn't need to change, and we aren't doing ios dev at the moment
-# (which is the only thing which might ever cause it to need to change).
-ios/robovm.xml
-
 ## GWT
 war/
 html/war/gwt_bree/
