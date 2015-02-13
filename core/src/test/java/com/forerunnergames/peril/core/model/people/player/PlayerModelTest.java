@@ -115,7 +115,7 @@ public class PlayerModelTest
   public void testExistsPlayerWithColor ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final PlayerColor color = PlayerColor.ORANGE;
+    final PlayerColor color = PlayerColor.TEAL;
 
     playerModel.requestToAdd (PlayerFactory.builder ("Test Player").color (color).build ());
 
@@ -588,7 +588,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String name = "Test Player";
-    final PlayerColor color = PlayerColor.ORANGE;
+    final PlayerColor color = PlayerColor.TEAL;
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIFTH;
     final PersonIdentity identity = PersonIdentity.SELF;
     final Player player = PlayerFactory.create (name, identity, color, turnOrder);

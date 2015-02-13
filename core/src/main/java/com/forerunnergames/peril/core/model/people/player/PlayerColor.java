@@ -16,11 +16,11 @@ public enum PlayerColor
   CYAN,
   GOLD,
   GREEN,
-  ORANGE,
   PINK,
   PURPLE,
   RED,
   SILVER,
+  TEAL,
   UNKNOWN;
 
   private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (

@@ -1,51 +1,51 @@
-// "Country Name", Width, Height, Destination X (Map Space, Top Left Origin), Destination Y (Map Space, Top Left Origin), Sprites per Row, Center X, Center Y
+// "Country Name", Width, Height, Destination Bottom Left X (Map Space, Top Left Origin), Destination Bottom Left Y (Map Space, Top Left Origin), Center X (Map Space, Top Left Origin), Center Y (Map Space, Top Left Origin)
 
-"Alaska", 177, 84, 0, 64, 12, 80, 80
-"Northwest Territory", 378, 106, 130, 11, 12, 250, 100
-"Greenland", 289, 109, 453, 8, 12, 600, 50
-"Alberta", 156, 51, 158, 119, 12, 250, 150
-"Ontario", 121, 68, 316, 119, 12, 350, 150
-"Quebec", 128, 88, 421, 104, 12, 450, 150
-"Hawaii", 23, 14, 42, 290, 12, 60, 300
-"Western United States", 144, 100, 208, 170, 12, 250, 200
-"Eastern United States", 141, 107, 339, 170, 12, 400, 200
-"Central America", 188, 116, 244, 243, 12, 300, 275
-"Caribbean Islands", 119, 64, 398, 268, 12, 450, 300
-"Svalbard", 78, 19, 848, 22, 12, 875, 30
-"Iceland", 52, 14, 682, 87, 12, 700, 95
-"Scandinavia", 123, 76, 821, 65, 12, 850, 100
-"Great Britain", 57, 43, 749, 120, 12, 800, 150
-"Northern Europe", 96, 39, 811, 140, 12, 850, 150
-"Ukraine", 227, 163, 897, 38, 12, 1000, 100
-"Western Europe", 77, 66, 753, 160, 12, 900, 180
-"Southern Europe", 109, 62, 828, 169, 12, 775, 200
-"Ural", 146, 120, 1070, 55, 12, 1100, 100
-"Siberia", 158, 148, 1179, 19, 12, 1250, 100
-"Yakutsk", 265, 93, 1298, 42, 12, 1400, 100
-"Kamchatka", 281, 134, 1416, 63, 12, 1600, 100
-"Afghanistan", 171, 89, 1017, 139, 12, 1100, 200
-"Irkutsk", 212, 68, 1218, 99, 12, 1300, 150
-"Mongolia", 217, 92, 1214, 148, 12, 1300, 200
-"Japan", 108, 92, 1402, 179, 12, 1420, 240
-"Middle East", 171, 135, 920, 199, 12, 1000, 250
-"India", 168, 147, 1084, 217, 12, 1150, 300
-"China", 233, 138, 1145, 170, 12, 1300, 250
-"Siam", 82, 123, 1234, 265, 12, 1250, 300
-"Venezuela", 126, 72, 425, 334, 12, 500, 350
-"Peru", 125, 132, 413, 386, 12, 475, 475
-"Brazil", 185, 183, 448, 369, 12, 550, 450
-"Argentina", 103, 172, 439, 476, 12, 500, 550
-"Falkland Islands", 15, 6, 509, 626, 12, 515, 630
-"North Africa", 191, 161, 716, 221, 12, 800, 300
-"Egypt", 125, 59, 842, 240, 12, 900, 275
-"Congo", 100, 108, 840, 344, 12, 900, 400
-"East Africa", 139, 180, 902, 286, 12, 975, 350
-"South Africa", 137, 132, 854, 420, 12, 900, 500
-"Madagascar", 34, 62, 1003, 447, 12, 1025, 475
-"Philippines", 46, 62, 1351, 306, 12, 1390, 350
-"Indonesia", 173, 84, 1248, 358, 12, 1325, 400
-"New Guinea", 154, 54, 1412, 391, 12, 1475, 425
-"Western Australia", 129, 109, 1332, 454, 12, 1425, 525
-"Eastern Australia", 119, 151, 1406, 441, 12, 1500, 500
-"New Zealand", 56, 59, 1586, 549, 12, 1600, 600
-"Antarctica", 1704, 133, 0, 671, 1, 775, 775
+"Alaska", 221, 105, 2, 210, 97, 141
+"Northwest Territory", 453, 131, 161, 169, 324, 139
+"Greenland", 348, 136, 548, 171, 717, 83
+"Alberta", 206, 65, 178, 236, 297, 202
+"Ontario", 155, 101, 383, 272, 434, 212
+"Quebec", 154, 109, 509, 264, 561, 201
+"Hawaii", 28, 18, 53, 403, 77, 400
+"Western United States", 176, 128, 253, 361, 324, 281
+"Eastern United States", 169, 135, 411, 368, 477, 303
+"Central America", 228, 144, 296, 470, 388, 381
+"Caribbean Islands", 107, 43, 481, 411, 555, 404
+"Svalbard", 92, 22, 1024, 75, 1059, 63
+"Iceland", 60, 17, 825, 150, 855, 142
+"Scandinavia", 149, 90, 990, 196, 1088, 127
+"Great Britain", 69, 50, 903, 227, 949, 214
+"Northern Europe", 120, 66, 978, 249, 1024, 221
+"Ukraine", 273, 203, 1081, 276, 1216, 181
+"Western Europe", 97, 85, 908, 306, 962, 250
+"Southern Europe", 133, 70, 1000, 303, 1088, 257
+"Ural", 180, 150, 1288, 243, 1378, 160
+"Siberia", 197, 182, 1413, 231, 1500, 132
+"Yakutsk", 312, 116, 1566, 194, 1678, 130
+"Kamchatka", 337, 164, 1706, 268, 1920, 140
+"Afghanistan", 207, 112, 1228, 309, 1350, 250
+"Irkutsk", 258, 91, 1470, 238, 1580, 200
+"Mongolia", 263, 109, 1462, 316, 1570, 250
+"Japan", 90, 132, 1699, 334, 1758, 290
+"Middle East", 210, 167, 1111, 439, 1200, 330
+"India", 207, 184, 1306, 477, 1388, 366
+"China", 277, 174, 1382, 407, 1528, 328
+"Siam", 97, 154, 1487, 504, 1540, 400
+"Venezuela", 154, 93, 514, 533, 560, 490
+"Peru", 154, 163, 499, 666, 560, 590
+"Brazil", 221, 227, 543, 710, 680, 570
+"Argentina", 125, 216, 531, 828, 580, 700
+"Falkland Islands", 17, 5, 616, 808, 630, 805
+"North Africa", 233, 200, 864, 499, 1000, 400
+"Egypt", 148, 75, 1017, 398, 1100, 360
+"Congo", 126, 137, 1012, 586, 1085, 500
+"East Africa", 165, 223, 1089, 604, 1160, 450
+"South Africa", 165, 164, 1029, 709, 1100, 650
+"Madagascar", 41, 77, 1208, 657, 1230, 620
+"Philippines", 53, 74, 1629, 479, 1650, 420
+"Indonesia", 182, 102, 1504, 573, 1540, 515
+"New Guinea", 130, 61, 1703, 572, 1765, 540
+"Western Australia", 156, 138, 1607, 728, 1650, 650
+"Eastern Australia", 139, 187, 1697, 759, 1800, 675
+"New Zealand", 68, 70, 1909, 777, 1920, 770
+"Antarctica", 2048, 154, 0, 1023, 1000, 950

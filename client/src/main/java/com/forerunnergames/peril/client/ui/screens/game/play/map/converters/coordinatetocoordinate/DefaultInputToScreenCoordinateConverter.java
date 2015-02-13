@@ -22,7 +22,7 @@ public class DefaultInputToScreenCoordinateConverter implements InputToScreenCoo
 
     if (screenCoordinate != null) return screenCoordinate;
 
-    screenCoordinate = CoordinateSpaces.inputSpaceToScreenSpace (inputCoordinate, screenSize);
+    screenCoordinate = CoordinateSpaces.actualInputSpaceToActualScreenSpace (inputCoordinate, screenSize);
 
     inputToScreenCoordinates.put (inputCoordinate, screenSize, screenCoordinate);
 

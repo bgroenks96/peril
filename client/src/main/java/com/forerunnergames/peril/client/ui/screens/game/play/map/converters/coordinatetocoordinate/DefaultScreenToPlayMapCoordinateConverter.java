@@ -14,6 +14,6 @@ public final class DefaultScreenToPlayMapCoordinateConverter implements ScreenTo
     Arguments.checkIsNotNull (screenCoordinate, "screenCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    return CoordinateSpaces.screenSpaceToPlayMapSpace (screenCoordinate, screenSize);
+    return CoordinateSpaces.actualScreenSpaceToReferencePlayMapSpace (screenCoordinate, screenSize);
   }
 }

@@ -9,47 +9,72 @@ import com.forerunnergames.tools.common.geometry.Geometry;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Scaling2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
-import com.forerunnergames.tools.common.geometry.Translation2D;
 
 // @formatter:off
 public final class CoordinateSpaces
 {
-  public static Point2D inputSpaceToScreenSpace (final Point2D inputCoordinate, final Size2D screenSize)
+  public static Point2D actualInputSpaceToActualScreenSpace (final Point2D actualInputCoordinate,
+                                                             final Size2D screenSize)
   {
-    Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
+    Arguments.checkIsNotNull (actualInputCoordinate, "actualInputCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    return Geometry.translate (inputCoordinate, InputSettings.REFERENCE_INPUT_SPACE_TO_SCREEN_SPACE_TRANSLATION);
+    return Geometry.translate (actualInputCoordinate, InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION);
   }
 
-  public static Point2D screenSpaceToInputSpace (final Point2D screenCoordinate, final Size2D screenSize)
+  public static Point2D actualScreenSpaceToActualInputSpace (final Point2D actualScreenCoordinate,
+                                                             final Size2D screenSize)
   {
-    Arguments.checkIsNotNull (screenCoordinate, "screenCoordinate");
+    Arguments.checkIsNotNull (actualScreenCoordinate, "actualScreenCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    return Geometry.translate (screenCoordinate, InputSettings.REFERENCE_SCREEN_SPACE_TO_INPUT_SPACE_TRANSLATION);
+    return Geometry.translate (actualScreenCoordinate, InputSettings.ACTUAL_SCREEN_SPACE_TO_ACTUAL_INPUT_SPACE_TRANSLATION);
   }
 
-  public static Point2D playMapSpaceToScreenSpace (final Point2D playMapCoordinate, final Size2D screenSize)
+  public static Point2D referencePlayMapSpaceToActualScreenSpace (final Point2D referencePlayMapCoordinate,
+                                                                  final Size2D screenSize)
   {
-    Arguments.checkIsNotNull (playMapCoordinate, "playMapCoordinate");
+    Arguments.checkIsNotNull (referencePlayMapCoordinate, "referencePlayMapCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    final Translation2D translation = PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_SCREEN_SPACE_TRANSLATION;
-    final Scaling2D scaling = Geometry.divide (screenSize, GraphicsSettings.REFERENCE_SCREEN_SIZE);
+    final Point2D referenceScreenCoordinate = referencePlayMapSpaceToReferenceScreenSpace (referencePlayMapCoordinate);
+    final Scaling2D referenceToActualScreenScaling = Geometry.divide (screenSize, GraphicsSettings.REFERENCE_SCREEN_SIZE);
+    final Point2D actualScreenCoordinate = Geometry.scale (referenceScreenCoordinate, referenceToActualScreenScaling);
 
-    return Geometry.scale (Geometry.translate (playMapCoordinate, translation), scaling);
+    return actualScreenCoordinate;
   }
 
-  public static Point2D screenSpaceToPlayMapSpace (final Point2D screenCoordinate, final Size2D screenSize)
+  public static Point2D referencePlayMapSpaceToReferenceScreenSpace (final Point2D referencePlayMapCoordinate)
   {
-    Arguments.checkIsNotNull (screenCoordinate, "screenCoordinate");
+    Arguments.checkIsNotNull (referencePlayMapCoordinate, "referencePlayMapCoordinate");
+
+    final Point2D actualPlayMapCoordinate = Geometry.scale (referencePlayMapCoordinate, PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+    final Point2D referenceScreenCoordinate = Geometry.translate (actualPlayMapCoordinate, PlayMapSettings.ACTUAL_PLAY_MAP_SPACE_TO_REFERENCE_SCREEN_SPACE_TRANSLATION);
+
+    return referenceScreenCoordinate;
+  }
+
+  public static Point2D actualScreenSpaceToReferencePlayMapSpace (final Point2D actualScreenCoordinate,
+                                                                  final Size2D screenSize)
+  {
+    Arguments.checkIsNotNull (actualScreenCoordinate, "actualScreenCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    final Translation2D translation = PlayMapSettings.REFERENCE_SCREEN_SPACE_TO_PLAY_MAP_SPACE_TRANSLATION;
-    final Scaling2D scaling = Geometry.divide (GraphicsSettings.REFERENCE_SCREEN_SIZE, screenSize);
+    final Scaling2D actualToReferenceScreenScaling = Geometry.divide (GraphicsSettings.REFERENCE_SCREEN_SIZE, screenSize);
+    final Point2D referenceScreenCoordinate = Geometry.scale (actualScreenCoordinate, actualToReferenceScreenScaling);
+    final Point2D referencePlayMapCoordinate = referenceScreenSpaceToReferencePlayMapSpace (referenceScreenCoordinate);
 
-    return Geometry.translate (Geometry.scale (screenCoordinate, scaling), translation);
+    return referencePlayMapCoordinate;
+  }
+
+  public static Point2D referenceScreenSpaceToReferencePlayMapSpace (final Point2D referenceScreenCoordinate)
+  {
+    Arguments.checkIsNotNull (referenceScreenCoordinate, "referenceScreenCoordinate");
+
+    final Point2D actualPlayMapCoordinate = Geometry.translate (referenceScreenCoordinate, PlayMapSettings.REFERENCE_SCREEN_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_TRANSLATION);
+    final Point2D referencePlayMapCoordinate = Geometry.scale (actualPlayMapCoordinate, PlayMapSettings. ACTUAL_PLAY_MAP_SPACE_TO_REFERENCE_PLAY_MAP_SPACE_SCALING);
+
+    return referencePlayMapCoordinate;
   }
 
   private CoordinateSpaces ()

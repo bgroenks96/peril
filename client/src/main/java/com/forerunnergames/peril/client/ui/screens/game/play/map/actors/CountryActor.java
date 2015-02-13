@@ -13,6 +13,7 @@ import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteColorOrder;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteData;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.tools.CoordinateSpaces;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.geometry.Geometry;
@@ -65,11 +66,14 @@ public final class CountryActor extends Actor
   {
     if (shouldUpdateScreenSize ()) updateScreenSize ();
 
-    final Point2D destScreen = Geometry.translate (spriteData.getDestPlayMap (), PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_SCREEN_SPACE_TRANSLATION);
-    final float width = spriteData.getWidth ();
-    final float height = spriteData.getHeight ();
-    final float x = destScreen.getX();
-    final float y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT - destScreen.getY() - height;
+    if (spriteData.getName().getName ().equals ("Antarctica")) return;
+
+    final Point2D destReferenceScreenSpace = CoordinateSpaces.referencePlayMapSpaceToReferenceScreenSpace (spriteData.getDestPlayMap ());
+    final float x = destReferenceScreenSpace.getX();
+    final float y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT - destReferenceScreenSpace.getY();
+    final Size2D sizeActualPlayMapSpace = Geometry.scale (spriteData.getSize(), PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+    final float width = sizeActualPlayMapSpace.getWidth ();
+    final float height = sizeActualPlayMapSpace.getHeight ();
 
     if (currentSpriteIndex >= 0) batch.draw (getSpriteAtIndex (currentSpriteIndex), x, y, width, height);
     if (PlayMapSettings.ENABLE_HOVER_EFFECTS && isHovered) batch.draw (getSpriteAtIndex (HOVERED_SPRITE_INDEX), x, y, width, height);

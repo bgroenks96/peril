@@ -26,7 +26,6 @@ public final class Assets
   public static Music menuMusic;
   public static Texture playScreenBackground;
   public static Texture playScreenMapBackground;
-  public static Texture playScreenMapForeground;
   public static Pixmap playScreenMapInputDetection;
   public static Music playScreenMusic;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
@@ -50,7 +49,6 @@ public final class Assets
     rightMenuBarShadow.dispose ();
     playScreenBackground.dispose ();
     playScreenMapBackground.dispose ();
-    playScreenMapForeground.dispose ();
     playScreenMapInputDetection.dispose ();
 
     isLoaded = false;
@@ -76,7 +74,6 @@ public final class Assets
     menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/menuScreens.mp3"));
     playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapForeground = new Texture (Gdx.files.internal ("map/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("map/inputDetection.png"));
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
     // @formatter:on
@@ -90,7 +87,6 @@ public final class Assets
     setFilter (rightMenuBarShadow);
     setFilter (playScreenBackground);
     setFilter (playScreenMapBackground);
-    setFilter (playScreenMapForeground);
 
     isLoaded = true;
   }

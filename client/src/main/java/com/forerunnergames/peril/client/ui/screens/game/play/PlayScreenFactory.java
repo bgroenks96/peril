@@ -8,18 +8,24 @@ import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapIn
 import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetectionFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.common.Event;
+
+import net.engio.mbassy.bus.MBassador;
 
 public final class PlayScreenFactory
 {
-  public static PlayScreen create (final ScreenController screenController, final MouseInput mouseInput)
+  public static PlayScreen create (final ScreenController screenController,
+                                   final MouseInput mouseInput,
+                                   final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create ();
 
     return new PlayScreen (screenController, PlayMapActorFactory.create (playMapInputDetection),
-                    new TerritoryTextActor (playMapInputDetection, mouseInput), new PlayScreenMusic ());
+                    new TerritoryTextActor (playMapInputDetection, mouseInput), new PlayScreenMusic (), eventBus);
   }
 
   private PlayScreenFactory ()

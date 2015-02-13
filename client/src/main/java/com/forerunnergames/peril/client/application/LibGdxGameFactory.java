@@ -8,6 +8,7 @@ import com.forerunnergames.peril.client.controllers.EventBasedClientController;
 import com.forerunnergames.peril.client.controllers.MultiplayerController;
 import com.forerunnergames.peril.client.kryonet.KryonetClient;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.client.ui.screens.ScreenFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.tools.common.Application;
@@ -59,7 +60,8 @@ public final class LibGdxGameFactory
     final Controller multiplayerController = new MultiplayerController (gameServerCreator, clientController, clientController, eventBus);
     final Application application = new ClientApplication (clientController, multiplayerController);
     final Game libGdxGame = new LibGdxGameWrapper (application);
-    final Controller screenController = new ScreenController (libGdxGame);
+    final ScreenFactory screenFactory = new ScreenFactory (eventBus);
+    final Controller screenController = new ScreenController (libGdxGame, screenFactory);
     // @formatter:on
 
     // We must use setter injection here because constructor injection won't work due to circular dependencies:

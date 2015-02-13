@@ -95,7 +95,7 @@ public enum PlayerTurnOrder
 
   public String toMixedOrdinal ()
   {
-    return Strings.toMixedOrdinal (asInt ());
+    return is (UNKNOWN) ? "?" : Strings.toMixedOrdinal (asInt ());
   }
 
   public String toProperCase ()

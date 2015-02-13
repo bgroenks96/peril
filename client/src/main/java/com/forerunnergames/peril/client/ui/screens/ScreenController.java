@@ -21,15 +21,18 @@ public final class ScreenController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
   private final Game game;
+  private final ScreenFactory screenFactory;
   private BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
   private ScreenId previousScreenId;
 
-  public ScreenController (final Game game)
+  public ScreenController (final Game game, final ScreenFactory screenFactory)
   {
     Arguments.checkIsNotNull (game, "game");
+    Arguments.checkIsNotNull (screenFactory, "screenFactory");
 
     this.game = game;
+    this.screenFactory = screenFactory;
   }
 
   @Override
@@ -37,7 +40,7 @@ public final class ScreenController extends ControllerAdapter
   {
     for (final ScreenId screenId : ScreenId.values ())
     {
-      screens.put (screenId, ScreenFactory.create (screenId, this, new LibGdxMouseInput (Gdx.input)));
+      screens.put (screenId, screenFactory.create (screenId, this, new LibGdxMouseInput (Gdx.input)));
     }
 
     toScreen (ScreenSettings.START_SCREEN);
