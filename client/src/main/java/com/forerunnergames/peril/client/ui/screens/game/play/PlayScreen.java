@@ -8,15 +8,15 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -30,10 +30,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
-import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.RowStyle;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -68,13 +65,12 @@ import net.engio.mbassy.listener.Handler;
 public final class PlayScreen extends InputAdapter implements Screen
 {
   private final ScreenController screenController;
+  private final PlayScreenWidgetFactory widgetFactory;
   private final PlayMapActor playMapActor;
   private final TerritoryTextActor territoryTextActor;
   private final ScreenMusic music;
   private final MBassador <Event> eventBus;
   private final Stage stage;
-  private final Skin skin;
-  private final Label.LabelStyle labelStyle;
   private final ImmutableList <String> wordList = ImmutableList.of ("Lorem", "ipsum", "dolor", "sit", "amet,",
                   "consectetur", "adipiscing", "elit.", "Mauris", "elementum", "nunc", "id", "dolor", "imperdiet",
                   "tincidunt.", "Proin", "rutrum", "leo", "orci,", "nec", "interdum", "mauris", "pretium", "ut.",
@@ -93,36 +89,36 @@ public final class PlayScreen extends InputAdapter implements Screen
   private Set <String> availablePlayerNames = new HashSet <> ();
 
   public PlayScreen (final ScreenController screenController,
+                     final PlayScreenWidgetFactory widgetFactory,
                      final PlayMapActor playMapActor,
                      final TerritoryTextActor territoryTextActor,
                      final ScreenMusic music,
                      final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.screenController = screenController;
+    this.widgetFactory = widgetFactory;
     this.playMapActor = playMapActor;
     this.territoryTextActor = territoryTextActor;
     this.music = music;
     this.eventBus = eventBus;
 
-    skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
-    labelStyle = new Label.LabelStyle (new BitmapFont (
-                    Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt")), Color.WHITE);
-    statusBox = new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, new RowStyle (22, 8, 8));
-    chatBox = new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, new RowStyle (22, 8, 8), skin.get (TextField.TextFieldStyle.class), eventBus);
-    playerBox = new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, new RowStyle (22, 8, 8));
+    statusBox = widgetFactory.createStatusBox ();
+    chatBox = widgetFactory.createChatBox ();
+    playerBox = widgetFactory.createPlayerBox ();
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (createPlayMapActor ()).padRight (14);
+    playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, territoryTextActor)).padRight (14);
     playMapAndSideBarTable.add (createSideBarActor ());
 
     final Table foregroundTable = new Table ().pad (14);
@@ -491,7 +487,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     eventBus.unsubscribe (this);
 
     stage.dispose ();
-    skin.dispose ();
   }
 
   private Size2D getScreenSize ()
@@ -511,30 +506,19 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     final Table sideBarTable = new Table ().top ().padTop (33).padBottom (33).padLeft (32).padRight (32);
 
-    sideBarTable.add (new Button (skin)).top ().width (42).height (42);
-    sideBarTable.add (new Button (skin)).top ().width (42).height (42).padLeft (26);
+    sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42);
+    sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42).padLeft (26);
 
     final int rowsOfButtons = 13;
 
     for (int i = 0; i < rowsOfButtons - 1; ++i)
     {
       sideBarTable.row ().padTop (16);
-      sideBarTable.add (new Button (skin)).top ().width (42).height (42);
-      sideBarTable.add (new Button (skin)).top ().width (42).height (42).padLeft (26);
+      sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42);
+      sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42).padLeft (26);
     }
 
     return sideBarTable;
-  }
-
-  private Actor createPlayMapActor ()
-  {
-    final Stack stack = new Stack ();
-
-    stack.add (new Image (Assets.playScreenMapBackground));
-    stack.add (playMapActor);
-    stack.add (territoryTextActor);
-
-    return stack;
   }
 
   private StatusMessageEvent createStatusMessageEvent ()

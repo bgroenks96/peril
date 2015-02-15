@@ -4,12 +4,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
 import com.forerunnergames.peril.client.ui.widgets.RowStyle;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
@@ -26,12 +26,12 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   private final TextField textField;
 
   public ChatBox (final ScrollPane.ScrollPaneStyle scrollPaneStyle,
-                  final Label.LabelStyle labelStyle,
+                  final LabelFactory labelFactory,
                   final RowStyle rowStyle,
                   final TextField.TextFieldStyle textFieldStyle,
                   final MBassador <Event> eventBus)
   {
-    super (scrollPaneStyle, labelStyle, rowStyle);
+    super (scrollPaneStyle, labelFactory, rowStyle);
 
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");

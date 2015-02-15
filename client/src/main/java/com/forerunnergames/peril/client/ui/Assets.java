@@ -5,7 +5,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GLTexture;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.tools.common.Classes;
@@ -30,6 +32,8 @@ public final class Assets
   public static Music playScreenMusic;
   public static Pixmap menuNormalCursor;
   public static Pixmap playScreenNormalCursor;
+  public static BitmapFont aurulentSans16;
+  public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
   private static boolean isLoaded = false;
@@ -54,6 +58,8 @@ public final class Assets
     playScreenMapInputDetection.dispose ();
     menuNormalCursor.dispose();
     playScreenNormalCursor.dispose();
+    aurulentSans16.dispose ();
+    skin.dispose ();
 
     isLoaded = false;
   }
@@ -82,6 +88,8 @@ public final class Assets
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
     menuNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
     playScreenNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
+    aurulentSans16 = new BitmapFont (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt"));
+    skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     // @formatter:on
 
     setFilter (menuBackground);

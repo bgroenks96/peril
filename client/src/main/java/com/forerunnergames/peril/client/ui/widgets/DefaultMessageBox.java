@@ -1,24 +1,23 @@
 package com.forerunnergames.peril.client.ui.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
 
 public class DefaultMessageBox <T extends Message> extends AbstractMessageBox <T>
 {
-  private final Label.LabelStyle labelStyle;
+  private final LabelFactory labelFactory;
 
   public DefaultMessageBox (final ScrollPaneStyle scrollPaneStyle,
-                            final Label.LabelStyle labelStyle,
+                            final LabelFactory labelFactory,
                             final RowStyle rowStyle)
   {
     super (scrollPaneStyle, rowStyle);
 
-    Arguments.checkIsNotNull (labelStyle, "labelStyle");
+    Arguments.checkIsNotNull (labelFactory, "labelFactory");
 
-    this.labelStyle = labelStyle;
+    this.labelFactory = labelFactory;
   }
 
   @Override
@@ -26,15 +25,6 @@ public class DefaultMessageBox <T extends Message> extends AbstractMessageBox <T
   {
     Arguments.checkIsNotNull (message, "message");
 
-    return createLabel (message.getText ());
-  }
-
-  private Label createLabel (final String text)
-  {
-    final Label label = new Label (text, labelStyle);
-
-    label.setWrap (true);
-
-    return label;
+    return labelFactory.create (message.getText ());
   }
 }

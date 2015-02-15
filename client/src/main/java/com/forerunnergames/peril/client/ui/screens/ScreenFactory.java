@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens;
 import com.badlogic.gdx.Screen;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreenMusic;
