@@ -31,6 +31,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.widgets.StatusBox;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -81,8 +82,7 @@ public final class PlayScreen extends InputAdapter implements Screen
                   "pellentesque", "sodales.", "Donec", "a", "metus", "eget", "mi", "tempus", "feugiat.", "Etiam",
                   "fringilla", "ullamcorper", "justo", "ut", "mattis.", "Nam", "egestas", "elit", "at", "luctus",
                   "molestie.");
-  private Table statusBoxScrollTable;
-  private ScrollPane statusBoxScrollPane;
+  private final StatusBox statusBox;
   private Table chatBoxScrollTable;
   private ScrollPane chatBoxScrollPane;
   private TextField chatBoxTextField;
@@ -113,6 +113,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     labelStyle = new Label.LabelStyle (new BitmapFont (
                     Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt")), Color.WHITE);
+    statusBox = new StatusBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -125,7 +126,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     final Table foregroundTable = new Table ().pad (14);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
     foregroundTable.row ().expandY ().padTop (16);
-    foregroundTable.add (createStatusBoxActor ()).width (750).height (230).padRight (15).padBottom (2);
+    foregroundTable.add (statusBox).width (750).height (230).padRight (15).padBottom (2);
     foregroundTable.add (createChatBoxActor ()).width (750).height (232).padRight (15);
     foregroundTable.add (createPlayerBoxActor ()).width (361).height (230).padRight (1).padBottom (2);
 
@@ -155,7 +156,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    addStatusBoxText (withMessageTextFrom (event));
+    statusBox.addText (withMessageTextFrom (event));
   }
 
   @Handler
@@ -367,7 +368,7 @@ public final class PlayScreen extends InputAdapter implements Screen
       }
       case 'S':
       {
-        clearStatusBox ();
+        statusBox.clear ();
 
         return false;
       }
@@ -530,21 +531,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     return stack;
   }
 
-  private Actor createStatusBoxActor ()
-  {
-    statusBoxScrollTable = new Table ().top ().padLeft (8).padRight (8);
-    statusBoxScrollPane = new ScrollPane (statusBoxScrollTable, skin);
-    statusBoxScrollPane.setOverscroll (false, false);
-    statusBoxScrollPane.setForceScroll (false, true);
-    statusBoxScrollPane.setFadeScrollBars (false);
-    statusBoxScrollPane.setScrollingDisabled (true, false);
-    statusBoxScrollPane.setScrollBarPositions (true, true);
-    statusBoxScrollPane.setScrollbarsOnTop (false);
-    statusBoxScrollPane.setSmoothScrolling (true);
-
-    return statusBoxScrollPane;
-  }
-
   private Actor createChatBoxActor ()
   {
     chatBoxScrollTable = new Table ().top ().padLeft (8).padRight (8);
@@ -607,15 +593,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     playerBoxScrollPane.setSmoothScrolling (true);
 
     return playerBoxScrollPane;
-  }
-
-  private void addStatusBoxText (final String text)
-  {
-    statusBoxScrollTable.row ().expandX ().fillX ().prefHeight (22);
-    statusBoxScrollTable.add (createMessageBoxLabel (text));
-    statusBoxScrollTable.layout ();
-    statusBoxScrollPane.layout ();
-    statusBoxScrollPane.setScrollY (statusBoxScrollPane.getMaxY ());
   }
 
   private void addChatBoxText (final String text)
@@ -711,12 +688,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     return randomSubsetWordListStringBuilder.toString () + " "
                     + Randomness.getRandomIntegerFrom (0, Integer.MAX_VALUE - 1)
                     + " aaa WW W W W W W W W WWWWWWWWWWWWWWWW";
-  }
-
-  private void clearStatusBox ()
-  {
-    statusBoxScrollTable.reset ();
-    statusBoxScrollTable.top ().padLeft (8).padRight (8);
   }
 
   private void clearChatBox ()
