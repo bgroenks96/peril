@@ -12,16 +12,16 @@ import static org.junit.Assert.assertTrue;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.id.Id;
@@ -127,10 +127,10 @@ public class GameModelTest
 
     gameModel.distributeInitialArmies ();
 
-    final ImmutableSet <Player> players = eventHandler.lastEvent (DistributeInitialArmiesCompleteEvent.class)
+    final ImmutableSet <PlayerPacket> players = eventHandler.lastEvent (DistributeInitialArmiesCompleteEvent.class)
                     .getPlayers ();
 
-    for (final Player player : players)
+    for (final PlayerPacket player : players)
     {
       assertTrue (player.hasArmiesInHand (initialArmies));
     }

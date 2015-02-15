@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.core.shared.net.events;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
@@ -15,6 +14,7 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrd
 import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Classes;
@@ -63,7 +63,7 @@ public final class EventFluency
     return event.getPlayerName ();
   }
 
-  public static ImmutableSet <Player> playersInGameFrom (final JoinGameServerSuccessEvent event)
+  public static ImmutableSet <PlayerPacket> playersInGameFrom (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

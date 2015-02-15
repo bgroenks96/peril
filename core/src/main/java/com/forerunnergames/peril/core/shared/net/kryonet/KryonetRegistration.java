@@ -8,10 +8,10 @@ import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.*;
 import com.forerunnergames.peril.core.shared.net.events.denied.*;
-import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.*;
 import com.forerunnergames.peril.core.shared.net.events.success.*;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
@@ -45,7 +45,6 @@ public final class KryonetRegistration
           ChatMessageDeniedEvent.class,
           ChatMessageRequestEvent.class,
           ChatMessageSuccessEvent.class,
-          PlayerCountryAssignmentCompleteEvent.class,
           CreateGameServerDeniedEvent.class,
           CreateGameServerRequestEvent.class,
           CreateGameServerSuccessEvent.class,
@@ -85,6 +84,7 @@ public final class KryonetRegistration
           KryonetRemote.class,
           PersonIdentity.class,
           PlayerColor.class,
+          PlayerCountryAssignmentCompleteEvent.class,
           PlayerTurnOrder.class,
           PlayerJoinGameDeniedEvent.class,
           PlayerJoinGameRequestEvent.class,
