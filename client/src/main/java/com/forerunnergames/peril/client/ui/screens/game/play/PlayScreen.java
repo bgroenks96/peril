@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageFrom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -31,8 +31,9 @@ import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.widgets.PlayerBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.widgets.StatusBox;
+import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.RowStyle;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -47,7 +48,9 @@ import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
@@ -82,9 +85,9 @@ public final class PlayScreen extends InputAdapter implements Screen
                   "pellentesque", "sodales.", "Donec", "a", "metus", "eget", "mi", "tempus", "feugiat.", "Etiam",
                   "fringilla", "ullamcorper", "justo", "ut", "mattis.", "Nam", "egestas", "elit", "at", "luctus",
                   "molestie.");
-  private final StatusBox statusBox;
-  private final ChatBox chatBox;
-  private final PlayerBox playerBox;
+  private final MessageBox <StatusMessage> statusBox;
+  private final MessageBox <ChatMessage> chatBox;
+  private final MessageBox <Message> playerBox;
   private Size2D currentScreenSize;
   private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator;
   private Set <String> availablePlayerNames = new HashSet <> ();
@@ -110,9 +113,9 @@ public final class PlayScreen extends InputAdapter implements Screen
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     labelStyle = new Label.LabelStyle (new BitmapFont (
                     Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt")), Color.WHITE);
-    statusBox = new StatusBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle);
-    chatBox = new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, skin.get (TextField.TextFieldStyle.class), eventBus);
-    playerBox = new PlayerBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle);
+    statusBox = new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, new RowStyle (22, 8, 8));
+    chatBox = new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, new RowStyle (22, 8, 8), skin.get (TextField.TextFieldStyle.class), eventBus);
+    playerBox = new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, new RowStyle (22, 8, 8));
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -125,9 +128,9 @@ public final class PlayScreen extends InputAdapter implements Screen
     final Table foregroundTable = new Table ().pad (14);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
     foregroundTable.row ().expandY ().padTop (16);
-    foregroundTable.add (statusBox).width (750).height (230).padRight (15).padBottom (2);
-    foregroundTable.add (chatBox).width (750).height (232).padRight (15);
-    foregroundTable.add (playerBox).width (361).height (230).padRight (1).padBottom (2);
+    foregroundTable.add (statusBox.asActor()).width (750).height (230).padRight (15).padBottom (2);
+    foregroundTable.add (chatBox.asActor()).width (750).height (232).padRight (15);
+    foregroundTable.add (playerBox.asActor()).width (361).height (230).padRight (1).padBottom (2);
 
     rootStack.add (foregroundTable);
 
@@ -155,7 +158,8 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    statusBox.addText (withMessageTextFrom (event));
+    statusBox.addMessage (withMessageFrom (event));
+    statusBox.showLastMessage ();
   }
 
   @Handler
@@ -163,7 +167,8 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    chatBox.addText (withMessageTextFrom (event));
+    chatBox.addMessage (withMessageFrom (event));
+    chatBox.showLastMessage ();
   }
 
   @Handler
@@ -171,7 +176,8 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    playerBox.addText (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ());
+    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". "
+        + event.getPlayerName ()));
   }
 
   @Override
