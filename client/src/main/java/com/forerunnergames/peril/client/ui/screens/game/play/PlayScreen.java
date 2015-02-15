@@ -31,6 +31,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.StatusBox;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
@@ -83,8 +84,7 @@ public final class PlayScreen extends InputAdapter implements Screen
                   "molestie.");
   private final StatusBox statusBox;
   private final ChatBox chatBox;
-  private Table playerBoxScrollTable;
-  private ScrollPane playerBoxScrollPane;
+  private final PlayerBox playerBox;
   private Size2D currentScreenSize;
   private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator;
   private Set <String> availablePlayerNames = new HashSet <> ();
@@ -112,6 +112,7 @@ public final class PlayScreen extends InputAdapter implements Screen
                     Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt")), Color.WHITE);
     statusBox = new StatusBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle);
     chatBox = new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, skin.get (TextField.TextFieldStyle.class), eventBus);
+    playerBox = new PlayerBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -126,7 +127,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     foregroundTable.row ().expandY ().padTop (16);
     foregroundTable.add (statusBox).width (750).height (230).padRight (15).padBottom (2);
     foregroundTable.add (chatBox).width (750).height (232).padRight (15);
-    foregroundTable.add (createPlayerBoxActor ()).width (361).height (230).padRight (1).padBottom (2);
+    foregroundTable.add (playerBox).width (361).height (230).padRight (1).padBottom (2);
 
     rootStack.add (foregroundTable);
 
@@ -170,7 +171,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    addPlayerBoxText (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ());
+    playerBox.addText (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ());
   }
 
   @Override
@@ -390,7 +391,8 @@ public final class PlayScreen extends InputAdapter implements Screen
       }
       case 'P':
       {
-        clearPlayerBox ();
+        playerBox.clear ();
+        playerTurnOrderIterator = createPlayerTurnOrderIterator ();
 
         return false;
       }
@@ -529,38 +531,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     return stack;
   }
 
-  private Actor createPlayerBoxActor ()
-  {
-    playerBoxScrollTable = new Table ().top ().padLeft (8).padRight (8);
-    playerBoxScrollPane = new ScrollPane (playerBoxScrollTable, skin);
-    playerBoxScrollPane.setOverscroll (false, false);
-    playerBoxScrollPane.setForceScroll (false, true);
-    playerBoxScrollPane.setFadeScrollBars (false);
-    playerBoxScrollPane.setScrollingDisabled (true, false);
-    playerBoxScrollPane.setScrollBarPositions (true, true);
-    playerBoxScrollPane.setScrollbarsOnTop (false);
-    playerBoxScrollPane.setSmoothScrolling (true);
-
-    return playerBoxScrollPane;
-  }
-
-  private void addPlayerBoxText (final String text)
-  {
-    playerBoxScrollTable.row ().expandX ().fillX ().prefHeight (22);
-    playerBoxScrollTable.add (createMessageBoxLabel (text));
-    playerBoxScrollTable.layout ();
-    playerBoxScrollPane.layout ();
-  }
-
-  private Label createMessageBoxLabel (final String text)
-  {
-    final Label label = new Label (text, labelStyle);
-
-    label.setWrap (true);
-
-    return label;
-  }
-
   private StatusMessageEvent createStatusMessageEvent ()
   {
     return new DefaultStatusMessageEvent (createStatusMessage ());
@@ -628,13 +598,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     return randomSubsetWordListStringBuilder.toString () + " "
                     + Randomness.getRandomIntegerFrom (0, Integer.MAX_VALUE - 1)
                     + " aaa WW W W W W W W W WWWWWWWWWWWWWWWW";
-  }
-
-  private void clearPlayerBox ()
-  {
-    playerBoxScrollTable.reset ();
-    playerBoxScrollTable.top ().padLeft (8).padRight (8);
-    playerTurnOrderIterator = createPlayerTurnOrderIterator ();
   }
 
   private UnmodifiableIterator <PlayerTurnOrder> createPlayerTurnOrderIterator ()
