@@ -18,6 +18,8 @@ import com.forerunnergames.tools.common.geometry.Size2D;
 
 public class TerritoryTextActor extends Actor
 {
+  private static final int TEXT_OFFSET_X = 35;
+  private static final int TEXT_OFFSET_Y = -17;
   private final PlayMapInputDetection playMapInputDetection;
   private final MouseInput mouseInput;
   private final BitmapFont font;
@@ -54,8 +56,8 @@ public class TerritoryTextActor extends Actor
 
     mouseHoverCoordinate = mouseInput.getHoverCoordinate ();
 
-    x = (mouseHoverCoordinate.getX () + 10) * scaling.getX ();
-    y = (screenSize.getHeight () - mouseHoverCoordinate.getY () - 15) * scaling.getY ();
+    x = (mouseHoverCoordinate.getX () + TEXT_OFFSET_X) * scaling.getX ();
+    y = (screenSize.getHeight () - mouseHoverCoordinate.getY () + TEXT_OFFSET_Y) * scaling.getY ();
 
     territoryNames = playMapInputDetection.getPrintableTerritoryNamesAt (mouseHoverCoordinate, screenSize)
                     + (countryColor.is (PlayerColor.UNKNOWN) ? "" : ", " + Strings.toProperCase (countryColor.name ()));

@@ -28,6 +28,8 @@ public final class Assets
   public static Texture playScreenMapBackground;
   public static Pixmap playScreenMapInputDetection;
   public static Music playScreenMusic;
+  public static Pixmap menuNormalCursor;
+  public static Pixmap playScreenNormalCursor;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
   private static boolean isLoaded = false;
@@ -50,6 +52,8 @@ public final class Assets
     playScreenBackground.dispose ();
     playScreenMapBackground.dispose ();
     playScreenMapInputDetection.dispose ();
+    menuNormalCursor.dispose();
+    playScreenNormalCursor.dispose();
 
     isLoaded = false;
   }
@@ -76,6 +80,8 @@ public final class Assets
     playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("map/inputDetection.png"));
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
+    menuNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
+    playScreenNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
     // @formatter:on
 
     setFilter (menuBackground);

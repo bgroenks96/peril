@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
@@ -114,6 +115,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   @Override
   public void show ()
   {
+    showCursor ();
+
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
 
     if (MusicSettings.IS_ENABLED) music.start ();
@@ -125,6 +128,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     Gdx.input.setInputProcessor (null);
 
     if (MusicSettings.IS_ENABLED) music.stop ();
+
+    hideCursor ();
   }
 
   @Override
@@ -157,5 +162,16 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   public void dispose ()
   {
     stage.dispose ();
+  }
+
+  private void showCursor ()
+  {
+    Gdx.input.setCursorImage (Assets.menuNormalCursor, (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
+                              (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
+  }
+
+  private void hideCursor ()
+  {
+    Gdx.input.setCursorImage (null, 0, 0);
   }
 }
