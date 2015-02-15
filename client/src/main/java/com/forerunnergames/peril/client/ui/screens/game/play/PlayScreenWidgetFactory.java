@@ -13,6 +13,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapA
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.PlayMapWidget;
+import com.forerunnergames.peril.client.ui.screens.game.play.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
@@ -61,6 +62,11 @@ public final class PlayScreenWidgetFactory
   public MessageBox <Message> createPlayerBox ()
   {
     return new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelFactory, rowStyle);
+  }
+
+  public SideBar createSideBar ()
+  {
+    return new SideBar (this);
   }
 
   public Button createButton ()

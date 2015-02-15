@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -119,7 +118,7 @@ public final class PlayScreen extends InputAdapter implements Screen
 
     final Table playMapAndSideBarTable = new Table ();
     playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, territoryTextActor)).padRight (14);
-    playMapAndSideBarTable.add (createSideBarActor ());
+    playMapAndSideBarTable.add (widgetFactory.createSideBar ());
 
     final Table foregroundTable = new Table ().pad (14);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
@@ -500,25 +499,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     currentScreenSize = new Size2D (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
 
     return currentScreenSize;
-  }
-
-  private Actor createSideBarActor ()
-  {
-    final Table sideBarTable = new Table ().top ().padTop (33).padBottom (33).padLeft (32).padRight (32);
-
-    sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42);
-    sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42).padLeft (26);
-
-    final int rowsOfButtons = 13;
-
-    for (int i = 0; i < rowsOfButtons - 1; ++i)
-    {
-      sideBarTable.row ().padTop (16);
-      sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42);
-      sideBarTable.add (widgetFactory.createButton ()).top ().width (42).height (42).padLeft (26);
-    }
-
-    return sideBarTable;
   }
 
   private StatusMessageEvent createStatusMessageEvent ()
