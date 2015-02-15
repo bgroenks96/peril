@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -31,6 +30,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.StatusBox;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
@@ -48,7 +48,6 @@ import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
 
@@ -83,9 +82,7 @@ public final class PlayScreen extends InputAdapter implements Screen
                   "fringilla", "ullamcorper", "justo", "ut", "mattis.", "Nam", "egestas", "elit", "at", "luctus",
                   "molestie.");
   private final StatusBox statusBox;
-  private Table chatBoxScrollTable;
-  private ScrollPane chatBoxScrollPane;
-  private TextField chatBoxTextField;
+  private final ChatBox chatBox;
   private Table playerBoxScrollTable;
   private ScrollPane playerBoxScrollPane;
   private Size2D currentScreenSize;
@@ -114,6 +111,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     labelStyle = new Label.LabelStyle (new BitmapFont (
                     Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt")), Color.WHITE);
     statusBox = new StatusBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle);
+    chatBox = new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelStyle, skin.get (TextField.TextFieldStyle.class), eventBus);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -127,7 +125,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
     foregroundTable.row ().expandY ().padTop (16);
     foregroundTable.add (statusBox).width (750).height (230).padRight (15).padBottom (2);
-    foregroundTable.add (createChatBoxActor ()).width (750).height (232).padRight (15);
+    foregroundTable.add (chatBox).width (750).height (232).padRight (15);
     foregroundTable.add (createPlayerBoxActor ()).width (361).height (230).padRight (1).padBottom (2);
 
     rootStack.add (foregroundTable);
@@ -164,7 +162,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    addChatBoxText (withMessageTextFrom (event));
+    chatBox.addText (withMessageTextFrom (event));
   }
 
   @Handler
@@ -380,7 +378,7 @@ public final class PlayScreen extends InputAdapter implements Screen
       }
       case 'C':
       {
-        clearChatBox ();
+        chatBox.clear ();
 
         return false;
       }
@@ -531,55 +529,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     return stack;
   }
 
-  private Actor createChatBoxActor ()
-  {
-    chatBoxScrollTable = new Table ().top ().padLeft (8).padRight (8);
-    chatBoxScrollPane = new ScrollPane (chatBoxScrollTable, skin);
-    chatBoxScrollPane.setOverscroll (false, false);
-    chatBoxScrollPane.setForceScroll (false, true);
-    chatBoxScrollPane.setFadeScrollBars (false);
-    chatBoxScrollPane.setScrollingDisabled (true, false);
-    chatBoxScrollPane.setScrollBarPositions (true, true);
-    chatBoxScrollPane.setScrollbarsOnTop (false);
-    chatBoxScrollPane.setSmoothScrolling (true);
-    chatBoxTextField = new TextField ("", skin);
-
-    chatBoxTextField.addListener (new InputListener ()
-    {
-      @Override
-      public boolean keyDown (final InputEvent event, final int keycode)
-      {
-        switch (keycode)
-        {
-          case Input.Keys.ENTER:
-          {
-            final String textFieldText = Strings.compressWhitespace (chatBoxTextField.getText ().trim ());
-
-            chatBoxTextField.setText ("");
-
-            if (Strings.isPrintable (textFieldText))
-            {
-              eventBus.publish (new DefaultChatMessageEvent (new DefaultChatMessage (textFieldText)));
-            }
-
-            return true;
-          }
-          default:
-          {
-            return false;
-          }
-        }
-      }
-    });
-
-    final Table chatBoxAndTextFieldTable = new Table ().top ();
-    chatBoxAndTextFieldTable.add (chatBoxScrollPane).expandX ().fillX ().height (199).padBottom (2);
-    chatBoxAndTextFieldTable.row ();
-    chatBoxAndTextFieldTable.add (chatBoxTextField).expandX ().fillX ().height (26).padTop (5).padLeft (4).padRight (4);
-
-    return chatBoxAndTextFieldTable;
-  }
-
   private Actor createPlayerBoxActor ()
   {
     playerBoxScrollTable = new Table ().top ().padLeft (8).padRight (8);
@@ -593,15 +542,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     playerBoxScrollPane.setSmoothScrolling (true);
 
     return playerBoxScrollPane;
-  }
-
-  private void addChatBoxText (final String text)
-  {
-    chatBoxScrollTable.row ().expandX ().fillX ().prefHeight (22);
-    chatBoxScrollTable.add (createMessageBoxLabel (text));
-    chatBoxScrollTable.layout ();
-    chatBoxScrollPane.layout ();
-    chatBoxScrollPane.setScrollY (chatBoxScrollPane.getMaxY ());
   }
 
   private void addPlayerBoxText (final String text)
@@ -688,12 +628,6 @@ public final class PlayScreen extends InputAdapter implements Screen
     return randomSubsetWordListStringBuilder.toString () + " "
                     + Randomness.getRandomIntegerFrom (0, Integer.MAX_VALUE - 1)
                     + " aaa WW W W W W W W W WWWWWWWWWWWWWWWW";
-  }
-
-  private void clearChatBox ()
-  {
-    chatBoxScrollTable.reset ();
-    chatBoxScrollTable.top ().padLeft (8).padRight (8);
   }
 
   private void clearPlayerBox ()
