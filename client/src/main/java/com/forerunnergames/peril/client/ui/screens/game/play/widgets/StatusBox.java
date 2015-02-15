@@ -8,7 +8,7 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class StatusBox extends ScrollPane
 {
-  private final Table statusBoxScrollTable;
+  private final Table table;
   private final Label.LabelStyle labelStyle;
 
   public StatusBox (final ScrollPaneStyle scrollPaneStyle, final Label.LabelStyle labelStyle)
@@ -19,9 +19,9 @@ public final class StatusBox extends ScrollPane
 
     this.labelStyle = labelStyle;
 
-    statusBoxScrollTable = new Table ().top ().padLeft (8).padRight (8);
+    table = new Table ().top ().padLeft (8).padRight (8);
 
-    setWidget (statusBoxScrollTable);
+    setWidget (table);
     setOverscroll (false, false);
     setForceScroll (false, true);
     setFadeScrollBars (false);
@@ -33,9 +33,9 @@ public final class StatusBox extends ScrollPane
 
   public void addText (final String text)
   {
-    statusBoxScrollTable.row ().expandX ().fillX ().prefHeight (22);
-    statusBoxScrollTable.add (createLabel (text));
-    statusBoxScrollTable.layout ();
+    table.row ().expandX ().fillX ().prefHeight (22);
+    table.add (createLabel (text));
+    table.layout ();
 
     layout ();
     setScrollY (getMaxY ());
@@ -43,8 +43,8 @@ public final class StatusBox extends ScrollPane
 
   public void clear ()
   {
-    statusBoxScrollTable.reset ();
-    statusBoxScrollTable.top ().padLeft (8).padRight (8);
+    table.reset ();
+    table.top ().padLeft (8).padRight (8);
   }
 
   private Label createLabel (final String text)
