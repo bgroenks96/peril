@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.widgets;
 
+import static com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,7 +30,7 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   public ChatBox (final ScrollPane.ScrollPaneStyle scrollPaneStyle,
                   final LabelFactory labelFactory,
                   final RowStyle rowStyle,
-                  final TextField.TextFieldStyle textFieldStyle,
+                  final TextFieldStyle textFieldStyle,
                   final MBassador <Event> eventBus)
   {
     super (scrollPaneStyle, labelFactory, rowStyle);
@@ -37,10 +39,11 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     textField = new TextField ("", textFieldStyle);
+
     textField.addListener (new TextFieldInputListener (eventBus));
 
-    table = new Table().top();
-    table.add (super.asActor()).expandX ().fillX ().height (199).padBottom (2);
+    table = new Table ().top ();
+    table.add (super.asActor ()).expandX ().fillX ().height (199).padBottom (2);
     table.row ();
     table.add (textField).expandX ().fillX ().height (26).padTop (5).padLeft (4).padRight (4);
   }
@@ -54,6 +57,13 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   private final class TextFieldInputListener extends InputListener
   {
     private MBassador <Event> eventBus;
+
+    public TextFieldInputListener (final MBassador <Event> eventBus)
+    {
+      Arguments.checkIsNotNull (eventBus, "eventBus");
+
+      this.eventBus = eventBus;
+    }
 
     @Override
     public boolean keyDown (final InputEvent event, final int keycode)
@@ -78,13 +88,6 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
         return false;
       }
       }
-    }
-
-    private TextFieldInputListener (final MBassador <Event> eventBus)
-    {
-      Arguments.checkIsNotNull (eventBus, "eventBus");
-
-      this.eventBus = eventBus;
     }
   }
 }
