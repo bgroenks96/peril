@@ -11,9 +11,9 @@ public class DefaultMessageBox <T extends Message> extends AbstractMessageBox <T
 
   public DefaultMessageBox (final ScrollPaneStyle scrollPaneStyle,
                             final LabelFactory labelFactory,
-                            final RowStyle rowStyle)
+                            final MessageBoxRowStyle messageBoxRowStyle)
   {
-    super (scrollPaneStyle, rowStyle);
+    super (scrollPaneStyle, messageBoxRowStyle);
 
     Arguments.checkIsNotNull (labelFactory, "labelFactory");
 

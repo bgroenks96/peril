@@ -84,15 +84,15 @@ public final class PlayScreen extends InputAdapter implements Screen
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, territoryTextActor)).padRight (14);
-    playMapAndSideBarTable.add (widgetFactory.createSideBar ());
+    playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, territoryTextActor)).padRight (16);
+    playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top();
 
-    final Table foregroundTable = new Table ().pad (14);
+    final Table foregroundTable = new Table ().pad (12);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
-    foregroundTable.row ().expandY ().padTop (16);
-    foregroundTable.add (statusBox.asActor ()).width (750).height (230).padRight (15).padBottom (2);
-    foregroundTable.add (chatBox.asActor ()).width (750).height (232).padRight (15);
-    foregroundTable.add (playerBox.asActor ()).width (361).height (230).padRight (1).padBottom (2);
+    foregroundTable.row ().expandY ().padTop (16 + 2);
+    foregroundTable.add (statusBox.asActor ()).width (714).height (252 - 2 - 2).padRight (16).padBottom (2);
+    foregroundTable.add (chatBox.asActor ()).width (714).height (252 - 2).padRight (16);
+    foregroundTable.add (playerBox.asActor ()).width (436).height (252 - 2 - 2).padBottom (2);
 
     rootStack.add (foregroundTable);
 

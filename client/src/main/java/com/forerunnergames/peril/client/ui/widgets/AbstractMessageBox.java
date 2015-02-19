@@ -9,16 +9,17 @@ import com.forerunnergames.tools.common.Message;
 
 public abstract class AbstractMessageBox <T extends Message> extends ScrollPane implements MessageBox <T>
 {
+  private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
   private final Table table;
-  private final RowStyle rowStyle;
+  private final MessageBoxRowStyle messageBoxRowStyle;
 
-  protected AbstractMessageBox (final ScrollPaneStyle scrollPaneStyle, final RowStyle rowStyle)
+  protected AbstractMessageBox (final ScrollPaneStyle scrollPaneStyle, final MessageBoxRowStyle messageBoxRowStyle)
   {
     super (null, scrollPaneStyle);
 
-    Arguments.checkIsNotNull (rowStyle, "rowStyle");
+    Arguments.checkIsNotNull (messageBoxRowStyle, "rowStyle");
 
-    this.rowStyle = rowStyle;
+    this.messageBoxRowStyle = messageBoxRowStyle;
 
     table = new Table ();
     configureTable ();
@@ -38,7 +39,7 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   {
     Arguments.checkIsNotNull (message, "message");
 
-    table.row ().expandX ().fillX ().prefHeight (rowStyle.getHeight ());
+    table.row ().expandX ().fillX ().prefHeight (messageBoxRowStyle.getHeight ());
     table.add (createRow (message));
     table.layout ();
 
@@ -52,16 +53,16 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   }
 
   @Override
+  public Actor asActor ()
+  {
+    return this;
+  }
+
+  @Override
   public void clear ()
   {
     clearTable ();
     configureTable ();
-  }
-
-  @Override
-  public Actor asActor ()
-  {
-    return this;
   }
 
   protected abstract Actor createRow (final T message);
@@ -73,6 +74,7 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
 
   private void configureTable ()
   {
-    table.top ().padLeft (rowStyle.getPaddingLeft ()).padRight (rowStyle.getPaddingRight ());
+    table.top ().padLeft (messageBoxRowStyle.getPaddingLeft ()).padRight (messageBoxRowStyle.getPaddingRight ())
+        .padTop (SCROLLPANE_INNER_PADDING_TOP);
   }
 }

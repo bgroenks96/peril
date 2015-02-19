@@ -2,13 +2,13 @@ package com.forerunnergames.peril.client.ui.widgets;
 
 import com.forerunnergames.tools.common.Arguments;
 
-public final class RowStyle
+public final class MessageBoxRowStyle
 {
   private final float height;
   private final float paddingLeft;
   private final float paddingRight;
 
-  public RowStyle (final float height, final float paddingLeft, final float paddingRight)
+  public MessageBoxRowStyle (final float height, final float paddingLeft, final float paddingRight)
   {
     Arguments.checkIsNotNegative (height, "height");
     Arguments.checkIsNotNegative (paddingLeft, "paddingLeft");
