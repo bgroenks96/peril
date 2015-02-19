@@ -83,8 +83,8 @@ public final class Assets
     rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/menuScreens.mp3"));
     playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapBackground = new Texture (Gdx.files.internal ("map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("map/inputDetection.png"));
+    playScreenMapBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("ui/screens/game/play/map/inputDetection.png"));
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
     menuNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
     playScreenNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
