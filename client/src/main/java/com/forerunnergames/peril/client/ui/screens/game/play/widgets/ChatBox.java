@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
 import com.forerunnergames.peril.client.ui.widgets.MessageBoxRowStyle;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -85,7 +85,7 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
 
         if (Strings.isPrintable (textFieldText))
         {
-          eventBus.publish (new DefaultChatMessageEvent (new DefaultChatMessage (textFieldText)));
+          eventBus.publish (new ChatMessageRequestEvent (new DefaultChatMessage (textFieldText)));
         }
 
         return true;

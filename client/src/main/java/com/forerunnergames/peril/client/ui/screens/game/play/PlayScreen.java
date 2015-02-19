@@ -1,6 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.hasAuthorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withAuthorNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -26,6 +29,7 @@ import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
+import com.forerunnergames.peril.client.ui.screens.game.play.debug.DebugEventProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
@@ -34,6 +38,7 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEv
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
+import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -55,6 +60,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   private final MessageBox <ChatMessage> chatBox;
   private final MessageBox <Message> playerBox;
   private final InputProcessor inputProcessor;
+  private final DebugEventProcessor debugEventProcessor;
   private Size2D currentScreenSize;
 
   public PlayScreen (final ScreenController screenController,
@@ -74,6 +80,8 @@ public final class PlayScreen extends InputAdapter implements Screen
     this.playMapActor = playMapActor;
     this.music = music;
     this.eventBus = eventBus;
+
+    debugEventProcessor = new DebugEventProcessor (eventBus);
 
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox ();
@@ -155,11 +163,13 @@ public final class PlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  public void onChatMessageEvent (final ChatMessageEvent event)
+  public void onChatMessageSuccessEvent (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    chatBox.addMessage (withMessageFrom (event));
+    if (! hasAuthorFrom (event)) return;
+
+    chatBox.addMessage (new DefaultChatMessage (withAuthorNameFrom (event) + ": " + withMessageTextFrom (event)));
     chatBox.showLastMessage ();
   }
 

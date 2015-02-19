@@ -3,14 +3,15 @@ package com.forerunnergames.peril.client.ui.screens.game.play.debug;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -67,9 +68,9 @@ public final class DebugEventGenerator
     eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage ()));
   }
 
-  public void generateChatMessageEvent ()
+  public void generateChatMessageSuccessEvent ()
   {
-    eventBus.publish (new DefaultChatMessageEvent (createChatMessage ()));
+    eventBus.publish (new ChatMessageSuccessEvent (createChatMessage ()));
   }
 
   public void generatePlayerJoinGameSuccessEvent ()
@@ -91,7 +92,9 @@ public final class DebugEventGenerator
 
   private ChatMessage createChatMessage ()
   {
-    return new DefaultChatMessage (createMessageText ());
+    final Author author = PlayerFactory.builder (Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES)).build();
+
+    return new DefaultChatMessage (author, createMessageText ());
   }
 
   private Player createPlayer ()
@@ -133,8 +136,7 @@ public final class DebugEventGenerator
 
     randomSubsetWordListStringBuilder.deleteCharAt (randomSubsetWordListStringBuilder.lastIndexOf (" "));
 
-    return randomSubsetWordListStringBuilder.toString () + " "
-        + Randomness.getRandomIntegerFrom (0, Integer.MAX_VALUE - 1) + " aaa WW W W W W W W W WWWWWWWWWWWWWWWW";
+    return randomSubsetWordListStringBuilder.toString ();
   }
 
   private UnmodifiableIterator <PlayerTurnOrder> createPlayerTurnOrderIterator ()

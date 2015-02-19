@@ -98,6 +98,14 @@ public final class EventFluency
     return event.getAuthor ();
   }
 
+  public static String withAuthorNameFrom (final ChatMessageEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsTrue (event.hasAuthor (), "Cannot get author name for non-existent author in event [" + event + "].");
+
+    return event.getAuthor ().getName ();
+  }
+
   public static <T extends Message> T withMessageFrom (final MessageEvent <T> event)
   {
     return messageFrom (event);

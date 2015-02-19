@@ -255,7 +255,7 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'c':
       {
-        eventGenerator.generateChatMessageEvent ();
+        eventGenerator.generateChatMessageSuccessEvent ();
 
         return false;
       }
