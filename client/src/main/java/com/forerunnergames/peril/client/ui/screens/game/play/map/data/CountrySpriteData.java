@@ -77,6 +77,7 @@ public final class CountrySpriteData
   public float getSrcX (final int spriteIndex)
   {
     Arguments.checkIsNotNegative (spriteIndex, "spriteIndex");
+    Arguments.checkUpperExclusiveBound (spriteIndex, spritesPerRow, "spriteIndex", "spritesPerRow");
 
     return size.getWidth () * (spriteIndex % spritesPerRow);
   }
@@ -84,6 +85,7 @@ public final class CountrySpriteData
   public float getSrcY (final int spriteIndex)
   {
     Arguments.checkIsNotNegative (spriteIndex, "spriteIndex");
+    Arguments.checkUpperExclusiveBound (spriteIndex, spritesPerRow, "spriteIndex", "spritesPerRow");
 
     return size.getHeight () * (spriteIndex / spritesPerRow);
   }

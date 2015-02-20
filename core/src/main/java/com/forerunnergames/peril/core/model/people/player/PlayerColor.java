@@ -23,15 +23,15 @@ public enum PlayerColor
   TEAL,
   UNKNOWN;
 
-  private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (
-                  EnumSet.allOf (PlayerColor.class), new Predicate <PlayerColor> ()
-                  {
-                    @Override
-                    public boolean apply (final PlayerColor color)
-                    {
-                      return color.isNot (UNKNOWN);
-                    }
-                  }));
+  private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
+      .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
+  {
+    @Override
+    public boolean apply (final PlayerColor color)
+    {
+      return color.isNot (UNKNOWN);
+    }
+  }));
 
   public static int count ()
   {
@@ -45,7 +45,12 @@ public enum PlayerColor
 
   public boolean hasNext ()
   {
-    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (UNKNOWN);
+    return ordinal () < values ().length - 1;
+  }
+
+  public boolean hasNextValid ()
+  {
+    return hasNext () && values ()[ordinal () + 1].isNot (UNKNOWN);
   }
 
   public boolean is (final PlayerColor color)
@@ -59,19 +64,30 @@ public enum PlayerColor
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return !is (color);
+    return ! is (color);
   }
 
   public PlayerColor next ()
   {
     if (hasNext ())
     {
-      return values ()[ordinal () + 1];
+      return getNextValue ();
     }
     else
     {
-      throw new IllegalStateException ("Cannot get next " + getClass ().getSimpleName () + " value because "
-                      + toString () + " is the last value.");
+      throw new IllegalStateException (getNextValueErrorMessage ());
+    }
+  }
+
+  public PlayerColor nextValid ()
+  {
+    if (hasNextValid ())
+    {
+      return getNextValue ();
+    }
+    else
+    {
+      throw new IllegalStateException (getNextValueErrorMessage ());
     }
   }
 
@@ -89,5 +105,15 @@ public enum PlayerColor
   public String toString ()
   {
     return name ();
+  }
+
+  private PlayerColor getNextValue ()
+  {
+    return values ()[ordinal () + 1];
+  }
+
+  private String getNextValueErrorMessage ()
+  {
+    return "Cannot get next " + getClass ().getSimpleName () + " value because " + toString () + " is the last value.";
   }
 }

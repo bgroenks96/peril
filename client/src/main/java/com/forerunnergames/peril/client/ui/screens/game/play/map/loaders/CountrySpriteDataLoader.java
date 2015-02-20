@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableBiMap;
 
 public final class CountrySpriteDataLoader extends AbstractDataLoader <CountryName, CountrySpriteData>
 {
-  private static final int SPRITES_PER_ROW = 12;
+  private static final int SPRITES_PER_ROW = 13;
   private final ImmutableBiMap.Builder <CountryName, CountrySpriteData> countrySpriteDataBuilder = new ImmutableBiMap.Builder <> ();
   private StreamParser streamParser;
   private String countryNameValue;

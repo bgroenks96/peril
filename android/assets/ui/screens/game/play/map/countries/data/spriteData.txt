@@ -9,9 +9,9 @@
 "Ontario", 155, 101, 383, 272, 434, 212
 "Quebec", 154, 109, 509, 264, 561, 201
 "Hawaii", 89, 89, 10, 449, 77, 400
-"Western United States", 406, 204, 23, 437, 324, 281
+"Western United States", 176, 128, 253, 361, 324, 281
 "Eastern United States", 169, 135, 411, 368, 477, 303
-"Central America", 512, 144, 12, 470, 388, 381
+"Central America", 228, 144, 296, 470, 388, 381
 "Caribbean Islands", 113, 52, 478, 417, 555, 404
 "Svalbard", 98, 41, 1021, 83, 1059, 63
 "Iceland", 66, 41, 822, 161, 855, 142

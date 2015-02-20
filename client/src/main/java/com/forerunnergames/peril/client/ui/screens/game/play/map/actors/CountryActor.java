@@ -27,16 +27,16 @@ import java.util.Map;
 // @formatter:off
 public final class CountryActor extends Actor
 {
-  private static final int TOTAL_SPRITE_COUNT = 12;
-  private static final int HOVERED_SPRITE_INDEX = 10;
-  private static final int TOUCHED_SPRITE_INDEX = 11;
+  private static final int TOTAL_SPRITE_COUNT = 13;
+  private static final int DISABLED_SPRITE_INDEX = 11;
+  private static final int HIGHLIGHTED_SPRITE_INDEX = 12;
   private final CountrySpriteData spriteData;
   private final CountrySpriteColorOrder colorOrder;
   private final Map <Integer, Sprite> spriteIndicesToSprites = new HashMap <> ();
   private final Texture spriteSheetTexture;
   private boolean isHovered = false;
   private boolean isTouchDown = false;
-  private int currentSpriteIndex = -1;
+  private int currentSpriteIndex;
   private Size2D screenSize;
   private Scaling2D scaling;
 
@@ -59,6 +59,7 @@ public final class CountryActor extends Actor
     }
 
     setName (spriteData.getName ().getName ());
+    clearColor();
   }
 
   @Override
@@ -66,6 +67,7 @@ public final class CountryActor extends Actor
   {
     if (shouldUpdateScreenSize ()) updateScreenSize ();
 
+    // TODO Production: Remove
     if (spriteData.getName().getName ().equals ("Antarctica")) return;
 
     final Point2D destReferenceScreenSpace = CoordinateSpaces.referencePlayMapSpaceToReferenceScreenSpace (spriteData.getDestPlayMap ());
@@ -76,8 +78,8 @@ public final class CountryActor extends Actor
     final float height = sizeActualPlayMapSpace.getHeight ();
 
     if (currentSpriteIndex >= 0) batch.draw (getSpriteAtIndex (currentSpriteIndex), x, y, width, height);
-    if (PlayMapSettings.ENABLE_HOVER_EFFECTS && isHovered) batch.draw (getSpriteAtIndex (HOVERED_SPRITE_INDEX), x, y, width, height);
-    if (PlayMapSettings.ENABLE_CLICK_EFFECTS && isTouchDown) batch.draw (getSpriteAtIndex (TOUCHED_SPRITE_INDEX), x, y, width, height);
+    if (PlayMapSettings.ENABLE_HOVER_EFFECTS && isHovered) batch.draw (getSpriteAtIndex (HIGHLIGHTED_SPRITE_INDEX), x, y, width, height);
+    if (PlayMapSettings.ENABLE_CLICK_EFFECTS && isTouchDown) batch.draw (getSpriteAtIndex (DISABLED_SPRITE_INDEX), x, y, width, height);
   }
 
   public PlayerColor getCurrentColor()
@@ -114,7 +116,7 @@ public final class CountryActor extends Actor
 
   public void clearColor ()
   {
-    currentSpriteIndex = -1;
+    changeColorTo (PlayerColor.UNKNOWN);
   }
 
   public void onHoverStart ()

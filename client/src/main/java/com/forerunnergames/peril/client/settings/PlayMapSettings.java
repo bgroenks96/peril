@@ -19,7 +19,7 @@ public final class PlayMapSettings
   public static final Translation2D REFERENCE_SCREEN_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_TRANSLATION   = new Translation2D (-12, -12);
   public static final Scaling2D     ACTUAL_PLAY_MAP_SPACE_TO_REFERENCE_PLAY_MAP_SPACE_SCALING     = Geometry.divide (REFERENCE_SIZE, ACTUAL_SIZE);
   public static final Scaling2D     REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING     = Geometry.divide (ACTUAL_SIZE, REFERENCE_SIZE);
-  public static final boolean       ENABLE_HOVER_EFFECTS                                          = false;
+  public static final boolean       ENABLE_HOVER_EFFECTS                                          = true;
   public static final boolean       ENABLE_CLICK_EFFECTS                                          = false;
 
   private PlayMapSettings ()

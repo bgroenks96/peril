@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 public final class PlayMapActor extends Actor
 {
   private final ImmutableMap <CountryName, CountryActor> countryNamesToActors;
@@ -58,6 +60,21 @@ public final class PlayMapActor extends Actor
     return countryNamesToActors.containsKey (inputDetection.getCountryNameAt (inputCoordinate, screenSize));
   }
 
+  public boolean countryActorAtPointIs (final Point2D inputCoordinate,
+                                        final Size2D screenSize,
+                                        @Nullable final CountryActor countryActor)
+  {
+    return countryActor != null && existsCountryActorAt (inputCoordinate, screenSize)
+        && getCountryActorAt (inputCoordinate, screenSize).getName ().equals (countryActor.getName ());
+  }
+
+  public boolean countryActorAtPointIsNot (final Point2D inputCoordinate,
+                                           final Size2D screenSize,
+                                           final CountryActor countryActor)
+  {
+    return ! countryActorAtPointIs (inputCoordinate, screenSize, countryActor);
+  }
+
   public CountryActor getCountryActorAt (final Point2D inputCoordinate, final Size2D screenSize)
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
@@ -68,7 +85,7 @@ public final class PlayMapActor extends Actor
     if (countryActor == null)
     {
       throw new IllegalStateException ("Cannot find " + CountryActor.class.getSimpleName () + " at " + inputCoordinate
-                      + ".");
+          + ".");
 
     }
 
@@ -85,7 +102,7 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (mouseCoordinate, "mouseCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (!existsCountryActorAt (mouseCoordinate, screenSize))
+    if (! existsCountryActorAt (mouseCoordinate, screenSize))
     {
       if (touchedCountryActor != null)
       {
@@ -106,7 +123,7 @@ public final class PlayMapActor extends Actor
     hoveredCountryActor.onHoverStart ();
 
     if (this.hoveredCountryActor != null
-                    && !this.hoveredCountryActor.getName ().equals (hoveredCountryActor.getName ()))
+        && ! this.hoveredCountryActor.getName ().equals (hoveredCountryActor.getName ()))
     {
       this.hoveredCountryActor.onHoverEnd ();
     }
@@ -121,7 +138,7 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (touchDownCoordinate, "touchDownCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (!existsCountryActorAt (touchDownCoordinate, screenSize))
+    if (! existsCountryActorAt (touchDownCoordinate, screenSize))
     {
       if (touchedCountryActor != null)
       {
@@ -144,7 +161,7 @@ public final class PlayMapActor extends Actor
     touchedDownCountryActor.onTouchDown ();
     touchedDownCountryActor.changeColorRandomly ();
 
-    if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
+    if (touchedCountryActor != null && ! touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
     {
       touchedCountryActor.onTouchUp ();
     }
@@ -159,7 +176,7 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (touchUpCoordinate, "touchUpCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (!existsCountryActorAt (touchUpCoordinate, screenSize))
+    if (countryActorAtPointIsNot (touchUpCoordinate, screenSize, touchedCountryActor))
     {
       if (touchedCountryActor != null)
       {
@@ -172,9 +189,9 @@ public final class PlayMapActor extends Actor
         hoveredCountryActor.onHoverEnd ();
         hoveredCountryActor = null;
       }
-
-      return false;
     }
+
+    if (! existsCountryActorAt (touchUpCoordinate, screenSize)) return false;
 
     final CountryActor touchedUpCountryActor = getCountryActorAt (touchUpCoordinate, screenSize);
     touchedUpCountryActor.onTouchUp ();
@@ -182,7 +199,7 @@ public final class PlayMapActor extends Actor
     hoveredCountryActor = touchedUpCountryActor;
     hoveredCountryActor.onHoverStart ();
 
-    if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedUpCountryActor.getName ()))
+    if (touchedCountryActor != null && ! touchedCountryActor.getName ().equals (touchedUpCountryActor.getName ()))
     {
       touchedCountryActor.onTouchUp ();
     }
@@ -303,13 +320,13 @@ public final class PlayMapActor extends Actor
     Arguments.checkUpperInclusiveBound (n, PlayerColor.validValues ().size (), "n");
 
     final ImmutableSet.Builder <PlayerColor> nColorsBuilder = ImmutableSet.builder ();
-    final Set <PlayerColor> validColors = new HashSet <> (PlayerColor.validValues ());
+    final Set <PlayerColor> colors = new HashSet <> (Arrays.asList (PlayerColor.values ()));
 
     for (int i = 0; i < n; ++i)
     {
-      final PlayerColor randomColor = Randomness.getRandomElementFrom (validColors);
+      final PlayerColor randomColor = Randomness.getRandomElementFrom (colors);
       nColorsBuilder.add (randomColor);
-      validColors.remove (randomColor);
+      colors.remove (randomColor);
     }
 
     randomizeCountryColorsUsingOnly (nColorsBuilder.build ());
