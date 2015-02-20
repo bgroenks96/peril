@@ -30,7 +30,6 @@ public final class PlayMapActor extends Actor
   private final PlayMapInputDetection inputDetection;
   private CountryActor hoveredCountryActor;
   private CountryActor touchedCountryActor;
-  private CountryActor countryActor;
 
   public PlayMapActor (final ImmutableMap <CountryName, CountryActor> countryNamesToActors,
                        final PlayMapInputDetection inputDetection)
@@ -80,7 +79,8 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    countryActor = countryNamesToActors.get (inputDetection.getCountryNameAt (inputCoordinate, screenSize));
+    final CountryActor countryActor = countryNamesToActors.get (inputDetection.getCountryNameAt (inputCoordinate,
+                                                                                                 screenSize));
 
     if (countryActor == null)
     {
@@ -276,6 +276,8 @@ public final class PlayMapActor extends Actor
 
   public void clearCountryColor (final String countryName)
   {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
     final CountryName name = new CountryName (countryName);
 
     if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).clearColor ();
@@ -301,6 +303,9 @@ public final class PlayMapActor extends Actor
 
   public void setCountryColor (final String countryName, final PlayerColor color)
   {
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNull (color, "color");
+
     final CountryName name = new CountryName (countryName);
 
     if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).changeColorTo (color);
