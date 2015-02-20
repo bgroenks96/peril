@@ -1,13 +1,35 @@
 <configuration>
+  <debug>true</debug>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n</pattern>
     </encoder>
   </appender>
-  <logger name="com.forerunnergames.peril.server" level="DEBUG" additivity="false">
+
+  <!-- Create a custom timestamp variable named 'bySecond' that can be injected into the filename of a log. -->
+  <timestamp key="bySecond" datePattern="yyyy_MM_dd_HH_mm_ss"/>
+
+  <!-- A SiftingAppender is used here only to force lazy log file creation. -->
+  <!-- This prevents an empty file from being created by FileAppender when nothing has been logged. -->
+  <!-- For more information, see: http://jira.qos.ch/browse/LOGBACK-202 -->
+  <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+    <discriminator>
+      <key>null</key> <!-- key is not used -->
+      <defaultValue>null</defaultValue> <!-- default value is not used -->
+    </discriminator>
+    <sift>
+      <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <!-- Inject the timestamp 'bySecond' variable to virtually guarantee a unique filename -->
+        <file>crash-${bySecond}.txt</file>
+        <append>false</append> <!-- If crash.txt already exists erase the contents. -->
+        <encoder>
+          <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n</pattern>
+        </encoder>
+      </appender>
+    </sift>
+  </appender>
+  <root level="ERROR">
     <appender-ref ref="STDOUT" />
-  </logger>
-  <root level="DEBUG">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="SIFT" /> <!-- Write to file only for errors. -->
   </root>
 </configuration>

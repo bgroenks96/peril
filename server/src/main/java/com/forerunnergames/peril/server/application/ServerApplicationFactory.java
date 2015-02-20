@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
 
 // @formatter:off
 public final class ServerApplicationFactory
@@ -39,16 +38,7 @@ public final class ServerApplicationFactory
     final CommandLineArgs jArgs = new CommandLineArgs ();
     final JCommander jCommander = new JCommander (jArgs);
 
-    try
-    {
-      jCommander.parse (args);
-    }
-    catch (final ParameterException e)
-    {
-      System.out.println (e.getMessage ());
-
-      System.exit (1);
-    }
+    jCommander.parse (args);
 
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ()
             .addFeature (Feature.SyncPubSub.Default ())

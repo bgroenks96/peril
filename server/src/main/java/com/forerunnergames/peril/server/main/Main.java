@@ -13,16 +13,18 @@ public final class Main
 
   public static void main (final String... args)
   {
-    try
+    Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler ()
     {
-      ServerApplicationFactory.create (args).initialize ();
-    }
-    catch (final Throwable e)
-    {
-      log.error (ServerSettings.CRASH_MESSAGE, e);
+      @Override
+      public void uncaughtException (final Thread thread, final Throwable throwable)
+      {
+        log.error (ServerSettings.CRASH_MESSAGE, throwable);
 
-      System.exit (1);
-    }
+        System.exit (1);
+      }
+    });
+
+    ServerApplicationFactory.create (args).initialize ();
   }
 
   private Main ()
