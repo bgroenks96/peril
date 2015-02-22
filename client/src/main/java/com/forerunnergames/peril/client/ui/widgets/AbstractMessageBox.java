@@ -1,10 +1,12 @@
 package com.forerunnergames.peril.client.ui.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Maths;
 import com.forerunnergames.tools.common.Message;
 
 public abstract class AbstractMessageBox <T extends Message> extends ScrollPane implements MessageBox <T>
@@ -39,11 +41,14 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   {
     Arguments.checkIsNotNull (message, "message");
 
+    final Actor row = createRow (message);
     table.row ().expandX ().fillX ().prefHeight (messageBoxRowStyle.getHeight ());
-    table.add (createRow (message));
+    final Cell messageCell = table.add (row);
     table.layout ();
-
     layout ();
+    messageCell.height (Maths.nextHigherMultiple ((int) row.getHeight (), (int) messageBoxRowStyle.getHeight ()));
+    table.invalidateHierarchy ();
+    layout();
   }
 
   @Override
