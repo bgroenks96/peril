@@ -12,6 +12,7 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -135,6 +136,20 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getConfiguration ();
+  }
+
+  public static String withCountryNameFrom (final CountryArmiesChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getCountryName ();
+  }
+
+  public static int withNewArmyCountFrom (final CountryArmiesChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getNewArmyCount ();
   }
 
   private EventFluency ()

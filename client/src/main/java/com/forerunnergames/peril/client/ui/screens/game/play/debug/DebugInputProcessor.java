@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
@@ -25,6 +26,7 @@ public final class DebugInputProcessor extends InputAdapter
 {
   private final ScreenController screenController;
   private final PlayMapActor playMapActor;
+  private final ArmyTextActor armyTextActor;
   private final TerritoryTextActor territoryTextActor;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
@@ -33,6 +35,7 @@ public final class DebugInputProcessor extends InputAdapter
 
   public DebugInputProcessor (final ScreenController screenController,
                               final PlayMapActor playMapActor,
+                              final ArmyTextActor armyTextActor,
                               final TerritoryTextActor territoryTextActor,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
@@ -41,6 +44,7 @@ public final class DebugInputProcessor extends InputAdapter
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
@@ -49,6 +53,7 @@ public final class DebugInputProcessor extends InputAdapter
 
     this.screenController = screenController;
     this.playMapActor = playMapActor;
+    this.armyTextActor = armyTextActor;
     this.territoryTextActor = territoryTextActor;
     this.statusBox = statusBox;
     this.chatBox = chatBox;
@@ -275,6 +280,18 @@ public final class DebugInputProcessor extends InputAdapter
       {
         playerBox.clear ();
         eventGenerator.resetPlayers();
+
+        return false;
+      }
+      case 'a':
+      {
+        eventGenerator.generateCountryArmiesChangedEvent ();
+
+        return false;
+      }
+      case 'A':
+      {
+        armyTextActor.reset();
 
         return false;
       }

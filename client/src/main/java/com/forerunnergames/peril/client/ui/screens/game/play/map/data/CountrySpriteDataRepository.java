@@ -19,10 +19,22 @@ public final class CountrySpriteDataRepository
     this.countryNamesToCountrySprites = countryNamesToCountrySprites;
   }
 
+  public boolean has (final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return countryNamesToCountrySprites.containsKey (countryName);
+  }
+
+  public boolean doesNotHave (final CountryName countryName)
+  {
+    return ! has (countryName);
+  }
+
   public CountrySpriteData get (final CountryName name)
   {
     Arguments.checkIsNotNull (name, "name");
-    Preconditions.checkIsTrue (countryNamesToCountrySprites.containsKey (name), "Cannot find: " + name + ".");
+    Preconditions.checkIsTrue (has (name), "Cannot find: " + name + ".");
 
     return countryNamesToCountrySprites.get (name);
   }

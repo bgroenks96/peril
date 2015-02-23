@@ -2,8 +2,10 @@ package com.forerunnergames.peril.client.ui.screens.game.play;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.hasAuthorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withAuthorNameFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withCountryNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withNewArmyCountFrom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -31,11 +33,14 @@ import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.debug.DebugEventProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.debug.DebugInputProcessor;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
+import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
@@ -53,6 +58,7 @@ import net.engio.mbassy.listener.Handler;
 public final class PlayScreen extends InputAdapter implements Screen
 {
   private final PlayMapActor playMapActor;
+  private final ArmyTextActor armyTextActor;
   private final ScreenMusic music;
   private final MBassador <Event> eventBus;
   private final Stage stage;
@@ -66,6 +72,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   public PlayScreen (final ScreenController screenController,
                      final PlayScreenWidgetFactory widgetFactory,
                      final PlayMapActor playMapActor,
+                     final ArmyTextActor armyTextActor,
                      final TerritoryTextActor territoryTextActor,
                      final ScreenMusic music,
                      final MBassador <Event> eventBus)
@@ -73,11 +80,13 @@ public final class PlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playMapActor = playMapActor;
+    this.armyTextActor = armyTextActor;
     this.music = music;
     this.eventBus = eventBus;
 
@@ -92,8 +101,9 @@ public final class PlayScreen extends InputAdapter implements Screen
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, territoryTextActor)).padRight (16);
-    playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top();
+    playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, armyTextActor, territoryTextActor))
+        .padRight (16);
+    playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top ();
 
     final Table foregroundTable = new Table ().pad (12);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
@@ -148,7 +158,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     };
 
     final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor,
-                    territoryTextActor, statusBox, chatBox, playerBox, eventBus);
+        armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -182,10 +192,19 @@ public final class PlayScreen extends InputAdapter implements Screen
                     new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ()));
   }
 
+  @Handler
+  public void onCountryArmiesChangedEvent (final CountryArmiesChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    armyTextActor.setCountryArmyCountTo (withNewArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
+  }
+
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
     playMapActor.touchDown (new Point2D (screenX, screenY), button, getScreenSize ());
+    armyTextActor.touchDown (playMapActor.getCountryNameAt (new Point2D (screenX, screenY), getScreenSize ()), button);
 
     return false;
   }
@@ -267,7 +286,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   private Size2D getScreenSize ()
   {
     if (currentScreenSize != null && currentScreenSize.getWidth () == Gdx.graphics.getWidth ()
-                    && currentScreenSize.getHeight () == Gdx.graphics.getHeight ())
+        && currentScreenSize.getHeight () == Gdx.graphics.getHeight ())
     {
       return currentScreenSize;
     }

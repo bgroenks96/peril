@@ -3,8 +3,11 @@ package com.forerunnergames.peril.client.ui.screens.game.play;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActorFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteDataRepository;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteDataRepositoryFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetectionFactory;
 import com.forerunnergames.tools.common.Arguments;
@@ -24,9 +27,11 @@ public final class PlayScreenFactory
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create ();
+    final CountrySpriteDataRepository countrySpriteDataRepository = CountrySpriteDataRepositoryFactory.create ();
 
     return new PlayScreen (screenController, new PlayScreenWidgetFactory (Assets.skin, eventBus),
-        PlayMapActorFactory.create (playMapInputDetection), new TerritoryTextActor (playMapInputDetection, mouseInput),
+        PlayMapActorFactory.create (countrySpriteDataRepository, playMapInputDetection), new ArmyTextActor (
+            countrySpriteDataRepository), new TerritoryTextActor (playMapInputDetection, mouseInput),
         new PlayScreenMusic (), eventBus);
   }
 

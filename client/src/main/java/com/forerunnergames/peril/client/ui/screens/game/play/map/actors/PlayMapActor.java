@@ -92,6 +92,16 @@ public final class PlayMapActor extends Actor
     return countryActor;
   }
 
+  public CountryName getCountryNameAt (final Point2D inputCoordinate, final Size2D screenSize)
+  {
+    Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
+    Arguments.checkIsNotNull (screenSize, "screenSize");
+
+    if (! existsCountryActorAt (inputCoordinate, screenSize)) return new CountryName ("");
+
+    return new CountryName (getCountryActorAt (inputCoordinate, screenSize).getName());
+  }
+
   public PlayerColor getHoveredCountryColor ()
   {
     return hoveredCountryActor != null ? hoveredCountryActor.getCurrentColor () : PlayerColor.UNKNOWN;

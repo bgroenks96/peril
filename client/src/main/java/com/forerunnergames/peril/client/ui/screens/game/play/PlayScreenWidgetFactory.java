@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
@@ -76,12 +77,15 @@ public final class PlayScreenWidgetFactory
     return new Button (skin.get (Button.ButtonStyle.class));
   }
 
-  public PlayMapWidget
-      createPlayMapWidget (final PlayMapActor playMapActor, final TerritoryTextActor territoryTextActor)
+  public PlayMapWidget createPlayMapWidget (final PlayMapActor playMapActor,
+                                            final ArmyTextActor armyTextActor,
+                                            final TerritoryTextActor territoryTextActor)
   {
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
 
-    return new PlayMapWidget (new Image (Assets.playScreenMapBackground), playMapActor, territoryTextActor);
+    return new PlayMapWidget (new Image (Assets.playScreenMapBackground), playMapActor, armyTextActor,
+        territoryTextActor);
   }
 }

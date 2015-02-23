@@ -4,6 +4,7 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
@@ -52,6 +53,26 @@ public final class DebugEventGenerator
                                                                                "[FG] Escendrix", "[LOLZ] nutButter",
                                                                                "[WWWW] WWWWWWWWWWWWWWWW",
                                                                                "[X] generalKiller");
+
+  private final ImmutableList <String> COUNTRY_NAMES = ImmutableList.of ("Alaska", "Northwest Territory", "Greenland",
+                                                                         "Alberta", "Ontario", "Quebec", "Hawaii",
+                                                                         "Western United States",
+                                                                         "Eastern United States", "Central America",
+                                                                         "Caribbean Islands", "Svalbard", "Iceland",
+                                                                         "Scandinavia", "Great Britain",
+                                                                         "Northern Europe", "Ukraine",
+                                                                         "Western Europe", "Southern Europe", "Ural",
+                                                                         "Siberia", "Yakutsk", "Kamchatka",
+                                                                         "Afghanistan", "Irkutsk", "Mongolia", "Japan",
+                                                                         "Middle East", "India", "China", "Siam",
+                                                                         "Venezuela", "Peru", "Brazil", "Argentina",
+                                                                         "Falkland Islands", "North Africa", "Egypt",
+                                                                         "Congo", "East Africa", "South Africa",
+                                                                         "Madagascar", "Philippines", "Indonesia",
+                                                                         "New Guinea", "Western Australia",
+                                                                         "Eastern Australia", "New Zealand",
+                                                                         "Antarctica");
+
   private final MBassador <Event> eventBus;
   private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator = PlayerTurnOrder.validValues ().iterator ();
   private Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
@@ -78,11 +99,26 @@ public final class DebugEventGenerator
     eventBus.publish (new PlayerJoinGameSuccessEvent (createPlayer ()));
   }
 
+  public void generateCountryArmiesChangedEvent ()
+  {
+    eventBus.publish (new CountryArmiesChangedEvent (getRandomCountryName (), 0, getRandomCountryArmyCount ()));
+  }
+
   public void resetPlayers ()
   {
     playerTurnOrderIterator = createPlayerTurnOrderIterator ();
     availablePlayerNames.clear ();
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
+  }
+
+  private String getRandomCountryName ()
+  {
+    return Randomness.getRandomElementFrom (COUNTRY_NAMES);
+  }
+
+  private int getRandomCountryArmyCount ()
+  {
+    return Randomness.getRandomIntegerFrom (0, 99);
   }
 
   private StatusMessage createStatusMessage ()
@@ -92,7 +128,7 @@ public final class DebugEventGenerator
 
   private ChatMessage createChatMessage ()
   {
-    final Author author = PlayerFactory.builder (Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES)).build();
+    final Author author = PlayerFactory.builder (Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES)).build ();
 
     return new DefaultChatMessage (author, createMessageText ());
   }

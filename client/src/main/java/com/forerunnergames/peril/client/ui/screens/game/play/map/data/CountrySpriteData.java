@@ -59,6 +59,11 @@ public final class CountrySpriteData
     return destPlayMap.getY ();
   }
 
+  public Point2D getCenter()
+  {
+    return center;
+  }
+
   public Size2D getSize()
   {
     return size;
