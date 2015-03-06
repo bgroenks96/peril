@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.core.shared.net.events.request;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
@@ -12,15 +11,11 @@ public final class ChangePlayerColorRequestEvent implements PlayerColorEvent, Re
 {
   private final PlayerColorEvent playerColorEvent;
 
-  public ChangePlayerColorRequestEvent (final Player player,
-                                        final PlayerColor currentColor,
-                                        final PlayerColor previousColor)
+  public ChangePlayerColorRequestEvent (final PlayerColor requestedColor)
   {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (currentColor, "currentColor");
-    Arguments.checkIsNotNull (previousColor, "previousColor");
+    Arguments.checkIsNotNull (requestedColor, "requestedColor");
 
-    playerColorEvent = new DefaultPlayerColorEvent (currentColor);
+    playerColorEvent = new DefaultPlayerColorEvent (requestedColor);
   }
 
   @Override

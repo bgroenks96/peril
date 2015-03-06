@@ -21,9 +21,9 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerColorSuccessEvent;
@@ -33,6 +33,7 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.HashSet;
@@ -135,24 +136,31 @@ public final class GameModel
   {
     log.info ("Randomly assigning player countries...");
 
-    Set <Country> countries = new HashSet <> (playMapModel.getCountries ());
-    ImmutableSet <Player> players = playerModel.getPlayers ();
+    final Set <Country> countries = new HashSet <> (playMapModel.getCountries ());
+    final ImmutableSet <Player> players = playerModel.getPlayers ();
     // TODO: this should be done more accordingly with GameRules or something
     final int countriesPerPlayer = countries.size () / players.size () + 1;
-    for (Player player : players)
+    for (final Player player : players)
     {
       int count = 0;
-      Iterator <Country> itr = countries.iterator ();
+      final Iterator <Country> itr = countries.iterator ();
       while (itr.hasNext () && count < countriesPerPlayer)
       {
-        Country toAssign = itr.next ();
+        final Country toAssign = itr.next ();
         playMapModel.assignCountryOwner (toAssign.getId (), player.getId ());
         itr.remove ();
         count++;
       }
     }
 
-    eventBus.publish (new PlayerCountryAssignmentCompleteEvent ());
+    // prepare immutable view of PlayMapModel for completion event
+    final ImmutableSet <Country> assignedCountries = playMapModel.getAssignedCountries ();
+    final ImmutableMap.Builder <Country, Player> playMapBuilder = ImmutableMap.builder ();
+    for (final Country country : assignedCountries)
+    {
+      playMapBuilder.put (country, playerModel.playerWith (playMapModel.getOwnerOf (country.getId ())));
+    }
+    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapBuilder.build ()));
   }
 
   @StateMachineAction
