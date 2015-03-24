@@ -9,6 +9,7 @@ import com.forerunnergames.tools.common.geometry.Geometry;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Scaling2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
+import com.forerunnergames.tools.common.geometry.Translation2D;
 
 // @formatter:off
 public final class CoordinateSpaces
@@ -75,6 +76,22 @@ public final class CoordinateSpaces
     final Point2D referencePlayMapCoordinate = Geometry.scale (actualPlayMapCoordinate, PlayMapSettings. ACTUAL_PLAY_MAP_SPACE_TO_REFERENCE_PLAY_MAP_SPACE_SCALING);
 
     return referencePlayMapCoordinate;
+  }
+
+  public static Point2D toReferenceCountrySpace (final Point2D sourceSpaceCoordinate, final Point2D countryOriginSourceSpace)
+  {
+    Arguments.checkIsNotNull (sourceSpaceCoordinate, "sourceSpaceCoordinate");
+    Arguments.checkIsNotNull (countryOriginSourceSpace, "countryOriginSourceSpace");
+
+    return Geometry.absoluteValue (Geometry.translate (sourceSpaceCoordinate, new Translation2D (-countryOriginSourceSpace.getX(), -countryOriginSourceSpace.getY())));
+  }
+
+  public static Point2D fromReferenceCountrySpace (final Point2D referenceCountrySpaceCoordinate, final Point2D countryOriginDestinationSpace)
+  {
+    Arguments.checkIsNotNull (referenceCountrySpaceCoordinate, "referenceCountrySpaceCoordinate");
+    Arguments.checkIsNotNull (countryOriginDestinationSpace, "countryOriginDestinationSpace");
+
+    return Geometry.translate (referenceCountrySpaceCoordinate, new Translation2D (countryOriginDestinationSpace.getX(), countryOriginDestinationSpace.getY()));
   }
 
   private CoordinateSpaces ()

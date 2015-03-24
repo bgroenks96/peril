@@ -18,7 +18,6 @@ import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.geometry.Geometry;
 import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Scaling2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
 
 import java.util.HashMap;
@@ -34,11 +33,13 @@ public final class CountryActor extends Actor
   private final CountrySpriteColorOrder colorOrder;
   private final Map <Integer, Sprite> spriteIndicesToSprites = new HashMap <> ();
   private final Texture spriteSheetTexture;
+  private final float x;
+  private final float y;
+  private final float width;
+  private final float height;
   private boolean isHovered = false;
   private boolean isTouchDown = false;
   private int currentSpriteIndex;
-  private Size2D screenSize;
-  private Scaling2D scaling;
 
   public CountryActor (final CountrySpriteData spriteData, final CountrySpriteColorOrder colorOrder)
   {
@@ -58,24 +59,24 @@ public final class CountryActor extends Actor
       spriteIndicesToSprites.put (spriteIndex, sprite);
     }
 
+    final Point2D destReferenceScreenSpace = CoordinateSpaces.referencePlayMapSpaceToReferenceScreenSpace (spriteData.getDestPlayMapReferenceSpace ());
+    x = destReferenceScreenSpace.getX();
+    y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT - destReferenceScreenSpace.getY();
+    final Size2D sizeActualPlayMapSpace = Geometry.scale (spriteData.getSizePlayMapReferenceSpace(), PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+    width = sizeActualPlayMapSpace.getWidth ();
+    height = sizeActualPlayMapSpace.getHeight ();
+
     setName (spriteData.getName ().getName ());
+    setSize (width, height);
+    setBounds (0, 0, width, height);
     clearColor();
   }
 
   @Override
   public void draw (final Batch batch, final float parentAlpha)
   {
-    if (shouldUpdateScreenSize ()) updateScreenSize ();
-
     // TODO Production: Remove
     if (spriteData.getName().getName ().equals ("Antarctica")) return;
-
-    final Point2D destReferenceScreenSpace = CoordinateSpaces.referencePlayMapSpaceToReferenceScreenSpace (spriteData.getDestPlayMap ());
-    final float x = destReferenceScreenSpace.getX();
-    final float y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT - destReferenceScreenSpace.getY();
-    final Size2D sizeActualPlayMapSpace = Geometry.scale (spriteData.getSize(), PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
-    final float width = sizeActualPlayMapSpace.getWidth ();
-    final float height = sizeActualPlayMapSpace.getHeight ();
 
     if (currentSpriteIndex >= 0) batch.draw (getSpriteAtIndex (currentSpriteIndex), x, y, width, height);
     if (PlayMapSettings.ENABLE_HOVER_EFFECTS && isHovered) batch.draw (getSpriteAtIndex (HIGHLIGHTED_SPRITE_INDEX), x, y, width, height);
@@ -147,6 +148,46 @@ public final class CountryActor extends Actor
     spriteSheetTexture.setFilter (minFilter, magFilter);
   }
 
+  public Sprite getCurrentSprite()
+  {
+    return getSpriteAtIndex (currentSpriteIndex);
+  }
+
+  public Point2D getDestPlayMapReferenceSpace()
+  {
+    return spriteData.getDestPlayMapReferenceSpace ();
+  }
+
+  public Point2D getCenterPlayMapReferenceSpace()
+  {
+    return spriteData.getCenterPlayMapReferenceSpace();
+  }
+
+  public Size2D getSizePlayMapReferenceSpace()
+  {
+    return spriteData.getSizePlayMapReferenceSpace ();
+  }
+
+  public Size2D getSizePlayMapActualSpace()
+  {
+    return new Size2D (width, height);
+  }
+
+  public float getWidthPlayMapActualSpace()
+  {
+    return width;
+  }
+
+  public float getHeightPlayMapActualSpace()
+  {
+    return height;
+  }
+
+  public String getCurrentCountrySpriteName()
+  {
+    return getName() + " " + getCurrentColor ().toProperCase ();
+  }
+
   private Sprite createSprite (final Texture spriteSheetTexture, final int spriteIndex)
   {
     return new Sprite (new TextureRegion (spriteSheetTexture, Math.round (spriteData.getSrcX (spriteIndex)),
@@ -162,16 +203,5 @@ public final class CountryActor extends Actor
   private FileHandle loadSpriteSheet ()
   {
     return Gdx.files.internal (AssetPaths.PLAY_MAP_COUNTRY_SPRITE_IMAGES_PATH + spriteData.getNameAsFileName ("png"));
-  }
-
-  private boolean shouldUpdateScreenSize ()
-  {
-    return screenSize == null || scaling == null || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-  }
-
-  private void updateScreenSize()
-  {
-    screenSize = new Size2D (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    scaling = Geometry.divide (screenSize, GraphicsSettings.REFERENCE_SCREEN_SIZE);
   }
 }

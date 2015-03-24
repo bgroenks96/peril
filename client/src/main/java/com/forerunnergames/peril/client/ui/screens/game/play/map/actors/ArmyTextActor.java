@@ -53,7 +53,7 @@ public final class ArmyTextActor extends Actor
     for (final Map.Entry <CountryName, Integer> entry : countryNamesToArmyCounts.entrySet ())
     {
       countryArmyText = String.valueOf (entry.getValue ());
-      countryCenterPlayMapReferenceSpace = countrySpriteDataRepository.get (entry.getKey ()).getCenter ();
+      countryCenterPlayMapReferenceSpace = countrySpriteDataRepository.get (entry.getKey ()).getCenterPlayMapReferenceSpace ();
       countryCenterReferenceScreenSpace = CoordinateSpaces
           .referencePlayMapSpaceToReferenceScreenSpace (countryCenterPlayMapReferenceSpace);
 
@@ -72,6 +72,7 @@ public final class ArmyTextActor extends Actor
     if (shouldUpdateScreenSize ()) updateScreenSize ();
   }
 
+  // TODO Production: Remove
   public boolean touchDown (final CountryName countryName, final int button)
   {
     switch (button)
@@ -130,8 +131,10 @@ public final class ArmyTextActor extends Actor
     changeArmyCountBy (getCountryArmyCountDelta (countryName, armyCount), countryName);
   }
 
-  private void changeArmyCountBy (final int armyCountyDelta, final CountryName countryName)
+  public void changeArmyCountBy (final int armyCountyDelta, final CountryName countryName)
   {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
     if (countrySpriteDataRepository.doesNotHave (countryName)) return;
 
     final int oldCountryArmyCount = getCountryArmyCount (countryName);

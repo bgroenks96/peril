@@ -145,11 +145,11 @@ public final class EventFluency
     return event.getCountryName ();
   }
 
-  public static int withNewArmyCountFrom (final CountryArmiesChangedEvent event)
+  public static int deltaArmyCountFrom (final CountryArmiesChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getNewArmyCount ();
+    return event.getDeltaArmyCount ();
   }
 
   private EventFluency ()

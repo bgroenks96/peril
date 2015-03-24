@@ -14,7 +14,7 @@ public final class GraphicsSettings
   public static final Size2D                REFERENCE_SCREEN_SIZE        = new Size2D (REFERENCE_SCREEN_WIDTH, REFERENCE_SCREEN_HEIGHT);
   public static final int                   INITIAL_WINDOW_WIDTH         = 1920;
   public static final int                   INITIAL_WINDOW_HEIGHT        = 1080;
-  public static final boolean               IS_FULLSCREEN                = false;
+  public static final boolean               IS_FULLSCREEN                = true;
   public static final boolean               IS_VSYNC_ENABLED             = true;
   public static final boolean               IS_WINDOW_RESIZABLE          = true;
   public static final String                WINDOW_TITLE                 = "Peril";

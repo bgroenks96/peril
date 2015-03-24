@@ -5,7 +5,7 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.with
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withCountryNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withNewArmyCountFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.deltaArmyCountFrom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -36,6 +36,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.debug.DebugInputPro
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
@@ -65,6 +66,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
   private final MessageBox <Message> playerBox;
+  private final MandatoryOccupationPopup mandatoryOccupationPopup;
   private final InputProcessor inputProcessor;
   private final DebugEventProcessor debugEventProcessor;
   private Size2D currentScreenSize;
@@ -129,6 +131,8 @@ public final class PlayScreen extends InputAdapter implements Screen
       }
     };
 
+    mandatoryOccupationPopup = widgetFactory.createMandatoryOccupationPopup (stage);
+
     stage.addActor (rootStack);
 
     stage.addListener (new ClickListener ()
@@ -158,7 +162,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     };
 
     final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor,
-        armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, eventBus);
+        armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -197,7 +201,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    armyTextActor.setCountryArmyCountTo (withNewArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
+    armyTextActor.changeArmyCountBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
   }
 
   @Override
@@ -280,6 +284,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     eventBus.unsubscribe (this);
 
+    mandatoryOccupationPopup.dispose();
     stage.dispose ();
   }
 

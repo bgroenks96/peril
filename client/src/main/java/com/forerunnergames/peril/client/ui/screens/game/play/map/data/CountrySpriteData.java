@@ -8,27 +8,27 @@ import com.forerunnergames.tools.common.geometry.Size2D;
 public final class CountrySpriteData
 {
   private final CountryName name;
-  private final Point2D destPlayMap;
-  private final Point2D center;
-  private final Size2D size;
+  private final Point2D destPlayMapReferenceSpace;
+  private final Point2D centerPlayMapReferenceSpace;
+  private final Size2D sizePlayMapReferenceSpace;
   private final int spritesPerRow;
 
   public CountrySpriteData (final CountryName name,
-                            final Point2D destPlayMap,
-                            final Point2D center,
-                            final Size2D size,
+                            final Point2D destPlayMapReferenceSpace,
+                            final Point2D centerPlayMapReferenceSpace,
+                            final Size2D sizePlayMapReferenceSpace,
                             final int spritesPerRow)
   {
     Arguments.checkIsNotNull (name, "name");
-    Arguments.checkIsNotNull (destPlayMap, "destPlayMap");
-    Arguments.checkIsNotNull (center, "center");
-    Arguments.checkIsNotNull (size, "size");
+    Arguments.checkIsNotNull (destPlayMapReferenceSpace, "destPlayMapReferenceSpace");
+    Arguments.checkIsNotNull (centerPlayMapReferenceSpace, "centerPlayMapReferenceSpace");
+    Arguments.checkIsNotNull (sizePlayMapReferenceSpace, "sizePlayMapReferenceSpace");
     Arguments.checkLowerExclusiveBound (spritesPerRow, 0, "spritesPerRow");
 
     this.name = name;
-    this.destPlayMap = destPlayMap;
-    this.center = center;
-    this.size = size;
+    this.destPlayMapReferenceSpace = destPlayMapReferenceSpace;
+    this.centerPlayMapReferenceSpace = centerPlayMapReferenceSpace;
+    this.sizePlayMapReferenceSpace = sizePlayMapReferenceSpace;
     this.spritesPerRow = spritesPerRow;
   }
 
@@ -44,39 +44,29 @@ public final class CountrySpriteData
     return name.asFileName (fileNameExtension);
   }
 
-  public Point2D getDestPlayMap()
+  public Point2D getDestPlayMapReferenceSpace ()
   {
-    return destPlayMap;
+    return destPlayMapReferenceSpace;
   }
 
-  public float getDestPlayMapX ()
+  public Point2D getCenterPlayMapReferenceSpace ()
   {
-    return destPlayMap.getX ();
+    return centerPlayMapReferenceSpace;
   }
 
-  public float getDestPlayMapY ()
+  public Size2D getSizePlayMapReferenceSpace ()
   {
-    return destPlayMap.getY ();
-  }
-
-  public Point2D getCenter()
-  {
-    return center;
-  }
-
-  public Size2D getSize()
-  {
-    return size;
+    return sizePlayMapReferenceSpace;
   }
 
   public float getWidth ()
   {
-    return size.getWidth ();
+    return sizePlayMapReferenceSpace.getWidth ();
   }
 
   public float getHeight ()
   {
-    return size.getHeight ();
+    return sizePlayMapReferenceSpace.getHeight ();
   }
 
   public float getSrcX (final int spriteIndex)
@@ -84,7 +74,7 @@ public final class CountrySpriteData
     Arguments.checkIsNotNegative (spriteIndex, "spriteIndex");
     Arguments.checkUpperExclusiveBound (spriteIndex, spritesPerRow, "spriteIndex", "spritesPerRow");
 
-    return size.getWidth () * (spriteIndex % spritesPerRow);
+    return sizePlayMapReferenceSpace.getWidth () * (spriteIndex % spritesPerRow);
   }
 
   public float getSrcY (final int spriteIndex)
@@ -92,14 +82,15 @@ public final class CountrySpriteData
     Arguments.checkIsNotNegative (spriteIndex, "spriteIndex");
     Arguments.checkUpperExclusiveBound (spriteIndex, spritesPerRow, "spriteIndex", "spritesPerRow");
 
-    return size.getHeight () * (spriteIndex / spritesPerRow);
+    return sizePlayMapReferenceSpace.getHeight () * (spriteIndex / spritesPerRow);
   }
 
   @Override
   public String toString ()
   {
-    return String.format (
-                    "%1$s: Name: %2$s | Destination (Play Map Space): %3$s | Center (Play Map Space): %4$s | Size: %5$s | spritesPerRow: %6$s",
-                    getClass ().getSimpleName (), name, destPlayMap, center, size, spritesPerRow);
+    return String.format ("%1$s: Name: %2$s | Destination (Play Map Reference Space): %3$s"
+                                    + " | Center (Play Map Reference Space): %4$s | Size: %5$s | spritesPerRow: %6$s",
+                    getClass ().getSimpleName (), name, destPlayMapReferenceSpace, centerPlayMapReferenceSpace,
+                    sizePlayMapReferenceSpace, spritesPerRow);
   }
 }

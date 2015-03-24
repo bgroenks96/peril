@@ -99,7 +99,7 @@ public final class PlayMapActor extends Actor
 
     if (! existsCountryActorAt (inputCoordinate, screenSize)) return new CountryName ("");
 
-    return new CountryName (getCountryActorAt (inputCoordinate, screenSize).getName());
+    return new CountryName (getCountryActorAt (inputCoordinate, screenSize).getName ());
   }
 
   public PlayerColor getHoveredCountryColor ()
@@ -217,6 +217,28 @@ public final class PlayMapActor extends Actor
     touchedCountryActor = null;
 
     return true;
+  }
+
+  public boolean existsCountryActorWithName (final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return countryNamesToActors.containsKey (countryName);
+  }
+
+  public CountryActor getCountryActorWithName (final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    final CountryActor countryActor = countryNamesToActors.get (countryName);
+
+    if (countryActor == null)
+    {
+      throw new IllegalStateException ("Cannot find " + CountryActor.class.getSimpleName () + " with name ["
+          + countryName + "].");
+    }
+
+    return countryActor;
   }
 
   public void setClassicCountryColors ()

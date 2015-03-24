@@ -33,6 +33,8 @@ public final class Assets
   public static Pixmap menuNormalCursor;
   public static Pixmap playScreenNormalCursor;
   public static BitmapFont aurulentSans16;
+  public static Texture armyMovementBackground;
+  public static Texture armyMovementOccupationTitle;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
@@ -59,6 +61,8 @@ public final class Assets
     menuNormalCursor.dispose();
     playScreenNormalCursor.dispose();
     aurulentSans16.dispose ();
+    armyMovementBackground.dispose ();
+    armyMovementOccupationTitle.dispose ();
     skin.dispose ();
 
     isLoaded = false;
@@ -89,6 +93,8 @@ public final class Assets
     menuNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
     playScreenNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
     aurulentSans16 = new BitmapFont (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt"));
+    armyMovementBackground = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     // @formatter:on
 
@@ -101,6 +107,8 @@ public final class Assets
     setFilter (rightMenuBarShadow);
     setFilter (playScreenBackground);
     setFilter (playScreenMapBackground);
+    setFilter (armyMovementBackground);
+    setFilter (armyMovementOccupationTitle);
 
     isLoaded = true;
   }

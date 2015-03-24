@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.debug;
 
+import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
@@ -101,7 +102,7 @@ public final class DebugEventGenerator
 
   public void generateCountryArmiesChangedEvent ()
   {
-    eventBus.publish (new CountryArmiesChangedEvent (getRandomCountryName (), 0, getRandomCountryArmyCount ()));
+    eventBus.publish (new CountryArmiesChangedEvent (getRandomCountryNameString (), getRandomCountryDeltaArmyCount ()));
   }
 
   public void resetPlayers ()
@@ -111,12 +112,17 @@ public final class DebugEventGenerator
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
   }
 
-  private String getRandomCountryName ()
+  public CountryName getRandomCountryName()
+  {
+    return new CountryName (getRandomCountryNameString ());
+  }
+
+  private String getRandomCountryNameString ()
   {
     return Randomness.getRandomElementFrom (COUNTRY_NAMES);
   }
 
-  private int getRandomCountryArmyCount ()
+  private int getRandomCountryDeltaArmyCount ()
   {
     return Randomness.getRandomIntegerFrom (0, 99);
   }

@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -13,6 +14,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyText
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.ChatBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.PlayMapWidget;
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
@@ -87,5 +89,12 @@ public final class PlayScreenWidgetFactory
 
     return new PlayMapWidget (new Image (Assets.playScreenMapBackground), playMapActor, armyTextActor,
         territoryTextActor);
+  }
+
+  public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+
+    return new MandatoryOccupationPopup (skin, stage, eventBus);
   }
 }
