@@ -6,6 +6,7 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreenMusic;
+import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -34,9 +35,13 @@ public final class ScreenFactory
       {
         return new MainMenuScreen (screenController, new MainMenuScreenMusic ());
       }
-      case PLAY:
+      case PLAY_CLASSIC:
       {
-        return PlayScreenFactory.create (screenController, mouseInput, eventBus);
+        return PlayScreenFactory.create (screenController, mouseInput, GameMode.CLASSIC, eventBus);
+      }
+      case PLAY_PERIL:
+      {
+        return PlayScreenFactory.create (screenController, mouseInput, GameMode.PERIL, eventBus);
       }
       default:
       {

@@ -5,6 +5,7 @@ import com.forerunnergames.tools.common.Arguments;
 public enum GameMode
 {
   CLASSIC,
+  PERIL,
   CUSTOM;
 
   public static int count ()

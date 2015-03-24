@@ -98,7 +98,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     {
       case Input.Keys.RIGHT:
       {
-        screenController.toScreen (ScreenId.PLAY);
+        screenController.toScreen (ScreenId.PLAY_CLASSIC);
         return true;
       }
       case Input.Keys.ESCAPE:

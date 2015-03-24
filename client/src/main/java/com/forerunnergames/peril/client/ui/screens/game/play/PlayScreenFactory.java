@@ -1,16 +1,12 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
+import com.badlogic.gdx.Screen;
+
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.sprites.CountrySprites;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteDataRepository;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteDataRepositoryFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetection;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetectionFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicPlayScreenFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilPlayScreenFactory;
+import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
@@ -19,21 +15,31 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PlayScreenFactory
 {
-  public static PlayScreen create (final ScreenController screenController,
-                                   final MouseInput mouseInput,
-                                   final MBassador <Event> eventBus)
+  public static Screen create (final ScreenController screenController,
+                               final MouseInput mouseInput,
+                               final GameMode gameMode,
+                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (gameMode, "gameMode");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create ();
-    final CountrySpriteDataRepository countrySpriteDataRepository = CountrySpriteDataRepositoryFactory.create ();
-
-    return new PlayScreen (screenController, new PlayScreenWidgetFactory (Assets.skin, eventBus),
-            PlayMapActorFactory.create (new CountrySprites (), countrySpriteDataRepository, playMapInputDetection),
-            new ArmyTextActor (countrySpriteDataRepository),
-            new TerritoryTextActor (playMapInputDetection, mouseInput), new PlayScreenMusic (), eventBus);
+    switch (gameMode)
+    {
+    case CLASSIC:
+    {
+      return ClassicPlayScreenFactory.create (screenController, mouseInput, eventBus);
+    }
+    case PERIL:
+    {
+      return PerilPlayScreenFactory.create (screenController, mouseInput, eventBus);
+    }
+    default:
+    {
+      throw new UnsupportedOperationException ("Unknown game mode [" + gameMode + "].");
+    }
+    }
   }
 
   private PlayScreenFactory ()
