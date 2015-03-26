@@ -80,6 +80,6 @@ public class TerritoryTextActor extends Actor
   {
     screenSize = new Size2D (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     scaling = Geometry.divide (GraphicsSettings.REFERENCE_SCREEN_SIZE, screenSize);
-    font.setScale (scaling.getX (), scaling.getY ());
+    font.getData ().setScale (scaling.getX (), scaling.getY ());
   }
 }
