@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -11,10 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
@@ -475,16 +476,21 @@ public final class MandatoryOccupationPopup extends Dialog
   private final class ArmyTextActor extends Actor
   {
     private final BitmapFont font = Assets.aurulentSans16;
+    private final GlyphLayout glyphLayout = new GlyphLayout ();
     private String text = "";
     private Point2D topLeft = new Point2D (0, 0);
     private Size2D screenSize;
     private Scaling2D scaling;
-    private BitmapFont.TextBounds bounds;
 
     public void setArmies (final int armies)
     {
-      text = String.valueOf (armies);
+      changeText (String.valueOf (armies));
+    }
 
+    private void changeText (final String text)
+    {
+      this.text = text;
+      glyphLayout.setText (font, text);
       updateSize ();
     }
 
@@ -498,7 +504,7 @@ public final class MandatoryOccupationPopup extends Dialog
     @Override
     public void draw (final Batch batch, final float parentAlpha)
     {
-      font.draw (batch, text, topLeft.getX () + (13 - font.getBounds (text).width) / 2.0f, topLeft.getY ());
+      font.draw (batch, text, topLeft.getX () + (13 - glyphLayout.width) / 2.0f, topLeft.getY ());
     }
 
     @Override
@@ -509,7 +515,7 @@ public final class MandatoryOccupationPopup extends Dialog
       if (! shouldUpdateScreenSize ()) return;
 
       updateScreenSize ();
-      updateScaling();
+      updateScaling ();
       updateSize ();
     }
 
@@ -527,13 +533,12 @@ public final class MandatoryOccupationPopup extends Dialog
     private void updateScaling ()
     {
       scaling = Geometry.divide (GraphicsSettings.REFERENCE_SCREEN_SIZE, screenSize);
-      font.setScale (scaling.getX (), scaling.getY ());
+      font.getData ().setScale (scaling.getX (), scaling.getY ());
     }
 
     private void updateSize ()
     {
-      bounds = font.getBounds (text);
-      setSize (bounds.width, bounds.height);
+      setSize (glyphLayout.width, glyphLayout.height);
     }
   }
 }
