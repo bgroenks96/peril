@@ -38,6 +38,8 @@ public final class Assets
   public static BitmapFont aurulentSans16;
   public static Texture armyMovementBackground;
   public static Texture armyMovementOccupationTitle;
+  public static TextureAtlas perilModeAtlas;
+  public static NinePatch perilModeGridLines;
   public static ImmutableList <TextureAtlas> countryAtlases;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
@@ -67,6 +69,7 @@ public final class Assets
     aurulentSans16.dispose ();
     armyMovementBackground.dispose ();
     armyMovementOccupationTitle.dispose ();
+    perilModeAtlas.dispose ();
     skin.dispose ();
 
     for (TextureAtlas atlas : countryAtlases)
@@ -104,6 +107,8 @@ public final class Assets
     aurulentSans16 = new BitmapFont (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt"));
     armyMovementBackground = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    perilModeAtlas = new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/modes/peril/perilMode.atlas"));
+    perilModeGridLines = perilModeAtlas.createPatch ("gridLines");
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     countryAtlases = ImmutableList.of (
             new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries0.atlas")),

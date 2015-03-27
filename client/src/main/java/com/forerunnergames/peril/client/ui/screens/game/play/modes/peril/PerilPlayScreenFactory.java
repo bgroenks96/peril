@@ -21,7 +21,7 @@ public final class PerilPlayScreenFactory
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return new PerilPlayScreen (screenController, new PlayScreenMusic (), eventBus);
+    return new PerilPlayScreen (screenController, new BattleGrid (new TankActor ()), new PlayScreenMusic (), eventBus);
   }
 
   private PerilPlayScreenFactory ()

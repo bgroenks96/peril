@@ -1,0 +1,27 @@
+
+perilMode.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+tankBody
+  rotate: false
+  xy: 1, 1
+  size: 10, 26
+  orig: 10, 26
+  offset: 0, 0
+  index: -1
+tankTurret
+  rotate: false
+  xy: 13, 6
+  size: 10, 21
+  orig: 10, 21
+  offset: 0, 0
+  index: -1
+gridLines
+  rotate: false
+  xy: 25, 23
+  size: 4, 4
+  split: 1, 1, 1, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1

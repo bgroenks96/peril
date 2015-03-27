@@ -9,10 +9,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -34,28 +33,27 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final InputProcessor inputProcessor;
-  private final ShapeRenderer shapeRenderer;
 
   public PerilPlayScreen (final ScreenController screenController,
+                          final BattleGrid battleGrid,
                           final ScreenMusic music,
                           final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (battleGrid, "battleGrid");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.music = music;
     this.eventBus = eventBus;
 
-    final Stack rootStack = new Stack ();
-    rootStack.setFillParent (true);
+    final Table rootTable = new Table ();
+    rootTable.setFillParent (true);
+    rootTable.add (battleGrid);
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
         GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
-
-    shapeRenderer = new ShapeRenderer ();
-    shapeRenderer.setProjectionMatrix (camera.combined);
 
     stage = new Stage (viewport)
     {
@@ -68,7 +66,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
       }
     };
 
-    stage.addActor (rootStack);
+    stage.addActor (rootTable);
 
     stage.addListener (new ClickListener ()
     {
@@ -96,7 +94,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
       }
     };
 
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this);
+    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, battleGrid);
   }
 
   @Override
@@ -115,6 +113,24 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
       return false;
     }
     }
+  }
+
+  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved (final int screenX, final int screenY)
+  {
+    return false;
   }
 
   @Override
@@ -137,10 +153,6 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
 
     stage.act (delta);
     stage.draw ();
-
-    shapeRenderer.begin (ShapeRenderer.ShapeType.Filled);
-    shapeRenderer.circle (0, 0, 10);
-    shapeRenderer.end ();
   }
 
   @Override
@@ -189,23 +201,5 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   private void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
-  }
-
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    return false;
   }
 }
