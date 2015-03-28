@@ -1,18 +1,16 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class BattleGrid extends Stack implements InputProcessor
+public final class BattleGrid extends Table implements InputProcessor
 {
   private final UnitActor unitActor;
   private Table unitActorTable;
@@ -41,8 +39,7 @@ public final class BattleGrid extends Stack implements InputProcessor
       unitActorTable.row ();
     }
 
-    add (gridLinesTable);
-    add (unitActorTable);
+    stack (gridLinesTable, unitActorTable);
 
     gridLinesTable.setVisible (BattleGridSettings.VISIBLE_GRID_LINES);
 
@@ -60,107 +57,49 @@ public final class BattleGrid extends Stack implements InputProcessor
   @Override
   public boolean keyDown (final int keycode)
   {
-    switch (keycode)
-    {
-    case Input.Keys.LEFT:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
-      {
-        unitActor.setMoving (UnitActor.MovementDirection.LEFT);
-      }
-      else
-      {
-        unitActor.moveLeft ();
-      }
-
-      return true;
-    }
-    case Input.Keys.RIGHT:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
-      {
-        unitActor.setMoving (UnitActor.MovementDirection.RIGHT);
-      }
-      else
-      {
-        unitActor.moveRight ();
-      }
-
-      return true;
-    }
-    case Input.Keys.UP:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
-      {
-        unitActor.setMoving (UnitActor.MovementDirection.UP);
-      }
-      else
-      {
-        unitActor.moveUp ();
-      }
-
-      return true;
-    }
-    case Input.Keys.DOWN:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
-      {
-        unitActor.setMoving (UnitActor.MovementDirection.DOWN);
-      }
-      else
-      {
-        unitActor.moveDown ();
-      }
-
-      return true;
-    }
-    default:
-    {
-      return true;
-    }
-    }
+    return unitActor.keyDown (keycode);
   }
 
   @Override
   public boolean keyUp (final int keycode)
   {
-    return false;
+    return unitActor.keyUp (keycode);
   }
 
   @Override
   public boolean keyTyped (final char character)
   {
-    return false;
+    return unitActor.keyTyped (character);
   }
 
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    return false;
+    return unitActor.touchDown (screenX, screenY, pointer, button);
   }
 
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
-    return false;
+    return unitActor.touchUp (screenX, screenY, pointer, button);
   }
 
   @Override
   public boolean touchDragged (final int screenX, final int screenY, final int pointer)
   {
-    return false;
+    return unitActor.touchDragged (screenX, screenY, pointer);
   }
 
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    return false;
+    return unitActor.mouseMoved (screenX, screenY);
   }
 
   @Override
   public boolean scrolled (final int amount)
   {
-    return false;
+    return unitActor.scrolled (amount);
   }
 
   private boolean shouldUpdateGridPositionOf (final UnitActor unitActor)

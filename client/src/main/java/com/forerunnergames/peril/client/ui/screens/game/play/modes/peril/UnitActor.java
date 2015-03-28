@@ -1,54 +1,41 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import javax.annotation.Nullable;
 
-public interface UnitActor
+public interface UnitActor extends InputProcessor
 {
   enum MovementDirection
   {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
+    FORWARD,
+    REVERSE,
     NONE
   }
 
-  enum FacingDirection
+  enum TurnDirection
   {
-    UP(0),
-    DOWN(180),
-    LEFT(270),
-    RIGHT(90);
-
-    public int degrees ()
-    {
-      return degrees;
-    }
-
-    FacingDirection (final int degrees)
-    {
-      this.degrees = degrees;
-    }
-
-    private final int degrees;
+    RIGHT,
+    LEFT,
+    U_TURN,
+    NONE
   }
 
-  void moveRight ();
+  void turnRight ();
 
-  void moveLeft ();
+  void turnLeft ();
 
-  void moveUp ();
+  void turnAround ();
 
-  void moveDown ();
+  void moveForward ();
+
+  void moveReverse ();
 
   void setMoving (final MovementDirection movementDirection);
 
-  void setFacing (final FacingDirection facingDirection);
-
-  boolean isMoving ();
+  void setTurning (final TurnDirection turnDirection);
 
   Vector2 getPreviousPosition ();
 
@@ -57,6 +44,4 @@ public interface UnitActor
   Actor asActor ();
 
   boolean is (@Nullable final Actor actor);
-
-  boolean isNot (@Nullable final Actor actor);
 }

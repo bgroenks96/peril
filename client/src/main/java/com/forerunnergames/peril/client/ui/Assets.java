@@ -108,7 +108,7 @@ public final class Assets
     armyMovementBackground = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     perilModeAtlas = new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/modes/peril/perilMode.atlas"));
-    perilModeGridLines = perilModeAtlas.createPatch ("gridLines");
+    perilModeGridLines = perilModeAtlas.createPatch ("gridMiddle");
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     countryAtlases = ImmutableList.of (
             new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries0.atlas")),

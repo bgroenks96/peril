@@ -1,21 +1,14 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.MusicSettings;
@@ -24,7 +17,6 @@ import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-
 import net.engio.mbassy.bus.MBassador;
 
 public final class PerilPlayScreen extends InputAdapter implements Screen
@@ -35,21 +27,24 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   private final InputProcessor inputProcessor;
 
   public PerilPlayScreen (final ScreenController screenController,
-                          final BattleGrid battleGrid,
+                          final TankActor2 tankActor2,
                           final ScreenMusic music,
                           final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
-    Arguments.checkIsNotNull (battleGrid, "battleGrid");
+    Arguments.checkIsNotNull (tankActor2, "tankActor2");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.music = music;
     this.eventBus = eventBus;
 
+    /*
     final Table rootTable = new Table ();
     rootTable.setFillParent (true);
-    rootTable.add (battleGrid);
+    rootTable.add (tankActor2);
+    rootTable.debugAll ();
+    */
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
@@ -66,7 +61,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
       }
     };
 
-    stage.addActor (rootTable);
+    stage.addActor (tankActor2);
 
     stage.addListener (new ClickListener ()
     {
@@ -94,7 +89,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
       }
     };
 
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, battleGrid);
+    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, tankActor2);
   }
 
   @Override
@@ -102,16 +97,16 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   {
     switch (keycode)
     {
-    case Input.Keys.ESCAPE:
-    {
-      Gdx.app.exit ();
+      case Input.Keys.ESCAPE:
+      {
+        Gdx.app.exit ();
 
-      return false;
-    }
-    default:
-    {
-      return false;
-    }
+        return false;
+      }
+      default:
+      {
+        return false;
+      }
     }
   }
 
