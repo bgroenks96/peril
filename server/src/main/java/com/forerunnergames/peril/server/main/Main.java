@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.server.main;
 
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
-import com.forerunnergames.peril.server.settings.ServerSettings;
 import com.forerunnergames.tools.common.Classes;
 
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ public final class Main
       @Override
       public void uncaughtException (final Thread thread, final Throwable throwable)
       {
-        log.error (ServerSettings.CRASH_MESSAGE, throwable);
+        log.error ("The server application has crashed!", throwable);
 
         System.exit (1);
       }

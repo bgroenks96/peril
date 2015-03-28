@@ -1,5 +1,4 @@
 <configuration>
-  <debug>true</debug>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n</pattern>
@@ -28,6 +27,7 @@
       </appender>
     </sift>
   </appender>
+
   <root level="ERROR">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="SIFT" /> <!-- Write to file only for errors. -->
