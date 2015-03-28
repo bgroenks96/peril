@@ -3,6 +3,7 @@ package com.forerunnergames.peril.ios;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
 
+import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 
 import org.robovm.apple.foundation.NSAutoreleasePool;
@@ -20,6 +21,8 @@ public final class IOSLauncher extends IOSApplication.Delegate
   @Override
   protected IOSApplication createApplication ()
   {
+    new ClientApplicationProperties ();
+
     return new IOSApplication (LibGdxGameFactory.create (), new IOSApplicationConfiguration ());
   }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
+import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 
@@ -27,7 +28,7 @@ public final class DesktopLauncher
 
         try
         {
-          Gdx.app.exit();
+          Gdx.app.exit ();
         }
         catch (final Throwable throwable2)
         {
@@ -37,6 +38,8 @@ public final class DesktopLauncher
     });
 
     final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration ();
+
+    new ClientApplicationProperties ();
 
     config.width = GraphicsSettings.INITIAL_WINDOW_WIDTH;
     config.height = GraphicsSettings.INITIAL_WINDOW_HEIGHT;

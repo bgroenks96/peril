@@ -28,7 +28,7 @@
     </sift>
   </appender>
 
-  <logger name="com.forerunnergames.peril.client" level="WARN" additivity="false">
+  <logger name="com.forerunnergames.peril" level="WARN" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>
 
