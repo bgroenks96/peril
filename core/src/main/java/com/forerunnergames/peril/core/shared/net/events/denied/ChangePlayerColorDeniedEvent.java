@@ -10,24 +10,24 @@ import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColo
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.REASON>
+public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.Reason>
         implements PlayerColorEvent
 {
   private final PlayerColorEvent playerColorEvent;
 
-  public enum REASON
+  public enum Reason
   {
     REQUESTED_COLOR_EQUALS_EXISTING_COLOR,
     COLOR_ALREADY_TAKEN,
     REQUESTED_COLOR_INALID,
   }
 
-  public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final REASON reason)
+  public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final Reason reason)
   {
     this (colorFrom (event), reason);
   }
 
-  public ChangePlayerColorDeniedEvent (final PlayerColor color, final REASON reason)
+  public ChangePlayerColorDeniedEvent (final PlayerColor color, final Reason reason)
   {
     super (reason);
 

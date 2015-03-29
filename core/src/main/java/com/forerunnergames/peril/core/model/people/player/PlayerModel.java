@@ -281,17 +281,17 @@ public final class PlayerModel
     playerWith (playerId).removeArmiesFromHand (armies);
   }
 
-  public Result <PlayerJoinGameDeniedEvent.REASON> requestToAdd (final Player player)
+  public Result <PlayerJoinGameDeniedEvent.Reason> requestToAdd (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
     // @formatter:off
-    if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL);
-    if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_ID);
-    if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_NAME);
-    if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_COLOR);
-    if (existsPlayerWith (turnOrderOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER);
-    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result.failure (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY);
+    if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL);
+    if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID);
+    if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+    if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_COLOR);
+    if (existsPlayerWith (turnOrderOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_TURN_ORDER);
+    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_SELF_IDENTITY);
     // @formatter:on
 
     add (player);
@@ -299,7 +299,7 @@ public final class PlayerModel
     return Result.success ();
   }
 
-  public Result <ChangePlayerColorDeniedEvent.REASON> requestToChangeColorOfPlayer (final Id playerId,
+  public Result <ChangePlayerColorDeniedEvent.Reason> requestToChangeColorOfPlayer (final Id playerId,
                                                                                     final PlayerColor toColor)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -308,9 +308,9 @@ public final class PlayerModel
     final Player player = playerWith (playerId);
 
     // @formatter:off
-    if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
-    if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN);
-    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_INALID);
+    if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
+    if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.Reason.COLOR_ALREADY_TAKEN);
+    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_INALID);
     // @formatter:on
 
     player.setColor (toColor);
@@ -318,52 +318,52 @@ public final class PlayerModel
     return Result.success ();
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemove (final Player player)
+  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemove (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
     if (!existsPlayerWith (idOf (player))) return Result
-            .failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+            .failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     deregister (player);
 
     return Result.success ();
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByColor (final PlayerColor color)
+  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveByColor (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
 
-    if (!existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     return requestToRemove (playerWith (color));
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveById (final Id id)
+  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveById (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
 
-    if (!existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     return requestToRemove (playerWith (id));
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByName (final String name)
+  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveByName (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
-    if (!existsPlayerWith (name)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (name)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     return requestToRemove (playerWithName (name));
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.REASON> requestToRemoveByTurnOrder (final PlayerTurnOrder turnOrder)
+  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveByTurnOrder (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
     Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
 
-    if (!existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     return requestToRemove (playerWith (turnOrder));
   }

@@ -4,11 +4,11 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedE
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.REASON>
+public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.Reason>
 {
   private final String playerName;
 
-  public enum REASON
+  public enum Reason
   {
     GAME_IS_FULL,
     DUPLICATE_SELF_IDENTITY,
@@ -18,7 +18,7 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     DUPLICATE_TURN_ORDER
   }
 
-  public PlayerJoinGameDeniedEvent (final String playerName, final PlayerJoinGameDeniedEvent.REASON reason)
+  public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)
   {
     super (reason);
 

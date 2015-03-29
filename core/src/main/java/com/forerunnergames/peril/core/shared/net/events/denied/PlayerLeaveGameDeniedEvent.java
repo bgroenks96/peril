@@ -3,14 +3,14 @@ package com.forerunnergames.peril.core.shared.net.events.denied;
 import com.forerunnergames.peril.core.shared.net.events.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerLeaveGameDeniedEvent extends AbstractDeniedEvent <PlayerLeaveGameDeniedEvent.REASON>
+public final class PlayerLeaveGameDeniedEvent extends AbstractDeniedEvent <PlayerLeaveGameDeniedEvent.Reason>
 {
-  public enum REASON
+  public enum Reason
   {
     PLAYER_DOES_NOT_EXIST
   }
 
-  public PlayerLeaveGameDeniedEvent (final REASON reason)
+  public PlayerLeaveGameDeniedEvent (final Reason reason)
   {
     super (reason);
   }

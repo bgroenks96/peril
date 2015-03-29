@@ -197,7 +197,7 @@ public final class GameModel
 
     final Player player = playerModel.playerWith (colorFrom (event));
 
-    final Result <ChangePlayerColorDeniedEvent.REASON> result;
+    final Result <ChangePlayerColorDeniedEvent.Reason> result;
     result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), colorFrom (event));
 
     if (result.isSuccessful ())
@@ -216,7 +216,7 @@ public final class GameModel
     Arguments.checkIsNotNull (event, "event");
 
     final Player player = PlayerFactory.create (withPlayerNameFrom (event));
-    final Result <PlayerJoinGameDeniedEvent.REASON> result;
+    final Result <PlayerJoinGameDeniedEvent.Reason> result;
 
     result = playerModel.requestToAdd (player);
 

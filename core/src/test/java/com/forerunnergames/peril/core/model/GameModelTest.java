@@ -170,7 +170,7 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameDeniedEvent.class));
     assertThat (playerNameFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)), is (name));
     assertThat (reasonFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)),
-                is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
+                is (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL));
   }
 
   @Test
