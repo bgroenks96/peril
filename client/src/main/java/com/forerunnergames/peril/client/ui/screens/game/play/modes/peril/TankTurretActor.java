@@ -15,7 +15,7 @@ public final class TankTurretActor extends Actor
   {
     tankTurret = Assets.perilModeAtlas.findRegion ("tankTurret");
 
-    setOrigin (tankTurret.getRegionWidth () / 2.0f, tankTurret.getRegionHeight () / 3.0f);
+    setOrigin (12, 26);
   }
 
   @Override

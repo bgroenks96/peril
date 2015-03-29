@@ -15,7 +15,7 @@ public final class TankBodyActor extends Actor
   {
     tankBody = Assets.perilModeAtlas.findRegion ("tankBody");
 
-    setOrigin (tankBody.getRegionWidth () / 2.0f, tankBody.getRegionHeight () / 3.0f);
+    setOrigin (12, 26);
   }
 
   @Override
