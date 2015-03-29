@@ -2,6 +2,8 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.enums.IterableEnum;
+import com.forerunnergames.tools.common.enums.IterableEnumHelper;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -9,7 +11,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.EnumSet;
 
-public enum PlayerTurnOrder
+public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
 {
   UNKNOWN,
   FIRST,
@@ -33,14 +35,87 @@ public enum PlayerTurnOrder
     }
   }));
 
+  @Override
+  public boolean hasNext ()
+  {
+    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (UNKNOWN);
+  }
+
+  @Override
+  public PlayerTurnOrder next ()
+  {
+    return IterableEnumHelper.next (this, values ());
+  }
+
+  @Override
+  public boolean hasPrevious ()
+  {
+    return IterableEnumHelper.hasPrevious (this);
+  }
+
+  @Override
+  public PlayerTurnOrder previous ()
+  {
+    return IterableEnumHelper.previous (this, values ());
+  }
+
+  @Override
+  public boolean is (final PlayerTurnOrder turnOrder)
+  {
+    return IterableEnumHelper.is (this, turnOrder);
+  }
+
+  @Override
+  public boolean isNot (final PlayerTurnOrder turnOrder)
+  {
+    return IterableEnumHelper.isNot (this, turnOrder);
+  }
+
+  @Override
+  public int getPosition ()
+  {
+    return IterableEnumHelper.getPosition (this);
+  }
+
+  @Override
+  public String toMixedOrdinalPosition ()
+  {
+    return IterableEnumHelper.toMixedOrdinalPosition (this);
+  }
+
   public static int count ()
   {
-    return values ().length;
+    return IterableEnumHelper.count (values ());
   }
 
   public static ImmutableSet <PlayerTurnOrder> validValues ()
   {
     return validValues;
+  }
+
+  public boolean hasNextValid ()
+  {
+    return IterableEnumHelper.hasNextValid (this, values (), validValues);
+  }
+
+  public PlayerTurnOrder nextValid ()
+  {
+    return IterableEnumHelper.nextValid (this, values (), validValues);
+  }
+
+  public String toLowerCase ()
+  {
+    return IterableEnumHelper.toLowerCase (this);
+  }
+
+  public String toUpperCase ()
+  {
+    return IterableEnumHelper.toUpperCase (this);
+  }
+
+  public String toProperCase ()
+  {
+    return IterableEnumHelper.toProperCase (this);
   }
 
   public static PlayerTurnOrder getNthTurnOrder (final int nthPlayerTurnOrder)
@@ -51,56 +126,14 @@ public enum PlayerTurnOrder
     return PlayerTurnOrder.values ()[nthPlayerTurnOrder];
   }
 
-  public int asInt ()
-  {
-    return ordinal ();
-  }
-
-  public boolean hasNext ()
-  {
-    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (UNKNOWN);
-  }
-
-  public boolean is (final PlayerTurnOrder turnOrder)
-  {
-    Arguments.checkIsNotNull (turnOrder, "turnOrder");
-
-    return this.equals (turnOrder);
-  }
-
-  public boolean isNot (final PlayerTurnOrder turnOrder)
-  {
-    Arguments.checkIsNotNull (turnOrder, "turnOrder");
-
-    return !this.equals (turnOrder);
-  }
-
-  public PlayerTurnOrder next ()
-  {
-    if (hasNext ())
-    {
-      return values ()[ordinal () + 1];
-    }
-    else
-    {
-      throw new IllegalStateException ("Cannot get next " + getClass ().getSimpleName () + " value because "
-              + toString () + " is the last value.");
-    }
-  }
-
-  public String toLowerCase ()
-  {
-    return name ().toLowerCase ();
-  }
-
   public String toMixedOrdinal ()
   {
     return is (UNKNOWN) ? "?" : Strings.toMixedOrdinal (asInt ());
   }
 
-  public String toProperCase ()
+  public int asInt ()
   {
-    return Strings.toProperCase (name ());
+    return ordinal ();
   }
 
   @Override

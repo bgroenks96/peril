@@ -1,15 +1,14 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
-
+import com.forerunnergames.tools.common.enums.IterableEnum;
+import com.forerunnergames.tools.common.enums.IterableEnumHelper;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.EnumSet;
 
-public enum PlayerColor
+public enum PlayerColor implements IterableEnum <PlayerColor>
 {
   BLUE,
   BROWN,
@@ -33,9 +32,57 @@ public enum PlayerColor
     }
   }));
 
+  @Override
+  public boolean hasNext ()
+  {
+    return IterableEnumHelper.hasNext (this, values ());
+  }
+
+  @Override
+  public PlayerColor next ()
+  {
+    return IterableEnumHelper.next (this, values ());
+  }
+
+  @Override
+  public boolean hasPrevious ()
+  {
+    return IterableEnumHelper.hasPrevious (this);
+  }
+
+  @Override
+  public PlayerColor previous ()
+  {
+    return IterableEnumHelper.previous (this, values ());
+  }
+
+  @Override
+  public boolean is (final PlayerColor color)
+  {
+    return IterableEnumHelper.is (this, color);
+  }
+
+  @Override
+  public boolean isNot (final PlayerColor color)
+  {
+    return IterableEnumHelper.isNot (this, color);
+  }
+
+  @Override
+  public int getPosition ()
+  {
+    return IterableEnumHelper.getPosition (this);
+  }
+
+  @Override
+  public String toMixedOrdinalPosition ()
+  {
+    return IterableEnumHelper.toMixedOrdinalPosition (this);
+  }
+
   public static int count ()
   {
-    return values ().length;
+    return IterableEnumHelper.count (values ());
   }
 
   public static ImmutableSet <PlayerColor> validValues ()
@@ -43,77 +90,34 @@ public enum PlayerColor
     return validValues;
   }
 
-  public boolean hasNext ()
-  {
-    return ordinal () < values ().length - 1;
-  }
-
   public boolean hasNextValid ()
   {
-    return hasNext () && values ()[ordinal () + 1].isNot (UNKNOWN);
-  }
-
-  public boolean is (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    return equals (color);
-  }
-
-  public boolean isNot (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    return !is (color);
-  }
-
-  public PlayerColor next ()
-  {
-    if (hasNext ())
-    {
-      return getNextValue ();
-    }
-    else
-    {
-      throw new IllegalStateException (getNextValueErrorMessage ());
-    }
+    return IterableEnumHelper.hasNextValid (this, values (), validValues);
   }
 
   public PlayerColor nextValid ()
   {
-    if (hasNextValid ())
-    {
-      return getNextValue ();
-    }
-    else
-    {
-      throw new IllegalStateException (getNextValueErrorMessage ());
-    }
+    return IterableEnumHelper.nextValid (this, values (), validValues);
   }
 
   public String toLowerCase ()
   {
-    return name ().toLowerCase ();
+    return IterableEnumHelper.toLowerCase (this);
+  }
+
+  public String toUpperCase ()
+  {
+    return IterableEnumHelper.toUpperCase (this);
   }
 
   public String toProperCase ()
   {
-    return Strings.toProperCase (name ());
+    return IterableEnumHelper.toProperCase (this);
   }
 
   @Override
   public String toString ()
   {
     return name ();
-  }
-
-  private PlayerColor getNextValue ()
-  {
-    return values ()[ordinal () + 1];
-  }
-
-  private String getNextValueErrorMessage ()
-  {
-    return "Cannot get next " + getClass ().getSimpleName () + " value because " + toString () + " is the last value.";
   }
 }
