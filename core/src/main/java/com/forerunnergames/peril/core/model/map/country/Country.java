@@ -4,11 +4,11 @@ import com.forerunnergames.peril.core.model.map.territory.Territory;
 
 public interface Country extends Territory
 {
-  public CountryName getCountryName ();
+  CountryName getCountryName ();
 
-  public int getArmyCount ();
+  int getArmyCount ();
 
-  public boolean hasAnyArmies ();
+  boolean hasAnyArmies ();
 
-  public boolean hasAtLeastNArmies (int n);
+  boolean hasAtLeastNArmies (int n);
 }

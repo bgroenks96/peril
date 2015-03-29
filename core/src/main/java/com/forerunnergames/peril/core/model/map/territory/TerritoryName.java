@@ -2,16 +2,16 @@ package com.forerunnergames.peril.core.model.map.territory;
 
 public interface TerritoryName
 {
-  public String getName ();
+  String getName ();
 
   @Override
-  public int hashCode ();
+  int hashCode ();
 
   @Override
-  public boolean equals (final Object o);
+  boolean equals (final Object o);
 
   @Override
-  public String toString ();
+  String toString ();
 
-  public boolean isUnknown ();
+  boolean isUnknown ();
 }

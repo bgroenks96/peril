@@ -5,5 +5,5 @@ import com.forerunnergames.tools.common.geometry.Point2D;
 
 public interface PlayMapCoordinateToRgbaColorConverter
 {
-  public RgbaColor convert (final Point2D playMapCoordinate);
+  RgbaColor convert (final Point2D playMapCoordinate);
 }

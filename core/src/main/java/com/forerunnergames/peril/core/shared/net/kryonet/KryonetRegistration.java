@@ -31,7 +31,7 @@ import java.util.HashMap;
 public final class KryonetRegistration
 {
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
-  public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.<Class <?>> of (
+  public static final ImmutableSet <Class <?>> CLASSES = ImmutableSet.of (
           // @formatter:off
           AbstractDeniedEvent.class,
           AbstractMessageEvent.class,

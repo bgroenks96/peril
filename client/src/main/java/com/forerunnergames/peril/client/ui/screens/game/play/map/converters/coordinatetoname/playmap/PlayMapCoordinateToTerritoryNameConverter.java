@@ -5,5 +5,5 @@ import com.forerunnergames.tools.common.geometry.Point2D;
 
 public interface PlayMapCoordinateToTerritoryNameConverter <T extends TerritoryName>
 {
-  public T convert (final Point2D playMapCoordinate);
+  T convert (final Point2D playMapCoordinate);
 }

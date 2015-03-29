@@ -72,9 +72,8 @@ public final class KryonetRemote implements Remote
 
     final KryonetRemote that = (KryonetRemote) o;
 
-    if (connectionId != that.connectionId) return false;
+    return connectionId == that.connectionId;
 
-    return true;
   }
 
   @Override

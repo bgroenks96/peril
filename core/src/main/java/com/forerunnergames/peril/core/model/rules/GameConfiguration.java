@@ -2,13 +2,13 @@ package com.forerunnergames.peril.core.model.rules;
 
 public interface GameConfiguration
 {
-  public GameMode getGameMode ();
+  GameMode getGameMode ();
 
-  public int getPlayerLimit ();
+  int getPlayerLimit ();
 
-  public int getWinPercentage ();
+  int getWinPercentage ();
 
-  public int getTotalCountryCount ();
+  int getTotalCountryCount ();
 
-  public InitialCountryAssignment getInitialCountryAssignment ();
+  InitialCountryAssignment getInitialCountryAssignment ();
 }

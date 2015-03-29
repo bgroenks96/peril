@@ -2,37 +2,37 @@ package com.forerunnergames.peril.core.model.rules;
 
 public interface GameRules
 {
-  public int getInitialArmies ();
+  int getInitialArmies ();
 
-  public InitialCountryAssignment getInitialCountryAssignment ();
+  InitialCountryAssignment getInitialCountryAssignment ();
 
-  public int getMinArmiesInHand ();
+  int getMinArmiesInHand ();
 
-  public int getMaxArmiesInHand ();
+  int getMaxArmiesInHand ();
 
-  public int getMinPlayerLimit ();
+  int getMinPlayerLimit ();
 
-  public int getMaxPlayerLimit ();
+  int getMaxPlayerLimit ();
 
-  public int getMinPlayers ();
+  int getMinPlayers ();
 
-  public int getMaxPlayers ();
+  int getMaxPlayers ();
 
-  public int getMinTotalCountryCount ();
+  int getMinTotalCountryCount ();
 
-  public int getMaxTotalCountryCount ();
+  int getMaxTotalCountryCount ();
 
-  public int getMinWinPercentage ();
+  int getMinWinPercentage ();
 
-  public int getMaxWinPercentage ();
+  int getMaxWinPercentage ();
 
-  public int getPlayerLimit ();
+  int getPlayerLimit ();
 
-  public int getTotalCountryCount ();
+  int getTotalCountryCount ();
 
-  public int getWinPercentage ();
+  int getWinPercentage ();
 
-  public int getWinningCountryCount ();
+  int getWinningCountryCount ();
 
-  public boolean isValidWinPercentage (final int winPercentage);
+  boolean isValidWinPercentage (final int winPercentage);
 }

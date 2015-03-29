@@ -4,5 +4,5 @@ import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 
 public interface PlayerColorEvent
 {
-  public PlayerColor getRequestedColor ();
+  PlayerColor getRequestedColor ();
 }

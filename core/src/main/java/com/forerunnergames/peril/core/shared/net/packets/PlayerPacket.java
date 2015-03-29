@@ -5,21 +5,21 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 
 public interface PlayerPacket
 {
-  public String getName ();
+  String getName ();
 
-  public PlayerColor getColor ();
+  PlayerColor getColor ();
 
-  public PlayerTurnOrder getTurnOrder ();
+  PlayerTurnOrder getTurnOrder ();
 
-  public int getArmiesInHand ();
+  int getArmiesInHand ();
 
-  public boolean has (final PlayerColor color);
+  boolean has (final PlayerColor color);
 
-  public boolean has (final PlayerTurnOrder turnOrder);
+  boolean has (final PlayerTurnOrder turnOrder);
 
-  public boolean hasArmiesInHand (final int armies);
+  boolean hasArmiesInHand (final int armies);
 
-  public boolean doesNotHave (final PlayerColor color);
+  boolean doesNotHave (final PlayerColor color);
 
-  public boolean doesNotHave (final PlayerTurnOrder turnOrder);
+  boolean doesNotHave (final PlayerTurnOrder turnOrder);
 }

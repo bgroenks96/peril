@@ -6,5 +6,5 @@ import com.forerunnergames.tools.common.geometry.Size2D;
 
 public interface ScreenCoordinateToTerritoryNameConverter <T extends TerritoryName>
 {
-  public T convert (final Point2D screenCoordinate, final Size2D screenSize);
+  T convert (final Point2D screenCoordinate, final Size2D screenSize);
 }

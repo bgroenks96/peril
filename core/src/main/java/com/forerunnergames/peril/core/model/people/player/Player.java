@@ -4,27 +4,27 @@ import com.forerunnergames.peril.core.model.people.person.Person;
 
 public interface Player extends Person
 {
-  public void addArmiesToHand (final int armies);
+  void addArmiesToHand (final int armies);
 
-  public boolean doesNotHave (final PlayerColor color);
+  boolean doesNotHave (final PlayerColor color);
 
-  public boolean doesNotHave (final PlayerTurnOrder turnOrder);
+  boolean doesNotHave (final PlayerTurnOrder turnOrder);
 
-  public int getArmiesInHand ();
+  int getArmiesInHand ();
 
-  public PlayerColor getColor ();
+  PlayerColor getColor ();
 
-  public void setColor (final PlayerColor color);
+  void setColor (final PlayerColor color);
 
-  public PlayerTurnOrder getTurnOrder ();
+  PlayerTurnOrder getTurnOrder ();
 
-  public void setTurnOrder (final PlayerTurnOrder turnOrder);
+  void setTurnOrder (final PlayerTurnOrder turnOrder);
 
-  public boolean has (final PlayerColor color);
+  boolean has (final PlayerColor color);
 
-  public boolean has (final PlayerTurnOrder turnOrder);
+  boolean has (final PlayerTurnOrder turnOrder);
 
-  public boolean hasArmiesInHand (final int armies);
+  boolean hasArmiesInHand (final int armies);
 
-  public void removeArmiesFromHand (final int armies);
+  void removeArmiesFromHand (final int armies);
 }

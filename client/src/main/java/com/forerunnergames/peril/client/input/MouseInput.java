@@ -4,5 +4,5 @@ import com.forerunnergames.tools.common.geometry.Point2D;
 
 public interface MouseInput
 {
-  public Point2D getHoverCoordinate ();
+  Point2D getHoverCoordinate ();
 }

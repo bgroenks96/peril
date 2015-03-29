@@ -6,11 +6,11 @@ import com.forerunnergames.tools.common.Message;
 
 public interface MessageBox <T extends Message>
 {
-  public void addMessage (final T message);
+  void addMessage (final T message);
 
-  public void showLastMessage ();
+  void showLastMessage ();
 
-  public void clear ();
+  void clear ();
 
-  public Actor asActor ();
+  Actor asActor ();
 }

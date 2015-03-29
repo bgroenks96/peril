@@ -5,5 +5,5 @@ import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 
 public interface TerritoryColorToNameConverter <T extends TerritoryColor <?>, U extends TerritoryName>
 {
-  public U convert (final T territoryColor);
+  U convert (final T territoryColor);
 }

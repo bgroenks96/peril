@@ -4,5 +4,5 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 
 public interface PlayerTurnOrderEvent
 {
-  public PlayerTurnOrder getRequestedTurnOrder ();
+  PlayerTurnOrder getRequestedTurnOrder ();
 }

@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 public interface ChatMessageEvent extends MessageEvent <ChatMessage>
 {
   @Nullable
-  public Author getAuthor ();
+  Author getAuthor ();
 
-  public boolean hasAuthor ();
+  boolean hasAuthor ();
 }

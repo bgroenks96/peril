@@ -5,5 +5,5 @@ import com.forerunnergames.tools.common.geometry.Size2D;
 
 public interface ScreenToPlayMapCoordinateConverter
 {
-  public Point2D convert (final Point2D screenCoordinate, final Size2D screenSize);
+  Point2D convert (final Point2D screenCoordinate, final Size2D screenSize);
 }
