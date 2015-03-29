@@ -3,9 +3,8 @@ package com.forerunnergames.peril.core.model;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.reasonFrom;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -28,12 +27,8 @@ import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.config.BusConfiguration;
-import net.engio.mbassy.bus.config.Feature;
-import net.engio.mbassy.bus.config.IBusConfiguration;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 import net.engio.mbassy.listener.Handler;
@@ -42,10 +37,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.mockito.Mockito;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.mockito.Mockito;
 
 public class GameModelTest
 {
@@ -60,11 +55,7 @@ public class GameModelTest
   @BeforeClass
   public static void setupClass ()
   {
-    final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
-
-    eventBus = new MBassador <> (eventBusConfiguration);
+    eventBus = new MBassador<> ();
 
     eventBus.addErrorHandler (new IPublicationErrorHandler ()
     {
@@ -227,7 +218,7 @@ public class GameModelTest
 
   private ImmutableSet <Country> mockCountries ()
   {
-    Builder <Country> countrySetBuilder = ImmutableSet.builder ();
+    ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
     for (int i = 0; i < 20; i++)
     {
       Country mockedCountry = Mockito.mock (Country.class);

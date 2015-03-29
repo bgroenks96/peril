@@ -17,9 +17,6 @@ import com.forerunnergames.tools.net.Server;
 import com.forerunnergames.tools.net.ServerController;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.config.BusConfiguration;
-import net.engio.mbassy.bus.config.Feature;
-import net.engio.mbassy.bus.config.IBusConfiguration;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 
@@ -40,12 +37,7 @@ public final class ServerApplicationFactory
 
     jCommander.parse (args);
 
-    final IBusConfiguration eventBusConfiguration = new BusConfiguration ()
-            .addFeature (Feature.SyncPubSub.Default ())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
-
-    final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
+    final MBassador <Event> eventBus = new MBassador <> ();
 
     eventBus.addErrorHandler (new IPublicationErrorHandler ()
     {

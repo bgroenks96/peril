@@ -15,9 +15,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.config.BusConfiguration;
-import net.engio.mbassy.bus.config.Feature;
-import net.engio.mbassy.bus.config.IBusConfiguration;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 
@@ -44,11 +41,7 @@ public class GameStateMachineTest
   @BeforeClass
   public static void setUpClass ()
   {
-    final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
-
-    final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
+    final MBassador <Event> eventBus = new MBassador <> ();
 
     eventBus.addErrorHandler (new IPublicationErrorHandler ()
     {
