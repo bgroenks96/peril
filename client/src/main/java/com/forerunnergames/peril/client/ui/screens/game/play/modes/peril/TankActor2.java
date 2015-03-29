@@ -162,7 +162,7 @@ public final class TankActor2 extends Actor implements UnitActor
         {
           case NONE:
           {
-            setTurretTurning (TurnDirection.RIGHT);
+            setTurretTurning (TurnDirection.U_TURN);
             break;
           }
           case LEFT:
