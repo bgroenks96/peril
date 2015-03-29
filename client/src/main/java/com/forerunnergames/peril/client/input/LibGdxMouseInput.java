@@ -26,8 +26,8 @@ public final class LibGdxMouseInput implements MouseInput
   @Override
   public Point2D getHoverCoordinate ()
   {
-    x = input.getX();
-    y = input.getY();
+    x = input.getX ();
+    y = input.getY ();
 
     point = pointCache.get (x, y);
 

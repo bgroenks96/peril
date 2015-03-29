@@ -80,8 +80,8 @@ public final class KryonetRemote implements Remote
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Connection Id: %2$s | Address: %3$s", ((Object) this).getClass ().getSimpleName (), connectionId,
-                    address);
+    return String.format ("%1$s: Connection Id: %2$s | Address: %3$s", ((Object) this).getClass ().getSimpleName (),
+                          connectionId, address);
   }
 
   @RequiredForNetworkSerialization

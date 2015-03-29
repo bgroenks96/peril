@@ -89,8 +89,9 @@ public final class CountrySpriteData
   public String toString ()
   {
     return String.format ("%1$s: Name: %2$s | Destination (Play Map Reference Space): %3$s"
-                                    + " | Center (Play Map Reference Space): %4$s | Size: %5$s | spritesPerRow: %6$s",
-                    getClass ().getSimpleName (), name, destPlayMapReferenceSpace, centerPlayMapReferenceSpace,
-                    sizePlayMapReferenceSpace, spritesPerRow);
+                                  + " | Center (Play Map Reference Space): %4$s | Size: %5$s | spritesPerRow: %6$s",
+                          getClass ().getSimpleName (), name, destPlayMapReferenceSpace, centerPlayMapReferenceSpace,
+                          sizePlayMapReferenceSpace,
+                          spritesPerRow);
   }
 }

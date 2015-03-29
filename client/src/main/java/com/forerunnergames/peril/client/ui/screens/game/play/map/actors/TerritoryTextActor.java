@@ -60,7 +60,7 @@ public class TerritoryTextActor extends Actor
     y = (screenSize.getHeight () - mouseHoverCoordinate.getY () + TEXT_OFFSET_Y) * scaling.getY ();
 
     territoryNames = playMapInputDetection.getPrintableTerritoryNamesAt (mouseHoverCoordinate, screenSize)
-                    + (countryColor.is (PlayerColor.UNKNOWN) ? "" : ", " + Strings.toProperCase (countryColor.name ()));
+            + (countryColor.is (PlayerColor.UNKNOWN) ? "" : ", " + Strings.toProperCase (countryColor.name ()));
   }
 
   public void setHoveredCountryColor (final PlayerColor color)
@@ -73,7 +73,7 @@ public class TerritoryTextActor extends Actor
   private boolean shouldUpdateScreenSize ()
   {
     return screenSize == null || scaling == null
-                    || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+            || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
   }
 
   private void updateScreenSize ()

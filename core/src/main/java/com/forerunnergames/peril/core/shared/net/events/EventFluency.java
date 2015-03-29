@@ -84,7 +84,7 @@ public final class EventFluency
     return event.getReasonForKick ();
   }
 
-  public static <T> T reasonFrom (final DeniedEvent<T> event)
+  public static <T> T reasonFrom (final DeniedEvent <T> event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -102,7 +102,8 @@ public final class EventFluency
   public static String withAuthorNameFrom (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsTrue (event.hasAuthor (), "Cannot get author name for non-existent author in event [" + event + "].");
+    Arguments.checkIsTrue (event.hasAuthor (), "Cannot get author name for non-existent author in event [" + event
+            + "].");
 
     return event.getAuthor ().getName ();
   }

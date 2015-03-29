@@ -58,8 +58,8 @@ public final class Assets
     playScreenBackground.dispose ();
     playScreenMapBackground.dispose ();
     playScreenMapInputDetection.dispose ();
-    menuNormalCursor.dispose();
-    playScreenNormalCursor.dispose();
+    menuNormalCursor.dispose ();
+    playScreenNormalCursor.dispose ();
     aurulentSans16.dispose ();
     armyMovementBackground.dispose ();
     armyMovementOccupationTitle.dispose ();

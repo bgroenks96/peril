@@ -34,26 +34,26 @@ public final class ClientApplicationProperties
   private static final String MUSIC_VOLUME_PROPERTY_KEY = "music-volume";
   private static final String START_SCREEN_PROPERTY_KEY = "start-screen";
   private static final String PROPERTIES_FILE_COMMENTS = "To reset this file, simply delete it, run peril-client, and it will be recreated with default values.\n"
-      + "Valid values:\n"
-      + WINDOW_WIDTH_PROPERTY_KEY
-      + ": any whole number > 0\n"
-      + WINDOW_HEIGHT_PROPERTY_KEY
-      + ": any whole number > 0\n"
-      + WINDOW_RESIZABLE_PROPERTY_KEY
-      + ": true, false\n"
-      + WINDOW_TITLE_PROPERTY_KEY
-      + ": anything\n"
-      + FULLSCREEN_PROPERTY_KEY
-      + ": true, false\n"
-      + VSYNC_PROPERTY_KEY
-      + ": true, false\n"
-      + MUSIC_ENABLED_PROPERTY_KEY
-      + ": true, false\n"
-      + MUSIC_VOLUME_PROPERTY_KEY
-      + ": any decimal number 0.0 to 1.0 (inclusive)\n"
-      + START_SCREEN_PROPERTY_KEY
-      + ": "
-      + Strings.toStringList (", ", LetterCase.NONE, false, ScreenId.values ());
+          + "Valid values:\n"
+          + WINDOW_WIDTH_PROPERTY_KEY
+          + ": any whole number > 0\n"
+          + WINDOW_HEIGHT_PROPERTY_KEY
+          + ": any whole number > 0\n"
+          + WINDOW_RESIZABLE_PROPERTY_KEY
+          + ": true, false\n"
+          + WINDOW_TITLE_PROPERTY_KEY
+          + ": anything\n"
+          + FULLSCREEN_PROPERTY_KEY
+          + ": true, false\n"
+          + VSYNC_PROPERTY_KEY
+          + ": true, false\n"
+          + MUSIC_ENABLED_PROPERTY_KEY
+          + ": true, false\n"
+          + MUSIC_VOLUME_PROPERTY_KEY
+          + ": any decimal number 0.0 to 1.0 (inclusive)\n"
+          + START_SCREEN_PROPERTY_KEY
+          + ": "
+          + Strings.toStringList (", ", LetterCase.NONE, false, ScreenId.values ());
 
   public ClientApplicationProperties ()
   {

@@ -9,6 +9,6 @@ public class InitialCountryAssignmentParameterConverter implements IStringConver
   @Override
   public InitialCountryAssignment convert (final String value)
   {
-    return InitialCountryAssignment.valueOf (value.toUpperCase());
+    return InitialCountryAssignment.valueOf (value.toUpperCase ());
   }
 }

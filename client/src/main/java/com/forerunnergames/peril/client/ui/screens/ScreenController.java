@@ -68,7 +68,7 @@ public final class ScreenController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (id, "id");
     Arguments.checkIsTrue (screens.containsKey (id), "Cannot find " + Screen.class.getSimpleName () + " with "
-                    + id.getClass ().getSimpleName () + " [" + id + "].");
+            + id.getClass ().getSimpleName () + " [" + id + "].");
 
     if (id.equals (getCurrentScreenId ())) return;
 
@@ -77,7 +77,7 @@ public final class ScreenController extends ControllerAdapter
     game.setScreen (screens.get (id));
 
     log.info ("Changed from {} [{}] to {} [{}].", Screen.class.getSimpleName (), previousScreenId,
-                    Screen.class.getSimpleName (), id);
+              Screen.class.getSimpleName (), id);
   }
 
   private ScreenId getCurrentScreenId ()

@@ -36,7 +36,8 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), kickEvent, playerDeniedEvent);
+    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), kickEvent,
+                          playerDeniedEvent);
   }
 
   @RequiredForNetworkSerialization

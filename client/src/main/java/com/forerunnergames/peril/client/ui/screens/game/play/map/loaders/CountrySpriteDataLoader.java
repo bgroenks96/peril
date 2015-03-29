@@ -64,6 +64,6 @@ public final class CountrySpriteDataLoader extends AbstractDataLoader <CountryNa
     final Point2D spriteCenter = new Point2D (spriteCenterX, spriteCenterY);
 
     countrySpriteDataBuilder.put (countryName, new CountrySpriteData (countryName, spriteDestPlayMap, spriteCenter,
-                    spriteSize, SPRITES_PER_ROW));
+            spriteSize, SPRITES_PER_ROW));
   }
 }

@@ -115,7 +115,7 @@ public final class DefaultPlayer extends AbstractPerson implements Player
     Arguments.checkIsNotNull (armies, "armies");
     Arguments.checkIsNotNegative (armies, "armies");
     Preconditions.checkIsTrue (armies <= armiesInHand, "Cannot remove more armies [" + armies
-                    + "] than are currently in hand [" + armiesInHand + "].");
+            + "] than are currently in hand [" + armiesInHand + "].");
 
     armiesInHand -= armies;
   }
@@ -124,7 +124,7 @@ public final class DefaultPlayer extends AbstractPerson implements Player
   public String toString ()
   {
     return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand: %4$s", super.toString (), color,
-                    turnOrder, armiesInHand);
+                          turnOrder, armiesInHand);
   }
 
   @RequiredForNetworkSerialization

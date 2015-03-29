@@ -76,7 +76,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = 105;
     final int expectedMinWinPercentage = 52;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit)
-                    .totalCountryCount (totalCountryCount).build ();
+            .totalCountryCount (totalCountryCount).build ();
     final int actualMinWinPercentage = rules.getMinWinPercentage ();
 
     assertEquals (expectedMinWinPercentage, actualMinWinPercentage);
@@ -89,7 +89,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT;
     final int expectedMinWinPercentage = 41;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit)
-                    .totalCountryCount (totalCountryCount).build ();
+            .totalCountryCount (totalCountryCount).build ();
     final int actualMinWinPercentage = rules.getMinWinPercentage ();
 
     assertEquals (expectedMinWinPercentage, actualMinWinPercentage);
@@ -102,7 +102,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT;
     final int expectedMinWinPercentage = 16;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit)
-                    .totalCountryCount (totalCountryCount).build ();
+            .totalCountryCount (totalCountryCount).build ();
     final int actualMinWinPercentage = rules.getMinWinPercentage ();
 
     assertEquals (expectedMinWinPercentage, actualMinWinPercentage);
@@ -115,7 +115,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = 11;
     final int expectedMinWinPercentage = 20;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit)
-                    .totalCountryCount (totalCountryCount).build ();
+            .totalCountryCount (totalCountryCount).build ();
     final int actualMinWinPercentage = rules.getMinWinPercentage ();
 
     assertEquals (expectedMinWinPercentage, actualMinWinPercentage);
@@ -213,7 +213,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = 52;
     final int expectedWinningCountryCount = 46;
     final GameRules rules = new ClassicGameRules.Builder ().winPercentage (winPercentage)
-                    .totalCountryCount (totalCountryCount).build ();
+            .totalCountryCount (totalCountryCount).build ();
     final int actualWinningCountryCount = rules.getWinningCountryCount ();
 
     assertEquals (expectedWinningCountryCount, actualWinningCountryCount);

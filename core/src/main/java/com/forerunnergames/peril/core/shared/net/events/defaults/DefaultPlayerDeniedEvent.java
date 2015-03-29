@@ -7,7 +7,7 @@ import com.forerunnergames.tools.net.events.DeniedEvent;
 
 public final class DefaultPlayerDeniedEvent implements PlayerDeniedEvent <String>
 {
-  private final DeniedEvent<String> deniedEvent;
+  private final DeniedEvent <String> deniedEvent;
 
   public DefaultPlayerDeniedEvent (final String reason)
   {

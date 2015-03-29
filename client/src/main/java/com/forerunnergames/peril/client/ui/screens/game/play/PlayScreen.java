@@ -104,7 +104,7 @@ public final class PlayScreen extends InputAdapter implements Screen
 
     final Table playMapAndSideBarTable = new Table ();
     playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, armyTextActor, territoryTextActor))
-        .padRight (16);
+            .padRight (16);
     playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top ();
 
     final Table foregroundTable = new Table ().pad (12);
@@ -118,7 +118,7 @@ public final class PlayScreen extends InputAdapter implements Screen
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
-        GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
+            GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
 
     stage = new Stage (viewport)
     {
@@ -162,7 +162,7 @@ public final class PlayScreen extends InputAdapter implements Screen
     };
 
     final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor,
-        armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
+            armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -181,7 +181,7 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    if (! hasAuthorFrom (event)) return;
+    if (!hasAuthorFrom (event)) return;
 
     chatBox.addMessage (new DefaultChatMessage (withAuthorNameFrom (event) + ": " + withMessageTextFrom (event)));
     chatBox.showLastMessage ();
@@ -192,8 +192,8 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    playerBox.addMessage (
-                    new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ()));
+    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". "
+            + event.getPlayerName ()));
   }
 
   @Handler
@@ -284,14 +284,14 @@ public final class PlayScreen extends InputAdapter implements Screen
   {
     eventBus.unsubscribe (this);
 
-    mandatoryOccupationPopup.dispose();
+    mandatoryOccupationPopup.dispose ();
     stage.dispose ();
   }
 
   private Size2D getScreenSize ()
   {
     if (currentScreenSize != null && currentScreenSize.getWidth () == Gdx.graphics.getWidth ()
-        && currentScreenSize.getHeight () == Gdx.graphics.getHeight ())
+            && currentScreenSize.getHeight () == Gdx.graphics.getHeight ())
     {
       return currentScreenSize;
     }

@@ -48,7 +48,7 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
     layout ();
     messageCell.height (Maths.nextHigherMultiple ((int) row.getHeight (), (int) messageBoxRowStyle.getHeight ()));
     table.invalidateHierarchy ();
-    layout();
+    layout ();
   }
 
   @Override
@@ -80,6 +80,6 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   private void configureTable ()
   {
     table.top ().padLeft (messageBoxRowStyle.getPaddingLeft ()).padRight (messageBoxRowStyle.getPaddingRight ())
-        .padTop (SCROLLPANE_INNER_PADDING_TOP);
+            .padTop (SCROLLPANE_INNER_PADDING_TOP);
   }
 }

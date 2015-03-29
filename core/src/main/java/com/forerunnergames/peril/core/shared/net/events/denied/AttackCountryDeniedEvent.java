@@ -5,7 +5,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.DeniedEvent;
 
-public final class AttackCountryDeniedEvent implements DeniedEvent<String>
+public final class AttackCountryDeniedEvent implements DeniedEvent <String>
 {
   private final DeniedEvent <String> deniedEvent;
 

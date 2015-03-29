@@ -7,8 +7,8 @@ public final class MusicSettings
   public static boolean IS_ENABLED = false;
   public static float INITIAL_VOLUME = 1.0f;
 
-  private MusicSettings()
+  private MusicSettings ()
   {
-    Classes.instantiationNotAllowed();
+    Classes.instantiationNotAllowed ();
   }
 }

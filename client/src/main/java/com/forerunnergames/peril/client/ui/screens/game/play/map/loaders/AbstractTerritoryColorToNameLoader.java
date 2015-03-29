@@ -10,7 +10,7 @@ import com.forerunnergames.tools.common.io.StreamParser;
 import com.google.common.collect.ImmutableBiMap;
 
 public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryColor <?>, U extends TerritoryName>
-                extends AbstractDataLoader <T, U> implements TerritoryColorToNameLoader <T, U>
+        extends AbstractDataLoader <T, U> implements TerritoryColorToNameLoader <T, U>
 {
   private final ImmutableBiMap.Builder <T, U> territoryColorsToNames = new ImmutableBiMap.Builder <> ();
   private StreamParser streamParser;
@@ -51,6 +51,6 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
   protected final void saveData ()
   {
     territoryColorsToNames.put (createTerritoryColor (territoryColorComponentValue),
-                    createTerritoryName (territoryNameValue));
+                                createTerritoryName (territoryNameValue));
   }
 }

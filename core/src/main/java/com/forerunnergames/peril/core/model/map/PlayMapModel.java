@@ -46,7 +46,6 @@ public final class PlayMapModel
     return countryIds.get (countryId);
   }
 
-
   /**
    * Assigns the Country specified by countryId to the owner specified by ownerId.
    *

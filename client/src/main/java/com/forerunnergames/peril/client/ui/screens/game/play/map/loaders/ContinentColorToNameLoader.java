@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class ContinentColorToNameLoader extends
-                AbstractTerritoryColorToNameLoader <ContinentColor, ContinentName>
+        AbstractTerritoryColorToNameLoader <ContinentColor, ContinentName>
 {
   @Override
   protected ContinentColor createTerritoryColor (final int colorComponentValue)

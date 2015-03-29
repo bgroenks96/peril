@@ -7,7 +7,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.google.common.collect.ImmutableMap;
 
 public abstract class AbstractTerritoryColorToNameConverter <T extends TerritoryColor <?>, U extends TerritoryName>
-                implements TerritoryColorToNameConverter <T, U>
+        implements TerritoryColorToNameConverter <T, U>
 {
   private final U UNKNOWN_TERRITORY_NAME = createTerritoryName ("");
   private final ImmutableMap <T, U> territoryColorsToNames;

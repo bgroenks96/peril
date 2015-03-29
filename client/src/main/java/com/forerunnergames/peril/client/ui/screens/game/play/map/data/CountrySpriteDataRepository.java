@@ -28,7 +28,7 @@ public final class CountrySpriteDataRepository
 
   public boolean doesNotHave (final CountryName countryName)
   {
-    return ! has (countryName);
+    return !has (countryName);
   }
 
   public CountrySpriteData get (final CountryName name)

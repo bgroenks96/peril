@@ -237,7 +237,8 @@ public class PlayerModelTest
   public void testGetPlayers ()
   {
     final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("Test Player 1"),
-                    PlayerFactory.create ("Test Player 2"), PlayerFactory.create ("Test Player 3"));
+                                                                   PlayerFactory.create ("Test Player 2"),
+                                                                   PlayerFactory.create ("Test Player 3"));
 
     final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size ());
 
@@ -435,9 +436,9 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final Id player1Id = new Id (1);
     final Player player1 = new DefaultPlayer ("Test Player 1", player1Id, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-                    PlayerTurnOrder.UNKNOWN);
+            PlayerTurnOrder.UNKNOWN);
     final Player player2 = new DefaultPlayer ("Test Player 2", new Id (2), PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-                    PlayerTurnOrder.UNKNOWN);
+            PlayerTurnOrder.UNKNOWN);
 
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
@@ -522,9 +523,9 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final Id duplicateId = new Id (1);
     final Player player1 = new DefaultPlayer ("Test Player 1", duplicateId, PersonIdentity.UNKNOWN,
-                    PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
     final Player player2 = new DefaultPlayer ("Test Player 2", duplicateId, PersonIdentity.UNKNOWN,
-                    PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_ID));
@@ -539,8 +540,8 @@ public class PlayerModelTest
     final Player player2 = PlayerFactory.builder ("Test Player 2").identity (PersonIdentity.SELF).build ();
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
-    assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (
-                    PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY));
+    assertTrue (playerModel.requestToAdd (player2)
+            .failedBecauseOf (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_SELF_IDENTITY));
     assertTrue (playerModel.playerCountIs (1));
   }
 
@@ -552,8 +553,8 @@ public class PlayerModelTest
     final Player player2 = PlayerFactory.builder ("Test Player 2").turnOrder (PlayerTurnOrder.THIRD).build ();
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
-    assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (
-                    PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER));
+    assertTrue (playerModel.requestToAdd (player2)
+            .failedBecauseOf (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_TURN_ORDER));
     assertTrue (playerModel.playerCountIs (1));
   }
 
@@ -564,8 +565,8 @@ public class PlayerModelTest
 
     addNPlayersTo (playerModel, MAX_PLAYERS);
 
-    assertTrue (playerModel.requestToAdd (PlayerFactory.create ("Test Player X")).failedBecauseOf (
-                    PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
+    assertTrue (playerModel.requestToAdd (PlayerFactory.create ("Test Player X"))
+            .failedBecauseOf (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
   }
 
   @Test
@@ -574,9 +575,9 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final String duplicateName = "Test Player";
     final Player player1 = PlayerFactory.create (duplicateName, PersonIdentity.SELF, PlayerColor.PINK,
-                    PlayerTurnOrder.EIGHTH);
+                                                 PlayerTurnOrder.EIGHTH);
     final Player player2 = PlayerFactory.create (duplicateName, PersonIdentity.NON_SELF, PlayerColor.BLUE,
-                    PlayerTurnOrder.THIRD);
+                                                 PlayerTurnOrder.THIRD);
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (PlayerJoinGameDeniedEvent.REASON.DUPLICATE_NAME));
@@ -614,8 +615,8 @@ public class PlayerModelTest
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
 
-    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player2), player1Color).failedBecauseOf (
-                    ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN));
+    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player2), player1Color)
+            .failedBecauseOf (ChangePlayerColorDeniedEvent.REASON.COLOR_ALREADY_TAKEN));
     assertTrue (playerModel.playerWith (idOf (player1)).has (player1Color));
     assertTrue (playerModel.playerWith (idOf (player2)).has (player2Color));
     assertTrue (playerModel.existsPlayerWith (player1Color));
@@ -646,8 +647,8 @@ public class PlayerModelTest
 
     playerModel.requestToAdd (player);
 
-    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player), color).failedBecauseOf (
-                    ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR));
+    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player), color)
+            .failedBecauseOf (ChangePlayerColorDeniedEvent.REASON.REQUESTED_COLOR_EQUALS_EXISTING_COLOR));
     assertTrue (playerModel.existsPlayerWith (color));
   }
 
@@ -666,8 +667,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveByColor (PlayerColor.BROWN).failedBecauseOf (
-                    PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
+    assertTrue (playerModel.requestToRemoveByColor (PlayerColor.BROWN)
+            .failedBecauseOf (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
   }
 
   @Test
@@ -687,8 +688,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveById (new Id (1)).failedBecauseOf (
-                    PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
+    assertTrue (playerModel.requestToRemoveById (new Id (1))
+            .failedBecauseOf (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
   }
 
   @Test
@@ -708,8 +709,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveByName ("Non-Existent Player").failedBecauseOf (
-                    PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
+    assertTrue (playerModel.requestToRemoveByName ("Non-Existent Player")
+            .failedBecauseOf (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
   }
 
   @Test
@@ -736,8 +737,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveByTurnOrder (PlayerTurnOrder.FIFTH).failedBecauseOf (
-                    PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
+    assertTrue (playerModel.requestToRemoveByTurnOrder (PlayerTurnOrder.FIFTH)
+            .failedBecauseOf (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST));
   }
 
   @Test

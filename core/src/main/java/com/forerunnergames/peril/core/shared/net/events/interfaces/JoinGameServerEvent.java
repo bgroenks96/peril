@@ -5,5 +5,5 @@ import com.forerunnergames.tools.net.ServerConfiguration;
 
 public interface JoinGameServerEvent extends Event
 {
-  public ServerConfiguration getConfiguration();
+  public ServerConfiguration getConfiguration ();
 }

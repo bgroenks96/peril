@@ -48,7 +48,7 @@ public final class PlayScreenWidgetFactory
     this.eventBus = eventBus;
 
     messageBoxRowStyle = new MessageBoxRowStyle (MESSAGE_BOX_ROW_HEIGHT, MESSAGE_BOX_ROW_PADDING_LEFT,
-        MESSAGE_BOX_ROW_PADDING_RIGHT);
+            MESSAGE_BOX_ROW_PADDING_RIGHT);
 
     labelFactory = new LabelFactory (new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
   }
@@ -61,7 +61,7 @@ public final class PlayScreenWidgetFactory
   public MessageBox <ChatMessage> createChatBox ()
   {
     return new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelFactory, messageBoxRowStyle,
-        skin.get (TextField.TextFieldStyle.class), eventBus);
+            skin.get (TextField.TextFieldStyle.class), eventBus);
   }
 
   public MessageBox <Message> createPlayerBox ()
@@ -88,7 +88,7 @@ public final class PlayScreenWidgetFactory
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
 
     return new PlayMapWidget (new Image (Assets.playScreenMapBackground), playMapActor, armyTextActor,
-        territoryTextActor);
+            territoryTextActor);
   }
 
   public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage)

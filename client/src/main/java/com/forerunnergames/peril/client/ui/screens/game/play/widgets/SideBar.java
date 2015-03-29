@@ -20,7 +20,7 @@ public final class SideBar extends Table
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
     top ().padTop (SIDEBAR_INNER_PADDING_TOP).padLeft (SIDEBAR_INNER_PADDING_LEFT)
-        .padRight (SIDEBAR_INNER_PADDING_RIGHT);
+            .padRight (SIDEBAR_INNER_PADDING_RIGHT);
 
     add (widgetFactory.createButton ()).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 

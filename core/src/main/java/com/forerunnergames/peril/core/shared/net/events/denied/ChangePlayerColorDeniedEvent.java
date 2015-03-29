@@ -11,7 +11,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.REASON>
-                implements PlayerColorEvent
+        implements PlayerColorEvent
 {
   private final PlayerColorEvent playerColorEvent;
 
@@ -27,8 +27,7 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
     this (colorFrom (event), reason);
   }
 
-  public ChangePlayerColorDeniedEvent (final PlayerColor color,
-                                       final REASON reason)
+  public ChangePlayerColorDeniedEvent (final PlayerColor color, final REASON reason)
   {
     super (reason);
 
@@ -46,7 +45,8 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerColorEvent, super.toString ());
+    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerColorEvent,
+                          super.toString ());
   }
 
   @RequiredForNetworkSerialization

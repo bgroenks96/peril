@@ -78,7 +78,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Override
-  public void initialize()
+  public void initialize ()
   {
     eventBus.subscribe (this);
   }

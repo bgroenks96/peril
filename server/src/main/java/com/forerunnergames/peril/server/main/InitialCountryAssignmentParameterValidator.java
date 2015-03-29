@@ -17,7 +17,7 @@ public final class InitialCountryAssignmentParameterValidator implements IParame
     catch (final IllegalArgumentException e)
     {
       throw new ParameterException (new RuntimeException ("Invalid value \"" + value + "\" for parameter \"" + name
-                      + "\".", e));
+              + "\".", e));
     }
   }
 }

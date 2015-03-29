@@ -61,8 +61,8 @@ public class GameModelTest
   public static void setupClass ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     eventBus = new MBassador <> (eventBusConfiguration);
 
@@ -128,7 +128,7 @@ public class GameModelTest
     gameModel.distributeInitialArmies ();
 
     final ImmutableSet <PlayerPacket> players = eventHandler.lastEvent (DistributeInitialArmiesCompleteEvent.class)
-                    .getPlayers ();
+            .getPlayers ();
 
     for (final PlayerPacket player : players)
     {
@@ -170,7 +170,7 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameDeniedEvent.class));
     assertThat (playerNameFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)), is (name));
     assertThat (reasonFrom (eventHandler.lastEvent (PlayerJoinGameDeniedEvent.class)),
-                    is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
+                is (PlayerJoinGameDeniedEvent.REASON.GAME_IS_FULL));
   }
 
   @Test

@@ -74,177 +74,179 @@ public final class DebugInputProcessor extends InputAdapter
   {
     switch (keycode)
     {
-    case Input.Keys.LEFT:
-    {
-      screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
+      case Input.Keys.LEFT:
+      {
+        screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
 
-      return false;
-    }
-    case Input.Keys.ESCAPE:
-    {
-      Gdx.app.exit ();
+        return false;
+      }
+      case Input.Keys.ESCAPE:
+      {
+        Gdx.app.exit ();
 
-      return false;
-    }
-    case Input.Keys.NUM_1:
-    {
-      playMapActor.clearCountryColors ();
+        return false;
+      }
+      case Input.Keys.NUM_1:
+      {
+        playMapActor.clearCountryColors ();
 
-      return false;
-    }
-    case Input.Keys.NUM_2:
-    {
-      playMapActor.randomizeCountryColors ();
+        return false;
+      }
+      case Input.Keys.NUM_2:
+      {
+        playMapActor.randomizeCountryColors ();
 
-      return false;
-    }
-    case Input.Keys.NUM_3:
-    {
-      playMapActor.randomizeCountryColorsUsingNRandomColors (Randomness.getRandomIntegerFrom (1, 10));
+        return false;
+      }
+      case Input.Keys.NUM_3:
+      {
+        playMapActor.randomizeCountryColorsUsingNRandomColors (Randomness.getRandomIntegerFrom (1, 10));
 
-      return false;
-    }
-    case Input.Keys.NUM_4:
-    {
-      playMapActor.randomizeCountryColorsUsingNRandomColors (2);
+        return false;
+      }
+      case Input.Keys.NUM_4:
+      {
+        playMapActor.randomizeCountryColorsUsingNRandomColors (2);
 
-      return false;
-    }
-    case Input.Keys.NUM_5:
-    {
-      playMapActor.randomizeCountryColorsUsingNRandomColors (3);
+        return false;
+      }
+      case Input.Keys.NUM_5:
+      {
+        playMapActor.randomizeCountryColorsUsingNRandomColors (3);
 
-      return false;
-    }
-    case Input.Keys.NUM_6:
-    {
-      playMapActor.setClassicCountryColors ();
+        return false;
+      }
+      case Input.Keys.NUM_6:
+      {
+        playMapActor.setClassicCountryColors ();
 
-      return false;
-    }
-    case Input.Keys.NUM_7:
-    {
-      playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.CYAN);
+        return false;
+      }
+      case Input.Keys.NUM_7:
+      {
+        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.CYAN);
 
-      return false;
-    }
-    case Input.Keys.NUM_8:
-    {
-      playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.BLUE, PlayerColor.CYAN);
+        return false;
+      }
+      case Input.Keys.NUM_8:
+      {
+        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.BLUE, PlayerColor.CYAN);
 
-      return false;
-    }
-    case Input.Keys.NUM_9:
-    {
-      playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.PINK, PlayerColor.PURPLE);
+        return false;
+      }
+      case Input.Keys.NUM_9:
+      {
+        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.PINK, PlayerColor.PURPLE);
 
-      return false;
-    }
-    case Input.Keys.NUM_0:
-    {
-      playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.RED, PlayerColor.BROWN);
+        return false;
+      }
+      case Input.Keys.NUM_0:
+      {
+        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.RED, PlayerColor.BROWN);
 
-      return false;
-    }
-    case Input.Keys.MINUS:
-    {
-      playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.CYAN, PlayerColor.SILVER);
+        return false;
+      }
+      case Input.Keys.MINUS:
+      {
+        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.CYAN, PlayerColor.SILVER);
 
-      return false;
-    }
-    case Input.Keys.EQUALS:
-    {
-      playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.GREEN);
+        return false;
+      }
+      case Input.Keys.EQUALS:
+      {
+        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.GREEN);
 
-      return false;
-    }
-    case Input.Keys.Q:
-    {
-      playMapActor.setCountriesTo (PlayerColor.BLUE);
+        return false;
+      }
+      case Input.Keys.Q:
+      {
+        playMapActor.setCountriesTo (PlayerColor.BLUE);
 
-      return false;
-    }
-    case Input.Keys.W:
-    {
-      playMapActor.setCountriesTo (PlayerColor.BROWN);
+        return false;
+      }
+      case Input.Keys.W:
+      {
+        playMapActor.setCountriesTo (PlayerColor.BROWN);
 
-      return false;
-    }
-    case Input.Keys.E:
-    {
-      playMapActor.setCountriesTo (PlayerColor.CYAN);
+        return false;
+      }
+      case Input.Keys.E:
+      {
+        playMapActor.setCountriesTo (PlayerColor.CYAN);
 
-      return false;
-    }
-    case Input.Keys.R:
-    {
-      playMapActor.setCountriesTo (PlayerColor.GOLD);
+        return false;
+      }
+      case Input.Keys.R:
+      {
+        playMapActor.setCountriesTo (PlayerColor.GOLD);
 
-      return false;
-    }
-    case Input.Keys.T:
-    {
-      playMapActor.setCountriesTo (PlayerColor.GREEN);
+        return false;
+      }
+      case Input.Keys.T:
+      {
+        playMapActor.setCountriesTo (PlayerColor.GREEN);
 
-      return false;
-    }
-    case Input.Keys.Y:
-    {
-      playMapActor.setCountriesTo (PlayerColor.PINK);
+        return false;
+      }
+      case Input.Keys.Y:
+      {
+        playMapActor.setCountriesTo (PlayerColor.PINK);
 
-      return false;
-    }
-    case Input.Keys.U:
-    {
-      playMapActor.setCountriesTo (PlayerColor.PURPLE);
+        return false;
+      }
+      case Input.Keys.U:
+      {
+        playMapActor.setCountriesTo (PlayerColor.PURPLE);
 
-      return false;
-    }
-    case Input.Keys.I:
-    {
-      playMapActor.setCountriesTo (PlayerColor.RED);
+        return false;
+      }
+      case Input.Keys.I:
+      {
+        playMapActor.setCountriesTo (PlayerColor.RED);
 
-      return false;
-    }
-    case Input.Keys.O:
-    {
-      playMapActor.setCountriesTo (PlayerColor.SILVER);
+        return false;
+      }
+      case Input.Keys.O:
+      {
+        playMapActor.setCountriesTo (PlayerColor.SILVER);
 
-      return false;
-    }
-    case Input.Keys.LEFT_BRACKET:
-    {
-      playMapActor.setCountriesTo (PlayerColor.TEAL);
+        return false;
+      }
+      case Input.Keys.LEFT_BRACKET:
+      {
+        playMapActor.setCountriesTo (PlayerColor.TEAL);
 
-      return false;
-    }
-    case Input.Keys.F:
-    {
-      Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-      playMapActor.setCountryTextureFiltering (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        return false;
+      }
+      case Input.Keys.F:
+      {
+        Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        playMapActor.setCountryTextureFiltering (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-      return false;
-    }
-    case Input.Keys.G:
-    {
-      Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest,
-                                                Texture.TextureFilter.Nearest);
-      playMapActor
-          .setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
+        return false;
+      }
+      case Input.Keys.G:
+      {
+        Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest,
+                                                  Texture.TextureFilter.Nearest);
+        playMapActor.setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearNearest,
+                                                 Texture.TextureFilter.Nearest);
 
-      return false;
-    }
-    case Input.Keys.H:
-    {
-      Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
-      playMapActor.setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+        return false;
+      }
+      case Input.Keys.H:
+      {
+        Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear,
+                                                  Texture.TextureFilter.Linear);
+        playMapActor
+                .setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
-      return false;
-    }
-    default:
-    {
-      return false;
-    }
+        return false;
+      }
+      default:
+      {
+        return false;
+      }
     }
   }
 
@@ -253,85 +255,85 @@ public final class DebugInputProcessor extends InputAdapter
   {
     switch (character)
     {
-    case 's':
-    {
-      eventGenerator.generateStatusMessageEvent ();
-
-      return false;
-    }
-    case 'S':
-    {
-      statusBox.clear ();
-
-      return false;
-    }
-    case 'c':
-    {
-      eventGenerator.generateChatMessageSuccessEvent ();
-
-      return false;
-    }
-    case 'C':
-    {
-      chatBox.clear ();
-
-      return false;
-    }
-    case 'p':
-    {
-      eventGenerator.generatePlayerJoinGameSuccessEvent ();
-
-      return false;
-    }
-    case 'P':
-    {
-      playerBox.clear ();
-      eventGenerator.resetPlayers ();
-
-      return false;
-    }
-    case 'a':
-    {
-      eventGenerator.generateCountryArmiesChangedEvent ();
-
-      return false;
-    }
-    case 'A':
-    {
-      armyTextActor.reset ();
-
-      return false;
-    }
-    case 'm':
-    {
-      /*
-      final CountryName sourceCountryName = new CountryName ("Kamchatka");
-      final CountryName destinationCountryName = new CountryName ("Northwest Territory");
-      */
-
-      final CountryName sourceCountryName = eventGenerator.getRandomCountryName ();
-      CountryName destinationCountryName;
-
-      do
+      case 's':
       {
-        destinationCountryName = eventGenerator.getRandomCountryName ();
+        eventGenerator.generateStatusMessageEvent ();
+
+        return false;
       }
-      while (destinationCountryName.equals (sourceCountryName));
+      case 'S':
+      {
+        statusBox.clear ();
 
-      final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
-      final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
-      final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
-      final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
-      final int maxArmies = totalArmies - 1;
+        return false;
+      }
+      case 'c':
+      {
+        eventGenerator.generateChatMessageSuccessEvent ();
 
-      mandatoryOccupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
+        return false;
+      }
+      case 'C':
+      {
+        chatBox.clear ();
 
-      return false;
-    }
-    default:
-    {
-      return false;
-    }
+        return false;
+      }
+      case 'p':
+      {
+        eventGenerator.generatePlayerJoinGameSuccessEvent ();
+
+        return false;
+      }
+      case 'P':
+      {
+        playerBox.clear ();
+        eventGenerator.resetPlayers ();
+
+        return false;
+      }
+      case 'a':
+      {
+        eventGenerator.generateCountryArmiesChangedEvent ();
+
+        return false;
+      }
+      case 'A':
+      {
+        armyTextActor.reset ();
+
+        return false;
+      }
+      case 'm':
+      {
+        /*
+         * final CountryName sourceCountryName = new CountryName ("Kamchatka"); final CountryName destinationCountryName
+         * = new CountryName ("Northwest Territory");
+         */
+
+        final CountryName sourceCountryName = eventGenerator.getRandomCountryName ();
+        CountryName destinationCountryName;
+
+        do
+        {
+          destinationCountryName = eventGenerator.getRandomCountryName ();
+        }
+        while (destinationCountryName.equals (sourceCountryName));
+
+        final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
+        final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
+        final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
+        final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
+        final int maxArmies = totalArmies - 1;
+
+        mandatoryOccupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
+
+        return false;
+      }
+      default:
+      {
+        return false;
+      }
     }
   }
 

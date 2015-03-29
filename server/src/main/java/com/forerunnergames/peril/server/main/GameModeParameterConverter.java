@@ -9,6 +9,6 @@ public class GameModeParameterConverter implements IStringConverter <GameMode>
   @Override
   public GameMode convert (final String value)
   {
-    return GameMode.valueOf (value.toUpperCase());
+    return GameMode.valueOf (value.toUpperCase ());
   }
 }

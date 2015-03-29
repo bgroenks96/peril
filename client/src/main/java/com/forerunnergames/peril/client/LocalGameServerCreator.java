@@ -31,7 +31,7 @@ public final class LocalGameServerCreator implements GameServerCreator
     }
 
     log.info ("Launching your local host & play server \"{}\" on port {} (TCP)...", config.getServerName (),
-                    config.getServerTcpPort ());
+              config.getServerTcpPort ());
 
     try
     {

@@ -24,7 +24,7 @@ public enum PlayerColor
   UNKNOWN;
 
   private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
-      .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
+          .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
   {
     @Override
     public boolean apply (final PlayerColor color)
@@ -64,7 +64,7 @@ public enum PlayerColor
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return ! is (color);
+    return !is (color);
   }
 
   public PlayerColor next ()

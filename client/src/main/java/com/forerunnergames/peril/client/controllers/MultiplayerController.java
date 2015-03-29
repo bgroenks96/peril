@@ -160,7 +160,7 @@ public final class MultiplayerController extends ControllerAdapter
   private Result <String> joinGameServer (final ServerConfiguration config)
   {
     return connectToServer (config.getServerAddress (), config.getServerTcpPort (),
-                    NetworkSettings.CONNECTION_TIMEOUT_MS, NetworkSettings.MAX_CONNECTION_ATTEMPTS);
+                            NetworkSettings.CONNECTION_TIMEOUT_MS, NetworkSettings.MAX_CONNECTION_ATTEMPTS);
   }
 
   private Result <String> connectToServer (final String address,

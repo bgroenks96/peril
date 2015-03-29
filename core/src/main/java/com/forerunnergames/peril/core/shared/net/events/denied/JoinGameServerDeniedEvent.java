@@ -8,7 +8,7 @@ import com.forerunnergames.tools.net.ServerConfiguration;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.DeniedEvent;
 
-public final class JoinGameServerDeniedEvent implements JoinGameServerEvent, DeniedEvent<String>
+public final class JoinGameServerDeniedEvent implements JoinGameServerEvent, DeniedEvent <String>
 {
   private final JoinGameServerRequestEvent requestEvent;
   private final DeniedEvent <String> deniedEvent;
@@ -38,7 +38,7 @@ public final class JoinGameServerDeniedEvent implements JoinGameServerEvent, Den
   public String toString ()
   {
     return String.format ("%1$s: Original request: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (),
-                    requestEvent, deniedEvent);
+                          requestEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization

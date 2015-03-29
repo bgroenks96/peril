@@ -85,7 +85,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     tableL5.add ().width (294.0f);
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
+    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
+            GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
     stage = new Stage (viewport);
     stage.addActor (rootStack);
   }

@@ -8,7 +8,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.DeniedEvent;
 
-public final class CommandMessageDeniedEvent implements CommandMessageEvent, DeniedEvent<String>
+public final class CommandMessageDeniedEvent implements CommandMessageEvent, DeniedEvent <String>
 {
   private final CommandMessageEvent commandMessageEvent;
   private final DeniedEvent <String> deniedEvent;
@@ -43,7 +43,8 @@ public final class CommandMessageDeniedEvent implements CommandMessageEvent, Den
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), commandMessageEvent, deniedEvent);
+    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), commandMessageEvent,
+                          deniedEvent);
   }
 
   @RequiredForNetworkSerialization

@@ -182,7 +182,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     if (!isConnected (client))
     {
       log.warn ("Prevented sending object [{}] to client [{}] because that client isn't connected to the server.",
-                      object, client);
+                object, client);
 
       return;
     }
@@ -218,7 +218,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     if (!isRunning)
     {
       log.warn ("Prevented sending object [{}] to all clients except [{}] because the server isn't running.", object,
-                      client);
+                client);
 
       return;
     }

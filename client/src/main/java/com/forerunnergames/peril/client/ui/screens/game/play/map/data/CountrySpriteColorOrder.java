@@ -23,7 +23,7 @@ public final class CountrySpriteColorOrder
   {
     Arguments.checkIsNotNull (color, "color");
     Preconditions.checkIsTrue (playerColorsToCountrySpriteIndices.containsKey (color),
-                    "Cannot find sprite index with color [" + color + "].");
+                               "Cannot find sprite index with color [" + color + "].");
 
     return playerColorsToCountrySpriteIndices.get (color);
   }

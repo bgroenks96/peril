@@ -200,7 +200,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
       log.debug ("Failure reason: [{}]", Strings.toString (e));
 
       return Result.failure ("Could not connect to server with address [" + address + "] on port [" + tcpPort
-                      + "] (TCP). Details:\n\n" + Strings.toString (e));
+              + "] (TCP). Details:\n\n" + Strings.toString (e));
     }
   }
 }

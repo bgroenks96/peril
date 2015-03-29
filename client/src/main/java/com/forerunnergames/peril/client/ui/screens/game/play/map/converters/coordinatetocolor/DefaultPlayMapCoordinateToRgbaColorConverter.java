@@ -26,7 +26,8 @@ public final class DefaultPlayMapCoordinateToRgbaColorConverter implements PlayM
   {
     Arguments.checkIsNotNull (playMapCoordinate, "playMapCoordinate");
 
-    rawColor = rawPlayMapTerritoryColorsImage.getPixel (Math.round (playMapCoordinate.getX ()), Math.round (playMapCoordinate.getY ()));
+    rawColor = rawPlayMapTerritoryColorsImage.getPixel (Math.round (playMapCoordinate.getX ()),
+                                                        Math.round (playMapCoordinate.getY ()));
     rgbaColor = rawToRgbaColors.get (rawColor);
 
     if (rgbaColor != null) return rgbaColor;

@@ -23,15 +23,15 @@ public enum PlayerTurnOrder
   NINTH,
   TENTH;
 
-  private static ImmutableSet <PlayerTurnOrder> validValues = ImmutableSet.copyOf (Collections2.filter (
-                  EnumSet.allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
-                  {
-                    @Override
-                    public boolean apply (final PlayerTurnOrder turnOrder)
-                    {
-                      return turnOrder.isNot (UNKNOWN);
-                    }
-                  }));
+  private static ImmutableSet <PlayerTurnOrder> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
+          .allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
+  {
+    @Override
+    public boolean apply (final PlayerTurnOrder turnOrder)
+    {
+      return turnOrder.isNot (UNKNOWN);
+    }
+  }));
 
   public static int count ()
   {
@@ -84,7 +84,7 @@ public enum PlayerTurnOrder
     else
     {
       throw new IllegalStateException ("Cannot get next " + getClass ().getSimpleName () + " value because "
-                      + toString () + " is the last value.");
+              + toString () + " is the last value.");
     }
   }
 

@@ -5,7 +5,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.map.converters.coor
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 
 public final class InputCoordinateToContinentNameConverter extends
-                AbstractInputCoordinateToTerritoryNameConverter <ContinentName>
+        AbstractInputCoordinateToTerritoryNameConverter <ContinentName>
 
 {
   public InputCoordinateToContinentNameConverter (final InputToScreenCoordinateConverter inputToScreenCoordinateConverter,

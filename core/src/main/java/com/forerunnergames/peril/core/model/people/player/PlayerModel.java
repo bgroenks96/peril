@@ -38,12 +38,10 @@ public final class PlayerModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
-    Preconditions.checkIsTrue (
-                    canAddArmiesToHandOf (playerId, armies),
-                    "Cannot add " + armies + " armies to hand of player with id: [" + playerId
-                                    + "]. That player already has " + getArmiesInHandOf (playerId)
-                                    + " armies in hand. The maximum armies allowed in a player's hand is "
-                                    + rules.getMaxArmiesInHand () + ".");
+    Preconditions.checkIsTrue (canAddArmiesToHandOf (playerId, armies), "Cannot add " + armies
+            + " armies to hand of player with id: [" + playerId + "]. That player already has "
+            + getArmiesInHandOf (playerId) + " armies in hand. The maximum armies allowed in a player's hand is "
+            + rules.getMaxArmiesInHand () + ".");
 
     playerWith (playerId).addArmiesToHand (armies);
   }
@@ -275,12 +273,10 @@ public final class PlayerModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
-    Preconditions.checkIsTrue (
-                    canRemoveArmiesFromHandOf (playerId, armies),
-                    "Cannot remove " + armies + " armies from hand of player with id: [" + playerId
-                                    + "]. That player only has " + getArmiesInHandOf (playerId)
-                                    + " armies in hand. The minimum armies allowed in a player's hand is "
-                                    + rules.getMinArmiesInHand () + ".");
+    Preconditions.checkIsTrue (canRemoveArmiesFromHandOf (playerId, armies), "Cannot remove " + armies
+            + " armies from hand of player with id: [" + playerId + "]. That player only has "
+            + getArmiesInHandOf (playerId) + " armies in hand. The minimum armies allowed in a player's hand is "
+            + rules.getMinArmiesInHand () + ".");
 
     playerWith (playerId).removeArmiesFromHand (armies);
   }
@@ -327,7 +323,7 @@ public final class PlayerModel
     Arguments.checkIsNotNull (player, "player");
 
     if (!existsPlayerWith (idOf (player))) return Result
-                    .failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
+            .failure (PlayerLeaveGameDeniedEvent.REASON.PLAYER_DOES_NOT_EXIST);
 
     deregister (player);
 

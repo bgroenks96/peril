@@ -44,7 +44,7 @@ public final class ArmyTextActor extends Actor
 
     font = new BitmapFont ();
 
-    reset();
+    reset ();
   }
 
   @Override
@@ -53,9 +53,10 @@ public final class ArmyTextActor extends Actor
     for (final Map.Entry <CountryName, Integer> entry : countryNamesToArmyCounts.entrySet ())
     {
       countryArmyText = String.valueOf (entry.getValue ());
-      countryCenterPlayMapReferenceSpace = countrySpriteDataRepository.get (entry.getKey ()).getCenterPlayMapReferenceSpace ();
+      countryCenterPlayMapReferenceSpace = countrySpriteDataRepository.get (entry.getKey ())
+              .getCenterPlayMapReferenceSpace ();
       countryCenterReferenceScreenSpace = CoordinateSpaces
-          .referencePlayMapSpaceToReferenceScreenSpace (countryCenterPlayMapReferenceSpace);
+              .referencePlayMapSpaceToReferenceScreenSpace (countryCenterPlayMapReferenceSpace);
 
       x = countryCenterReferenceScreenSpace.getX ();
       y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT - countryCenterReferenceScreenSpace.getY ();
@@ -160,7 +161,7 @@ public final class ArmyTextActor extends Actor
   private boolean shouldUpdateScreenSize ()
   {
     return screenSize == null || scaling == null
-        || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+            || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
   }
 
   private void updateScreenSize ()

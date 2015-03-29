@@ -39,8 +39,8 @@ public final class LibGdxGameFactory
   public static ApplicationListener create ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 

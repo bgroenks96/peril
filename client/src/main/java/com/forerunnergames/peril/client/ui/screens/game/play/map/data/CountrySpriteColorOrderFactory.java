@@ -11,7 +11,7 @@ public final class CountrySpriteColorOrderFactory
   public static CountrySpriteColorOrder create ()
   {
     return new CountrySpriteColorOrder (
-                    COUNTRY_SPRITE_COLOR_ORDER_LOADER.load (AssetPaths.PLAY_MAP_COUNTRY_SPRITE_COLOR_ORDER_FILENAME));
+            COUNTRY_SPRITE_COLOR_ORDER_LOADER.load (AssetPaths.PLAY_MAP_COUNTRY_SPRITE_COLOR_ORDER_FILENAME));
   }
 
   private CountrySpriteColorOrderFactory ()

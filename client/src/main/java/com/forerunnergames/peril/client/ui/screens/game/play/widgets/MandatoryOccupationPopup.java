@@ -241,7 +241,7 @@ public final class MandatoryOccupationPopup extends Dialog
   @Override
   public void hide ()
   {
-    if (! isShown) return;
+    if (!isShown) return;
 
     super.hide (null);
 
@@ -257,10 +257,10 @@ public final class MandatoryOccupationPopup extends Dialog
 
     // TODO Production: Remove
     eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage ("You occupied " + destinationCountryName
-        + " with " + Strings.pluralize (deltaArmyCount, "army", "armies") + " from " + sourceCountryName + ".")));
+            + " with " + Strings.pluralize (deltaArmyCount, "army", "armies") + " from " + sourceCountryName + ".")));
 
     // TODO Production: Remove
-    eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, - deltaArmyCount));
+    eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmyCount));
 
     // TODO Production: Remove
     eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmyCount));
@@ -512,7 +512,7 @@ public final class MandatoryOccupationPopup extends Dialog
     {
       super.act (delta);
 
-      if (! shouldUpdateScreenSize ()) return;
+      if (!shouldUpdateScreenSize ()) return;
 
       updateScreenSize ();
       updateScaling ();
@@ -522,7 +522,7 @@ public final class MandatoryOccupationPopup extends Dialog
     private boolean shouldUpdateScreenSize ()
     {
       return screenSize == null || scaling == null
-          || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+              || screenSize.isNot (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     }
 
     private void updateScreenSize ()

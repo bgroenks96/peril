@@ -5,6 +5,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.map.colors.Territor
 import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 
 public interface TerritoryColorToNameLoader <T extends TerritoryColor <?>, U extends TerritoryName> extends
-                DataLoader <T, U>
+        DataLoader <T, U>
 {
 }

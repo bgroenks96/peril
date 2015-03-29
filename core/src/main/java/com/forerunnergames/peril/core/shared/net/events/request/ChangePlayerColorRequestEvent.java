@@ -24,7 +24,6 @@ public final class ChangePlayerColorRequestEvent implements PlayerColorEvent, Re
     return playerColorEvent.getRequestedColor ();
   }
 
-
   @Override
   public String toString ()
   {

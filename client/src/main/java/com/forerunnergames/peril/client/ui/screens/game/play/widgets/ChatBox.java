@@ -49,10 +49,10 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
 
     table = new Table ().top ();
     table.add (super.asActor ()).expandX ().fillX ().height (SCROLLPANE_HEIGHT)
-        .padBottom (SCROLLPANE_TEXTFIELD_VERTICAL_PADDING);
+            .padBottom (SCROLLPANE_TEXTFIELD_VERTICAL_PADDING);
     table.row ();
     table.add (textField).expandX ().fillX ().height (TEXTFIELD_HEIGHT).padLeft (TEXTFIELD_INNER_PADDING_LEFT)
-        .padRight (TEXTFIELD_INNER_PADDING_RIGHT);
+            .padRight (TEXTFIELD_INNER_PADDING_RIGHT);
   }
 
   @Override
@@ -77,23 +77,23 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
     {
       switch (keycode)
       {
-      case Input.Keys.ENTER:
-      {
-        final String textFieldText = Strings.compressWhitespace (textField.getText ().trim ());
-
-        textField.setText ("");
-
-        if (Strings.isPrintable (textFieldText))
+        case Input.Keys.ENTER:
         {
-          eventBus.publish (new ChatMessageRequestEvent (new DefaultChatMessage (textFieldText)));
-        }
+          final String textFieldText = Strings.compressWhitespace (textField.getText ().trim ());
 
-        return true;
-      }
-      default:
-      {
-        return false;
-      }
+          textField.setText ("");
+
+          if (Strings.isPrintable (textFieldText))
+          {
+            eventBus.publish (new ChatMessageRequestEvent (new DefaultChatMessage (textFieldText)));
+          }
+
+          return true;
+        }
+        default:
+        {
+          return false;
+        }
       }
     }
   }

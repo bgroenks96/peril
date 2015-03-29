@@ -16,7 +16,7 @@ public final class CountryArmiesChangedEvent implements GameNotificationEvent
     this.deltaArmyCount = deltaArmyCount;
   }
 
-  public String getCountryName()
+  public String getCountryName ()
   {
     return countryName;
   }

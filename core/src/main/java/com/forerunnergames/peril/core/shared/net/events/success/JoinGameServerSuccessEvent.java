@@ -50,7 +50,7 @@ public final class JoinGameServerSuccessEvent implements JoinGameServerEvent, Su
   public String toString ()
   {
     return String.format ("%1$s: Game Configuration: %2$s | Players In Game: %3$s | %4$s", ((Object) this).getClass ()
-                    .getSimpleName (), gameConfig, Strings.toString (playersInGame), joinGameServerEvent);
+            .getSimpleName (), gameConfig, Strings.toString (playersInGame), joinGameServerEvent);
   }
 
   @RequiredForNetworkSerialization

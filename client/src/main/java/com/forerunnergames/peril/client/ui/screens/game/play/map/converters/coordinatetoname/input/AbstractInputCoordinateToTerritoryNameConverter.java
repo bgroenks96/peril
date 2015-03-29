@@ -8,7 +8,7 @@ import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
 
 public abstract class AbstractInputCoordinateToTerritoryNameConverter <T extends TerritoryName> implements
-                InputCoordinateToTerritoryNameConverter <T>
+        InputCoordinateToTerritoryNameConverter <T>
 {
   private final InputToScreenCoordinateConverter inputToScreenCoordinateConverter;
   private final ScreenCoordinateToTerritoryNameConverter <T> screenCoordinateToTerritoryNameConverter;

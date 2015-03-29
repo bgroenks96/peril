@@ -64,14 +64,14 @@ public final class PlayMapActor extends Actor
                                         @Nullable final CountryActor countryActor)
   {
     return countryActor != null && existsCountryActorAt (inputCoordinate, screenSize)
-        && getCountryActorAt (inputCoordinate, screenSize).getName ().equals (countryActor.getName ());
+            && getCountryActorAt (inputCoordinate, screenSize).getName ().equals (countryActor.getName ());
   }
 
   public boolean countryActorAtPointIsNot (final Point2D inputCoordinate,
                                            final Size2D screenSize,
                                            final CountryActor countryActor)
   {
-    return ! countryActorAtPointIs (inputCoordinate, screenSize, countryActor);
+    return !countryActorAtPointIs (inputCoordinate, screenSize, countryActor);
   }
 
   public CountryActor getCountryActorAt (final Point2D inputCoordinate, final Size2D screenSize)
@@ -85,7 +85,7 @@ public final class PlayMapActor extends Actor
     if (countryActor == null)
     {
       throw new IllegalStateException ("Cannot find " + CountryActor.class.getSimpleName () + " at " + inputCoordinate
-          + ".");
+              + ".");
 
     }
 
@@ -97,7 +97,7 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (! existsCountryActorAt (inputCoordinate, screenSize)) return new CountryName ("");
+    if (!existsCountryActorAt (inputCoordinate, screenSize)) return new CountryName ("");
 
     return new CountryName (getCountryActorAt (inputCoordinate, screenSize).getName ());
   }
@@ -112,7 +112,7 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (mouseCoordinate, "mouseCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (! existsCountryActorAt (mouseCoordinate, screenSize))
+    if (!existsCountryActorAt (mouseCoordinate, screenSize))
     {
       if (touchedCountryActor != null)
       {
@@ -133,7 +133,7 @@ public final class PlayMapActor extends Actor
     hoveredCountryActor.onHoverStart ();
 
     if (this.hoveredCountryActor != null
-        && ! this.hoveredCountryActor.getName ().equals (hoveredCountryActor.getName ()))
+            && !this.hoveredCountryActor.getName ().equals (hoveredCountryActor.getName ()))
     {
       this.hoveredCountryActor.onHoverEnd ();
     }
@@ -148,7 +148,7 @@ public final class PlayMapActor extends Actor
     Arguments.checkIsNotNull (touchDownCoordinate, "touchDownCoordinate");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (! existsCountryActorAt (touchDownCoordinate, screenSize))
+    if (!existsCountryActorAt (touchDownCoordinate, screenSize))
     {
       if (touchedCountryActor != null)
       {
@@ -171,7 +171,7 @@ public final class PlayMapActor extends Actor
     touchedDownCountryActor.onTouchDown ();
     touchedDownCountryActor.changeColorRandomly ();
 
-    if (touchedCountryActor != null && ! touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
+    if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
     {
       touchedCountryActor.onTouchUp ();
     }
@@ -201,7 +201,7 @@ public final class PlayMapActor extends Actor
       }
     }
 
-    if (! existsCountryActorAt (touchUpCoordinate, screenSize)) return false;
+    if (!existsCountryActorAt (touchUpCoordinate, screenSize)) return false;
 
     final CountryActor touchedUpCountryActor = getCountryActorAt (touchUpCoordinate, screenSize);
     touchedUpCountryActor.onTouchUp ();
@@ -209,7 +209,7 @@ public final class PlayMapActor extends Actor
     hoveredCountryActor = touchedUpCountryActor;
     hoveredCountryActor.onHoverStart ();
 
-    if (touchedCountryActor != null && ! touchedCountryActor.getName ().equals (touchedUpCountryActor.getName ()))
+    if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedUpCountryActor.getName ()))
     {
       touchedCountryActor.onTouchUp ();
     }
@@ -235,7 +235,7 @@ public final class PlayMapActor extends Actor
     if (countryActor == null)
     {
       throw new IllegalStateException ("Cannot find " + CountryActor.class.getSimpleName () + " with name ["
-          + countryName + "].");
+              + countryName + "].");
     }
 
     return countryActor;

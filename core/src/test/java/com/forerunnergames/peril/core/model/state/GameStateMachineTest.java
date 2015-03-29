@@ -38,15 +38,15 @@ public class GameStateMachineTest
   private static String getRandomPlayerName ()
   {
     return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron",
-                    "Maddy", "Brittany", "Jonathan", "Adam", "Brian");
+                                            "Maddy", "Brittany", "Jonathan", "Adam", "Brian");
   }
 
   @BeforeClass
   public static void setUpClass ()
   {
     final IBusConfiguration eventBusConfiguration = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-                    .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-                    .addFeature (Feature.AsynchronousMessageDispatch.Default ());
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default ());
 
     final MBassador <Event> eventBus = new MBassador <> (eventBusConfiguration);
 

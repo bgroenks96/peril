@@ -30,9 +30,9 @@ public final class PlayScreenFactory
     final CountrySpriteDataRepository countrySpriteDataRepository = CountrySpriteDataRepositoryFactory.create ();
 
     return new PlayScreen (screenController, new PlayScreenWidgetFactory (Assets.skin, eventBus),
-        PlayMapActorFactory.create (countrySpriteDataRepository, playMapInputDetection), new ArmyTextActor (
-            countrySpriteDataRepository), new TerritoryTextActor (playMapInputDetection, mouseInput),
-        new PlayScreenMusic (), eventBus);
+            PlayMapActorFactory.create (countrySpriteDataRepository, playMapInputDetection), new ArmyTextActor (
+                    countrySpriteDataRepository), new TerritoryTextActor (playMapInputDetection, mouseInput),
+            new PlayScreenMusic (), eventBus);
   }
 
   private PlayScreenFactory ()

@@ -112,7 +112,7 @@ public final class DebugEventGenerator
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
   }
 
-  public CountryName getRandomCountryName()
+  public CountryName getRandomCountryName ()
   {
     return new CountryName (getRandomCountryNameString ());
   }
@@ -148,7 +148,7 @@ public final class DebugEventGenerator
 
   private boolean shouldResetPlayers ()
   {
-    return ! playerTurnOrderIterator.hasNext () || availablePlayerNames.isEmpty ();
+    return !playerTurnOrderIterator.hasNext () || availablePlayerNames.isEmpty ();
   }
 
   private String createPlayerName ()

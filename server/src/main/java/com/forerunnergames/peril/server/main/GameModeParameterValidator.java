@@ -17,7 +17,7 @@ public final class GameModeParameterValidator implements IParameterValidator
     catch (final IllegalArgumentException e)
     {
       throw new ParameterException (new RuntimeException ("Invalid value \"" + value + "\" for parameter \"" + name
-                      + "\".", e));
+              + "\".", e));
     }
   }
 }
