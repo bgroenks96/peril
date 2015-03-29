@@ -16,7 +16,7 @@ import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Scaling2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
 
-public class TerritoryTextActor extends Actor
+public final class TerritoryTextActor extends Actor
 {
   private static final int TEXT_OFFSET_X = 35;
   private static final int TEXT_OFFSET_Y = -17;
