@@ -38,7 +38,7 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   @Override
   public boolean hasNext ()
   {
-    return ordinal () < values ().length - 1 && values ()[ordinal () + 1].isNot (UNKNOWN);
+    return IterableEnumHelper.hasNext (this, values ());
   }
 
   @Override
@@ -123,7 +123,7 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
     Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
     Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");
 
-    return PlayerTurnOrder.values ()[nthPlayerTurnOrder];
+    return PlayerTurnOrder.values () [nthPlayerTurnOrder];
   }
 
   public String toMixedOrdinal ()
