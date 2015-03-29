@@ -120,14 +120,22 @@ public final class GameModel
     switch (rules.getInitialCountryAssignment ())
     {
       case RANDOM:
+      {
         log.info ("Initial country assignment = RANDOM");
         eventBus.publish (new RandomlyAssignPlayerCountriesEvent ());
         break;
+      }
       case MANUAL:
+      {
         log.info ("Initial country assignment = MANUAL");
         eventBus.publish (new BeginManualCountrySelectionEvent ());
+        break;
+      }
       default:
+      {
         log.info ("Unrecognized value for InitialCountryAssignment.");
+        break;
+      }
     }
   }
 
