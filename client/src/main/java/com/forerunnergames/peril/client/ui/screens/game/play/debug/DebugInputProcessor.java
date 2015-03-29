@@ -78,152 +78,152 @@ public final class DebugInputProcessor extends InputAdapter
       {
         screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
 
-        return false;
+        return true;
       }
       case Input.Keys.ESCAPE:
       {
         Gdx.app.exit ();
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_1:
       {
         playMapActor.clearCountryColors ();
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_2:
       {
         playMapActor.randomizeCountryColors ();
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_3:
       {
         playMapActor.randomizeCountryColorsUsingNRandomColors (Randomness.getRandomIntegerFrom (1, 10));
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_4:
       {
         playMapActor.randomizeCountryColorsUsingNRandomColors (2);
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_5:
       {
         playMapActor.randomizeCountryColorsUsingNRandomColors (3);
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_6:
       {
         playMapActor.setClassicCountryColors ();
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_7:
       {
         playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.CYAN);
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_8:
       {
         playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.BLUE, PlayerColor.CYAN);
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_9:
       {
         playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.PINK, PlayerColor.PURPLE);
 
-        return false;
+        return true;
       }
       case Input.Keys.NUM_0:
       {
         playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.RED, PlayerColor.BROWN);
 
-        return false;
+        return true;
       }
       case Input.Keys.MINUS:
       {
         playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.CYAN, PlayerColor.SILVER);
 
-        return false;
+        return true;
       }
       case Input.Keys.EQUALS:
       {
         playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.GREEN);
 
-        return false;
+        return true;
       }
       case Input.Keys.Q:
       {
         playMapActor.setCountriesTo (PlayerColor.BLUE);
 
-        return false;
+        return true;
       }
       case Input.Keys.W:
       {
         playMapActor.setCountriesTo (PlayerColor.BROWN);
 
-        return false;
+        return true;
       }
       case Input.Keys.E:
       {
         playMapActor.setCountriesTo (PlayerColor.CYAN);
 
-        return false;
+        return true;
       }
       case Input.Keys.R:
       {
         playMapActor.setCountriesTo (PlayerColor.GOLD);
 
-        return false;
+        return true;
       }
       case Input.Keys.T:
       {
         playMapActor.setCountriesTo (PlayerColor.GREEN);
 
-        return false;
+        return true;
       }
       case Input.Keys.Y:
       {
         playMapActor.setCountriesTo (PlayerColor.PINK);
 
-        return false;
+        return true;
       }
       case Input.Keys.U:
       {
         playMapActor.setCountriesTo (PlayerColor.PURPLE);
 
-        return false;
+        return true;
       }
       case Input.Keys.I:
       {
         playMapActor.setCountriesTo (PlayerColor.RED);
 
-        return false;
+        return true;
       }
       case Input.Keys.O:
       {
         playMapActor.setCountriesTo (PlayerColor.SILVER);
 
-        return false;
+        return true;
       }
       case Input.Keys.LEFT_BRACKET:
       {
         playMapActor.setCountriesTo (PlayerColor.TEAL);
 
-        return false;
+        return true;
       }
       case Input.Keys.F:
       {
         Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         playMapActor.setCountryTextureFiltering (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-        return false;
+        return true;
       }
       case Input.Keys.G:
       {
@@ -232,7 +232,7 @@ public final class DebugInputProcessor extends InputAdapter
         playMapActor.setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearNearest,
                                                  Texture.TextureFilter.Nearest);
 
-        return false;
+        return true;
       }
       case Input.Keys.H:
       {
@@ -241,7 +241,7 @@ public final class DebugInputProcessor extends InputAdapter
         playMapActor
                 .setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
-        return false;
+        return true;
       }
       default:
       {
@@ -259,50 +259,50 @@ public final class DebugInputProcessor extends InputAdapter
       {
         eventGenerator.generateStatusMessageEvent ();
 
-        return false;
+        return true;
       }
       case 'S':
       {
         statusBox.clear ();
 
-        return false;
+        return true;
       }
       case 'c':
       {
         eventGenerator.generateChatMessageSuccessEvent ();
 
-        return false;
+        return true;
       }
       case 'C':
       {
         chatBox.clear ();
 
-        return false;
+        return true;
       }
       case 'p':
       {
         eventGenerator.generatePlayerJoinGameSuccessEvent ();
 
-        return false;
+        return true;
       }
       case 'P':
       {
         playerBox.clear ();
         eventGenerator.resetPlayers ();
 
-        return false;
+        return true;
       }
       case 'a':
       {
         eventGenerator.generateCountryArmiesChangedEvent ();
 
-        return false;
+        return true;
       }
       case 'A':
       {
         armyTextActor.reset ();
 
-        return false;
+        return true;
       }
       case 'm':
       {
@@ -328,7 +328,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         mandatoryOccupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
 
-        return false;
+        return true;
       }
       default:
       {
@@ -342,7 +342,7 @@ public final class DebugInputProcessor extends InputAdapter
   {
     territoryTextActor.setHoveredCountryColor (playMapActor.getHoveredCountryColor ());
 
-    return false;
+    return true;
   }
 
   @Override
@@ -350,6 +350,6 @@ public final class DebugInputProcessor extends InputAdapter
   {
     territoryTextActor.setHoveredCountryColor (playMapActor.getHoveredCountryColor ());
 
-    return false;
+    return true;
   }
 }
