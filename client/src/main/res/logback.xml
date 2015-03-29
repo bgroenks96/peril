@@ -12,6 +12,10 @@
   <!-- This prevents an empty file from being created by FileAppender when nothing has been logged. -->
   <!-- For more information, see: http://jira.qos.ch/browse/LOGBACK-202 -->
   <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+    <!-- Only allow errors to create a file or to be logged to file -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ERROR</level>
+    </filter>
     <discriminator>
       <key>null</key> <!-- key is not used -->
       <defaultValue>null</defaultValue> <!-- default value is not used -->
@@ -19,7 +23,7 @@
     <sift>
       <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <!-- Inject the timestamp 'bySecond' variable to virtually guarantee a unique filename -->
-        <file>crash-${bySecond}.txt</file>
+        <file>${user.home}/peril/crashes/crash-${bySecond}.txt</file>
         <append>false</append> <!-- If crash.txt already exists erase the contents. -->
         <encoder>
           <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n</pattern>
@@ -33,7 +37,6 @@
   </logger>
 
   <root level="ERROR">
-    <appender-ref ref="STDOUT" />
     <appender-ref ref="SIFT" /> <!-- Write to file only for errors. -->
   </root>
 </configuration>

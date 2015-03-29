@@ -7,6 +7,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,10 +16,14 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Reads & writes user configurable settings to & from an external properties file.
+ */
 public final class ClientApplicationProperties
 {
   private static final Logger log = LoggerFactory.getLogger (ClientApplicationProperties.class);
-  private static final String PROPERTIES_FILE_NAME = "peril.settings";
+  private static final String PROPERTIES_FILE_SUBDIR = "peril/settings";
+  private static final String PROPERTIES_FILE_NAME = "settings.txt";
   private static final String WINDOW_WIDTH_PROPERTY_KEY = "window-width";
   private static final String WINDOW_HEIGHT_PROPERTY_KEY = "window-height";
   private static final String WINDOW_RESIZABLE_PROPERTY_KEY = "window-resizable";
@@ -65,8 +70,8 @@ public final class ClientApplicationProperties
     defaults.setProperty (START_SCREEN_PROPERTY_KEY, String.valueOf (ScreenSettings.START_SCREEN));
 
     final Properties properties = new Properties (defaults);
-    final String propertiesFilePathAndName = System.getProperty ("user.home") + System.getProperty ("file.separator")
-        + PROPERTIES_FILE_NAME;
+    final String propertiesFilePath = System.getProperty ("user.home") + "/" + PROPERTIES_FILE_SUBDIR;
+    final String propertiesFilePathAndName = propertiesFilePath + "/" + PROPERTIES_FILE_NAME;
 
     try
     {
@@ -78,13 +83,15 @@ public final class ClientApplicationProperties
       {
         log.info ("Failed to load {}. Attempting to create it...", propertiesFilePathAndName);
 
+        new File (propertiesFilePath).mkdirs ();
+
         defaults.store (new FileOutputStream (propertiesFilePathAndName), PROPERTIES_FILE_COMMENTS);
 
         log.info ("Successfully created {}.", propertiesFilePathAndName);
       }
       catch (final IOException e1)
       {
-        log.warn ("Failed to load or create {}. Falling back to defaults.", PROPERTIES_FILE_NAME);
+        log.warn ("Failed to load or create {}. Falling back to defaults.", propertiesFilePathAndName);
       }
     }
 
