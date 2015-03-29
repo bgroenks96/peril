@@ -3,10 +3,9 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
-
 import com.forerunnergames.tools.common.Arguments;
 
 public final class TankActor2 extends Actor implements UnitActor
@@ -21,10 +20,10 @@ public final class TankActor2 extends Actor implements UnitActor
   private TurnDirection turnDirection = TurnDirection.NONE;
   private TurnDirection turretTurnDirection = TurnDirection.NONE;
   private boolean turretActive = false;
-  private RepeatAction forwardBodyAction = new RepeatAction ();
-  private RepeatAction reverseBodyAction = new RepeatAction ();
-  private RepeatAction forwardTurretAction = new RepeatAction ();
-  private RepeatAction reverseTurretAction = new RepeatAction ();
+  private Action forwardBodyAction;
+  private Action reverseBodyAction;
+  private Action forwardTurretAction;
+  private Action reverseTurretAction;
 
   public TankActor2 ()
   {
@@ -58,7 +57,7 @@ public final class TankActor2 extends Actor implements UnitActor
         setMoving (MovementDirection.NONE);
         setTurning (TurnDirection.LEFT);
 
-        if (! turretActive) setTurretTurning (TurnDirection.LEFT);
+        if (!turretActive) setTurretTurning (TurnDirection.LEFT);
 
         return true;
       }
@@ -67,7 +66,7 @@ public final class TankActor2 extends Actor implements UnitActor
         setMoving (MovementDirection.NONE);
         setTurning (TurnDirection.RIGHT);
 
-        if (! turretActive) setTurretTurning (TurnDirection.RIGHT);
+        if (!turretActive) setTurretTurning (TurnDirection.RIGHT);
 
         return true;
       }
@@ -76,7 +75,7 @@ public final class TankActor2 extends Actor implements UnitActor
         setMoving (MovementDirection.NONE);
         setTurning (TurnDirection.U_TURN);
 
-        if (! turretActive) setTurretTurning (TurnDirection.U_TURN);
+        if (!turretActive) setTurretTurning (TurnDirection.U_TURN);
 
         return true;
       }
@@ -232,33 +231,15 @@ public final class TankActor2 extends Actor implements UnitActor
   {
     Arguments.checkIsNotNull (movementDirection, "movementDirection");
 
-    if (this.turnDirection != TurnDirection.NONE) return;
+    if (this.turnDirection != TurnDirection.NONE || this.movementDirection != MovementDirection.NONE) return;
 
     switch (movementDirection)
     {
-      case NONE:
-      {
-        forwardBodyAction.finish ();
-        reverseBodyAction.finish ();
-        forwardTurretAction.finish ();
-        reverseTurretAction.finish ();
-
-        break;
-      }
       case FORWARD:
       {
-        forwardBodyAction = Actions.forever (Actions.moveBy (bodyForwardVector.x
-            * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, - bodyForwardVector.y
-            * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
-
-        forwardTurretAction = Actions.forever (Actions.moveBy (bodyForwardVector.x
-            * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, - bodyForwardVector.y
-            * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
-
-        bodyActor.removeAction (reverseBodyAction);
-        turretActor.removeAction (reverseTurretAction);
-
-        bodyActor.addAction (Actions.sequence (forwardBodyAction, Actions.run (new Runnable ()
+        bodyActor.addAction (Actions.sequence (Actions.moveBy (bodyForwardVector.x
+                * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, -bodyForwardVector.y
+                * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1), Actions.run (new Runnable ()
         {
           @Override
           public void run ()
@@ -267,33 +248,27 @@ public final class TankActor2 extends Actor implements UnitActor
           }
         })));
 
-        turretActor.addAction (forwardTurretAction);
+        turretActor.addAction (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                               -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
 
         break;
       }
       case REVERSE:
       {
-        reverseBodyAction = Actions.forever (Actions.moveBy (- bodyForwardVector.x
-            * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, bodyForwardVector.y
-            * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
+        bodyActor.addAction (Actions.sequence (Actions.moveBy (-bodyForwardVector.x
+                                                       * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, bodyForwardVector.y
+                                                       * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                                               Actions.run (new Runnable ()
+                                               {
+                                                 @Override
+                                                 public void run ()
+                                                 {
+                                                   TankActor2.this.movementDirection = MovementDirection.NONE;
+                                                 }
+                                               })));
 
-        reverseTurretAction = Actions.forever (Actions.moveBy (- bodyForwardVector.x
-            * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, bodyForwardVector.y
-            * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
-
-        bodyActor.removeAction (forwardBodyAction);
-        turretActor.removeAction (forwardTurretAction);
-
-        bodyActor.addAction (Actions.sequence (reverseBodyAction, Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            TankActor2.this.movementDirection = MovementDirection.NONE;
-          }
-        })));
-
-        turretActor.addAction (reverseTurretAction);
+        turretActor.addAction (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                               bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
 
         break;
       }
@@ -313,14 +288,14 @@ public final class TankActor2 extends Actor implements UnitActor
     {
       case RIGHT:
       {
-        bodyActor.addAction (Actions.sequence (Actions.rotateBy (- 90, 1), Actions.run (new Runnable ()
+        bodyActor.addAction (Actions.sequence (Actions.rotateBy (-90, 1), Actions.run (new Runnable ()
         {
           @Override
           public void run ()
           {
             TankActor2.this.turnDirection = TurnDirection.NONE;
 
-            bodyForwardVector.rotate (- 90);
+            bodyForwardVector.rotate (-90);
           }
         })));
 
@@ -343,14 +318,14 @@ public final class TankActor2 extends Actor implements UnitActor
       }
       case U_TURN:
       {
-        bodyActor.addAction (Actions.sequence (Actions.rotateBy (- 180, 2), Actions.run (new Runnable ()
+        bodyActor.addAction (Actions.sequence (Actions.rotateBy (-180, 2), Actions.run (new Runnable ()
         {
           @Override
           public void run ()
           {
             TankActor2.this.turnDirection = TurnDirection.NONE;
 
-            bodyForwardVector.rotate (- 180);
+            bodyForwardVector.rotate (-180);
           }
         })));
 
@@ -371,14 +346,14 @@ public final class TankActor2 extends Actor implements UnitActor
     {
       case RIGHT:
       {
-        turretActor.addAction (Actions.sequence (Actions.rotateBy (- 90, 1), Actions.run (new Runnable ()
+        turretActor.addAction (Actions.sequence (Actions.rotateBy (-90, 1), Actions.run (new Runnable ()
         {
           @Override
           public void run ()
           {
             TankActor2.this.turretTurnDirection = TurnDirection.NONE;
 
-            turretForwardVector.rotate (- 90);
+            turretForwardVector.rotate (-90);
           }
         })));
 
@@ -401,14 +376,14 @@ public final class TankActor2 extends Actor implements UnitActor
       }
       case U_TURN:
       {
-        turretActor.addAction (Actions.sequence (Actions.rotateBy (- 180, 2), Actions.run (new Runnable ()
+        turretActor.addAction (Actions.sequence (Actions.rotateBy (-180, 2), Actions.run (new Runnable ()
         {
           @Override
           public void run ()
           {
             TankActor2.this.turretTurnDirection = TurnDirection.NONE;
 
-            turretForwardVector.rotate (- 180);
+            turretForwardVector.rotate (-180);
           }
         })));
 
@@ -421,11 +396,11 @@ public final class TankActor2 extends Actor implements UnitActor
 
   public void deactivateTurret ()
   {
-    if (! turretActive) return;
+    if (!turretActive) return;
 
     final int degrees = Math.round (turretForwardVector.angle (bodyForwardVector));
 
-    if (degrees == - 90)
+    if (degrees == -90)
     {
       setTurretTurning (TurnDirection.RIGHT);
     }
