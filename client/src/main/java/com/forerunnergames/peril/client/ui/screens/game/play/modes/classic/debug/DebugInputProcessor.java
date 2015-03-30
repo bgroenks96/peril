@@ -80,6 +80,12 @@ public final class DebugInputProcessor extends InputAdapter
 
         return true;
       }
+      case Input.Keys.RIGHT:
+      {
+        screenController.toScreen (ScreenId.PLAY_PERIL);
+
+        return true;
+      }
       case Input.Keys.ESCAPE:
       {
         Gdx.app.exit ();
