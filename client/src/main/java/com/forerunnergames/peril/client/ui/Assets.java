@@ -7,10 +7,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.tools.common.Classes;
+
+import com.google.common.collect.ImmutableList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,7 @@ public final class Assets
   public static BitmapFont aurulentSans16;
   public static Texture armyMovementBackground;
   public static Texture armyMovementOccupationTitle;
+  public static ImmutableList <TextureAtlas> countryAtlases;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
@@ -64,6 +68,11 @@ public final class Assets
     armyMovementBackground.dispose ();
     armyMovementOccupationTitle.dispose ();
     skin.dispose ();
+
+    for (TextureAtlas atlas : countryAtlases)
+    {
+      atlas.dispose ();
+    }
 
     isLoaded = false;
   }
@@ -96,6 +105,12 @@ public final class Assets
     armyMovementBackground = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
+    countryAtlases = ImmutableList.of (
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries0.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries1.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries2.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries3.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries4.atlas")));
     // @formatter:on
 
     setFilter (menuBackground);
