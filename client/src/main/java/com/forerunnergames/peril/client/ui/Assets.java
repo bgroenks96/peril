@@ -106,11 +106,11 @@ public final class Assets
     armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
     countryAtlases = ImmutableList.of (
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries0.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries1.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries2.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries3.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/countries4.atlas")));
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries0.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries1.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries2.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries3.atlas")),
+            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries4.atlas")));
     // @formatter:on
 
     setFilter (menuBackground);
