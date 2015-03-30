@@ -33,27 +33,37 @@ public final class ClientApplicationProperties
   private static final String MUSIC_ENABLED_PROPERTY_KEY = "music-enabled";
   private static final String MUSIC_VOLUME_PROPERTY_KEY = "music-volume";
   private static final String START_SCREEN_PROPERTY_KEY = "start-screen";
-  private static final String PROPERTIES_FILE_COMMENTS = "To reset this file, simply delete it, run peril-client, and it will be recreated with default values.\n"
-          + "Valid values:\n"
+  private static final String PROPERTIES_FILE_COMMENTS = " Player-Configurable Peril Settings\n\n"
+          + " IMPORTANT: All lines starting with a # don't do anything. Look near the bottom of the file for the actual settings!\n\n"
+          + " To reset this file, simply delete it, restart Peril, and it will be recreated with default values.\n"
+          + " You can delete any setting in here if you don't care about it, which will just cause it to use the default value.\n"
+          + " To delete a setting, just delete the entire line containing the setting.\n\n" + " Valid values:\n\n "
           + WINDOW_WIDTH_PROPERTY_KEY
-          + ": any whole number > 0\n"
+          + ": any whole number >= " + GraphicsSettings.MIN_INITIAL_WINDOW_WIDTH + " and <= the max resolution width of your monitor(s)\n "
           + WINDOW_HEIGHT_PROPERTY_KEY
-          + ": any whole number > 0\n"
+          + ": any whole number >= " + GraphicsSettings.MIN_INITIAL_WINDOW_HEIGHT + " and <= the max resolution height of your monitor(s)\n "
           + WINDOW_RESIZABLE_PROPERTY_KEY
-          + ": true, false\n"
+          + ": true, false\n "
           + WINDOW_TITLE_PROPERTY_KEY
-          + ": anything\n"
+          + ": anything\n "
           + FULLSCREEN_PROPERTY_KEY
-          + ": true, false\n"
+          + ": true, false\n "
           + VSYNC_PROPERTY_KEY
-          + ": true, false\n"
+          + ": true, false\n "
           + MUSIC_ENABLED_PROPERTY_KEY
-          + ": true, false\n"
+          + ": true, false\n "
           + MUSIC_VOLUME_PROPERTY_KEY
-          + ": any decimal number 0.0 to 1.0 (inclusive)\n"
+          + ": any decimal number >= " + MusicSettings.MIN_VOLUME + " and <= " + MusicSettings.MAX_VOLUME + "\n "
           + START_SCREEN_PROPERTY_KEY
           + ": "
-          + Strings.toStringList (", ", LetterCase.NONE, false, ScreenId.values ());
+          + Strings.toStringList (", ", LetterCase.NONE, false, ScreenId.values ())
+          + "\n\n"
+          + " If you've done your best to read & follow these instructions, and you're still having problems:\n\n"
+          + " 1) Ask for help on our forums at http://community.forerunnergames.com\n"
+          + " 2) Email us at support@forerunnergames.com. Please attach this file in the email, as well as any crash files.\n";
+
+  private final Properties properties;
+  private final String propertiesFilePath;
 
   public ClientApplicationProperties ()
   {
@@ -69,8 +79,8 @@ public final class ClientApplicationProperties
     defaults.setProperty (MUSIC_VOLUME_PROPERTY_KEY, String.valueOf (MusicSettings.INITIAL_VOLUME));
     defaults.setProperty (START_SCREEN_PROPERTY_KEY, String.valueOf (ScreenSettings.START_SCREEN));
 
-    final Properties properties = new Properties (defaults);
-    final String propertiesFilePath = System.getProperty ("user.home") + "/" + PROPERTIES_FILE_SUBDIR;
+    properties = new Properties (defaults);
+    propertiesFilePath = System.getProperty ("user.home") + "/" + PROPERTIES_FILE_SUBDIR;
     final String propertiesFilePathAndName = propertiesFilePath + "/" + PROPERTIES_FILE_NAME;
 
     try
@@ -85,7 +95,11 @@ public final class ClientApplicationProperties
 
         new File (propertiesFilePath).mkdirs ();
 
-        defaults.store (new FileOutputStream (propertiesFilePathAndName), PROPERTIES_FILE_COMMENTS);
+        final FileOutputStream fileOutputStream = new FileOutputStream (propertiesFilePathAndName);
+
+        defaults.store (fileOutputStream, PROPERTIES_FILE_COMMENTS);
+
+        fileOutputStream.close ();
 
         log.info ("Successfully created {}.", propertiesFilePathAndName);
       }
@@ -95,14 +109,96 @@ public final class ClientApplicationProperties
       }
     }
 
-    GraphicsSettings.INITIAL_WINDOW_WIDTH = Integer.valueOf (properties.getProperty (WINDOW_WIDTH_PROPERTY_KEY));
-    GraphicsSettings.INITIAL_WINDOW_HEIGHT = Integer.valueOf (properties.getProperty (WINDOW_HEIGHT_PROPERTY_KEY));
-    GraphicsSettings.IS_WINDOW_RESIZABLE = Boolean.valueOf (properties.getProperty (WINDOW_RESIZABLE_PROPERTY_KEY));
+    GraphicsSettings.INITIAL_WINDOW_WIDTH = parseInteger (WINDOW_WIDTH_PROPERTY_KEY, GraphicsSettings.MIN_INITIAL_WINDOW_WIDTH);
+    GraphicsSettings.INITIAL_WINDOW_HEIGHT = parseInteger (WINDOW_HEIGHT_PROPERTY_KEY, GraphicsSettings.MIN_INITIAL_WINDOW_HEIGHT);
+    GraphicsSettings.IS_WINDOW_RESIZABLE = parseBoolean (WINDOW_RESIZABLE_PROPERTY_KEY);
     GraphicsSettings.WINDOW_TITLE = properties.getProperty (WINDOW_TITLE_PROPERTY_KEY);
-    GraphicsSettings.IS_FULLSCREEN = Boolean.valueOf (properties.getProperty (FULLSCREEN_PROPERTY_KEY));
-    GraphicsSettings.IS_VSYNC_ENABLED = Boolean.valueOf (properties.getProperty (VSYNC_PROPERTY_KEY));
-    MusicSettings.IS_ENABLED = Boolean.valueOf (properties.getProperty (MUSIC_ENABLED_PROPERTY_KEY));
-    MusicSettings.INITIAL_VOLUME = Float.valueOf (properties.getProperty (MUSIC_VOLUME_PROPERTY_KEY));
-    ScreenSettings.START_SCREEN = ScreenId.valueOf (properties.getProperty (START_SCREEN_PROPERTY_KEY).toUpperCase ());
+    GraphicsSettings.IS_FULLSCREEN = parseBoolean (FULLSCREEN_PROPERTY_KEY);
+    GraphicsSettings.IS_VSYNC_ENABLED = parseBoolean (VSYNC_PROPERTY_KEY);
+    MusicSettings.IS_ENABLED = parseBoolean (MUSIC_ENABLED_PROPERTY_KEY);
+    MusicSettings.INITIAL_VOLUME = parseFloat (MUSIC_VOLUME_PROPERTY_KEY, MusicSettings.MIN_VOLUME, MusicSettings.MAX_VOLUME);
+    ScreenSettings.START_SCREEN = parseEnum (START_SCREEN_PROPERTY_KEY, ScreenId.class);
+  }
+
+  private Integer parseInteger (final String propertyKey, final int min)
+  {
+    String propertyValue = null;
+
+    try
+    {
+      propertyValue = getPropertyValueFrom (propertyKey);
+
+      final int value = Integer.valueOf (getPropertyValueFrom (propertyKey));
+
+      if (value < min) throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue));
+
+      return value;
+    }
+    catch (final NumberFormatException e)
+    {
+      throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue), e);
+    }
+  }
+
+  private Float parseFloat (final String propertyKey, final float min, final float max)
+  {
+    String propertyValue = null;
+
+    try
+    {
+      propertyValue = getPropertyValueFrom (propertyKey);
+
+      final float value = Float.valueOf (getPropertyValueFrom (propertyKey));
+
+      if (value < min || value > max) throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue));
+
+      return value;
+    }
+    catch (final NumberFormatException e)
+    {
+      throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue), e);
+    }
+  }
+
+  private Boolean parseBoolean (final String propertyKey)
+  {
+    final String propertyValue = getPropertyValueFrom (propertyKey);
+
+    if (!propertyValue.equalsIgnoreCase ("true") && !propertyValue.equalsIgnoreCase ("false"))
+    {
+      throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue));
+    }
+
+    return Boolean.valueOf (propertyValue);
+  }
+
+  private <E extends Enum <E>> E parseEnum (final String propertyKey, final Class <E> enumType)
+  {
+    String propertyValue = null;
+
+    try
+    {
+      propertyValue = getPropertyValueFrom (propertyKey);
+
+      return Enum.valueOf (enumType, getPropertyValueFrom (propertyKey).toUpperCase ());
+    }
+    catch (final NullPointerException | IllegalArgumentException e)
+    {
+      throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue), e);
+    }
+  }
+
+  private String getPropertyValueFrom (final String propertyKey)
+  {
+    return properties.getProperty (propertyKey);
+  }
+
+  private String getParseErrorMessageFor (final String propertyKey, final String propertyValue) throws RuntimeException
+  {
+    return "Oops! Looks like your " + PROPERTIES_FILE_NAME + " (located in: " + propertiesFilePath
+            + ") has an invalid setting:\n\n" + propertyKey + "=" + propertyValue
+            + " <-- HINT: The part after the = sign (" + propertyValue + ") ain't right!\n\n"
+            + "Time to go back and actually read the instructions in your " + PROPERTIES_FILE_NAME
+            + " and then try again... ;-)\n\nNerdy developer details:\n";
   }
 }

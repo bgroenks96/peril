@@ -17,7 +17,7 @@ public final class Main
       @Override
       public void uncaughtException (final Thread thread, final Throwable throwable)
       {
-        log.error ("The server application has crashed!", throwable);
+        log.error ("The server application has crashed!\n", throwable);
 
         System.exit (1);
       }

@@ -22,9 +22,7 @@ public final class DesktopLauncher
       @Override
       public void uncaughtException (final Thread thread, final Throwable throwable)
       {
-        log.error ("The client application has crashed!", throwable);
-
-        if (Gdx.app == null) System.exit (1);
+        log.error ("The client application has crashed!\n", throwable);
 
         try
         {
