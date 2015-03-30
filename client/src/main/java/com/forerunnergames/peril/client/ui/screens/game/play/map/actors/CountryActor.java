@@ -162,26 +162,6 @@ public final class CountryActor extends Actor
     return spriteData.getCenterPlayMapReferenceSpace();
   }
 
-  public Size2D getSizePlayMapReferenceSpace()
-  {
-    return spriteData.getSizePlayMapReferenceSpace ();
-  }
-
-  public Size2D getSizePlayMapActualSpace()
-  {
-    return new Size2D (width, height);
-  }
-
-  public float getWidthPlayMapActualSpace()
-  {
-    return width;
-  }
-
-  public float getHeightPlayMapActualSpace()
-  {
-    return height;
-  }
-
   public String getCurrentCountrySpriteName()
   {
     return getName() + " " + getCurrentColor ().toProperCase ();
