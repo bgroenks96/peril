@@ -1,8 +1,6 @@
 package com.forerunnergames.peril.core.model.map.territory;
 
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.common.Strings;
 
 public abstract class AbstractTerritoryName implements TerritoryName
 {
@@ -13,40 +11,6 @@ public abstract class AbstractTerritoryName implements TerritoryName
     Arguments.checkIsNotNull (name, "name");
 
     this.name = name;
-  }
-
-  @Override
-  public String asFileName (final String fileExtension)
-  {
-    Arguments.checkIsNotNullOrEmptyOrBlank (fileExtension, "fileExtension");
-    Preconditions.checkIsFalse (name.isEmpty (), "Cannot convert empty territory name to file name.");
-    Preconditions.checkIsFalse (Strings.isWhitespace (name), "Cannot convert blank territory name to file name.");
-
-    final String[] words = name.split (" ");
-
-    final StringBuilder fileNameBuilder = new StringBuilder ();
-
-    boolean isFirstWord = true;
-
-    for (final String word : words)
-    {
-      if (isFirstWord)
-      {
-        final String firstLetter = word.substring (0, 1);
-
-        fileNameBuilder.append ((word.replaceFirst (firstLetter, firstLetter.toLowerCase ())));
-
-        isFirstWord = false;
-      }
-      else
-      {
-        fileNameBuilder.append (word);
-      }
-    }
-
-    fileNameBuilder.append (".").append (fileExtension);
-
-    return fileNameBuilder.toString ();
   }
 
   @Override

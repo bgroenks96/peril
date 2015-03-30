@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.sprites.CountrySpriteState;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActor;
@@ -15,7 +16,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.Territor
 import com.forerunnergames.peril.client.ui.screens.game.play.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -88,140 +88,139 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case Input.Keys.NUM_1:
       {
-        playMapActor.clearCountryColors ();
+        playMapActor.setCountriesTo (CountrySpriteState.UNOWNED);
 
         return true;
       }
       case Input.Keys.NUM_2:
       {
-        playMapActor.randomizeCountryColors ();
+        playMapActor.randomizeCountryStates ();
 
         return true;
       }
       case Input.Keys.NUM_3:
       {
-        playMapActor.randomizeCountryColorsUsingNRandomColors (Randomness.getRandomIntegerFrom (1, 10));
+        playMapActor.randomizeCountryStatesUsingNRandomStates (Randomness.getRandomIntegerFrom (1, 10));
 
         return true;
       }
       case Input.Keys.NUM_4:
       {
-        playMapActor.randomizeCountryColorsUsingNRandomColors (2);
+        playMapActor.randomizeCountryStatesUsingNRandomStates (2);
 
         return true;
       }
       case Input.Keys.NUM_5:
       {
-        playMapActor.randomizeCountryColorsUsingNRandomColors (3);
+        playMapActor.randomizeCountryStatesUsingNRandomStates (3);
 
         return true;
       }
       case Input.Keys.NUM_6:
       {
-        playMapActor.setClassicCountryColors ();
+        playMapActor.setClassicCountryStates ();
 
         return true;
       }
       case Input.Keys.NUM_7:
       {
-        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.CYAN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.TEAL, CountrySpriteState.CYAN);
 
         return true;
       }
       case Input.Keys.NUM_8:
       {
-        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.BLUE, PlayerColor.CYAN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.BLUE, CountrySpriteState.CYAN);
 
         return true;
       }
       case Input.Keys.NUM_9:
       {
-        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.PINK, PlayerColor.PURPLE);
+        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.PINK, CountrySpriteState.PURPLE);
 
         return true;
       }
       case Input.Keys.NUM_0:
       {
-        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.RED, PlayerColor.BROWN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.RED, CountrySpriteState.BROWN);
 
         return true;
       }
       case Input.Keys.MINUS:
       {
-        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.CYAN, PlayerColor.SILVER);
+        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.CYAN, CountrySpriteState.SILVER);
 
         return true;
       }
       case Input.Keys.EQUALS:
       {
-        playMapActor.randomizeCountryColorsUsingOnly (PlayerColor.TEAL, PlayerColor.GREEN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.TEAL, CountrySpriteState.GREEN);
 
         return true;
       }
       case Input.Keys.Q:
       {
-        playMapActor.setCountriesTo (PlayerColor.BLUE);
+        playMapActor.setCountriesTo (CountrySpriteState.BLUE);
 
         return true;
       }
       case Input.Keys.W:
       {
-        playMapActor.setCountriesTo (PlayerColor.BROWN);
+        playMapActor.setCountriesTo (CountrySpriteState.BROWN);
 
         return true;
       }
       case Input.Keys.E:
       {
-        playMapActor.setCountriesTo (PlayerColor.CYAN);
+        playMapActor.setCountriesTo (CountrySpriteState.CYAN);
 
         return true;
       }
       case Input.Keys.R:
       {
-        playMapActor.setCountriesTo (PlayerColor.GOLD);
+        playMapActor.setCountriesTo (CountrySpriteState.GOLD);
 
         return true;
       }
       case Input.Keys.T:
       {
-        playMapActor.setCountriesTo (PlayerColor.GREEN);
+        playMapActor.setCountriesTo (CountrySpriteState.GREEN);
 
         return true;
       }
       case Input.Keys.Y:
       {
-        playMapActor.setCountriesTo (PlayerColor.PINK);
+        playMapActor.setCountriesTo (CountrySpriteState.PINK);
 
         return true;
       }
       case Input.Keys.U:
       {
-        playMapActor.setCountriesTo (PlayerColor.PURPLE);
+        playMapActor.setCountriesTo (CountrySpriteState.PURPLE);
 
         return true;
       }
       case Input.Keys.I:
       {
-        playMapActor.setCountriesTo (PlayerColor.RED);
+        playMapActor.setCountriesTo (CountrySpriteState.RED);
 
         return true;
       }
       case Input.Keys.O:
       {
-        playMapActor.setCountriesTo (PlayerColor.SILVER);
+        playMapActor.setCountriesTo (CountrySpriteState.SILVER);
 
         return true;
       }
       case Input.Keys.LEFT_BRACKET:
       {
-        playMapActor.setCountriesTo (PlayerColor.TEAL);
+        playMapActor.setCountriesTo (CountrySpriteState.TEAL);
 
         return true;
       }
       case Input.Keys.F:
       {
         Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-        playMapActor.setCountryTextureFiltering (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         return true;
       }
@@ -229,8 +228,6 @@ public final class DebugInputProcessor extends InputAdapter
       {
         Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest,
                                                   Texture.TextureFilter.Nearest);
-        playMapActor.setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearNearest,
-                                                 Texture.TextureFilter.Nearest);
 
         return true;
       }
@@ -238,8 +235,6 @@ public final class DebugInputProcessor extends InputAdapter
       {
         Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear,
                                                   Texture.TextureFilter.Linear);
-        playMapActor
-                .setCountryTextureFiltering (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
         return true;
       }
@@ -340,7 +335,7 @@ public final class DebugInputProcessor extends InputAdapter
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    territoryTextActor.setHoveredCountryColor (playMapActor.getHoveredCountryColor ());
+    territoryTextActor.setHoveredCountryState (playMapActor.getHoveredCountryState ());
 
     return true;
   }
@@ -348,7 +343,7 @@ public final class DebugInputProcessor extends InputAdapter
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    territoryTextActor.setHoveredCountryColor (playMapActor.getHoveredCountryColor ());
+    territoryTextActor.setHoveredCountryState (playMapActor.getHoveredCountryState ());
 
     return true;
   }

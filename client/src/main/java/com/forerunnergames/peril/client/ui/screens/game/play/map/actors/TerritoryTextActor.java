@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.sprites.CountrySpriteState;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetection;
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.geometry.Geometry;
@@ -23,7 +23,7 @@ public final class TerritoryTextActor extends Actor
   private final PlayMapInputDetection playMapInputDetection;
   private final MouseInput mouseInput;
   private final BitmapFont font;
-  private PlayerColor countryColor = PlayerColor.UNKNOWN;
+  private CountrySpriteState countryState;
   private Point2D mouseHoverCoordinate;
   private String territoryNames;
   private Size2D screenSize;
@@ -39,6 +39,8 @@ public final class TerritoryTextActor extends Actor
     this.playMapInputDetection = playMapInputDetection;
     this.mouseInput = mouseInput;
     font = new BitmapFont ();
+
+    setHoveredCountryState (CountrySpriteState.UNOWNED);
   }
 
   @Override
@@ -60,14 +62,14 @@ public final class TerritoryTextActor extends Actor
     y = (screenSize.getHeight () - mouseHoverCoordinate.getY () + TEXT_OFFSET_Y) * scaling.getY ();
 
     territoryNames = playMapInputDetection.getPrintableTerritoryNamesAt (mouseHoverCoordinate, screenSize)
-            + (countryColor.is (PlayerColor.UNKNOWN) ? "" : ", " + Strings.toProperCase (countryColor.name ()));
+            + (countryState.is (CountrySpriteState.UNOWNED) ? "" : ", " + Strings.toProperCase (countryState.name ()));
   }
 
-  public void setHoveredCountryColor (final PlayerColor color)
+  public void setHoveredCountryState (final CountrySpriteState countryState)
   {
-    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsNotNull (countryState, "countryState");
 
-    countryColor = color;
+    this.countryState = countryState;
   }
 
   private boolean shouldUpdateScreenSize ()

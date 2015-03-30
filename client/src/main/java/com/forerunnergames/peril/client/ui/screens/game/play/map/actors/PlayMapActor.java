@@ -1,13 +1,12 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.map.actors;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import com.forerunnergames.peril.client.ui.screens.game.play.map.sprites.CountrySpriteState;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.geometry.Point2D;
@@ -21,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 public final class PlayMapActor extends Actor
@@ -102,9 +100,9 @@ public final class PlayMapActor extends Actor
     return new CountryName (getCountryActorAt (inputCoordinate, screenSize).getName ());
   }
 
-  public PlayerColor getHoveredCountryColor ()
+  public CountrySpriteState getHoveredCountryState ()
   {
-    return hoveredCountryActor != null ? hoveredCountryActor.getCurrentColor () : PlayerColor.UNKNOWN;
+    return hoveredCountryActor != null ? hoveredCountryActor.getCurrentState () : CountrySpriteState.UNOWNED;
   }
 
   public boolean mouseMoved (final Point2D mouseCoordinate, final Size2D screenSize)
@@ -163,13 +161,13 @@ public final class PlayMapActor extends Actor
 
     if (button == Input.Buttons.RIGHT)
     {
-      touchedDownCountryActor.nextColor ();
+      touchedDownCountryActor.nextState ();
 
       return true;
     }
 
     touchedDownCountryActor.onTouchDown ();
-    touchedDownCountryActor.changeColorRandomly ();
+    touchedDownCountryActor.changeStateRandomly ();
 
     if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
     {
@@ -241,163 +239,136 @@ public final class PlayMapActor extends Actor
     return countryActor;
   }
 
-  public void setClassicCountryColors ()
+  public void setClassicCountryStates ()
   {
     // North America
-    setCountryColor ("Alaska", PlayerColor.GOLD);
-    setCountryColor ("Northwest Territory", PlayerColor.GOLD);
-    setCountryColor ("Greenland", PlayerColor.GOLD);
-    setCountryColor ("Alberta", PlayerColor.GOLD);
-    setCountryColor ("Ontario", PlayerColor.GOLD);
-    setCountryColor ("Quebec", PlayerColor.GOLD);
-    setCountryColor ("Western United States", PlayerColor.GOLD);
-    setCountryColor ("Eastern United States", PlayerColor.GOLD);
-    setCountryColor ("Central America", PlayerColor.GOLD);
+    setCountryState ("Alaska", CountrySpriteState.GOLD);
+    setCountryState ("Northwest Territory", CountrySpriteState.GOLD);
+    setCountryState ("Greenland", CountrySpriteState.GOLD);
+    setCountryState ("Alberta", CountrySpriteState.GOLD);
+    setCountryState ("Ontario", CountrySpriteState.GOLD);
+    setCountryState ("Quebec", CountrySpriteState.GOLD);
+    setCountryState ("Western United States", CountrySpriteState.GOLD);
+    setCountryState ("Eastern United States", CountrySpriteState.GOLD);
+    setCountryState ("Central America", CountrySpriteState.GOLD);
 
     // South America
-    setCountryColor ("Venezuela", PlayerColor.RED);
-    setCountryColor ("Peru", PlayerColor.RED);
-    setCountryColor ("Brazil", PlayerColor.RED);
-    setCountryColor ("Argentina", PlayerColor.RED);
+    setCountryState ("Venezuela", CountrySpriteState.RED);
+    setCountryState ("Peru", CountrySpriteState.RED);
+    setCountryState ("Brazil", CountrySpriteState.RED);
+    setCountryState ("Argentina", CountrySpriteState.RED);
 
     // Europe
-    setCountryColor ("Iceland", PlayerColor.BLUE);
-    setCountryColor ("Scandinavia", PlayerColor.BLUE);
-    setCountryColor ("Great Britain", PlayerColor.BLUE);
-    setCountryColor ("Northern Europe", PlayerColor.BLUE);
-    setCountryColor ("Ukraine", PlayerColor.BLUE);
-    setCountryColor ("Western Europe", PlayerColor.BLUE);
-    setCountryColor ("Southern Europe", PlayerColor.BLUE);
+    setCountryState ("Iceland", CountrySpriteState.BLUE);
+    setCountryState ("Scandinavia", CountrySpriteState.BLUE);
+    setCountryState ("Great Britain", CountrySpriteState.BLUE);
+    setCountryState ("Northern Europe", CountrySpriteState.BLUE);
+    setCountryState ("Ukraine", CountrySpriteState.BLUE);
+    setCountryState ("Western Europe", CountrySpriteState.BLUE);
+    setCountryState ("Southern Europe", CountrySpriteState.BLUE);
 
     // Asia
-    setCountryColor ("Ural", PlayerColor.GREEN);
-    setCountryColor ("Siberia", PlayerColor.GREEN);
-    setCountryColor ("Yakutsk", PlayerColor.GREEN);
-    setCountryColor ("Kamchatka", PlayerColor.GREEN);
-    setCountryColor ("Afghanistan", PlayerColor.GREEN);
-    setCountryColor ("Irkutsk", PlayerColor.GREEN);
-    setCountryColor ("Mongolia", PlayerColor.GREEN);
-    setCountryColor ("Japan", PlayerColor.GREEN);
-    setCountryColor ("Middle East", PlayerColor.GREEN);
-    setCountryColor ("India", PlayerColor.GREEN);
-    setCountryColor ("China", PlayerColor.GREEN);
-    setCountryColor ("Siam", PlayerColor.GREEN);
+    setCountryState ("Ural", CountrySpriteState.GREEN);
+    setCountryState ("Siberia", CountrySpriteState.GREEN);
+    setCountryState ("Yakutsk", CountrySpriteState.GREEN);
+    setCountryState ("Kamchatka", CountrySpriteState.GREEN);
+    setCountryState ("Afghanistan", CountrySpriteState.GREEN);
+    setCountryState ("Irkutsk", CountrySpriteState.GREEN);
+    setCountryState ("Mongolia", CountrySpriteState.GREEN);
+    setCountryState ("Japan", CountrySpriteState.GREEN);
+    setCountryState ("Middle East", CountrySpriteState.GREEN);
+    setCountryState ("India", CountrySpriteState.GREEN);
+    setCountryState ("China", CountrySpriteState.GREEN);
+    setCountryState ("Siam", CountrySpriteState.GREEN);
 
     // Africa
-    setCountryColor ("North Africa", PlayerColor.BROWN);
-    setCountryColor ("Egypt", PlayerColor.BROWN);
-    setCountryColor ("Congo", PlayerColor.BROWN);
-    setCountryColor ("East Africa", PlayerColor.BROWN);
-    setCountryColor ("South Africa", PlayerColor.BROWN);
-    setCountryColor ("Madagascar", PlayerColor.BROWN);
+    setCountryState ("North Africa", CountrySpriteState.BROWN);
+    setCountryState ("Egypt", CountrySpriteState.BROWN);
+    setCountryState ("Congo", CountrySpriteState.BROWN);
+    setCountryState ("East Africa", CountrySpriteState.BROWN);
+    setCountryState ("South Africa", CountrySpriteState.BROWN);
+    setCountryState ("Madagascar", CountrySpriteState.BROWN);
 
     // Australia
-    setCountryColor ("Indonesia", PlayerColor.PINK);
-    setCountryColor ("New Guinea", PlayerColor.PINK);
-    setCountryColor ("Western Australia", PlayerColor.PINK);
-    setCountryColor ("Eastern Australia", PlayerColor.PINK);
+    setCountryState ("Indonesia", CountrySpriteState.PINK);
+    setCountryState ("New Guinea", CountrySpriteState.PINK);
+    setCountryState ("Western Australia", CountrySpriteState.PINK);
+    setCountryState ("Eastern Australia", CountrySpriteState.PINK);
 
-    clearCountryColor ("Hawaii");
-    clearCountryColor ("Caribbean Islands");
-    clearCountryColor ("Falkland Islands");
-    clearCountryColor ("Svalbard");
-    clearCountryColor ("Philippines");
-    clearCountryColor ("New Zealand");
-    clearCountryColor ("Antarctica");
+    // Not used in classic mode
+    setCountryState ("Hawaii", CountrySpriteState.DISABLED);
+    setCountryState ("Caribbean Islands", CountrySpriteState.DISABLED);
+    setCountryState ("Falkland Islands", CountrySpriteState.DISABLED);
+    setCountryState ("Svalbard", CountrySpriteState.DISABLED);
+    setCountryState ("Philippines", CountrySpriteState.DISABLED);
+    setCountryState ("New Zealand", CountrySpriteState.DISABLED);
+    setCountryState ("Antarctica", CountrySpriteState.DISABLED);
   }
 
-  public void clearCountryColor (final String countryName)
+  public void setCountriesTo (final CountrySpriteState state)
+  {
+    Arguments.checkIsNotNull (state, "state");
+
+    for (final CountryActor countryActor : getCountryActors ())
+    {
+      countryActor.changeStateTo (state);
+    }
+  }
+
+  public void setCountryState (final String countryName, final CountrySpriteState state)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNull (state, "state");
 
     final CountryName name = new CountryName (countryName);
 
-    if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).clearColor ();
+    if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).changeStateTo (state);
   }
 
-  public void clearCountryColors ()
+  public void randomizeCountryStates ()
   {
     for (final CountryActor countryActor : getCountryActors ())
     {
-      countryActor.clearColor ();
+      countryActor.changeStateRandomly ();
     }
   }
 
-  public void setCountriesTo (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    for (final CountryActor countryActor : getCountryActors ())
-    {
-      countryActor.changeColorTo (color);
-    }
-  }
-
-  public void setCountryColor (final String countryName, final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (countryName, "countryName");
-    Arguments.checkIsNotNull (color, "color");
-
-    final CountryName name = new CountryName (countryName);
-
-    if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).changeColorTo (color);
-  }
-
-  public void randomizeCountryColors ()
-  {
-    for (final CountryActor countryActor : getCountryActors ())
-    {
-      countryActor.changeColorRandomly ();
-    }
-  }
-
-  public void randomizeCountryColorsUsingNRandomColors (final int n)
+  public void randomizeCountryStatesUsingNRandomStates (final int n)
   {
     Arguments.checkLowerInclusiveBound (n, 1, "n");
-    Arguments.checkUpperInclusiveBound (n, PlayerColor.validValues ().size (), "n");
+    Arguments.checkUpperInclusiveBound (n, CountrySpriteState.values ().length, "n");
 
-    final ImmutableSet.Builder <PlayerColor> nColorsBuilder = ImmutableSet.builder ();
-    final Set <PlayerColor> colors = new HashSet <> (Arrays.asList (PlayerColor.values ()));
+    final ImmutableSet.Builder <CountrySpriteState> nStatesBuilder = ImmutableSet.builder ();
+    final Set <CountrySpriteState> states = new HashSet <> (Arrays.asList (CountrySpriteState.values ()));
 
     for (int i = 0; i < n; ++i)
     {
-      final PlayerColor randomColor = Randomness.getRandomElementFrom (colors);
-      nColorsBuilder.add (randomColor);
-      colors.remove (randomColor);
+      final CountrySpriteState randomState = Randomness.getRandomElementFrom (states);
+      nStatesBuilder.add (randomState);
+      states.remove (randomState);
     }
 
-    randomizeCountryColorsUsingOnly (nColorsBuilder.build ());
+    randomizeCountryStatesUsingOnly (nStatesBuilder.build ());
   }
 
-  public void randomizeCountryColorsUsingOnly (final Collection <PlayerColor> colors)
+  public void randomizeCountryStatesUsingOnly (final Collection <CountrySpriteState> states)
   {
-    Arguments.checkIsNotNullOrEmpty (colors, "colors");
-    Arguments.checkHasNoNullElements (colors, "colors");
+    Arguments.checkIsNotNullOrEmpty (states, "states");
+    Arguments.checkHasNoNullElements (states, "states");
 
-    PlayerColor randomColor;
+    CountrySpriteState randomState;
 
     for (final CountryActor countryActor : getCountryActors ())
     {
-      randomColor = Randomness.getRandomElementFrom (colors);
+      randomState = Randomness.getRandomElementFrom (states);
 
-      countryActor.changeColorTo (randomColor);
+      countryActor.changeStateTo (randomState);
     }
   }
 
-  public void randomizeCountryColorsUsingOnly (final PlayerColor... colors)
+  public void randomizeCountryStatesUsingOnly (final CountrySpriteState... states)
   {
-    randomizeCountryColorsUsingOnly (Arrays.asList (colors));
-  }
-
-  public void setCountryTextureFiltering (final Texture.TextureFilter minFilter, final Texture.TextureFilter magFilter)
-  {
-    Arguments.checkIsNotNull (minFilter, "minFilter");
-    Arguments.checkIsNotNull (magFilter, "magFilter");
-
-    for (final CountryActor countryActor : countryNamesToActors.values ())
-    {
-      countryActor.setTextureFiltering (minFilter, magFilter);
-    }
+    randomizeCountryStatesUsingOnly (Arrays.asList (states));
   }
 
   private ImmutableCollection <CountryActor> getCountryActors ()

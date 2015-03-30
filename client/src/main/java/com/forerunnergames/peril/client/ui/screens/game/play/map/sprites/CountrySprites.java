@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.game.play.map;
+package com.forerunnergames.peril.client.ui.screens.game.play.map.sprites;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -6,18 +6,24 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
-
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class CountrySprites
 {
-  private final Table <CountryName, CountrySpriteState, Sprite> countryNamesAndSpriteStatesToSprites = HashBasedTable.create ();
+  private final Map <CountryName, CountrySprite> countryNamesToSprites = new HashMap <> ();
   private StringBuilder countryNameStringBuilder = new StringBuilder ();
 
   public CountrySprites ()
   {
+    final Table <CountryName, CountrySpriteState, Sprite> countryNamesAndSpriteStatesToSprites = HashBasedTable
+            .create ();
+
     for (final TextureAtlas countryAtlas : Assets.countryAtlases)
     {
       for (final TextureAtlas.AtlasRegion countryAtlasRegion : countryAtlas.getRegions ())
@@ -25,27 +31,26 @@ public final class CountrySprites
         final String[] regionNameSegments = Strings.splitByUpperCase (countryAtlasRegion.name);
         final CountryName countryName = createCountryNameFrom (regionNameSegments);
         final CountrySpriteState countryCountrySpriteState = createCountryStateFrom (regionNameSegments);
-        final Sprite countrySprite = countryAtlas.createSprite (countryAtlasRegion.name);
+        final Sprite sprite = countryAtlas.createSprite (countryAtlasRegion.name);
 
-        countryNamesAndSpriteStatesToSprites.put (countryName, countryCountrySpriteState, countrySprite);
+        countryNamesAndSpriteStatesToSprites.put (countryName, countryCountrySpriteState, sprite);
       }
+    }
+
+    for (final CountryName countryName : countryNamesAndSpriteStatesToSprites.rowKeySet ())
+    {
+      countryNamesToSprites.put (countryName,
+                                 new CountrySprite (countryNamesAndSpriteStatesToSprites.row (countryName)));
     }
   }
 
-  public Sprite get (final CountryName countryName, final CountrySpriteState countrySpriteState)
+  public CountrySprite get (final CountryName countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
-    Arguments.checkIsNotNull (countrySpriteState, "countrySpriteState");
+    Preconditions.checkIsTrue (countryNamesToSprites.containsKey (countryName), "Cannot find country sprite named ["
+            + countryName + "].");
 
-    final Sprite countrySprite = countryNamesAndSpriteStatesToSprites.get (countryName, countrySpriteState);
-
-    if (countrySprite == null)
-    {
-      throw new IllegalStateException ("Cannot find country sprite named [" + countryName + "] with state ["
-              + countrySpriteState + "].");
-    }
-
-    return countrySprite;
+    return countryNamesToSprites.get (countryName);
   }
 
   private CountryName createCountryNameFrom (final String[] countryAtlasRegionNameSegments)
@@ -54,7 +59,7 @@ public final class CountrySprites
 
     for (int i = 0; i < countryAtlasRegionNameSegments.length - 1; ++i)
     {
-      countryNameStringBuilder.append (Strings.toProperCase (countryAtlasRegionNameSegments[i])).append (" ");
+      countryNameStringBuilder.append (Strings.toProperCase (countryAtlasRegionNameSegments [i])).append (" ");
     }
 
     countryNameStringBuilder.deleteCharAt (countryNameStringBuilder.length () - 1);

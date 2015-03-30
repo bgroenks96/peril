@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableBiMap;
 
 public final class CountrySpriteDataLoader extends AbstractDataLoader <CountryName, CountrySpriteData>
 {
-  private static final int SPRITES_PER_ROW = 13;
   private final ImmutableBiMap.Builder <CountryName, CountrySpriteData> countrySpriteDataBuilder = new ImmutableBiMap.Builder <> ();
   private StreamParser streamParser;
   private String countryNameValue;
@@ -64,6 +63,6 @@ public final class CountrySpriteDataLoader extends AbstractDataLoader <CountryNa
     final Point2D spriteCenter = new Point2D (spriteCenterX, spriteCenterY);
 
     countrySpriteDataBuilder.put (countryName, new CountrySpriteData (countryName, spriteDestPlayMap, spriteCenter,
-            spriteSize, SPRITES_PER_ROW));
+            spriteSize));
   }
 }

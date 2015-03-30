@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.map.actors;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteColorOrderFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteData;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.sprites.CountrySprites;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.data.CountrySpriteDataRepository;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
@@ -12,25 +11,21 @@ import com.google.common.collect.ImmutableMap;
 
 public final class PlayMapActorFactory
 {
-  public static PlayMapActor create (final CountrySpriteDataRepository countrySpriteDataRepository,
+  public static PlayMapActor create (final CountrySprites countrySprites,
+                                     final CountrySpriteDataRepository countrySpriteDataRepository,
                                      final PlayMapInputDetection playMapInputDetection)
   {
+    Arguments.checkIsNotNull (countrySprites, "countrySprites");
     Arguments.checkIsNotNull (countrySpriteDataRepository, "countrySpriteDataRepository");
     Arguments.checkIsNotNull (playMapInputDetection, "playMapInputDetection");
 
-    final CountryActorFactory countryActorFactory = new CountryActorFactory (CountrySpriteColorOrderFactory.create ());
+    final CountryActorFactory countryActorFactory = new CountryActorFactory (countrySprites, countrySpriteDataRepository);
 
     final ImmutableMap.Builder <CountryName, CountryActor> countryNamesToActorsBuilder = ImmutableMap.builder ();
 
-    CountrySpriteData countrySpriteData;
-    CountryActor countryActor;
-
     for (final CountryName countryName : countrySpriteDataRepository.getCountryNames ())
     {
-      countrySpriteData = countrySpriteDataRepository.get (countryName);
-      countryActor = countryActorFactory.create (countrySpriteData);
-
-      countryNamesToActorsBuilder.put (countryName, countryActor);
+      countryNamesToActorsBuilder.put (countryName, countryActorFactory.create (countryName));
     }
 
     return new PlayMapActor (countryNamesToActorsBuilder.build (), playMapInputDetection);

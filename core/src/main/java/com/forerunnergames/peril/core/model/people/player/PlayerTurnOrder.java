@@ -60,6 +60,18 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   }
 
   @Override
+  public PlayerTurnOrder first ()
+  {
+    return IterableEnumHelper.first (values ());
+  }
+
+  @Override
+  public PlayerTurnOrder last ()
+  {
+    return IterableEnumHelper.last (values ());
+  }
+
+  @Override
   public boolean is (final PlayerTurnOrder turnOrder)
   {
     return IterableEnumHelper.is (this, turnOrder);

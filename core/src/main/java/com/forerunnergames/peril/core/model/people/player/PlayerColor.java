@@ -57,6 +57,18 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   }
 
   @Override
+  public PlayerColor first ()
+  {
+    return IterableEnumHelper.first (values ());
+  }
+
+  @Override
+  public PlayerColor last ()
+  {
+    return IterableEnumHelper.last (values ());
+  }
+
+  @Override
   public boolean is (final PlayerColor color)
   {
     return IterableEnumHelper.is (this, color);

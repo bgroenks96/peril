@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.client.ui.screens.game.play.map.sprites.CountrySprites;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.PlayMapActorFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.map.actors.TerritoryTextActor;
@@ -30,9 +31,9 @@ public final class PlayScreenFactory
     final CountrySpriteDataRepository countrySpriteDataRepository = CountrySpriteDataRepositoryFactory.create ();
 
     return new PlayScreen (screenController, new PlayScreenWidgetFactory (Assets.skin, eventBus),
-            PlayMapActorFactory.create (countrySpriteDataRepository, playMapInputDetection), new ArmyTextActor (
-                    countrySpriteDataRepository), new TerritoryTextActor (playMapInputDetection, mouseInput),
-            new PlayScreenMusic (), eventBus);
+            PlayMapActorFactory.create (new CountrySprites (), countrySpriteDataRepository, playMapInputDetection),
+            new ArmyTextActor (countrySpriteDataRepository),
+            new TerritoryTextActor (playMapInputDetection, mouseInput), new PlayScreenMusic (), eventBus);
   }
 
   private PlayScreenFactory ()
