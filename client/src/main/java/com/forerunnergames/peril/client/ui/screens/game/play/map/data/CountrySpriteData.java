@@ -32,9 +32,16 @@ public final class CountrySpriteData
     this.spritesPerRow = spritesPerRow;
   }
 
-  public CountryName getName ()
+  public String getName ()
   {
-    return name;
+    return name.asString ();
+  }
+
+  public boolean hasName (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    return this.name.is (name);
   }
 
   public String getNameAsFileName (final String fileNameExtension)

@@ -50,6 +50,6 @@ public final class PlayMapInputDetection
     countryName = inputCoordinateToCountryNameConverter.convert (inputCoordinate, screenSize);
     continentName = inputCoordinateToContinentNameConverter.convert (inputCoordinate, screenSize);
 
-    return Strings.toStringList (", ", LetterCase.PROPER, false, countryName.getName (), continentName.getName ());
+    return Strings.toStringList (", ", LetterCase.PROPER, false, countryName.asString (), continentName.asString ());
   }
 }

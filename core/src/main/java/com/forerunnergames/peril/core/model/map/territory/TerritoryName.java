@@ -2,7 +2,13 @@ package com.forerunnergames.peril.core.model.map.territory;
 
 public interface TerritoryName
 {
-  String getName ();
+  String asFileName (final String fileExtension);
+
+  String asString ();
+
+  boolean is (final String name);
+
+  boolean isNot (final String name);
 
   @Override
   int hashCode ();

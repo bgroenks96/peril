@@ -66,7 +66,7 @@ public final class CountryActor extends Actor
     width = sizeActualPlayMapSpace.getWidth ();
     height = sizeActualPlayMapSpace.getHeight ();
 
-    setName (spriteData.getName ().getName ());
+    setName (spriteData.getName ());
     setSize (width, height);
     setBounds (0, 0, width, height);
     clearColor();
@@ -76,8 +76,7 @@ public final class CountryActor extends Actor
   public void draw (final Batch batch, final float parentAlpha)
   {
     // TODO Production: Remove
-    if (spriteData.getName().getName ().equals ("Antarctica")) return;
-
+    if (spriteData.hasName ("Antarctica")) return;
     if (currentSpriteIndex >= 0) batch.draw (getSpriteAtIndex (currentSpriteIndex), x, y, width, height);
     if (PlayMapSettings.ENABLE_HOVER_EFFECTS && isHovered) batch.draw (getSpriteAtIndex (HIGHLIGHTED_SPRITE_INDEX), x, y, width, height);
     if (PlayMapSettings.ENABLE_CLICK_EFFECTS && isTouchDown) batch.draw (getSpriteAtIndex (DISABLED_SPRITE_INDEX), x, y, width, height);
