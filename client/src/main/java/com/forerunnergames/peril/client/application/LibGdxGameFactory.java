@@ -9,6 +9,7 @@ import com.forerunnergames.peril.client.controllers.MultiplayerController;
 import com.forerunnergames.peril.client.kryonet.KryonetClient;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenFactory;
+import com.forerunnergames.peril.core.shared.application.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.tools.common.Application;
@@ -19,11 +20,6 @@ import com.forerunnergames.tools.net.Client;
 import com.forerunnergames.tools.net.ClientController;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.error.IPublicationErrorHandler;
-import net.engio.mbassy.bus.error.PublicationError;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Creates the {@link com.badlogic.gdx.ApplicationListener} instance to be passed to all of the executable sub-projects
@@ -31,20 +27,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class LibGdxGameFactory
 {
-  private static final Logger log = LoggerFactory.getLogger (LibGdxGameFactory.class);
-
   public static ApplicationListener create ()
   {
-    final MBassador <Event> eventBus = new MBassador <> ();
-
-    eventBus.addErrorHandler (new IPublicationErrorHandler ()
-    {
-      @Override
-      public void handleError (final PublicationError error)
-      {
-        log.error (error.toString (), error.getCause ());
-      }
-    });
+    final MBassador <Event> eventBus = EventBusFactory.create ();
 
     // @formatter:off
     final Client client = new KryonetClient ();

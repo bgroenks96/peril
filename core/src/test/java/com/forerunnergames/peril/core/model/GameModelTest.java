@@ -5,6 +5,7 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.reas
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -14,6 +15,7 @@ import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.core.shared.application.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
@@ -25,12 +27,9 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
-
 import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.error.IPublicationErrorHandler;
-import net.engio.mbassy.bus.error.PublicationError;
 import net.engio.mbassy.listener.Handler;
 
 import org.junit.Before;
@@ -39,12 +38,8 @@ import org.junit.Test;
 
 import org.mockito.Mockito;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class GameModelTest
 {
-  private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private static MBassador <Event> eventBus;
   private int playerLimit;
   private int initialArmies;
@@ -55,16 +50,7 @@ public class GameModelTest
   @BeforeClass
   public static void setupClass ()
   {
-    eventBus = new MBassador<> ();
-
-    eventBus.addErrorHandler (new IPublicationErrorHandler ()
-    {
-      @Override
-      public void handleError (final PublicationError error)
-      {
-        log.error (error.toString (), error.getCause ());
-      }
-    });
+    eventBus = EventBusFactory.create ();
   }
 
   @Before

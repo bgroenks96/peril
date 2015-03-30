@@ -7,6 +7,7 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
+import com.forerunnergames.peril.core.shared.application.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -15,8 +16,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.error.IPublicationErrorHandler;
-import net.engio.mbassy.bus.error.PublicationError;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,17 +40,7 @@ public class GameStateMachineTest
   @BeforeClass
   public static void setUpClass ()
   {
-    final MBassador <Event> eventBus = new MBassador <> ();
-
-    eventBus.addErrorHandler (new IPublicationErrorHandler ()
-    {
-      @Override
-      public void handleError (final PublicationError error)
-      {
-        log.error (error.toString (), error.getCause ());
-      }
-    });
-
+    final MBassador <Event> eventBus = EventBusFactory.create();
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
     final PlayerModel playerModel = new PlayerModel (rules);
     final GameModel gameModel = new GameModel (playerModel, rules, eventBus);
