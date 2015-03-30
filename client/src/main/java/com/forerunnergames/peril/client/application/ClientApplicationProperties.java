@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public final class ClientApplicationProperties
 {
   private static final Logger log = LoggerFactory.getLogger (ClientApplicationProperties.class);
-  private static final String PROPERTIES_FILE_SUBDIR = "peril/settings";
+  private static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   private static final String PROPERTIES_FILE_NAME = "settings.txt";
   private static final String WINDOW_WIDTH_PROPERTY_KEY = "window-width";
   private static final String WINDOW_HEIGHT_PROPERTY_KEY = "window-height";
@@ -80,8 +80,8 @@ public final class ClientApplicationProperties
     defaults.setProperty (START_SCREEN_PROPERTY_KEY, String.valueOf (ScreenSettings.START_SCREEN));
 
     properties = new Properties (defaults);
-    propertiesFilePath = System.getProperty ("user.home") + "/" + PROPERTIES_FILE_SUBDIR;
-    final String propertiesFilePathAndName = propertiesFilePath + "/" + PROPERTIES_FILE_NAME;
+    propertiesFilePath = System.getProperty ("user.home") + File.separator + PROPERTIES_FILE_SUBDIR;
+    final String propertiesFilePathAndName = propertiesFilePath + File.separator + PROPERTIES_FILE_NAME;
 
     try
     {
