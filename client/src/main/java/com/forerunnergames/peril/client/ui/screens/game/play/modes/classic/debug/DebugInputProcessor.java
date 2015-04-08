@@ -307,12 +307,11 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'm':
       {
-        /*
-         * final CountryName sourceCountryName = new CountryName ("Kamchatka"); final CountryName destinationCountryName
-         * = new CountryName ("Northwest Territory");
-         */
+        // final CountryName sourceCountryName = new CountryName ("Brazil");
+        // final CountryName destinationCountryName = new CountryName ("Northwest Territory");
 
         final CountryName sourceCountryName = eventGenerator.getRandomCountryName ();
+
         CountryName destinationCountryName;
 
         do

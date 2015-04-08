@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.deltaArmyCountFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.hasAuthorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withAuthorNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withCountryNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.deltaArmyCountFrom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -25,6 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
+import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.MusicSettings;
@@ -66,9 +68,9 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
   private final MessageBox <Message> playerBox;
-  private final MandatoryOccupationPopup mandatoryOccupationPopup;
   private final InputProcessor inputProcessor;
   private final DebugEventProcessor debugEventProcessor;
+  private final GdxKeyRepeatSystem keyRepeat;
   private Size2D currentScreenSize;
 
   public ClassicPlayScreen (final ScreenController screenController,
@@ -77,7 +79,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
                             final ArmyTextActor armyTextActor,
                             final TerritoryTextActor territoryTextActor,
                             final ScreenMusic music,
-                            final MBassador<Event> eventBus)
+                            final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
@@ -131,7 +133,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
       }
     };
 
-    mandatoryOccupationPopup = widgetFactory.createMandatoryOccupationPopup (stage);
+    final MandatoryOccupationPopup mandatoryOccupationPopup = widgetFactory.createMandatoryOccupationPopup (stage);
 
     stage.addActor (rootStack);
 
@@ -161,10 +163,113 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
       }
     };
 
+    keyRepeat = new GdxKeyRepeatSystem (Gdx.input, new GdxKeyRepeatListenerAdapter ()
+    {
+      @Override
+      public void keyDownRepeating (int keyCode)
+      {
+        mandatoryOccupationPopup.keyDownRepeating (keyCode);
+      }
+    });
+
+    keyRepeat.setKeyRepeatRate (Input.Keys.LEFT, 50);
+    keyRepeat.setKeyRepeatRate (Input.Keys.RIGHT, 50);
+    keyRepeat.setKeyRepeatRate (Input.Keys.UP, 50);
+    keyRepeat.setKeyRepeatRate (Input.Keys.DOWN, 50);
+    keyRepeat.setKeyRepeat (Input.Keys.LEFT, true);
+    keyRepeat.setKeyRepeat (Input.Keys.RIGHT, true);
+    keyRepeat.setKeyRepeat (Input.Keys.UP, true);
+    keyRepeat.setKeyRepeat (Input.Keys.DOWN, true);
+    keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
+    keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
+
     final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor,
             armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
+  }
+
+  @Override
+  public void show ()
+  {
+    showCursor ();
+
+    eventBus.subscribe (this);
+
+    Gdx.input.setInputProcessor (inputProcessor);
+
+    if (MusicSettings.IS_ENABLED) music.start ();
+  }
+
+  @Override
+  public void render (final float delta)
+  {
+    Gdx.gl.glClearColor (0, 0, 0, 1);
+    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
+
+    keyRepeat.update ();
+    stage.act (delta);
+    stage.draw ();
+  }
+
+  @Override
+  public void resize (final int width, final int height)
+  {
+    stage.getViewport ().update (width, height, true);
+  }
+
+  @Override
+  public void pause ()
+  {
+  }
+
+  @Override
+  public void resume ()
+  {
+  }
+
+  @Override
+  public void hide ()
+  {
+    eventBus.unsubscribe (this);
+
+    Gdx.input.setInputProcessor (null);
+
+    if (MusicSettings.IS_ENABLED) music.stop ();
+
+    hideCursor ();
+  }
+
+  @Override
+  public void dispose ()
+  {
+    eventBus.unsubscribe (this);
+    stage.dispose ();
+  }
+
+  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    playMapActor.touchDown (new Point2D (screenX, screenY), button, getScreenSize ());
+    armyTextActor.touchDown (playMapActor.getCountryNameAt (new Point2D (screenX, screenY), getScreenSize ()), button);
+
+    return false;
+  }
+
+  @Override
+  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    playMapActor.touchUp (new Point2D (screenX, screenY), button, getScreenSize ());
+
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved (final int screenX, final int screenY)
+  {
+    playMapActor.mouseMoved (new Point2D (screenX, screenY), getScreenSize ());
+
+    return false;
   }
 
   @Handler
@@ -204,90 +309,6 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     armyTextActor.changeArmyCountBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
   }
 
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    playMapActor.touchDown (new Point2D (screenX, screenY), button, getScreenSize ());
-    armyTextActor.touchDown (playMapActor.getCountryNameAt (new Point2D (screenX, screenY), getScreenSize ()), button);
-
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    playMapActor.touchUp (new Point2D (screenX, screenY), button, getScreenSize ());
-
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    playMapActor.mouseMoved (new Point2D (screenX, screenY), getScreenSize ());
-
-    return false;
-  }
-
-  @Override
-  public void show ()
-  {
-    showCursor ();
-
-    eventBus.subscribe (this);
-
-    Gdx.input.setInputProcessor (inputProcessor);
-
-    if (MusicSettings.IS_ENABLED) music.start ();
-  }
-
-  @Override
-  public void render (final float delta)
-  {
-    Gdx.gl.glClearColor (0, 0, 0, 1);
-    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
-
-    stage.act (delta);
-    stage.draw ();
-  }
-
-  @Override
-  public void resize (final int width, final int height)
-  {
-    stage.getViewport ().update (width, height, true);
-  }
-
-  @Override
-  public void pause ()
-  {
-  }
-
-  @Override
-  public void resume ()
-  {
-  }
-
-  @Override
-  public void hide ()
-  {
-    eventBus.unsubscribe (this);
-
-    Gdx.input.setInputProcessor (null);
-
-    if (MusicSettings.IS_ENABLED) music.stop ();
-
-    hideCursor ();
-  }
-
-  @Override
-  public void dispose ()
-  {
-    eventBus.unsubscribe (this);
-
-    mandatoryOccupationPopup.dispose ();
-    stage.dispose ();
-  }
-
   private Size2D getScreenSize ()
   {
     if (currentScreenSize != null && currentScreenSize.getWidth () == Gdx.graphics.getWidth ()
@@ -304,8 +325,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private void showCursor ()
   {
     Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
+            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
+            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
   }
 
   private void hideCursor ()

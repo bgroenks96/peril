@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
@@ -36,14 +38,22 @@ public final class Assets
   public static Pixmap menuNormalCursor;
   public static Pixmap playScreenNormalCursor;
   public static BitmapFont aurulentSans16;
+  public static BitmapFont droidSansMono18;
+  public static BitmapFont armyCircleDistanceFieldFont;
   public static Texture armyMovementBackground;
+  public static Texture armyMovementForegroundArrow;
+  public static Texture armyMovementForegroundArrowText;
   public static Texture armyMovementOccupationTitle;
   public static TextureAtlas perilModeAtlas;
   public static NinePatch perilModeGridLines;
+  public static ShaderProgram distanceFieldFontShader;
   public static ImmutableList <TextureAtlas> countryAtlases;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
   private static Texture menuRightBackgroundShadowTexture;
+  private static Texture aurulentSans16Texture;
+  private static Texture droidSansMono18Texture;
+  private static Texture armyCircleDistanceFieldFontTexture;
   private static boolean isLoaded = false;
 
   public static void dispose ()
@@ -67,8 +77,16 @@ public final class Assets
     menuNormalCursor.dispose ();
     playScreenNormalCursor.dispose ();
     aurulentSans16.dispose ();
+    aurulentSans16Texture.dispose ();
+    droidSansMono18.dispose ();
+    droidSansMono18Texture.dispose ();
+    armyCircleDistanceFieldFont.dispose ();
+    armyCircleDistanceFieldFontTexture.dispose ();
     armyMovementBackground.dispose ();
+    armyMovementForegroundArrow.dispose ();
+    armyMovementForegroundArrowText.dispose ();
     armyMovementOccupationTitle.dispose ();
+    distanceFieldFontShader.dispose ();
     perilModeAtlas.dispose ();
     skin.dispose ();
 
@@ -80,6 +98,7 @@ public final class Assets
     isLoaded = false;
   }
 
+  // @formatter:off
   public static void load ()
   {
     if (isLoaded)
@@ -88,7 +107,6 @@ public final class Assets
       return;
     }
 
-    // @formatter:off
     menuBackground = new Texture (Gdx.files.internal ("ui/screens/menus/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightBackgroundShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     rightMenuBackgroundShadow = new NinePatch (menuRightBackgroundShadowTexture);
@@ -104,8 +122,18 @@ public final class Assets
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
     menuNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
     playScreenNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
-    aurulentSans16 = new BitmapFont (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt"));
+    aurulentSans16Texture = new Texture (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    aurulentSans16Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
+    aurulentSans16 = new BitmapFont (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt"), new TextureRegion (aurulentSans16Texture), false);
+    droidSansMono18Texture = new Texture (Gdx.files.internal ("ui/fonts/droidsans/mono/droid-sans-mono-18.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    droidSansMono18Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
+    droidSansMono18 = new BitmapFont (Gdx.files.internal ("ui/fonts/droidsans/mono/droid-sans-mono-18.fnt"), new TextureRegion (droidSansMono18Texture), false);
+    armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("ui/screens/game/play/map/fonts/armyCircleDigits.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    armyCircleDistanceFieldFontTexture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
+    armyCircleDistanceFieldFont = new BitmapFont (Gdx.files.internal ("ui/screens/game/play/map/fonts/armyCircleDigits.fnt"), new TextureRegion (armyCircleDistanceFieldFontTexture), false);
     armyMovementBackground = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    armyMovementForegroundArrow = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    armyMovementForegroundArrowText = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/occupying.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     perilModeAtlas = new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/modes/peril/perilMode.atlas"));
     perilModeGridLines = perilModeAtlas.createPatch ("gridMiddle");
@@ -116,7 +144,13 @@ public final class Assets
             new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries2.atlas")),
             new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries3.atlas")),
             new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries4.atlas")));
-    // @formatter:on
+
+    distanceFieldFontShader = new ShaderProgram (Gdx.files.internal ("ui/shaders/font.vert"), Gdx.files.internal ("ui/shaders/font.frag"));
+
+    if (!distanceFieldFontShader.isCompiled ())
+    {
+      Gdx.app.error ("distanceFieldFontShader", "Compilation failed:\n" + distanceFieldFontShader.getLog ());
+    }
 
     setFilter (menuBackground);
     setFilter (menuRightBackgroundShadowTexture);
@@ -127,11 +161,13 @@ public final class Assets
     setFilter (rightMenuBarShadow);
     setFilter (playScreenBackground);
     setFilter (playScreenMapBackground);
-    setFilter (armyMovementBackground);
+    setFilter (armyMovementForegroundArrow);
+    setFilter (armyMovementForegroundArrowText);
     setFilter (armyMovementOccupationTitle);
 
     isLoaded = true;
   }
+  // @formatter:on
 
   private static void setFilter (final GLTexture texture)
   {

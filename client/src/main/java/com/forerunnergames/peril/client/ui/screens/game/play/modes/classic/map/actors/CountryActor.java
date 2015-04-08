@@ -137,11 +137,11 @@ public final class CountryActor extends Actor
 
   public Point2D getCenterPlayMapReferenceSpace()
   {
-    return spriteData.getCenterPlayMapReferenceSpace();
+    return spriteData.getCenterPlayMapReferenceSpace ();
   }
 
-  public String getCurrentCountrySpriteName()
+  public Size2D getSizePlayMapReferenceSpace()
   {
-    return getName() + " " + getCurrentState ().toProperCase ();
+    return spriteData.getSizePlayMapReferenceSpace ();
   }
 }

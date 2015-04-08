@@ -48,22 +48,12 @@ public final class CountrySpriteData
     return sizePlayMapReferenceSpace;
   }
 
-  public float getWidth ()
-  {
-    return sizePlayMapReferenceSpace.getWidth ();
-  }
-
-  public float getHeight ()
-  {
-    return sizePlayMapReferenceSpace.getHeight ();
-  }
-
   @Override
   public String toString ()
   {
     return String.format ("%1$s: Name: %2$s | Destination (Play Map Reference Space): %3$s"
-                                  + " | Center (Play Map Reference Space): %4$s | Size: %5$s",
-                          getClass ().getSimpleName (), name, destPlayMapReferenceSpace, centerPlayMapReferenceSpace,
-                          sizePlayMapReferenceSpace);
+                    + " | Center (Play Map Reference Space): %4$s | Size: %5$s", getClass ()
+                    .getSimpleName (), name,
+            destPlayMapReferenceSpace, centerPlayMapReferenceSpace, sizePlayMapReferenceSpace);
   }
 }
