@@ -107,45 +107,45 @@ public final class Assets
       return;
     }
 
-    menuBackground = new Texture (Gdx.files.internal ("ui/screens/menus/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightBackgroundShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    menuBackground = new Texture (Gdx.files.internal ("screens/menus/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("screens/menus/shared/rightBackgroundShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     rightMenuBackgroundShadow = new NinePatch (menuRightBackgroundShadowTexture);
-    mainMenuText = new Texture (Gdx.files.internal ("ui/screens/menus/main/text.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    topMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/topMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/bottomMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    leftMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/leftMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    rightMenuBarShadow = new Texture (Gdx.files.internal ("ui/screens/menus/shared/rightMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/menuScreens.mp3"));
-    playScreenBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapBackground = new Texture (Gdx.files.internal ("ui/screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("ui/screens/game/play/map/inputDetection.png"));
-    playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("ui/music/playScreen.mp3"));
-    menuNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
-    playScreenNormalCursor = new Pixmap (Gdx.files.internal ("ui/mouse/normalCursor.png"));
-    aurulentSans16Texture = new Texture (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    mainMenuText = new Texture (Gdx.files.internal ("screens/menus/main/text.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    topMenuBarExtensionShadow = new Texture (Gdx.files.internal ("screens/menus/shared/topMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("screens/menus/shared/bottomMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    leftMenuBarShadow = new Texture (Gdx.files.internal ("screens/menus/shared/leftMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    rightMenuBarShadow = new Texture (Gdx.files.internal ("screens/menus/shared/rightMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/menuScreens.mp3"));
+    playScreenBackground = new Texture (Gdx.files.internal ("screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playScreenMapBackground = new Texture (Gdx.files.internal ("screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("screens/game/play/map/inputDetection.png"));
+    playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/playScreen.mp3"));
+    menuNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
+    playScreenNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
+    aurulentSans16Texture = new Texture (Gdx.files.internal ("fonts/aurulentsans/aurulent-sans-16.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
     aurulentSans16Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    aurulentSans16 = new BitmapFont (Gdx.files.internal ("ui/fonts/aurulentsans/aurulent-sans-16.fnt"), new TextureRegion (aurulentSans16Texture), false);
-    droidSansMono18Texture = new Texture (Gdx.files.internal ("ui/fonts/droidsans/mono/droid-sans-mono-18.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    aurulentSans16 = new BitmapFont (Gdx.files.internal ("fonts/aurulentsans/aurulent-sans-16.fnt"), new TextureRegion (aurulentSans16Texture), false);
+    droidSansMono18Texture = new Texture (Gdx.files.internal ("fonts/droidsans/mono/droid-sans-mono-18.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
     droidSansMono18Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    droidSansMono18 = new BitmapFont (Gdx.files.internal ("ui/fonts/droidsans/mono/droid-sans-mono-18.fnt"), new TextureRegion (droidSansMono18Texture), false);
-    armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("ui/screens/game/play/map/fonts/armyCircleDigits.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    droidSansMono18 = new BitmapFont (Gdx.files.internal ("fonts/droidsans/mono/droid-sans-mono-18.fnt"), new TextureRegion (droidSansMono18Texture), false);
+    armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
     armyCircleDistanceFieldFontTexture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    armyCircleDistanceFieldFont = new BitmapFont (Gdx.files.internal ("ui/screens/game/play/map/fonts/armyCircleDigits.fnt"), new TextureRegion (armyCircleDistanceFieldFontTexture), false);
-    armyMovementBackground = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    armyMovementForegroundArrow = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/shared/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    armyMovementForegroundArrowText = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/occupying.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    armyMovementOccupationTitle = new Texture (Gdx.files.internal ("ui/widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    perilModeAtlas = new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/modes/peril/perilMode.atlas"));
+    armyCircleDistanceFieldFont = new BitmapFont (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.fnt"), new TextureRegion (armyCircleDistanceFieldFontTexture), false);
+    armyMovementBackground = new Texture (Gdx.files.internal ("widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    armyMovementForegroundArrow = new Texture (Gdx.files.internal ("widgets/popups/armymovement/shared/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    armyMovementForegroundArrowText = new Texture (Gdx.files.internal ("widgets/popups/armymovement/occupation/occupying.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    armyMovementOccupationTitle = new Texture (Gdx.files.internal ("widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    perilModeAtlas = new TextureAtlas (Gdx.files.internal ("screens/game/play/modes/peril/perilMode.atlas"));
     perilModeGridLines = perilModeAtlas.createPatch ("gridMiddle");
-    skin = new Skin (Gdx.files.internal ("ui/uiskin.json"));
+    skin = new Skin (Gdx.files.internal ("uiskin.json"));
     countryAtlases = ImmutableList.of (
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries0.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries1.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries2.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries3.atlas")),
-            new TextureAtlas (Gdx.files.internal ("ui/screens/game/play/map/countries/atlases/countries4.atlas")));
+            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries0.atlas")),
+            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries1.atlas")),
+            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries2.atlas")),
+            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries3.atlas")),
+            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries4.atlas")));
 
-    distanceFieldFontShader = new ShaderProgram (Gdx.files.internal ("ui/shaders/font.vert"), Gdx.files.internal ("ui/shaders/font.frag"));
+    distanceFieldFontShader = new ShaderProgram (Gdx.files.internal ("shaders/font.vert"), Gdx.files.internal ("shaders/font.frag"));
 
     if (!distanceFieldFontShader.isCompiled ())
     {
