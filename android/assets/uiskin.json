@@ -13,12 +13,12 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
-      "default": { "down": "default-round-down", "up": "default-round" },
+      "default": { "down": "default-button-down", "up": "default-button-up", "over": "default-button-over" },
       "toggle":  { "down": "default-round-down", "up": "default-round", "checked": "default-round-down" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
-      "default": { "down": "default-round-down", "up": "default-round", "font": "default-font", "fontColor": "white"},
+      "default": { "down": "default-button-down", "up": "default-button-up", "over": "default-button-over", "font": "default-font", "fontColor": "white"},
       "toggle":  { "down": "default-round-down", "up": "default-round", "font": "default-font", "fontColor": "white", "downFontColor": "red", "checked": "default-round-down" }
   },
 
@@ -28,7 +28,9 @@
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
       "default": {
-          "font": "default-font", "fontColor": "white", "background": "default-select",
+          "font": "default-font",
+          "fontColor": "white",
+          "background": "default-select",
           "scrollStyle": "default",
           "listStyle": { "font": "default-font", "selection": "default-select-selection" }
       }
