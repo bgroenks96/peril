@@ -3,9 +3,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -24,14 +21,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.tools.CoordinateSpaces;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
@@ -55,16 +53,11 @@ public final class MandatoryOccupationPopup extends Dialog
 {
   private static final float COUNTRY_BOX_WIDTH = 400;
   private static final float COUNTRY_BOX_HEIGHT = 200;
-  private static final float COUNTRY_BOX_INNER_PADDING = 1;
+  private static final float COUNTRY_BOX_INNER_PADDING = 3;
   private static final float SOURCE_COUNTRY_ARROW_WIDTH = 56;
   private static final float DESTINATION_COUNTRY_ARROW_WIDTH = 64;
   private static final float SOURCE_COUNTRY_BOX_DESTINATION_COUNTRY_BOX_SPACING = 12;
-  private static final float COUNTRY_ARMY_TEXT_CIRCLE_WIDTH_PLAY_MAP_REFERENCE_SPACE = 32;
-  private static final float COUNTRY_ARMY_TEXT_CIRCLE_HEIGHT_PLAY_MAP_REFERENCE_SPACE = 30;
-  private static final Size2D COUNTRY_ARMY_TEXT_CIRCLE_SIZE_PLAY_MAP_REFERENCE_SPACE = new Size2D (
-          COUNTRY_ARMY_TEXT_CIRCLE_WIDTH_PLAY_MAP_REFERENCE_SPACE,
-          COUNTRY_ARMY_TEXT_CIRCLE_HEIGHT_PLAY_MAP_REFERENCE_SPACE);
-  private static final Point2D FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE = new Point2D (364, 255);
+  private static final Point2D FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE = new Point2D (368, 255);
   private static final Size2D FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE = new Size2D (94, 14);
   private static final String WINDOW_STYLE_NAME_JSON = "dialog";
   private static final Point2D POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE = new Point2D (494, 172);
@@ -76,8 +69,8 @@ public final class MandatoryOccupationPopup extends Dialog
   private static final int SLIDER_STEP_SIZE = 1;
   private static final float INITIAL_BUTTON_REPEAT_DELAY_SECONDS = 0.5f;
   private static final float BUTTON_REPEAT_RATE_SECONDS = 0.05f;
-  final Vector2 tempSize = new Vector2 ();
-  final Color tempColor = new Color ();
+  private final Vector2 tempSize = new Vector2 ();
+  private final Color tempColor = new Color ();
   private final CountryArmyTextActor sourceCountryArmyTextActor = new CountryArmyTextActor ();
   private final CountryArmyTextActor destinationCountryArmyTextActor = new CountryArmyTextActor ();
   private final Stage stage;
@@ -591,18 +584,16 @@ public final class MandatoryOccupationPopup extends Dialog
                                          final CountryActor countryActor,
                                          final Image countryImage)
   {
-    countryArmyTextActor
-            .setCircleSizeActualCountrySpace (calculateCountryArmyTextCircleSizeActualCountrySpace (countryActor,
-                                                                                                    countryImage));
+    countryArmyTextActor.setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (countryActor,
+                                                                                              countryImage));
   }
 
   private void setCountryArmyCirclePosition (final CountryArmyTextActor countryArmyTextActor,
                                              final CountryActor countryActor,
                                              final Image countryImage)
   {
-    countryArmyTextActor
-            .setCircleTopLeftActualCountrySpace (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor,
-                                                                                                          countryImage));
+    countryArmyTextActor.setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor,
+            countryImage));
   }
 
   private float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
@@ -613,7 +604,7 @@ public final class MandatoryOccupationPopup extends Dialog
 
   private Image asImage (final CountryActor countryActor)
   {
-    return new Image (new SpriteDrawable (new Sprite (countryActor.getCurrentSprite ())), Scaling.none);
+    return new Image (countryActor.getCurrentImage ().getDrawable (), Scaling.none);
   }
 
   private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,
@@ -640,7 +631,7 @@ public final class MandatoryOccupationPopup extends Dialog
   private Size2D calculateCountryArmyTextCircleSizeActualCountrySpace (final CountryActor countryActor,
                                                                        final Image countryImagePostLayout)
   {
-    return Geometry.scale (COUNTRY_ARMY_TEXT_CIRCLE_SIZE_PLAY_MAP_REFERENCE_SPACE,
+    return Geometry.scale (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE,
                            calculateCountryImageScaling (countryActor, countryImagePostLayout));
   }
 
@@ -664,54 +655,5 @@ public final class MandatoryOccupationPopup extends Dialog
   {
     sourceCountryNameLabel.setText (sourceCountryName);
     destinationCountryNameLabel.setText (destinationCountryName);
-  }
-
-  private final class CountryArmyTextActor extends Actor
-  {
-    private final BitmapFont font = Assets.aurulentSans16;
-    private final GlyphLayout glyphLayout = new GlyphLayout ();
-    private String text = "";
-    private Vector2 circleTopLeftActualCountrySpace = new Vector2 ();
-    private Size2D circleSizeActualCountrySpace = new Size2D ();
-    private Vector2 tempPosition = new Vector2 ();
-    private float x;
-    private float y;
-
-    @Override
-    public void draw (final Batch batch, final float parentAlpha)
-    {
-      localToParentCoordinates (tempPosition.set (circleTopLeftActualCountrySpace));
-
-      x = tempPosition.x + (circleSizeActualCountrySpace.getWidth () - glyphLayout.width) / 2.0f;
-      y = tempPosition.y - (circleSizeActualCountrySpace.getHeight () - glyphLayout.height) / 2.0f;
-
-      font.draw (batch, text, x, y);
-    }
-
-    public void setArmies (final int armies)
-    {
-      changeText (String.valueOf (armies));
-    }
-
-    public void setCircleTopLeftActualCountrySpace (final Vector2 circleTopLeftActualCountrySpace)
-    {
-      Arguments.checkIsNotNull (circleTopLeftActualCountrySpace, "circleTopLeftActualCountrySpace");
-
-      this.circleTopLeftActualCountrySpace = circleTopLeftActualCountrySpace;
-    }
-
-    public void setCircleSizeActualCountrySpace (final Size2D circleSizeActualCountrySpace)
-    {
-      Arguments.checkIsNotNull (circleSizeActualCountrySpace, "circleSizeActualCountrySpace");
-
-      this.circleSizeActualCountrySpace = circleSizeActualCountrySpace;
-    }
-
-    private void changeText (final String text)
-    {
-      this.text = text;
-      glyphLayout.setText (font, text);
-      setSize (glyphLayout.width, glyphLayout.height);
-    }
   }
 }

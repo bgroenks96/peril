@@ -17,7 +17,7 @@ public final class AssetPaths
   public static final String PLAY_MAP_CONTINENT_DATA_PATH              = PLAY_MAP_CONTINENTS_PATH     + "data/";
   public static final String PLAY_MAP_COUNTRY_NAME_TO_COLOR_FILENAME   = PLAY_MAP_COUNTRY_DATA_PATH   + "inputDetection.txt";
   public static final String PLAY_MAP_CONTINENT_NAME_TO_COLOR_FILENAME = PLAY_MAP_CONTINENT_DATA_PATH + "inputDetection.txt";
-  public static final String PLAY_MAP_COUNTRY_SPRITE_DATA_FILENAME     = PLAY_MAP_COUNTRY_DATA_PATH   + "spriteData.txt";
+  public static final String PLAY_MAP_COUNTRY_IMAGE_DATA_FILENAME      = PLAY_MAP_COUNTRY_DATA_PATH   + "imageData.txt";
 
   private AssetPaths()
   {

@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.sprites.CountrySpriteState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.geometry.Geometry;
@@ -23,7 +23,7 @@ public final class TerritoryTextActor extends Actor
   private final PlayMapInputDetection playMapInputDetection;
   private final MouseInput mouseInput;
   private final BitmapFont font;
-  private CountrySpriteState countryState;
+  private CountryImageState countryState;
   private Point2D mouseHoverCoordinate;
   private String territoryNames;
   private Size2D screenSize;
@@ -40,7 +40,7 @@ public final class TerritoryTextActor extends Actor
     this.mouseInput = mouseInput;
     font = new BitmapFont ();
 
-    setHoveredCountryState (CountrySpriteState.UNOWNED);
+    setHoveredCountryState (CountryImageState.UNOWNED);
   }
 
   @Override
@@ -62,10 +62,10 @@ public final class TerritoryTextActor extends Actor
     y = (screenSize.getHeight () - mouseHoverCoordinate.getY () + TEXT_OFFSET_Y) * scaling.getY ();
 
     territoryNames = playMapInputDetection.getPrintableTerritoryNamesAt (mouseHoverCoordinate, screenSize)
-            + (countryState.is (CountrySpriteState.UNOWNED) ? "" : ", " + Strings.toProperCase (countryState.name ()));
+            + (countryState.is (CountryImageState.UNOWNED) ? "" : ", " + Strings.toProperCase (countryState.name ()));
   }
 
-  public void setHoveredCountryState (final CountrySpriteState countryState)
+  public void setHoveredCountryState (final CountryImageState countryState)
   {
     Arguments.checkIsNotNull (countryState, "countryState");
 

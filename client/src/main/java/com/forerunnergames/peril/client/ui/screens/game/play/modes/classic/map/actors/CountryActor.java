@@ -1,147 +1,192 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountrySpriteData;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.sprites.CountrySprite;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.sprites.CountrySpriteState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.tools.CoordinateSpaces;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.geometry.Geometry;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
+import com.forerunnergames.tools.common.geometry.Translation2D;
 
-// @formatter:off
-public final class CountryActor extends Actor
+import java.util.SortedMap;
+
+public final class CountryActor extends Group
 {
-  private final CountrySprite countrySprite;
-  private final CountrySpriteData spriteData;
-  private final Sprite hoveredSprite;
-  private final Sprite clickedSprite;
-  private final float x;
-  private final float y;
-  private final float width;
-  private final float height;
-  private CountrySpriteState currentState;
-  private Sprite currentSprite;
-  private boolean isHovered = false;
-  private boolean isTouchDown = false;
+  private final SortedMap <CountryImageState, Image> countryImageStatesToImages;
+  private final CountryImageData countryImageData;
+  private final CountryArmyTextActor countryArmyTextActor;
+  private CountryImageState currentImageState = CountryImageState.UNOWNED;
+  private Image currentImage;
 
-  public CountryActor (final CountrySprite countrySprite, final CountrySpriteData spriteData)
+  // @formatter:off
+  public CountryActor (final SortedMap <CountryImageState, Image> countryImageStatesToImages,
+                       final CountryImageData countryImageData,
+                       final CountryArmyTextActor countryArmyTextActor)
   {
-    Arguments.checkIsNotNull (countrySprite, "countrySprite");
-    Arguments.checkIsNotNull (spriteData, "spriteData");
+    Arguments.checkIsNotNull (countryImageStatesToImages, "countryImageStatesToImages");
+    Arguments.checkHasNoNullKeysOrValues (countryImageStatesToImages, "countryImageStatesToImages");
+    Arguments.checkIsNotNull (countryImageData, "countryImageData");
+    Arguments.checkIsNotNull (countryArmyTextActor, "countryArmyTextActor");
 
-    this.countrySprite = countrySprite;
-    this.spriteData = spriteData;
-    this.hoveredSprite = countrySprite.get (CountrySpriteState.HIGHLIGHT);
-    this.clickedSprite = countrySprite.get (CountrySpriteState.DISABLED);
+    this.countryImageStatesToImages = countryImageStatesToImages;
+    this.countryImageData = countryImageData;
+    this.countryArmyTextActor = countryArmyTextActor;
 
-    final Point2D destReferenceScreenSpace = CoordinateSpaces.referencePlayMapSpaceToReferenceScreenSpace (spriteData.getDestPlayMapReferenceSpace ());
-    x = destReferenceScreenSpace.getX();
-    y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT - destReferenceScreenSpace.getY();
-    final Size2D sizeActualPlayMapSpace = Geometry.scale (spriteData.getSizePlayMapReferenceSpace(), PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
-    width = sizeActualPlayMapSpace.getWidth ();
-    height = sizeActualPlayMapSpace.getHeight ();
+    final Point2D destPlayMapReferenceSpaceFlippedY =
+            Geometry.absoluteValue (
+                    Geometry.translate (
+                            countryImageData.getDestPlayMapReferenceSpace (),
+                            new Translation2D (0, -PlayMapSettings.REFERENCE_HEIGHT)));
 
-    hoveredSprite.setSize (width, height);
-    clickedSprite.setSize (width, height);
-    hoveredSprite.setPosition (x, y);
-    clickedSprite.setPosition (x, y);
+    final Point2D destPlayMapActualSpaceFlippedY =
+            CoordinateSpaces.referencePlayMapSpaceToActualPlayMapSpace (destPlayMapReferenceSpaceFlippedY);
 
-    setName (spriteData.getName ());
-    setPosition (x, y);
-    setSize (width, height);
-    setBounds (0, 0, width, height);
-    changeStateTo (CountrySpriteState.UNOWNED);
+    setName (countryImageData.getName ());
+
+    for (final Image countryImage : countryImageStatesToImages.values ())
+    {
+      countryImage.setVisible (false);
+      countryImage.setPosition (destPlayMapActualSpaceFlippedY.getX (), destPlayMapActualSpaceFlippedY.getY ());
+      countryImage.setScale (
+              PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.getX (),
+              PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.getY ());
+      addActor (countryImage);
+    }
+
+    addActor (countryArmyTextActor);
+
+    changeStateTo (CountryImageState.UNOWNED);
   }
+  // @formatter:on
 
-  @Override
-  public void draw (final Batch batch, final float parentAlpha)
+  public CountryImageState getCurrentImageState ()
   {
-    currentSprite.draw (batch, parentAlpha);
-
-    if (PlayMapSettings.ENABLE_HOVER_EFFECTS && isHovered) hoveredSprite.draw (batch, parentAlpha);
-    if (PlayMapSettings.ENABLE_CLICK_EFFECTS && isTouchDown) clickedSprite.draw (batch, parentAlpha);
-  }
-
-  public CountrySpriteState getCurrentState ()
-  {
-    return currentState;
+    return currentImageState;
   }
 
   public void changeStateRandomly ()
   {
-    CountrySpriteState randomState;
+    CountryImageState randomState;
 
     do
     {
-      randomState = Randomness.getRandomElementFrom (CountrySpriteState.values ());
+      randomState = Randomness.getRandomElementFrom (CountryImageState.values ());
     }
-    while (randomState.is (currentState));
+    while (randomState.is (currentImageState));
 
     changeStateTo (randomState);
   }
 
-  public void changeStateTo (final CountrySpriteState state)
+  public void changeStateTo (final CountryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
 
-    currentState = state;
-    currentSprite = countrySprite.get (state);
-    currentSprite.setPosition (x, y);
-    currentSprite.setSize (width, height);
+    if (state.is (CountryImageState.HIGHLIGHT)) return;
+
+    hide (currentImageState);
+    currentImageState = state;
+    currentImage = countryImageStatesToImages.get (currentImageState);
+    countryArmyTextActor.onStateChange (state);
+    show (currentImageState);
   }
 
   public void nextState ()
   {
-    final CountrySpriteState state = getCurrentState ();
+    final CountryImageState state = getCurrentImageState ();
 
-    changeStateTo (state.hasNext () ? state.next () : state.first());
+    changeStateTo (state.hasNextValid () ? state.nextValid () : state.first ());
   }
 
   public void onHoverStart ()
   {
-    isHovered = true;
+    if (!PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
+    if (currentImageState == CountryImageState.DISABLED) return;
+
+    show (CountryImageState.HIGHLIGHT);
   }
 
   public void onHoverEnd ()
   {
-    isHovered = false;
+    if (!PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
+
+    hide (CountryImageState.HIGHLIGHT);
   }
 
   public void onTouchDown ()
   {
-    isTouchDown = true;
+    if (!PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
+    if (currentImageState == CountryImageState.DISABLED) return;
+
+    hide (currentImageState);
+    show (CountryImageState.DISABLED);
   }
 
   public void onTouchUp ()
   {
-    isTouchDown = false;
+    if (!PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
+
+    hide (CountryImageState.DISABLED);
+    show (currentImageState);
   }
 
-  public Sprite getCurrentSprite()
+  public Image getCurrentImage ()
   {
-    return countrySprite.get (currentState);
+    return currentImage;
   }
 
-  public Point2D getDestPlayMapReferenceSpace()
+  public Point2D getDestPlayMapReferenceSpace ()
   {
-    return spriteData.getDestPlayMapReferenceSpace ();
+    return countryImageData.getDestPlayMapReferenceSpace ();
   }
 
-  public Point2D getCenterPlayMapReferenceSpace()
+  public Point2D getCenterPlayMapReferenceSpace ()
   {
-    return spriteData.getCenterPlayMapReferenceSpace ();
+    return countryImageData.getTextUpperLeftPlayMapReferenceSpace ();
   }
 
-  public Size2D getSizePlayMapReferenceSpace()
+  public Size2D getSizePlayMapReferenceSpace ()
   {
-    return spriteData.getSizePlayMapReferenceSpace ();
+    return countryImageData.getSizePlayMapReferenceSpace ();
+  }
+
+  public void setArmies (final int armies)
+  {
+    countryArmyTextActor.setArmies (armies);
+  }
+
+  public void incrementArmies ()
+  {
+    countryArmyTextActor.incrementArmies ();
+  }
+
+  public void decrementArmies ()
+  {
+    countryArmyTextActor.decrementArmies ();
+  }
+
+  public void changeArmiesBy (final int deltaArmies)
+  {
+    countryArmyTextActor.changeArmiesBy (deltaArmies);
+  }
+
+  private void hide (final CountryImageState state)
+  {
+    setStateVisibility (state, false);
+  }
+
+  private void show (final CountryImageState state)
+  {
+    setStateVisibility (state, true);
+  }
+
+  private void setStateVisibility (final CountryImageState state, final boolean isVisible)
+  {
+    countryImageStatesToImages.get (state).setVisible (isVisible);
   }
 }

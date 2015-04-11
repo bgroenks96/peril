@@ -1,11 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.sprites.CountrySpriteState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
@@ -20,9 +19,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 
-public final class PlayMapActor extends Actor
+public final class PlayMapActor extends Group
 {
   private final ImmutableMap <CountryName, CountryActor> countryNamesToActors;
   private final PlayMapInputDetection inputDetection;
@@ -38,14 +38,10 @@ public final class PlayMapActor extends Actor
 
     this.countryNamesToActors = countryNamesToActors;
     this.inputDetection = inputDetection;
-  }
 
-  @Override
-  public void draw (final Batch batch, final float parentAlpha)
-  {
-    for (final CountryActor actor : countryNamesToActors.values ())
+    for (final CountryActor countryActor : countryNamesToActors.values ())
     {
-      actor.draw (batch, parentAlpha);
+      addActor (countryActor);
     }
   }
 
@@ -100,9 +96,9 @@ public final class PlayMapActor extends Actor
     return new CountryName (getCountryActorAt (inputCoordinate, screenSize).getName ());
   }
 
-  public CountrySpriteState getHoveredCountryState ()
+  public CountryImageState getHoveredCountryState ()
   {
-    return hoveredCountryActor != null ? hoveredCountryActor.getCurrentState () : CountrySpriteState.UNOWNED;
+    return hoveredCountryActor != null ? hoveredCountryActor.getCurrentImageState () : CountryImageState.UNOWNED;
   }
 
   public boolean mouseMoved (final Point2D mouseCoordinate, final Size2D screenSize)
@@ -159,24 +155,35 @@ public final class PlayMapActor extends Actor
 
     final CountryActor touchedDownCountryActor = getCountryActorAt (touchDownCoordinate, screenSize);
 
-    if (button == Input.Buttons.RIGHT)
+    switch (button)
     {
-      touchedDownCountryActor.nextState ();
+      case Input.Buttons.LEFT:
+      {
+        touchedDownCountryActor.onTouchDown ();
+        touchedDownCountryActor.changeStateRandomly ();
+        touchedDownCountryActor.incrementArmies ();
 
-      return true;
+        if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
+        {
+          touchedCountryActor.onTouchUp ();
+        }
+
+        touchedCountryActor = touchedDownCountryActor;
+
+        return true;
+      }
+      case Input.Buttons.RIGHT:
+      {
+        touchedDownCountryActor.nextState ();
+        touchedDownCountryActor.decrementArmies ();
+
+        return true;
+      }
+      default:
+      {
+        return false;
+      }
     }
-
-    touchedDownCountryActor.onTouchDown ();
-    touchedDownCountryActor.changeStateRandomly ();
-
-    if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
-    {
-      touchedCountryActor.onTouchUp ();
-    }
-
-    touchedCountryActor = touchedDownCountryActor;
-
-    return true;
   }
 
   public boolean touchUp (final Point2D touchUpCoordinate, final int button, final Size2D screenSize)
@@ -242,70 +249,70 @@ public final class PlayMapActor extends Actor
   public void setClassicCountryStates ()
   {
     // North America
-    setCountryState ("Alaska", CountrySpriteState.GOLD);
-    setCountryState ("Northwest Territory", CountrySpriteState.GOLD);
-    setCountryState ("Greenland", CountrySpriteState.GOLD);
-    setCountryState ("Alberta", CountrySpriteState.GOLD);
-    setCountryState ("Ontario", CountrySpriteState.GOLD);
-    setCountryState ("Quebec", CountrySpriteState.GOLD);
-    setCountryState ("Western United States", CountrySpriteState.GOLD);
-    setCountryState ("Eastern United States", CountrySpriteState.GOLD);
-    setCountryState ("Central America", CountrySpriteState.GOLD);
+    setCountryState ("Alaska", CountryImageState.GOLD);
+    setCountryState ("Northwest Territory", CountryImageState.GOLD);
+    setCountryState ("Greenland", CountryImageState.GOLD);
+    setCountryState ("Alberta", CountryImageState.GOLD);
+    setCountryState ("Ontario", CountryImageState.GOLD);
+    setCountryState ("Quebec", CountryImageState.GOLD);
+    setCountryState ("Western United States", CountryImageState.GOLD);
+    setCountryState ("Eastern United States", CountryImageState.GOLD);
+    setCountryState ("Central America", CountryImageState.GOLD);
 
     // South America
-    setCountryState ("Venezuela", CountrySpriteState.RED);
-    setCountryState ("Peru", CountrySpriteState.RED);
-    setCountryState ("Brazil", CountrySpriteState.RED);
-    setCountryState ("Argentina", CountrySpriteState.RED);
+    setCountryState ("Venezuela", CountryImageState.RED);
+    setCountryState ("Peru", CountryImageState.RED);
+    setCountryState ("Brazil", CountryImageState.RED);
+    setCountryState ("Argentina", CountryImageState.RED);
 
     // Europe
-    setCountryState ("Iceland", CountrySpriteState.BLUE);
-    setCountryState ("Scandinavia", CountrySpriteState.BLUE);
-    setCountryState ("Great Britain", CountrySpriteState.BLUE);
-    setCountryState ("Northern Europe", CountrySpriteState.BLUE);
-    setCountryState ("Ukraine", CountrySpriteState.BLUE);
-    setCountryState ("Western Europe", CountrySpriteState.BLUE);
-    setCountryState ("Southern Europe", CountrySpriteState.BLUE);
+    setCountryState ("Iceland", CountryImageState.BLUE);
+    setCountryState ("Scandinavia", CountryImageState.BLUE);
+    setCountryState ("Great Britain", CountryImageState.BLUE);
+    setCountryState ("Northern Europe", CountryImageState.BLUE);
+    setCountryState ("Ukraine", CountryImageState.BLUE);
+    setCountryState ("Western Europe", CountryImageState.BLUE);
+    setCountryState ("Southern Europe", CountryImageState.BLUE);
 
     // Asia
-    setCountryState ("Ural", CountrySpriteState.GREEN);
-    setCountryState ("Siberia", CountrySpriteState.GREEN);
-    setCountryState ("Yakutsk", CountrySpriteState.GREEN);
-    setCountryState ("Kamchatka", CountrySpriteState.GREEN);
-    setCountryState ("Afghanistan", CountrySpriteState.GREEN);
-    setCountryState ("Irkutsk", CountrySpriteState.GREEN);
-    setCountryState ("Mongolia", CountrySpriteState.GREEN);
-    setCountryState ("Japan", CountrySpriteState.GREEN);
-    setCountryState ("Middle East", CountrySpriteState.GREEN);
-    setCountryState ("India", CountrySpriteState.GREEN);
-    setCountryState ("China", CountrySpriteState.GREEN);
-    setCountryState ("Siam", CountrySpriteState.GREEN);
+    setCountryState ("Ural", CountryImageState.GREEN);
+    setCountryState ("Siberia", CountryImageState.GREEN);
+    setCountryState ("Yakutsk", CountryImageState.GREEN);
+    setCountryState ("Kamchatka", CountryImageState.GREEN);
+    setCountryState ("Afghanistan", CountryImageState.GREEN);
+    setCountryState ("Irkutsk", CountryImageState.GREEN);
+    setCountryState ("Mongolia", CountryImageState.GREEN);
+    setCountryState ("Japan", CountryImageState.GREEN);
+    setCountryState ("Middle East", CountryImageState.GREEN);
+    setCountryState ("India", CountryImageState.GREEN);
+    setCountryState ("China", CountryImageState.GREEN);
+    setCountryState ("Siam", CountryImageState.GREEN);
 
     // Africa
-    setCountryState ("North Africa", CountrySpriteState.BROWN);
-    setCountryState ("Egypt", CountrySpriteState.BROWN);
-    setCountryState ("Congo", CountrySpriteState.BROWN);
-    setCountryState ("East Africa", CountrySpriteState.BROWN);
-    setCountryState ("South Africa", CountrySpriteState.BROWN);
-    setCountryState ("Madagascar", CountrySpriteState.BROWN);
+    setCountryState ("North Africa", CountryImageState.BROWN);
+    setCountryState ("Egypt", CountryImageState.BROWN);
+    setCountryState ("Congo", CountryImageState.BROWN);
+    setCountryState ("East Africa", CountryImageState.BROWN);
+    setCountryState ("South Africa", CountryImageState.BROWN);
+    setCountryState ("Madagascar", CountryImageState.BROWN);
 
     // Australia
-    setCountryState ("Indonesia", CountrySpriteState.PINK);
-    setCountryState ("New Guinea", CountrySpriteState.PINK);
-    setCountryState ("Western Australia", CountrySpriteState.PINK);
-    setCountryState ("Eastern Australia", CountrySpriteState.PINK);
+    setCountryState ("Indonesia", CountryImageState.PINK);
+    setCountryState ("New Guinea", CountryImageState.PINK);
+    setCountryState ("Western Australia", CountryImageState.PINK);
+    setCountryState ("Eastern Australia", CountryImageState.PINK);
 
     // Not used in classic mode
-    setCountryState ("Hawaii", CountrySpriteState.DISABLED);
-    setCountryState ("Caribbean Islands", CountrySpriteState.DISABLED);
-    setCountryState ("Falkland Islands", CountrySpriteState.DISABLED);
-    setCountryState ("Svalbard", CountrySpriteState.DISABLED);
-    setCountryState ("Philippines", CountrySpriteState.DISABLED);
-    setCountryState ("New Zealand", CountrySpriteState.DISABLED);
-    setCountryState ("Antarctica", CountrySpriteState.DISABLED);
+    setCountryState ("Hawaii", CountryImageState.DISABLED);
+    setCountryState ("Caribbean Islands", CountryImageState.DISABLED);
+    setCountryState ("Falkland Islands", CountryImageState.DISABLED);
+    setCountryState ("Svalbard", CountryImageState.DISABLED);
+    setCountryState ("Philippines", CountryImageState.DISABLED);
+    setCountryState ("New Zealand", CountryImageState.DISABLED);
+    setCountryState ("Antarctica", CountryImageState.DISABLED);
   }
 
-  public void setCountriesTo (final CountrySpriteState state)
+  public void setCountriesTo (final CountryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
 
@@ -315,7 +322,7 @@ public final class PlayMapActor extends Actor
     }
   }
 
-  public void setCountryState (final String countryName, final CountrySpriteState state)
+  public void setCountryState (final String countryName, final CountryImageState state)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
@@ -336,14 +343,14 @@ public final class PlayMapActor extends Actor
   public void randomizeCountryStatesUsingNRandomStates (final int n)
   {
     Arguments.checkLowerInclusiveBound (n, 1, "n");
-    Arguments.checkUpperInclusiveBound (n, CountrySpriteState.values ().length, "n");
+    Arguments.checkUpperInclusiveBound (n, CountryImageState.values ().length, "n");
 
-    final ImmutableSet.Builder <CountrySpriteState> nStatesBuilder = ImmutableSet.builder ();
-    final Set <CountrySpriteState> states = new HashSet <> (Arrays.asList (CountrySpriteState.values ()));
+    final ImmutableSet.Builder <CountryImageState> nStatesBuilder = ImmutableSet.builder ();
+    final Set <CountryImageState> states = new HashSet <> (Arrays.asList (CountryImageState.values ()));
 
     for (int i = 0; i < n; ++i)
     {
-      final CountrySpriteState randomState = Randomness.getRandomElementFrom (states);
+      final CountryImageState randomState = Randomness.getRandomElementFrom (states);
       nStatesBuilder.add (randomState);
       states.remove (randomState);
     }
@@ -351,12 +358,12 @@ public final class PlayMapActor extends Actor
     randomizeCountryStatesUsingOnly (nStatesBuilder.build ());
   }
 
-  public void randomizeCountryStatesUsingOnly (final Collection <CountrySpriteState> states)
+  public void randomizeCountryStatesUsingOnly (final Collection <CountryImageState> states)
   {
     Arguments.checkIsNotNullOrEmpty (states, "states");
     Arguments.checkHasNoNullElements (states, "states");
 
-    CountrySpriteState randomState;
+    CountryImageState randomState;
 
     for (final CountryActor countryActor : getCountryActors ())
     {
@@ -366,9 +373,51 @@ public final class PlayMapActor extends Actor
     }
   }
 
-  public void randomizeCountryStatesUsingOnly (final CountrySpriteState... states)
+  public void randomizeCountryStatesUsingOnly (final CountryImageState... states)
   {
     randomizeCountryStatesUsingOnly (Arrays.asList (states));
+  }
+
+  public void resetArmies ()
+  {
+    setAllArmiesTo (0);
+  }
+
+  public void setAllArmiesTo (final int armies)
+  {
+    for (final CountryActor countryActor : getCountryActors ())
+    {
+      countryActor.setArmies (armies);
+    }
+  }
+
+  public void incrementArmies (final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    getCountryActorWithName (countryName).incrementArmies ();
+  }
+
+  public void decrementArmies (final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    getCountryActorWithName (countryName).decrementArmies ();
+  }
+
+  public void setArmiesTo (final int armies, final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    getCountryActorWithName (countryName).setArmies (armies);
+  }
+
+  public void changeArmiesBy (final int deltaArmies, final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    getCountryActorWithName (countryName).changeArmiesBy (deltaArmies);
   }
 
   private ImmutableCollection <CountryActor> getCountryActors ()

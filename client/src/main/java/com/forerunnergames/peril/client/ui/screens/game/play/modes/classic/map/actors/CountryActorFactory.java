@@ -1,29 +1,33 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountrySpriteDataRepository;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.sprites.CountrySprites;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageRepository;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryActorFactory
 {
-  private final CountrySprites countrySprites;
-  private final CountrySpriteDataRepository countrySpriteDataRepository;
+  private final CountryImageRepository countryImageRepository;
+  private final CountryImageDataRepository countryImageDataRepository;
 
-  public CountryActorFactory (final CountrySprites countrySprites,
-                              final CountrySpriteDataRepository countrySpriteDataRepository)
+  public CountryActorFactory (final CountryImageRepository countryImageRepository,
+                              final CountryImageDataRepository countryImageDataRepository)
   {
-    Arguments.checkIsNotNull (countrySprites, "countrySprites");
-    Arguments.checkIsNotNull (countrySpriteDataRepository, "countrySpriteDataRepository");
+    Arguments.checkIsNotNull (countryImageRepository, "countrySprites");
+    Arguments.checkIsNotNull (countryImageDataRepository, "countrySpriteDataRepository");
 
-    this.countrySprites = countrySprites;
-    this.countrySpriteDataRepository = countrySpriteDataRepository;
+    this.countryImageRepository = countryImageRepository;
+    this.countryImageDataRepository = countryImageDataRepository;
   }
 
   public CountryActor create (final CountryName countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return new CountryActor (countrySprites.get (countryName), countrySpriteDataRepository.get (countryName));
+    final CountryImageData countryImageData = countryImageDataRepository.get (countryName);
+
+    return new CountryActor (countryImageRepository.getAll (countryName), countryImageData,
+            CountryArmyTextActorFactory.create (countryImageData));
   }
 }

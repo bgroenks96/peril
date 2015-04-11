@@ -35,7 +35,6 @@ import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
@@ -61,7 +60,6 @@ import net.engio.mbassy.listener.Handler;
 public final class ClassicPlayScreen extends InputAdapter implements Screen
 {
   private final PlayMapActor playMapActor;
-  private final ArmyTextActor armyTextActor;
   private final ScreenMusic music;
   private final MBassador <Event> eventBus;
   private final Stage stage;
@@ -76,7 +74,6 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   public ClassicPlayScreen (final ScreenController screenController,
                             final PlayScreenWidgetFactory widgetFactory,
                             final PlayMapActor playMapActor,
-                            final ArmyTextActor armyTextActor,
                             final TerritoryTextActor territoryTextActor,
                             final ScreenMusic music,
                             final MBassador <Event> eventBus)
@@ -84,13 +81,11 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
-    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playMapActor = playMapActor;
-    this.armyTextActor = armyTextActor;
     this.music = music;
     this.eventBus = eventBus;
 
@@ -105,8 +100,13 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (widgetFactory.createPlayMapWidget (playMapActor, armyTextActor, territoryTextActor))
-            .padRight (16);
+
+    final Stack playMapStack = new Stack ();
+    playMapStack.add (new Image (Assets.playScreenMapBackground));
+    playMapStack.add (playMapActor);
+    playMapStack.add (territoryTextActor);
+
+    playMapAndSideBarTable.add (playMapStack).padRight (16);
     playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top ();
 
     final Table foregroundTable = new Table ().pad (12);
@@ -184,7 +184,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
     final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor,
-            armyTextActor, territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
+            territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -250,8 +250,10 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMapActor.touchDown (new Point2D (screenX, screenY), button, getScreenSize ());
-    armyTextActor.touchDown (playMapActor.getCountryNameAt (new Point2D (screenX, screenY), getScreenSize ()), button);
+    final Point2D touchPoint = new Point2D (screenX, screenY);
+    final Size2D screenSize = getScreenSize ();
+
+    playMapActor.touchDown (touchPoint, button, screenSize);
 
     return false;
   }
@@ -297,8 +299,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". "
-            + event.getPlayerName ()));
+    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ()));
   }
 
   @Handler
@@ -306,7 +307,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    armyTextActor.changeArmyCountBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
+    playMapActor.changeArmiesBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
   }
 
   private Size2D getScreenSize ()
@@ -325,8 +326,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private void showCursor ()
   {
     Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
-            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
+                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
+                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
   }
 
   private void hideCursor ()

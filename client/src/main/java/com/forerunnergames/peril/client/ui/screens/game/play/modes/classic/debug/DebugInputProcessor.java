@@ -8,11 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.ArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.TerritoryTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.sprites.CountrySpriteState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
@@ -29,7 +28,6 @@ public final class DebugInputProcessor extends InputAdapter
 {
   private final ScreenController screenController;
   private final PlayMapActor playMapActor;
-  private final ArmyTextActor armyTextActor;
   private final TerritoryTextActor territoryTextActor;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
@@ -39,7 +37,6 @@ public final class DebugInputProcessor extends InputAdapter
 
   public DebugInputProcessor (final ScreenController screenController,
                               final PlayMapActor playMapActor,
-                              final ArmyTextActor armyTextActor,
                               final TerritoryTextActor territoryTextActor,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
@@ -49,7 +46,6 @@ public final class DebugInputProcessor extends InputAdapter
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
-    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
     Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
@@ -59,7 +55,6 @@ public final class DebugInputProcessor extends InputAdapter
 
     this.screenController = screenController;
     this.playMapActor = playMapActor;
-    this.armyTextActor = armyTextActor;
     this.territoryTextActor = territoryTextActor;
     this.statusBox = statusBox;
     this.chatBox = chatBox;
@@ -94,7 +89,7 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case Input.Keys.NUM_1:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.UNOWNED);
+        playMapActor.setCountriesTo (CountryImageState.UNOWNED);
 
         return true;
       }
@@ -130,97 +125,103 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case Input.Keys.NUM_7:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.TEAL, CountrySpriteState.CYAN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountryImageState.TEAL, CountryImageState.CYAN);
 
         return true;
       }
       case Input.Keys.NUM_8:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.BLUE, CountrySpriteState.CYAN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountryImageState.BLUE, CountryImageState.CYAN);
 
         return true;
       }
       case Input.Keys.NUM_9:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.PINK, CountrySpriteState.PURPLE);
+        playMapActor.randomizeCountryStatesUsingOnly (CountryImageState.PINK, CountryImageState.PURPLE);
 
         return true;
       }
       case Input.Keys.NUM_0:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.RED, CountrySpriteState.BROWN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountryImageState.RED, CountryImageState.BROWN);
 
         return true;
       }
       case Input.Keys.MINUS:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.CYAN, CountrySpriteState.SILVER);
+        playMapActor.randomizeCountryStatesUsingOnly (CountryImageState.CYAN, CountryImageState.SILVER);
 
         return true;
       }
       case Input.Keys.EQUALS:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountrySpriteState.TEAL, CountrySpriteState.GREEN);
+        playMapActor.randomizeCountryStatesUsingOnly (CountryImageState.TEAL, CountryImageState.GREEN);
 
         return true;
       }
       case Input.Keys.Q:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.BLUE);
+        playMapActor.setCountriesTo (CountryImageState.BLUE);
 
         return true;
       }
       case Input.Keys.W:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.BROWN);
+        playMapActor.setCountriesTo (CountryImageState.BROWN);
 
         return true;
       }
       case Input.Keys.E:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.CYAN);
+        playMapActor.setCountriesTo (CountryImageState.CYAN);
 
         return true;
       }
       case Input.Keys.R:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.GOLD);
+        playMapActor.setCountriesTo (CountryImageState.GOLD);
 
         return true;
       }
       case Input.Keys.T:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.GREEN);
+        playMapActor.setCountriesTo (CountryImageState.GREEN);
 
         return true;
       }
       case Input.Keys.Y:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.PINK);
+        playMapActor.setCountriesTo (CountryImageState.PINK);
 
         return true;
       }
       case Input.Keys.U:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.PURPLE);
+        playMapActor.setCountriesTo (CountryImageState.PURPLE);
 
         return true;
       }
       case Input.Keys.I:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.RED);
+        playMapActor.setCountriesTo (CountryImageState.RED);
 
         return true;
       }
       case Input.Keys.O:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.SILVER);
+        playMapActor.setCountriesTo (CountryImageState.SILVER);
 
         return true;
       }
       case Input.Keys.LEFT_BRACKET:
       {
-        playMapActor.setCountriesTo (CountrySpriteState.TEAL);
+        playMapActor.setCountriesTo (CountryImageState.TEAL);
+
+        return true;
+      }
+      case Input.Keys.RIGHT_BRACKET:
+      {
+        playMapActor.setCountriesTo (CountryImageState.DISABLED);
 
         return true;
       }
@@ -301,14 +302,14 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'A':
       {
-        armyTextActor.reset ();
+        playMapActor.resetArmies ();
 
         return true;
       }
       case 'm':
       {
-        // final CountryName sourceCountryName = new CountryName ("Brazil");
-        // final CountryName destinationCountryName = new CountryName ("Northwest Territory");
+//         final CountryName sourceCountryName = new CountryName ("Antarctica");
+//         final CountryName destinationCountryName = new CountryName ("Kamchatka");
 
         final CountryName sourceCountryName = eventGenerator.getRandomCountryName ();
 

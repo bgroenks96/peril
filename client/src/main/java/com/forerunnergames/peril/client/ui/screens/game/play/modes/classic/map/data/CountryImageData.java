@@ -5,26 +5,26 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.geometry.Point2D;
 import com.forerunnergames.tools.common.geometry.Size2D;
 
-public final class CountrySpriteData
+public final class CountryImageData
 {
   private final CountryName name;
   private final Point2D destPlayMapReferenceSpace;
-  private final Point2D centerPlayMapReferenceSpace;
+  private final Point2D textUpperLeftPlayMapReferenceSpace;
   private final Size2D sizePlayMapReferenceSpace;
 
-  public CountrySpriteData (final CountryName name,
-                            final Point2D destPlayMapReferenceSpace,
-                            final Point2D centerPlayMapReferenceSpace,
-                            final Size2D sizePlayMapReferenceSpace)
+  public CountryImageData (final CountryName name,
+                           final Point2D destPlayMapReferenceSpace,
+                           final Point2D textUpperLeftPlayMapReferenceSpace,
+                           final Size2D sizePlayMapReferenceSpace)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (destPlayMapReferenceSpace, "destPlayMapReferenceSpace");
-    Arguments.checkIsNotNull (centerPlayMapReferenceSpace, "centerPlayMapReferenceSpace");
+    Arguments.checkIsNotNull (textUpperLeftPlayMapReferenceSpace, "textUpperLeftPlayMapReferenceSpace");
     Arguments.checkIsNotNull (sizePlayMapReferenceSpace, "sizePlayMapReferenceSpace");
 
     this.name = name;
     this.destPlayMapReferenceSpace = destPlayMapReferenceSpace;
-    this.centerPlayMapReferenceSpace = centerPlayMapReferenceSpace;
+    this.textUpperLeftPlayMapReferenceSpace = textUpperLeftPlayMapReferenceSpace;
     this.sizePlayMapReferenceSpace = sizePlayMapReferenceSpace;
   }
 
@@ -38,9 +38,9 @@ public final class CountrySpriteData
     return destPlayMapReferenceSpace;
   }
 
-  public Point2D getCenterPlayMapReferenceSpace ()
+  public Point2D getTextUpperLeftPlayMapReferenceSpace ()
   {
-    return centerPlayMapReferenceSpace;
+    return textUpperLeftPlayMapReferenceSpace;
   }
 
   public Size2D getSizePlayMapReferenceSpace ()
@@ -52,8 +52,8 @@ public final class CountrySpriteData
   public String toString ()
   {
     return String.format ("%1$s: Name: %2$s | Destination (Play Map Reference Space): %3$s"
-                    + " | Center (Play Map Reference Space): %4$s | Size: %5$s", getClass ()
+                    + " | Text Upper Left (Play Map Reference Space): %4$s | Size: %5$s", getClass ()
                     .getSimpleName (), name,
-            destPlayMapReferenceSpace, centerPlayMapReferenceSpace, sizePlayMapReferenceSpace);
+            destPlayMapReferenceSpace, textUpperLeftPlayMapReferenceSpace, sizePlayMapReferenceSpace);
   }
 }

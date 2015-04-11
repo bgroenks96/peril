@@ -40,6 +40,12 @@ public abstract class AbstractTerritoryName implements TerritoryName
   }
 
   @Override
+  public int hashCode ()
+  {
+    return name.hashCode ();
+  }
+
+  @Override
   public boolean equals (Object o)
   {
     if (this == o) return true;
@@ -51,9 +57,9 @@ public abstract class AbstractTerritoryName implements TerritoryName
   }
 
   @Override
-  public int hashCode ()
+  public int compareTo (final TerritoryName territoryName)
   {
-    return name.hashCode ();
+    return name.compareTo (territoryName.asString ());
   }
 
   @Override
