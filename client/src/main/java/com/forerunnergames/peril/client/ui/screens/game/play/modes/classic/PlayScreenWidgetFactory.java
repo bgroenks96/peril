@@ -29,10 +29,13 @@ public final class PlayScreenWidgetFactory
   private static final int MESSAGE_BOX_ROW_HEIGHT = 24;
   private static final int MESSAGE_BOX_ROW_PADDING_LEFT = 12;
   private static final int MESSAGE_BOX_ROW_PADDING_RIGHT = 12;
+  private static final int MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
+  private static final int MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private final Skin skin;
   private final MBassador <Event> eventBus;
   private final LabelFactory labelFactory;
   private final MessageBoxRowStyle messageBoxRowStyle;
+  private final ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle;
 
   public PlayScreenWidgetFactory (final Skin skin, final MBassador <Event> eventBus)
   {
@@ -45,23 +48,35 @@ public final class PlayScreenWidgetFactory
     messageBoxRowStyle = new MessageBoxRowStyle (MESSAGE_BOX_ROW_HEIGHT, MESSAGE_BOX_ROW_PADDING_LEFT,
             MESSAGE_BOX_ROW_PADDING_RIGHT);
 
+    messageBoxScrollPaneStyle = skin.get (ScrollPane.ScrollPaneStyle.class);
+
+    if (messageBoxScrollPaneStyle.vScrollKnob != null)
+    {
+      messageBoxScrollPaneStyle.vScrollKnob.setMinWidth (MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
+    }
+
+    if (messageBoxScrollPaneStyle.hScrollKnob != null)
+    {
+      messageBoxScrollPaneStyle.hScrollKnob.setMinHeight (MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT);
+    }
+
     labelFactory = new LabelFactory (new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
   }
 
   public MessageBox <StatusMessage> createStatusBox ()
   {
-    return new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelFactory, messageBoxRowStyle);
+    return new DefaultMessageBox <> (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle);
   }
 
   public MessageBox <ChatMessage> createChatBox ()
   {
-    return new ChatBox (skin.get (ScrollPane.ScrollPaneStyle.class), labelFactory, messageBoxRowStyle,
+    return new ChatBox (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle,
             skin.get (TextField.TextFieldStyle.class), eventBus);
   }
 
   public MessageBox <Message> createPlayerBox ()
   {
-    return new DefaultMessageBox <> (skin.get (ScrollPane.ScrollPaneStyle.class), labelFactory, messageBoxRowStyle);
+    return new DefaultMessageBox <> (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle);
   }
 
   public SideBar createSideBar ()

@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.client.ui.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -28,12 +30,29 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
 
     setWidget (table);
     setOverscroll (false, false);
+    setFlickScroll (true);
     setForceScroll (false, true);
     setFadeScrollBars (false);
     setScrollingDisabled (true, false);
     setScrollBarPositions (true, true);
     setScrollbarsOnTop (false);
     setSmoothScrolling (true);
+    setVariableSizeKnobs (true);
+
+    addListener (new InputListener ()
+    {
+      @Override
+      public void enter (final InputEvent event, final float x, final float y, final int pointer, final Actor fromActor)
+      {
+        getStage ().setScrollFocus (AbstractMessageBox.this);
+      }
+
+      @Override
+      public void exit (final InputEvent event, final float x, final float y, final int pointer, final Actor toActor)
+      {
+        getStage ().setScrollFocus (null);
+      }
+    });
   }
 
   @Override

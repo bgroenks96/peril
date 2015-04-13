@@ -13,17 +13,17 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
-      "default": { "down": "default-button-down", "up": "default-button-up", "over": "default-button-over" },
+      "default": { "down": "custom-button-down", "up": "custom-button-up", "over": "custom-button-over" },
       "toggle":  { "down": "default-round-down", "up": "default-round", "checked": "default-round-down" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
-      "default": { "down": "default-button-down", "up": "default-button-up", "over": "default-button-over", "font": "default-font", "fontColor": "white"},
+      "default": { "down": "custom-button-down", "up": "custom-button-up", "over": "custom-button-over", "font": "default-font", "fontColor": "white"},
       "toggle":  { "down": "default-round-down", "up": "default-round", "font": "default-font", "fontColor": "white", "downFontColor": "red", "checked": "default-round-down" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
-      "default": { "vScroll": null, "hScrollKnob": "default-round-large", "background": null, "hScroll": null, "vScrollKnob": "default-round-large" }
+      "default": { "vScroll": null, "hScrollKnob": "custom-button-down", "background": null, "hScroll": null, "vScrollKnob": "custom-button-down" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
@@ -52,8 +52,8 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
-    "default-horizontal": { "background": "default-slider", "knob": "default-slider-knob" },
-    "default-vertical":   { "background": "default-slider", "knob": "default-round-large"
+    "default-horizontal": { "background": "custom-horizontal-slider", "knob": "custom-slider-knob" },
+    "default-vertical":   { "background": "custom-vertical-slider", "knob": "custom-slider-knob"
     }
   },
 
