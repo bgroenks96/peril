@@ -14,8 +14,8 @@ public final class CountryActorFactory
   public CountryActorFactory (final CountryImageRepository countryImageRepository,
                               final CountryImageDataRepository countryImageDataRepository)
   {
-    Arguments.checkIsNotNull (countryImageRepository, "countrySprites");
-    Arguments.checkIsNotNull (countryImageDataRepository, "countrySpriteDataRepository");
+    Arguments.checkIsNotNull (countryImageRepository, "countryImageRepository");
+    Arguments.checkIsNotNull (countryImageDataRepository, "countryImageDataRepository");
 
     this.countryImageRepository = countryImageRepository;
     this.countryImageDataRepository = countryImageDataRepository;

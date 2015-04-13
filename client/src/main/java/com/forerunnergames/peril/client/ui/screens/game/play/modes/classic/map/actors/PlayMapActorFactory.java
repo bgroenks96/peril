@@ -15,8 +15,8 @@ public final class PlayMapActorFactory
                                      final CountryImageDataRepository countryImageDataRepository,
                                      final PlayMapInputDetection playMapInputDetection)
   {
-    Arguments.checkIsNotNull (countryImageRepository, "countrySprites");
-    Arguments.checkIsNotNull (countryImageDataRepository, "countrySpriteDataRepository");
+    Arguments.checkIsNotNull (countryImageRepository, "countryImageRepository");
+    Arguments.checkIsNotNull (countryImageDataRepository, "countryImageDataRepository");
     Arguments.checkIsNotNull (playMapInputDetection, "playMapInputDetection");
 
     final CountryActorFactory countryActorFactory = new CountryActorFactory (countryImageRepository, countryImageDataRepository);

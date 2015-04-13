@@ -19,7 +19,7 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   {
     super (null, scrollPaneStyle);
 
-    Arguments.checkIsNotNull (messageBoxRowStyle, "rowStyle");
+    Arguments.checkIsNotNull (messageBoxRowStyle, "messageBoxRowStyle");
 
     this.messageBoxRowStyle = messageBoxRowStyle;
 

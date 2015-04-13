@@ -17,7 +17,7 @@ public class PlayerCountryAssignmentCompleteEvent implements GameNotificationEve
 
   public PlayerCountryAssignmentCompleteEvent (final ImmutableMap <Country, Player> countriesToPlayers)
   {
-    Arguments.checkIsNotNull (countriesToPlayers, "assignedCountries");
+    Arguments.checkIsNotNull (countriesToPlayers, "countriesToPlayers");
 
     this.countryToPlayerPackets = GamePackets.fromPlayMap (countriesToPlayers);
   }
