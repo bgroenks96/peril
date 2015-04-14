@@ -32,8 +32,8 @@ public final class Assets
   public static Texture rightMenuBarShadow;
   public static Music menuMusic;
   public static Texture playScreenBackground;
-  public static Texture playScreenMapBackground;
-  public static Pixmap playScreenMapInputDetection;
+  public static Texture playMapBackground;
+  public static Pixmap playMapInputDetection;
   public static Music playScreenMusic;
   public static Pixmap menuNormalCursor;
   public static Pixmap playScreenNormalCursor;
@@ -72,8 +72,8 @@ public final class Assets
     leftMenuBarShadow.dispose ();
     rightMenuBarShadow.dispose ();
     playScreenBackground.dispose ();
-    playScreenMapBackground.dispose ();
-    playScreenMapInputDetection.dispose ();
+    playMapBackground.dispose ();
+    playMapInputDetection.dispose ();
     menuNormalCursor.dispose ();
     playScreenNormalCursor.dispose ();
     aurulentSans16.dispose ();
@@ -117,8 +117,8 @@ public final class Assets
     rightMenuBarShadow = new Texture (Gdx.files.internal ("screens/menus/shared/rightMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/menuScreens.mp3"));
     playScreenBackground = new Texture (Gdx.files.internal ("screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapBackground = new Texture (Gdx.files.internal ("screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playScreenMapInputDetection = new Pixmap (Gdx.files.internal ("screens/game/play/map/inputDetection.png"));
+    playMapBackground = new Texture (Gdx.files.internal ("screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    playMapInputDetection = new Pixmap (Gdx.files.internal ("screens/game/play/map/inputDetection.png"));
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/playScreen.mp3"));
     menuNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
     playScreenNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
@@ -160,7 +160,7 @@ public final class Assets
     setFilter (leftMenuBarShadow);
     setFilter (rightMenuBarShadow);
     setFilter (playScreenBackground);
-    setFilter (playScreenMapBackground);
+    setFilter (playMapBackground);
     setFilter (armyMovementForegroundArrow);
     setFilter (armyMovementForegroundArrowText);
     setFilter (armyMovementOccupationTitle);

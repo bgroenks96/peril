@@ -1,18 +1,14 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.tools.CoordinateSpaces;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
-import com.forerunnergames.tools.common.geometry.Geometry;
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
-import com.forerunnergames.tools.common.geometry.Translation2D;
 
 import java.util.SortedMap;
 
@@ -24,7 +20,6 @@ public final class CountryActor extends Group
   private CountryImageState currentImageState = CountryImageState.UNOWNED;
   private Image currentImage;
 
-  // @formatter:off
   public CountryActor (final SortedMap <CountryImageState, Image> countryImageStatesToImages,
                        final CountryImageData countryImageData,
                        final CountryArmyTextActor countryArmyTextActor)
@@ -38,24 +33,18 @@ public final class CountryActor extends Group
     this.countryImageData = countryImageData;
     this.countryArmyTextActor = countryArmyTextActor;
 
-    final Point2D destPlayMapReferenceSpaceFlippedY =
-            Geometry.absoluteValue (
-                    Geometry.translate (
-                            countryImageData.getDestPlayMapReferenceSpace (),
-                            new Translation2D (0, -PlayMapSettings.REFERENCE_HEIGHT)));
-
-    final Point2D destPlayMapActualSpaceFlippedY =
-            CoordinateSpaces.referencePlayMapSpaceToActualPlayMapSpace (destPlayMapReferenceSpaceFlippedY);
+    final Vector2 tempPosition = new Vector2 (countryImageData.getReferenceDestination ());
+    tempPosition.y = PlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
+    tempPosition.scl (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
 
     setName (countryImageData.getName ());
 
     for (final Image countryImage : countryImageStatesToImages.values ())
     {
       countryImage.setVisible (false);
-      countryImage.setPosition (destPlayMapActualSpaceFlippedY.getX (), destPlayMapActualSpaceFlippedY.getY ());
-      countryImage.setScale (
-              PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.getX (),
-              PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.getY ());
+      countryImage.setPosition (tempPosition.x, tempPosition.y);
+      countryImage.setScale (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.x,
+                             PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.y);
       addActor (countryImage);
     }
 
@@ -63,7 +52,6 @@ public final class CountryActor extends Group
 
     changeStateTo (CountryImageState.UNOWNED);
   }
-  // @formatter:on
 
   public CountryImageState getCurrentImageState ()
   {
@@ -140,19 +128,24 @@ public final class CountryActor extends Group
     return currentImage;
   }
 
-  public Point2D getDestPlayMapReferenceSpace ()
+  public Vector2 getReferenceDestination ()
   {
-    return countryImageData.getDestPlayMapReferenceSpace ();
+    return countryImageData.getReferenceDestination ();
   }
 
-  public Point2D getCenterPlayMapReferenceSpace ()
+  public Vector2 getReferenceTextUpperLeft ()
   {
-    return countryImageData.getTextUpperLeftPlayMapReferenceSpace ();
+    return countryImageData.getReferenceTextUpperLeft ();
   }
 
-  public Size2D getSizePlayMapReferenceSpace ()
+  public float getReferenceWidth ()
   {
-    return countryImageData.getSizePlayMapReferenceSpace ();
+    return countryImageData.getReferenceWidth ();
+  }
+
+  public float getReferenceHeight ()
+  {
+    return countryImageData.getReferenceHeight ();
   }
 
   public void setArmies (final int armies)

@@ -61,7 +61,7 @@ public final class PlayMapInputDetectionFactory
     final InputCoordinateToTerritoryNameConverter <CountryName> inputCoordinateToCountryNameConverter;
     final InputCoordinateToTerritoryNameConverter <ContinentName> inputCoordinateToContinentNameConverter;
 
-    playMapCoordinateToRgbaColorConverter = new DefaultPlayMapCoordinateToRgbaColorConverter (Assets.playScreenMapInputDetection);
+    playMapCoordinateToRgbaColorConverter = new DefaultPlayMapCoordinateToRgbaColorConverter (Assets.playMapInputDetection);
 
     playMapCoordinateToCountryColorConverter = new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
     playMapCoordinateToContinentColorConverter = new PlayMapCoordinateToContinentColorConverter (playMapCoordinateToRgbaColorConverter);

@@ -1,21 +1,19 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocolor;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.color.RgbaColor;
-import com.forerunnergames.tools.common.geometry.Point2D;
 
 import java.util.HashMap;
 import java.util.Map;
 
-// @formatter:off
-public abstract class AbstractPlayMapCoordinateToTerritoryColorConverter <T extends TerritoryColor <?>>
-                implements PlayMapCoordinateToTerritoryColorConverter <T>
+public abstract class AbstractPlayMapCoordinateToTerritoryColorConverter <T extends TerritoryColor <?>> implements
+        PlayMapCoordinateToTerritoryColorConverter <T>
 {
   private final PlayMapCoordinateToRgbaColorConverter converter;
   private final Map <RgbaColor, T> rgbaToTerritoryColors = new HashMap <> ();
-  private RgbaColor rgbaColor;
-  private T territoryColor;
 
   protected AbstractPlayMapCoordinateToTerritoryColorConverter (final PlayMapCoordinateToRgbaColorConverter converter)
   {
@@ -25,13 +23,13 @@ public abstract class AbstractPlayMapCoordinateToTerritoryColorConverter <T exte
   }
 
   @Override
-  public T convert (final Point2D playMapCoordinate)
+  public T convert (final Vector2 playMapCoordinate)
   {
     Arguments.checkIsNotNull (playMapCoordinate, "playMapCoordinate");
 
-    rgbaColor = converter.convert (playMapCoordinate);
+    final RgbaColor rgbaColor = converter.convert (playMapCoordinate);
 
-    territoryColor = rgbaToTerritoryColors.get (rgbaColor);
+    T territoryColor = rgbaToTerritoryColors.get (rgbaColor);
 
     if (territoryColor != null) return territoryColor;
 

@@ -5,13 +5,11 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.c
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocolor.PlayMapCoordinateToTerritoryColorConverter;
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 
-// @formatter:off
-public final class PlayMapCoordinateToContinentNameConverter
-                extends AbstractPlayMapCoordinateToTerritoryNameConverter <ContinentColor, ContinentName>
+public final class PlayMapCoordinateToContinentNameConverter extends
+        AbstractPlayMapCoordinateToTerritoryNameConverter <ContinentColor, ContinentName>
 {
-  public PlayMapCoordinateToContinentNameConverter (
-                  final PlayMapCoordinateToTerritoryColorConverter <ContinentColor> playMapCoordinateToContinentColorConverter,
-                  final TerritoryColorToNameConverter <ContinentColor, ContinentName> continentColorToContinentNameConverter)
+  public PlayMapCoordinateToContinentNameConverter (final PlayMapCoordinateToTerritoryColorConverter <ContinentColor> playMapCoordinateToContinentColorConverter,
+                                                    final TerritoryColorToNameConverter <ContinentColor, ContinentName> continentColorToContinentNameConverter)
   {
     super (playMapCoordinateToContinentColorConverter, continentColorToContinentNameConverter);
   }

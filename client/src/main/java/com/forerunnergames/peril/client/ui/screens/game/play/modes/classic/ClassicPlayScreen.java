@@ -16,6 +16,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -30,13 +31,13 @@ import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.MusicSettings;
+import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
@@ -51,8 +52,6 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -69,19 +68,18 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private final InputProcessor inputProcessor;
   private final DebugEventProcessor debugEventProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
-  private Size2D currentScreenSize;
+  private final Vector2 currentScreenSize = new Vector2 ();
+  private final Vector2 tempPosition = new Vector2 ();
 
   public ClassicPlayScreen (final ScreenController screenController,
                             final PlayScreenWidgetFactory widgetFactory,
                             final PlayMapActor playMapActor,
-                            final TerritoryTextActor territoryTextActor,
                             final ScreenMusic music,
                             final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
-    Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
@@ -100,13 +98,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-
-    final Stack playMapStack = new Stack ();
-    playMapStack.add (new Image (Assets.playScreenMapBackground));
-    playMapStack.add (playMapActor);
-    playMapStack.add (territoryTextActor);
-
-    playMapAndSideBarTable.add (playMapStack).padRight (16);
+    playMapAndSideBarTable.add (playMapActor).size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT).padRight (16);
     playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top ();
 
     final Table foregroundTable = new Table ().pad (12);
@@ -183,8 +175,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor,
-            territoryTextActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
+    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -250,10 +241,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    final Point2D touchPoint = new Point2D (screenX, screenY);
-    final Size2D screenSize = getScreenSize ();
-
-    playMapActor.touchDown (touchPoint, button, screenSize);
+    playMapActor.touchDown (tempPosition.set (screenX, screenY), button, getScreenSize ());
 
     return false;
   }
@@ -261,7 +249,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMapActor.touchUp (new Point2D (screenX, screenY), button, getScreenSize ());
+    playMapActor.touchUp (tempPosition.set (screenX, screenY), button, getScreenSize ());
 
     return false;
   }
@@ -269,7 +257,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    playMapActor.mouseMoved (new Point2D (screenX, screenY), getScreenSize ());
+    playMapActor.mouseMoved (tempPosition.set (screenX, screenY), getScreenSize ());
 
     return false;
   }
@@ -310,24 +298,22 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     playMapActor.changeArmiesBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
   }
 
-  private Size2D getScreenSize ()
+  private Vector2 getScreenSize ()
   {
-    if (currentScreenSize != null && currentScreenSize.getWidth () == Gdx.graphics.getWidth ()
-            && currentScreenSize.getHeight () == Gdx.graphics.getHeight ())
+    if (((int) currentScreenSize.x) == Gdx.graphics.getWidth ()
+            && ((int) currentScreenSize.y) == Gdx.graphics.getHeight ())
     {
       return currentScreenSize;
     }
 
-    currentScreenSize = new Size2D (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-
-    return currentScreenSize;
+    return currentScreenSize.set (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
   }
 
   private void showCursor ()
   {
     Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
+                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
+                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
   }
 
   private void hideCursor ()

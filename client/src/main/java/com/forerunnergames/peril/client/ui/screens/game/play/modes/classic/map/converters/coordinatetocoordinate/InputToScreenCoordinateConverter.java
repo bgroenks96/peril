@@ -1,9 +1,8 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocoordinate;
 
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
+import com.badlogic.gdx.math.Vector2;
 
 public interface InputToScreenCoordinateConverter
 {
-  Point2D convert (final Point2D inputCoordinate, final Size2D screenSize);
+  Vector2 convert (final Vector2 inputCoordinate);
 }

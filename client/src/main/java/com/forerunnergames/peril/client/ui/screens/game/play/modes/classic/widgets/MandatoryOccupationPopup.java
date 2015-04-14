@@ -30,7 +30,6 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.tools.CoordinateSpaces;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
@@ -39,11 +38,6 @@ import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.geometry.Geometry;
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Scaling2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
-import com.forerunnergames.tools.common.geometry.Translation2D;
 
 import javax.annotation.Nullable;
 
@@ -57,11 +51,11 @@ public final class MandatoryOccupationPopup extends Dialog
   private static final float SOURCE_COUNTRY_ARROW_WIDTH = 56;
   private static final float DESTINATION_COUNTRY_ARROW_WIDTH = 64;
   private static final float SOURCE_COUNTRY_BOX_DESTINATION_COUNTRY_BOX_SPACING = 12;
-  private static final Point2D FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE = new Point2D (368, 255);
-  private static final Size2D FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE = new Size2D (94, 14);
+  private static final Vector2 FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE = new Vector2 (368, 255);
+  private static final Vector2 FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE = new Vector2 (94, 14);
   private static final String WINDOW_STYLE_NAME_JSON = "dialog";
-  private static final Point2D POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE = new Point2D (494, 172);
-  private static final Size2D SIZE_REFERENCE_SCREEN_SPACE = new Size2D (836, 468);
+  private static final Vector2 POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE = new Vector2 (494, 172);
+  private static final Vector2 SIZE_REFERENCE_SCREEN_SPACE = new Vector2 (836, 468);
   private static final int BORDER_THICKNESS_PIXELS = 12;
   private static final boolean IS_RESIZABLE = false;
   private static final boolean IS_MOVABLE = true;
@@ -69,6 +63,8 @@ public final class MandatoryOccupationPopup extends Dialog
   private static final int SLIDER_STEP_SIZE = 1;
   private static final float INITIAL_BUTTON_REPEAT_DELAY_SECONDS = 0.5f;
   private static final float BUTTON_REPEAT_RATE_SECONDS = 0.05f;
+  private final Vector2 tempPosition = new Vector2 ();
+  private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
   private final Color tempColor = new Color ();
   private final CountryArmyTextActor sourceCountryArmyTextActor = new CountryArmyTextActor ();
@@ -194,10 +190,10 @@ public final class MandatoryOccupationPopup extends Dialog
     tempColor.set (getColor ());
     batch.setColor (tempColor.r, tempColor.g, tempColor.b, tempColor.a * parentAlpha);
     foregroundArrow.draw (batch, getX (), getY (), getX () + tempSize.x, getY () + tempSize.y);
-    foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.getX (), getY ()
-                                      + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.getY (),
-                              FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.getWidth (),
-                              FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.getHeight ());
+    foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.x, getY ()
+                                      + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.y,
+                              FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.x,
+                              FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.y);
   }
 
   public void show (final int minDestinationArmies,
@@ -223,8 +219,8 @@ public final class MandatoryOccupationPopup extends Dialog
     setSliderRange (minDestinationArmies, maxDestinationArmies);
     setSliderToMinValue ();
     setCountries (sourceCountryActor, destinationCountryActor);
-    setPosition (POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE.getX (), GraphicsSettings.REFERENCE_SCREEN_HEIGHT
-            - getHeight () - POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE.getY ());
+    setPosition (POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE.x, GraphicsSettings.REFERENCE_SCREEN_HEIGHT - getHeight ()
+            - POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE.y);
     show (stage, null);
 
     isShown = true;
@@ -273,7 +269,7 @@ public final class MandatoryOccupationPopup extends Dialog
   {
     setResizable (IS_RESIZABLE);
     setMovable (IS_MOVABLE);
-    setSize (SIZE_REFERENCE_SCREEN_SPACE.getWidth (), SIZE_REFERENCE_SCREEN_SPACE.getHeight ());
+    setSize (SIZE_REFERENCE_SCREEN_SPACE.x, SIZE_REFERENCE_SCREEN_SPACE.y);
     pad (BORDER_THICKNESS_PIXELS);
   }
 
@@ -593,7 +589,7 @@ public final class MandatoryOccupationPopup extends Dialog
                                              final Image countryImage)
   {
     countryArmyTextActor.setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor,
-            countryImage));
+                                                                                                    countryImage));
   }
 
   private float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
@@ -610,40 +606,24 @@ public final class MandatoryOccupationPopup extends Dialog
   private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,
                                                                            final Image countryImagePostLayout)
   {
-    final Point2D countryOriginReferencePlayMapSpace = countryActor.getDestPlayMapReferenceSpace ();
-    final Point2D countryArmyTextTopLeftReferencePlayMapSpace = countryActor.getCenterPlayMapReferenceSpace ();
-
-    final Point2D countryArmyTextTopLeftReferenceCountrySpace = CoordinateSpaces
-            .toReferenceCountrySpace (countryArmyTextTopLeftReferencePlayMapSpace, countryOriginReferencePlayMapSpace);
-
-    final Point2D countryArmyTextTopLeftScaledCountrySpace = Geometry
-            .scale (countryArmyTextTopLeftReferenceCountrySpace,
-                    calculateCountryImageScaling (countryActor, countryImagePostLayout));
-
-    final Point2D countryArmyTextTopLeftActualCountrySpace = Geometry
-            .translate (countryArmyTextTopLeftScaledCountrySpace,
-                        new Translation2D (countryImagePostLayout.getImageX (), countryImagePostLayout.getImageY ()));
-
-    return new Vector2 (countryArmyTextTopLeftActualCountrySpace.getX (),
-            countryArmyTextTopLeftActualCountrySpace.getY ());
+    return tempPosition.set (countryActor.getReferenceTextUpperLeft ())
+            .sub (countryActor.getReferenceDestination ())
+            .set (Math.abs (tempPosition.x), Math.abs (tempPosition.y))
+            .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout))
+            .add (countryImagePostLayout.getImageX (), countryImagePostLayout.getImageY ());
   }
 
-  private Size2D calculateCountryArmyTextCircleSizeActualCountrySpace (final CountryActor countryActor,
-                                                                       final Image countryImagePostLayout)
+  private Vector2 calculateCountryArmyTextCircleSizeActualCountrySpace (final CountryActor countryActor,
+                                                                        final Image countryImagePostLayout)
   {
-    return Geometry.scale (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE,
-                           calculateCountryImageScaling (countryActor, countryImagePostLayout));
+    return tempSize.set (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE)
+            .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout));
   }
 
-  private Scaling2D calculateCountryImageScaling (final CountryActor countryActor, final Image countryImagePostLayout)
+  private Vector2 calculateCountryImageScaling (final CountryActor countryActor, final Image countryImagePostLayout)
   {
-    return Geometry.divide (getSizeOfCountryImagePostLayout (countryImagePostLayout),
-                            countryActor.getSizePlayMapReferenceSpace ());
-  }
-
-  private Size2D getSizeOfCountryImagePostLayout (final Image countryImagePostLayout)
-  {
-    return new Size2D (countryImagePostLayout.getImageWidth (), countryImagePostLayout.getImageHeight ());
+    return tempScaling.set (countryImagePostLayout.getImageWidth () / countryActor.getReferenceWidth (),
+            countryImagePostLayout.getImageHeight () / countryActor.getReferenceHeight ());
   }
 
   private void setSliderRange (final int minValue, final int maxValue)

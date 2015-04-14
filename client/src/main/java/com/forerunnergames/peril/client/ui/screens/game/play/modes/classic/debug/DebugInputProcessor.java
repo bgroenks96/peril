@@ -10,7 +10,6 @@ import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.TerritoryTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
@@ -28,7 +27,6 @@ public final class DebugInputProcessor extends InputAdapter
 {
   private final ScreenController screenController;
   private final PlayMapActor playMapActor;
-  private final TerritoryTextActor territoryTextActor;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
   private final MessageBox <Message> playerBox;
@@ -37,7 +35,6 @@ public final class DebugInputProcessor extends InputAdapter
 
   public DebugInputProcessor (final ScreenController screenController,
                               final PlayMapActor playMapActor,
-                              final TerritoryTextActor territoryTextActor,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
                               final MessageBox <Message> playerBox,
@@ -46,7 +43,6 @@ public final class DebugInputProcessor extends InputAdapter
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
-    Arguments.checkIsNotNull (territoryTextActor, "territoryTextActor");
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
     Arguments.checkIsNotNull (playerBox, "playerBox");
@@ -55,7 +51,6 @@ public final class DebugInputProcessor extends InputAdapter
 
     this.screenController = screenController;
     this.playMapActor = playMapActor;
-    this.territoryTextActor = territoryTextActor;
     this.statusBox = statusBox;
     this.chatBox = chatBox;
     this.playerBox = playerBox;
@@ -119,7 +114,68 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case Input.Keys.NUM_6:
       {
-        playMapActor.setClassicCountryStates ();
+        // North America
+        playMapActor.setCountryState ("Alaska", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Northwest Territory", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Greenland", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Alberta", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Ontario", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Quebec", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Western United States", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Eastern United States", CountryImageState.GOLD);
+        playMapActor.setCountryState ("Central America", CountryImageState.GOLD);
+
+        // South America
+        playMapActor.setCountryState ("Venezuela", CountryImageState.RED);
+        playMapActor.setCountryState ("Peru", CountryImageState.RED);
+        playMapActor.setCountryState ("Brazil", CountryImageState.RED);
+        playMapActor.setCountryState ("Argentina", CountryImageState.RED);
+
+        // Europe
+        playMapActor.setCountryState ("Iceland", CountryImageState.BLUE);
+        playMapActor.setCountryState ("Scandinavia", CountryImageState.BLUE);
+        playMapActor.setCountryState ("Great Britain", CountryImageState.BLUE);
+        playMapActor.setCountryState ("Northern Europe", CountryImageState.BLUE);
+        playMapActor.setCountryState ("Ukraine", CountryImageState.BLUE);
+        playMapActor.setCountryState ("Western Europe", CountryImageState.BLUE);
+        playMapActor.setCountryState ("Southern Europe", CountryImageState.BLUE);
+
+        // Asia
+        playMapActor.setCountryState ("Ural", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Siberia", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Yakutsk", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Kamchatka", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Afghanistan", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Irkutsk", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Mongolia", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Japan", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Middle East", CountryImageState.GREEN);
+        playMapActor.setCountryState ("India", CountryImageState.GREEN);
+        playMapActor.setCountryState ("China", CountryImageState.GREEN);
+        playMapActor.setCountryState ("Siam", CountryImageState.GREEN);
+
+        // Africa
+        playMapActor.setCountryState ("North Africa", CountryImageState.BROWN);
+        playMapActor.setCountryState ("Egypt", CountryImageState.BROWN);
+        playMapActor.setCountryState ("Congo", CountryImageState.BROWN);
+        playMapActor.setCountryState ("East Africa", CountryImageState.BROWN);
+        playMapActor.setCountryState ("South Africa", CountryImageState.BROWN);
+        playMapActor.setCountryState ("Madagascar", CountryImageState.BROWN);
+
+        // Australia
+        playMapActor.setCountryState ("Indonesia", CountryImageState.PINK);
+        playMapActor.setCountryState ("New Guinea", CountryImageState.PINK);
+        playMapActor.setCountryState ("Western Australia", CountryImageState.PINK);
+        playMapActor.setCountryState ("Eastern Australia", CountryImageState.PINK);
+
+        // Not used in classic mode
+        playMapActor.setCountryState ("Hawaii", CountryImageState.DISABLED);
+        playMapActor.setCountryState ("Caribbean Islands", CountryImageState.DISABLED);
+        playMapActor.setCountryState ("Falkland Islands", CountryImageState.DISABLED);
+        playMapActor.setCountryState ("Svalbard", CountryImageState.DISABLED);
+        playMapActor.setCountryState ("Philippines", CountryImageState.DISABLED);
+        playMapActor.setCountryState ("New Zealand", CountryImageState.DISABLED);
+        playMapActor.setCountryState ("Antarctica", CountryImageState.DISABLED);
 
         return true;
       }
@@ -227,20 +283,20 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case Input.Keys.F:
       {
-        Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        Assets.playMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         return true;
       }
       case Input.Keys.G:
       {
-        Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest,
+        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest,
                                                   Texture.TextureFilter.Nearest);
 
         return true;
       }
       case Input.Keys.H:
       {
-        Assets.playScreenMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear,
+        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear,
                                                   Texture.TextureFilter.Linear);
 
         return true;
@@ -336,21 +392,5 @@ public final class DebugInputProcessor extends InputAdapter
         return false;
       }
     }
-  }
-
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    territoryTextActor.setHoveredCountryState (playMapActor.getHoveredCountryState ());
-
-    return true;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    territoryTextActor.setHoveredCountryState (playMapActor.getHoveredCountryState ());
-
-    return true;
   }
 }

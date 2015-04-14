@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocolor;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
-import com.forerunnergames.tools.common.geometry.Point2D;
 
 public interface PlayMapCoordinateToTerritoryColorConverter <T extends TerritoryColor <?>>
 {
-  public T convert (final Point2D playMapCoordinate);
+  T convert (final Vector2 playMapCoordinate);
 }

@@ -27,18 +27,18 @@ public final class PlayScreenFactory
 
     switch (gameMode)
     {
-    case CLASSIC:
-    {
-      return ClassicPlayScreenFactory.create (screenController, mouseInput, eventBus);
-    }
-    case PERIL:
-    {
-      return PerilPlayScreenFactory.create (screenController, mouseInput, eventBus);
-    }
-    default:
-    {
-      throw new UnsupportedOperationException ("Unknown game mode [" + gameMode + "].");
-    }
+      case CLASSIC:
+      {
+        return ClassicPlayScreenFactory.create (screenController, mouseInput, eventBus);
+      }
+      case PERIL:
+      {
+        return PerilPlayScreenFactory.create (screenController, mouseInput, eventBus);
+      }
+      default:
+      {
+        throw new UnsupportedOperationException ("Unknown game mode [" + gameMode + "].");
+      }
     }
   }
 

@@ -1,31 +1,20 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocoordinate;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.tools.CoordinateSpaces;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
+import com.badlogic.gdx.math.Vector2;
 
-import com.google.common.collect.HashBasedTable;
+import com.forerunnergames.peril.client.settings.InputSettings;
+import com.forerunnergames.tools.common.Arguments;
 
 public class DefaultInputToScreenCoordinateConverter implements InputToScreenCoordinateConverter
 {
-  private final HashBasedTable <Point2D, Size2D, Point2D> inputToScreenCoordinates = HashBasedTable.create ();
-  private Point2D screenCoordinate;
+  private final Vector2 screenCoordinate = new Vector2 ();
 
   @Override
-  public Point2D convert (final Point2D inputCoordinate, final Size2D screenSize)
+  public Vector2 convert (final Vector2 inputCoordinate)
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    screenCoordinate = inputToScreenCoordinates.get (inputCoordinate, screenSize);
-
-    if (screenCoordinate != null) return screenCoordinate;
-
-    screenCoordinate = CoordinateSpaces.actualInputSpaceToActualScreenSpace (inputCoordinate, screenSize);
-
-    inputToScreenCoordinates.put (inputCoordinate, screenSize, screenCoordinate);
-
-    return screenCoordinate;
+    return screenCoordinate.set (inputCoordinate)
+            .add (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION);
   }
 }

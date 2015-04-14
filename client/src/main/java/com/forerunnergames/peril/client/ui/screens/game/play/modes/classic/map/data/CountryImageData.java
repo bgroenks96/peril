@@ -1,31 +1,31 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
 
 public final class CountryImageData
 {
   private final CountryName name;
-  private final Point2D destPlayMapReferenceSpace;
-  private final Point2D textUpperLeftPlayMapReferenceSpace;
-  private final Size2D sizePlayMapReferenceSpace;
+  private final Vector2 referenceDestination;
+  private final Vector2 referenceTextUpperLeft;
+  private final Vector2 referenceSize;
 
   public CountryImageData (final CountryName name,
-                           final Point2D destPlayMapReferenceSpace,
-                           final Point2D textUpperLeftPlayMapReferenceSpace,
-                           final Size2D sizePlayMapReferenceSpace)
+                           final Vector2 referenceDestination,
+                           final Vector2 referenceTextUpperLeft,
+                           final Vector2 referenceSize)
   {
     Arguments.checkIsNotNull (name, "name");
-    Arguments.checkIsNotNull (destPlayMapReferenceSpace, "destPlayMapReferenceSpace");
-    Arguments.checkIsNotNull (textUpperLeftPlayMapReferenceSpace, "textUpperLeftPlayMapReferenceSpace");
-    Arguments.checkIsNotNull (sizePlayMapReferenceSpace, "sizePlayMapReferenceSpace");
+    Arguments.checkIsNotNull (referenceDestination, "referenceDestination");
+    Arguments.checkIsNotNull (referenceTextUpperLeft, "referenceTextUpperLeft");
+    Arguments.checkIsNotNull (referenceSize, "referenceSize");
 
     this.name = name;
-    this.destPlayMapReferenceSpace = destPlayMapReferenceSpace;
-    this.textUpperLeftPlayMapReferenceSpace = textUpperLeftPlayMapReferenceSpace;
-    this.sizePlayMapReferenceSpace = sizePlayMapReferenceSpace;
+    this.referenceDestination = referenceDestination;
+    this.referenceTextUpperLeft = referenceTextUpperLeft;
+    this.referenceSize = referenceSize;
   }
 
   public String getName ()
@@ -33,27 +33,32 @@ public final class CountryImageData
     return name.asString ();
   }
 
-  public Point2D getDestPlayMapReferenceSpace ()
+  public Vector2 getReferenceDestination ()
   {
-    return destPlayMapReferenceSpace;
+    return referenceDestination;
   }
 
-  public Point2D getTextUpperLeftPlayMapReferenceSpace ()
+  public Vector2 getReferenceTextUpperLeft ()
   {
-    return textUpperLeftPlayMapReferenceSpace;
+    return referenceTextUpperLeft;
   }
 
-  public Size2D getSizePlayMapReferenceSpace ()
+  public float getReferenceWidth ()
   {
-    return sizePlayMapReferenceSpace;
+    return referenceSize.x;
+  }
+
+  public float getReferenceHeight ()
+  {
+    return referenceSize.y;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Name: %2$s | Destination (Play Map Reference Space): %3$s"
-                    + " | Text Upper Left (Play Map Reference Space): %4$s | Size: %5$s", getClass ()
+    return String.format ("%1$s: Name: %2$s | Reference Destination: %3$s"
+                    + " | Reference Text Upper Left: %4$s | Reference Size: %5$s", getClass ()
                     .getSimpleName (), name,
-            destPlayMapReferenceSpace, textUpperLeftPlayMapReferenceSpace, sizePlayMapReferenceSpace);
+            referenceDestination, referenceTextUpperLeft, referenceSize);
   }
 }

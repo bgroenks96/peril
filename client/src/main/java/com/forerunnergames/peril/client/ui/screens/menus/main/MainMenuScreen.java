@@ -167,8 +167,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
 
   private void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.menuNormalCursor, (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.getX (),
-                              (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.getY ());
+    Gdx.input.setCursorImage (Assets.menuNormalCursor, (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
+                              (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
   }
 
   private void hideCursor ()

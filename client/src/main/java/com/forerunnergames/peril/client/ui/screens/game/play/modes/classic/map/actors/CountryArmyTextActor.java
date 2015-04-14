@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.geometry.Size2D;
 
 import com.google.common.math.IntMath;
 
@@ -22,7 +21,7 @@ public final class CountryArmyTextActor extends Actor
   private String armiesText;
   private int armies;
   private Vector2 circleTopLeft = new Vector2 ();
-  private Size2D circleSize = new Size2D ();
+  private Vector2 circleSize = new Vector2 ();
   private Vector2 initialPosition = new Vector2 ();
   private Vector2 finalPosition = new Vector2 ();
 
@@ -37,11 +36,8 @@ public final class CountryArmyTextActor extends Actor
   {
     localToParentCoordinates (initialPosition.set (circleTopLeft));
 
-    finalPosition.x = initialPosition.x + (circleSize.getWidth () - glyphLayout.width) / 2.0f
-            + FONT_METRICS_ADJUSTMENT.x;
-
-    finalPosition.y = initialPosition.y - (circleSize.getHeight () - glyphLayout.height) / 2.0f
-            + FONT_METRICS_ADJUSTMENT.y;
+    finalPosition.x = initialPosition.x + (circleSize.x - glyphLayout.width) / 2.0f + FONT_METRICS_ADJUSTMENT.x;
+    finalPosition.y = initialPosition.y - (circleSize.y - glyphLayout.height) / 2.0f + FONT_METRICS_ADJUSTMENT.y;
 
     font.draw (batch, armiesText, finalPosition.x, finalPosition.y);
   }
@@ -53,11 +49,13 @@ public final class CountryArmyTextActor extends Actor
     this.circleTopLeft.set (circleTopLeft);
   }
 
-  public void setCircleSize (final Size2D circleSize)
+  public void setCircleSize (final Vector2 circleSize)
   {
     Arguments.checkIsNotNull (circleSize, "circleSize");
+    Arguments.checkIsNotNegative (circleSize.x, "circleSize.x");
+    Arguments.checkIsNotNegative (circleSize.y, "circleSize.y");
 
-    this.circleSize = circleSize;
+    this.circleSize.set (circleSize);
   }
 
   public void setArmies (final int armies)

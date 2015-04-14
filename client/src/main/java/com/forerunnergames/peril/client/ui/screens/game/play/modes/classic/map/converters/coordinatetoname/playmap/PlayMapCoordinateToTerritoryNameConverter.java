@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.playmap;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
-import com.forerunnergames.tools.common.geometry.Point2D;
 
 public interface PlayMapCoordinateToTerritoryNameConverter <T extends TerritoryName>
 {
-  T convert (final Point2D playMapCoordinate);
+  T convert (final Vector2 playMapCoordinate);
 }

@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocolor;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.tools.common.color.RgbaColor;
-import com.forerunnergames.tools.common.geometry.Point2D;
 
 public interface PlayMapCoordinateToRgbaColorConverter
 {
-  RgbaColor convert (final Point2D playMapCoordinate);
+  RgbaColor convert (final Vector2 playMapCoordinate);
 }

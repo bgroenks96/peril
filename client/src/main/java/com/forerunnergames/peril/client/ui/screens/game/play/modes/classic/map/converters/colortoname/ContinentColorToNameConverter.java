@@ -6,8 +6,8 @@ import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableMap;
 
-// @formatter:off
-public final class ContinentColorToNameConverter extends AbstractTerritoryColorToNameConverter <ContinentColor, ContinentName>
+public final class ContinentColorToNameConverter extends
+        AbstractTerritoryColorToNameConverter <ContinentColor, ContinentName>
 {
   public ContinentColorToNameConverter (final ImmutableMap <ContinentColor, ContinentName> continentColorsToNames)
   {

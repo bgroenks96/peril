@@ -1,12 +1,12 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.peril.client.io.AbstractDataLoader;
 import com.forerunnergames.peril.client.io.StreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.geometry.Point2D;
-import com.forerunnergames.tools.common.geometry.Size2D;
 import com.forerunnergames.tools.common.io.StreamParser;
 
 import com.google.common.collect.ImmutableBiMap;
@@ -16,12 +16,12 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   private final ImmutableBiMap.Builder <CountryName, CountryImageData> countryImageDataBuilder = new ImmutableBiMap.Builder <> ();
   private StreamParser streamParser;
   private String nameValue;
-  private int width;
-  private int height;
-  private int destPlayMapX;
-  private int destPlayMapY;
-  private int textUpperLeftX;
-  private int textUpperLeftY;
+  private int referenceWidth;
+  private int referenceHeight;
+  private int referenceDestinationX;
+  private int referenceDestinationY;
+  private int referenceTextUpperLeftX;
+  private int referenceTextUpperLeftY;
 
   @Override
   protected ImmutableBiMap <CountryName, CountryImageData> finalizeData ()
@@ -44,12 +44,12 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   protected boolean readData ()
   {
     nameValue = streamParser.getNextQuotedString ();
-    width = streamParser.getNextInteger ();
-    height = streamParser.getNextInteger ();
-    destPlayMapX = streamParser.getNextInteger ();
-    destPlayMapY = streamParser.getNextInteger ();
-    textUpperLeftX = streamParser.getNextInteger ();
-    textUpperLeftY = streamParser.getNextInteger ();
+    referenceWidth = streamParser.getNextInteger ();
+    referenceHeight = streamParser.getNextInteger ();
+    referenceDestinationX = streamParser.getNextInteger ();
+    referenceDestinationY = streamParser.getNextInteger ();
+    referenceTextUpperLeftX = streamParser.getNextInteger ();
+    referenceTextUpperLeftY = streamParser.getNextInteger ();
 
     return !streamParser.isEndOfFile ();
   }
@@ -58,10 +58,11 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   protected void saveData ()
   {
     final CountryName name = new CountryName (nameValue);
-    final Size2D size = new Size2D (width, height);
-    final Point2D destPlayMap = new Point2D (destPlayMapX, destPlayMapY);
-    final Point2D textUpperLeft = new Point2D (textUpperLeftX, textUpperLeftY);
+    final Vector2 referenceSize = new Vector2 (referenceWidth, referenceHeight);
+    final Vector2 referenceDestination = new Vector2 (referenceDestinationX, referenceDestinationY);
+    final Vector2 referenceTextUpperLeft = new Vector2 (referenceTextUpperLeftX, referenceTextUpperLeftY);
 
-    countryImageDataBuilder.put (name, new CountryImageData (name, destPlayMap, textUpperLeft, size));
+    countryImageDataBuilder.put (name, new CountryImageData (name, referenceDestination, referenceTextUpperLeft,
+            referenceSize));
   }
 }
