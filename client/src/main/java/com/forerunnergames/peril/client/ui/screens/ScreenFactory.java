@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
@@ -23,25 +24,29 @@ public final class ScreenFactory
     this.eventBus = eventBus;
   }
 
-  public Screen create (final ScreenId screenId, final ScreenController screenController, final MouseInput mouseInput)
+  public Screen create (final ScreenId screenId,
+                        final ScreenController screenController,
+                        final MouseInput mouseInput,
+                        final Skin skin)
   {
     Arguments.checkIsNotNull (screenId, "screenId");
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (skin, "skin");
 
     switch (screenId)
     {
       case MAIN_MENU:
       {
-        return new MainMenuScreen (screenController, new MainMenuScreenMusic ());
+        return new MainMenuScreen (screenController, new MainMenuScreenMusic (), skin);
       }
       case PLAY_CLASSIC:
       {
-        return PlayScreenFactory.create (screenController, mouseInput, GameMode.CLASSIC, eventBus);
+        return PlayScreenFactory.create (screenController, mouseInput, GameMode.CLASSIC, eventBus, skin);
       }
       case PLAY_PERIL:
       {
-        return PlayScreenFactory.create (screenController, mouseInput, GameMode.PERIL, eventBus);
+        return PlayScreenFactory.create (screenController, mouseInput, GameMode.PERIL, eventBus, skin);
       }
       default:
       {

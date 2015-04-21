@@ -1,0 +1,208 @@
+menus.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+aiColorBlue
+  rotate: false
+  xy: 1966, 5
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorBrown
+  rotate: false
+  xy: 1986, 5
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorCyan
+  rotate: false
+  xy: 2006, 5
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorGold
+  rotate: false
+  xy: 2026, 5
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorGreen
+  rotate: false
+  xy: 1966, 25
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorOrange
+  rotate: false
+  xy: 1986, 25
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorPink
+  rotate: false
+  xy: 2006, 25
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorPurple
+  rotate: false
+  xy: 2026, 25
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorRed
+  rotate: false
+  xy: 1966, 45
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+aiColorSilver
+  rotate: false
+  xy: 1986, 45
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+bottomBackgroundShadow
+  rotate: false
+  xy: 1984, 105
+  size: 1, 302
+  orig: 1, 302
+  offset: 0, 0
+  index: -1
+leftMenuBarShadow
+  rotate: false
+  xy: 2000, 2
+  size: 22, 1
+  orig: 22, 1
+  offset: 0, 0
+  index: -1
+menuBackground
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1080
+  orig: 1920, 1080
+  offset: 0, 0
+  index: -1
+menuBarExtension
+  rotate: false
+  xy: 1966, 105
+  size: 12, 12
+  orig: 12, 12
+  offset: 0, 0
+  index: -1
+menuChoiceOver
+  rotate: true
+  xy: 1924, 2
+  size: 357, 40
+  orig: 358, 40
+  offset: 0, 0
+  index: -1
+menuTitleBackground
+  rotate: false
+  xy: 1980, 105
+  size: 2, 2
+  split: 0, 0, 0, 0
+  orig: 2, 2
+  offset: 0, 0
+  index: -1
+playerColorBlue
+  rotate: false
+  xy: 2006, 45
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorBrown
+  rotate: false
+  xy: 2026, 45
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorCyan
+  rotate: false
+  xy: 1966, 65
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorGold
+  rotate: false
+  xy: 1986, 65
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorGreen
+  rotate: false
+  xy: 2006, 65
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorOrange
+  rotate: false
+  xy: 2026, 65
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorPink
+  rotate: false
+  xy: 1966, 85
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorPurple
+  rotate: false
+  xy: 1986, 85
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorRed
+  rotate: false
+  xy: 2006, 85
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+playerColorSilver
+  rotate: false
+  xy: 2026, 85
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+rightBackgroundShadow
+  rotate: false
+  xy: 1966, 2
+  size: 32, 1
+  orig: 32, 1
+  offset: 0, 0
+  index: -1
+rightMenuBarShadow
+  rotate: false
+  xy: 2024, 2
+  size: 22, 1
+  orig: 22, 1
+  offset: 0, 0
+  index: -1
+topBackgroundShadow
+  rotate: false
+  xy: 1980, 109
+  size: 1, 302
+  orig: 1, 302
+  offset: 0, 0
+  index: -1

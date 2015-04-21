@@ -6,12 +6,25 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -22,6 +35,9 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
+import com.forerunnergames.peril.client.ui.widgets.AbstractOkCancelPopup;
+import com.forerunnergames.peril.client.ui.widgets.Popup;
+import com.forerunnergames.peril.client.ui.widgets.PopupStyle;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class MainMenuScreen extends InputAdapter implements Screen
@@ -29,66 +45,153 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   private final ScreenController screenController;
   private final ScreenMusic music;
   private final Stage stage;
+  private final Popup quitPopup;
 
-  public MainMenuScreen (final ScreenController screenController, final ScreenMusic music)
+  public MainMenuScreen (final ScreenController screenController, final ScreenMusic music, final Skin skin)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (music, "music");
+    Arguments.checkIsNotNull (skin, "skin");
 
     this.screenController = screenController;
     this.music = music;
 
-    // Layer 0 - menu background image
+    // Layer 0 - background image
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (new Image (Assets.menuBackground));
+    rootStack.add (new Image (Assets.menuAtlas.findRegion ("menuBackground")));
 
-    // Layer 1 - right menu background shadow
-    final Table tableL1 = new Table ();
+    // TODO Production: Remove
+    rootStack.debug ();
+
+    // Layer 1 - right background shadow
+    final Table tableL1 = new Table ().top ().left ();
+    tableL1.add ().width (660);
+    tableL1.add (new Image (Assets.menuAtlas.findRegion ("rightBackgroundShadow"))).width (32).expandY ().fill ();
     rootStack.add (tableL1);
-    tableL1.add ().width (666.0f);
-    tableL1.add (new Image (Assets.rightMenuBackgroundShadow)).expandY ().fillY ();
-    tableL1.add ().expandX ();
 
-    // Layer 2 - text
-    final Table tableL2 = new Table ();
+    // Layer 2 - top & bottom background shadows
+    final Table tableL2 = new Table ().top ().left ();
+    tableL2.add ().width (660);
+    tableL2.add (new Image (new TiledDrawable (Assets.menuAtlas.findRegion ("topBackgroundShadow")))).width (332)
+            .height (302).fill ();
+    tableL2.row ();
+    tableL2.add ().colspan (2).expandY ();
+    tableL2.row ();
+    tableL2.add ();
+    tableL2.add (new Image (new TiledDrawable (Assets.menuAtlas.findRegion ("bottomBackgroundShadow")))).width (332)
+            .height (302).fill ();
     rootStack.add (tableL2);
-    tableL2.add ().width (294.0f);
-    tableL2.add (new Image (Assets.mainMenuText));
-    tableL2.add ().expandX ();
 
-    // Layer 3 - top & bottom menu bar extension shadows
-    final Table tableL3 = new Table ();
+    // Layer 3 - title background
+    final Table tableL3 = new Table ().top ().left ();
+    tableL3.add ().width (301).height (400);
+    tableL3.row ();
+    tableL3.add ();
+    tableL3.add (new Image (new NinePatchDrawable (Assets.menuAtlas.createPatch ("menuTitleBackground"))))
+            .size (358, 60).fill ();
     rootStack.add (tableL3);
-    tableL3.add ().width (666.0f);
-    tableL3.add (new Image (Assets.topMenuBarExtensionShadow)).width (288.0f).fillX ().top ();
-    tableL3.add ().expandX ();
-    tableL3.row ();
-    tableL3.add ().expandY ();
-    tableL3.row ();
-    tableL3.add ().width (666.0f);
-    tableL3.add (new Image (Assets.bottomMenuBarExtensionShadow)).width (288.0f).fillX ().bottom ();
-    tableL3.add ().expandX ();
 
-    // Layer 4 - left & right menu bar shadows
-    final Table tableL4 = new Table ();
+    // Layer 4 - text
+    final Table tableL4 = new Table ().top ().left ();
+    tableL4.add ().width (301).height (400);
+    tableL4.row ();
+    tableL4.add ().height (60);
+    tableL4.add (new Label ("Main Menu", new Label.LabelStyle (Assets.skyHookMono31, Color.WHITE))).padLeft (30)
+            .height (37).top ().left ();
+    tableL4.row ();
+    tableL4.add ().height (42);
+    tableL4.row ();
+    tableL4.add ();
+
+    final ImageTextButton.ImageTextButtonStyle buttonStyle = new ImageTextButton.ImageTextButtonStyle ();
+    buttonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
+    buttonStyle.font = Assets.droidSansMono18;
+
+    final ImageTextButton singlePlayerButton = new ImageTextButton ("Single Player", buttonStyle);
+    final Stack singlePlayerButtonStack = new Stack ();
+    singlePlayerButtonStack.add (new Container <> (singlePlayerButton.getLabel ()).left ().padLeft (60));
+    singlePlayerButtonStack.add (singlePlayerButton.getImage ());
+    singlePlayerButton.clearChildren ();
+    singlePlayerButton.add (singlePlayerButtonStack).fill ().expand ();
+
+    tableL4.add (singlePlayerButton).width (358).height (40).left ().fill ();
+    tableL4.row ();
+    tableL4.add ().height (10);
+    tableL4.row ();
+    tableL4.add ();
+
+    final ImageTextButton multiplayerPlayerButton = new ImageTextButton ("Multiplayer", buttonStyle);
+    final Stack multiplayerButtonStack = new Stack ();
+    multiplayerButtonStack.add (new Container <> (multiplayerPlayerButton.getLabel ()).left ().padLeft (60));
+    multiplayerButtonStack.add (multiplayerPlayerButton.getImage ());
+    multiplayerPlayerButton.clearChildren ();
+    multiplayerPlayerButton.add (multiplayerButtonStack).fill ().expand ();
+    multiplayerPlayerButton.addListener (new ChangeListener ()
+    {
+      @Override
+      public void changed (final ChangeEvent event, final Actor actor)
+      {
+        screenController.toScreen (ScreenId.PLAY_CLASSIC);
+      }
+    });
+
+    tableL4.add (multiplayerPlayerButton).width (358).height (40).left ().fill ();
+    tableL4.row ();
+    tableL4.add ().height (10);
+    tableL4.row ();
+    tableL4.add ();
+
+    final ImageTextButton settingsPlayerButton = new ImageTextButton ("Settings", buttonStyle);
+    final Stack settingsButtonStack = new Stack ();
+    settingsButtonStack.add (new Container <> (settingsPlayerButton.getLabel ()).left ().padLeft (60));
+    settingsButtonStack.add (settingsPlayerButton.getImage ());
+    settingsPlayerButton.clearChildren ();
+    settingsPlayerButton.add (settingsButtonStack).fill ().expand ();
+
+    tableL4.add (settingsPlayerButton).width (358).height (40).left ().fill ();
+    tableL4.row ();
+    tableL4.add ().height (10);
+    tableL4.row ();
+    tableL4.add ();
+
+    final ImageTextButton quitButton = new ImageTextButton ("Quit", buttonStyle);
+    final Stack quitButtonStack = new Stack ();
+    quitButtonStack.add (new Container <> (quitButton.getLabel ()).left ().padLeft (60));
+    quitButtonStack.add (quitButton.getImage ());
+    quitButton.clearChildren ();
+    quitButton.add (quitButtonStack).fill ().expand ();
+    quitButton.addListener (new ChangeListener ()
+    {
+      @Override
+      public void changed (final ChangeEvent event, final Actor actor)
+      {
+        quitPopup.show ();
+      }
+    });
+
+    tableL4.add (quitButton).width (358).height (40).left ().fill ();
+
     rootStack.add (tableL4);
-    tableL4.add ().width (294.0f);
-    tableL4.add (new Image (Assets.leftMenuBarShadow)).expandY ().fillY ();
-    tableL4.add ().width (330.0f);
-    tableL4.add (new Image (Assets.rightMenuBarShadow)).expandY ().fillY ();
-    tableL4.add ().expandX ();
 
-    // Layer 5 - buttons
-    final Table tableL5 = new Table ();
+    // Layer 5 - left & right menu bar shadows
+    final Table tableL5 = new Table ().top ().left ();
+    tableL5.add ().width (300);
+    tableL5.add (new Image (Assets.menuAtlas.findRegion ("leftMenuBarShadow"))).width (22).expandY ().fill ();
+    tableL5.add ().width (316);
+    tableL5.add (new Image (Assets.menuAtlas.findRegion ("rightMenuBarShadow"))).width (22).expandY ().fill ();
     rootStack.add (tableL5);
-    tableL5.add ().width (294.0f);
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
             GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
     stage = new Stage (viewport);
     stage.addActor (rootStack);
+
+    quitPopup = new QuitPopup (skin, PopupStyle.builder ().titleHeight (34)
+    // .message
+    // ("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris elementum nunc id dolor imperdiet tincidunt. Proin rutrum leo orci, nec interdum mauris pretium ut.\n\nSuspendisse faucibus, purus vitae finibus euismod, libero urna fermentum diam, at pretium quam lacus vitae metus. Suspendisse ac tincidunt leo. Morbi a tellus purus. Aenean a arcu ante. Nulla facilisi.\n\nAliquam pharetra sed urna nec efficitur. Maecenas pulvinar libero eget pellentesque sodales. Donec a metus eget mi tempus feugiat. Etiam fringilla ullamcorper justo ut mattis. Nam egestas elit at luctus molestie.")
+            .message ("Are you sure you want to quit?").build (), stage);
   }
 
   @Override
@@ -96,14 +199,12 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   {
     switch (keycode)
     {
-      case Input.Keys.RIGHT:
-      {
-        screenController.toScreen (ScreenId.PLAY_CLASSIC);
-        return true;
-      }
       case Input.Keys.ESCAPE:
       {
-        Gdx.app.exit ();
+        if (quitPopup.isShown ()) return false;
+
+        quitPopup.show ();
+
         return true;
       }
       default:
@@ -121,16 +222,6 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
 
     if (MusicSettings.IS_ENABLED) music.start ();
-  }
-
-  @Override
-  public void hide ()
-  {
-    Gdx.input.setInputProcessor (null);
-
-    if (MusicSettings.IS_ENABLED) music.stop ();
-
-    hideCursor ();
   }
 
   @Override
@@ -160,6 +251,16 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   }
 
   @Override
+  public void hide ()
+  {
+    Gdx.input.setInputProcessor (null);
+
+    if (MusicSettings.IS_ENABLED) music.stop ();
+
+    hideCursor ();
+  }
+
+  @Override
   public void dispose ()
   {
     stage.dispose ();
@@ -174,5 +275,22 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   private void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
+  }
+
+  private final class QuitPopup extends AbstractOkCancelPopup
+  {
+    public QuitPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage)
+    {
+      super (skin, new Window.WindowStyle (Assets.droidSans20, Color.WHITE, new TextureRegionDrawable (
+              new TextureRegion (Assets.quitPopupBackground))), popupStyle, stage);
+
+      changeButtonText ("OK", "QUIT");
+    }
+
+    @Override
+    public void onSubmit ()
+    {
+      Gdx.app.exit ();
+    }
   }
 }

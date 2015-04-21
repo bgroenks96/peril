@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -36,12 +37,14 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   public PerilPlayScreen (final ScreenController screenController,
                           final TankActor2 tankActor2,
                           final ScreenMusic music,
-                          final MBassador <Event> eventBus)
+                          final MBassador <Event> eventBus,
+                          final Skin skin)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (tankActor2, "tankActor2");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (skin, "skin");
 
     this.music = music;
     this.eventBus = eventBus;

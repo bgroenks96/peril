@@ -23,13 +23,7 @@ import org.slf4j.LoggerFactory;
 // TODO: Use TextureAtlas.
 public final class Assets
 {
-  public static Texture menuBackground;
-  public static NinePatch rightMenuBackgroundShadow;
-  public static Texture mainMenuText;
-  public static Texture topMenuBarExtensionShadow;
-  public static Texture bottomMenuBarExtensionShadow;
-  public static Texture leftMenuBarShadow;
-  public static Texture rightMenuBarShadow;
+  public static TextureAtlas menuAtlas;
   public static Music menuMusic;
   public static Texture playScreenBackground;
   public static Texture playMapBackground;
@@ -39,20 +33,24 @@ public final class Assets
   public static Pixmap playScreenNormalCursor;
   public static BitmapFont aurulentSans16;
   public static BitmapFont droidSansMono18;
+  public static BitmapFont droidSans20;
+  public static BitmapFont skyHookMono31;
   public static BitmapFont armyCircleDistanceFieldFont;
   public static Texture armyMovementBackground;
   public static Texture armyMovementForegroundArrow;
   public static Texture armyMovementForegroundArrowText;
   public static Texture armyMovementOccupationTitle;
+  public static Texture quitPopupBackground;
   public static TextureAtlas perilModeAtlas;
   public static NinePatch perilModeGridLines;
   public static ShaderProgram distanceFieldFontShader;
   public static ImmutableList <TextureAtlas> countryAtlases;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
-  private static Texture menuRightBackgroundShadowTexture;
   private static Texture aurulentSans16Texture;
   private static Texture droidSansMono18Texture;
+  private static Texture droidSans20Texture;
+  private static Texture skyHookMono31Texture;
   private static Texture armyCircleDistanceFieldFontTexture;
   private static boolean isLoaded = false;
 
@@ -64,13 +62,7 @@ public final class Assets
       return;
     }
 
-    menuBackground.dispose ();
-    menuRightBackgroundShadowTexture.dispose ();
-    mainMenuText.dispose ();
-    topMenuBarExtensionShadow.dispose ();
-    bottomMenuBarExtensionShadow.dispose ();
-    leftMenuBarShadow.dispose ();
-    rightMenuBarShadow.dispose ();
+    menuAtlas.dispose ();
     playScreenBackground.dispose ();
     playMapBackground.dispose ();
     playMapInputDetection.dispose ();
@@ -80,12 +72,17 @@ public final class Assets
     aurulentSans16Texture.dispose ();
     droidSansMono18.dispose ();
     droidSansMono18Texture.dispose ();
+    droidSans20.dispose ();
+    droidSans20Texture.dispose ();
+    skyHookMono31.dispose ();
+    skyHookMono31Texture.dispose ();
     armyCircleDistanceFieldFont.dispose ();
     armyCircleDistanceFieldFontTexture.dispose ();
     armyMovementBackground.dispose ();
     armyMovementForegroundArrow.dispose ();
     armyMovementForegroundArrowText.dispose ();
     armyMovementOccupationTitle.dispose ();
+    quitPopupBackground.dispose ();
     distanceFieldFontShader.dispose ();
     perilModeAtlas.dispose ();
     skin.dispose ();
@@ -107,14 +104,9 @@ public final class Assets
       return;
     }
 
-    menuBackground = new Texture (Gdx.files.internal ("screens/menus/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    menuRightBackgroundShadowTexture = new Texture (Gdx.files.internal ("screens/menus/shared/rightBackgroundShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    rightMenuBackgroundShadow = new NinePatch (menuRightBackgroundShadowTexture);
-    mainMenuText = new Texture (Gdx.files.internal ("screens/menus/main/text.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    topMenuBarExtensionShadow = new Texture (Gdx.files.internal ("screens/menus/shared/topMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    bottomMenuBarExtensionShadow = new Texture (Gdx.files.internal ("screens/menus/shared/bottomMenuBarExtensionShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    leftMenuBarShadow = new Texture (Gdx.files.internal ("screens/menus/shared/leftMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    rightMenuBarShadow = new Texture (Gdx.files.internal ("screens/menus/shared/rightMenuBarShadow.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    ShaderProgram.pedantic = false;
+
+    menuAtlas = new TextureAtlas (Gdx.files.internal ("screens/menus/menus.atlas"));
     menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/menuScreens.mp3"));
     playScreenBackground = new Texture (Gdx.files.internal ("screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     playMapBackground = new Texture (Gdx.files.internal ("screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
@@ -128,13 +120,20 @@ public final class Assets
     droidSansMono18Texture = new Texture (Gdx.files.internal ("fonts/droidsans/mono/droid-sans-mono-18.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
     droidSansMono18Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
     droidSansMono18 = new BitmapFont (Gdx.files.internal ("fonts/droidsans/mono/droid-sans-mono-18.fnt"), new TextureRegion (droidSansMono18Texture), false);
-    armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
-    armyCircleDistanceFieldFontTexture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
+    droidSans20Texture = new Texture (Gdx.files.internal ("fonts/droidsans/droid-sans-20.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    droidSans20Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
+    droidSans20 = new BitmapFont (Gdx.files.internal ("fonts/droidsans/droid-sans-20.fnt"), new TextureRegion (droidSans20Texture), false);
+    skyHookMono31Texture = new Texture (Gdx.files.internal ("fonts/skyhook/mono/skyhook-mono-31.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
+    skyHookMono31Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
+    skyHookMono31 = new BitmapFont (Gdx.files.internal ("fonts/skyhook/mono/skyhook-mono-31.fnt"), new TextureRegion (skyHookMono31Texture), false);
+    armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.png"), false);
+    armyCircleDistanceFieldFontTexture.setFilter (Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     armyCircleDistanceFieldFont = new BitmapFont (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.fnt"), new TextureRegion (armyCircleDistanceFieldFontTexture), false);
     armyMovementBackground = new Texture (Gdx.files.internal ("widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementForegroundArrow = new Texture (Gdx.files.internal ("widgets/popups/armymovement/shared/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementForegroundArrowText = new Texture (Gdx.files.internal ("widgets/popups/armymovement/occupation/occupying.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     armyMovementOccupationTitle = new Texture (Gdx.files.internal ("widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+    quitPopupBackground = new Texture (Gdx.files.internal ("widgets/popups/quit/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
     perilModeAtlas = new TextureAtlas (Gdx.files.internal ("screens/game/play/modes/peril/perilMode.atlas"));
     perilModeGridLines = perilModeAtlas.createPatch ("gridMiddle");
     skin = new Skin (Gdx.files.internal ("uiskin.json"));
@@ -152,18 +151,12 @@ public final class Assets
       Gdx.app.error ("distanceFieldFontShader", "Compilation failed:\n" + distanceFieldFontShader.getLog ());
     }
 
-    setFilter (menuBackground);
-    setFilter (menuRightBackgroundShadowTexture);
-    setFilter (mainMenuText);
-    setFilter (topMenuBarExtensionShadow);
-    setFilter (bottomMenuBarExtensionShadow);
-    setFilter (leftMenuBarShadow);
-    setFilter (rightMenuBarShadow);
     setFilter (playScreenBackground);
     setFilter (playMapBackground);
     setFilter (armyMovementForegroundArrow);
     setFilter (armyMovementForegroundArrowText);
     setFilter (armyMovementOccupationTitle);
+    setFilter (quitPopupBackground);
 
     isLoaded = true;
   }
