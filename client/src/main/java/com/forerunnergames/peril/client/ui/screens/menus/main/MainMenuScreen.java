@@ -42,7 +42,6 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class MainMenuScreen extends InputAdapter implements Screen
 {
-  private final ScreenController screenController;
   private final ScreenMusic music;
   private final Stage stage;
   private final Popup quitPopup;
@@ -53,7 +52,6 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (skin, "skin");
 
-    this.screenController = screenController;
     this.music = music;
 
     // Layer 0 - background image
