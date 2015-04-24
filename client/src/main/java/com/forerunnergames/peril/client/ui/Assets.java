@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // TODO: Use TextureAtlas.
+// TODO: Use AssetManager.
 public final class Assets
 {
   public static TextureAtlas menuAtlas;
