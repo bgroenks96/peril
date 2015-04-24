@@ -17,7 +17,7 @@ public final class PlayMapSettings
   public static final Vector2   COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE           = new Vector2 (32, 30);
   public static final Vector2   COUNTRY_ARMY_CIRCLE_SIZE_ACTUAL_PLAY_MAP_SPACE              = new Vector2 (COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE).scl (REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
   public static final boolean   ENABLE_HOVER_EFFECTS                                        = true;
-  public static final boolean   ENABLE_CLICK_EFFECTS                                        = true;
+  public static final boolean   ENABLE_CLICK_EFFECTS                                        = false;
   // @formatter:on
 
   private PlayMapSettings ()
