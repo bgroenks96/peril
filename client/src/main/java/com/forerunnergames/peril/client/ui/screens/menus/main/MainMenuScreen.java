@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -23,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -72,14 +73,19 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     // Layer 2 - top & bottom background shadows
     final Table tableL2 = new Table ().top ().left ();
     tableL2.add ().width (660);
-    tableL2.add (new Image (new TiledDrawable (Assets.menuAtlas.findRegion ("topBackgroundShadow")))).width (332)
-            .height (302).fill ();
+
+    final Sprite topAndBottomBackgroundShadow = Assets.menuAtlas.createSprite ("topAndBottomBackgroundShadow");
+
+    tableL2.add (new Image (new SpriteDrawable (topAndBottomBackgroundShadow))).width (332).height (302).fill ();
     tableL2.row ();
     tableL2.add ().colspan (2).expandY ();
     tableL2.row ();
     tableL2.add ();
-    tableL2.add (new Image (new TiledDrawable (Assets.menuAtlas.findRegion ("bottomBackgroundShadow")))).width (332)
-            .height (302).fill ();
+
+    final Sprite bottomBackgroundShadow = new Sprite (topAndBottomBackgroundShadow);
+    bottomBackgroundShadow.flip (true, false);
+
+    tableL2.add (new Image (new SpriteDrawable (bottomBackgroundShadow))).width (332).height (302).fill ();
     rootStack.add (tableL2);
 
     // Layer 3 - title background
@@ -87,8 +93,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     tableL3.add ().width (301).height (400);
     tableL3.row ();
     tableL3.add ();
-    tableL3.add (new Image (new NinePatchDrawable (Assets.menuAtlas.createPatch ("menuTitleBackground"))))
-            .size (358, 60).fill ();
+    tableL3.add (new Image (new NinePatchDrawable (Assets.menuAtlas.createPatch ("menuTitleBackground")))).size (358, 60).fill ();
     rootStack.add (tableL3);
 
     // Layer 4 - text & buttons
@@ -96,8 +101,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     tableL4.add ().width (301).height (400);
     tableL4.row ();
     tableL4.add ().height (60);
-    tableL4.add (new Label ("Main Menu", new Label.LabelStyle (Assets.skyHookMono31, Color.WHITE))).padLeft (30)
-            .height (37).top ().left ();
+    tableL4.add (new Label ("Main Menu", new Label.LabelStyle (Assets.skyHookMono31, Color.WHITE))).padLeft (30).height (37).top ().left ();
     tableL4.row ();
     tableL4.add ().height (42);
     tableL4.row ();
@@ -109,7 +113,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
 
     final ImageTextButton singlePlayerButton = new ImageTextButton ("Single Player", buttonStyle);
     final Stack singlePlayerButtonStack = new Stack ();
-    singlePlayerButtonStack.add (new Container <> (singlePlayerButton.getLabel ()).left ().padLeft (60));
+    singlePlayerButtonStack.add (new Container<> (singlePlayerButton.getLabel ()).left ().padLeft (60));
     singlePlayerButtonStack.add (singlePlayerButton.getImage ());
     singlePlayerButton.clearChildren ();
     singlePlayerButton.add (singlePlayerButtonStack).fill ().expand ();
@@ -122,7 +126,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
 
     final ImageTextButton multiplayerPlayerButton = new ImageTextButton ("Multiplayer", buttonStyle);
     final Stack multiplayerButtonStack = new Stack ();
-    multiplayerButtonStack.add (new Container <> (multiplayerPlayerButton.getLabel ()).left ().padLeft (60));
+    multiplayerButtonStack.add (new Container<> (multiplayerPlayerButton.getLabel ()).left ().padLeft (60));
     multiplayerButtonStack.add (multiplayerPlayerButton.getImage ());
     multiplayerPlayerButton.clearChildren ();
     multiplayerPlayerButton.setSize (358, 40);
@@ -144,7 +148,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
 
     final ImageTextButton settingsButton = new ImageTextButton ("Settings", buttonStyle);
     final Stack settingsButtonStack = new Stack ();
-    settingsButtonStack.add (new Container <> (settingsButton.getLabel ()).left ().padLeft (60));
+    settingsButtonStack.add (new Container<> (settingsButton.getLabel ()).left ().padLeft (60));
     settingsButtonStack.add (settingsButton.getImage ());
     settingsButton.clearChildren ();
     settingsButton.add (settingsButtonStack).fill ().expand ();
@@ -157,7 +161,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
 
     final ImageTextButton quitButton = new ImageTextButton ("Quit", buttonStyle);
     final Stack quitButtonStack = new Stack ();
-    quitButtonStack.add (new Container <> (quitButton.getLabel ()).left ().padLeft (60));
+    quitButtonStack.add (new Container<> (quitButton.getLabel ()).left ().padLeft (60));
     quitButtonStack.add (quitButton.getImage ());
     quitButton.clearChildren ();
     quitButton.add (quitButtonStack).fill ().expand ();
@@ -177,9 +181,16 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     // Layer 5 - left & right menu bar shadows
     final Table tableL5 = new Table ().top ().left ();
     tableL5.add ().width (300);
-    tableL5.add (new Image (Assets.menuAtlas.findRegion ("leftMenuBarShadow"))).width (22).expandY ().fill ();
+
+    final TextureRegion leftAndRightMenuBarShadow = Assets.menuAtlas.findRegion ("leftAndRightMenuBarShadow");
+
+    tableL5.add (new Image (leftAndRightMenuBarShadow)).width (22).expandY ().fill ();
     tableL5.add ().width (316);
-    tableL5.add (new Image (Assets.menuAtlas.findRegion ("rightMenuBarShadow"))).width (22).expandY ().fill ();
+
+    final TextureRegion rightMenuBarShadow = new TextureRegion (leftAndRightMenuBarShadow);
+    rightMenuBarShadow.flip (true, false);
+
+    tableL5.add (new Image (rightMenuBarShadow)).width (22).expandY ().fill ();
     tableL5.setTouchable (Touchable.disabled);
     rootStack.add (tableL5);
 
