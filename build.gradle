@@ -19,7 +19,7 @@ allprojects {
 
   ext {
     appName = projectName
-    gdxVersion = "1.5.7-SNAPSHOT"
+    gdxVersion = "1.5.6"
     roboVMVersion = "1.0.0"
   }
 
