@@ -43,7 +43,26 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    textField = new TextField ("", textFieldStyle);
+    textField = new TextField ("", textFieldStyle)
+    {
+      @Override
+      protected InputListener createInputListener ()
+      {
+        return new TextFieldClickListener ()
+        {
+          @Override
+          public boolean keyDown (final InputEvent event, final int keycode)
+          {
+            return doNotHandleEscapeKeyInTextField (event, keycode);
+          }
+
+          private boolean doNotHandleEscapeKeyInTextField (final InputEvent event, final int keycode)
+          {
+            return keycode != Input.Keys.ESCAPE && super.keyDown (event, keycode);
+          }
+        };
+      }
+    };
 
     textField.addListener (new TextFieldInputListener (eventBus));
 
@@ -59,6 +78,14 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   public Actor asActor ()
   {
     return table;
+  }
+
+  @Override
+  public void clear ()
+  {
+    super.clear ();
+
+    textField.setText ("");
   }
 
   private final class TextFieldInputListener extends InputListener

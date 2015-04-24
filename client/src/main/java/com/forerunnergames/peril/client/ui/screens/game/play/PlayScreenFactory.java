@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicPlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilPlayScreenFactory;
@@ -17,26 +18,28 @@ import net.engio.mbassy.bus.MBassador;
 public final class PlayScreenFactory
 {
   public static Screen create (final ScreenController screenController,
+                               final ScreenSize screenSize,
                                final MouseInput mouseInput,
                                final GameMode gameMode,
-                               final MBassador <Event> eventBus,
-                               final Skin skin)
+                               final Skin skin,
+                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (gameMode, "gameMode");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (skin, "skin");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     switch (gameMode)
     {
       case CLASSIC:
       {
-        return ClassicPlayScreenFactory.create (screenController, mouseInput, eventBus, skin);
+        return ClassicPlayScreenFactory.create (screenController, screenSize, mouseInput, skin, eventBus);
       }
       case PERIL:
       {
-        return PerilPlayScreenFactory.create (screenController, mouseInput, eventBus, skin);
+        return PerilPlayScreenFactory.create (screenController, screenSize, mouseInput, skin, eventBus);
       }
       default:
       {

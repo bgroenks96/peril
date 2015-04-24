@@ -9,10 +9,10 @@ import com.forerunnergames.tools.common.Classes;
 public final class GraphicsSettings
 {
   // @formatter:off
-  public static final float                 MIN_INITIAL_WINDOW_WIDTH          = 640;
-  public static final float                 MIN_INITIAL_WINDOW_HEIGHT         = 480;
-  public static final float                 REFERENCE_SCREEN_WIDTH            = 1920;
-  public static final float                 REFERENCE_SCREEN_HEIGHT           = 1080;
+  public static final int                   MIN_INITIAL_WINDOW_WIDTH          = 640;
+  public static final int                   MIN_INITIAL_WINDOW_HEIGHT         = 480;
+  public static final int                   REFERENCE_SCREEN_WIDTH            = 1920;
+  public static final int                   REFERENCE_SCREEN_HEIGHT           = 1080;
   public static final Vector2               REFERENCE_SCREEN_SIZE             = new Vector2 (REFERENCE_SCREEN_WIDTH, REFERENCE_SCREEN_HEIGHT);
   public static final boolean               TEXTURE_MIPMAPPING                = true;
   public static final Texture.TextureFilter TEXTURE_MINIFICATION_FILTER       = Texture.TextureFilter.MipMapLinearNearest;

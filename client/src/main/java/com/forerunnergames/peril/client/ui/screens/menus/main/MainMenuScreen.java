@@ -4,14 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -19,25 +20,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
-import com.forerunnergames.peril.client.ui.widgets.AbstractOkCancelPopup;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.widgets.Popup;
 import com.forerunnergames.peril.client.ui.widgets.PopupStyle;
+import com.forerunnergames.peril.client.ui.widgets.QuitPopup;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class MainMenuScreen extends InputAdapter implements Screen
@@ -45,10 +44,15 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   private final ScreenMusic music;
   private final Stage stage;
   private final Popup quitPopup;
+  private final InputProcessor inputProcessor;
 
-  public MainMenuScreen (final ScreenController screenController, final ScreenMusic music, final Skin skin)
+  public MainMenuScreen (final ScreenController screenController,
+                         final ScreenSize screenSize,
+                         final ScreenMusic music,
+                         final Skin skin)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (skin, "skin");
 
@@ -58,9 +62,6 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     rootStack.add (new Image (Assets.menuAtlas.findRegion ("menuBackground")));
-
-    // TODO Production: Remove
-    rootStack.debug ();
 
     // Layer 1 - right background shadow
     final Table tableL1 = new Table ().top ().left ();
@@ -90,7 +91,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
             .size (358, 60).fill ();
     rootStack.add (tableL3);
 
-    // Layer 4 - text
+    // Layer 4 - text & buttons
     final Table tableL4 = new Table ().top ().left ();
     tableL4.add ().width (301).height (400);
     tableL4.row ();
@@ -124,6 +125,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     multiplayerButtonStack.add (new Container <> (multiplayerPlayerButton.getLabel ()).left ().padLeft (60));
     multiplayerButtonStack.add (multiplayerPlayerButton.getImage ());
     multiplayerPlayerButton.clearChildren ();
+    multiplayerPlayerButton.setSize (358, 40);
     multiplayerPlayerButton.add (multiplayerButtonStack).fill ().expand ();
     multiplayerPlayerButton.addListener (new ChangeListener ()
     {
@@ -140,14 +142,14 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     tableL4.row ();
     tableL4.add ();
 
-    final ImageTextButton settingsPlayerButton = new ImageTextButton ("Settings", buttonStyle);
+    final ImageTextButton settingsButton = new ImageTextButton ("Settings", buttonStyle);
     final Stack settingsButtonStack = new Stack ();
-    settingsButtonStack.add (new Container <> (settingsPlayerButton.getLabel ()).left ().padLeft (60));
-    settingsButtonStack.add (settingsPlayerButton.getImage ());
-    settingsPlayerButton.clearChildren ();
-    settingsPlayerButton.add (settingsButtonStack).fill ().expand ();
+    settingsButtonStack.add (new Container <> (settingsButton.getLabel ()).left ().padLeft (60));
+    settingsButtonStack.add (settingsButton.getImage ());
+    settingsButton.clearChildren ();
+    settingsButton.add (settingsButtonStack).fill ().expand ();
 
-    tableL4.add (settingsPlayerButton).width (358).height (40).left ().fill ();
+    tableL4.add (settingsButton).width (358).height (40).left ().fill ();
     tableL4.row ();
     tableL4.add ().height (10);
     tableL4.row ();
@@ -178,18 +180,27 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     tableL5.add (new Image (Assets.menuAtlas.findRegion ("leftMenuBarShadow"))).width (22).expandY ().fill ();
     tableL5.add ().width (316);
     tableL5.add (new Image (Assets.menuAtlas.findRegion ("rightMenuBarShadow"))).width (22).expandY ().fill ();
+    tableL5.setTouchable (Touchable.disabled);
     rootStack.add (tableL5);
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
-            GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
+    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
+            screenSize.referenceHeight (), camera);
+
     stage = new Stage (viewport);
     stage.addActor (rootStack);
 
-    quitPopup = new QuitPopup (skin, PopupStyle.builder ().titleHeight (34)
-    // .message
-    // ("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris elementum nunc id dolor imperdiet tincidunt. Proin rutrum leo orci, nec interdum mauris pretium ut.\n\nSuspendisse faucibus, purus vitae finibus euismod, libero urna fermentum diam, at pretium quam lacus vitae metus. Suspendisse ac tincidunt leo. Morbi a tellus purus. Aenean a arcu ante. Nulla facilisi.\n\nAliquam pharetra sed urna nec efficitur. Maecenas pulvinar libero eget pellentesque sodales. Donec a metus eget mi tempus feugiat. Etiam fringilla ullamcorper justo ut mattis. Nam egestas elit at luctus molestie.")
-            .message ("Are you sure you want to quit?").build (), stage);
+    quitPopup = new QuitPopup (skin, PopupStyle.builder ().titleHeight (34).message ("Are you sure you want to quit?")
+            .build (), stage)
+    {
+      @Override
+      public void onSubmit ()
+      {
+        Gdx.app.exit ();
+      }
+    };
+
+    inputProcessor = new InputMultiplexer (stage, this);
   }
 
   @Override
@@ -199,8 +210,6 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     {
       case Input.Keys.ESCAPE:
       {
-        if (quitPopup.isShown ()) return false;
-
         quitPopup.show ();
 
         return true;
@@ -217,9 +226,11 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   {
     showCursor ();
 
-    Gdx.input.setInputProcessor (new InputMultiplexer (this, stage));
+    Gdx.input.setInputProcessor (inputProcessor);
 
-    if (MusicSettings.IS_ENABLED) music.start ();
+    stage.mouseMoved (Gdx.input.getX (), Gdx.input.getY ());
+
+    music.start ();
   }
 
   @Override
@@ -236,6 +247,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   public void resize (final int width, final int height)
   {
     stage.getViewport ().update (width, height, true);
+    stage.getViewport ().setScreenPosition (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
+                                            InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
   }
 
   @Override
@@ -251,9 +264,11 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   @Override
   public void hide ()
   {
+    stage.unfocusAll ();
+
     Gdx.input.setInputProcessor (null);
 
-    if (MusicSettings.IS_ENABLED) music.stop ();
+    music.stop ();
 
     hideCursor ();
   }
@@ -273,22 +288,5 @@ public final class MainMenuScreen extends InputAdapter implements Screen
   private void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
-  }
-
-  private final class QuitPopup extends AbstractOkCancelPopup
-  {
-    public QuitPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage)
-    {
-      super (skin, new Window.WindowStyle (Assets.droidSans20, Color.WHITE, new TextureRegionDrawable (
-              new TextureRegion (Assets.quitPopupBackground))), popupStyle, stage);
-
-      changeButtonText ("OK", "QUIT");
-    }
-
-    @Override
-    public void onSubmit ()
-    {
-      Gdx.app.exit ();
-    }
   }
 }

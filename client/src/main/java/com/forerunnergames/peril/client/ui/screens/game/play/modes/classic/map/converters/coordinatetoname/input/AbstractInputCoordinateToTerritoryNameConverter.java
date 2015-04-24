@@ -24,12 +24,11 @@ public abstract class AbstractInputCoordinateToTerritoryNameConverter <T extends
   }
 
   @Override
-  public T convert (final Vector2 inputCoordinate, final Vector2 screenSize)
+  public T convert (final Vector2 inputCoordinate)
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
     return screenCoordinateToTerritoryNameConverter
-            .convert (inputToScreenCoordinateConverter.convert (inputCoordinate), screenSize);
+            .convert (inputToScreenCoordinateConverter.convert (inputCoordinate));
   }
 }

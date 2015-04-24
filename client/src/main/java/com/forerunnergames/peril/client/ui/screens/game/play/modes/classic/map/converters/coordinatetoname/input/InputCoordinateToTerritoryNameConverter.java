@@ -6,5 +6,5 @@ import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 
 public interface InputCoordinateToTerritoryNameConverter <T extends TerritoryName>
 {
-  T convert (final Vector2 inputCoordinate, final Vector2 screenSize);
+  T convert (final Vector2 inputCoordinate);
 }

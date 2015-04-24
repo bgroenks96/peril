@@ -1,13 +1,11 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
@@ -22,10 +20,8 @@ public final class HoveredTerritoryTextActor extends Actor
   private final PlayMapInputDetection playMapInputDetection;
   private final MouseInput mouseInput;
   private final BitmapFont font;
-  private final Vector2 mouseHoverPosition = new Vector2 ();
+  private final Vector2 mousePosition = new Vector2 ();
   private final Vector2 textPosition = new Vector2 ();
-  private final Vector2 screenSize = new Vector2 ();
-  private Vector2 scaling = new Vector2 ();
   private String text = "";
   private PlayMapActor playMapActor;
   private CountryImageState countryImageState;
@@ -51,21 +47,19 @@ public final class HoveredTerritoryTextActor extends Actor
   {
     super.act (delta);
 
-    if (shouldUpdateScreenSize ()) updateScreenSize ();
+    mousePosition.set (mouseInput.position ());
 
-    mouseHoverPosition.set (mouseInput.getHoverX (), mouseInput.getHoverY ());
-
-    final CountryName countryName = playMapInputDetection.getCountryNameAt (mouseHoverPosition, screenSize);
-    final ContinentName continentName = playMapInputDetection.getContinentNameAt (mouseHoverPosition, screenSize);
+    final CountryName countryName = playMapInputDetection.getCountryNameAt (mousePosition);
+    final ContinentName continentName = playMapInputDetection.getContinentNameAt (mousePosition);
 
     if (playMapActor != null) countryImageState = playMapActor.getCurrentImageStateOf (countryName);
 
     text = Strings.toStringList (", ", LetterCase.PROPER, false, countryName.asString (), continentName.asString (),
                                  countryImageState != null ? countryImageState.toString () : "");
 
-    screenToLocalCoordinates (mouseHoverPosition);
+    screenToLocalCoordinates (mousePosition);
 
-    textPosition.set (mouseHoverPosition.x + TEXT_OFFSET.x, mouseHoverPosition.y + TEXT_OFFSET.y);
+    textPosition.set (mousePosition.x + TEXT_OFFSET.x, mousePosition.y + TEXT_OFFSET.y);
   }
 
   public void setPlayMapActor (final PlayMapActor playMapActor)
@@ -73,18 +67,5 @@ public final class HoveredTerritoryTextActor extends Actor
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
 
     this.playMapActor = playMapActor;
-  }
-
-  private boolean shouldUpdateScreenSize ()
-  {
-    return (int) screenSize.x != Gdx.graphics.getWidth () || (int) screenSize.y != Gdx.graphics.getHeight ();
-  }
-
-  private void updateScreenSize ()
-  {
-    screenSize.set (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    scaling.set (GraphicsSettings.REFERENCE_SCREEN_WIDTH / screenSize.x, GraphicsSettings.REFERENCE_SCREEN_HEIGHT
-            / screenSize.y);
-    font.getData ().setScale (scaling.x, scaling.y);
   }
 }

@@ -22,11 +22,11 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractOkPopup implements Popup
+public abstract class OkPopup implements Popup
 {
   private final DelegateDialog delegate;
 
-  public AbstractOkPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage)
+  public OkPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage)
   {
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
@@ -37,7 +37,19 @@ public abstract class AbstractOkPopup implements Popup
       @Override
       public void onSubmit ()
       {
-        AbstractOkPopup.this.onSubmit ();
+        OkPopup.this.onSubmit ();
+      }
+
+      @Override
+      public void onShow ()
+      {
+        OkPopup.this.onShow ();
+      }
+
+      @Override
+      public void onHide ()
+      {
+        OkPopup.this.onHide ();
       }
     };
 
@@ -45,10 +57,7 @@ public abstract class AbstractOkPopup implements Popup
     addButtons ();
   }
 
-  public AbstractOkPopup (final Skin skin,
-                          final Window.WindowStyle windowStyle,
-                          final PopupStyle popupStyle,
-                          final Stage stage)
+  public OkPopup (final Skin skin, final Window.WindowStyle windowStyle, final PopupStyle popupStyle, final Stage stage)
   {
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
 
@@ -57,7 +66,19 @@ public abstract class AbstractOkPopup implements Popup
       @Override
       public void onSubmit ()
       {
-        AbstractOkPopup.this.onSubmit ();
+        OkPopup.this.onSubmit ();
+      }
+
+      @Override
+      public void onShow ()
+      {
+        OkPopup.this.onShow ();
+      }
+
+      @Override
+      public void onHide ()
+      {
+        OkPopup.this.onHide ();
       }
     };
 
@@ -82,6 +103,16 @@ public abstract class AbstractOkPopup implements Popup
   public final void hide ()
   {
     delegate.hide ();
+  }
+
+  @Override
+  public void onShow ()
+  {
+  }
+
+  @Override
+  public void onHide ()
+  {
   }
 
   @Override
@@ -169,6 +200,8 @@ public abstract class AbstractOkPopup implements Popup
 
       isShown = true;
 
+      onShow ();
+
       return this;
     }
 
@@ -184,6 +217,8 @@ public abstract class AbstractOkPopup implements Popup
 
       isShown = true;
 
+      onShow ();
+
       return this;
     }
 
@@ -193,6 +228,8 @@ public abstract class AbstractOkPopup implements Popup
       if (!isShown) return;
 
       super.hide (action);
+
+      onHide ();
 
       isShown = false;
     }
@@ -204,6 +241,8 @@ public abstract class AbstractOkPopup implements Popup
 
       super.hide (Actions.fadeOut (0.2f, Interpolation.fade));
 
+      onHide ();
+
       isShown = false;
     }
 
@@ -212,7 +251,15 @@ public abstract class AbstractOkPopup implements Popup
     {
       if (!(object instanceof PopupAction) || object != PopupAction.SUBMIT_AND_HIDE) return;
 
-      onSubmit ();
+      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          remove ();
+          onSubmit ();
+        }
+      })));
     }
 
     @Override

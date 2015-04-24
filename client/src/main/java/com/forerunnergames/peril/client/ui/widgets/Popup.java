@@ -10,6 +10,10 @@ public interface Popup
 
   void onSubmit ();
 
+  void onShow ();
+
+  void onHide ();
+
   boolean isShown ();
 
   Actor asActor ();

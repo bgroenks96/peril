@@ -41,7 +41,8 @@ public final class ScreenController extends ControllerAdapter
   {
     for (final ScreenId screenId : ScreenId.values ())
     {
-      screens.put (screenId, screenFactory.create (screenId, this, new LibGdxMouseInput (Gdx.input), Assets.skin));
+      screens.put (screenId, screenFactory.create (screenId, this, new LibGdxScreenSize (Gdx.graphics),
+                                                   new LibGdxMouseInput (Gdx.input), Assets.skin));
     }
 
     toScreen (ScreenSettings.START_SCREEN);

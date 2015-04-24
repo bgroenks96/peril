@@ -22,19 +22,17 @@ public final class PlayMapInputDetection
     this.inputCoordinateToContinentNameConverter = inputCoordinateToContinentNameConverter;
   }
 
-  public CountryName getCountryNameAt (final Vector2 inputCoordinate, final Vector2 screenSize)
+  public CountryName getCountryNameAt (final Vector2 inputCoordinate)
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    return inputCoordinateToCountryNameConverter.convert (inputCoordinate, screenSize);
+    return inputCoordinateToCountryNameConverter.convert (inputCoordinate);
   }
 
-  public ContinentName getContinentNameAt (final Vector2 inputCoordinate, final Vector2 screenSize)
+  public ContinentName getContinentNameAt (final Vector2 inputCoordinate)
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    return inputCoordinateToContinentNameConverter.convert (inputCoordinate, screenSize);
+    return inputCoordinateToContinentNameConverter.convert (inputCoordinate);
   }
 }

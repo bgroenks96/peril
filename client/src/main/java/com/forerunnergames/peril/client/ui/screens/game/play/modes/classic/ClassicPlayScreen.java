@@ -28,18 +28,23 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.Popup;
+import com.forerunnergames.peril.client.ui.widgets.PopupStyle;
+import com.forerunnergames.peril.client.ui.widgets.QuitPopup;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
@@ -60,6 +65,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 {
   private final PlayMapActor playMapActor;
   private final ScreenMusic music;
+  private final MouseInput mouseInput;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final MessageBox <StatusMessage> statusBox;
@@ -68,37 +74,41 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private final InputProcessor inputProcessor;
   private final DebugEventProcessor debugEventProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
-  private final Vector2 currentScreenSize = new Vector2 ();
+  private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
 
   public ClassicPlayScreen (final ScreenController screenController,
                             final PlayScreenWidgetFactory widgetFactory,
-                            final PlayMapActor playMapActor,
                             final ScreenMusic music,
+                            final ScreenSize screenSize,
+                            final MouseInput mouseInput,
                             final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (playMapActor, "playMapActor");
     Arguments.checkIsNotNull (music, "music");
+    Arguments.checkIsNotNull (screenSize, "screenSize");
+    Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.playMapActor = playMapActor;
     this.music = music;
     this.eventBus = eventBus;
+    this.mouseInput = mouseInput;
 
     debugEventProcessor = new DebugEventProcessor (eventBus);
 
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox ();
     playerBox = widgetFactory.createPlayerBox ();
+    playMapActor = widgetFactory.createPlayMapActor ();
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (playMapActor).size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT).padRight (16);
+    playMapAndSideBarTable.add (playMapActor).size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT)
+            .padRight (16);
     playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top ();
 
     final Table foregroundTable = new Table ().pad (12);
@@ -110,22 +120,55 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 
     rootStack.add (foregroundTable);
 
-    final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
-            GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
+    final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
+    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
+            screenSize.referenceHeight (), camera);
 
-    stage = new Stage (viewport)
+    stage = new Stage (viewport);
+
+    final MandatoryOccupationPopup mandatoryOccupationPopup = new MandatoryOccupationPopup (widgetFactory.getSkin (),
+            stage, eventBus)
     {
       @Override
-      public boolean keyDown (int keyCode)
+      public void onSubmit ()
       {
-        if (keyCode == Input.Keys.ESCAPE) return false;
+      }
 
-        return super.keyDown (keyCode);
+      @Override
+      public void onShow ()
+      {
+        playMapActor.disable ();
+      }
+
+      @Override
+      public void onHide ()
+      {
+        playMapActor.enable (mouseInput.position ());
       }
     };
 
-    final MandatoryOccupationPopup mandatoryOccupationPopup = widgetFactory.createMandatoryOccupationPopup (stage);
+    quitPopup = new QuitPopup (widgetFactory.getSkin (), PopupStyle.builder ().titleHeight (34)
+            .message ("Are you sure you want to quit?\nQuitting will end the game for everyone.").build (), stage)
+    {
+      @Override
+      public void onShow ()
+      {
+        playMapActor.disable ();
+      }
+
+      @Override
+      public void onHide ()
+      {
+        playMapActor.enable (mouseInput.position ());
+      }
+
+      @Override
+      public void onSubmit ()
+      {
+        screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
+      }
+
+    };
 
     stage.addActor (rootStack);
 
@@ -175,7 +218,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, playMapActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
+    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, mouseInput,
+            playMapActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -189,7 +233,10 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 
     Gdx.input.setInputProcessor (inputProcessor);
 
-    if (MusicSettings.IS_ENABLED) music.start ();
+    stage.mouseMoved (mouseInput.x (), mouseInput.y ());
+    playMapActor.mouseMoved (mouseInput.position ());
+
+    music.start ();
   }
 
   @Override
@@ -207,6 +254,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   public void resize (final int width, final int height)
   {
     stage.getViewport ().update (width, height, true);
+    stage.getViewport ().setScreenPosition (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
+                                            InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
   }
 
   @Override
@@ -224,11 +273,18 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   {
     eventBus.unsubscribe (this);
 
+    stage.unfocusAll ();
+
     Gdx.input.setInputProcessor (null);
 
-    if (MusicSettings.IS_ENABLED) music.stop ();
+    music.stop ();
 
     hideCursor ();
+
+    chatBox.clear ();
+    statusBox.clear ();
+    playerBox.clear ();
+    playMapActor.reset ();
   }
 
   @Override
@@ -239,9 +295,27 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   }
 
   @Override
+  public boolean keyDown (final int keycode)
+  {
+    switch (keycode)
+    {
+      case Input.Keys.ESCAPE:
+      {
+        quitPopup.show ();
+
+        return true;
+      }
+      default:
+      {
+        return false;
+      }
+    }
+  }
+
+  @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMapActor.touchDown (tempPosition.set (screenX, screenY), button, getScreenSize ());
+    playMapActor.touchDown (tempPosition.set (screenX, screenY), button);
 
     return false;
   }
@@ -249,7 +323,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMapActor.touchUp (tempPosition.set (screenX, screenY), button, getScreenSize ());
+    playMapActor.touchUp (tempPosition.set (screenX, screenY));
 
     return false;
   }
@@ -257,7 +331,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    playMapActor.mouseMoved (tempPosition.set (screenX, screenY), getScreenSize ());
+    playMapActor.mouseMoved (tempPosition.set (screenX, screenY));
 
     return false;
   }
@@ -287,7 +361,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ()));
+    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". "
+            + event.getPlayerName ()));
   }
 
   @Handler
@@ -296,17 +371,6 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (event, "event");
 
     playMapActor.changeArmiesBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
-  }
-
-  private Vector2 getScreenSize ()
-  {
-    if (((int) currentScreenSize.x) == Gdx.graphics.getWidth ()
-            && ((int) currentScreenSize.y) == Gdx.graphics.getHeight ())
-    {
-      return currentScreenSize;
-    }
-
-    return currentScreenSize.set (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
   }
 
   private void showCursor ()

@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -26,6 +26,7 @@ import net.engio.mbassy.bus.MBassador;
 public final class DebugInputProcessor extends InputAdapter
 {
   private final ScreenController screenController;
+  private final MouseInput mouseInput;
   private final PlayMapActor playMapActor;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
@@ -34,6 +35,7 @@ public final class DebugInputProcessor extends InputAdapter
   private final DebugEventGenerator eventGenerator;
 
   public DebugInputProcessor (final ScreenController screenController,
+                              final MouseInput mouseInput,
                               final PlayMapActor playMapActor,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
@@ -42,6 +44,7 @@ public final class DebugInputProcessor extends InputAdapter
                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
@@ -50,6 +53,7 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.screenController = screenController;
+    this.mouseInput = mouseInput;
     this.playMapActor = playMapActor;
     this.statusBox = statusBox;
     this.chatBox = chatBox;
@@ -64,9 +68,15 @@ public final class DebugInputProcessor extends InputAdapter
   {
     switch (keycode)
     {
-      case Input.Keys.LEFT:
+      case Input.Keys.Z:
       {
-        screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
+        playMapActor.disable ();
+
+        return true;
+      }
+      case Input.Keys.X:
+      {
+        playMapActor.enable (mouseInput.position ());
 
         return true;
       }
@@ -76,15 +86,9 @@ public final class DebugInputProcessor extends InputAdapter
 
         return true;
       }
-      case Input.Keys.ESCAPE:
-      {
-        Gdx.app.exit ();
-
-        return true;
-      }
       case Input.Keys.NUM_1:
       {
-        playMapActor.setCountriesTo (CountryImageState.UNOWNED);
+        playMapActor.resetCountryStates ();
 
         return true;
       }
@@ -384,6 +388,7 @@ public final class DebugInputProcessor extends InputAdapter
         final int maxArmies = totalArmies - 1;
 
         mandatoryOccupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
+        playMapActor.disable ();
 
         return true;
       }

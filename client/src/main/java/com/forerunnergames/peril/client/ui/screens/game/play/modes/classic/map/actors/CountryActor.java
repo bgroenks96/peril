@@ -18,6 +18,7 @@ public final class CountryActor extends Group
   private final CountryImageData countryImageData;
   private final CountryArmyTextActor countryArmyTextActor;
   private CountryImageState currentImageState = CountryImageState.UNOWNED;
+  private boolean isEnabled = true;
   private Image currentImage;
 
   public CountryActor (final SortedMap <CountryImageState, Image> countryImageStatesToImages,
@@ -93,7 +94,7 @@ public final class CountryActor extends Group
 
   public void onHoverStart ()
   {
-    if (!PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
+    if (!isEnabled || !PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
     if (currentImageState == CountryImageState.DISABLED) return;
 
     show (CountryImageState.HIGHLIGHT);
@@ -101,14 +102,14 @@ public final class CountryActor extends Group
 
   public void onHoverEnd ()
   {
-    if (!PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
+    if (!isEnabled || !PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
 
     hide (CountryImageState.HIGHLIGHT);
   }
 
   public void onTouchDown ()
   {
-    if (!PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
+    if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
     if (currentImageState == CountryImageState.DISABLED) return;
 
     hide (currentImageState);
@@ -117,7 +118,7 @@ public final class CountryActor extends Group
 
   public void onTouchUp ()
   {
-    if (!PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
+    if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
 
     hide (CountryImageState.DISABLED);
     show (currentImageState);
@@ -166,6 +167,16 @@ public final class CountryActor extends Group
   public void changeArmiesBy (final int deltaArmies)
   {
     countryArmyTextActor.changeArmiesBy (deltaArmies);
+  }
+
+  public void disable ()
+  {
+    isEnabled = false;
+  }
+
+  public void enable ()
+  {
+    isEnabled = true;
   }
 
   private void hide (final CountryImageState state)

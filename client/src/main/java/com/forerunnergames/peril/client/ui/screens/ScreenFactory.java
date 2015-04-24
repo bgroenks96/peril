@@ -4,9 +4,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.settings.MusicSettings;
+import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreenMusic;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -26,11 +27,13 @@ public final class ScreenFactory
 
   public Screen create (final ScreenId screenId,
                         final ScreenController screenController,
+                        final ScreenSize screenSize,
                         final MouseInput mouseInput,
                         final Skin skin)
   {
     Arguments.checkIsNotNull (screenId, "screenId");
     Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (skin, "skin");
 
@@ -38,15 +41,15 @@ public final class ScreenFactory
     {
       case MAIN_MENU:
       {
-        return new MainMenuScreen (screenController, new MainMenuScreenMusic (), skin);
+        return new MainMenuScreen (screenController, screenSize, new DefaultScreenMusic (Assets.menuMusic, new MusicSettings ()), skin);
       }
       case PLAY_CLASSIC:
       {
-        return PlayScreenFactory.create (screenController, mouseInput, GameMode.CLASSIC, eventBus, skin);
+        return PlayScreenFactory.create (screenController, screenSize, mouseInput, GameMode.CLASSIC, skin, eventBus);
       }
       case PLAY_PERIL:
       {
-        return PlayScreenFactory.create (screenController, mouseInput, GameMode.PERIL, eventBus, skin);
+        return PlayScreenFactory.create (screenController, screenSize, mouseInput, GameMode.PERIL, skin, eventBus);
       }
       default:
       {

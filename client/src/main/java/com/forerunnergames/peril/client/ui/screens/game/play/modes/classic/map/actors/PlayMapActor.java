@@ -28,8 +28,10 @@ public final class PlayMapActor extends Group
 {
   private final ImmutableMap <CountryName, CountryActor> countryNamesToActors;
   private final PlayMapInputDetection inputDetection;
+  private final HoveredTerritoryTextActor hoveredTerritoryTextActor;
   private CountryActor hoveredCountryActor;
   private CountryActor touchedCountryActor;
+  private boolean isEnabled = true;
 
   public PlayMapActor (final ImmutableMap <CountryName, CountryActor> countryNamesToActors,
                        final PlayMapInputDetection inputDetection,
@@ -42,6 +44,7 @@ public final class PlayMapActor extends Group
 
     this.countryNamesToActors = countryNamesToActors;
     this.inputDetection = inputDetection;
+    this.hoveredTerritoryTextActor = hoveredTerritoryTextActor;
 
     final Image backgroundImage = new Image (Assets.playMapBackground);
     backgroundImage.setSize (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT);
@@ -58,12 +61,13 @@ public final class PlayMapActor extends Group
     hoveredTerritoryTextActor.setPlayMapActor (this);
   }
 
-  public boolean mouseMoved (final Vector2 mouseCoordinate, final Vector2 screenSize)
+  public boolean mouseMoved (final Vector2 mouseCoordinate)
   {
     Arguments.checkIsNotNull (mouseCoordinate, "mouseCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (!existsCountryActorAt (mouseCoordinate, screenSize))
+    if (! isEnabled) return false;
+
+    if (!existsCountryActorAt (mouseCoordinate))
     {
       if (touchedCountryActor != null)
       {
@@ -80,7 +84,7 @@ public final class PlayMapActor extends Group
       return false;
     }
 
-    final CountryActor hoveredCountryActor = getCountryActorAt (mouseCoordinate, screenSize);
+    final CountryActor hoveredCountryActor = getCountryActorAt (mouseCoordinate);
     hoveredCountryActor.onHoverStart ();
 
     if (this.hoveredCountryActor != null
@@ -94,12 +98,13 @@ public final class PlayMapActor extends Group
     return true;
   }
 
-  public boolean touchDown (final Vector2 touchDownCoordinate, final int button, final Vector2 screenSize)
+  public boolean touchDown (final Vector2 touchDownCoordinate, final int button)
   {
     Arguments.checkIsNotNull (touchDownCoordinate, "touchDownCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (!existsCountryActorAt (touchDownCoordinate, screenSize))
+    if (! isEnabled) return false;
+
+    if (!existsCountryActorAt (touchDownCoordinate))
     {
       if (touchedCountryActor != null)
       {
@@ -110,7 +115,7 @@ public final class PlayMapActor extends Group
       return false;
     }
 
-    final CountryActor touchedDownCountryActor = getCountryActorAt (touchDownCoordinate, screenSize);
+    final CountryActor touchedDownCountryActor = getCountryActorAt (touchDownCoordinate);
 
     switch (button)
     {
@@ -143,12 +148,13 @@ public final class PlayMapActor extends Group
     }
   }
 
-  public boolean touchUp (final Vector2 touchUpCoordinate, final int button, final Vector2 screenSize)
+  public boolean touchUp (final Vector2 touchUpCoordinate)
   {
     Arguments.checkIsNotNull (touchUpCoordinate, "touchUpCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    if (countryActorAtPointIsNot (touchUpCoordinate, screenSize, touchedCountryActor))
+    if (! isEnabled) return false;
+
+    if (countryActorAtPointIsNot (touchUpCoordinate, touchedCountryActor))
     {
       if (touchedCountryActor != null)
       {
@@ -163,9 +169,9 @@ public final class PlayMapActor extends Group
       }
     }
 
-    if (!existsCountryActorAt (touchUpCoordinate, screenSize)) return false;
+    if (!existsCountryActorAt (touchUpCoordinate)) return false;
 
-    final CountryActor touchedUpCountryActor = getCountryActorAt (touchUpCoordinate, screenSize);
+    final CountryActor touchedUpCountryActor = getCountryActorAt (touchUpCoordinate);
     touchedUpCountryActor.onTouchUp ();
 
     hoveredCountryActor = touchedUpCountryActor;
@@ -222,6 +228,17 @@ public final class PlayMapActor extends Group
     randomizeCountryStatesUsingOnly (Arrays.asList (states));
   }
 
+  public void reset ()
+  {
+    resetCountryStates ();
+    resetArmies ();
+  }
+
+  public void resetCountryStates ()
+  {
+    setCountriesTo (CountryImageState.UNOWNED);
+  }
+
   public void resetArmies ()
   {
     setAllArmiesTo (0);
@@ -269,13 +286,40 @@ public final class PlayMapActor extends Group
     return countryNamesToActors.get (countryName).getCurrentImageState ();
   }
 
-  private CountryActor getCountryActorAt (final Vector2 inputCoordinate, final Vector2 screenSize)
+  public void disable ()
   {
-    Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
+    hoveredTerritoryTextActor.setVisible (false);
 
-    final CountryActor countryActor = countryNamesToActors.get (inputDetection.getCountryNameAt (inputCoordinate,
-                                                                                                 screenSize));
+    if (hoveredCountryActor != null) hoveredCountryActor.onHoverEnd ();
+    if (touchedCountryActor != null) touchedCountryActor.onTouchUp ();
+
+    for (final CountryActor countryActor : getCountryActors ())
+    {
+      countryActor.disable ();
+    }
+
+    isEnabled = false;
+  }
+
+  public void enable (final Vector2 currentMouseLocation)
+  {
+    Arguments.checkIsNotNull (currentMouseLocation, "currentMouseLocation");
+
+    hoveredTerritoryTextActor.setVisible (true);
+
+    for (final CountryActor countryActor : getCountryActors ())
+    {
+      countryActor.enable ();
+    }
+
+    isEnabled = true;
+
+    mouseMoved (currentMouseLocation);
+  }
+
+  private CountryActor getCountryActorAt (final Vector2 inputCoordinate)
+  {
+    final CountryActor countryActor = countryNamesToActors.get (inputDetection.getCountryNameAt (inputCoordinate));
 
     if (countryActor == null)
     {
@@ -289,9 +333,6 @@ public final class PlayMapActor extends Group
 
   private void randomizeCountryStatesUsingOnly (final Collection <CountryImageState> states)
   {
-    Arguments.checkIsNotNullOrEmpty (states, "states");
-    Arguments.checkHasNoNullElements (states, "states");
-
     CountryImageState randomState;
 
     for (final CountryActor countryActor : getCountryActors ())
@@ -310,27 +351,20 @@ public final class PlayMapActor extends Group
     }
   }
 
-  private boolean existsCountryActorAt (final Vector2 inputCoordinate, final Vector2 screenSize)
+  private boolean existsCountryActorAt (final Vector2 inputCoordinate)
   {
-    Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
-
-    return countryNamesToActors.containsKey (inputDetection.getCountryNameAt (inputCoordinate, screenSize));
+    return countryNamesToActors.containsKey (inputDetection.getCountryNameAt (inputCoordinate));
   }
 
-  private boolean countryActorAtPointIs (final Vector2 inputCoordinate,
-                                         final Vector2 screenSize,
-                                         @Nullable final CountryActor countryActor)
+  private boolean countryActorAtPointIs (final Vector2 inputCoordinate, @Nullable final CountryActor countryActor)
   {
-    return countryActor != null && existsCountryActorAt (inputCoordinate, screenSize)
-            && getCountryActorAt (inputCoordinate, screenSize).getName ().equals (countryActor.getName ());
+    return countryActor != null && existsCountryActorAt (inputCoordinate)
+            && getCountryActorAt (inputCoordinate).getName ().equals (countryActor.getName ());
   }
 
-  private boolean countryActorAtPointIsNot (final Vector2 inputCoordinate,
-                                            final Vector2 screenSize,
-                                            final CountryActor countryActor)
+  private boolean countryActorAtPointIsNot (final Vector2 inputCoordinate, final CountryActor countryActor)
   {
-    return !countryActorAtPointIs (inputCoordinate, screenSize, countryActor);
+    return !countryActorAtPointIs (inputCoordinate, countryActor);
   }
 
   private ImmutableCollection <CountryActor> getCountryActors ()

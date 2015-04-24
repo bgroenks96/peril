@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepositoryFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageRepository;
@@ -14,11 +15,12 @@ import com.google.common.collect.ImmutableMap;
 
 public final class PlayMapActorFactory
 {
-  public static PlayMapActor create (final MouseInput mouseInput)
+  public static PlayMapActor create (final ScreenSize screenSize, final MouseInput mouseInput)
   {
+    Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
 
-    final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create ();
+    final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create (screenSize);
     final CountryImageRepository countryImageRepository = new CountryImageRepository ();
     final CountryImageDataRepository countryImageDataRepository = CountryImageDataRepositoryFactory.create ();
 

@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.client.settings;
 
-import com.forerunnergames.tools.common.Classes;
-
 public final class MusicSettings
 {
   public static final float MIN_VOLUME = 0.0f;
@@ -9,8 +7,23 @@ public final class MusicSettings
   public static boolean IS_ENABLED = true;
   public static float INITIAL_VOLUME = MAX_VOLUME;
 
-  private MusicSettings ()
+  public boolean isEnabled ()
   {
-    Classes.instantiationNotAllowed ();
+    return IS_ENABLED;
+  }
+
+  public float getMinVolume ()
+  {
+    return MIN_VOLUME;
+  }
+
+  public float getMaxVolume ()
+  {
+    return MAX_VOLUME;
+  }
+
+  public float getInitialVolume ()
+  {
+    return INITIAL_VOLUME;
   }
 }

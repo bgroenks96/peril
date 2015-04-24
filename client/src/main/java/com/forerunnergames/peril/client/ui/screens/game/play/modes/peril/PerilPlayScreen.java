@@ -16,9 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
@@ -36,29 +37,26 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
 
   public PerilPlayScreen (final ScreenController screenController,
                           final TankActor2 tankActor2,
+                          final ScreenSize screenSize,
+                          final MouseInput mouseInput,
                           final ScreenMusic music,
-                          final MBassador <Event> eventBus,
-                          final Skin skin)
+                          final Skin skin,
+                          final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (tankActor2, "tankActor2");
+    Arguments.checkIsNotNull (screenSize, "screenSize");
+    Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (music, "music");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (skin, "skin");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.music = music;
     this.eventBus = eventBus;
 
-    /*
-    final Table rootTable = new Table ();
-    rootTable.setFillParent (true);
-    rootTable.add (tankActor2);
-    rootTable.debugAll ();
-    */
-
-    final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING,
-        GraphicsSettings.REFERENCE_SCREEN_WIDTH, GraphicsSettings.REFERENCE_SCREEN_HEIGHT, camera);
+    final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
+    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
+            screenSize.referenceWidth (), camera);
 
     stage = new Stage (viewport)
     {
@@ -121,24 +119,6 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   }
 
   @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    return false;
-  }
-
-  @Override
   public void show ()
   {
     showCursor ();
@@ -147,7 +127,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
 
     Gdx.input.setInputProcessor (inputProcessor);
 
-    if (MusicSettings.IS_ENABLED) music.start ();
+    music.start ();
   }
 
   @Override
@@ -183,7 +163,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
 
     Gdx.input.setInputProcessor (null);
 
-    if (MusicSettings.IS_ENABLED) music.stop ();
+    music.stop ();
 
     hideCursor ();
   }
@@ -194,6 +174,24 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
     eventBus.unsubscribe (this);
 
     stage.dispose ();
+  }
+
+  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved (final int screenX, final int screenY)
+  {
+    return false;
   }
 
   private void showCursor ()

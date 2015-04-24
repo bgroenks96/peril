@@ -31,6 +31,7 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
+import com.forerunnergames.peril.client.ui.widgets.Popup;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
@@ -43,7 +44,7 @@ import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class MandatoryOccupationPopup extends Dialog
+public abstract class MandatoryOccupationPopup extends Dialog implements Popup
 {
   private static final float COUNTRY_BOX_WIDTH = 400;
   private static final float COUNTRY_BOX_HEIGHT = 200;
@@ -123,6 +124,13 @@ public final class MandatoryOccupationPopup extends Dialog
     super.hide (action);
 
     isShown = false;
+
+    onHide ();
+  }
+
+  @Override
+  public void show ()
+  {
   }
 
   @Override
@@ -133,6 +141,20 @@ public final class MandatoryOccupationPopup extends Dialog
     super.hide (null);
 
     isShown = false;
+
+    onHide ();
+  }
+
+  @Override
+  public boolean isShown ()
+  {
+    return isShown;
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return this;
   }
 
   @Override
@@ -153,6 +175,8 @@ public final class MandatoryOccupationPopup extends Dialog
     eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
 
     // TODO: Production: Publish event (OccupyCountryRequestEvent?)
+
+    onSubmit ();
   }
 
   @Override
@@ -224,6 +248,8 @@ public final class MandatoryOccupationPopup extends Dialog
     show (stage, null);
 
     isShown = true;
+
+    onShow ();
   }
 
   public void keyDownRepeating (final int keyCode)

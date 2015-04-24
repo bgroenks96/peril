@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.io.DataLoader;
 import com.forerunnergames.peril.client.settings.AssetPaths;
 import com.forerunnergames.peril.client.ui.Assets;
@@ -30,13 +31,16 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.l
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.CountryColorToNameLoader;
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
 // @formatter:off
 public final class PlayMapInputDetectionFactory
 {
-  public static PlayMapInputDetection create ()
+  public static PlayMapInputDetection create (final ScreenSize screenSize)
   {
+    Arguments.checkIsNotNull (screenSize, "screenSize");
+
     final PlayMapCoordinateToRgbaColorConverter playMapCoordinateToRgbaColorConverter;
 
     final PlayMapCoordinateToTerritoryColorConverter <CountryColor> playMapCoordinateToCountryColorConverter;
@@ -79,7 +83,7 @@ public final class PlayMapInputDetectionFactory
                                     playMapCoordinateToContinentColorConverter,
                                     continentColorToNameConverter);
 
-    screenToPlayMapCoordinateConverter = new DefaultScreenToPlayMapCoordinateConverter ();
+    screenToPlayMapCoordinateConverter = new DefaultScreenToPlayMapCoordinateConverter (screenSize);
 
     screenCoordinateToCountryNameConverter =
                     new ScreenCoordinateToCountryNameConverter (
@@ -105,6 +109,7 @@ public final class PlayMapInputDetectionFactory
 
     return new PlayMapInputDetection (inputCoordinateToCountryNameConverter, inputCoordinateToContinentNameConverter);
   }
+  // @formatter:on
 
   private PlayMapInputDetectionFactory ()
   {
