@@ -22,8 +22,8 @@ public final class GraphicsSettings
   public static final boolean               FONT_TEXTURE_MIPMAPPING           = true;
   public static final Scaling               VIEWPORT_SCALING                  = Scaling.stretch;
 
-  public static float   INITIAL_WINDOW_WIDTH  = REFERENCE_SCREEN_WIDTH;
-  public static float   INITIAL_WINDOW_HEIGHT = REFERENCE_SCREEN_HEIGHT;
+  public static int     INITIAL_WINDOW_WIDTH  = REFERENCE_SCREEN_WIDTH;
+  public static int     INITIAL_WINDOW_HEIGHT = REFERENCE_SCREEN_HEIGHT;
   public static boolean IS_FULLSCREEN         = true;
   public static boolean IS_VSYNC_ENABLED      = true;
   public static boolean IS_WINDOW_RESIZABLE   = true;

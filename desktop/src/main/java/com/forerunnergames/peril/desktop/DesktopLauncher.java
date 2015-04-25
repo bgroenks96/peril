@@ -39,8 +39,8 @@ public final class DesktopLauncher
 
     new ClientApplicationProperties ();
 
-    config.width = (int) GraphicsSettings.INITIAL_WINDOW_WIDTH;
-    config.height = (int) GraphicsSettings.INITIAL_WINDOW_HEIGHT;
+    config.width = GraphicsSettings.INITIAL_WINDOW_WIDTH;
+    config.height = GraphicsSettings.INITIAL_WINDOW_HEIGHT;
     config.fullscreen = GraphicsSettings.IS_FULLSCREEN;
     config.vSyncEnabled = GraphicsSettings.IS_VSYNC_ENABLED;
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
