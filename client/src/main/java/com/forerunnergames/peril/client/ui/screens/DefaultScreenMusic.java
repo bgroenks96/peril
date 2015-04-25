@@ -22,7 +22,7 @@ public final class DefaultScreenMusic implements ScreenMusic
   @Override
   public void start ()
   {
-    if (! settings.isEnabled ()) return;
+    if (!settings.isEnabled () || music.isPlaying ()) return;
 
     music.setVolume (settings.getInitialVolume ());
     music.setLooping (true);
@@ -32,7 +32,7 @@ public final class DefaultScreenMusic implements ScreenMusic
   @Override
   public void stop ()
   {
-    if (! settings.isEnabled ()) return;
+    if (!settings.isEnabled () || !music.isPlaying ()) return;
 
     music.stop ();
   }
