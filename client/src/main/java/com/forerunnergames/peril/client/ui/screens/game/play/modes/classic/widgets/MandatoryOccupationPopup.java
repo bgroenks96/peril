@@ -79,7 +79,6 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
   private Label destinationCountryNameLabel;
   private TextButton minusButton;
   private TextButton plusButton;
-  private TextButton resetButton;
   private TextButton minButton;
   private TextButton maxButton;
   private TextButton okButton;
@@ -281,12 +280,11 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
     slider = new Slider (0, 0, SLIDER_STEP_SIZE, IS_SLIDER_VERTICAL, skin);
     sourceCountryNameLabel = new Label (null, skin);
     destinationCountryNameLabel = new Label (null, skin);
-    okButton = new TextButton ("OK", skin.get (TextButton.TextButtonStyle.class));
-    resetButton = new TextButton ("RESET", skin.get (TextButton.TextButtonStyle.class));
-    minButton = new TextButton ("|<", skin.get (TextButton.TextButtonStyle.class));
-    minusButton = new TextButton ("-", skin.get (TextButton.TextButtonStyle.class));
-    plusButton = new TextButton ("+", skin.get (TextButton.TextButtonStyle.class));
-    maxButton = new TextButton (">|", skin.get (TextButton.TextButtonStyle.class));
+    okButton = new TextButton ("OK", skin.get ("small", TextButton.TextButtonStyle.class));
+    minButton = new TextButton ("|<", skin.get ("small", TextButton.TextButtonStyle.class));
+    minusButton = new TextButton ("-", skin.get ("small", TextButton.TextButtonStyle.class));
+    plusButton = new TextButton ("+", skin.get ("small", TextButton.TextButtonStyle.class));
+    maxButton = new TextButton (">|", skin.get ("small", TextButton.TextButtonStyle.class));
     sourceCountryStack = new Stack ();
     destinationCountryStack = new Stack ();
   }
@@ -354,17 +352,18 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
   {
     final Table buttonTable = getButtonTable ();
 
-    getCell (buttonTable).width (812).height (138).space (12);
+    getCell (buttonTable).height (140).space (12).expandX ().fill ();
 
-    buttonTable.add (minButton).size (22, 34).space (8);
-    buttonTable.add (minusButton).size (34, 34).space (8);
-    buttonTable.add (slider).width (624).height (12).space (8);
-    buttonTable.add (plusButton).size (34, 34).space (8);
-    buttonTable.add (maxButton).size (22, 34).space (8);
-    buttonTable.row ().spaceTop (22);
+    buttonTable.defaults ().space (0).pad (0);
+    buttonTable.center ();
+    buttonTable.add (minButton).width (20).spaceRight (7);
+    buttonTable.add (minusButton).width (30).spaceLeft (7).spaceRight (10);
+    buttonTable.add (slider).width (382).height (12).spaceLeft (10).spaceRight (10);
+    buttonTable.add (plusButton).width (30).spaceLeft (10).spaceRight (7);
+    buttonTable.add (maxButton).width (20).spaceLeft (7);
+    buttonTable.row ().spaceTop (40);
     buttonTable.add ().colspan (2);
-    buttonTable.add (resetButton).size (94, 38);
-    buttonTable.add (okButton).size (55, 38).colspan (2).right ();
+    buttonTable.add (okButton).width (44);
   }
 
   private void configureInput ()
@@ -387,16 +386,6 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
       public void changed (final ChangeEvent event, final Actor actor)
       {
         updateCountryArmies ();
-      }
-    });
-
-    resetButton.addListener (new InputListener ()
-    {
-      @Override
-      public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
-      {
-        setSliderToMinValue ();
-        return true;
       }
     });
 

@@ -148,6 +148,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     };
 
     quitPopup = new QuitPopup (widgetFactory.getSkin (), PopupStyle.builder ().titleHeight (34)
+            .textButtonStyle ("small")
             .message ("Are you sure you want to quit?\nQuitting will end the game for everyone.").build (), stage)
     {
       @Override

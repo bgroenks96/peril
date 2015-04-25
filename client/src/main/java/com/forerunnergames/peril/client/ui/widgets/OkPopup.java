@@ -315,10 +315,10 @@ public abstract class OkPopup implements Popup
       Arguments.checkIsNotNull (buttonText, "buttonText");
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
-      final TextButton textButton = new TextButton (buttonText, skin.get (TextButton.TextButtonStyle.class));
-
-      textButton.pad (0);
-      textButton.getLabelCell ().size (110, 38);
+      final TextButton textButton = new TextButton (buttonText, skin.get (popupStyle.getTextButtonStyleName (),
+                                                                          TextButton.TextButtonStyle.class));
+      textButton.padLeft (12).padRight (12).padTop (0).padBottom (0);
+      textButton.getLabelCell ();
 
       button (textButton, popupAction);
 
@@ -349,13 +349,13 @@ public abstract class OkPopup implements Popup
     private void configureContentTable ()
     {
       getContentTable ().left ();
-      getCell (getContentTable ()).pad (26);
+      getCell (getContentTable ()).pad (20);
     }
 
     private void configureButtonTable ()
     {
-      getButtonTable ().defaults().space (26);
-      getButtonTable ().pad (26);
+      getButtonTable ().defaults().space (20);
+      getButtonTable ().padLeft (20).padRight (20).padBottom (16).padTop (16);
       getCell (getButtonTable ()).right ();
     }
 

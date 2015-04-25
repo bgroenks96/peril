@@ -201,8 +201,8 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     stage = new Stage (viewport);
     stage.addActor (rootStack);
 
-    quitPopup = new QuitPopup (skin, PopupStyle.builder ().titleHeight (34).message ("Are you sure you want to quit?")
-            .build (), stage)
+    quitPopup = new QuitPopup (skin, PopupStyle.builder ().titleHeight (34).textButtonStyle ("small")
+            .message ("Are you sure you want to quit?").build (), stage)
     {
       @Override
       public void onSubmit ()

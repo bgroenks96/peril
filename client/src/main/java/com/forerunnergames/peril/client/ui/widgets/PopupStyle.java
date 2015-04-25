@@ -5,6 +5,7 @@ import com.forerunnergames.tools.common.Arguments;
 public final class PopupStyle
 {
   public static final String DEFAULT_WINDOW_STYLE_NAME = "dialog";
+  public static final String DEFAULT_TEXT_BUTTON_STYLE_NAME = "default";
   public static final String DEFAULT_TITLE = "";
   public static final String DEFAULT_WINDOW_MESSAGE = "";
   public static final int DEFAULT_BORDER_THICKNESS_PIXELS = 12;
@@ -20,6 +21,7 @@ public final class PopupStyle
   public static final float DEFAULT_HEIGHT_REFERENCE_SCREEN_SPACE = AUTO_HEIGHT;
   public static final float DEFAULT_TITLE_HEIGHT = AUTO_HEIGHT;
   private final String windowStyleName;
+  private final String textButtonStyleName;
   private final String title;
   private final float titleHeight;
   private final String message;
@@ -39,6 +41,11 @@ public final class PopupStyle
   public String getWindowStyleName ()
   {
     return windowStyleName;
+  }
+
+  public String getTextButtonStyleName ()
+  {
+    return textButtonStyleName;
   }
 
   public final String getTitle ()
@@ -92,6 +99,7 @@ public final class PopupStyle
   }
 
   private PopupStyle (final String windowStyleName,
+                      final String textButtonStyleName,
                       final String title,
                       final float titleHeight,
                       final String message,
@@ -104,11 +112,13 @@ public final class PopupStyle
                       final boolean isMovable)
   {
     Arguments.checkIsNotNull (windowStyleName, "windowStyleName");
+    Arguments.checkIsNotNull (textButtonStyleName, "textButtonStyleName");
     Arguments.checkIsNotNull (title, "title");
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNegative (borderThicknessPixels, "borderThicknessPixels");
 
     this.windowStyleName = windowStyleName;
+    this.textButtonStyleName = textButtonStyleName;
     this.title = title;
     this.titleHeight = titleHeight;
     this.message = message;
@@ -124,6 +134,7 @@ public final class PopupStyle
   public static final class PopupStyleBuilder
   {
     private String windowStyleName = DEFAULT_WINDOW_STYLE_NAME;
+    private String textButtonStyleName = DEFAULT_TEXT_BUTTON_STYLE_NAME;
     private String title = DEFAULT_TITLE;
     private float titleHeight = DEFAULT_TITLE_HEIGHT;
     private String message = DEFAULT_WINDOW_MESSAGE;
@@ -137,9 +148,9 @@ public final class PopupStyle
 
     public PopupStyle build ()
     {
-      return new PopupStyle (windowStyleName, title, titleHeight, message, positionUpperLeftReferenceScreenSpaceX,
-              positionUpperLeftReferenceScreenSpaceY, widthReferenceScreenSpace, heightReferenceScreenSpace,
-              borderThicknessPixels, isResizable, isMovable);
+      return new PopupStyle (windowStyleName, textButtonStyleName, title, titleHeight, message,
+              positionUpperLeftReferenceScreenSpaceX, positionUpperLeftReferenceScreenSpaceY,
+              widthReferenceScreenSpace, heightReferenceScreenSpace, borderThicknessPixels, isResizable, isMovable);
     }
 
     public PopupStyleBuilder windowStyle (final String windowStyleName)
@@ -147,6 +158,15 @@ public final class PopupStyle
       Arguments.checkIsNotNull (windowStyleName, "windowStyleName");
 
       this.windowStyleName = windowStyleName;
+
+      return this;
+    }
+
+    public PopupStyleBuilder textButtonStyle (final String textuButtonStyleName)
+    {
+      Arguments.checkIsNotNull (textuButtonStyleName, "textuButtonStyleName");
+
+      this.textButtonStyleName = textuButtonStyleName;
 
       return this;
     }

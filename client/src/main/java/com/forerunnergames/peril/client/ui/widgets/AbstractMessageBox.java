@@ -13,6 +13,7 @@ import com.forerunnergames.tools.common.Message;
 
 public abstract class AbstractMessageBox <T extends Message> extends ScrollPane implements MessageBox <T>
 {
+  private static final int V_SCROLLBAR_WIDTH = 14;
   private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
   private final Table table;
   private final MessageBoxRowStyle messageBoxRowStyle;
@@ -38,6 +39,8 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
     setScrollbarsOnTop (false);
     setSmoothScrolling (true);
     setVariableSizeKnobs (true);
+
+    scrollPaneStyle.vScrollKnob.setMinWidth (V_SCROLLBAR_WIDTH);
 
     addListener (new InputListener ()
     {
