@@ -22,6 +22,14 @@ public final class MusicFactory
       {
         return Assets.menuMusic;
       }
+      case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
+      {
+        return Assets.menuMusic;
+      }
+      case MULTIPLAYER_PERIL_GAME_MODE_MENU:
+      {
+        return Assets.menuMusic;
+      }
       case PLAY_CLASSIC:
       {
         return Assets.playScreenMusic;

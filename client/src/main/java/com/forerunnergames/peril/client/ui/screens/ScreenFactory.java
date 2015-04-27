@@ -7,6 +7,8 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.MultiplayerGameModesMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.MultiplayerClassicGameModeMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.peril.MultiplayerPerilGameModeMenuScreen;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -45,6 +47,14 @@ public final class ScreenFactory
       case MULTIPLAYER_GAME_MODES_MENU:
       {
         return new MultiplayerGameModesMenuScreen (screenChanger, screenSize, skin);
+      }
+      case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
+      {
+        return new MultiplayerClassicGameModeMenuScreen (screenChanger, screenSize, skin);
+      }
+      case MULTIPLAYER_PERIL_GAME_MODE_MENU:
+      {
+        return new MultiplayerPerilGameModeMenuScreen (screenChanger, screenSize, skin);
       }
       case PLAY_CLASSIC:
       {

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes;
+package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -37,13 +37,13 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class MultiplayerGameModesMenuScreen extends InputAdapter implements Screen
+public final class MultiplayerClassicGameModeMenuScreen extends InputAdapter implements Screen
 {
   private final ScreenChanger screenChanger;
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public MultiplayerGameModesMenuScreen (final ScreenChanger screenChanger, final ScreenSize screenSize, final Skin skin)
+  public MultiplayerClassicGameModeMenuScreen (final ScreenChanger screenChanger, final ScreenSize screenSize, final Skin skin)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
@@ -98,7 +98,7 @@ public final class MultiplayerGameModesMenuScreen extends InputAdapter implement
             .height (37).top ().left ();
     tableL4.row ();
     tableL4.add ().height (30);
-    tableL4.add (new Label ("GAME MODES", new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE))).padLeft (30)
+    tableL4.add (new Label ("CLASSIC MODE", new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE))).padLeft (30)
             .top ().left ();
     tableL4.row ();
     tableL4.add ().height (22);
@@ -109,44 +109,44 @@ public final class MultiplayerGameModesMenuScreen extends InputAdapter implement
     menuChoiceButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
     menuChoiceButtonStyle.font = Assets.droidSansMono18;
 
-    final ImageTextButton classicGameModeButton = new ImageTextButton ("CLASSIC", menuChoiceButtonStyle);
+    final ImageTextButton createGameButton = new ImageTextButton ("CREATE GAME", menuChoiceButtonStyle);
     final Stack classicGameModeButtonStack = new Stack ();
-    classicGameModeButtonStack.add (new Container <> (classicGameModeButton.getLabel ()).left ().padLeft (60));
-    classicGameModeButtonStack.add (classicGameModeButton.getImage ());
-    classicGameModeButton.clearChildren ();
-    classicGameModeButton.add (classicGameModeButtonStack).fill ().expand ();
-    classicGameModeButton.addListener (new ChangeListener ()
+    classicGameModeButtonStack.add (new Container<> (createGameButton.getLabel ()).left ().padLeft (60));
+    classicGameModeButtonStack.add (createGameButton.getImage ());
+    createGameButton.clearChildren ();
+    createGameButton.add (classicGameModeButtonStack).fill ().expand ();
+    createGameButton.addListener (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        screenChanger.toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+        screenChanger.toScreen (ScreenId.PLAY_CLASSIC);
       }
     });
 
-    tableL4.add (classicGameModeButton).width (358).height (40).left ().fill ();
+    tableL4.add (createGameButton).width (358).height (40).left ().fill ();
     tableL4.row ();
     tableL4.add ().height (10);
     tableL4.row ();
     tableL4.add ();
 
-    final ImageTextButton perilGameModeButton = new ImageTextButton ("PERIL", menuChoiceButtonStyle);
+    final ImageTextButton joinGameButton = new ImageTextButton ("JOIN GAME", menuChoiceButtonStyle);
     final Stack perilGameModeButtonStack = new Stack ();
-    perilGameModeButtonStack.add (new Container<> (perilGameModeButton.getLabel ()).left ().padLeft (60));
-    perilGameModeButtonStack.add (perilGameModeButton.getImage ());
-    perilGameModeButton.clearChildren ();
-    perilGameModeButton.setSize (358, 40);
-    perilGameModeButton.add (perilGameModeButtonStack).fill ().expand ();
-    perilGameModeButton.addListener (new ChangeListener ()
+    perilGameModeButtonStack.add (new Container<> (joinGameButton.getLabel ()).left ().padLeft (60));
+    perilGameModeButtonStack.add (joinGameButton.getImage ());
+    joinGameButton.clearChildren ();
+    joinGameButton.setSize (358, 40);
+    joinGameButton.add (perilGameModeButtonStack).fill ().expand ();
+    joinGameButton.addListener (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        screenChanger.toScreen (ScreenId.MULTIPLAYER_PERIL_GAME_MODE_MENU);
+        screenChanger.toScreen (ScreenId.PLAY_CLASSIC);
       }
     });
 
-    tableL4.add (perilGameModeButton).width (358).height (40).left ().fill ();
+    tableL4.add (joinGameButton).width (358).height (40).left ().fill ();
 
     tableL4.row ();
     tableL4.add ().height (388);
@@ -159,7 +159,7 @@ public final class MultiplayerGameModesMenuScreen extends InputAdapter implement
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        screenChanger.toScreen (ScreenId.MAIN_MENU);
+        screenChanger.toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
       }
     });
 
@@ -200,7 +200,7 @@ public final class MultiplayerGameModesMenuScreen extends InputAdapter implement
     {
       case Input.Keys.ESCAPE:
       {
-        screenChanger.toScreen (ScreenId.MAIN_MENU);
+        screenChanger.toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
 
         return true;
       }
