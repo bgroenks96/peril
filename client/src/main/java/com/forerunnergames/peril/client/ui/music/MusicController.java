@@ -50,6 +50,8 @@ public final class MusicController extends ControllerAdapter implements MusicCha
             + fromScreen + "].");
     Arguments.checkIsTrue (music.containsKey (toScreen), "Cannot find music for screen [" + toScreen + "].");
 
+    if (! musicSettings.isEnabled ()) return;
+
     final Music oldMusic = music.get (fromScreen);
     final Music newMusic = music.get (toScreen);
 
