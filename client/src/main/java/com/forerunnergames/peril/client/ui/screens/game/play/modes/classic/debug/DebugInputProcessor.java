@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.screens.ScreenController;
-import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
@@ -25,7 +23,6 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class DebugInputProcessor extends InputAdapter
 {
-  private final ScreenController screenController;
   private final MouseInput mouseInput;
   private final PlayMapActor playMapActor;
   private final MessageBox <StatusMessage> statusBox;
@@ -34,8 +31,7 @@ public final class DebugInputProcessor extends InputAdapter
   private final MandatoryOccupationPopup mandatoryOccupationPopup;
   private final DebugEventGenerator eventGenerator;
 
-  public DebugInputProcessor (final ScreenController screenController,
-                              final MouseInput mouseInput,
+  public DebugInputProcessor (final MouseInput mouseInput,
                               final PlayMapActor playMapActor,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
@@ -43,7 +39,6 @@ public final class DebugInputProcessor extends InputAdapter
                               final MandatoryOccupationPopup mandatoryOccupationPopup,
                               final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (screenController, "screenController");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
     Arguments.checkIsNotNull (statusBox, "statusBox");
@@ -52,7 +47,6 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (mandatoryOccupationPopup, "mandatoryOccupationPopup");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.screenController = screenController;
     this.mouseInput = mouseInput;
     this.playMapActor = playMapActor;
     this.statusBox = statusBox;
@@ -77,12 +71,6 @@ public final class DebugInputProcessor extends InputAdapter
       case Input.Keys.X:
       {
         playMapActor.enable (mouseInput.position ());
-
-        return true;
-      }
-      case Input.Keys.RIGHT:
-      {
-        screenController.toScreen (ScreenId.PLAY_PERIL);
 
         return true;
       }
@@ -293,15 +281,13 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case Input.Keys.G:
       {
-        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest,
-                                                  Texture.TextureFilter.Nearest);
+        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
 
         return true;
       }
       case Input.Keys.H:
       {
-        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear,
-                                                  Texture.TextureFilter.Linear);
+        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
         return true;
       }
@@ -368,8 +354,8 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'm':
       {
-//         final CountryName sourceCountryName = new CountryName ("Antarctica");
-//         final CountryName destinationCountryName = new CountryName ("Kamchatka");
+        // final CountryName sourceCountryName = new CountryName ("Antarctica");
+        // final CountryName destinationCountryName = new CountryName ("Kamchatka");
 
         final CountryName sourceCountryName = eventGenerator.getRandomCountryName ();
 

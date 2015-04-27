@@ -17,12 +17,12 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.screens.ScreenController;
-import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
+import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
+import com.forerunnergames.peril.client.ui.screens.ScreenId;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -30,28 +30,26 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PerilPlayScreen extends InputAdapter implements Screen
 {
-  private final ScreenMusic music;
+  private final ScreenChanger screenChanger;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public PerilPlayScreen (final ScreenController screenController,
+  public PerilPlayScreen (final ScreenChanger screenChanger,
                           final TankActor2 tankActor2,
                           final ScreenSize screenSize,
                           final MouseInput mouseInput,
-                          final ScreenMusic music,
                           final Skin skin,
                           final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (tankActor2, "tankActor2");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.music = music;
+    this.screenChanger = screenChanger;
     this.eventBus = eventBus;
 
     final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
@@ -107,7 +105,7 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
     {
       case Input.Keys.ESCAPE:
       {
-        Gdx.app.exit ();
+        screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
 
         return false;
       }
@@ -126,8 +124,6 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
     eventBus.subscribe (this);
 
     Gdx.input.setInputProcessor (inputProcessor);
-
-    music.start ();
   }
 
   @Override
@@ -163,8 +159,6 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
 
     Gdx.input.setInputProcessor (null);
 
-    music.stop ();
-
     hideCursor ();
   }
 
@@ -197,8 +191,8 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   private void showCursor ()
   {
     Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
+            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
+            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
   }
 
   private void hideCursor ()

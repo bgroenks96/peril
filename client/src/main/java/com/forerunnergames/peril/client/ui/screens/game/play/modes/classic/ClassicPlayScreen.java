@@ -33,9 +33,8 @@ import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
-import com.forerunnergames.peril.client.ui.screens.ScreenMusic;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
@@ -64,7 +63,6 @@ import net.engio.mbassy.listener.Handler;
 public final class ClassicPlayScreen extends InputAdapter implements Screen
 {
   private final PlayMapActor playMapActor;
-  private final ScreenMusic music;
   private final MouseInput mouseInput;
   private final MBassador <Event> eventBus;
   private final Stage stage;
@@ -77,30 +75,27 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
 
-  public ClassicPlayScreen (final ScreenController screenController,
+  public ClassicPlayScreen (final ScreenChanger screenChanger,
                             final PlayScreenWidgetFactory widgetFactory,
-                            final ScreenMusic music,
                             final ScreenSize screenSize,
                             final MouseInput mouseInput,
                             final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (music, "music");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.music = music;
     this.eventBus = eventBus;
     this.mouseInput = mouseInput;
 
     debugEventProcessor = new DebugEventProcessor (eventBus);
 
     statusBox = widgetFactory.createStatusBox ();
-    chatBox = widgetFactory.createChatBox ();
+    chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
-    playMapActor = widgetFactory.createPlayMapActor ();
+    playMapActor = widgetFactory.createPlayMapActor (screenSize, mouseInput);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -166,9 +161,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
       @Override
       public void onSubmit ()
       {
-        screenController.toPreviousScreenOr (ScreenId.MAIN_MENU);
+        screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
       }
-
     };
 
     stage.addActor (rootStack);
@@ -219,8 +213,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (screenController, mouseInput,
-            playMapActor, statusBox, chatBox, playerBox, mandatoryOccupationPopup, eventBus);
+    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox,
+            chatBox, playerBox, mandatoryOccupationPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -236,8 +230,6 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
     playMapActor.mouseMoved (mouseInput.position ());
-
-    music.start ();
   }
 
   @Override
@@ -277,8 +269,6 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     stage.unfocusAll ();
 
     Gdx.input.setInputProcessor (null);
-
-    music.stop ();
 
     hideCursor ();
 
@@ -336,6 +326,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 
     return false;
   }
+
 
   @Handler
   public void onStatusMessageEvent (final StatusMessageEvent event)

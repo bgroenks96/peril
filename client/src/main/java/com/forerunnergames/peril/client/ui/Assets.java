@@ -64,11 +64,13 @@ public final class Assets
     }
 
     menuAtlas.dispose ();
+    menuNormalCursor.dispose ();
+    menuMusic.dispose ();
     playScreenBackground.dispose ();
     playMapBackground.dispose ();
     playMapInputDetection.dispose ();
-    menuNormalCursor.dispose ();
     playScreenNormalCursor.dispose ();
+    playScreenMusic.dispose ();
     aurulentSans16.dispose ();
     aurulentSans16Texture.dispose ();
     droidSansMono18.dispose ();

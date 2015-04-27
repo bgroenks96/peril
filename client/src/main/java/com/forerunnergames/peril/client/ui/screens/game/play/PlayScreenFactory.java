@@ -4,8 +4,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicPlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilPlayScreenFactory;
 import com.forerunnergames.peril.core.model.rules.GameMode;
@@ -17,14 +17,14 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PlayScreenFactory
 {
-  public static Screen create (final ScreenController screenController,
+  public static Screen create (final ScreenChanger screenChanger,
                                final ScreenSize screenSize,
                                final MouseInput mouseInput,
                                final GameMode gameMode,
                                final Skin skin,
                                final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (gameMode, "gameMode");
@@ -35,11 +35,11 @@ public final class PlayScreenFactory
     {
       case CLASSIC:
       {
-        return ClassicPlayScreenFactory.create (screenController, screenSize, mouseInput, skin, eventBus);
+        return ClassicPlayScreenFactory.create (screenChanger, screenSize, mouseInput, skin, eventBus);
       }
       case PERIL:
       {
-        return PerilPlayScreenFactory.create (screenController, screenSize, mouseInput, skin, eventBus);
+        return PerilPlayScreenFactory.create (screenChanger, screenSize, mouseInput, skin, eventBus);
       }
       default:
       {

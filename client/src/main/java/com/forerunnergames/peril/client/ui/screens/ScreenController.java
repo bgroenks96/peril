@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.forerunnergames.peril.client.input.LibGdxMouseInput;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.ui.music.MusicChanger;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
@@ -18,22 +19,25 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ScreenController extends ControllerAdapter
+public final class ScreenController extends ControllerAdapter implements ScreenChanger
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
   private final Game game;
   private final ScreenFactory screenFactory;
+  private final MusicChanger musicChanger;
   private BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
   private ScreenId previousScreenId;
 
-  public ScreenController (final Game game, final ScreenFactory screenFactory)
+  public ScreenController (final Game game, final ScreenFactory screenFactory, final MusicChanger musicChanger)
   {
     Arguments.checkIsNotNull (game, "game");
     Arguments.checkIsNotNull (screenFactory, "screenFactory");
+    Arguments.checkIsNotNull (musicChanger, "musicChanger");
 
     this.game = game;
     this.screenFactory = screenFactory;
+    this.musicChanger = musicChanger;
   }
 
   @Override
@@ -59,6 +63,7 @@ public final class ScreenController extends ControllerAdapter
     screens.clear ();
   }
 
+  @Override
   public void toPreviousScreenOr (final ScreenId defaultScreenId)
   {
     Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
@@ -66,6 +71,7 @@ public final class ScreenController extends ControllerAdapter
     toScreen (previousScreenId != null ? previousScreenId : defaultScreenId);
   }
 
+  @Override
   public void toScreen (final ScreenId id)
   {
     Arguments.checkIsNotNull (id, "id");
@@ -77,6 +83,7 @@ public final class ScreenController extends ControllerAdapter
     previousScreenId = getCurrentScreenId ();
 
     game.setScreen (screens.get (id));
+    musicChanger.changeMusic (previousScreenId, getCurrentScreenId ());
 
     log.info ("Changed from {} [{}] to {} [{}].", Screen.class.getSimpleName (), previousScreenId,
               Screen.class.getSimpleName (), id);

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.menus.main;
+package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
@@ -34,24 +35,21 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.Popup;
-import com.forerunnergames.peril.client.ui.widgets.PopupStyle;
-import com.forerunnergames.peril.client.ui.widgets.QuitPopup;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class MainMenuScreen extends InputAdapter implements Screen
+public final class MultiplayerGameModesMenuScreen extends InputAdapter implements Screen
 {
+  private final ScreenChanger screenChanger;
   private final Stage stage;
-  private final Popup quitPopup;
   private final InputProcessor inputProcessor;
 
-  public MainMenuScreen (final ScreenChanger screenChanger,
-                         final ScreenSize screenSize,
-                         final Skin skin)
+  public MultiplayerGameModesMenuScreen (final ScreenChanger screenChanger, final ScreenSize screenSize, final Skin skin)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (skin, "skin");
+
+    this.screenChanger = screenChanger;
 
     // Layer 0 - background image
     final Stack rootStack = new Stack ();
@@ -88,89 +86,84 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     tableL3.row ();
     tableL3.add ();
     tableL3.add (new Image (new NinePatchDrawable (Assets.menuAtlas.createPatch ("menuTitleBackground"))))
-            .size (358, 60).fill ();
+            .size (358, 80).fill ();
     rootStack.add (tableL3);
 
     // Layer 4 - text & buttons
     final Table tableL4 = new Table ().top ().left ();
     tableL4.add ().width (301).height (400);
     tableL4.row ();
-    tableL4.add ().height (60);
-    tableL4.add (new Label ("MAIN MENU", new Label.LabelStyle (Assets.skyHookMono31, Color.WHITE))).padLeft (30)
+    tableL4.add ().height (50);
+    tableL4.add (new Label ("MULTIPLAYER", new Label.LabelStyle (Assets.skyHookMono31, Color.WHITE))).padLeft (30)
             .height (37).top ().left ();
     tableL4.row ();
-    tableL4.add ().height (42);
+    tableL4.add ().height (30);
+    tableL4.add (new Label ("GAME MODES", new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE))).padLeft (30)
+            .top ().left ();
+    tableL4.row ();
+    tableL4.add ().height (22);
     tableL4.row ();
     tableL4.add ();
 
-    final ImageTextButton.ImageTextButtonStyle buttonStyle = new ImageTextButton.ImageTextButtonStyle ();
-    buttonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
-    buttonStyle.font = Assets.droidSansMono18;
+    final ImageTextButton.ImageTextButtonStyle menuChoiceButtonStyle = new ImageTextButton.ImageTextButtonStyle ();
+    menuChoiceButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
+    menuChoiceButtonStyle.font = Assets.droidSansMono18;
 
-    final ImageTextButton singlePlayerButton = new ImageTextButton ("SINGLE PLAYER", buttonStyle);
-    final Stack singlePlayerButtonStack = new Stack ();
-    singlePlayerButtonStack.add (new Container <> (singlePlayerButton.getLabel ()).left ().padLeft (60));
-    singlePlayerButtonStack.add (singlePlayerButton.getImage ());
-    singlePlayerButton.clearChildren ();
-    singlePlayerButton.add (singlePlayerButtonStack).fill ().expand ();
-
-    tableL4.add (singlePlayerButton).width (358).height (40).left ().fill ();
-    tableL4.row ();
-    tableL4.add ().height (10);
-    tableL4.row ();
-    tableL4.add ();
-
-    final ImageTextButton multiplayerPlayerButton = new ImageTextButton ("MULTIPLAYER", buttonStyle);
-    final Stack multiplayerButtonStack = new Stack ();
-    multiplayerButtonStack.add (new Container <> (multiplayerPlayerButton.getLabel ()).left ().padLeft (60));
-    multiplayerButtonStack.add (multiplayerPlayerButton.getImage ());
-    multiplayerPlayerButton.clearChildren ();
-    multiplayerPlayerButton.setSize (358, 40);
-    multiplayerPlayerButton.add (multiplayerButtonStack).fill ().expand ();
-    multiplayerPlayerButton.addListener (new ChangeListener ()
+    final ImageTextButton classicGameModeButton = new ImageTextButton ("CLASSIC", menuChoiceButtonStyle);
+    final Stack classicGameModeButtonStack = new Stack ();
+    classicGameModeButtonStack.add (new Container <> (classicGameModeButton.getLabel ()).left ().padLeft (60));
+    classicGameModeButtonStack.add (classicGameModeButton.getImage ());
+    classicGameModeButton.clearChildren ();
+    classicGameModeButton.add (classicGameModeButtonStack).fill ().expand ();
+    classicGameModeButton.addListener (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        screenChanger.toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
+        screenChanger.toScreen (ScreenId.PLAY_CLASSIC);
       }
     });
 
-    tableL4.add (multiplayerPlayerButton).width (358).height (40).left ().fill ();
+    tableL4.add (classicGameModeButton).width (358).height (40).left ().fill ();
     tableL4.row ();
     tableL4.add ().height (10);
     tableL4.row ();
     tableL4.add ();
 
-    final ImageTextButton settingsButton = new ImageTextButton ("SETTINGS", buttonStyle);
-    final Stack settingsButtonStack = new Stack ();
-    settingsButtonStack.add (new Container <> (settingsButton.getLabel ()).left ().padLeft (60));
-    settingsButtonStack.add (settingsButton.getImage ());
-    settingsButton.clearChildren ();
-    settingsButton.add (settingsButtonStack).fill ().expand ();
-
-    tableL4.add (settingsButton).width (358).height (40).left ().fill ();
-    tableL4.row ();
-    tableL4.add ().height (10);
-    tableL4.row ();
-    tableL4.add ();
-
-    final ImageTextButton quitButton = new ImageTextButton ("QUIT", buttonStyle);
-    final Stack quitButtonStack = new Stack ();
-    quitButtonStack.add (new Container <> (quitButton.getLabel ()).left ().padLeft (60));
-    quitButtonStack.add (quitButton.getImage ());
-    quitButton.clearChildren ();
-    quitButton.add (quitButtonStack).fill ().expand ();
-    quitButton.addListener (new ChangeListener ()
+    final ImageTextButton perilGameModeButton = new ImageTextButton ("PERIL", menuChoiceButtonStyle);
+    final Stack perilGameModeButtonStack = new Stack ();
+    perilGameModeButtonStack.add (new Container<> (perilGameModeButton.getLabel ()).left ().padLeft (60));
+    perilGameModeButtonStack.add (perilGameModeButton.getImage ());
+    perilGameModeButton.clearChildren ();
+    perilGameModeButton.setSize (358, 40);
+    perilGameModeButton.add (perilGameModeButtonStack).fill ().expand ();
+    perilGameModeButton.addListener (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        quitPopup.show ();
+        screenChanger.toScreen (ScreenId.PLAY_PERIL);
       }
     });
 
-    tableL4.add (quitButton).width (358).height (40).left ().fill ();
+    tableL4.add (perilGameModeButton).width (358).height (40).left ().fill ();
+
+    tableL4.row ();
+    tableL4.add ().height (388);
+    tableL4.row ();
+    tableL4.add ();
+
+    final TextButton backButton = new TextButton ("BACK", skin);
+    backButton.addListener (new ChangeListener ()
+    {
+      @Override
+      public void changed (final ChangeEvent event, final Actor actor)
+      {
+        screenChanger.toScreen (ScreenId.MAIN_MENU);
+      }
+    });
+
+    tableL4.add (backButton).width (110).left ().padLeft (59);
 
     rootStack.add (tableL4);
 
@@ -197,16 +190,6 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     stage = new Stage (viewport);
     stage.addActor (rootStack);
 
-    quitPopup = new QuitPopup (skin, PopupStyle.builder ().titleHeight (34).textButtonStyle ("small")
-            .message ("Are you sure you want to quit?").build (), stage)
-    {
-      @Override
-      public void onSubmit ()
-      {
-        Gdx.app.exit ();
-      }
-    };
-
     inputProcessor = new InputMultiplexer (stage, this);
   }
 
@@ -217,7 +200,7 @@ public final class MainMenuScreen extends InputAdapter implements Screen
     {
       case Input.Keys.ESCAPE:
       {
-        quitPopup.show ();
+        screenChanger.toScreen (ScreenId.MAIN_MENU);
 
         return true;
       }

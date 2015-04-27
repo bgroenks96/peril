@@ -4,10 +4,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.settings.MusicSettings;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.MultiplayerGameModesMenuScreen;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -26,13 +25,13 @@ public final class ScreenFactory
   }
 
   public Screen create (final ScreenId screenId,
-                        final ScreenController screenController,
+                        final ScreenChanger screenChanger,
                         final ScreenSize screenSize,
                         final MouseInput mouseInput,
                         final Skin skin)
   {
     Arguments.checkIsNotNull (screenId, "screenId");
-    Arguments.checkIsNotNull (screenController, "screenController");
+    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (skin, "skin");
@@ -41,15 +40,19 @@ public final class ScreenFactory
     {
       case MAIN_MENU:
       {
-        return new MainMenuScreen (screenController, screenSize, new DefaultScreenMusic (Assets.menuMusic, new MusicSettings ()), skin);
+        return new MainMenuScreen (screenChanger, screenSize, skin);
+      }
+      case MULTIPLAYER_GAME_MODES_MENU:
+      {
+        return new MultiplayerGameModesMenuScreen (screenChanger, screenSize, skin);
       }
       case PLAY_CLASSIC:
       {
-        return PlayScreenFactory.create (screenController, screenSize, mouseInput, GameMode.CLASSIC, skin, eventBus);
+        return PlayScreenFactory.create (screenChanger, screenSize, mouseInput, GameMode.CLASSIC, skin, eventBus);
       }
       case PLAY_PERIL:
       {
-        return PlayScreenFactory.create (screenController, screenSize, mouseInput, GameMode.PERIL, skin, eventBus);
+        return PlayScreenFactory.create (screenChanger, screenSize, mouseInput, GameMode.PERIL, skin, eventBus);
       }
       default:
       {
