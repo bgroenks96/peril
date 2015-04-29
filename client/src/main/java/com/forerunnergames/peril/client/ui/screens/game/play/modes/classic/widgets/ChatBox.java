@@ -27,8 +27,6 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   private static final int SCROLLPANE_HEIGHT = 226 - 2 - 2;
   private static final int SCROLLPANE_TEXTFIELD_VERTICAL_PADDING = 2 + 2;
   private static final int TEXTFIELD_HEIGHT = 24;
-  private static final int TEXTFIELD_INNER_PADDING_LEFT = 12;
-  private static final int TEXTFIELD_INNER_PADDING_RIGHT = 14;
   private final Table table;
   private final TextField textField;
 
@@ -42,13 +40,6 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
 
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");
-
-    textFieldStyle.background.setLeftWidth (TEXTFIELD_INNER_PADDING_LEFT);
-    textFieldStyle.background.setRightWidth (TEXTFIELD_INNER_PADDING_RIGHT);
-    textFieldStyle.focusedBackground.setLeftWidth (TEXTFIELD_INNER_PADDING_LEFT);
-    textFieldStyle.focusedBackground.setRightWidth (TEXTFIELD_INNER_PADDING_RIGHT);
-    textFieldStyle.disabledBackground.setLeftWidth (TEXTFIELD_INNER_PADDING_LEFT);
-    textFieldStyle.disabledBackground.setRightWidth (TEXTFIELD_INNER_PADDING_RIGHT);
 
     textField = new TextField ("", textFieldStyle)
     {
