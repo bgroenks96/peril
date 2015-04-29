@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -12,7 +12,7 @@ import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class ClassicPlayScreenFactory
+public final class PerilModePlayScreenFactory
 {
   public static Screen create (final Skin skin,
                                final ScreenChanger screenChanger,
@@ -26,10 +26,10 @@ public final class ClassicPlayScreenFactory
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return new ClassicPlayScreen (new PlayScreenWidgetFactory (skin), screenChanger, screenSize, mouseInput, eventBus);
+    return new PerilModePlayScreen (skin, screenChanger, new TankActor2 (), screenSize, mouseInput, eventBus);
   }
 
-  private ClassicPlayScreenFactory ()
+  private PerilModePlayScreenFactory ()
   {
     Classes.instantiationNotAllowed ();
   }

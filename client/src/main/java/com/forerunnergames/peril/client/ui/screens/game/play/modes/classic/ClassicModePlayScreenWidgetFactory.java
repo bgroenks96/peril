@@ -13,7 +13,7 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ChatBox;
+import com.forerunnergames.peril.client.ui.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
@@ -31,7 +31,7 @@ import com.forerunnergames.tools.common.Message;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class PlayScreenWidgetFactory
+public final class ClassicModePlayScreenWidgetFactory
 {
   private static final int MESSAGE_BOX_ROW_HEIGHT = 24;
   private static final int MESSAGE_BOX_ROW_PADDING_LEFT = 12;
@@ -43,7 +43,7 @@ public final class PlayScreenWidgetFactory
   private final MessageBoxRowStyle messageBoxRowStyle;
   private final ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle;
 
-  public PlayScreenWidgetFactory (final Skin skin)
+  public ClassicModePlayScreenWidgetFactory (final Skin skin)
   {
     Arguments.checkIsNotNull (skin, "skin");
 

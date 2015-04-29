@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicPlayScreenFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilPlayScreenFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreenFactory;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
@@ -35,11 +35,11 @@ public final class PlayScreenFactory
     {
       case CLASSIC:
       {
-        return ClassicPlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
+        return ClassicModePlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
       }
       case PERIL:
       {
-        return PerilPlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
+        return PerilModePlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
       }
       default:
       {

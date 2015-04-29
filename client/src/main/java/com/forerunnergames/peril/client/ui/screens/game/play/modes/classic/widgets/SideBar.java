@@ -2,7 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.PlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class SideBar extends Table
@@ -15,7 +15,7 @@ public final class SideBar extends Table
   private static final int BUTTON_HEIGHT = 40;
   private static final int VERTICAL_PADDING_BETWEEN_BUTTONS = 20;
 
-  public SideBar (final PlayScreenWidgetFactory widgetFactory)
+  public SideBar (final ClassicModePlayScreenWidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 

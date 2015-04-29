@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets;
+package com.forerunnergames.peril.client.ui.widgets;
 
 import static com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 

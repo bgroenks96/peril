@@ -28,19 +28,19 @@ import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class PerilPlayScreen extends InputAdapter implements Screen
+public final class PerilModePlayScreen extends InputAdapter implements Screen
 {
   private final ScreenChanger screenChanger;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public PerilPlayScreen (final Skin skin,
-                          final ScreenChanger screenChanger,
-                          final TankActor2 tankActor2,
-                          final ScreenSize screenSize,
-                          final MouseInput mouseInput,
-                          final MBassador <Event> eventBus)
+  public PerilModePlayScreen (final Skin skin,
+                              final ScreenChanger screenChanger,
+                              final TankActor2 tankActor2,
+                              final ScreenSize screenSize,
+                              final MouseInput mouseInput,
+                              final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (tankActor2, "tankActor2");
@@ -191,8 +191,8 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   private void showCursor ()
   {
     Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
-            (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
+                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
+                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
   }
 
   private void hideCursor ()

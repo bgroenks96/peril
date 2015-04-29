@@ -60,7 +60,7 @@ import com.forerunnergames.tools.common.Message;
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-public final class ClassicPlayScreen extends InputAdapter implements Screen
+public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
   private final PlayMapActor playMapActor;
   private final MouseInput mouseInput;
@@ -75,11 +75,11 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
 
-  public ClassicPlayScreen (final PlayScreenWidgetFactory widgetFactory,
-                            final ScreenChanger screenChanger,
-                            final ScreenSize screenSize,
-                            final MouseInput mouseInput,
-                            final MBassador <Event> eventBus)
+  public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
+                                final ScreenChanger screenChanger,
+                                final ScreenSize screenSize,
+                                final MouseInput mouseInput,
+                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
