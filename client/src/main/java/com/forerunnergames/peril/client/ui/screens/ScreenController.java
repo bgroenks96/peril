@@ -1,20 +1,20 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
-import com.forerunnergames.peril.client.input.LibGdxMouseInput;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.music.MusicChanger;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import javax.annotation.Nullable;
+
+import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,30 +23,31 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
   private final Game game;
-  private final ScreenFactory screenFactory;
   private final MusicChanger musicChanger;
-  private BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
+  private final MBassador <Event> eventBus;
+  private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
   private ScreenId previousScreenId;
 
-  public ScreenController (final Game game, final ScreenFactory screenFactory, final MusicChanger musicChanger)
+  public ScreenController (final Game game, final MusicChanger musicChanger, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (game, "game");
-    Arguments.checkIsNotNull (screenFactory, "screenFactory");
     Arguments.checkIsNotNull (musicChanger, "musicChanger");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.game = game;
-    this.screenFactory = screenFactory;
     this.musicChanger = musicChanger;
+    this.eventBus = eventBus;
   }
 
   @Override
   public void initialize ()
   {
+    final ScreenFactory screenFactory = ScreenFactoryCreator.create (this, eventBus);
+
     for (final ScreenId screenId : ScreenId.values ())
     {
-      screens.put (screenId, screenFactory.create (screenId, this, new LibGdxScreenSize (Gdx.graphics),
-                                                   new LibGdxMouseInput (Gdx.input), Assets.skin));
+      screens.put (screenId, screenFactory.create (screenId));
     }
 
     toScreen (ScreenSettings.START_SCREEN);

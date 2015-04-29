@@ -31,7 +31,7 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
-import com.forerunnergames.peril.client.ui.widgets.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
-public abstract class MandatoryOccupationPopup extends Dialog implements Popup
+public class MandatoryOccupationPopup extends Dialog
 {
   private static final float COUNTRY_BOX_WIDTH = 400;
   private static final float COUNTRY_BOX_HEIGHT = 200;
@@ -72,6 +72,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
   private final CountryArmyTextActor destinationCountryArmyTextActor = new CountryArmyTextActor ();
   private final Stage stage;
   private final MBassador <Event> eventBus;
+  private final PopupListener listener;
   private Image title;
   private Drawable foregroundArrow;
   private Drawable foregroundArrowText;
@@ -94,16 +95,21 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
   private Stack sourceCountryStack;
   private Stack destinationCountryStack;
 
-  public MandatoryOccupationPopup (final Skin skin, final Stage stage, final MBassador <Event> eventBus)
+  public MandatoryOccupationPopup (final Skin skin,
+                                   final Stage stage,
+                                   final MBassador <Event> eventBus,
+                                   final PopupListener listener)
   {
     super ("", skin, WINDOW_STYLE_NAME_JSON);
 
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (listener, "listener");
 
     this.stage = stage;
     this.eventBus = eventBus;
+    this.listener = listener;
 
     createWidgets (skin);
     configureWindow ();
@@ -124,12 +130,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
 
     isShown = false;
 
-    onHide ();
-  }
-
-  @Override
-  public void show ()
-  {
+    listener.onHide ();
   }
 
   @Override
@@ -141,19 +142,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
 
     isShown = false;
 
-    onHide ();
-  }
-
-  @Override
-  public boolean isShown ()
-  {
-    return isShown;
-  }
-
-  @Override
-  public Actor asActor ()
-  {
-    return this;
+    listener.onHide ();
   }
 
   @Override
@@ -175,7 +164,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
 
     // TODO: Production: Publish event (OccupyCountryRequestEvent?)
 
-    onSubmit ();
+    listener.onSubmit ();
   }
 
   @Override
@@ -248,7 +237,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
 
     isShown = true;
 
-    onShow ();
+    listener.onShow ();
   }
 
   public void keyDownRepeating (final int keyCode)
@@ -621,8 +610,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
   private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,
                                                                            final Image countryImagePostLayout)
   {
-    return tempPosition.set (countryActor.getReferenceTextUpperLeft ())
-            .sub (countryActor.getReferenceDestination ())
+    return tempPosition.set (countryActor.getReferenceTextUpperLeft ()).sub (countryActor.getReferenceDestination ())
             .set (Math.abs (tempPosition.x), Math.abs (tempPosition.y))
             .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout))
             .add (countryImagePostLayout.getImageX (), countryImagePostLayout.getImageY ());
@@ -638,7 +626,7 @@ public abstract class MandatoryOccupationPopup extends Dialog implements Popup
   private Vector2 calculateCountryImageScaling (final CountryActor countryActor, final Image countryImagePostLayout)
   {
     return tempScaling.set (countryImagePostLayout.getImageWidth () / countryActor.getReferenceWidth (),
-            countryImagePostLayout.getImageHeight () / countryActor.getReferenceHeight ());
+                            countryImagePostLayout.getImageHeight () / countryActor.getReferenceHeight ());
   }
 
   private void setSliderRange (final int minValue, final int maxValue)

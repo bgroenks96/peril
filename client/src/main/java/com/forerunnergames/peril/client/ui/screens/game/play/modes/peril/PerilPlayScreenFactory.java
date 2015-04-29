@@ -14,10 +14,10 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PerilPlayScreenFactory
 {
-  public static Screen create (final ScreenChanger screenChanger,
+  public static Screen create (final Skin skin,
+                               final ScreenChanger screenChanger,
                                final ScreenSize screenSize,
                                final MouseInput mouseInput,
-                               final Skin skin,
                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
@@ -26,7 +26,7 @@ public final class PerilPlayScreenFactory
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return new PerilPlayScreen (screenChanger, new TankActor2 (), screenSize, mouseInput, skin, eventBus);
+    return new PerilPlayScreen (skin, screenChanger, new TankActor2 (), screenSize, mouseInput, eventBus);
   }
 
   private PerilPlayScreenFactory ()

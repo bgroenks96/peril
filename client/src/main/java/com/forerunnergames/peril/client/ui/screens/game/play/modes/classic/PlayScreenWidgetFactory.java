@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -13,11 +14,15 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ChatBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popups.QuitPopup;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -98,8 +103,23 @@ public final class PlayScreenWidgetFactory
     return new Button (skin.get (Button.ButtonStyle.class));
   }
 
-  public Skin getSkin ()
+  public Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
   {
-    return skin;
+    Arguments.checkIsNotNull (message, "message");
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new QuitPopup (skin, message, stage, listener);
+  }
+
+  public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage,
+                                                                  final MBassador <Event> eventBus,
+                                                                  final PopupListener listener)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new MandatoryOccupationPopup (skin, stage, eventBus, listener);
   }
 }

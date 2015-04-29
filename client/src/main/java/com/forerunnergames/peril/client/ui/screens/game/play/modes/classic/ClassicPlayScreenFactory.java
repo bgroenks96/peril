@@ -14,10 +14,10 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class ClassicPlayScreenFactory
 {
-  public static Screen create (final ScreenChanger screenChanger,
+  public static Screen create (final Skin skin,
+                               final ScreenChanger screenChanger,
                                final ScreenSize screenSize,
                                final MouseInput mouseInput,
-                               final Skin skin,
                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
@@ -26,7 +26,7 @@ public final class ClassicPlayScreenFactory
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return new ClassicPlayScreen (screenChanger, new PlayScreenWidgetFactory (skin), screenSize, mouseInput, eventBus);
+    return new ClassicPlayScreen (new PlayScreenWidgetFactory (skin), screenChanger, screenSize, mouseInput, eventBus);
   }
 
   private ClassicPlayScreenFactory ()

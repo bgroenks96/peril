@@ -17,11 +17,11 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PlayScreenFactory
 {
-  public static Screen create (final ScreenChanger screenChanger,
+  public static Screen create (final GameMode gameMode,
+                               final Skin skin,
+                               final ScreenChanger screenChanger,
                                final ScreenSize screenSize,
                                final MouseInput mouseInput,
-                               final GameMode gameMode,
-                               final Skin skin,
                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
@@ -35,11 +35,11 @@ public final class PlayScreenFactory
     {
       case CLASSIC:
       {
-        return ClassicPlayScreenFactory.create (screenChanger, screenSize, mouseInput, skin, eventBus);
+        return ClassicPlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
       }
       case PERIL:
       {
-        return PerilPlayScreenFactory.create (screenChanger, screenSize, mouseInput, skin, eventBus);
+        return PerilPlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
       }
       default:
       {

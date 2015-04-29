@@ -1,23 +1,27 @@
-package com.forerunnergames.peril.client.ui.widgets;
+package com.forerunnergames.peril.client.ui.widgets.popups;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 
-public abstract class OkCancelPopup extends OkPopup
+public class OkCancelPopup extends OkPopup
 {
-  public OkCancelPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage)
+  public OkCancelPopup (final Skin skin,
+                        final PopupStyle popupStyle,
+                        final Stage stage,
+                        final PopupListener listener)
   {
-    super (skin, popupStyle, stage);
+    super (skin, popupStyle, stage, listener);
   }
 
   public OkCancelPopup (final Skin skin,
                         final Window.WindowStyle windowStyle,
                         final PopupStyle popupStyle,
-                        final Stage stage)
+                        final Stage stage,
+                        final PopupListener listener)
   {
-    super (skin, windowStyle, popupStyle, stage);
+    super (skin, windowStyle, popupStyle, stage, listener);
   }
 
   @Override

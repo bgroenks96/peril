@@ -41,9 +41,9 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.Popup;
-import com.forerunnergames.peril.client.ui.widgets.PopupStyle;
-import com.forerunnergames.peril.client.ui.widgets.QuitPopup;
+import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popups.PopupListenerAdapter;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;
@@ -75,8 +75,8 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
 
-  public ClassicPlayScreen (final ScreenChanger screenChanger,
-                            final PlayScreenWidgetFactory widgetFactory,
+  public ClassicPlayScreen (final PlayScreenWidgetFactory widgetFactory,
+                            final ScreenChanger screenChanger,
                             final ScreenSize screenSize,
                             final MouseInput mouseInput,
                             final MBassador <Event> eventBus)
@@ -121,49 +121,44 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 
     stage = new Stage (viewport);
 
-    final MandatoryOccupationPopup mandatoryOccupationPopup = new MandatoryOccupationPopup (widgetFactory.getSkin (),
-            stage, eventBus)
-    {
-      @Override
-      public void onSubmit ()
-      {
-      }
+    final MandatoryOccupationPopup mandatoryOccupationPopup = widgetFactory
+            .createMandatoryOccupationPopup (stage, eventBus, new PopupListenerAdapter ()
+            {
+              @Override
+              public void onShow ()
+              {
+                playMapActor.disable ();
+              }
 
-      @Override
-      public void onShow ()
-      {
-        playMapActor.disable ();
-      }
+              @Override
+              public void onHide ()
+              {
+                playMapActor.enable (mouseInput.position ());
+              }
+            });
 
-      @Override
-      public void onHide ()
-      {
-        playMapActor.enable (mouseInput.position ());
-      }
-    };
+    quitPopup = widgetFactory
+            .createQuitPopup ("Are you sure you want to quit?\nQuitting will end the game for everyone.", stage,
+                              new PopupListener ()
+                              {
+                                @Override
+                                public void onSubmit ()
+                                {
+                                  screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
+                                }
 
-    quitPopup = new QuitPopup (widgetFactory.getSkin (), PopupStyle.builder ().titleHeight (34)
-            .textButtonStyle ("small")
-            .message ("Are you sure you want to quit?\nQuitting will end the game for everyone.").build (), stage)
-    {
-      @Override
-      public void onShow ()
-      {
-        playMapActor.disable ();
-      }
+                                @Override
+                                public void onShow ()
+                                {
+                                  playMapActor.disable ();
+                                }
 
-      @Override
-      public void onHide ()
-      {
-        playMapActor.enable (mouseInput.position ());
-      }
-
-      @Override
-      public void onSubmit ()
-      {
-        screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
-      }
-    };
+                                @Override
+                                public void onHide ()
+                                {
+                                  playMapActor.enable (mouseInput.position ());
+                                }
+                              });
 
     stage.addActor (rootStack);
 
@@ -327,7 +322,6 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
     return false;
   }
 
-
   @Handler
   public void onStatusMessageEvent (final StatusMessageEvent event)
   {
@@ -353,8 +347,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". "
-            + event.getPlayerName ()));
+    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ()));
   }
 
   @Handler
@@ -367,9 +360,7 @@ public final class ClassicPlayScreen extends InputAdapter implements Screen
 
   private void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
+    Gdx.input.setCursorImage (Assets.playScreenNormalCursor, (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x, (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
   }
 
   private void hideCursor ()

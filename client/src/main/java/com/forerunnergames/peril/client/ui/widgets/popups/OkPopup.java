@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets;
+package com.forerunnergames.peril.client.ui.widgets.popups;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -22,65 +22,34 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public abstract class OkPopup implements Popup
+public class OkPopup implements Popup
 {
   private final DelegateDialog delegate;
 
-  public OkPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage)
+  public OkPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage, final PopupListener listener)
   {
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
+    Arguments.checkIsNotNull (listener, "listener");
 
     delegate = new DelegateDialog (popupStyle.getTitle (), skin.get (popupStyle.getWindowStyleName (),
-                                                                     Window.WindowStyle.class), popupStyle, stage, skin)
-    {
-      @Override
-      public void onSubmit ()
-      {
-        OkPopup.this.onSubmit ();
-      }
-
-      @Override
-      public void onShow ()
-      {
-        OkPopup.this.onShow ();
-      }
-
-      @Override
-      public void onHide ()
-      {
-        OkPopup.this.onHide ();
-      }
-    };
+                                                                     Window.WindowStyle.class), popupStyle, stage,
+            skin, listener);
 
     addKeys ();
     addButtons ();
   }
 
-  public OkPopup (final Skin skin, final Window.WindowStyle windowStyle, final PopupStyle popupStyle, final Stage stage)
+  public OkPopup (final Skin skin,
+                  final Window.WindowStyle windowStyle,
+                  final PopupStyle popupStyle,
+                  final Stage stage,
+                  final PopupListener listener)
   {
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
+    Arguments.checkIsNotNull (popupStyle, "listener");
 
-    delegate = new DelegateDialog (popupStyle.getTitle (), windowStyle, popupStyle, stage, skin)
-    {
-      @Override
-      public void onSubmit ()
-      {
-        OkPopup.this.onSubmit ();
-      }
-
-      @Override
-      public void onShow ()
-      {
-        OkPopup.this.onShow ();
-      }
-
-      @Override
-      public void onHide ()
-      {
-        OkPopup.this.onHide ();
-      }
-    };
+    delegate = new DelegateDialog (popupStyle.getTitle (), windowStyle, popupStyle, stage, skin, listener);
 
     addKeys ();
     addButtons ();
@@ -103,16 +72,6 @@ public abstract class OkPopup implements Popup
   public final void hide ()
   {
     delegate.hide ();
-  }
-
-  @Override
-  public void onShow ()
-  {
-  }
-
-  @Override
-  public void onHide ()
-  {
   }
 
   @Override
@@ -152,35 +111,39 @@ public abstract class OkPopup implements Popup
     delegate.addKey (keyCode, popupAction);
   }
 
-  private abstract class DelegateDialog extends Dialog implements Popup
+  private class DelegateDialog extends Dialog implements Popup
   {
     private final PopupStyle popupStyle;
     private final Stage stage;
     private final Skin skin;
+    private final PopupListener listener;
     private final Label.LabelStyle labelStyle;
-    private boolean isShown = false;
     private final Map <String, TextButton> buttonTextToTextButtons = new HashMap <> ();
+    private boolean isShown = false;
 
     public DelegateDialog (final String title,
                            final WindowStyle windowStyle,
                            final PopupStyle popupStyle,
                            final Stage stage,
-                           final Skin skin)
+                           final Skin skin,
+                           final PopupListener listener)
     {
       super (title, windowStyle);
 
       Arguments.checkIsNotNull (popupStyle, "popupStyle");
       Arguments.checkIsNotNull (stage, "stage");
       Arguments.checkIsNotNull (skin, "skin");
+      Arguments.checkIsNotNull (listener, "listener");
 
       this.popupStyle = popupStyle;
       this.stage = stage;
       this.skin = skin;
+      this.listener = listener;
 
       labelStyle = new Label.LabelStyle (Assets.droidSans20, Color.WHITE);
 
       // TODO Production: Remove
-      //debug ();
+      // debug ();
 
       configureWindow ();
       configureButtonTable ();
@@ -193,6 +156,8 @@ public abstract class OkPopup implements Popup
     {
       if (isShown) return this;
 
+      stage.unfocusAll ();
+
       super.show (stage, action);
 
       setSize ();
@@ -200,7 +165,7 @@ public abstract class OkPopup implements Popup
 
       isShown = true;
 
-      onShow ();
+      listener.onShow ();
 
       return this;
     }
@@ -210,6 +175,8 @@ public abstract class OkPopup implements Popup
     {
       if (isShown) return this;
 
+      stage.unfocusAll ();
+
       super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade)));
 
       setSize ();
@@ -217,7 +184,7 @@ public abstract class OkPopup implements Popup
 
       isShown = true;
 
-      onShow ();
+      listener.onShow ();
 
       return this;
     }
@@ -229,7 +196,7 @@ public abstract class OkPopup implements Popup
 
       super.hide (action);
 
-      onHide ();
+      listener.onHide ();
 
       isShown = false;
     }
@@ -241,25 +208,9 @@ public abstract class OkPopup implements Popup
 
       super.hide (Actions.fadeOut (0.2f, Interpolation.fade));
 
-      onHide ();
+      listener.onHide ();
 
       isShown = false;
-    }
-
-    @Override
-    protected void result (@Nullable final Object object)
-    {
-      if (!(object instanceof PopupAction) || object != PopupAction.SUBMIT_AND_HIDE) return;
-
-      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
-      {
-        @Override
-        public void run ()
-        {
-          remove ();
-          onSubmit ();
-        }
-      })));
     }
 
     @Override
@@ -278,6 +229,22 @@ public abstract class OkPopup implements Popup
     public Actor asActor ()
     {
       return this;
+    }
+
+    @Override
+    protected void result (@Nullable final Object object)
+    {
+      if (!(object instanceof PopupAction) || object != PopupAction.SUBMIT_AND_HIDE) return;
+
+      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          remove ();
+          listener.onSubmit ();
+        }
+      })));
     }
 
     public void configureWindow ()
@@ -329,7 +296,8 @@ public abstract class OkPopup implements Popup
     {
       Arguments.checkIsNotNull (oldText, "oldText");
       Arguments.checkIsNotNull (newText, "newText");
-      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText), "Cannot find button with text [" + oldText + "].");
+      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText), "Cannot find button with text [" + oldText
+              + "].");
 
       buttonTextToTextButtons.get (oldText).setText (newText);
     }
@@ -354,7 +322,7 @@ public abstract class OkPopup implements Popup
 
     private void configureButtonTable ()
     {
-      getButtonTable ().defaults().space (20);
+      getButtonTable ().defaults ().space (20);
       getButtonTable ().padLeft (20).padRight (20).padBottom (16).padTop (16);
       getCell (getButtonTable ()).right ();
     }

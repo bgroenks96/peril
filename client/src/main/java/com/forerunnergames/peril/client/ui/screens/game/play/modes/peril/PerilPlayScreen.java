@@ -35,11 +35,11 @@ public final class PerilPlayScreen extends InputAdapter implements Screen
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public PerilPlayScreen (final ScreenChanger screenChanger,
+  public PerilPlayScreen (final Skin skin,
+                          final ScreenChanger screenChanger,
                           final TankActor2 tankActor2,
                           final ScreenSize screenSize,
                           final MouseInput mouseInput,
-                          final Skin skin,
                           final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
