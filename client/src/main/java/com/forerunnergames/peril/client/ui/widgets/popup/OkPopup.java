@@ -156,7 +156,7 @@ public class OkPopup implements Popup
     {
       if (isShown) return this;
 
-      stage.unfocusAll ();
+      stage.cancelTouchFocus ();
 
       super.show (stage, action);
 
@@ -175,7 +175,7 @@ public class OkPopup implements Popup
     {
       if (isShown) return this;
 
-      stage.unfocusAll ();
+      stage.cancelTouchFocus ();
 
       super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade)));
 
