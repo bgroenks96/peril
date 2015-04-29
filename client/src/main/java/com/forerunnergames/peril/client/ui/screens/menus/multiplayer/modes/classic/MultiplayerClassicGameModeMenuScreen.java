@@ -1,7 +1,8 @@
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -27,19 +28,19 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
   @Override
   protected void addMenuChoices ()
   {
-    addMenuChoice ("CREATE GAME", new ChangeListener ()
+    addMenuChoice ("CREATE GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         toScreen (ScreenId.PLAY_CLASSIC);
       }
     });
 
-    addMenuChoice ("JOIN GAME", new ChangeListener ()
+    addMenuChoice ("JOIN GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         toScreen (ScreenId.PLAY_CLASSIC);
       }
@@ -55,10 +56,10 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
   @Override
   protected void addButtons ()
   {
-    addBackButton (new ChangeListener ()
+    addBackButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
       }

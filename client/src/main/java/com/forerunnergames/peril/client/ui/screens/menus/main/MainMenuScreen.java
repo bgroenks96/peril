@@ -1,8 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.menus.main;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -41,37 +42,37 @@ public final class MainMenuScreen extends AbstractMenuScreen
   @Override
   protected void addMenuChoices ()
   {
-    addMenuChoice ("SINGLE PLAYER", new ChangeListener ()
+    addMenuChoice ("SINGLE PLAYER", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         // TODO Implement
       }
     });
 
-    addMenuChoice ("MULTIPLAYER", new ChangeListener ()
+    addMenuChoice ("MULTIPLAYER", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
       }
     });
 
-    addMenuChoice ("SETTINGS", new ChangeListener ()
+    addMenuChoice ("SETTINGS", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         // TODO Implement
       }
     });
 
-    addMenuChoice ("QUIT", new ChangeListener ()
+    addMenuChoice ("QUIT", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void changed (final ChangeEvent event, final Actor actor)
+      public void clicked (InputEvent event, float x, float y)
       {
         quitPopup.show ();
       }

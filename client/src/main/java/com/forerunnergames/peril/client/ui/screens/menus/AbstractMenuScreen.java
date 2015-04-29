@@ -10,12 +10,12 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -215,16 +215,16 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     screenChanger.toScreen (id);
   }
 
-  protected final void addMenuChoice (final String choiceText, final ChangeListener changeListener)
+  protected final void addMenuChoice (final String choiceText, final EventListener listener)
   {
     Arguments.checkIsNotNull (choiceText, "choiceText");
-    Arguments.checkIsNotNull (changeListener, "changeListener");
+    Arguments.checkIsNotNull (listener, "listener");
 
     menuChoiceTable.row ();
     menuChoiceTable.add ().height (10);
     menuChoiceTable.row ();
     menuChoiceTable.add ();
-    menuChoiceTable.add (widgetFactory.createMenuChoice (choiceText, changeListener)).width (358).height (40).left ()
+    menuChoiceTable.add (widgetFactory.createMenuChoice (choiceText, listener)).width (358).height (40).left ()
             .fill ();
   }
 
@@ -240,7 +240,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   {
   }
 
-  protected final void addBackButton (final ChangeListener listener)
+  protected final void addBackButton (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 

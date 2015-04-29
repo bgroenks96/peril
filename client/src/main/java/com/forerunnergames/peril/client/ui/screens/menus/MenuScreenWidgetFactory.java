@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -13,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
@@ -100,7 +100,7 @@ public final class MenuScreenWidgetFactory
     return new Label (titleText, new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
   }
 
-  public Button createMenuChoice (final String choiceText, final ChangeListener listener)
+  public Button createMenuChoice (final String choiceText, final EventListener listener)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (choiceText, "choiceText");
     Arguments.checkIsNotNull (listener, "listener");
@@ -125,7 +125,7 @@ public final class MenuScreenWidgetFactory
     return new QuitPopup (skin, message, stage, listener);
   }
 
-  public Actor createBackButton (final ChangeListener listener)
+  public Actor createBackButton (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
