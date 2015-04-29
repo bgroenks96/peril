@@ -13,19 +13,18 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
-      "default": { "down": "custom-button-down", "up": "custom-button-up", "over": "custom-button-over", "disabled": "custom-button-disabled" },
-      "toggle":  { "down": "default-round-down", "up": "default-round", "checked": "default-round-down" },
-      "small":   { "down": "custom-small-button-down", "up": "custom-small-button-up", "over": "custom-small-button-over", "disabled": "custom-small-button-disabled" }
+      "default": { "down": "button-down", "up": "button-up", "over": "button-over", "disabled": "button-disabled" },
+      "toggle":  { "down": "toggle-on", "up": "toggle-off", "checked": "toggle-on", "disabled": "toggle-disabled" },
+      "small":   { "down": "small-button-down", "up": "small-button-up", "over": "small-button-over", "disabled": "small-button-disabled" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
-      "default": { "down": "custom-button-down", "up": "custom-button-up", "over": "custom-button-over", "disabled": "custom-button-disabled", "font": "default-font", "fontColor": "white"},
-      "toggle":  { "down": "default-round-down", "up": "default-round", "font": "default-font", "fontColor": "white", "downFontColor": "red", "checked": "default-round-down" },
-      "small":   { "down": "custom-small-button-down", "up": "custom-small-button-up", "over": "custom-small-button-over", "disabled": "custom-small-button-disabled", "font": "default-font", "fontColor": "white"},
+      "default": { "down": "button-down", "up": "button-up", "over": "button-over", "disabled": "button-disabled", "font": "default-font", "fontColor": "white"},
+      "small":   { "down": "small-button-down", "up": "small-button-up", "over": "small-button-over", "disabled": "small-button-disabled", "font": "default-font", "fontColor": "white"}
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
-      "default": { "vScroll": null, "hScrollKnob": "custom-scroll-knob", "background": null, "hScroll": null, "vScrollKnob": "custom-scroll-knob" }
+      "default": { "vScroll": null, "hScrollKnob": "scroll-knob", "background": null, "hScroll": null, "vScrollKnob": "scroll-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
@@ -54,8 +53,8 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
-    "default-horizontal": { "background": "custom-horizontal-slider", "knob": "custom-slider-knob" },
-    "default-vertical":   { "background": "custom-vertical-slider", "knob": "custom-slider-knob" }
+    "default-horizontal": { "background": "horizontal-slider-background", "knob": "slider-knob" },
+    "default-vertical":   { "background": "vertical-slider-background", "knob": "slider-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
@@ -63,11 +62,11 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
-      "default": { "selection": "selection", "background": null, "font": "default-font", "fontColor": "white", "cursor": "cursor"}
+      "default": { "selection": "selection", "background": "textfield-background", "focusedBackground": "textfield-focused-background", "disabledBackground": "textfield-disabled-background", "font": "default-font", "fontColor": "white", "cursor": "cursor"}
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
-      "default": { "checkboxOn": "check-on", "checkboxOff": "check-off", "font": "default-font", "fontColor": "white"}
+      "default": { "checkboxOn": "checkbox-on", "checkboxOff": "checkbox-off", "checkboxOnDisabled": "checkbox-on-disabled", "checkboxOffDisabled": "checkbox-off-disabled", "font": "default-font", "fontColor": "white"}
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {

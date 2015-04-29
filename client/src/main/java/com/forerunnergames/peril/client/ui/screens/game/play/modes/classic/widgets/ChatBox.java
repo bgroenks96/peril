@@ -43,6 +43,13 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    textFieldStyle.background.setLeftWidth (TEXTFIELD_INNER_PADDING_LEFT);
+    textFieldStyle.background.setRightWidth (TEXTFIELD_INNER_PADDING_RIGHT);
+    textFieldStyle.focusedBackground.setLeftWidth (TEXTFIELD_INNER_PADDING_LEFT);
+    textFieldStyle.focusedBackground.setRightWidth (TEXTFIELD_INNER_PADDING_RIGHT);
+    textFieldStyle.disabledBackground.setLeftWidth (TEXTFIELD_INNER_PADDING_LEFT);
+    textFieldStyle.disabledBackground.setRightWidth (TEXTFIELD_INNER_PADDING_RIGHT);
+
     textField = new TextField ("", textFieldStyle)
     {
       @Override
@@ -70,8 +77,7 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
     table.add (super.asActor ()).expandX ().fillX ().height (SCROLLPANE_HEIGHT)
             .padBottom (SCROLLPANE_TEXTFIELD_VERTICAL_PADDING);
     table.row ();
-    table.add (textField).expandX ().fillX ().height (TEXTFIELD_HEIGHT).padLeft (TEXTFIELD_INNER_PADDING_LEFT)
-            .padRight (TEXTFIELD_INNER_PADDING_RIGHT);
+    table.add (textField).expandX ().fillX ().height (TEXTFIELD_HEIGHT);
   }
 
   @Override
