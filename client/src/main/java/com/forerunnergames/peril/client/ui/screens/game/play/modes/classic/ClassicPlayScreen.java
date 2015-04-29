@@ -41,9 +41,9 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popups.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.StatusMessageEvent;

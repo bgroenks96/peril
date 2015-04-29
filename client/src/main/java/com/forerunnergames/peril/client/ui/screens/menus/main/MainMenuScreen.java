@@ -9,8 +9,8 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popups.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 
 public final class MainMenuScreen extends AbstractMenuScreen
 {

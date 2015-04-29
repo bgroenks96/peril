@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets.popups;
+package com.forerunnergames.peril.client.ui.widgets.popup;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

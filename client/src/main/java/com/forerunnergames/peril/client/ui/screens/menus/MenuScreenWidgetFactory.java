@@ -18,9 +18,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popups.QuitPopup;
+import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class MenuScreenWidgetFactory

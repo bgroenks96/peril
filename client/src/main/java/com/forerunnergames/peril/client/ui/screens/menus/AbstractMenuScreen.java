@@ -25,8 +25,8 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.tools.common.Arguments;
 
 public abstract class AbstractMenuScreen extends InputAdapter implements Screen

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets.popups;
+package com.forerunnergames.peril.client.ui.widgets.popup;
 
 import com.forerunnergames.tools.common.Arguments;
 

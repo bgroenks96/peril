@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets.popups;
+package com.forerunnergames.peril.client.ui.widgets.popup;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -296,8 +296,7 @@ public class OkPopup implements Popup
     {
       Arguments.checkIsNotNull (oldText, "oldText");
       Arguments.checkIsNotNull (newText, "newText");
-      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText), "Cannot find button with text [" + oldText
-              + "].");
+      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText), "Cannot find button with text [" + oldText + "].");
 
       buttonTextToTextButtons.get (oldText).setText (newText);
     }

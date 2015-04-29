@@ -31,7 +31,7 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
-import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;

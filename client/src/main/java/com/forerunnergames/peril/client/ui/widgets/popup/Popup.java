@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets.popups;
+package com.forerunnergames.peril.client.ui.widgets.popup;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
