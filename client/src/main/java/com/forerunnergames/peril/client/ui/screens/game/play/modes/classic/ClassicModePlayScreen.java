@@ -104,7 +104,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final Table playMapAndSideBarTable = new Table ();
     playMapAndSideBarTable.add (playMapActor).size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT)
             .padRight (16);
-    playMapAndSideBarTable.add (widgetFactory.createSideBar ()).top ();
+    playMapAndSideBarTable.add (widgetFactory.createSideBar (eventBus)).top ();
 
     final Table foregroundTable = new Table ().pad (12);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);

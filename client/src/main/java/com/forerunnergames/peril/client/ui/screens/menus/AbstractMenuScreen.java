@@ -224,8 +224,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     menuChoiceTable.add ().height (10);
     menuChoiceTable.row ();
     menuChoiceTable.add ();
-    menuChoiceTable.add (widgetFactory.createMenuChoice (choiceText, listener)).width (358).height (40).left ()
-            .fill ();
+    menuChoiceTable.add (widgetFactory.createMenuChoice (choiceText, listener)).width (358).height (40).left ().fill ();
   }
 
   protected final Popup createQuitPopup (final String message, final PopupListener listener)

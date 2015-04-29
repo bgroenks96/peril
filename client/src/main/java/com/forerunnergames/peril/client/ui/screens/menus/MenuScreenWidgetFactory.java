@@ -5,27 +5,21 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class MenuScreenWidgetFactory
+public final class MenuScreenWidgetFactory extends WidgetFactory
 {
-  private final Skin skin;
   private final ImageTextButton.ImageTextButtonStyle menuChoiceTextButtonStyle;
   private final Sprite topBackgroundShadowSprite;
   private final Sprite bottomBackgroundShadowSprite;
@@ -34,9 +28,7 @@ public final class MenuScreenWidgetFactory
 
   public MenuScreenWidgetFactory (final Skin skin)
   {
-    Arguments.checkIsNotNull (skin, "skin");
-
-    this.skin = skin;
+    super (skin);
 
     menuChoiceTextButtonStyle = new ImageTextButton.ImageTextButtonStyle ();
     menuChoiceTextButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
@@ -100,7 +92,7 @@ public final class MenuScreenWidgetFactory
     return new Label (titleText, new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
   }
 
-  public Button createMenuChoice (final String choiceText, final EventListener listener)
+  public Actor createMenuChoice (final String choiceText, final EventListener listener)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (choiceText, "choiceText");
     Arguments.checkIsNotNull (listener, "listener");
@@ -116,22 +108,10 @@ public final class MenuScreenWidgetFactory
     return menuChoiceButton;
   }
 
-  public Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
-  {
-    Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return new QuitPopup (skin, message, stage, listener);
-  }
-
   public Actor createBackButton (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final TextButton backButton = new TextButton ("BACK", skin);
-    backButton.addListener (listener);
-
-    return backButton;
+    return createTextButton ("BACK", listener);
   }
 }

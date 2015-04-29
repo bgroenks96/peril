@@ -1,11 +1,13 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -13,16 +15,15 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -31,7 +32,7 @@ import com.forerunnergames.tools.common.Message;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class ClassicModePlayScreenWidgetFactory
+public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
 {
   private static final int MESSAGE_BOX_ROW_HEIGHT = 24;
   private static final int MESSAGE_BOX_ROW_PADDING_LEFT = 12;
@@ -42,10 +43,11 @@ public final class ClassicModePlayScreenWidgetFactory
   private final LabelFactory labelFactory;
   private final MessageBoxRowStyle messageBoxRowStyle;
   private final ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle;
+  private final TextButton.TextButtonStyle sideBarIconStyle;
 
   public ClassicModePlayScreenWidgetFactory (final Skin skin)
   {
-    Arguments.checkIsNotNull (skin, "skin");
+    super (skin);
 
     this.skin = skin;
 
@@ -65,6 +67,11 @@ public final class ClassicModePlayScreenWidgetFactory
     }
 
     labelFactory = new LabelFactory (new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
+
+    sideBarIconStyle = skin.get (TextButton.TextButtonStyle.class);
+    sideBarIconStyle.font = Assets.skyHookMono31;
+    sideBarIconStyle.unpressedOffsetY = 16;
+    sideBarIconStyle.pressedOffsetY = 16;
   }
 
   public PlayMapActor createPlayMapActor (final ScreenSize screenSize, final MouseInput mouseInput)
@@ -93,23 +100,19 @@ public final class ClassicModePlayScreenWidgetFactory
     return new DefaultMessageBox <> (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle);
   }
 
-  public SideBar createSideBar ()
+  public Actor createSideBar (final MBassador <Event> eventBus)
   {
-    return new SideBar (this);
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+
+    return new SideBar (this, eventBus);
   }
 
-  public Button createButton ()
+  public Actor createSideBarIcon (final SideBar.IconType iconType, final EventListener listener)
   {
-    return new Button (skin.get (Button.ButtonStyle.class));
-  }
-
-  public Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
-  {
-    Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (iconType, "iconType");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new QuitPopup (skin, message, stage, listener);
+    return createTextButton (iconType.asSymbol (), sideBarIconStyle, listener);
   }
 
   public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage,
