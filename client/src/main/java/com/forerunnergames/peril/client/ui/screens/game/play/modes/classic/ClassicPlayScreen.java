@@ -40,7 +40,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
-import com.forerunnergames.peril.client.ui.widgets.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popups.PopupListenerAdapter;

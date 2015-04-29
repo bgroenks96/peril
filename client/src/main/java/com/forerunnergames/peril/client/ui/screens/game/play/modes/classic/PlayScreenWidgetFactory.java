@@ -16,10 +16,10 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
-import com.forerunnergames.peril.client.ui.widgets.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
-import com.forerunnergames.peril.client.ui.widgets.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.popups.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popups.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popups.QuitPopup;

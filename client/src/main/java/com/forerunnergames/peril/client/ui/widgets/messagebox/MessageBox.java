@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets;
+package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 

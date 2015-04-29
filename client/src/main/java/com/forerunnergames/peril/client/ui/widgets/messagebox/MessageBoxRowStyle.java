@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.widgets;
+package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
 import com.forerunnergames.tools.common.Arguments;
 
