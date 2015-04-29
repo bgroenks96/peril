@@ -64,18 +64,18 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     // Layer 1 - right background shadow
     final Table tableL1 = new Table ().top ().left ();
     tableL1.add ().width (660);
-    tableL1.add (widgetFactory.createRightBackgroundShadow ()).width (32).expandY ().fill ();
+    tableL1.add (widgetFactory.createRightBackgroundShadow ()).expandY ().fill ();
     rootStack.add (tableL1);
 
     // Layer 2 - top & bottom background shadows
     final Table tableL2 = new Table ().top ().left ();
     tableL2.add ().width (660);
-    tableL2.add (widgetFactory.createTopBackgroundShadow ()).width (332).height (302).fill ();
+    tableL2.add (widgetFactory.createTopBackgroundShadow ()).fill ();
     tableL2.row ();
     tableL2.add ().colspan (2).expandY ();
     tableL2.row ();
     tableL2.add ();
-    tableL2.add (widgetFactory.createBottomBackgroundShadow ()).width (332).height (302).fill ();
+    tableL2.add (widgetFactory.createBottomBackgroundShadow ()).fill ();
     rootStack.add (tableL2);
 
     // Layer 3 - title background
@@ -99,9 +99,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     // Layer 5 - left & right menu bar shadows
     final Table tableL5 = new Table ().top ().left ();
     tableL5.add ().width (300);
-    tableL5.add (widgetFactory.createLeftMenuBarShadow ()).width (22).expandY ().fill ();
+    tableL5.add (widgetFactory.createLeftMenuBarShadow ()).expandY ().fill ();
     tableL5.add ().width (316);
-    tableL5.add (widgetFactory.createRightMenuBarShadow ()).width (22).expandY ().fill ();
+    tableL5.add (widgetFactory.createRightMenuBarShadow ()).expandY ().fill ();
     tableL5.setTouchable (Touchable.disabled);
     rootStack.add (tableL5);
 

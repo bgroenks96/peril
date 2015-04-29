@@ -26,7 +26,7 @@ import com.forerunnergames.tools.common.Arguments;
 public final class MenuScreenWidgetFactory
 {
   private final Skin skin;
-  private final ImageTextButton.ImageTextButtonStyle buttonStyle;
+  private final ImageTextButton.ImageTextButtonStyle menuChoiceTextButtonStyle;
   private final Sprite topBackgroundShadowSprite;
   private final Sprite bottomBackgroundShadowSprite;
   private final TextureRegion leftMenuBarShadowTextureRegion;
@@ -38,9 +38,9 @@ public final class MenuScreenWidgetFactory
 
     this.skin = skin;
 
-    buttonStyle = new ImageTextButton.ImageTextButtonStyle ();
-    buttonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
-    buttonStyle.font = Assets.droidSansMono18;
+    menuChoiceTextButtonStyle = new ImageTextButton.ImageTextButtonStyle ();
+    menuChoiceTextButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
+    menuChoiceTextButtonStyle.font = Assets.droidSansMono18;
 
     topBackgroundShadowSprite = Assets.menuAtlas.createSprite ("topAndBottomBackgroundShadow");
     bottomBackgroundShadowSprite = new Sprite (topBackgroundShadowSprite);
@@ -105,7 +105,7 @@ public final class MenuScreenWidgetFactory
     Arguments.checkIsNotNullOrEmptyOrBlank (choiceText, "choiceText");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final ImageTextButton menuChoiceButton = new ImageTextButton (choiceText, buttonStyle);
+    final ImageTextButton menuChoiceButton = new ImageTextButton (choiceText, menuChoiceTextButtonStyle);
     final Stack singlePlayerButtonStack = new Stack ();
     singlePlayerButtonStack.add (new Container <> (menuChoiceButton.getLabel ()).left ().padLeft (60));
     singlePlayerButtonStack.add (menuChoiceButton.getImage ());
