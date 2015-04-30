@@ -68,7 +68,7 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
 
     labelFactory = new LabelFactory (new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
 
-    sideBarIconStyle = skin.get (TextButton.TextButtonStyle.class);
+    sideBarIconStyle = new TextButton.TextButtonStyle (skin.get (TextButton.TextButtonStyle.class));
     sideBarIconStyle.font = Assets.skyHookMono31;
     sideBarIconStyle.unpressedOffsetY = 16;
     sideBarIconStyle.pressedOffsetY = 16;
