@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -520,14 +519,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     interactionTable.add (widgetFactory.createTextButton (text, listener)).width (220).right ().padRight (60)
             .padBottom (60);
-  }
-
-  protected TextButton createTextButton (final String text, final EventListener listener)
-  {
-    Arguments.checkIsNotNull (text, "text");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return widgetFactory.createTextButton (text, listener);
   }
 
   private void addMenuChoiceSpacer ()
