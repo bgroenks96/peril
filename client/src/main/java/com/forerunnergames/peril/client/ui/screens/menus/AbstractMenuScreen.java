@@ -140,8 +140,8 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     stage.addActor (rootStack);
 
-    // interactionTable.debug ();
-    // rootStack.debug ();
+//    interactionTable.debug ();
+//    rootStack.debug ();
 
     stage.addListener (new ClickListener ()
     {

@@ -19,6 +19,7 @@ public final class MusicFactory
       case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
       case MULTIPLAYER_PERIL_GAME_MODE_MENU:
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
+      case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {
         return Assets.menuMusic;
       }

@@ -42,7 +42,7 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        toScreen (ScreenId.PLAY_CLASSIC);
+        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU);
       }
     });
   }
