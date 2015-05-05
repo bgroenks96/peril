@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
@@ -34,9 +35,9 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
     menuChoiceTextButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
     menuChoiceTextButtonStyle.font = Assets.droidSansMono18;
 
-    topBackgroundShadowSprite = Assets.menuAtlas.createSprite ("topAndBottomBackgroundShadow");
+    topBackgroundShadowSprite = Assets.menuAtlas.createSprite ("topAndBottomShadow");
     bottomBackgroundShadowSprite = new Sprite (topBackgroundShadowSprite);
-    bottomBackgroundShadowSprite.flip (true, false);
+    bottomBackgroundShadowSprite.flip (false, true);
 
     leftMenuBarShadowTextureRegion = Assets.menuAtlas.findRegion ("leftAndRightMenuBarShadow");
     rightMenuBarShadowTextureRegion = new TextureRegion (leftMenuBarShadowTextureRegion);
@@ -45,7 +46,12 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
 
   public Actor createScreenBackground ()
   {
-    return new Image (Assets.menuAtlas.findRegion ("menuBackground"));
+    return new Image (Assets.menuAtlas.findRegion ("background"));
+  }
+
+  public Actor createMenuBar ()
+  {
+    return new Image (new TiledDrawable (Assets.menuAtlas.findRegion ("menuBar")));
   }
 
   public Actor createRightBackgroundShadow ()
@@ -106,12 +112,5 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
     menuChoiceButton.addListener (listener);
 
     return menuChoiceButton;
-  }
-
-  public Actor createBackButton (final EventListener listener)
-  {
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return createTextButton ("BACK", listener);
   }
 }

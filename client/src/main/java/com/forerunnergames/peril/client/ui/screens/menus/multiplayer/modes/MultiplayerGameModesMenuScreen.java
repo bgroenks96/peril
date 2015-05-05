@@ -31,7 +31,7 @@ public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
     addMenuChoice ("CLASSIC", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
       }
@@ -40,7 +40,7 @@ public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
     addMenuChoice ("PERIL", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         toScreen (ScreenId.MULTIPLAYER_PERIL_GAME_MODE_MENU);
       }
@@ -59,7 +59,7 @@ public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
     addBackButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         toScreen (ScreenId.MAIN_MENU);
       }

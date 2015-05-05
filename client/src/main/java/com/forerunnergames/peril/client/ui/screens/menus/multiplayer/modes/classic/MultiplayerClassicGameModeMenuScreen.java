@@ -31,16 +31,16 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
     addMenuChoice ("CREATE GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
-        toScreen (ScreenId.PLAY_CLASSIC);
+        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU);
       }
     });
 
     addMenuChoice ("JOIN GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         toScreen (ScreenId.PLAY_CLASSIC);
       }
@@ -59,7 +59,7 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
     addBackButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
       }

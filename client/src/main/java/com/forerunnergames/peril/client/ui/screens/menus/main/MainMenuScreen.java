@@ -45,7 +45,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
     addMenuChoice ("SINGLE PLAYER", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         // TODO Implement
       }
@@ -54,7 +54,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
     addMenuChoice ("MULTIPLAYER", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
       }
@@ -63,7 +63,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
     addMenuChoice ("SETTINGS", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         // TODO Implement
       }
@@ -72,7 +72,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
     addMenuChoice ("QUIT", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
-      public void clicked (InputEvent event, float x, float y)
+      public void clicked (final InputEvent event, final float x, final float y)
       {
         quitPopup.show ();
       }

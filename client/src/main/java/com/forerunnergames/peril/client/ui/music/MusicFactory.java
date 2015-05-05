@@ -15,25 +15,14 @@ public final class MusicFactory
     switch (screenId)
     {
       case MAIN_MENU:
-      {
-        return Assets.menuMusic;
-      }
       case MULTIPLAYER_GAME_MODES_MENU:
-      {
-        return Assets.menuMusic;
-      }
       case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
-      {
-        return Assets.menuMusic;
-      }
       case MULTIPLAYER_PERIL_GAME_MODE_MENU:
+      case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       {
         return Assets.menuMusic;
       }
       case PLAY_CLASSIC:
-      {
-        return Assets.playScreenMusic;
-      }
       case PLAY_PERIL:
       {
         return Assets.playScreenMusic;
