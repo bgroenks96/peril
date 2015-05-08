@@ -40,6 +40,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
     this.eventBus = eventBus;
 
+    addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
+    addTitle ("CLASSIC MODE", Align.topLeft, 40);
+
     playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH,
                                                          GameSettings.PLAYER_NAME_PATTERN);
 
@@ -99,38 +102,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     verticalGroup.addActor (gameSettingsTable);
 
     addContent (verticalGroup);
-  }
 
-  @Override
-  public void show ()
-  {
-    super.show ();
-
-    expandMenuBar ();
-  }
-
-  @Override
-  protected void addTitle ()
-  {
-    addTitleWithSubtitle ("JOIN MULTIPLAYER GAME", "CLASSIC MODE");
-  }
-
-  @Override
-  protected void onEscape ()
-  {
-    contractMenuBar (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
-      }
-    });
-  }
-
-  @Override
-  protected void addButtons ()
-  {
     addBackButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -152,31 +124,52 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-//        final String rawPlayerName = playerNameTextField.getText ();
-//        final String rawPlayerClanTag = playerClanTagTextField.getText ();
-//        final String finalPlayerName = rawPlayerClanTag.isEmpty () ? rawPlayerName
-//                : GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag
-//                        + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL + " " + rawPlayerName;
-//        final String finalServerAddress = serverAddressTextField.getText ();
+        //        final String rawPlayerName = playerNameTextField.getText ();
+        //        final String rawPlayerClanTag = playerClanTagTextField.getText ();
+        //        final String finalPlayerName = rawPlayerClanTag.isEmpty () ? rawPlayerName
+        //                : GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag
+        //                        + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL + " " + rawPlayerName;
+        //        final String finalServerAddress = serverAddressTextField.getText ();
 
         // TODO Go to loading screen, which will listen for a JoinGameServerRequestEvent.
         toScreen (ScreenId.PLAY_CLASSIC);
 
-//        Gdx.app.postRunnable (new Runnable ()
-//        {
-//          @Override
-//          public void run ()
-//          {
-//            // TODO Production: Remove.
-//            eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (finalPlayerName + " joined "
-//                    + finalServerAddress + ".")));
-//
-//            // TODO Replace GameServerConfiguration values with real values.
-//            // TODO Uncomment.
-//            eventBus.publish (new JoinGameServerRequestEvent (new DefaultServerConfiguration ("", finalServerAddress,
-//                    NetworkSettings.DEFAULT_TCP_PORT)));
-//          }
-//        });
+        //        Gdx.app.postRunnable (new Runnable ()
+        //        {
+        //          @Override
+        //          public void run ()
+        //          {
+        //            // TODO Production: Remove.
+        //            eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (finalPlayerName + " joined "
+        //                    + finalServerAddress + ".")));
+        //
+        //            // TODO Replace GameServerConfiguration values with real values.
+        //            // TODO Uncomment.
+        //            eventBus.publish (new JoinGameServerRequestEvent (new DefaultServerConfiguration ("", finalServerAddress,
+        //                    NetworkSettings.DEFAULT_TCP_PORT)));
+        //          }
+        //        });
+      }
+    });
+  }
+
+  @Override
+  public void show ()
+  {
+    super.show ();
+
+    expandMenuBar ();
+  }
+
+  @Override
+  protected void onEscape ()
+  {
+    contractMenuBar (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
       }
     });
   }

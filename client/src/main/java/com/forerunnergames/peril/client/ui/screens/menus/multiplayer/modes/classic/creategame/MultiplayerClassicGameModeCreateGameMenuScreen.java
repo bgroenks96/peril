@@ -54,6 +54,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     this.eventBus = eventBus;
 
+    addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
+    addTitle ("CLASSIC MODE", Align.topLeft, 40);
+
     playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH,
                                                          GameSettings.PLAYER_NAME_PATTERN);
 
@@ -197,38 +200,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     verticalGroup.addActor (gameSettingsTable);
 
     addContent (verticalGroup);
-  }
 
-  @Override
-  public void show ()
-  {
-    super.show ();
-
-    expandMenuBar ();
-  }
-
-  @Override
-  protected void addTitle ()
-  {
-    addTitleWithSubtitle ("CREATE MULTIPLAYER GAME", "CLASSIC MODE");
-  }
-
-  @Override
-  protected void onEscape ()
-  {
-    contractMenuBar (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
-      }
-    });
-  }
-
-  @Override
-  protected void addButtons ()
-  {
     addBackButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -279,6 +251,27 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         // NetworkSettings.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT))));
         // }
         // });
+      }
+    });
+  }
+
+  @Override
+  public void show ()
+  {
+    super.show ();
+
+    expandMenuBar ();
+  }
+
+  @Override
+  protected void onEscape ()
+  {
+    contractMenuBar (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
       }
     });
   }

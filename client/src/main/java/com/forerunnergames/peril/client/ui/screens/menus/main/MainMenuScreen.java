@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -31,17 +32,11 @@ public final class MainMenuScreen extends AbstractMenuScreen
         Gdx.app.exit ();
       }
     });
-  }
 
-  @Override
-  protected void addTitle ()
-  {
-    addTitleWithoutSubtitle ("MAIN MENU");
-  }
+    addTitle ("MAIN MENU", Align.left, 60);
 
-  @Override
-  protected void addMenuChoices ()
-  {
+    addMenuChoiceSpacer (42);
+
     addMenuChoice ("SINGLE PLAYER", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -50,6 +45,8 @@ public final class MainMenuScreen extends AbstractMenuScreen
         // TODO Implement
       }
     });
+
+    addMenuChoiceSpacer (10);
 
     addMenuChoice ("MULTIPLAYER", new ClickListener (Input.Buttons.LEFT)
     {
@@ -60,6 +57,8 @@ public final class MainMenuScreen extends AbstractMenuScreen
       }
     });
 
+    addMenuChoiceSpacer (10);
+
     addMenuChoice ("SETTINGS", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -68,6 +67,8 @@ public final class MainMenuScreen extends AbstractMenuScreen
         // TODO Implement
       }
     });
+
+    addMenuChoiceSpacer (10);
 
     addMenuChoice ("QUIT", new ClickListener (Input.Buttons.LEFT)
     {

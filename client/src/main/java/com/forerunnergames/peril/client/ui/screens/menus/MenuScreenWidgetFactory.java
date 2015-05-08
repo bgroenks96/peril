@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.client.ui.screens.menus;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -33,7 +31,7 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
 
     menuChoiceTextButtonStyle = new ImageTextButton.ImageTextButtonStyle ();
     menuChoiceTextButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
-    menuChoiceTextButtonStyle.font = Assets.droidSansMono18;
+    menuChoiceTextButtonStyle.font = skin.getFont ("default-font");
 
     topBackgroundShadowSprite = Assets.menuAtlas.createSprite ("topAndBottomShadow");
     bottomBackgroundShadowSprite = new Sprite (topBackgroundShadowSprite);
@@ -84,18 +82,12 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
     return new Image (new NinePatchDrawable (Assets.menuAtlas.createPatch ("menuTitleBackground")));
   }
 
-  public Actor createTitle (final String titleText)
+  public Actor createTitle (final String titleText, final int alignment)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (titleText, "titleText");
+    Arguments.checkIsNotNegative (alignment, "alignment");
 
-    return new Label (titleText, new Label.LabelStyle (Assets.skyHookMono31, Color.WHITE));
-  }
-
-  public Actor createSubTitle (final String titleText)
-  {
-    Arguments.checkIsNotNullOrEmptyOrBlank (titleText, "titleText");
-
-    return new Label (titleText, new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
+    return createLabel (titleText, alignment);
   }
 
   public Actor createMenuChoice (final String choiceText, final EventListener listener)

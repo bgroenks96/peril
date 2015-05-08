@@ -32,10 +32,6 @@ public final class Assets
   public static Music playScreenMusic;
   public static Pixmap menuNormalCursor;
   public static Pixmap playScreenNormalCursor;
-  public static BitmapFont aurulentSans16;
-  public static BitmapFont droidSansMono18;
-  public static BitmapFont droidSans20;
-  public static BitmapFont skyHookMono31;
   public static BitmapFont armyCircleDistanceFieldFont;
   public static Texture armyMovementBackground;
   public static Texture armyMovementForegroundArrow;
@@ -48,10 +44,6 @@ public final class Assets
   public static ImmutableList <TextureAtlas> countryAtlases;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
-  private static Texture aurulentSans16Texture;
-  private static Texture droidSansMono18Texture;
-  private static Texture droidSans20Texture;
-  private static Texture skyHookMono31Texture;
   private static Texture armyCircleDistanceFieldFontTexture;
   private static boolean isLoaded = false;
 
@@ -71,14 +63,6 @@ public final class Assets
     playMapInputDetection.dispose ();
     playScreenNormalCursor.dispose ();
     playScreenMusic.dispose ();
-    aurulentSans16.dispose ();
-    aurulentSans16Texture.dispose ();
-    droidSansMono18.dispose ();
-    droidSansMono18Texture.dispose ();
-    droidSans20.dispose ();
-    droidSans20Texture.dispose ();
-    skyHookMono31.dispose ();
-    skyHookMono31Texture.dispose ();
     armyCircleDistanceFieldFont.dispose ();
     armyCircleDistanceFieldFontTexture.dispose ();
     armyMovementBackground.dispose ();
@@ -117,18 +101,6 @@ public final class Assets
     playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/playScreen.mp3"));
     menuNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
     playScreenNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
-    aurulentSans16Texture = new Texture (Gdx.files.internal ("fonts/aurulentsans/aurulent-sans-16.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
-    aurulentSans16Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    aurulentSans16 = new BitmapFont (Gdx.files.internal ("fonts/aurulentsans/aurulent-sans-16.fnt"), new TextureRegion (aurulentSans16Texture), false);
-    droidSansMono18Texture = new Texture (Gdx.files.internal ("fonts/droidsans/mono/droid-sans-mono-18.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
-    droidSansMono18Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    droidSansMono18 = new BitmapFont (Gdx.files.internal ("fonts/droidsans/mono/droid-sans-mono-18.fnt"), new TextureRegion (droidSansMono18Texture), false);
-    droidSans20Texture = new Texture (Gdx.files.internal ("fonts/droidsans/droid-sans-20.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
-    droidSans20Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    droidSans20 = new BitmapFont (Gdx.files.internal ("fonts/droidsans/droid-sans-20.fnt"), new TextureRegion (droidSans20Texture), false);
-    skyHookMono31Texture = new Texture (Gdx.files.internal ("fonts/skyhook/mono/skyhook-mono-31.png"), GraphicsSettings.FONT_TEXTURE_MIPMAPPING);
-    skyHookMono31Texture.setFilter (GraphicsSettings.FONT_TEXTURE_MINIFICATION_FILTER, GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER);
-    skyHookMono31 = new BitmapFont (Gdx.files.internal ("fonts/skyhook/mono/skyhook-mono-31.fnt"), new TextureRegion (skyHookMono31Texture), false);
     armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.png"), false);
     armyCircleDistanceFieldFontTexture.setFilter (Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     armyCircleDistanceFieldFont = new BitmapFont (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.fnt"), new TextureRegion (armyCircleDistanceFieldFontTexture), false);

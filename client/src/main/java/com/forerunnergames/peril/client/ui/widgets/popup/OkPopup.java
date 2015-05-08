@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.client.ui.widgets.popup;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Align;
 
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.tools.common.Arguments;
 
 import java.util.HashMap;
@@ -140,7 +138,7 @@ public class OkPopup implements Popup
       this.skin = skin;
       this.listener = listener;
 
-      labelStyle = new Label.LabelStyle (Assets.droidSans20, Color.WHITE);
+      labelStyle = skin.get (Label.LabelStyle.class);
 
       // TODO Production: Remove
       // debug ();

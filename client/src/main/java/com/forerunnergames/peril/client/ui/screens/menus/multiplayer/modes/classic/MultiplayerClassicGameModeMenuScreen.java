@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.clas
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -17,17 +18,12 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
                                                final ScreenSize screenSize)
   {
     super (widgetFactory, screenChanger, screenSize);
-  }
 
-  @Override
-  protected void addTitle ()
-  {
-    addTitleWithSubtitle ("MULTIPLAYER", "CLASSIC MODE");
-  }
+    addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
+    addTitle ("CLASSIC MODE", Align.topLeft, 40);
 
-  @Override
-  protected void addMenuChoices ()
-  {
+    addMenuChoiceSpacer (22);
+
     addMenuChoice ("CREATE GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -37,6 +33,8 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
       }
     });
 
+    addMenuChoiceSpacer (10);
+
     addMenuChoice ("JOIN GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -45,17 +43,7 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
         toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU);
       }
     });
-  }
 
-  @Override
-  protected void onEscape ()
-  {
-    toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
-  }
-
-  @Override
-  protected void addButtons ()
-  {
     addBackButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
@@ -64,5 +52,11 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
         toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
       }
     });
+  }
+
+  @Override
+  protected void onEscape ()
+  {
+    toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
   }
 }

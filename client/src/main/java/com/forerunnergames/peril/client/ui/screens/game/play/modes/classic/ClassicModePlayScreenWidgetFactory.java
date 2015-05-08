@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
@@ -43,7 +41,6 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
   private final LabelFactory labelFactory;
   private final MessageBoxRowStyle messageBoxRowStyle;
   private final ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle;
-  private final TextButton.TextButtonStyle sideBarIconStyle;
 
   public ClassicModePlayScreenWidgetFactory (final Skin skin)
   {
@@ -66,12 +63,7 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
       messageBoxScrollPaneStyle.hScrollKnob.setMinHeight (MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT);
     }
 
-    labelFactory = new LabelFactory (new Label.LabelStyle (Assets.aurulentSans16, Color.WHITE));
-
-    sideBarIconStyle = new TextButton.TextButtonStyle (skin.get (TextButton.TextButtonStyle.class));
-    sideBarIconStyle.font = Assets.skyHookMono31;
-    sideBarIconStyle.unpressedOffsetY = 16;
-    sideBarIconStyle.pressedOffsetY = 16;
+    labelFactory = new LabelFactory (skin.get (Label.LabelStyle.class));
   }
 
   public PlayMapActor createPlayMapActor (final ScreenSize screenSize, final MouseInput mouseInput)
@@ -112,7 +104,7 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     Arguments.checkIsNotNull (iconType, "iconType");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createTextButton (iconType.asSymbol (), sideBarIconStyle, listener);
+    return createTextButton (iconType.asSymbol (), skin.get (TextButton.TextButtonStyle.class), listener);
   }
 
   public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage,
