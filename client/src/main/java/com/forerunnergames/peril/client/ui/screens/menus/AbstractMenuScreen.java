@@ -85,7 +85,11 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     // Layer 0 - screen background
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (widgetFactory.createScreenBackground ());
+    final Table tableL0 = new Table ().top ().left ();
+    tableL0.add (widgetFactory.createScreenBackgroundLeft ());
+    tableL0.add ().expandX ();
+    tableL0.add (widgetFactory.createScreenBackgroundRight ());
+    rootStack.add (tableL0);
 
     // Layer 1 - menu bar & right background shadow
     final Table tableL1 = new Table ().top ().left ();
@@ -97,12 +101,12 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     // Layer 2 - top & bottom background shadows
     final Table tableL2 = new Table ().top ().left ();
     tableL2.add ().width (300);
-    tableL2.add (widgetFactory.createTopBackgroundShadow ()).fill ();
+    tableL2.add (widgetFactory.createTopBackgroundShadow ()).size (692, 302).fill ();
     tableL2.row ();
-    tableL2.add ().colspan (2).expandY ();
+    tableL2.add ().expandY ();
     tableL2.row ();
     tableL2.add ();
-    tableL2.add (widgetFactory.createBottomBackgroundShadow ()).fill ();
+    tableL2.add (widgetFactory.createBottomBackgroundShadow ()).size (692, 302).fill ();
     rootStack.add (tableL2);
 
     // Layer 3 - title background
@@ -144,12 +148,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     rootStack.add (tableL5);
 
     stage.addActor (rootStack);
-//
-//    interactionTable.debug ();
-//    titleTable.debug ();
-//    menuChoicesTable.debug ();
-//    buttonTable.debug ();
-//    rootStack.debug ();
 
     stage.addListener (new ClickListener ()
     {

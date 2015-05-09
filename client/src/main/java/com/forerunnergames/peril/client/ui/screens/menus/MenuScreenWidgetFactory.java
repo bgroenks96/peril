@@ -42,9 +42,14 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
     rightMenuBarShadowTextureRegion.flip (true, false);
   }
 
-  public Actor createScreenBackground ()
+  public Actor createScreenBackgroundLeft ()
   {
-    return new Image (Assets.menuAtlas.findRegion ("background"));
+    return new Image (Assets.menuAtlas.findRegion ("backgroundLeft"));
+  }
+
+  public Actor createScreenBackgroundRight ()
+  {
+    return new Image (Assets.menuAtlas.findRegion ("backgroundRight"));
   }
 
   public Actor createMenuBar ()
@@ -59,12 +64,12 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
 
   public Actor createTopBackgroundShadow ()
   {
-    return new Image (new SpriteDrawable (topBackgroundShadowSprite));
+    return new Image (new TiledDrawable (topBackgroundShadowSprite));
   }
 
   public Actor createBottomBackgroundShadow ()
   {
-    return new Image (new SpriteDrawable (bottomBackgroundShadowSprite));
+    return new Image (new TiledDrawable (bottomBackgroundShadowSprite));
   }
 
   public Actor createLeftMenuBarShadow ()

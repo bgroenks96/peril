@@ -3,18 +3,18 @@ menus.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-background
-  rotate: false
-  xy: 1, 347
-  size: 1920, 1080
-  orig: 1920, 1080
-  offset: 0, 0
-  index: -1
-topAndBottomShadow
+backgroundRight
   rotate: false
   xy: 1, 44
-  size: 692, 302
-  orig: 692, 302
+  size: 1260, 1080
+  orig: 1260, 1080
+  offset: 0, 0
+  index: -1
+backgroundLeft
+  rotate: false
+  xy: 1262, 44
+  size: 300, 1080
+  orig: 300, 1080
   offset: 0, 0
   index: -1
 menuChoiceOver
@@ -24,30 +24,37 @@ menuChoiceOver
   orig: 358, 40
   offset: 0, 0
   index: -1
+topAndBottomShadow
+  rotate: false
+  xy: 1563, 822
+  size: 1, 302
+  orig: 1, 302
+  offset: 0, 0
+  index: -1
 rightBackgroundShadow
   rotate: false
-  xy: 1922, 1426
+  xy: 1, 1
   size: 32, 1
   orig: 32, 1
   offset: 0, 0
   index: -1
 menuBar
   rotate: false
-  xy: 694, 334
+  xy: 360, 31
   size: 12, 12
   orig: 12, 12
   offset: 0, 0
   index: -1
 leftAndRightMenuBarShadow
   rotate: false
-  xy: 1, 1
+  xy: 1565, 1123
   size: 22, 1
   orig: 22, 1
   offset: 0, 0
   index: -1
 menuTitleBackground
   rotate: false
-  xy: 360, 42
+  xy: 1563, 820
   size: 1, 1
   split: 0, 0, 0, 0
   orig: 1, 1
