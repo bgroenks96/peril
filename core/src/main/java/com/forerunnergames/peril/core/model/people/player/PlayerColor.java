@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.tools.common.enums.IterableEnum;
 import com.forerunnergames.tools.common.enums.IterableEnumHelper;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
@@ -23,7 +24,7 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   UNKNOWN;
 
   private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
-          .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
+    .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
   {
     @Override
     public boolean apply (final PlayerColor color)

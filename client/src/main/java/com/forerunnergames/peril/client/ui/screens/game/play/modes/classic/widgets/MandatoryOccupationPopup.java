@@ -33,8 +33,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultStatusMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.CountryArmiesChangedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultStatusMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;

@@ -20,7 +20,7 @@ public abstract class AbstractTerritoryName implements TerritoryName
   }
 
   @Override
-  public boolean is (String name)
+  public boolean is (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
@@ -28,7 +28,7 @@ public abstract class AbstractTerritoryName implements TerritoryName
   }
 
   @Override
-  public boolean isNot (String name)
+  public boolean isNot (final String name)
   {
     return !is (name);
   }
@@ -46,12 +46,12 @@ public abstract class AbstractTerritoryName implements TerritoryName
   }
 
   @Override
-  public boolean equals (Object o)
+  public boolean equals (final Object o)
   {
     if (this == o) return true;
     if (o == null || getClass () != o.getClass ()) return false;
 
-    AbstractTerritoryName that = (AbstractTerritoryName) o;
+    final AbstractTerritoryName that = (AbstractTerritoryName) o;
 
     return name.equals (that.name);
   }

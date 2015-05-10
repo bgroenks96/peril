@@ -28,8 +28,8 @@ public final class PlayMapModel
     this.rules = rules;
 
     // init country id map
-    Builder <Id, Country> countryMapBuilder = ImmutableMap.builder ();
-    for (Country country : countries)
+    final Builder <Id, Country> countryMapBuilder = ImmutableMap.builder ();
+    for (final Country country : countries)
     {
       countryMapBuilder.put (country.getId (), country);
     }
@@ -94,12 +94,25 @@ public final class PlayMapModel
 
   public ImmutableSet <Country> getAssignedCountries ()
   {
-    ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
-    for (Id id : countryIds.keySet ())
+    final ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
+    for (final Id id : countryIds.keySet ())
     {
-      if (countryToOwnerMap.containsKey (id)) countrySetBuilder.add (countryIds.get (id));
+      if (countryToOwnerMap.containsKey (id))
+      {
+        countrySetBuilder.add (countryIds.get (id));
+      }
     }
     return countrySetBuilder.build ();
+  }
+
+  public int getCountryCount ()
+  {
+    return countryIds.size ();
+  }
+
+  public int getAssignedCountryCount ()
+  {
+    return getAssignedCountries ().size ();
   }
 
   // internal convenience method for running precondition check.

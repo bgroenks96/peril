@@ -73,7 +73,7 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   public String toString ()
   {
     return String.format ("%1$s: Game Configuration: %2$s | Server Configuration: %3$s", ((Object) this).getClass ()
-            .getSimpleName (), gameConfig, serverConfig);
+      .getSimpleName (), gameConfig, serverConfig);
   }
 
   @RequiredForNetworkSerialization

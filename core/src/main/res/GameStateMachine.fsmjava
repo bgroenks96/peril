@@ -14,10 +14,10 @@
         <parameter type="com.forerunnergames.peril.core.model.state.events.CreateGameEvent" name="event"/>
       </event>
       <event id="onDeterminePlayerTurnOrderCompleteEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent" name="event"/>
       </event>
       <event id="onDistributeInitialArmiesCompleteEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent" name="event"/>
       </event>
       <event id="onRandomlyAssignPlayerCountriesEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent" name="event"/>
@@ -26,7 +26,7 @@
         <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent" name="event"/>
       </event>
       <event id="onPlayerCountryAssignmentCompleteEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent" name="event"/>
       </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event"/>
@@ -37,16 +37,16 @@
     </eventSource>
     <eventSource name="Players">
       <event id="onPlayerJoinGameRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent" name="event"/>
       </event>
       <event id="onPlayerJoinGameSuccessEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent" name="event"/>
       </event>
       <event id="onPlayerJoinGameDeniedEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent" name="event"/>
       </event>
       <event id="onChangePlayerColorRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent" name="event"/>
       </event>
     </eventSource>
   </events>
@@ -89,10 +89,14 @@
             <state name="WaitForCountrySelectionToBegin">
               <onEntry action="gameModel.waitForCountrySelectionToBegin()"/>
               <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries"/>
-              <transition event="onBeginManualCountrySelectionEvent" nextState="EndGame"/>
+              <transition event="onBeginManualCountrySelectionEvent" nextState="WaitForPlayerToSelectCountry"/>
             </state>
             <state name="RandomlyAssignPlayerCountries">
               <onEntry action="gameModel.randomlyAssignPlayerCountries()"/>
+              <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame"/>
+            </state>
+            <state name="WaitForPlayerToSelectCountry">
+              <onEntry action="gameModel.waitForPlayerToSelectCountry()"/>
               <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame"/>
             </state>
           </state>
