@@ -22,7 +22,6 @@ task generateJava << {
           classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",
           classpath: configurations.stateBuilderAntTask.asPath)
   ant.stateBuilder (input: "${projectDir}/src/main/res", output: "${projectDir}/src-gen/main/java") {}
-  System.clearProperty ("user.name")
 }
 
 compileJava.dependsOn (generateJava)
