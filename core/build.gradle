@@ -7,15 +7,16 @@ sourceSets.test.resources.srcDirs = ["src/test/res/"]
 
 configurations {
   stateBuilderAntTask
+  stateBuilderAntTask.exclude group: "unquietcode.tools.jcodemodel"
 }
 
 dependencies {
-  stateBuilderAntTask files ("libs/statebuilder-ant-task-2.4.jar")
-  stateBuilderAntTask "com.stateforge.statebuilder:statebuilder-java:2.4"
+  stateBuilderAntTask "com.unquietcode.tools.jcodemodel:codemodel:1.0.2"
+  stateBuilderAntTask "com.stateforge.statebuilder.ant:statebuilder-ant-task:3.6"
+  stateBuilderAntTask "com.stateforge.statebuilder:statebuilder-java:3.6"
 }
 
 task generateJava << {
-  System.setProperty ("user.name", "forerunnergames")
   clean.delete "${projectDir}/src-gen"
   ant.taskdef (name: "stateBuilder",
           classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",

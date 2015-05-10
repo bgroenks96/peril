@@ -28,7 +28,6 @@ allprojects {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-    maven { url "http://stateforge.com/repository/" }
   }
 }
 
@@ -112,7 +111,7 @@ project (":core") {
   dependencies {
     compile ("com.forerunnergames.tools:common:1.0-SNAPSHOT")
     compile ("com.forerunnergames.tools:net:1.0-SNAPSHOT")
-    compile ("com.stateforge:statemachine:2.4") {
+    compile ("com.stateforge:statemachine:3.6") {
       exclude module: "commons-io"
     }
     compile "net.engio:mbassador:1.2.1"
