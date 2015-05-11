@@ -8,7 +8,7 @@ import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.shared.application.EventBusFactory;
-import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -19,7 +19,6 @@ import net.engio.mbassy.bus.MBassador;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,8 +3,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debu
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
-import com.forerunnergames.peril.core.shared.net.events.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChatMessageSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;

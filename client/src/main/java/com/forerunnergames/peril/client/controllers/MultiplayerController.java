@@ -8,11 +8,11 @@ import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
-import com.forerunnergames.peril.core.shared.net.events.denied.CreateGameServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.JoinGameServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.DestroyGameServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.CreateGameServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.CreateGameServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;

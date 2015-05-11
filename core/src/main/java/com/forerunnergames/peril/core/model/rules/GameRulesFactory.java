@@ -28,7 +28,7 @@ public final class GameRulesFactory
       case CLASSIC:
       {
         return new ClassicGameRules.Builder ().playerLimit (playerLimit).winPercentage (winPercentage)
-                .totalCountryCount (totalCountryCount).initialCountryAssignment (initialCountryAssignment).build ();
+          .totalCountryCount (totalCountryCount).initialCountryAssignment (initialCountryAssignment).build ();
       }
       case CUSTOM:
       {

@@ -20,16 +20,16 @@ public final class EventBusFactory
   public static MBassador <Event> create ()
   {
     return new MBassador <> (new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
-            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ())
-            .setProperty (Properties.Handler.PublicationError, new IPublicationErrorHandler ()
-            {
-              @Override
-              public void handleError (final PublicationError error)
-              {
-                log.error (error.toString (), error.getCause ());
-              }
-            }));
+      .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+      .addFeature (Feature.AsynchronousMessageDispatch.Default ())
+      .setProperty (Properties.Handler.PublicationError, new IPublicationErrorHandler ()
+      {
+        @Override
+        public void handleError (final PublicationError error)
+        {
+          log.error (error.toString (), error.getCause ());
+        }
+      }));
   }
 
   private EventBusFactory ()

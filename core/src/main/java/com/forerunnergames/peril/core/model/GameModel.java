@@ -19,15 +19,15 @@ import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondit
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.DeterminePlayerTurnOrderCompleteEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.DistributeInitialArmiesCompleteEvent;
-import com.forerunnergames.peril.core.shared.net.events.notification.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.ChangePlayerColorRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.ChangePlayerColorSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.ChangePlayerColorSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -169,6 +169,16 @@ public final class GameModel
       playMapBuilder.put (country, playerModel.playerWith (playMapModel.getOwnerOf (country.getId ())));
     }
     eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapBuilder.build ()));
+  }
+
+  @StateMachineAction
+  public void waitForPlayerToSelectCountry ()
+  {
+    log.info ("Waiting for players to select countries");
+
+    // TODO: figure out how this is going to work; i.e. what events need to be made, etc.
+
+    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (ImmutableMap.<Country, Player> of ()));
   }
 
   @StateMachineAction

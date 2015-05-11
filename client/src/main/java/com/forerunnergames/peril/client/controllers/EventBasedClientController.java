@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.controllers;
 
-import com.forerunnergames.peril.core.shared.net.events.interfaces.GameNotificationEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.AbstractClientController;

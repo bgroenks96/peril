@@ -65,7 +65,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
   {
     return String.format ("%1$s: Game mode: %2$s | Player limit: %3$s | Win Percentage: %4$s"
                                   + " | Total Country Count: %5$s" + " | Initial Country Assignment: %6$s", getClass ()
-                                  .getSimpleName (),
+                            .getSimpleName (),
                           gameMode, playerLimit, winPercentage, totalCountryCount, initialCountryAssignment);
   }
 

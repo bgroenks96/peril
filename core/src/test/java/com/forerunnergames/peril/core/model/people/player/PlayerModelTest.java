@@ -17,9 +17,9 @@ import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;

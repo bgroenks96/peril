@@ -2,8 +2,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.InputAdapter;
 
-import com.forerunnergames.peril.core.shared.net.events.success.AttackCountrySuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.success.DefendCountrySuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.AttackCountrySuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.DefendCountrySuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 

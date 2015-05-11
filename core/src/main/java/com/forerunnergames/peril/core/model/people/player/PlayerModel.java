@@ -7,9 +7,9 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.shared.net.events.denied.ChangePlayerColorDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.denied.PlayerLeaveGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
@@ -323,7 +323,7 @@ public final class PlayerModel
     Arguments.checkIsNotNull (player, "player");
 
     if (!existsPlayerWith (idOf (player))) return Result
-            .failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+      .failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     deregister (player);
 
@@ -370,8 +370,14 @@ public final class PlayerModel
 
   private void add (final Player player)
   {
-    if (player.has (PlayerColor.UNKNOWN)) player.setColor (nextAvailableColor ());
-    if (player.has (PlayerTurnOrder.UNKNOWN)) player.setTurnOrder (nextAvailableTurnOrder ());
+    if (player.has (PlayerColor.UNKNOWN))
+    {
+      player.setColor (nextAvailableColor ());
+    }
+    if (player.has (PlayerTurnOrder.UNKNOWN))
+    {
+      player.setTurnOrder (nextAvailableTurnOrder ());
+    }
 
     register (player);
   }
