@@ -7,6 +7,7 @@ import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
 import com.forerunnergames.peril.core.shared.net.packets.GamePackets;
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -35,5 +36,11 @@ public class PlayerCountryAssignmentCompleteEvent implements GameNotificationEve
   public PlayerPacket getOwner (final CountryPacket country)
   {
     return countryToPlayerPackets.get (country);
+  }
+
+  @RequiredForNetworkSerialization
+  private PlayerCountryAssignmentCompleteEvent ()
+  {
+    countryToPlayerPackets = null;
   }
 }
