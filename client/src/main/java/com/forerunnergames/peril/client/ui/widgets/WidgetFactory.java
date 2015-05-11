@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -42,7 +43,9 @@ public class WidgetFactory
     return textButton;
   }
 
-  public TextButton createTextButton (final String text, final TextButton.TextButtonStyle style, final EventListener listener)
+  public TextButton createTextButton (final String text,
+                                      final TextButton.TextButtonStyle style,
+                                      final EventListener listener)
   {
     Arguments.checkIsNotNull (text, "text");
     Arguments.checkIsNotNull (style, "style");
@@ -52,6 +55,22 @@ public class WidgetFactory
     textButton.addListener (listener);
 
     return textButton;
+  }
+
+  public ImageButton createImageButton (final EventListener listener)
+  {
+    return createImageButton (skin.get (ImageButton.ImageButtonStyle.class), listener);
+  }
+
+  public ImageButton createImageButton (final ImageButton.ImageButtonStyle style, final EventListener listener)
+  {
+    Arguments.checkIsNotNull (style, "style");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    final ImageButton imageButton = new ImageButton (style);
+    imageButton.addListener (listener);
+
+    return imageButton;
   }
 
   public Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
@@ -130,8 +149,8 @@ public class WidgetFactory
     return new CheckBox ("", skin);
   }
 
-  public <T> SelectBox<T> createSelectBox ()
+  public <T> SelectBox <T> createSelectBox ()
   {
-    return new SelectBox<> (skin);
+    return new SelectBox <> (skin);
   }
 }

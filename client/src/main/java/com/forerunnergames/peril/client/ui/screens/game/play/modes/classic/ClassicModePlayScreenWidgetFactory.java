@@ -3,10 +3,10 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -104,7 +104,7 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     Arguments.checkIsNotNull (iconType, "iconType");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createTextButton (iconType.asSymbol (), skin.get (TextButton.TextButtonStyle.class), listener);
+    return createImageButton (skin.get (iconType.getStyle (), ImageButton.ImageButtonStyle.class), listener);
   }
 
   public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage,

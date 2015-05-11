@@ -28,7 +28,7 @@ public final class SideBar extends Table
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     top ().padTop (SIDEBAR_INNER_PADDING_TOP).padLeft (SIDEBAR_INNER_PADDING_LEFT)
-            .padRight (SIDEBAR_INNER_PADDING_RIGHT);
+      .padRight (SIDEBAR_INNER_PADDING_RIGHT);
 
     add (widgetFactory.createSideBarIcon (IconType.TRADE_IN, new ClickListener (Input.Buttons.LEFT)
     {
@@ -79,21 +79,21 @@ public final class SideBar extends Table
 
   public enum IconType
   {
-    TRADE_IN("+"),
-    REINFORCE("»"),
-    END_TURN("x"),
-    MY_SETTINGS("¤");
+    TRADE_IN ("trade-in"),
+    REINFORCE ("reinforce"),
+    END_TURN ("end-turn"),
+    MY_SETTINGS ("my-settings");
 
-    private final String symbol;
+    private final String style;
 
-    IconType (final String symbol)
+    IconType (final String style)
     {
-      this.symbol = symbol;
+      this.style = style;
     }
 
-    public String asSymbol ()
+    public String getStyle ()
     {
-      return symbol;
+      return style;
     }
   }
 }

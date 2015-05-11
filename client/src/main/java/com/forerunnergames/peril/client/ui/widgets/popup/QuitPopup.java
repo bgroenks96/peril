@@ -15,7 +15,7 @@ public class QuitPopup extends OkCancelPopup
   {
     super (skin, new Window.WindowStyle (skin.getFont ("default-font"), Color.WHITE, new TextureRegionDrawable (
             new TextureRegion (Assets.quitPopupBackground))), PopupStyle.builder ().titleHeight (34)
-            .textButtonStyle ("small").message (message).build (), stage, listener);
+            .textButtonStyle ("popup").message (message).build (), stage, listener);
 
     changeButtonText ("OK", "QUIT");
   }

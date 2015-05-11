@@ -4,10 +4,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -42,8 +42,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final SelectBox <String> initialCountryAssignmentSelectBox;
   private final Label playerLimitLabel;
   private final Label mapNameLabel;
-  private final TextButton customizePlayersButton;
-  private final TextButton customizeMapButton;
+  private final ImageButton customizePlayersButton;
+  private final ImageButton customizeMapButton;
 
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                          final ScreenChanger screenChanger,
@@ -85,7 +85,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     mapNameLabel = widgetFactory.createBackgroundLabel (String.valueOf ("Classic"), Align.left);
 
-    customizePlayersButton = widgetFactory.createTextButton ("...", new ClickListener (Input.Buttons.LEFT)
+    customizePlayersButton = widgetFactory.createImageButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
@@ -104,7 +104,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       }
     });
 
-    customizeMapButton = widgetFactory.createTextButton ("...", new ClickListener (Input.Buttons.LEFT)
+    customizeMapButton = widgetFactory.createImageButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
