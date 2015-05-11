@@ -70,12 +70,6 @@ public final class GameModel
     this.eventBus = eventBus;
   }
 
-  // temporary debug constructor to prevent shit from breaking
-  public GameModel (final PlayerModel playerModel, final GameRules rules, final MBassador <Event> eventBus)
-  {
-    this (playerModel, new PlayMapModel (ImmutableSet.<Country> of (), rules), rules, eventBus);
-  }
-
   @StateMachineAction
   public void beginGame ()
   {
