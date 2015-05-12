@@ -1,8 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
-import com.forerunnergames.peril.core.shared.net.packets.GamePackets;
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -13,12 +11,12 @@ public final class DeterminePlayerTurnOrderCompleteEvent implements GameNotifica
 {
   private final ImmutableSet <PlayerPacket> turnOrderedPlayers;
 
-  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSet <Player> orderedPlayers)
+  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSet <PlayerPacket> orderedPlayers)
   {
     Arguments.checkIsNotNull (orderedPlayers, "orderedPlayers");
     Arguments.checkHasNoNullElements (orderedPlayers, "orderedPlayers");
 
-    this.turnOrderedPlayers = GamePackets.fromPlayers (orderedPlayers);
+    this.turnOrderedPlayers = orderedPlayers;
   }
 
   public ImmutableSet <PlayerPacket> getOrderedPlayers ()

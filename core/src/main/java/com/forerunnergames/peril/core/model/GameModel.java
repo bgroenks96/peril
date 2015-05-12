@@ -32,6 +32,8 @@ import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSel
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChangePlayerColorSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
+import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -44,7 +46,6 @@ import com.google.common.collect.ImmutableSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -98,7 +99,7 @@ public final class GameModel
       playerModel.changeTurnOrderOfPlayer (idOf (player), randomTurnOrderItr.next ());
     }
 
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayers ()));
+    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (GamePackets.fromPlayers (playerModel.getPlayers ())));
   }
 
   @StateMachineAction
@@ -113,7 +114,7 @@ public final class GameModel
       playerModel.addArmiesToHandOf (idOf (player), armies);
     }
 
-    eventBus.publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayers ()));
+    eventBus.publish (new DistributeInitialArmiesCompleteEvent (GamePackets.fromPlayers (playerModel.getPlayers ())));
   }
 
   @StateMachineAction
@@ -146,25 +147,34 @@ public final class GameModel
   {
     log.info ("Randomly assigning player countries...");
 
-    final Set <Country> countries = new HashSet <> (playMapModel.getCountries ());
+    final List <Country> countries = Randomness.shuffle (new HashSet <> (playMapModel.getCountries ()));
     final ImmutableSet <Player> players = playerModel.getPlayers ();
-    // TODO: this should be done more accordingly with GameRules or something
-    final int countriesPerPlayer = countries.size () / players.size () + 1;
-    for (final Player player : players)
+    // TODO: army distribution should be handled by GameRules
+    final Iterator <Country> itr = countries.iterator ();
+    // first use floor value of [country count] / [player count]
+    int countriesPerPlayer = countries.size () / players.size ();
+    while (itr.hasNext ())
     {
-      int count = 0;
-      final Iterator <Country> itr = countries.iterator ();
-      while (itr.hasNext () && count < countriesPerPlayer)
+      for (final Player player : players)
       {
-        final Country toAssign = itr.next ();
-        log.info ("Assigning country [" + toAssign.getCountryName ().asString () + "] to [" + player.getName () + "].");
-        playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (player));
-        itr.remove ();
-        count++;
+        for (int count = 0; count < countriesPerPlayer; count++)
+        {
+          final Country toAssign = itr.next ();
+          log.info ("Assigning country [" + toAssign.getCountryName ().asString () + "] to [" + player.getName ()
+                  + "].");
+          playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (player));
+          itr.remove ();
+        }
       }
+      // once each player has received the floor minimum, distribute 1 to each player until the
+      // remaining countries are depleted
+      countriesPerPlayer = 1;
     }
 
-    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
+    // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
+    final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
+    playMapViewPackets = GamePackets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
   }
 
   @StateMachineAction
@@ -175,11 +185,14 @@ public final class GameModel
     {
       log.info ("Waiting for player [" + currentPlayer.getName () + "] to select a country...");
       playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
-      eventBus.publish (new PlayerSelectCountryInputRequestEvent (currentPlayer));
+      eventBus.publish (new PlayerSelectCountryInputRequestEvent (GamePackets.fromPlayer (currentPlayer)));
     }
     else
     {
-      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
+      // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
+      final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
+      playMapViewPackets = GamePackets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
     }
   }
 

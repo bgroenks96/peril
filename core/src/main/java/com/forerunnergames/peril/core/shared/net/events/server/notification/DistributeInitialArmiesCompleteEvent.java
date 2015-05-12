@@ -1,9 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
-import com.forerunnergames.peril.core.shared.net.packets.GamePackets;
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
@@ -12,9 +11,12 @@ public final class DistributeInitialArmiesCompleteEvent implements GameNotificat
 {
   private final ImmutableSet <PlayerPacket> players;
 
-  public DistributeInitialArmiesCompleteEvent (final ImmutableSet <Player> players)
+  public DistributeInitialArmiesCompleteEvent (final ImmutableSet <PlayerPacket> players)
   {
-    this.players = GamePackets.fromPlayers (players);
+    Arguments.checkIsNotNull (players, "players");
+    Arguments.checkHasNoNullElements (players, "players");
+
+    this.players = players;
   }
 
   public ImmutableSet <PlayerPacket> getPlayers ()
