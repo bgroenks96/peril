@@ -44,7 +44,7 @@ public final class ScreenFactory
     this.screenSize = screenSize;
     this.mouseInput = mouseInput;
     this.eventBus = eventBus;
-    this.menuScreenWidgetFactory = new MenuScreenWidgetFactory (skin);
+    menuScreenWidgetFactory = new MenuScreenWidgetFactory (skin);
   }
 
   public Screen create (final ScreenId screenId)

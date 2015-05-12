@@ -331,7 +331,7 @@ public final class TankActor extends Actor implements UnitActor
   {
     Arguments.checkIsNotNull (turnDirection, "turnDirection");
 
-    this.turretTurnDirection = turnDirection;
+    turretTurnDirection = turnDirection;
   }
 
   public void deactivateTurret ()

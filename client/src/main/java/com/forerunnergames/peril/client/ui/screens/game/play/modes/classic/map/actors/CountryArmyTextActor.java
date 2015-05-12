@@ -112,7 +112,7 @@ public final class CountryArmyTextActor extends Actor
 
   private void changeText (final String text)
   {
-    this.armiesText = text;
+    armiesText = text;
     glyphLayout.setText (font, text);
     setSize (glyphLayout.width, glyphLayout.height);
   }

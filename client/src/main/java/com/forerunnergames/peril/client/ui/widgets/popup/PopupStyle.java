@@ -166,7 +166,7 @@ public final class PopupStyle
     {
       Arguments.checkIsNotNull (textuButtonStyleName, "textuButtonStyleName");
 
-      this.textButtonStyleName = textuButtonStyleName;
+      textButtonStyleName = textuButtonStyleName;
 
       return this;
     }

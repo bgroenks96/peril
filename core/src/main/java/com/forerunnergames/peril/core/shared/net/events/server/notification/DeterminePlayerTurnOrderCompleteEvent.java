@@ -11,12 +11,12 @@ public final class DeterminePlayerTurnOrderCompleteEvent implements GameNotifica
 {
   private final ImmutableSet <PlayerPacket> turnOrderedPlayers;
 
-  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSet <PlayerPacket> orderedPlayers)
+  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSet <PlayerPacket> turnOrderedPlayers)
   {
-    Arguments.checkIsNotNull (orderedPlayers, "orderedPlayers");
-    Arguments.checkHasNoNullElements (orderedPlayers, "orderedPlayers");
+    Arguments.checkIsNotNull (turnOrderedPlayers, "turnOrderedPlayers");
+    Arguments.checkHasNoNullElements (turnOrderedPlayers, "turnOrderedPlayers");
 
-    this.turnOrderedPlayers = orderedPlayers;
+    this.turnOrderedPlayers = turnOrderedPlayers;
   }
 
   public ImmutableSet <PlayerPacket> getOrderedPlayers ()

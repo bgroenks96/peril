@@ -56,13 +56,13 @@ public final class ClassicGameRules implements GameRules
   @Override
   public int getMinPlayerLimit ()
   {
-    return ClassicGameRules.MIN_PLAYER_LIMIT;
+    return MIN_PLAYER_LIMIT;
   }
 
   @Override
   public int getMaxPlayerLimit ()
   {
-    return ClassicGameRules.MAX_PLAYER_LIMIT;
+    return MAX_PLAYER_LIMIT;
   }
 
   @Override
@@ -98,7 +98,7 @@ public final class ClassicGameRules implements GameRules
   @Override
   public int getMaxWinPercentage ()
   {
-    return ClassicGameRules.MAX_WIN_PERCENTAGE;
+    return MAX_WIN_PERCENTAGE;
   }
 
   @Override
@@ -264,7 +264,7 @@ public final class ClassicGameRules implements GameRules
     Arguments.checkUpperInclusiveBound (totalCountryCount, MAX_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT");
     Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
 
-    this.minWinPercentage = calculateMinWinPercentage (playerLimit, totalCountryCount);
+    minWinPercentage = calculateMinWinPercentage (playerLimit, totalCountryCount);
 
     Arguments.checkLowerInclusiveBound (winPercentage, minWinPercentage, "winPercentage");
 
@@ -272,8 +272,8 @@ public final class ClassicGameRules implements GameRules
     this.winPercentage = winPercentage;
     this.totalCountryCount = totalCountryCount;
     this.initialCountryAssignment = initialCountryAssignment;
-    this.initialArmies = calculateInitialArmies (playerLimit);
-    this.winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
+    initialArmies = calculateInitialArmies (playerLimit);
+    winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
     // @formatter:on
   }
 

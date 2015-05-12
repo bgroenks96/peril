@@ -42,7 +42,7 @@ public final class PlayerFactory
       Arguments.checkIsNotNull (name, "name");
 
       this.name = name;
-      this.id = IdGenerator.generateUniqueId ();
+      id = IdGenerator.generateUniqueId ();
     }
 
     public Player build ()

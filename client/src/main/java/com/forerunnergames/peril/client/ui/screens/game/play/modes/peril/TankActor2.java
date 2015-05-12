@@ -231,7 +231,7 @@ public final class TankActor2 extends Actor implements UnitActor
   {
     Arguments.checkIsNotNull (movementDirection, "movementDirection");
 
-    if (this.turnDirection != TurnDirection.NONE || this.movementDirection != MovementDirection.NONE) return;
+    if (turnDirection != TurnDirection.NONE || this.movementDirection != MovementDirection.NONE) return;
 
     switch (movementDirection)
     {
@@ -282,7 +282,7 @@ public final class TankActor2 extends Actor implements UnitActor
   {
     Arguments.checkIsNotNull (turnDirection, "turnDirection");
 
-    if (this.movementDirection != MovementDirection.NONE || this.turnDirection != TurnDirection.NONE) return;
+    if (movementDirection != MovementDirection.NONE || this.turnDirection != TurnDirection.NONE) return;
 
     switch (turnDirection)
     {
@@ -340,7 +340,7 @@ public final class TankActor2 extends Actor implements UnitActor
   {
     Arguments.checkIsNotNull (turnDirection, "turnDirection");
 
-    if (this.turretTurnDirection != TurnDirection.NONE) return;
+    if (turretTurnDirection != TurnDirection.NONE) return;
 
     switch (turnDirection)
     {
@@ -351,7 +351,7 @@ public final class TankActor2 extends Actor implements UnitActor
           @Override
           public void run ()
           {
-            TankActor2.this.turretTurnDirection = TurnDirection.NONE;
+            turretTurnDirection = TurnDirection.NONE;
 
             turretForwardVector.rotate (-90);
           }
@@ -366,7 +366,7 @@ public final class TankActor2 extends Actor implements UnitActor
           @Override
           public void run ()
           {
-            TankActor2.this.turretTurnDirection = TurnDirection.NONE;
+            turretTurnDirection = TurnDirection.NONE;
 
             turretForwardVector.rotate (90);
           }
@@ -381,7 +381,7 @@ public final class TankActor2 extends Actor implements UnitActor
           @Override
           public void run ()
           {
-            TankActor2.this.turretTurnDirection = TurnDirection.NONE;
+            turretTurnDirection = TurnDirection.NONE;
 
             turretForwardVector.rotate (-180);
           }
@@ -391,7 +391,7 @@ public final class TankActor2 extends Actor implements UnitActor
       }
     }
 
-    this.turretTurnDirection = turnDirection;
+    turretTurnDirection = turnDirection;
   }
 
   public void deactivateTurret ()
