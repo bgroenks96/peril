@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.server.application;
 
-import com.beust.jcommander.JCommander;
-
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
@@ -19,7 +19,11 @@ import com.forerunnergames.tools.common.controllers.Controller;
 import com.forerunnergames.tools.net.Server;
 import com.forerunnergames.tools.net.ServerController;
 
+import com.google.common.collect.ImmutableSet;
+
 import net.engio.mbassy.bus.MBassador;
+
+import com.beust.jcommander.JCommander;
 
 public final class ServerApplicationFactory
 {
@@ -36,7 +40,8 @@ public final class ServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort, KryonetRegistration.CLASSES, eventBus);
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage, jArgs.totalCountryCount, jArgs.initialCountryAssignment);
     final PlayerModel playerModel = new PlayerModel (gameRules);
-    final GameModel gameModel = new GameModel (playerModel, gameRules, eventBus);
+    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), gameRules);
+    final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
     final Controller multiplayerController = new MultiplayerController (jArgs.serverName, jArgs.serverTcpPort, serverController, serverController, eventBus);
     // @formatter:on
