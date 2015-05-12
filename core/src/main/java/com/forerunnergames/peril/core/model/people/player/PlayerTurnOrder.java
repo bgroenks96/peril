@@ -26,7 +26,7 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   TENTH;
 
   private static ImmutableSet <PlayerTurnOrder> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
-    .allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
+          .allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
   {
     @Override
     public boolean apply (final PlayerTurnOrder turnOrder)

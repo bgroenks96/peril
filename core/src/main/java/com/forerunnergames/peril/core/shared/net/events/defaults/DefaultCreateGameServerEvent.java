@@ -26,7 +26,7 @@ public final class DefaultCreateGameServerEvent implements CreateGameServerEvent
   public String toString ()
   {
     return String
-      .format ("%1$s: Game Server Configuration: %2$s", ((Object) this).getClass ().getSimpleName (), config);
+            .format ("%1$s: Game Server Configuration: %2$s", ((Object) this).getClass ().getSimpleName (), config);
   }
 
   @RequiredForNetworkSerialization

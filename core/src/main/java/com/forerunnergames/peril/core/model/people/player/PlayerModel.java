@@ -323,7 +323,7 @@ public final class PlayerModel
     Arguments.checkIsNotNull (player, "player");
 
     if (!existsPlayerWith (idOf (player))) return Result
-      .failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+            .failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
 
     deregister (player);
 

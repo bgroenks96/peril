@@ -31,7 +31,7 @@ public final class KryonetRegistration
   private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet
   // TODO Java 8: Generalized target-type inference: Remove unnecessary
   // explicit generic <Class <?>> type.
-    .<Class <?>> of (
+          .<Class <?>> of (
                            // @formatter:off
                            ArrayList.class,
                            Classes.class,
@@ -63,7 +63,7 @@ public final class KryonetRegistration
     try
     {
       final ImmutableSet <ClassInfo> cinfo = ClassPath.from (ClassLoader.getSystemClassLoader ())
-        .getTopLevelClassesRecursive (CORE_NET_PACKAGE_NAME);
+              .getTopLevelClassesRecursive (CORE_NET_PACKAGE_NAME);
       for (final ClassInfo ci : cinfo)
       {
         final Class <?> nextClass = Class.forName (ci.getName ());
