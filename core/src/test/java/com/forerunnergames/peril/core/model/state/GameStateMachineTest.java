@@ -2,9 +2,9 @@ package com.forerunnergames.peril.core.model.state;
 
 import static org.junit.Assert.fail;
 
+import com.forerunnergames.peril.core.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
@@ -13,8 +13,6 @@ import com.forerunnergames.peril.core.shared.application.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
-
-import com.google.common.collect.ImmutableSet;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +45,7 @@ public class GameStateMachineTest
     final MBassador <Event> eventBus = EventBusFactory.create ();
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
     final PlayerModel playerModel = new PlayerModel (rules);
-    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), rules);
+    final PlayMapModel playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (20), rules);
     final GameModel gameModel = new GameModel (playerModel, playMapModel, rules, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()

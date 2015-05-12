@@ -8,6 +8,7 @@ import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.id.Id;
@@ -25,8 +26,7 @@ public class PlayMapModelTest
 {
   private ImmutableSet <Country> defaultTestCountries;
 
-  @Before
-  public void setup ()
+  public static ImmutableSet <Country> generateTestCountries (final int count)
   {
     Builder <Country> countrySetBuilder = ImmutableSet.builder ();
     for (int i = 0; i < 20; i++)
@@ -38,7 +38,13 @@ public class PlayMapModelTest
       Mockito.when (mockedCountry.is (mockedCountry)).thenReturn (true);
       countrySetBuilder.add (mockedCountry);
     }
-    defaultTestCountries = countrySetBuilder.build ();
+    return countrySetBuilder.build ();
+  }
+
+  @Before
+  public void setup ()
+  {
+    this.defaultTestCountries = generateTestCountries (20);
   }
 
   @Test
@@ -76,7 +82,7 @@ public class PlayMapModelTest
 
     modelTest.assignCountryOwner (country.getId (), testPlayer.getId ());
     modelTest.unassignCountry (country.getId ());
-    assertFalse (modelTest.getAssignedCountries ().contains (country));
+    assertFalse (modelTest.isCountryAssigned (country.getId ()));
   }
 
   @Test
@@ -92,7 +98,7 @@ public class PlayMapModelTest
 
   private PlayMapModel createPlayMapModelTestWith (final ImmutableSet <Country> countries)
   {
-    final GameRules mockRules = Mockito.mock (GameRules.class);
-    return new PlayMapModel (countries, mockRules);
+    final GameRules classicRules = new ClassicGameRules.Builder ().build ();
+    return new PlayMapModel (countries, classicRules);
   }
 }
