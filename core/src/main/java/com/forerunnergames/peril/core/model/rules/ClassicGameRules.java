@@ -2,6 +2,8 @@ package com.forerunnergames.peril.core.model.rules;
 
 import com.forerunnergames.tools.common.Arguments;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.annotation.Nullable;
 
 public final class ClassicGameRules implements GameRules
@@ -129,11 +131,44 @@ public final class ClassicGameRules implements GameRules
     return winPercentage >= minWinPercentage && winPercentage <= MAX_WIN_PERCENTAGE;
   }
 
+  /**
+   * @return an ImmutableList of length 'playerCount' containing ordered country-per-player distribution values.
+   */
+  @Override
+  public ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount)
+  {
+    Arguments.checkIsNotNegative (playerCount, "playerCount");
+    Arguments.checkLowerInclusiveBound (playerCount, MIN_PLAYERS, "playerCount");
+    Arguments.checkUpperInclusiveBound (playerCount, playerLimit, "playerCount");
+
+    // return immediately for zero players to avoid a zero divisor error
+    // this is only included in case for any reason MIN_PLAYERS becomes 0
+    if (playerCount == 0) return ImmutableList.of ();
+
+    final ImmutableList.Builder <Integer> listBuilder = ImmutableList.builder ();
+    final int countryCount = getTotalCountryCount ();
+    final int baseCountriesPerPlayer = countryCount / playerCount;
+    int countryPerPlayerRemainder = countryCount % playerCount;
+    for (int i = 0; i < playerCount; i++)
+    {
+      int playerCountryCount = baseCountriesPerPlayer;
+      // as long as there is a remainder left, add one to the country count
+      if (countryPerPlayerRemainder > 0)
+      {
+        playerCountryCount++;
+      }
+      listBuilder.add (playerCountryCount);
+      // decrement country remainder
+      countryPerPlayerRemainder--;
+    }
+    return listBuilder.build ();
+  }
+
   // @formatter:off
   /**
    * Defined in ClassicGameRules by the following piecewise function:
    *
-   * P(n) = | 1               if n = 10
+   * P(n) = | 5               if n = 10
    *        | 40 - 5*(n - 2)  if n < 10
    *
    * where 'P' is the number of armies returned in the set and 'n' is the number of players in the given PlayerModel.
@@ -241,4 +276,5 @@ public final class ClassicGameRules implements GameRules
     this.winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
     // @formatter:on
   }
+
 }
