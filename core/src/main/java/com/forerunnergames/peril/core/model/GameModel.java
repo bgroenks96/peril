@@ -21,17 +21,22 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.response.PlayerSelectCountryInputResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryInputRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChangePlayerColorSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -53,6 +58,9 @@ public final class GameModel
   private final PlayMapModel playMapModel;
   private final GameRules rules;
   private final MBassador <Event> eventBus;
+
+  // TODO might be unnecessary; address later
+  private PlayerTurnOrder playerTurn = PlayerTurnOrder.FIRST;
 
   public GameModel (final PlayerModel playerModel,
                     final PlayMapModel playMapModel,
@@ -149,30 +157,51 @@ public final class GameModel
       while (itr.hasNext () && count < countriesPerPlayer)
       {
         final Country toAssign = itr.next ();
-        playMapModel.assignCountryOwner (toAssign.getId (), player.getId ());
+        log.info ("Assigning country [" + toAssign.getCountryName ().asString () + "] to [" + player.getName () + "].");
+        playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (player));
         itr.remove ();
         count++;
       }
     }
 
-    // prepare immutable view of PlayMapModel for completion event
-    final ImmutableSet <Country> assignedCountries = playMapModel.getAssignedCountries ();
-    final ImmutableMap.Builder <Country, Player> playMapBuilder = ImmutableMap.builder ();
-    for (final Country country : assignedCountries)
-    {
-      playMapBuilder.put (country, playerModel.playerWith (playMapModel.getOwnerOf (country.getId ())));
-    }
-    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapBuilder.build ()));
+    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
   }
 
   @StateMachineAction
-  public void waitForPlayerToSelectCountry ()
+  public void waitForPlayersToSelectInitialCountries ()
   {
-    log.info ("Waiting for players to select countries");
+    final Player currentPlayer = playerModel.playerWith (playerTurn);
+    if (playMapModel.hasUnassignedCountries ())
+    {
+      log.info ("Waiting for player [" + currentPlayer.getName () + "] to select a country...");
+      playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
+      eventBus.publish (new PlayerSelectCountryInputRequestEvent (currentPlayer));
+    }
+    else
+    {
+      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
+    }
+  }
 
-    // TODO: figure out how this is going to work; i.e. what events need to be made, etc.
+  @StateMachineAction
+  public void handlePlayerCountrySelectionRequest (final PlayerSelectCountryInputResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
 
-    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (ImmutableMap.<Country, Player> of ()));
+    final String selectedCountryName = event.getSelectedCountryName ();
+    final Player currentPlayer = playerModel.playerWith (playerTurn);
+    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
+                                                       idOf (currentPlayer));
+    if (result.isSuccessful ())
+    {
+      eventBus.publish (new PlayerSelectCountryInputResponseSuccessEvent (selectedCountryName));
+    }
+    else
+    {
+      eventBus.publish (new PlayerSelectCountryInputResponseDeniedEvent (selectedCountryName,
+              failureReasonFrom (result)));
+    }
   }
 
   @StateMachineAction
@@ -273,5 +302,21 @@ public final class GameModel
   public boolean playerLimitIsAtLeast (final int limit)
   {
     return playerModel.playerLimitIsAtLeast (limit);
+  }
+
+  private ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel,
+                                                               final PlayMapModel playMapModel)
+  {
+    final ImmutableSet <Country> countries = playMapModel.getCountries ();
+    final ImmutableMap.Builder <Country, Player> playMapView = ImmutableMap.builder ();
+    for (final Country country : countries)
+    {
+      if (playMapModel.isCountryAssigned (idOf (country)))
+      {
+        final Id ownerId = playMapModel.getOwnerOf (idOf (country));
+        playMapView.put (country, playerModel.playerWith (ownerId));
+      }
+    }
+    return playMapView.build ();
   }
 }

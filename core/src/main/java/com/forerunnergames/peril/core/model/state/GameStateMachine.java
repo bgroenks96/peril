@@ -7,11 +7,13 @@ import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.response.PlayerSelectCountryInputResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.stateforge.statemachine.context.IContextEnd;
@@ -133,6 +135,26 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onRandomlyAssignPlayerCountriesEvent (event);
+  }
+
+  @Handler
+  public void onPlayerSelectCountryInputResponseRequestEvent (final PlayerSelectCountryInputResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onPlayerSelectCountryInputResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onPlayerSelectCountryInputResponseSuccessEvent (final PlayerSelectCountryInputResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onPlayerSelectCountryInputResponseSuccessEvent (event);
   }
 
   @Handler

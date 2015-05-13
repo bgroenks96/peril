@@ -73,5 +73,4 @@ public final class DefaultPlayerPacket implements PlayerPacket
   {
     return this.turnOrder.isNot (turnOrder);
   }
-
 }
