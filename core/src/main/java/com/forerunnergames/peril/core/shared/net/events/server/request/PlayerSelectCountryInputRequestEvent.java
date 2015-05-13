@@ -26,6 +26,6 @@ public final class PlayerSelectCountryInputRequestEvent implements InputRequestE
   @RequiredForNetworkSerialization
   private PlayerSelectCountryInputRequestEvent ()
   {
-    this.player = null;
+    player = null;
   }
 }

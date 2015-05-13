@@ -1,9 +1,13 @@
 package com.forerunnergames.peril.core.model.map;
 
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
+import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableMap;
@@ -84,37 +88,51 @@ public final class PlayMapModel
     return countryToOwnerMap.containsKey (countryId);
   }
 
+  public boolean isCountryAssigned (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    if (!existsCountryWith (countryName)) return false;
+    return isCountryAssigned (idOf (countryWith (countryName)));
+  }
+
   /**
    * Assigns the Country specified by countryId to the owner specified by ownerId.
    *
-   * @param countryId
-   * @param ownerId
-   * @return the Id of the owner to which the Country was previously assigned, if any.
+   * @return success/failure Result with reason
    */
-  public Id assignCountryOwner (final Id countryId, final Id ownerId)
+  public Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
+                                                                                                  final Id ownerId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
-    checkValidCountryId (countryId);
 
-    return countryToOwnerMap.put (countryId, ownerId);
+    //@formatter:off
+    if (!existsCountryWith (countryId)) return Result.failure (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+    if (isCountryAssigned (countryId)) return Result.failure (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_NOT_AVAILABLE);
+    //@formatter:on
+
+    countryToOwnerMap.put (countryId, ownerId);
+    return Result.success ();
   }
 
   /**
    * Unassigns the Country specified by the given id from its current owner.
    *
-   * @param countryId
    * @return the Id of the owner to which the Country was previously assigned, if any.
    */
-  public Id unassignCountry (final Id countryId)
+  public Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> requestToUnassignCountry (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
-    checkValidCountryId (countryId);
 
-    return countryToOwnerMap.remove (countryId);
+    //@formatter:off
+    if (!existsCountryWith (countryId)) return Result.failure (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+    //@formatter:on
+
+    countryToOwnerMap.remove (countryId);
+    return Result.success ();
   }
 
   /**
-   * @param countryId
    * @return the Id of the owner to which the Country specified by countryId is currently assigned.
    */
   public Id getOwnerOf (final Id countryId)

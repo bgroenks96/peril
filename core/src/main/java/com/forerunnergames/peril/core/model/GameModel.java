@@ -25,7 +25,6 @@ import com.forerunnergames.peril.core.shared.net.events.client.response.PlayerSe
 import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
@@ -159,7 +158,7 @@ public final class GameModel
       {
         final Country toAssign = itr.next ();
         log.info ("Assigning country [" + toAssign.getCountryName ().asString () + "] to [" + player.getName () + "].");
-        playMapModel.assignCountryOwner (idOf (toAssign), idOf (player));
+        playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (player));
         itr.remove ();
         count++;
       }
@@ -190,18 +189,18 @@ public final class GameModel
     Arguments.checkIsNotNull (event, "event");
 
     final String selectedCountryName = event.getSelectedCountryName ();
-    // TODO there may be additional reasons why we might want to reject a selection
-    // see PlayerSelectCountryInputResponseDeniedEvent.Reason
-    if (playMapModel.existsCountryWith (selectedCountryName))
+    final Player currentPlayer = playerModel.playerWith (playerTurn);
+    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
+                                                       idOf (currentPlayer));
+    if (result.isSuccessful ())
     {
-      final Player currentPlayer = playerModel.playerWith (playerTurn);
-      playMapModel.assignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)), idOf (currentPlayer));
       eventBus.publish (new PlayerSelectCountryInputResponseSuccessEvent (selectedCountryName));
     }
     else
     {
       eventBus.publish (new PlayerSelectCountryInputResponseDeniedEvent (selectedCountryName,
-              Reason.COUNTRY_DOES_NOT_EXIST));
+              failureReasonFrom (result)));
     }
   }
 

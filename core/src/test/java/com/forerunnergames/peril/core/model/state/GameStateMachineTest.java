@@ -2,9 +2,9 @@ package com.forerunnergames.peril.core.model.state;
 
 import static org.junit.Assert.fail;
 
-import com.forerunnergames.peril.core.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
