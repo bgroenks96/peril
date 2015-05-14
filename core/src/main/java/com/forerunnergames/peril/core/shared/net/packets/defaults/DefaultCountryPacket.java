@@ -1,22 +1,24 @@
 package com.forerunnergames.peril.core.shared.net.packets.defaults;
 
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultCountryPacket implements CountryPacket
 {
-  private final CountryName name;
+  private final String name;
   private final int armyCount;
 
-  public DefaultCountryPacket (final Country country)
+  public DefaultCountryPacket (final String name, final int armyCount)
   {
-    name = country.getCountryName ();
-    armyCount = country.getArmyCount ();
+    Arguments.checkIsNotNull (name, "name");
+
+    this.name = name;
+    this.armyCount = armyCount;
   }
 
   @Override
-  public CountryName getCountryName ()
+  public String getCountryName ()
   {
     return name;
   }
@@ -36,6 +38,15 @@ public final class DefaultCountryPacket implements CountryPacket
   @Override
   public boolean hasAtLeastNArmies (final int n)
   {
+    Arguments.checkIsNotNegative (n, "n");
+
     return armyCount >= n;
+  }
+
+  @RequiredForNetworkSerialization
+  private DefaultCountryPacket ()
+  {
+    this.name = null;
+    this.armyCount = 0;
   }
 }

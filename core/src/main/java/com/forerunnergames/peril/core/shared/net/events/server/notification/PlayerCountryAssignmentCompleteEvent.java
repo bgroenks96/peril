@@ -1,10 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
 import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
-import com.forerunnergames.peril.core.shared.net.packets.GamePackets;
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -12,15 +9,16 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-public class PlayerCountryAssignmentCompleteEvent implements GameNotificationEvent
+public final class PlayerCountryAssignmentCompleteEvent implements GameNotificationEvent
 {
   private final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets;
 
-  public PlayerCountryAssignmentCompleteEvent (final ImmutableMap <Country, Player> countriesToPlayers)
+  public PlayerCountryAssignmentCompleteEvent (final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets)
   {
-    Arguments.checkIsNotNull (countriesToPlayers, "countriesToPlayers");
+    Arguments.checkIsNotNull (countryToPlayerPackets, "countryToPlayerPackets");
+    Arguments.checkHasNoNullKeysOrValues (countryToPlayerPackets, "countryToPlayerPackets");
 
-    this.countryToPlayerPackets = GamePackets.fromPlayMap (countriesToPlayers);
+    this.countryToPlayerPackets = countryToPlayerPackets;
   }
 
   public ImmutableSet <CountryPacket> getCountries ()

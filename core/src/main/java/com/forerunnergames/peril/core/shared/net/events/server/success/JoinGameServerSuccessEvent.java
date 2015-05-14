@@ -1,10 +1,8 @@
 package com.forerunnergames.peril.core.shared.net.events.server.success;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
-import com.forerunnergames.peril.core.shared.net.packets.GamePackets;
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -22,7 +20,7 @@ public final class JoinGameServerSuccessEvent implements JoinGameServerEvent, Su
 
   public JoinGameServerSuccessEvent (final ServerConfiguration serverConfig,
                                      final GameConfiguration gameConfig,
-                                     final ImmutableSet <Player> playersInGame)
+                                     final ImmutableSet <PlayerPacket> playersInGame)
 
   {
     Arguments.checkIsNotNull (serverConfig, "serverConfig");
@@ -32,7 +30,7 @@ public final class JoinGameServerSuccessEvent implements JoinGameServerEvent, Su
 
     joinGameServerEvent = new DefaultJoinGameServerEvent (serverConfig);
     this.gameConfig = gameConfig;
-    this.playersInGame = GamePackets.fromPlayers (playersInGame);
+    this.playersInGame = playersInGame;
   }
 
   public ImmutableSet <PlayerPacket> getPlayersInGame ()
