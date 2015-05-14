@@ -10,8 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
+import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
@@ -25,8 +24,6 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoi
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -37,15 +34,16 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.mockito.Mockito;
-
 public class GameModelTest
 {
   private static MBassador <Event> eventBus;
+
   private int playerLimit;
   private int initialArmies;
   private int maxPlayers;
   private GameModel gameModel;
+  private PlayerModel playerModel;
+  private PlayMapModel playMapModel;
   private EventBusHandler eventHandler;
 
   @BeforeClass
@@ -57,9 +55,11 @@ public class GameModelTest
   @Before
   public void setup ()
   {
-    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
-    final PlayerModel playerModel = new PlayerModel (gameRules);
-    final PlayMapModel playMapModel = new PlayMapModel (mockCountries (), gameRules);
+    final int testCountryCount = 30;
+    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (testCountryCount).build ();
+    playerModel = new PlayerModel (gameRules);
+    playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (testCountryCount), gameRules);
 
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
@@ -133,6 +133,7 @@ public class GameModelTest
 
     gameModel.randomlyAssignPlayerCountries ();
 
+    assertFalse (playMapModel.hasUnassignedCountries ());
     assertTrue (eventHandler.lastEventWasType (PlayerCountryAssignmentCompleteEvent.class));
   }
 
@@ -201,20 +202,6 @@ public class GameModelTest
 
     assertTrue (gameModel.playerCountIs (1));
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
-  }
-
-  private ImmutableSet <Country> mockCountries ()
-  {
-    ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
-    for (int i = 0; i < 20; i++)
-    {
-      Country mockedCountry = Mockito.mock (Country.class);
-      Id mockedCountryId = IdGenerator.generateUniqueId ();
-      Mockito.when (mockedCountry.getCountryName ()).thenReturn (new CountryName ("Country-" + i));
-      Mockito.when (mockedCountry.getId ()).thenReturn (mockedCountryId);
-      countrySetBuilder.add (mockedCountry);
-    }
-    return countrySetBuilder.build ();
   }
 
   private final class EventBusHandler

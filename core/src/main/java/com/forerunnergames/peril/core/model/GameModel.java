@@ -40,6 +40,7 @@ import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -145,30 +146,37 @@ public final class GameModel
   @StateMachineAction
   public void randomlyAssignPlayerCountries ()
   {
-    log.info ("Randomly assigning player countries...");
-
     final List <Country> countries = Randomness.shuffle (new HashSet <> (playMapModel.getCountries ()));
-    final ImmutableSet <Player> players = playerModel.getPlayers ();
-    // TODO: army distribution should be handled by GameRules
-    final Iterator <Country> itr = countries.iterator ();
-    // first use floor value of [country count] / [player count]
-    int countriesPerPlayer = countries.size () / players.size ();
-    while (itr.hasNext ())
+    final List <Player> players = Randomness.shuffle (playerModel.getPlayers ());
+    final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
+            .size ());
+
+    log.info ("Randomly assigning " + countries.size () + " countries to " + players.size () + " players...");
+
+    final Iterator <Country> countryItr = countries.iterator ();
+    for (int i = 0; i < players.size (); i++)
     {
-      for (final Player player : players)
+      final Player nextPlayer = players.get (i);
+      final int playerCountryCount = playerCountryDistribution.get (i);
+
+      int assignSuccessCount = 0; // for logging purposes
+      for (int count = 0; count < playerCountryCount && countryItr.hasNext (); count++)
       {
-        for (int count = 0; count < countriesPerPlayer; count++)
+        final Country toAssign = countryItr.next ();
+        final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+        result = playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (nextPlayer));
+        if (result.failed ())
         {
-          final Country toAssign = itr.next ();
-          log.info ("Assigning country [" + toAssign.getCountryName ().asString () + "] to [" + player.getName ()
-                  + "].");
-          playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (player));
-          itr.remove ();
+          log.warn ("Failed to assign country [" + toAssign.getName () + "] to [" + nextPlayer.getName ()
+                  + "] | Reason: " + failureReasonFrom (result));
         }
+        else
+        {
+          assignSuccessCount++;
+        }
+        countryItr.remove ();
       }
-      // once each player has received the floor minimum, distribute 1 to each player until the
-      // remaining countries are depleted
-      countriesPerPlayer = 1;
+      log.info ("Assigned " + assignSuccessCount + " countries to [" + nextPlayer.getName () + "].");
     }
 
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent

@@ -4,6 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
+import com.forerunnergames.peril.core.model.map.country.Country;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 import org.junit.Test;
 
 public class ClassicGameRulesTest
@@ -13,6 +19,18 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
     final int expectedInitialArmies = 5;
+    final int actualInitialArmies = rules.getInitialArmies ();
+
+    assertEquals (expectedInitialArmies, actualInitialArmies);
+  }
+
+  @Test
+  public void testGetInitialArmiesForMidMinMaxPlayers ()
+  {
+    final int midMinMaxPlayerLimit = ClassicGameRules.MIN_PLAYERS
+            + (ClassicGameRules.MAX_PLAYERS - ClassicGameRules.MIN_PLAYERS) / 2;
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (midMinMaxPlayerLimit).build ();
+    final int expectedInitialArmies = 40 - 5 * (midMinMaxPlayerLimit - 2);
     final int actualInitialArmies = rules.getInitialArmies ();
 
     assertEquals (expectedInitialArmies, actualInitialArmies);
@@ -232,5 +250,64 @@ public class ClassicGameRulesTest
     assertFalse (rules.isValidWinPercentage (Integer.MIN_VALUE));
     assertFalse (rules.isValidWinPercentage (0));
     assertFalse (rules.isValidWinPercentage (maxWinPercentage + 1));
+  }
+
+  @Test
+  public void testGetInitialPlayerCountryDistributionUniformMaxPlayers ()
+  {
+    final Integer expectedUniformDistributionValue = 3;
+    final ImmutableSet <Country> testCountrySet = PlayMapModelTest.generateTestCountries (ClassicGameRules.MAX_PLAYERS
+            * expectedUniformDistributionValue);
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (testCountrySet.size ()).build ();
+
+    final ImmutableList <Integer> testDistribution = rules
+            .getInitialPlayerCountryDistribution (ClassicGameRules.MAX_PLAYERS);
+    for (final Integer countryCount : testDistribution)
+    {
+      assertEquals (countryCount, expectedUniformDistributionValue);
+    }
+  }
+
+  @Test
+  public void testGetInitialPlayerCountryDistributionNonUniformMaxPlayers ()
+  {
+    final int testPlayerCount = ClassicGameRules.MAX_PLAYERS;
+    final int expectedBaseDistributionValue = 3, expectedRemainderValue = testPlayerCount - 3;
+    final ImmutableSet <Country> testCountrySet = PlayMapModelTest.generateTestCountries (testPlayerCount
+            * expectedBaseDistributionValue + expectedRemainderValue);
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (testPlayerCount)
+            .totalCountryCount (testCountrySet.size ()).build ();
+
+    final ImmutableList <Integer> testDistribution = rules.getInitialPlayerCountryDistribution (testPlayerCount);
+    for (int i = 0; i < expectedRemainderValue; i++)
+    {
+      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue + 1));
+    }
+    for (int i = expectedRemainderValue; i < testPlayerCount; i++)
+    {
+      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue));
+    }
+  }
+
+  @Test
+  public void testGetInitialPlayerCountryDistributionNonUniformMinPlayers ()
+  {
+    final int testPlayerCount = ClassicGameRules.MIN_PLAYERS;
+    final int expectedBaseDistributionValue = 10, expectedRemainderValue = 1;
+    final ImmutableSet <Country> testCountrySet = PlayMapModelTest.generateTestCountries (testPlayerCount
+            * expectedBaseDistributionValue + expectedRemainderValue);
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (testPlayerCount)
+            .totalCountryCount (testCountrySet.size ()).build ();
+
+    final ImmutableList <Integer> testDistribution = rules.getInitialPlayerCountryDistribution (testPlayerCount);
+    for (int i = 0; i < expectedRemainderValue; i++)
+    {
+      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue + 1));
+    }
+    for (int i = expectedRemainderValue; i < testPlayerCount; i++)
+    {
+      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue));
+    }
   }
 }

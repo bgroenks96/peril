@@ -43,9 +43,12 @@ public class GameStateMachineTest
   public static void setUpClass ()
   {
     final MBassador <Event> eventBus = EventBusFactory.create ();
-    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS).build ();
+    final int testCountryCount = 20;
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (testCountryCount).build ();
     final PlayerModel playerModel = new PlayerModel (rules);
-    final PlayMapModel playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (20), rules);
+    final PlayMapModel playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (testCountryCount),
+            rules);
     final GameModel gameModel = new GameModel (playerModel, playMapModel, rules, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()

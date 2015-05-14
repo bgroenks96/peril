@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.core.model.rules;
 
+import com.google.common.collect.ImmutableList;
+
 public interface GameRules
 {
   int getInitialArmies ();
@@ -33,6 +35,8 @@ public interface GameRules
   int getWinPercentage ();
 
   int getWinningCountryCount ();
+
+  ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount);
 
   boolean isValidWinPercentage (final int winPercentage);
 }
