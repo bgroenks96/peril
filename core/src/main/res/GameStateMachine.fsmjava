@@ -113,19 +113,21 @@
             <state name="WaitForCountrySelectionToBegin">
               <onEntry action="gameModel.waitForCountrySelectionToBegin()" />
               <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries" />
-              <transition event="onBeginManualCountrySelectionEvent" nextState="WaitForPlayersToSelectInitialCountries" />
+              <transition event="onBeginManualCountrySelectionEvent" nextState="ManuallyAssignPlayerCountries" />
             </state>
             <state name="RandomlyAssignPlayerCountries">
               <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
               <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
             </state>
-            <state name="WaitForPlayersToSelectInitialCountries">
-              <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
-              <transition event="onPlayerSelectCountryInputResponseRequestEvent" action="gameModel.handlePlayerCountrySelectionRequest(event)"
-                nextState="WaitForPlayersToSelectInitialCountries" />
-              <transition event="onPlayerSelectCountryInputResponseSuccessEvent" action="gameModel.waitForPlayersToSelectInitialCountries()"
-                nextState="WaitForPlayersToSelectInitialCountries" />
-              <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
+            <state name="ManuallyAssignPlayerCountries">
+              <state name="WaitForPlayersToSelectInitialCountries">
+                <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
+                <transition event="onPlayerSelectCountryInputResponseRequestEvent" action="gameModel.handlePlayerCountrySelectionRequest(event)"
+                            nextState="WaitForPlayersToSelectInitialCountries" />
+                <transition event="onPlayerSelectCountryInputResponseSuccessEvent" action="gameModel.waitForPlayersToSelectInitialCountries()"
+                            nextState="WaitForPlayersToSelectInitialCountries" />
+                <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
+              </state>
             </state>
           </state>
           <state name="EndGame">
