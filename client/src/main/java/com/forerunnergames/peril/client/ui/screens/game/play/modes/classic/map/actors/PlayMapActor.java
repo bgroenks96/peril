@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-import com.forerunnergames.peril.client.settings.PlayMapSettings;
+import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
@@ -47,7 +47,7 @@ public final class PlayMapActor extends Group
     this.hoveredTerritoryTextActor = hoveredTerritoryTextActor;
 
     final Image backgroundImage = new Image (Assets.playMapBackground);
-    backgroundImage.setSize (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT);
+    backgroundImage.setSize (ClassicPlayMapSettings.ACTUAL_WIDTH, ClassicPlayMapSettings.ACTUAL_HEIGHT);
 
     addActor (backgroundImage);
 
@@ -65,7 +65,7 @@ public final class PlayMapActor extends Group
   {
     Arguments.checkIsNotNull (mouseCoordinate, "mouseCoordinate");
 
-    if (! isEnabled) return false;
+    if (!isEnabled) return false;
 
     if (!existsCountryActorAt (mouseCoordinate))
     {
@@ -102,7 +102,7 @@ public final class PlayMapActor extends Group
   {
     Arguments.checkIsNotNull (touchDownCoordinate, "touchDownCoordinate");
 
-    if (! isEnabled) return false;
+    if (!isEnabled) return false;
 
     if (!existsCountryActorAt (touchDownCoordinate))
     {
@@ -152,7 +152,7 @@ public final class PlayMapActor extends Group
   {
     Arguments.checkIsNotNull (touchUpCoordinate, "touchUpCoordinate");
 
-    if (! isEnabled) return false;
+    if (!isEnabled) return false;
 
     if (countryActorAtPointIsNot (touchUpCoordinate, touchedCountryActor))
     {

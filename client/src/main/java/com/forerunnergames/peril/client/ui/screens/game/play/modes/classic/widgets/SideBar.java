@@ -84,16 +84,16 @@ public final class SideBar extends Table
     END_TURN ("end-turn"),
     MY_SETTINGS ("my-settings");
 
-    private final String style;
+    private final String styleName;
 
-    IconType (final String style)
+    IconType (final String styleName)
     {
-      this.style = style;
+      this.styleName = styleName;
     }
 
-    public String getStyle ()
+    public String getStyleName ()
     {
-      return style;
+      return styleName;
     }
   }
 }

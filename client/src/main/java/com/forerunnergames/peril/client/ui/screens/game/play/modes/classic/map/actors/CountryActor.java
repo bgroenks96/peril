@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-import com.forerunnergames.peril.client.settings.PlayMapSettings;
+import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.tools.common.Arguments;
@@ -35,8 +35,8 @@ public final class CountryActor extends Group
     this.countryArmyTextActor = countryArmyTextActor;
 
     final Vector2 tempPosition = new Vector2 (countryImageData.getReferenceDestination ());
-    tempPosition.y = PlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
-    tempPosition.scl (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+    tempPosition.y = ClassicPlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
+    tempPosition.scl (ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
 
     setName (countryImageData.getName ());
 
@@ -44,8 +44,8 @@ public final class CountryActor extends Group
     {
       countryImage.setVisible (false);
       countryImage.setPosition (tempPosition.x, tempPosition.y);
-      countryImage.setScale (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.x,
-                             PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.y);
+      countryImage.setScale (ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.x,
+                             ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.y);
       addActor (countryImage);
     }
 
@@ -94,7 +94,7 @@ public final class CountryActor extends Group
 
   public void onHoverStart ()
   {
-    if (!isEnabled || !PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
+    if (!isEnabled || !ClassicPlayMapSettings.ENABLE_HOVER_EFFECTS) return;
     if (currentImageState == CountryImageState.DISABLED) return;
 
     show (CountryImageState.HIGHLIGHT);
@@ -102,14 +102,14 @@ public final class CountryActor extends Group
 
   public void onHoverEnd ()
   {
-    if (!isEnabled || !PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
+    if (!isEnabled || !ClassicPlayMapSettings.ENABLE_HOVER_EFFECTS) return;
 
     hide (CountryImageState.HIGHLIGHT);
   }
 
   public void onTouchDown ()
   {
-    if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
+    if (!isEnabled || !ClassicPlayMapSettings.ENABLE_CLICK_EFFECTS) return;
     if (currentImageState == CountryImageState.DISABLED) return;
 
     hide (currentImageState);
@@ -118,7 +118,7 @@ public final class CountryActor extends Group
 
   public void onTouchUp ()
   {
-    if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
+    if (!isEnabled || !ClassicPlayMapSettings.ENABLE_CLICK_EFFECTS) return;
 
     hide (CountryImageState.DISABLED);
     show (currentImageState);

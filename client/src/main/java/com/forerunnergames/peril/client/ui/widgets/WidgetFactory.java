@@ -57,17 +57,12 @@ public class WidgetFactory
     return textButton;
   }
 
-  public ImageButton createImageButton (final EventListener listener)
+  public ImageButton createImageButton (final String styleName, final EventListener listener)
   {
-    return createImageButton (skin.get (ImageButton.ImageButtonStyle.class), listener);
-  }
-
-  public ImageButton createImageButton (final ImageButton.ImageButtonStyle style, final EventListener listener)
-  {
-    Arguments.checkIsNotNull (style, "style");
+    Arguments.checkIsNotNull (styleName, "styleName");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final ImageButton imageButton = new ImageButton (style);
+    final ImageButton imageButton = new ImageButton (skin.get (styleName, ImageButton.ImageButtonStyle.class));
     imageButton.addListener (listener);
 
     return imageButton;
@@ -96,7 +91,7 @@ public class WidgetFactory
   {
     Arguments.checkIsNotNull (text, "text");
 
-    final Label label = new Label (text, skin, "label-with-background");
+    final Label label = new Label (text, skin, "label-text-with-background");
     label.setAlignment (alignment);
 
     return label;

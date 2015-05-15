@@ -3,6 +3,8 @@ package com.forerunnergames.peril.server.main;
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
 import com.forerunnergames.tools.common.Classes;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,9 @@ public final class Main
       @Override
       public void uncaughtException (final Thread thread, final Throwable throwable)
       {
-        log.error ("The server application has crashed!\n", throwable);
+        log.error ("The server application has crashed!\n\nA crash file has been created in \""
+                + System.getProperty ("user.home") + File.separator + "peril" + File.separator
+                + "crashes\".\n", throwable);
 
         System.exit (1);
       }

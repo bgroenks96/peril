@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
-import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.io.DataLoader;
-import com.forerunnergames.peril.client.settings.AssetPaths;
+import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.ContinentColor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.CountryColor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.colortoname.ContinentColorToNameConverter;
@@ -70,8 +70,8 @@ public final class PlayMapInputDetectionFactory
     playMapCoordinateToCountryColorConverter = new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
     playMapCoordinateToContinentColorConverter = new PlayMapCoordinateToContinentColorConverter (playMapCoordinateToRgbaColorConverter);
 
-    countryColorToNameConverter = new CountryColorToNameConverter (countryColorToNameLoader.load (AssetPaths.PLAY_MAP_COUNTRY_NAME_TO_COLOR_FILENAME));
-    continentColorToNameConverter = new ContinentColorToNameConverter (continentColorToNameLoader.load (AssetPaths.PLAY_MAP_CONTINENT_NAME_TO_COLOR_FILENAME));
+    countryColorToNameConverter = new CountryColorToNameConverter (countryColorToNameLoader.load (ClassicPlayMapSettings.COUNTRY_NAME_TO_COLOR_FILENAME));
+    continentColorToNameConverter = new ContinentColorToNameConverter (continentColorToNameLoader.load (ClassicPlayMapSettings.CONTINENT_NAME_TO_COLOR_FILENAME));
 
     playMapCoordinateToCountryNameConverter =
                     new PlayMapCoordinateToCountryNameConverter (

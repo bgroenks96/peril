@@ -2,16 +2,18 @@ package com.forerunnergames.peril.client.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GLTexture;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import com.forerunnergames.peril.client.application.ClientApplicationProperties;
+import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.tools.common.Classes;
 
@@ -32,7 +34,6 @@ public final class Assets
   public static Music playScreenMusic;
   public static Pixmap menuNormalCursor;
   public static Pixmap playScreenNormalCursor;
-  public static BitmapFont armyCircleDistanceFieldFont;
   public static Texture armyMovementBackground;
   public static Texture armyMovementForegroundArrow;
   public static Texture armyMovementForegroundArrowText;
@@ -44,7 +45,6 @@ public final class Assets
   public static ImmutableList <TextureAtlas> countryAtlases;
   public static Skin skin;
   private static final Logger log = LoggerFactory.getLogger (Assets.class);
-  private static Texture armyCircleDistanceFieldFontTexture;
   private static boolean isLoaded = false;
 
   public static void dispose ()
@@ -63,8 +63,6 @@ public final class Assets
     playMapInputDetection.dispose ();
     playScreenNormalCursor.dispose ();
     playScreenMusic.dispose ();
-    armyCircleDistanceFieldFont.dispose ();
-    armyCircleDistanceFieldFontTexture.dispose ();
     armyMovementBackground.dispose ();
     armyMovementForegroundArrow.dispose ();
     armyMovementForegroundArrowText.dispose ();
@@ -82,7 +80,6 @@ public final class Assets
     isLoaded = false;
   }
 
-  // @formatter:off
   public static void load ()
   {
     if (isLoaded)
@@ -91,35 +88,91 @@ public final class Assets
       return;
     }
 
+    final FileHandle destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
+    final FileHandle sourceAssetsDir = Gdx.files.absolute (AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY);
+
+    if (AssetSettings.UPDATE_ASSETS)
+    {
+      log.info ("Attempting to update assets in \"{}\" from \"{}\"...", destAssetsDir.file (), sourceAssetsDir);
+
+      try
+      {
+        log.info ("Removing old assets...");
+
+        destAssetsDir.deleteDirectory ();
+
+        log.info ("Copying new assets...");
+
+        sourceAssetsDir.copyTo (destAssetsDir);
+
+        log.info ("Successfully updated assets.");
+      }
+      catch (final GdxRuntimeException e)
+      {
+        throw new RuntimeException ("Failed to update assets from: \""
+                + AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY + "\".\n" + "Make sure that "
+                + ClientApplicationProperties.UPDATED_ASSETS_DIRECTORY_KEY + " is properly set in \""
+                + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "\".\n" + "Also, "
+                + ClientApplicationProperties.UPDATE_ASSETS_KEY
+                + " must be set to true (in the same file) the first time you run the game.\n"
+                + "If you already tried all of that, you can set " + ClientApplicationProperties.UPDATE_ASSETS_KEY
+                + " to false.\nIn that case, you still need to make sure that you have a copy of all assets in "
+                + destAssetsDir.file () + ".\n\n" + "Nerdy developer details:\n", e);
+      }
+    }
+    else
+    {
+      log.warn ("Assets are not being updated.\n"
+              + "To change this behavior, change "
+              + ClientApplicationProperties.UPDATE_ASSETS_KEY
+              + " in "
+              + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME
+              + " from false to true.\n"
+              + "Make sure to back up any customizations you made to any assets first, as your changes will be overwritten.");
+    }
+
     ShaderProgram.pedantic = false;
 
-    menuAtlas = new TextureAtlas (Gdx.files.internal ("screens/menus/menus.atlas"));
-    menuMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/menuScreens.mp3"));
-    playScreenBackground = new Texture (Gdx.files.internal ("screens/game/play/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playMapBackground = new Texture (Gdx.files.internal ("screens/game/play/map/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    playMapInputDetection = new Pixmap (Gdx.files.internal ("screens/game/play/map/inputDetection.png"));
-    playScreenMusic = Gdx.audio.newMusic (Gdx.files.internal ("music/playScreen.mp3"));
-    menuNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
-    playScreenNormalCursor = new Pixmap (Gdx.files.internal ("mouse/normalCursor.png"));
-    armyCircleDistanceFieldFontTexture = new Texture (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.png"), false);
-    armyCircleDistanceFieldFontTexture.setFilter (Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-    armyCircleDistanceFieldFont = new BitmapFont (Gdx.files.internal ("screens/game/play/map/fonts/armyCircleDigits.fnt"), new TextureRegion (armyCircleDistanceFieldFontTexture), false);
-    armyMovementBackground = new Texture (Gdx.files.internal ("widgets/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    armyMovementForegroundArrow = new Texture (Gdx.files.internal ("widgets/popups/armymovement/shared/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    armyMovementForegroundArrowText = new Texture (Gdx.files.internal ("widgets/popups/armymovement/occupation/occupying.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    armyMovementOccupationTitle = new Texture (Gdx.files.internal ("widgets/popups/armymovement/occupation/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    quitPopupBackground = new Texture (Gdx.files.internal ("widgets/popups/quit/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
-    perilModeAtlas = new TextureAtlas (Gdx.files.internal ("screens/game/play/modes/peril/perilMode.atlas"));
-    perilModeGridLines = perilModeAtlas.createPatch ("gridMiddle");
-    skin = new Skin (Gdx.files.internal ("uiskin.json"));
-    countryAtlases = ImmutableList.of (
-            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries0.atlas")),
-            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries1.atlas")),
-            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries2.atlas")),
-            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries3.atlas")),
-            new TextureAtlas (Gdx.files.internal ("screens/game/play/map/countries/atlases/countries4.atlas")));
+    try
+    {
+      log.info ("Attempting to load assets from: \"{}\"...", destAssetsDir.file ());
 
-    distanceFieldFontShader = new ShaderProgram (Gdx.files.internal ("shaders/font.vert"), Gdx.files.internal ("shaders/font.frag"));
+      // @formatter:off
+      menuAtlas = new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/atlases/menus.atlas"));
+      menuMusic = Gdx.audio.newMusic (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/music/peril.mp3"));
+      menuNormalCursor = new Pixmap (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/cursors/normalCursor.png"));
+      playMapBackground = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      playMapInputDetection = new Pixmap (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/inputDetection.png"));
+      playScreenBackground = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      playScreenMusic = Gdx.audio.newMusic (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/shared/music/emerald-gates.mp3"));
+      playScreenNormalCursor = new Pixmap (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/cursors/normalCursor.png"));
+      armyMovementBackground = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/popups/armymovement/shared/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      armyMovementForegroundArrow = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/popups/armymovement/shared/foreground.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      armyMovementForegroundArrowText = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/popups/armymovement/occupy/occupying.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      armyMovementOccupationTitle = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/popups/armymovement/occupy/title.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      quitPopupBackground = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/popups/quit/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
+      perilModeAtlas = new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/peril/atlases/perilMode.atlas"));
+      perilModeGridLines = perilModeAtlas.createPatch ("gridMiddle");
+      skin = new Skin (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/skins/atlases/uiskin.json"));
+      countryAtlases = ImmutableList.of (
+              new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/countries/atlases/countries0.atlas")),
+              new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/countries/atlases/countries1.atlas")),
+              new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/countries/atlases/countries2.atlas")),
+              new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/countries/atlases/countries3.atlas")),
+              new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/countries/atlases/countries4.atlas")));
+
+      distanceFieldFontShader = new ShaderProgram (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/skins/fonts/distancefield/shaders/font.vert"), Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/skins/fonts/distancefield/shaders/font.frag"));
+      // @formatter:on
+    }
+    catch (final GdxRuntimeException e)
+    {
+      throw new RuntimeException ("Failed to load assets from: \"" + destAssetsDir.file () + "\"\n" + "Make sure that "
+              + ClientApplicationProperties.UPDATED_ASSETS_DIRECTORY_KEY + " is properly set in \""
+              + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "\"\n" + "Also, "
+              + ClientApplicationProperties.UPDATE_ASSETS_KEY
+              + " must be set to true (in the same file) the first time you run the game.\n\n"
+              + "Nerdy developer details:\n", e);
+    }
 
     if (!distanceFieldFontShader.isCompiled ())
     {
@@ -135,7 +188,6 @@ public final class Assets
 
     isLoaded = true;
   }
-  // @formatter:on
 
   private static void setFilter (final GLTexture texture)
   {

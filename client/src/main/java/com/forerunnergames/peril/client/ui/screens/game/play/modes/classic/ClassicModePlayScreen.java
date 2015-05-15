@@ -29,9 +29,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -102,8 +102,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     rootStack.add (new Image (Assets.playScreenBackground));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (playMapActor).size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT)
-            .padRight (16);
+    playMapAndSideBarTable.add (playMapActor)
+            .size (ClassicPlayMapSettings.ACTUAL_WIDTH, ClassicPlayMapSettings.ACTUAL_HEIGHT).padRight (16);
     playMapAndSideBarTable.add (widgetFactory.createSideBar (eventBus)).top ();
 
     final Table foregroundTable = new Table ().pad (12);

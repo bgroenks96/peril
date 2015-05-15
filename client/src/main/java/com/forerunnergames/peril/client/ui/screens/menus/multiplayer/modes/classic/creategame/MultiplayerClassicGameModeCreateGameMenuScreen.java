@@ -85,7 +85,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     mapNameLabel = widgetFactory.createBackgroundLabel (String.valueOf ("Classic"), Align.left);
 
-    customizePlayersButton = widgetFactory.createImageButton (new ClickListener (Input.Buttons.LEFT)
+    customizePlayersButton = widgetFactory.createImageButton ("options", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
@@ -104,7 +104,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       }
     });
 
-    customizeMapButton = widgetFactory.createImageButton (new ClickListener (Input.Buttons.LEFT)
+    customizeMapButton = widgetFactory.createImageButton ("options", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
