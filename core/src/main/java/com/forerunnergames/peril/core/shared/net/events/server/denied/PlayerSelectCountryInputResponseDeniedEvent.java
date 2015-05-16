@@ -12,8 +12,8 @@ public final class PlayerSelectCountryInputResponseDeniedEvent extends DefaultPl
   public enum Reason
   {
     COUNTRY_DOES_NOT_EXIST,
-    COUNTRY_NOT_ACTIVE,
-    COUNTRY_NOT_AVAILABLE;
+    COUNTRY_DISABLED,
+    COUNTRY_ALREADY_OWNED;
   }
 
   private final Reason reason;
