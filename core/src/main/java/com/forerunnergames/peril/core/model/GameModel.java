@@ -146,6 +146,13 @@ public final class GameModel
   @StateMachineAction
   public void randomlyAssignPlayerCountries ()
   {
+    // if there are no players, just give up now!
+    if (playerModel.isEmpty ())
+    {
+      log.info ("Skipping random country assignment... no players!");
+      return;
+    }
+
     final List <Country> countries = Randomness.shuffle (new HashSet <> (playMapModel.getCountries ()));
     final List <Player> players = Randomness.shuffle (playerModel.getPlayers ());
     final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
@@ -189,19 +196,19 @@ public final class GameModel
   public void waitForPlayersToSelectInitialCountries ()
   {
     final Player currentPlayer = playerModel.playerWith (playerTurn);
-    if (playMapModel.hasUnassignedCountries ())
-    {
-      log.info ("Waiting for player [" + currentPlayer.getName () + "] to select a country...");
-      playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
-      eventBus.publish (new PlayerSelectCountryInputRequestEvent (GamePackets.fromPlayer (currentPlayer)));
-    }
-    else
+
+    if (playMapModel.allCountriesAreOwned ())
     {
       // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
       playMapViewPackets = GamePackets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
       eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
+      return;
     }
+
+    log.info ("Waiting for player [" + currentPlayer.getName () + "] to select a country...");
+    playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
+    eventBus.publish (new PlayerSelectCountryInputRequestEvent (GamePackets.from (currentPlayer)));
   }
 
   @StateMachineAction
@@ -214,15 +221,14 @@ public final class GameModel
     final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
     result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
                                                        idOf (currentPlayer));
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new PlayerSelectCountryInputResponseSuccessEvent (selectedCountryName));
-    }
-    else
+    if (result.failed ())
     {
       eventBus.publish (new PlayerSelectCountryInputResponseDeniedEvent (selectedCountryName,
               failureReasonFrom (result)));
+      return;
     }
+
+    eventBus.publish (new PlayerSelectCountryInputResponseSuccessEvent (selectedCountryName));
   }
 
   @StateMachineAction
@@ -254,14 +260,13 @@ public final class GameModel
     final Result <ChangePlayerColorDeniedEvent.Reason> result;
     result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), colorFrom (event));
 
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new ChangePlayerColorSuccessEvent (event));
-    }
-    else
+    if (result.failed ())
     {
       eventBus.publish (new ChangePlayerColorDeniedEvent (event, failureReasonFrom (result)));
+      return;
     }
+
+    eventBus.publish (new ChangePlayerColorSuccessEvent (event));
   }
 
   @StateMachineAction
@@ -274,14 +279,13 @@ public final class GameModel
 
     result = playerModel.requestToAdd (player);
 
-    if (result.isSuccessful ())
-    {
-      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
-    }
-    else
+    if (result.failed ())
     {
       eventBus.publish (new PlayerJoinGameDeniedEvent (nameOf (player), failureReasonFrom (result)));
+      return;
     }
+
+    eventBus.publish (new PlayerJoinGameSuccessEvent (player));
   }
 
   public boolean isEmpty ()
@@ -332,11 +336,10 @@ public final class GameModel
     final ImmutableMap.Builder <Country, Player> playMapView = ImmutableMap.builder ();
     for (final Country country : countries)
     {
-      if (playMapModel.isCountryAssigned (idOf (country)))
-      {
-        final Id ownerId = playMapModel.getOwnerOf (idOf (country));
-        playMapView.put (country, playerModel.playerWith (ownerId));
-      }
+      if (!playMapModel.isCountryOwned (idOf (country))) continue;
+
+      final Id ownerId = playMapModel.getOwnerOf (idOf (country));
+      playMapView.put (country, playerModel.playerWith (ownerId));
     }
     return playMapView.build ();
   }

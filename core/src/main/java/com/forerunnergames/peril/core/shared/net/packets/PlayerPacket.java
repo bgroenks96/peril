@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.packets;
 
-
-public interface PlayerPacket
+public interface PlayerPacket extends GamePacket
 {
   String getName ();
 

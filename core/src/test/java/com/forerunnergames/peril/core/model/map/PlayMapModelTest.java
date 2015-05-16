@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model.map;
 
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -11,7 +12,9 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent;
 import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Result;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -45,41 +48,81 @@ public class PlayMapModelTest
   }
 
   @Test
-  public void testAssignCountriesToSingleOwner ()
+  public void testRequestToAssignCountriesToSingleOwner ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
 
     for (final Country testCountry : defaultTestCountries)
     {
-      modelTest.requestToAssignCountryOwner (testCountry.getId (), testPlayer.getId ());
-      assertTrue (modelTest.getOwnerOf (testCountry.getId ()).is (testPlayer.getId ()));
+      assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer)).succeeded ());
+      assertTrue (modelTest.getOwnerOf (idOf (testCountry)).is (idOf (testPlayer)));
     }
   }
 
   @Test
-  public void testAssignCountriesToUniqueOwners ()
+  public void testRequestToAssignCountriesToUniqueOwners ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
 
     for (final Country testCountry : defaultTestCountries)
     {
       final Player testPlayer = PlayerFactory.create ("TestPlayer");
-      modelTest.requestToAssignCountryOwner (testCountry.getId (), testPlayer.getId ());
-      assertTrue (modelTest.getOwnerOf (testCountry.getId ()).is (testPlayer.getId ()));
+      assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer)).succeeded ());
+      assertTrue (modelTest.getOwnerOf (idOf (testCountry)).is (idOf (testPlayer)));
     }
   }
 
   @Test
-  public void testUnassignCountry ()
+  public void testRequestToAssignCountryToOwnerFailsWithInvalidCountryId ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+
+    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    // assign wrong id
+    result = modelTest.requestToAssignCountryOwner (idOf (testPlayer), idOf (testPlayer));
+    assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+  }
+
+  @Test
+  public void testRequestToAssignCountryToOwnerFailsWithOwnedCountry ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testPlayer1 = PlayerFactory.create ("TestPlayer-1");
+    final Country testCountry = defaultTestCountries.asList ().get (0);
+
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer1)).succeeded ());
+
+    final Player testPlayer2 = PlayerFactory.create ("TestPlayer-2");
+
+    Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    result = modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer2));
+    assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED));
+  }
+
+  @Test
+  public void testRequestToUnassignCountry ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
     final Country country = Randomness.getRandomElementFrom (defaultTestCountries);
 
-    modelTest.requestToAssignCountryOwner (country.getId (), testPlayer.getId ());
-    modelTest.requestToUnassignCountry (country.getId ());
-    assertFalse (modelTest.isCountryAssigned (country.getId ()));
+    assertTrue (modelTest.requestToAssignCountryOwner (country.getId (), testPlayer.getId ()).succeeded ());
+    assertTrue (modelTest.requestToUnassignCountry (country.getId ()).succeeded ());
+    assertFalse (modelTest.isCountryOwned (country.getId ()));
+  }
+
+  @Test
+  public void testRequestToUnassignCountryFailsWithInvalidCountryId ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+
+    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    // assign wrong id
+    result = modelTest.requestToUnassignCountry (idOf (testPlayer));
+    assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
   }
 
   @Test
@@ -127,20 +170,41 @@ public class PlayMapModelTest
   }
 
   @Test
-  public void testHasAnyUnassignedCountriesAll ()
+  public void testGetOwnerOf ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+    final Player testOwner = PlayerFactory.create ("TestPlayer");
+
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    assertEquals (idOf (testOwner), modelTest.getOwnerOf (idOf (testCountry)));
+  }
+
+  @Test (expected = IllegalStateException.class)
+  public void testGetOwnerOfInvalidIdFailsWithException ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestPlayer");
+
+    // request owner with invalid country Id
+    modelTest.getOwnerOf (idOf (testOwner));
+  }
+
+  @Test
+  public void testHasAnyUnownedCountriesNoneOwned ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
 
     for (final Country testCountry : defaultTestCountries)
     {
       assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
-      assertFalse (modelTest.isCountryAssigned (idOf (testCountry)));
+      assertFalse (modelTest.isCountryOwned (idOf (testCountry)));
     }
-    assertTrue (modelTest.hasUnassignedCountries ());
+    assertTrue (modelTest.hasAnyUnownedCountries ());
   }
 
   @Test
-  public void testHasAnyUnassignedCountriesNone ()
+  public void testHasAnyUnownedCountriesAllOwned ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
     final Player testOwner = PlayerFactory.create ("TestOwner");
@@ -150,11 +214,11 @@ public class PlayMapModelTest
       assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
       assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
     }
-    assertFalse (modelTest.hasUnassignedCountries ());
+    assertFalse (modelTest.hasAnyUnownedCountries ());
   }
 
   @Test
-  public void testHasAnyUnassignedCountriesOne ()
+  public void testHasAnyUnownedCountriesOne ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
     final Player testOwner = PlayerFactory.create ("TestOwner");
@@ -167,9 +231,238 @@ public class PlayMapModelTest
       final Country testCountry = testCountriesItr.next ();
       assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
       assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
-      i++;
+      ++i;
     }
-    assertTrue (modelTest.hasUnassignedCountries ());
+    assertTrue (modelTest.hasAnyUnownedCountries ());
+  }
+
+  @Test
+  public void testHasAnyOwnedCountriesNoneOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    for (final Country testCountry : defaultTestCountries)
+    {
+      assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+      assertFalse (modelTest.isCountryOwned (idOf (testCountry)));
+    }
+    assertFalse (modelTest.hasAnyOwnedCountries ());
+  }
+
+  @Test
+  public void testHasAnyOwnedCountriesOneOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestOwner");
+
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+    assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    assertTrue (modelTest.hasAnyOwnedCountries ());
+  }
+
+  @Test
+  public void testAllCountriesAreOwnedNoneOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    for (final Country testCountry : defaultTestCountries)
+    {
+      assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+      assertFalse (modelTest.isCountryOwned (idOf (testCountry)));
+    }
+    assertFalse (modelTest.allCountriesAreOwned ());
+  }
+
+  @Test
+  public void testAllCountriesAreOwnedAllOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestOwner");
+
+    for (final Country testCountry : defaultTestCountries)
+    {
+      assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+      assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    }
+    assertTrue (modelTest.allCountriesAreOwned ());
+  }
+
+  @Test
+  public void testAllCountriesAreOwnedOneOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestOwner");
+
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+    assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    assertFalse (modelTest.allCountriesAreOwned ());
+  }
+
+  @Test
+  public void testAllCountriesAreUnownedNoneOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    for (final Country testCountry : defaultTestCountries)
+    {
+      assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+      assertFalse (modelTest.isCountryOwned (idOf (testCountry)));
+    }
+    assertTrue (modelTest.allCountriesAreUnowned ());
+  }
+
+  @Test
+  public void testAllCountriesAreUnownedAllOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestOwner");
+
+    for (final Country testCountry : defaultTestCountries)
+    {
+      assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+      assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    }
+    assertFalse (modelTest.allCountriesAreUnowned ());
+  }
+
+  @Test
+  public void testAllCountriesAreUnownedOneOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestOwner");
+
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+    assertTrue (modelTest.existsCountryWith (idOf (testCountry)));
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    assertFalse (modelTest.allCountriesAreUnowned ());
+  }
+
+  @Test
+  public void testGetCountryCount ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertEquals (defaultTestCountries.size (), modelTest.getCountryCount ());
+  }
+
+  @Test
+  public void testGetCountryCountIsSizeOfDefault ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertTrue (modelTest.countryCountIs (defaultTestCountries.size ()));
+  }
+
+  @Test
+  public void testGetCountryCountIsFalseOnCountPlusOne ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertFalse (modelTest.countryCountIs (defaultTestCountries.size () + 1));
+  }
+
+  @Test
+  public void testGetCountryCountIsAtLeastSizeOfDefault ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertTrue (modelTest.countryCountIsAtLeast (defaultTestCountries.size ()));
+  }
+
+  @Test
+  public void testGetCountryCountIsAtLeastSizeOfDefaultMinusOne ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertTrue (modelTest.countryCountIsAtLeast (defaultTestCountries.size () - 1));
+  }
+
+  @Test
+  public void testGetCountryCountIsAtLeastFalseForSizeOfDefaultPlusOne ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertFalse (modelTest.countryCountIsAtLeast (defaultTestCountries.size () + 1));
+  }
+
+  @Test
+  public void testGetOwnedCountryCountHalfCountriesOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestPlayer");
+    final int n = modelTest.getCountryCount () / 2;
+
+    int i = 0;
+    final Iterator <Country> countryItr = modelTest.getCountries ().iterator ();
+    while (i < n && countryItr.hasNext ())
+    {
+      final Country nextCountry = countryItr.next ();
+      assertTrue (modelTest.requestToAssignCountryOwner (idOf (nextCountry), idOf (testOwner)).succeeded ());
+      ++i;
+    }
+
+    assertEquals (n, modelTest.getOwnedCountryCount ());
+  }
+
+  @Test
+  public void testOwnedCountryCountIsZero ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertTrue (modelTest.allCountriesAreUnowned ());
+
+    assertTrue (modelTest.ownedCountryCountIs (0));
+  }
+
+  @Test
+  public void testOwnedCountryCountIsOne ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestPlayer");
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+
+    assertTrue (modelTest.ownedCountryCountIs (1));
+  }
+
+  @Test
+  public void testOwnedCountryCountIsAtLeastOne ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestPlayer");
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+
+    assertTrue (modelTest.ownedCountryCountIsAtLeast (1));
+  }
+
+  @Test
+  public void testOwnedCountryCountIsAtLeastTwoAllOwned ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestOwner");
+
+    for (final Country testCountry : defaultTestCountries)
+    {
+      assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+    }
+    assertTrue (modelTest.ownedCountryCountIsAtLeast (2));
+  }
+
+  @Test
+  public void testOwnedCountryCountIsNotAtLeastTwo ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+    final Player testOwner = PlayerFactory.create ("TestPlayer");
+    final Country testCountry = modelTest.getCountries ().asList ().get (0);
+
+    assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
+
+    assertFalse (modelTest.ownedCountryCountIsAtLeast (2));
   }
 
   private PlayMapModel createPlayMapModelTestWith (final ImmutableSet <Country> countries)

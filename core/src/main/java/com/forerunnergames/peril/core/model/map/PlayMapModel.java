@@ -74,26 +74,41 @@ public final class PlayMapModel
     return country;
   }
 
-  public boolean hasUnassignedCountries ()
+  public boolean hasAnyUnownedCountries ()
   {
     // if the country -> owner map is less than the size of the country ID map, then there must be
     // some countries without an assigned owner.
     return countryToOwnerMap.size () < countryIds.size ();
   }
 
-  public boolean isCountryAssigned (final Id countryId)
+  public boolean allCountriesAreUnowned ()
+  {
+    return countryToOwnerMap.size () == 0;
+  }
+
+  public boolean hasAnyOwnedCountries ()
+  {
+    return countryToOwnerMap.size () > 0;
+  }
+
+  public boolean allCountriesAreOwned ()
+  {
+    return countryToOwnerMap.size () == countryIds.size ();
+  }
+
+  public boolean isCountryOwned (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
 
     return countryToOwnerMap.containsKey (countryId);
   }
 
-  public boolean isCountryAssigned (final String countryName)
+  public boolean isCountryOwned (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
     if (!existsCountryWith (countryName)) return false;
-    return isCountryAssigned (idOf (countryWith (countryName)));
+    return isCountryOwned (idOf (countryWith (countryName)));
   }
 
   /**
@@ -108,7 +123,7 @@ public final class PlayMapModel
 
     //@formatter:off
     if (!existsCountryWith (countryId)) return Result.failure (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
-    if (isCountryAssigned (countryId)) return Result.failure (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_NOT_AVAILABLE);
+    if (isCountryOwned (countryId)) return Result.failure (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED);
     //@formatter:on
 
     countryToOwnerMap.put (countryId, ownerId);
@@ -118,7 +133,7 @@ public final class PlayMapModel
   /**
    * Unassigns the Country specified by the given id from its current owner.
    *
-   * @return the Id of the owner to which the Country was previously assigned, if any.
+   * @return success/failure Result
    */
   public Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> requestToUnassignCountry (final Id countryId)
   {
@@ -140,7 +155,7 @@ public final class PlayMapModel
     Arguments.checkIsNotNull (countryId, "countryId");
     checkValidCountryId (countryId);
 
-    if (isCountryAssigned (countryId)) return countryToOwnerMap.get (countryId);
+    if (isCountryOwned (countryId)) return countryToOwnerMap.get (countryId);
     else throw new IllegalStateException ("Country with id [" + countryId + "] has no owner.");
   }
 
@@ -154,9 +169,29 @@ public final class PlayMapModel
     return countryIds.size ();
   }
 
-  public int getAssignedCountryCount ()
+  public boolean countryCountIs (final int n)
   {
-    return getAssignedCountries ().size ();
+    return getCountryCount () == n;
+  }
+
+  public boolean countryCountIsAtLeast (final int n)
+  {
+    return getCountryCount () >= n;
+  }
+
+  public int getOwnedCountryCount ()
+  {
+    return getOwnedCountries ().size ();
+  }
+
+  public boolean ownedCountryCountIs (final int n)
+  {
+    return getOwnedCountryCount () == n;
+  }
+
+  public boolean ownedCountryCountIsAtLeast (final int n)
+  {
+    return getOwnedCountryCount () >= n;
   }
 
   private Country getCountryByName (final String name)
@@ -172,7 +207,7 @@ public final class PlayMapModel
     return null;
   }
 
-  private ImmutableSet <Country> getAssignedCountries ()
+  private ImmutableSet <Country> getOwnedCountries ()
   {
     final ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
     for (final Id id : countryIds.keySet ())

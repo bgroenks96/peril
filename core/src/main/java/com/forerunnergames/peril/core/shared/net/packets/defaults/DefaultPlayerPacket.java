@@ -1,18 +1,25 @@
 package com.forerunnergames.peril.core.shared.net.packets.defaults;
 
+import com.forerunnergames.peril.core.shared.net.packets.AbstractGamePacket;
 import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultPlayerPacket implements PlayerPacket
+public final class DefaultPlayerPacket extends AbstractGamePacket implements PlayerPacket
 {
   private final String name;
   private final String color;
   private final int turnOrder;
   private final int armiesInHand;
 
-  public DefaultPlayerPacket (final String name, final String color, final int turnOrder, final int armiesInHand)
+  public DefaultPlayerPacket (final int playerId,
+                              final String name,
+                              final String color,
+                              final int turnOrder,
+                              final int armiesInHand)
   {
+    super (playerId);
+
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNegative (turnOrder, "turnOrder");
@@ -91,6 +98,8 @@ public final class DefaultPlayerPacket implements PlayerPacket
   @RequiredForNetworkSerialization
   private DefaultPlayerPacket ()
   {
+    super (0);
+
     this.name = null;
     this.color = null;
     this.turnOrder = 0;

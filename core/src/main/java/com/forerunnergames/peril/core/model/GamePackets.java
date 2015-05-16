@@ -1,5 +1,8 @@
 package com.forerunnergames.peril.core.model;
 
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
+
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
@@ -18,19 +21,19 @@ import java.util.Map;
 
 public final class GamePackets
 {
-  public static PlayerPacket fromPlayer (final Player player)
+  public static PlayerPacket from (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return new DefaultPlayerPacket (player.getName (), player.getColor ().toString (), player.getTurnOrder ().asInt (),
-            player.getArmiesInHand ());
+    return new DefaultPlayerPacket (idOf (player).value (), nameOf (player), player.getColor ().toString (), player
+            .getTurnOrder ().asInt (), player.getArmiesInHand ());
   }
 
-  public static CountryPacket fromCountry (final Country country)
+  public static CountryPacket from (final Country country)
   {
     Arguments.checkIsNotNull (country, "country");
 
-    return new DefaultCountryPacket (country.getCountryName ().asString (), country.getArmyCount ());
+    return new DefaultCountryPacket (idOf (country).value (), nameOf (country), country.getArmyCount ());
   }
 
   public static ImmutableSet <PlayerPacket> fromPlayers (final Collection <Player> players)
@@ -41,7 +44,7 @@ public final class GamePackets
     final Builder <PlayerPacket> packetSetBuilder = ImmutableSet.builder ();
     for (final Player player : players)
     {
-      packetSetBuilder.add (fromPlayer (player));
+      packetSetBuilder.add (from (player));
     }
     return packetSetBuilder.build ();
   }
@@ -54,7 +57,7 @@ public final class GamePackets
     final Builder <CountryPacket> packetSetBuilder = ImmutableSet.builder ();
     for (final Country country : countries)
     {
-      packetSetBuilder.add (fromCountry (country));
+      packetSetBuilder.add (from (country));
     }
     return packetSetBuilder.build ();
   }
@@ -67,9 +70,19 @@ public final class GamePackets
     final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapBuilder = ImmutableMap.builder ();
     for (final Country country : playMap.keySet ())
     {
-      playMapBuilder.put (fromCountry (country), fromPlayer (playMap.get (country)));
+      playMapBuilder.put (from (country), from (playMap.get (country)));
     }
     return playMapBuilder.build ();
+  }
+
+  public static boolean playerMatchesPacket (final Player player, final PlayerPacket playerPacket)
+  {
+    return from (player).is (playerPacket);
+  }
+
+  public static boolean countryMatchesPacket (final Country country, final CountryPacket countryPacket)
+  {
+    return from (country).is (countryPacket);
   }
 
   private GamePackets ()
