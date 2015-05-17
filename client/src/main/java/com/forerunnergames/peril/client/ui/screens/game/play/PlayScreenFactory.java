@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -22,24 +23,26 @@ public final class PlayScreenFactory
                                final ScreenChanger screenChanger,
                                final ScreenSize screenSize,
                                final MouseInput mouseInput,
+                               final Batch batch,
                                final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (gameMode, "gameMode");
+    Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (gameMode, "gameMode");
-    Arguments.checkIsNotNull (skin, "skin");
+    Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     switch (gameMode)
     {
       case CLASSIC:
       {
-        return ClassicModePlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
+        return ClassicModePlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, batch, eventBus);
       }
       case PERIL:
       {
-        return PerilModePlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, eventBus);
+        return PerilModePlayScreenFactory.create (skin, screenChanger, screenSize, mouseInput, batch, eventBus);
       }
       default:
       {

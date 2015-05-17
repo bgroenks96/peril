@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.forerunnergames.peril.client.input.LibGdxMouseInput;
 import com.forerunnergames.peril.client.ui.Assets;
@@ -17,6 +18,6 @@ public final class ScreenFactoryCreator
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     return new ScreenFactory (Assets.skin, screenChanger, new LibGdxScreenSize (Gdx.graphics), new LibGdxMouseInput (
-            Gdx.input), eventBus);
+            Gdx.input), new SpriteBatch (), eventBus);
   }
 }

@@ -16,6 +16,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -79,12 +80,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
                                 final MouseInput mouseInput,
+                                final Batch batch,
                                 final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
+    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.eventBus = eventBus;
@@ -119,7 +122,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
             screenSize.referenceHeight (), camera);
 
-    stage = new Stage (viewport);
+    stage = new Stage (viewport, batch);
 
     final MandatoryOccupationPopup mandatoryOccupationPopup = widgetFactory
             .createMandatoryOccupationPopup (stage, eventBus, new PopupListenerAdapter ()

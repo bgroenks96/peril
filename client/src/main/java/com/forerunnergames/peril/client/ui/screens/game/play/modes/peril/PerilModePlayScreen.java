@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -40,13 +41,15 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
                               final TankActor2 tankActor2,
                               final ScreenSize screenSize,
                               final MouseInput mouseInput,
+                              final Batch batch,
                               final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (tankActor2, "tankActor2");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (skin, "skin");
+    Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.screenChanger = screenChanger;
@@ -56,7 +59,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
             screenSize.referenceWidth (), camera);
 
-    stage = new Stage (viewport)
+    stage = new Stage (viewport, batch)
     {
       @Override
       public boolean keyDown (final int keyCode)

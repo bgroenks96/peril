@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -62,11 +63,13 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
   protected AbstractMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
-                                final ScreenSize screenSize)
+                                final ScreenSize screenSize,
+                                final Batch batch)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
+    Arguments.checkIsNotNull (batch, "batch");
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
@@ -80,7 +83,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
             screenSize.referenceHeight (), camera);
 
-    stage = new Stage (viewport);
+    stage = new Stage (viewport, batch);
 
     // Layer 0 - screen background
     final Stack rootStack = new Stack ();

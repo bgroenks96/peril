@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -48,9 +49,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                          final ScreenChanger screenChanger,
                                                          final ScreenSize screenSize,
+                                                         final Batch batch,
                                                          final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize);
+    super (widgetFactory, screenChanger, screenSize, batch);
 
     this.eventBus = eventBus;
 
