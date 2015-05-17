@@ -310,7 +310,7 @@ public final class PlayerModel
     // @formatter:off
     if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
     if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.Reason.COLOR_ALREADY_TAKEN);
-    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_INALID);
+    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_INVALID);
     // @formatter:on
 
     player.setColor (toColor);

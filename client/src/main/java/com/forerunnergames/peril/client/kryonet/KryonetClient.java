@@ -144,14 +144,14 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 
     if (!isRunning)
     {
-      log.warn ("Prevented sending object [" + object + "] to the server because the client hasn't been started.");
+      log.warn ("Prevented sending object [{}] to the server because the client hasn't been started.", object);
 
       return;
     }
 
     if (!isConnected ())
     {
-      log.warn ("Prevented sending object [" + object + "] to the server because the client is disconnected.");
+      log.warn ("Prevented sending object [{}] to the server because the client is disconnected.", object);
 
       return;
     }

@@ -11,10 +11,10 @@ public final class PopupStyle
   public static final int DEFAULT_BORDER_THICKNESS_PIXELS = 12;
   public static final boolean DEFAULT_IS_RESIZABLE = false;
   public static final boolean DEFAULT_IS_MOVABLE = false;
-  public static final float AUTO_H_CENTER = -1;
-  public static final float AUTO_V_CENTER = -1;
-  public static final float AUTO_WIDTH = -1;
-  public static final float AUTO_HEIGHT = -1;
+  public static final int AUTO_H_CENTER = -1;
+  public static final int AUTO_V_CENTER = -1;
+  public static final int AUTO_WIDTH = -1;
+  public static final int AUTO_HEIGHT = -1;
   public static final float DEFAULT_POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE_X = AUTO_H_CENTER;
   public static final float DEFAULT_POSITION_UPPER_LEFT_REFERENCE_SCREEN_SPACE_Y = AUTO_V_CENTER;
   public static final float DEFAULT_WIDTH_REFERENCE_SCREEN_SPACE = AUTO_WIDTH;
@@ -162,11 +162,11 @@ public final class PopupStyle
       return this;
     }
 
-    public PopupStyleBuilder textButtonStyle (final String textuButtonStyleName)
+    public PopupStyleBuilder textButtonStyle (final String textButtonStyleName)
     {
-      Arguments.checkIsNotNull (textuButtonStyleName, "textuButtonStyleName");
+      Arguments.checkIsNotNull (textButtonStyleName, "textButtonStyleName");
 
-      textButtonStyleName = textuButtonStyleName;
+      this.textButtonStyleName = textButtonStyleName;
 
       return this;
     }

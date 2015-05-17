@@ -65,12 +65,12 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
-  public boolean equals (final Object o)
+  public boolean equals (final Object obj)
   {
-    if (this == o) return true;
-    if (!(o instanceof KryonetRemote)) return false;
+    if (this == obj) return true;
+    if (!(obj instanceof KryonetRemote)) return false;
 
-    final KryonetRemote that = (KryonetRemote) o;
+    final KryonetRemote that = (KryonetRemote) obj;
 
     return connectionId == that.connectionId;
 

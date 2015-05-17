@@ -81,7 +81,7 @@ public final class GameModel
   }
 
   @StateMachineAction
-  public void beginGame ()
+  public static void beginGame ()
   {
     log.info ("Starting the game...");
   }
@@ -158,10 +158,10 @@ public final class GameModel
     final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
             .size ());
 
-    log.info ("Randomly assigning " + countries.size () + " countries to " + players.size () + " players...");
+    log.info ("Randomly assigning {} countries to {} players...", countries.size (), players.size ());
 
     final Iterator <Country> countryItr = countries.iterator ();
-    for (int i = 0; i < players.size (); i++)
+    for (int i = 0; i < players.size (); ++i)
     {
       final Player nextPlayer = players.get (i);
       final int playerCountryCount = playerCountryDistribution.get (i);
@@ -174,8 +174,8 @@ public final class GameModel
         result = playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (nextPlayer));
         if (result.failed ())
         {
-          log.warn ("Failed to assign country [" + toAssign.getName () + "] to [" + nextPlayer.getName ()
-                  + "] | Reason: " + failureReasonFrom (result));
+          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", toAssign.getName (), nextPlayer.getName (),
+                    failureReasonFrom (result));
         }
         else
         {
@@ -183,7 +183,7 @@ public final class GameModel
         }
         countryItr.remove ();
       }
-      log.info ("Assigned " + assignSuccessCount + " countries to [" + nextPlayer.getName () + "].");
+      log.info ("Assigned {} countries to [{}].", assignSuccessCount, nextPlayer.getName ());
     }
 
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
@@ -206,7 +206,7 @@ public final class GameModel
       return;
     }
 
-    log.info ("Waiting for player [" + currentPlayer.getName () + "] to select a country...");
+    log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
     playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
     eventBus.publish (new PlayerSelectCountryInputRequestEvent (GamePackets.from (currentPlayer)));
   }
@@ -329,8 +329,7 @@ public final class GameModel
     return playerModel.playerLimitIsAtLeast (limit);
   }
 
-  private ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel,
-                                                               final PlayMapModel playMapModel)
+  private static ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel, final PlayMapModel playMapModel)
   {
     final ImmutableSet <Country> countries = playMapModel.getCountries ();
     final ImmutableMap.Builder <Country, Player> playMapView = ImmutableMap.builder ();

@@ -197,14 +197,14 @@ public class GdxKeyRepeatSystem
     }
   }
 
-  private static float millisToSeconds (int milliseconds)
+  private static float millisToSeconds (final int milliseconds)
   {
     return milliseconds / 1000.0f;
   }
 
-  private static int secondsToMillis (float seconds)
+  private static int secondsToMillis (final float seconds)
   {
-    return (int) (seconds * 1000);
+    return Math.round (seconds * 1000);
   }
 
   private void updateCurrentRepeatingKey ()
@@ -266,9 +266,9 @@ public class GdxKeyRepeatSystem
     }
   }
 
-  private void checkKeyCode (final int gdxKeyCode) throws GdxRuntimeException
+  private static void checkKeyCode (final int gdxKeyCode) throws GdxRuntimeException
   {
-    char temp;
+    final char temp;
 
     switch (gdxKeyCode)
     {

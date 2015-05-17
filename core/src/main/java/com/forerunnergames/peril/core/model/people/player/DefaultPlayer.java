@@ -90,7 +90,7 @@ public final class DefaultPlayer extends AbstractPerson implements Player
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return this.color.equals (color);
+    return this.color == color;
   }
 
   @Override
@@ -98,7 +98,7 @@ public final class DefaultPlayer extends AbstractPerson implements Player
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
-    return this.turnOrder.equals (turnOrder);
+    return this.turnOrder == turnOrder;
   }
 
   @Override

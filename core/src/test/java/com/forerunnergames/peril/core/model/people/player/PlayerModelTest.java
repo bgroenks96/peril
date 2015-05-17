@@ -752,7 +752,7 @@ public class PlayerModelTest
     assertTrue (playerModel.requestToRemoveByTurnOrder (turnOrder).succeeded ());
   }
 
-  private ImmutableSet <Player> addNPlayersTo (final PlayerModel playerModel, final int playerCount)
+  private static ImmutableSet <Player> addNPlayersTo (final PlayerModel playerModel, final int playerCount)
   {
     assertTrue (playerModel.isEmpty ());
     assertTrue (playerCount <= playerModel.getPlayerLimit ());
@@ -773,7 +773,7 @@ public class PlayerModelTest
     return playerBuilder.build ();
   }
 
-  private Player addSinglePlayerTo (final PlayerModel playerModel)
+  private static Player addSinglePlayerTo (final PlayerModel playerModel)
   {
     assertTrue (playerModel.isEmpty ());
     assertTrue (playerModel.getPlayerLimit () >= 1);
@@ -786,7 +786,7 @@ public class PlayerModelTest
     return player;
   }
 
-  private PlayerModel createPlayerModelWithLimitOf (final int playerLimit)
+  private static PlayerModel createPlayerModelWithLimitOf (final int playerLimit)
   {
     final GameRules gameRulesMock = mock (GameRules.class);
     when (gameRulesMock.getMinPlayers ()).thenReturn (MIN_PLAYERS);
@@ -798,7 +798,7 @@ public class PlayerModelTest
     return new PlayerModel (gameRulesMock);
   }
 
-  private void removeAllPlayersFrom (final PlayerModel playerModel)
+  private static void removeAllPlayersFrom (final PlayerModel playerModel)
   {
     for (final Player player : playerModel.getPlayers ())
     {

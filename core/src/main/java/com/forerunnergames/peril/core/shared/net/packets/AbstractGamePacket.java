@@ -39,8 +39,7 @@ public abstract class AbstractGamePacket implements GamePacket
   @Override
   public boolean equals (final Object obj)
   {
-    if (obj == null || !(obj instanceof GamePacket)) return false;
-    return ((GamePacket) obj).is (this);
+    return obj instanceof GamePacket && ((GamePacket) obj).is (this);
   }
 
   @Override

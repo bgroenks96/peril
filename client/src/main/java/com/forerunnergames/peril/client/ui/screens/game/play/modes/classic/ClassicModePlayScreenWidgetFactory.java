@@ -65,7 +65,7 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     labelFactory = new LabelFactory (skin.get (Label.LabelStyle.class));
   }
 
-  public PlayMapActor createPlayMapActor (final ScreenSize screenSize, final MouseInput mouseInput)
+  public static PlayMapActor createPlayMapActor (final ScreenSize screenSize, final MouseInput mouseInput)
   {
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");

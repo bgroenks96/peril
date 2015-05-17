@@ -25,13 +25,13 @@ public enum CountryImageState implements IterableEnum <CountryImageState>
   DISABLED,
   HIGHLIGHT;
 
-  private static ImmutableSet <CountryImageState> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
+  private static final ImmutableSet <CountryImageState> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
           .allOf (CountryImageState.class), new Predicate <CountryImageState> ()
   {
     @Override
-    public boolean apply (final CountryImageState state)
+    public boolean apply (final CountryImageState input)
     {
-      return state.isNot (HIGHLIGHT);
+      return input.isNot (HIGHLIGHT);
     }
   }));
 
@@ -72,15 +72,15 @@ public enum CountryImageState implements IterableEnum <CountryImageState>
   }
 
   @Override
-  public boolean is (CountryImageState countryImageState)
+  public boolean is (final CountryImageState e)
   {
-    return IterableEnumHelper.is (this, countryImageState);
+    return IterableEnumHelper.is (this, e);
   }
 
   @Override
-  public boolean isNot (CountryImageState countryImageState)
+  public boolean isNot (final CountryImageState e)
   {
-    return IterableEnumHelper.isNot (this, countryImageState);
+    return IterableEnumHelper.isNot (this, e);
   }
 
   @Override

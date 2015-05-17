@@ -12,7 +12,7 @@ public interface TerritoryName extends Comparable <TerritoryName>
   int hashCode ();
 
   @Override
-  boolean equals (final Object o);
+  boolean equals (final Object obj);
 
   @Override
   String toString ();

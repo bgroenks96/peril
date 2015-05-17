@@ -19,11 +19,11 @@ public final class CountryArmyTextActor extends Actor
   private final BitmapFont font;
   private final GlyphLayout glyphLayout = new GlyphLayout ();
   private String armiesText;
-  private int armies;
-  private Vector2 circleTopLeft = new Vector2 ();
-  private Vector2 circleSize = new Vector2 ();
-  private Vector2 initialPosition = new Vector2 ();
-  private Vector2 finalPosition = new Vector2 ();
+  private int armies = 0;
+  private final Vector2 circleTopLeft = new Vector2 ();
+  private final Vector2 circleSize = new Vector2 ();
+  private final Vector2 initialPosition = new Vector2 ();
+  private final Vector2 finalPosition = new Vector2 ();
 
   public CountryArmyTextActor ()
   {

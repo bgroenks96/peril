@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap;
 public abstract class AbstractTerritoryColorToNameConverter <T extends TerritoryColor <?>, U extends TerritoryName>
         implements TerritoryColorToNameConverter <T, U>
 {
-  private final U UNKNOWN_TERRITORY_NAME = createTerritoryName ("");
+  private static final String UNKNOWN_TERRITORY_NAME_VALUE = "";
   private final ImmutableMap <T, U> territoryColorsToNames;
 
   protected AbstractTerritoryColorToNameConverter (final ImmutableMap <T, U> territoryColorsToNames)
@@ -24,7 +24,7 @@ public abstract class AbstractTerritoryColorToNameConverter <T extends Territory
   {
     Arguments.checkIsNotNull (territoryColor, "territoryColor");
 
-    if (!territoryColorsToNames.containsKey (territoryColor)) return UNKNOWN_TERRITORY_NAME;
+    if (!territoryColorsToNames.containsKey (territoryColor)) return createTerritoryName (UNKNOWN_TERRITORY_NAME_VALUE);
 
     return territoryColorsToNames.get (territoryColor);
   }

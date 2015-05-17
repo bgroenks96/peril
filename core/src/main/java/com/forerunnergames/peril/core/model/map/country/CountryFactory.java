@@ -32,7 +32,7 @@ public final class CountryFactory
   {
     private final String name;
     private final Id id;
-    private int armyCount;
+    private int armyCount = 0;
 
     public CountryBuilder (final String countryName)
     {

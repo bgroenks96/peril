@@ -8,7 +8,7 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class MusicFactory
 {
-  public Music create (final ScreenId screenId)
+  public static Music create (final ScreenId screenId)
   {
     Arguments.checkIsNotNull (screenId, "screenId");
 

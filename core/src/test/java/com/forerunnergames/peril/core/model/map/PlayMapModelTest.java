@@ -33,7 +33,7 @@ public class PlayMapModelTest
   public static ImmutableSet <Country> generateTestCountries (final int count)
   {
     final Builder <Country> countrySetBuilder = ImmutableSet.builder ();
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; ++i)
     {
       final Country country = CountryFactory.create ("Country-" + i);
       countrySetBuilder.add (country);
@@ -96,7 +96,7 @@ public class PlayMapModelTest
 
     final Player testPlayer2 = PlayerFactory.create ("TestPlayer-2");
 
-    Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
     result = modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer2));
     assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED));
   }
@@ -465,7 +465,7 @@ public class PlayMapModelTest
     assertFalse (modelTest.ownedCountryCountIsAtLeast (2));
   }
 
-  private PlayMapModel createPlayMapModelTestWith (final ImmutableSet <Country> countries)
+  private static PlayMapModel createPlayMapModelTestWith (final ImmutableSet<Country> countries)
   {
     final GameRules classicRules = new ClassicGameRules.Builder ().build ();
     return new PlayMapModel (countries, classicRules);

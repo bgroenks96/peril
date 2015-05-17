@@ -59,11 +59,9 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     stage = new Stage (viewport)
     {
       @Override
-      public boolean keyDown (int keyCode)
+      public boolean keyDown (final int keyCode)
       {
-        if (keyCode == Input.Keys.ESCAPE) return false;
-
-        return super.keyDown (keyCode);
+        return keyCode != Input.Keys.ESCAPE && super.keyDown (keyCode);
       }
     };
 
@@ -87,7 +85,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     final InputProcessor preInputProcessor = new InputAdapter ()
     {
       @Override
-      public boolean touchDown (int screenX, int screenY, int pointer, int button)
+      public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
       {
         stage.setKeyboardFocus (null);
 
@@ -188,14 +186,14 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     return false;
   }
 
-  private void showCursor ()
+  private static void showCursor ()
   {
     Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
-                              (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
+                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
 
-  private void hideCursor ()
+  private static void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
   }

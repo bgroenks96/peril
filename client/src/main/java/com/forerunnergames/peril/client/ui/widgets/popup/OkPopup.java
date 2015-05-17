@@ -30,9 +30,7 @@ public class OkPopup implements Popup
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
     Arguments.checkIsNotNull (listener, "listener");
 
-    delegate = new DelegateDialog (popupStyle.getTitle (), skin.get (popupStyle.getWindowStyleName (),
-                                                                     Window.WindowStyle.class), popupStyle, stage,
-            skin, listener);
+    delegate = new DelegateDialog (popupStyle.getTitle (), skin.get (popupStyle.getWindowStyleName (), Window.WindowStyle.class), popupStyle, stage, skin, listener);
 
     addKeys ();
     addButtons ();
@@ -109,7 +107,7 @@ public class OkPopup implements Popup
     delegate.addKey (keyCode, popupAction);
   }
 
-  private class DelegateDialog extends Dialog implements Popup
+  private static class DelegateDialog extends Dialog implements Popup
   {
     private final PopupStyle popupStyle;
     private final Stage stage;
@@ -251,7 +249,7 @@ public class OkPopup implements Popup
       setMovable (popupStyle.isMovable ());
       pad (popupStyle.getBorderThicknessPixels ());
 
-      if (popupStyle.getTitleHeight () == PopupStyle.AUTO_HEIGHT)
+      if (Math.round (popupStyle.getTitleHeight ()) == PopupStyle.AUTO_HEIGHT)
       {
         padTop (getPadTop () + getTitleTable ().getPrefHeight ());
       }
@@ -326,7 +324,7 @@ public class OkPopup implements Popup
 
     private void setPosition ()
     {
-      if (popupStyle.getPositionUpperLeftReferenceScreenSpaceX () == PopupStyle.AUTO_H_CENTER)
+      if (Math.round (popupStyle.getPositionUpperLeftReferenceScreenSpaceX ()) == PopupStyle.AUTO_H_CENTER)
       {
         setX (Math.round ((stage.getWidth () - getWidth ()) / 2));
       }
@@ -335,7 +333,7 @@ public class OkPopup implements Popup
         setX (popupStyle.getPositionUpperLeftReferenceScreenSpaceX ());
       }
 
-      if (popupStyle.getPositionUpperLeftReferenceScreenSpaceY () == PopupStyle.AUTO_V_CENTER)
+      if (Math.round (popupStyle.getPositionUpperLeftReferenceScreenSpaceY ()) == PopupStyle.AUTO_V_CENTER)
       {
         setY (Math.round ((stage.getHeight () - getHeight ()) / 2));
       }
@@ -347,12 +345,12 @@ public class OkPopup implements Popup
 
     private void setSize ()
     {
-      if (popupStyle.getWidthReferenceScreenSpace () != PopupStyle.AUTO_WIDTH)
+      if (Math.round (popupStyle.getWidthReferenceScreenSpace ()) != PopupStyle.AUTO_WIDTH)
       {
         setWidth (popupStyle.getWidthReferenceScreenSpace ());
       }
 
-      if (popupStyle.getHeightReferenceScreenSpace () != PopupStyle.AUTO_HEIGHT)
+      if (Math.round (popupStyle.getHeightReferenceScreenSpace ()) != PopupStyle.AUTO_HEIGHT)
       {
         setHeight (popupStyle.getHeightReferenceScreenSpace ());
       }

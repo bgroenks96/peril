@@ -7,7 +7,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 {
   private final MusicFactory musicFactory;
   private final MusicSettings musicSettings;
-  private Map <ScreenId, Music> music = new HashMap <> (ScreenId.values ().length);
+  private final Map <ScreenId, Music> music = new EnumMap <> (ScreenId.class);
 
   public MusicController (final MusicFactory musicFactory, final MusicSettings musicSettings)
   {
@@ -32,7 +32,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   {
     for (final ScreenId screenId : ScreenId.values ())
     {
-      music.put (screenId, musicFactory.create (screenId));
+      music.put (screenId, MusicFactory.create (screenId));
     }
   }
 
@@ -50,7 +50,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
             + fromScreen + "].");
     Arguments.checkIsTrue (music.containsKey (toScreen), "Cannot find music for screen [" + toScreen + "].");
 
-    if (! musicSettings.isEnabled ()) return;
+    if (!MusicSettings.isEnabled ()) return;
 
     final Music oldMusic = music.get (fromScreen);
     final Music newMusic = music.get (toScreen);
@@ -59,7 +59,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
     if (oldMusic != null && oldMusic.isPlaying ()) oldMusic.stop ();
     if (newMusic.isPlaying ()) return;
 
-    newMusic.setVolume (musicSettings.getInitialVolume ());
+    newMusic.setVolume (MusicSettings.getInitialVolume ());
     newMusic.setLooping (true);
     newMusic.play ();
   }

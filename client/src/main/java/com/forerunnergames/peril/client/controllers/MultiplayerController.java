@@ -140,7 +140,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onServerDisconnectEvent (final ServerDisconnectionEvent event)
+  public static void onServerDisconnectEvent (final ServerDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -149,7 +149,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onSeverConnectionEvent (final ServerConnectionEvent event)
+  public static void onSeverConnectionEvent (final ServerConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

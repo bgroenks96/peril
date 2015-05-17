@@ -240,12 +240,12 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     log.info ("Stopped the server.");
   }
 
-  private boolean addressMatches (final Connection connection, final Remote client)
+  private static boolean addressMatches (final Connection connection, final Remote client)
   {
     return client.has (connection.getRemoteAddressTCP ()) || client.has (connection.getRemoteAddressUDP ());
   }
 
-  private boolean idMatches (final int connectionId, final Remote client)
+  private static boolean idMatches (final int connectionId, final Remote client)
   {
     return client.has (connectionId);
   }

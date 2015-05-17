@@ -71,7 +71,7 @@ public final class EventBasedClientController extends AbstractClientController
     eventBus.publish (new ServerCommunicationEvent ((Event) object, server));
   }
 
-  private boolean isValidCommunicationEvent (final Object eventObject)
+  private static boolean isValidCommunicationEvent (final Object eventObject)
   {
     return eventObject instanceof AnswerEvent || eventObject instanceof GameNotificationEvent;
   }

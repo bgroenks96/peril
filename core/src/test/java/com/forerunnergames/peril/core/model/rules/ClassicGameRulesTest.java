@@ -60,7 +60,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMaxArmiesInHand () == ClassicGameRules.MAX_ARMIES_IN_HAND);
+    assertEquals (rules.getMaxArmiesInHand (), ClassicGameRules.MAX_ARMIES_IN_HAND);
   }
 
   @Test
@@ -68,7 +68,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMaxPlayers () == ClassicGameRules.MAX_PLAYERS);
+    assertEquals (rules.getMaxPlayers (), ClassicGameRules.MAX_PLAYERS);
   }
 
   @Test
@@ -76,7 +76,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMinArmiesInHand () == ClassicGameRules.MIN_ARMIES_IN_HAND);
+    assertEquals (rules.getMinArmiesInHand (), ClassicGameRules.MIN_ARMIES_IN_HAND);
   }
 
   @Test
@@ -84,7 +84,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMinPlayers () == ClassicGameRules.MIN_PLAYERS);
+    assertEquals (rules.getMinPlayers (), ClassicGameRules.MIN_PLAYERS);
   }
 
   @Test
@@ -144,7 +144,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMinPlayerLimit () == ClassicGameRules.MIN_PLAYER_LIMIT);
+    assertEquals (rules.getMinPlayerLimit (), ClassicGameRules.MIN_PLAYER_LIMIT);
   }
 
   @Test
@@ -152,7 +152,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMaxTotalCountryCount () == ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT);
+    assertEquals (rules.getMaxTotalCountryCount (), ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT);
   }
 
   @Test
@@ -160,7 +160,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMinTotalCountryCount () == ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT);
+    assertEquals (rules.getMinTotalCountryCount (), ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT);
   }
 
   @Test
@@ -168,7 +168,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMaxPlayerLimit () == ClassicGameRules.MAX_PLAYER_LIMIT);
+    assertEquals (rules.getMaxPlayerLimit (), ClassicGameRules.MAX_PLAYER_LIMIT);
   }
 
   @Test
@@ -176,7 +176,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertTrue (rules.getMaxWinPercentage () == ClassicGameRules.MAX_WIN_PERCENTAGE);
+    assertEquals (rules.getMaxWinPercentage (), ClassicGameRules.MAX_WIN_PERCENTAGE);
   }
 
   @Test
@@ -185,7 +185,7 @@ public class ClassicGameRulesTest
     final int playerLimit = ClassicGameRules.MAX_PLAYER_LIMIT;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit).build ();
 
-    assertTrue (rules.getPlayerLimit () == playerLimit);
+    assertEquals (rules.getPlayerLimit (), playerLimit);
   }
 
   @Test
@@ -194,7 +194,7 @@ public class ClassicGameRulesTest
     final int playerLimit = ClassicGameRules.MIN_PLAYER_LIMIT;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit).build ();
 
-    assertTrue (rules.getPlayerLimit () == playerLimit);
+    assertEquals (rules.getPlayerLimit (), playerLimit);
   }
 
   @Test
@@ -203,7 +203,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT;
     final GameRules rules = new ClassicGameRules.Builder ().totalCountryCount (totalCountryCount).build ();
 
-    assertTrue (rules.getTotalCountryCount () == totalCountryCount);
+    assertEquals (rules.getTotalCountryCount (), totalCountryCount);
   }
 
   @Test
@@ -212,7 +212,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT;
     final GameRules rules = new ClassicGameRules.Builder ().totalCountryCount (totalCountryCount).build ();
 
-    assertTrue (rules.getTotalCountryCount () == totalCountryCount);
+    assertEquals (rules.getTotalCountryCount (), totalCountryCount);
   }
 
   @Test
@@ -221,7 +221,7 @@ public class ClassicGameRulesTest
     final int winPercentage = ClassicGameRules.MAX_WIN_PERCENTAGE;
     final GameRules rules = new ClassicGameRules.Builder ().winPercentage (winPercentage).build ();
 
-    assertTrue (rules.getWinPercentage () == winPercentage);
+    assertEquals (rules.getWinPercentage (), winPercentage);
   }
 
   @Test
@@ -282,11 +282,11 @@ public class ClassicGameRulesTest
     final ImmutableList <Integer> testDistribution = rules.getInitialPlayerCountryDistribution (testPlayerCount);
     for (int i = 0; i < expectedRemainderValue; i++)
     {
-      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue + 1));
+      assertTrue (expectedBaseDistributionValue + 1 == testDistribution.get (i));
     }
-    for (int i = expectedRemainderValue; i < testPlayerCount; i++)
+    for (int i = expectedRemainderValue; i < testPlayerCount; ++i)
     {
-      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue));
+      assertTrue (expectedBaseDistributionValue == testDistribution.get (i));
     }
   }
 
@@ -301,13 +301,13 @@ public class ClassicGameRulesTest
             .totalCountryCount (testCountrySet.size ()).build ();
 
     final ImmutableList <Integer> testDistribution = rules.getInitialPlayerCountryDistribution (testPlayerCount);
-    for (int i = 0; i < expectedRemainderValue; i++)
+    for (int i = 0; i < expectedRemainderValue; ++i)
     {
-      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue + 1));
+      assertTrue (expectedBaseDistributionValue + 1 == testDistribution.get (i));
     }
-    for (int i = expectedRemainderValue; i < testPlayerCount; i++)
+    for (int i = expectedRemainderValue; i < testPlayerCount; ++i)
     {
-      assertEquals (testDistribution.get (i), new Integer (expectedBaseDistributionValue));
+      assertTrue (expectedBaseDistributionValue == testDistribution.get (i));
     }
   }
 }

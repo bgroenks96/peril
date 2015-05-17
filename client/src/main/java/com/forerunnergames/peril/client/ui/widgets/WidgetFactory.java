@@ -43,9 +43,7 @@ public class WidgetFactory
     return textButton;
   }
 
-  public TextButton createTextButton (final String text,
-                                      final TextButton.TextButtonStyle style,
-                                      final EventListener listener)
+  public static TextButton createTextButton (final String text, final TextButton.TextButtonStyle style, final EventListener listener)
   {
     Arguments.checkIsNotNull (text, "text");
     Arguments.checkIsNotNull (style, "style");

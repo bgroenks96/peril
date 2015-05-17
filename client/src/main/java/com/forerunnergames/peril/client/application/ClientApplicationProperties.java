@@ -218,7 +218,7 @@ public final class ClientApplicationProperties
     return properties.getProperty (propertyKey);
   }
 
-  private String getParseErrorMessageFor (final String propertyKey, final String propertyValue) throws RuntimeException
+  private static String getParseErrorMessageFor (final String propertyKey, final String propertyValue) throws RuntimeException
   {
     return "Oops! Looks like your " + PROPERTIES_FILE_NAME + " (located in: \"" + PROPERTIES_FILE_PATH
             + "\") has an invalid setting:\n\n" + propertyKey + "=" + propertyValue

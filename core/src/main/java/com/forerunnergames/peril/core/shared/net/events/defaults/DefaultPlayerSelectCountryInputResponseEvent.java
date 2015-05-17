@@ -8,7 +8,7 @@ public class DefaultPlayerSelectCountryInputResponseEvent implements PlayerSelec
 {
   private final String selectedCountryName;
 
-  public DefaultPlayerSelectCountryInputResponseEvent (String selectedCountryName)
+  public DefaultPlayerSelectCountryInputResponseEvent (final String selectedCountryName)
   {
     Arguments.checkIsNotNull (selectedCountryName, "selectedCountryName");
 

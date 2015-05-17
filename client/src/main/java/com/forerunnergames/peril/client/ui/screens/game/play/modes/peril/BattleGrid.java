@@ -13,7 +13,7 @@ import com.forerunnergames.tools.common.Arguments;
 public final class BattleGrid extends Table implements InputProcessor
 {
   private final UnitActor unitActor;
-  private Table unitActorTable;
+  private final Table unitActorTable;
 
   public BattleGrid (final UnitActor unitActor)
   {
@@ -47,7 +47,7 @@ public final class BattleGrid extends Table implements InputProcessor
   }
 
   @Override
-  public void act (float delta)
+  public void act (final float delta)
   {
     super.act (delta);
 
@@ -107,7 +107,7 @@ public final class BattleGrid extends Table implements InputProcessor
     return ! areEqual (previousCellOf (unitActor), currentCellOf (unitActor));
   }
 
-  private boolean areEqual (final Cell <?> cell1, final Cell <?> cell2)
+  private static boolean areEqual (final Cell<?> cell1, final Cell<?> cell2)
   {
     return cell1 != null && cell2 != null && cell1.getRow () == cell2.getRow ()
         && cell1.getColumn () == cell2.getColumn ();
@@ -119,7 +119,7 @@ public final class BattleGrid extends Table implements InputProcessor
     addUnitActorTo (currentCellOf (unitActor), unitActor);
   }
 
-  private void removeUnitActorFrom (final Cell <?> cell)
+  private static void removeUnitActorFrom (final Cell<?> cell)
   {
     setCellActor (cell, null);
   }
@@ -134,22 +134,22 @@ public final class BattleGrid extends Table implements InputProcessor
     return (Cell <?>) unitActorTable.getCells ().get (cellIndex);
   }
 
-  private int gridPositionToCellIndex (final Vector2 gridPosition)
+  private static int gridPositionToCellIndex (final Vector2 gridPosition)
   {
-    return (int) (gridPosition.y * BattleGridSettings.BATTLE_GRID_COLUMN_COUNT + gridPosition.x);
+    return Math.round (gridPosition.y * BattleGridSettings.BATTLE_GRID_COLUMN_COUNT + gridPosition.x);
   }
 
-  private Vector2 previousGridPositionOf (final UnitActor unitActor)
+  private static Vector2 previousGridPositionOf (final UnitActor unitActor)
   {
     return unitActor.getPreviousPosition ();
   }
 
-  private void addUnitActorTo (final Cell <?> cell, final UnitActor unitActor)
+  private static void addUnitActorTo (final Cell<?> cell, final UnitActor unitActor)
   {
     setCellActor (cell, unitActor.asActor ());
   }
 
-  private void setCellActor (final Cell <?> cell, final Actor actor)
+  private static void setCellActor (final Cell<?> cell, final Actor actor)
   {
     cell.setActor (actor);
   }
@@ -159,7 +159,7 @@ public final class BattleGrid extends Table implements InputProcessor
     return cellAt (gridPositionToCellIndex (currentGridPositionOf (unitActor)));
   }
 
-  private Vector2 currentGridPositionOf (final UnitActor unitActor)
+  private static Vector2 currentGridPositionOf (final UnitActor unitActor)
   {
     return unitActor.getCurrentPosition ();
   }

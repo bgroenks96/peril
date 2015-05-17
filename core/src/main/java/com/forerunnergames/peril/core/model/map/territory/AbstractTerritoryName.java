@@ -46,20 +46,20 @@ public abstract class AbstractTerritoryName implements TerritoryName
   }
 
   @Override
-  public boolean equals (final Object o)
+  public boolean equals (final Object obj)
   {
-    if (this == o) return true;
-    if (o == null || getClass () != o.getClass ()) return false;
+    if (this == obj) return true;
+    if (obj == null || getClass () != obj.getClass ()) return false;
 
-    final AbstractTerritoryName that = (AbstractTerritoryName) o;
+    final AbstractTerritoryName that = (AbstractTerritoryName) obj;
 
     return name.equals (that.name);
   }
 
   @Override
-  public int compareTo (final TerritoryName territoryName)
+  public int compareTo (final TerritoryName o)
   {
-    return name.compareTo (territoryName.asString ());
+    return name.compareTo (o.asString ());
   }
 
   @Override

@@ -27,12 +27,12 @@ public abstract class AbstractTerritoryColor <T extends RgbaColorComponent> impl
   }
 
   @Override
-  public boolean equals (final Object o)
+  public boolean equals (final Object obj)
   {
-    if (this == o) return true;
-    if (o == null || getClass () != o.getClass ()) return false;
+    if (this == obj) return true;
+    if (obj == null || getClass () != obj.getClass ()) return false;
 
-    final AbstractTerritoryColor that = (AbstractTerritoryColor) o;
+    final AbstractTerritoryColor that = (AbstractTerritoryColor) obj;
 
     return colorComponent.equals (that.colorComponent);
   }

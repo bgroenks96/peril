@@ -7,6 +7,7 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -142,7 +143,7 @@ public class GameModelTest
     // can't use 5, though, because 5 < ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT
 
     gameModel = createGameModelWithTotalCountryCount (10);
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player-" + i));
     }
@@ -235,7 +236,7 @@ public class GameModelTest
     gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
 
     assertTrue (eventHandler.lastEventWasType (PlayerJoinGameSuccessEvent.class));
-    assertTrue (eventHandler.lastEvent (PlayerJoinGameSuccessEvent.class).getPlayerName ().equals (name));
+    assertEquals (eventHandler.lastEvent (PlayerJoinGameSuccessEvent.class).getPlayerName (), name);
   }
 
   @Test
@@ -304,7 +305,7 @@ public class GameModelTest
     return new GameModel (playerModel, playMapModel, gameRules, eventBus);
   }
 
-  private final class EventBusHandler
+  private static final class EventBusHandler
   {
     private Event lastEvent;
 

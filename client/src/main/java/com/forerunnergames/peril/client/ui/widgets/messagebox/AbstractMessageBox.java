@@ -65,10 +65,10 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
 
     final Actor row = createRow (message);
     table.row ().expandX ().fillX ().prefHeight (messageBoxRowStyle.getHeight ());
-    final Cell messageCell = table.add (row);
+    final Cell <Actor> messageCell = table.add (row);
     table.layout ();
     layout ();
-    messageCell.height (Maths.nextHigherMultiple ((int) row.getHeight (), (int) messageBoxRowStyle.getHeight ()));
+    messageCell.height (Maths.nextHigherMultiple (Math.round (row.getHeight ()), Math.round (messageBoxRowStyle.getHeight ())));
     table.invalidateHierarchy ();
     layout ();
   }

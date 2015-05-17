@@ -107,8 +107,7 @@ public final class PlayMapModel
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!existsCountryWith (countryName)) return false;
-    return isCountryOwned (idOf (countryWith (countryName)));
+    return existsCountryWith (countryName) && isCountryOwned (idOf (countryWith (countryName)));
   }
 
   /**
@@ -199,9 +198,9 @@ public final class PlayMapModel
     assert name != null;
     assert !name.isEmpty ();
 
-    for (final Id nextId : countryIds.keySet ())
+    for (final Map.Entry<Id, Country> idCountryEntry : countryIds.entrySet ())
     {
-      final Country country = countryIds.get (nextId);
+      final Country country = idCountryEntry.getValue ();
       if (country.hasName (name)) return country;
     }
     return null;

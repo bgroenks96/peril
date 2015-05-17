@@ -43,7 +43,7 @@ public final class HoveredTerritoryTextActor extends Actor
   }
 
   @Override
-  public void act (float delta)
+  public void act (final float delta)
   {
     super.act (delta);
 

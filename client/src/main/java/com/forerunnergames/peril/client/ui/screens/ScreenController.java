@@ -27,7 +27,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   private final MBassador <Event> eventBus;
   private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
-  private ScreenId previousScreenId;
+  private ScreenId previousScreenId = null;
 
   public ScreenController (final Game game, final MusicChanger musicChanger, final MBassador <Event> eventBus)
   {
@@ -79,7 +79,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
     Arguments.checkIsTrue (screens.containsKey (id), "Cannot find " + Screen.class.getSimpleName () + " with "
             + id.getClass ().getSimpleName () + " [" + id + "].");
 
-    if (id.equals (getCurrentScreenId ())) return;
+    if (id == getCurrentScreenId ()) return;
 
     previousScreenId = getCurrentScreenId ();
 

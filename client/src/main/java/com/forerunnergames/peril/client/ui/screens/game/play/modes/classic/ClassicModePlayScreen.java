@@ -95,7 +95,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
-    playMapActor = widgetFactory.createPlayMapActor (screenSize, mouseInput);
+    playMapActor = ClassicModePlayScreenWidgetFactory.createPlayMapActor (screenSize, mouseInput);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -180,7 +180,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final InputProcessor preInputProcessor = new InputAdapter ()
     {
       @Override
-      public boolean touchDown (int screenX, int screenY, int pointer, int button)
+      public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
       {
         stage.setKeyboardFocus (null);
 
@@ -191,7 +191,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat = new GdxKeyRepeatSystem (Gdx.input, new GdxKeyRepeatListenerAdapter ()
     {
       @Override
-      public void keyDownRepeating (int keyCode)
+      public void keyDownRepeating (final int keyCode)
       {
         mandatoryOccupationPopup.keyDownRepeating (keyCode);
       }
@@ -358,12 +358,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     playMapActor.changeArmiesBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
   }
 
-  private void showCursor ()
+  private static void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.playScreenNormalCursor, (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x, (int) InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
+    Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
+                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
 
-  private void hideCursor ()
+  private static void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
   }

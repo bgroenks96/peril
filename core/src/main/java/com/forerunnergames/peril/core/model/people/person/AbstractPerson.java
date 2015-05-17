@@ -8,7 +8,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 public abstract class AbstractPerson extends AbstractAsset implements Person, Author
 {
-  private PersonIdentity identity;
+  private PersonIdentity identity = PersonIdentity.UNKNOWN;
 
   protected AbstractPerson (final String name, final Id id, final PersonIdentity identity)
   {
@@ -43,6 +43,6 @@ public abstract class AbstractPerson extends AbstractAsset implements Person, Au
   {
     Arguments.checkIsNotNull (identity, "identity");
 
-    return this.identity.equals (identity);
+    return this.identity == identity;
   }
 }

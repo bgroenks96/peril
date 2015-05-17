@@ -68,9 +68,9 @@ public final class GamePackets
     Arguments.checkHasNoNullKeysOrValues (playMap, "playMap");
 
     final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapBuilder = ImmutableMap.builder ();
-    for (final Country country : playMap.keySet ())
+    for (final Map.Entry <Country, Player> countryPlayerEntry : playMap.entrySet ())
     {
-      playMapBuilder.put (from (country), from (playMap.get (country)));
+      playMapBuilder.put (from (countryPlayerEntry.getKey ()), from (countryPlayerEntry.getValue ()));
     }
     return playMapBuilder.build ();
   }

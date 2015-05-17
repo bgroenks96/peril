@@ -71,9 +71,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
 
-    menuBarActor = widgetFactory.createMenuBar ();
-    rightBackgroundShadowActor = widgetFactory.createRightBackgroundShadow ();
-    titleBackgroundActor = widgetFactory.createTitleBackground ();
+    menuBarActor = MenuScreenWidgetFactory.createMenuBar ();
+    rightBackgroundShadowActor = MenuScreenWidgetFactory.createRightBackgroundShadow ();
+    titleBackgroundActor = MenuScreenWidgetFactory.createTitleBackground ();
     rightMenuBarShadowActor = widgetFactory.createRightMenuBarShadow ();
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
@@ -86,9 +86,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     final Table tableL0 = new Table ().top ().left ();
-    tableL0.add (widgetFactory.createScreenBackgroundLeft ());
+    tableL0.add (MenuScreenWidgetFactory.createScreenBackgroundLeft ());
     tableL0.add ().expandX ();
-    tableL0.add (widgetFactory.createScreenBackgroundRight ());
+    tableL0.add (MenuScreenWidgetFactory.createScreenBackgroundRight ());
     rootStack.add (tableL0);
 
     // Layer 1 - menu bar & right background shadow
@@ -479,13 +479,13 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     buttonTable.add (widgetFactory.createTextButton (text, listener)).width (220);
   }
 
-  private void showCursor ()
+  private static void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.menuNormalCursor, (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.x,
-                              (int) InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.y);
+    Gdx.input.setCursorImage (Assets.menuNormalCursor, Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+                              Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
 
-  private void hideCursor ()
+  private static void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
   }

@@ -17,11 +17,11 @@ public final class Main
     Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler ()
     {
       @Override
-      public void uncaughtException (final Thread thread, final Throwable throwable)
+      public void uncaughtException (final Thread t, final Throwable e)
       {
         log.error ("The server application has crashed!\n\nA crash file has been created in \""
                 + System.getProperty ("user.home") + File.separator + "peril" + File.separator
-                + "crashes\".\n", throwable);
+                + "crashes\".\n", e);
 
         System.exit (1);
       }

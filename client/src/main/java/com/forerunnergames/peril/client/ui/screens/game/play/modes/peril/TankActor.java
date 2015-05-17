@@ -15,11 +15,11 @@ public final class TankActor extends Actor implements UnitActor
   private static final float ACTION_THRESHOLD_SECONDS = 1.0f / SPEED_IN_GRID_SQUARES_PER_SECOND;
   private final Sprite bodySprite;
   private final Sprite turretSprite;
-  private Vector2 spritePosition = new Vector2 (0, 0);
-  private Vector2 bodyForwardVector = new Vector2 (0, 1);
-  private Vector2 turretForwardVector = new Vector2 (0, 1);
-  private Vector2 previousPosition = new Vector2 (0, 0);
-  private Vector2 currentPosition = new Vector2 (0, 0);
+  private final Vector2 spritePosition = new Vector2 (0, 0);
+  private final Vector2 bodyForwardVector = new Vector2 (0, 1);
+  private final Vector2 turretForwardVector = new Vector2 (0, 1);
+  private final Vector2 previousPosition = new Vector2 (0, 0);
+  private final Vector2 currentPosition = new Vector2 (0, 0);
   private MovementDirection movementDirection = MovementDirection.NONE;
   private TurnDirection turnDirection = TurnDirection.NONE;
   private TurnDirection turretTurnDirection = TurnDirection.NONE;
@@ -49,7 +49,7 @@ public final class TankActor extends Actor implements UnitActor
   }
 
   @Override
-  public void act (float delta)
+  public void act (final float delta)
   {
     super.act (delta);
 
@@ -338,7 +338,7 @@ public final class TankActor extends Actor implements UnitActor
   {
     if (! turretActive) return;
 
-    final int degrees = (int) turretForwardVector.angle (bodyForwardVector);
+    final int degrees = Math.round (turretForwardVector.angle (bodyForwardVector));
 
     if (degrees == 0) return;
 

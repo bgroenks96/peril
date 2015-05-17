@@ -56,7 +56,7 @@ public final class CountryImageRepository
     return countryNamesAndImageStatesToImages.row (countryName);
   }
 
-  private CountryName createCountryNameFrom (final String[] countryAtlasRegionNameSegments)
+  private static CountryName createCountryNameFrom (final String... countryAtlasRegionNameSegments)
   {
     final StringBuilder countryNameStringBuilder = new StringBuilder ();
 
@@ -70,7 +70,7 @@ public final class CountryImageRepository
     return new CountryName (countryNameStringBuilder.toString ());
   }
 
-  private CountryImageState createCountryImageStateFrom (final String[] countryAtlasRegionNameSegments)
+  private static CountryImageState createCountryImageStateFrom (final String... countryAtlasRegionNameSegments)
   {
     return CountryImageState.valueOf (countryAtlasRegionNameSegments [countryAtlasRegionNameSegments.length - 1]
             .toUpperCase ());

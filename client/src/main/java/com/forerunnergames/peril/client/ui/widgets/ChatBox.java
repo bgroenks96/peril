@@ -86,7 +86,7 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
 
   private final class TextFieldInputListener extends InputListener
   {
-    private MBassador <Event> eventBus;
+    private final MBassador <Event> eventBus;
 
     public TextFieldInputListener (final MBassador <Event> eventBus)
     {

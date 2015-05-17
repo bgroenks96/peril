@@ -8,5 +8,5 @@ public interface TerritoryColor <T extends RgbaColorComponent>
 
   int hashCode ();
 
-  boolean equals (final Object o);
+  boolean equals (final Object obj);
 }

@@ -24,13 +24,15 @@ import org.junit.Test;
 public class GamePacketTest
 {
   private static final int SAMPLE_SIZE_MANY = 1000000;
+  private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
 
   @Test
   public void testTwoCommonPlayerPacketsAreEqual ()
   {
     final Player player = PlayerFactory.builder ("Test Player").build ();
 
-    final PlayerPacket packet0 = GamePackets.from (player), packet1 = GamePackets.from (player);
+    final PlayerPacket packet0 = GamePackets.from (player);
+    final PlayerPacket packet1 = GamePackets.from (player);
 
     assertEquals (packet0, packet1);
   }
@@ -40,7 +42,8 @@ public class GamePacketTest
   {
     final Country country = CountryFactory.builder ("Test Country").build ();
 
-    final CountryPacket packet0 = GamePackets.from (country), packet1 = GamePackets.from (country);
+    final CountryPacket packet0 = GamePackets.from (country);
+    final CountryPacket packet1 = GamePackets.from (country);
 
     assertEquals (packet0, packet1);
   }
@@ -51,7 +54,8 @@ public class GamePacketTest
     final Player player0 = PlayerFactory.builder ("Test Player-0").build ();
     final Player player1 = PlayerFactory.builder ("Test Player-1").build ();
 
-    final PlayerPacket packet0 = GamePackets.from (player0), packet1 = GamePackets.from (player1);
+    final PlayerPacket packet0 = GamePackets.from (player0);
+    final PlayerPacket packet1 = GamePackets.from (player1);
 
     assertNotEquals (packet0, packet1);
   }
@@ -62,10 +66,9 @@ public class GamePacketTest
     final ImmutableMap.Builder <PlayerPacket, Player> mapBuilder = ImmutableMap.builder ();
     final int n = SAMPLE_SIZE_MANY;
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
       final Player player = PlayerFactory.builder ("Player-" + i).build ();
-
       final PlayerPacket packet = GamePackets.from (player);
 
       mapBuilder.put (packet, player);
@@ -81,10 +84,9 @@ public class GamePacketTest
     final ImmutableMap.Builder <CountryPacket, Country> mapBuilder = ImmutableMap.builder ();
     final int n = SAMPLE_SIZE_MANY;
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
       final Country country = CountryFactory.builder ("Country-" + i).build ();
-
       final CountryPacket packet = GamePackets.from (country);
 
       mapBuilder.put (packet, country);
@@ -100,11 +102,10 @@ public class GamePacketTest
     final ImmutableMap.Builder <PlayerPacket, Player> mapBuilder = ImmutableMap.builder ();
     final int n = SAMPLE_SIZE_MANY / 2;
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
       final int strLen = 3 + i % 20;
       final Player player = PlayerFactory.builder (generateRandomLetterString (strLen) + i).build ();
-
       final PlayerPacket packet = GamePackets.from (player);
 
       mapBuilder.put (packet, player);
@@ -114,20 +115,18 @@ public class GamePacketTest
     mapBuilder.build ();
   }
 
-  private final String letters = "abcdefghijklmnopqrstuvwxyz";
-
-  private String generateRandomLetterString (final int length)
+  private static String generateRandomLetterString (final int length)
   {
     assertTrue (length > 0);
 
     final StringBuilder str = new StringBuilder (length);
     // NOTE: Can't use fg-tools Randomness because frequent calls seem to cause it to hang on an internal
-    // method, according to profiler (generateSystemEntroySeed). Using java.util.Random instead.
+    // method, according to profiler (generateSystemEntropySeed). Using java.util.Random instead.
     final Random rand = new Random ();
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < length; ++i)
     {
-      int ind = rand.nextInt (letters.length ());
-      str.append (letters.charAt (ind));
+      final int ind = rand.nextInt (LETTERS.length ());
+      str.append (LETTERS.charAt (ind));
     }
     return str.toString ();
   }

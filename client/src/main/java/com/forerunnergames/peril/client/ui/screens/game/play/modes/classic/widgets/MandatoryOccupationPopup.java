@@ -169,7 +169,7 @@ public class MandatoryOccupationPopup extends Dialog
   }
 
   @Override
-  public void act (float delta)
+  public void act (final float delta)
   {
     super.act (delta);
 
@@ -382,7 +382,7 @@ public class MandatoryOccupationPopup extends Dialog
     minButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
+      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
       {
         setSliderToMinValue ();
         return true;
@@ -392,7 +392,7 @@ public class MandatoryOccupationPopup extends Dialog
     minusButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
+      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
       {
         decrementSlider ();
         return true;
@@ -402,7 +402,7 @@ public class MandatoryOccupationPopup extends Dialog
     plusButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
+      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
       {
         incrementSlider ();
         return true;
@@ -412,7 +412,7 @@ public class MandatoryOccupationPopup extends Dialog
     maxButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
+      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
       {
         setSliderToMaxValue ();
         return true;
@@ -433,7 +433,7 @@ public class MandatoryOccupationPopup extends Dialog
 
   private int getSliderValue ()
   {
-    return (int) slider.getValue ();
+    return Math.round (slider.getValue ());
   }
 
   private void setSourceCountryArmies (final int armies)
@@ -476,7 +476,7 @@ public class MandatoryOccupationPopup extends Dialog
     addListener (new InputListener ()
     {
       @Override
-      public boolean keyDown (InputEvent event, int keycode)
+      public boolean keyDown (final InputEvent event, final int keycode)
       {
         if (!isShown) return false;
 
@@ -487,7 +487,7 @@ public class MandatoryOccupationPopup extends Dialog
             hide (new Action ()
             {
               @Override
-              public boolean act (float delta)
+              public boolean act (final float delta)
               {
                 result (null);
 
@@ -597,13 +597,13 @@ public class MandatoryOccupationPopup extends Dialog
                                                                                                     countryImage));
   }
 
-  private float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
+  private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
   {
     return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
             - (COUNTRY_BOX_WIDTH - (COUNTRY_BOX_INNER_PADDING * 2.0f) - countryImagePostLayout.getImageWidth ())));
   }
 
-  private Image asImage (final CountryActor countryActor)
+  private static Image asImage (final CountryActor countryActor)
   {
     return new Image (countryActor.getCurrentImage ().getDrawable (), Scaling.none);
   }

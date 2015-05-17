@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -211,7 +211,7 @@ public final class PlayMapActor extends Group
     Arguments.checkUpperInclusiveBound (n, CountryImageState.values ().length, "n");
 
     final ImmutableSet.Builder <CountryImageState> nStatesBuilder = ImmutableSet.builder ();
-    final Set <CountryImageState> states = new HashSet <> (Arrays.asList (CountryImageState.values ()));
+    final Set <CountryImageState> states = EnumSet.allOf (CountryImageState.class);
 
     for (int i = 0; i < n; ++i)
     {

@@ -27,56 +27,67 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class DebugEventGenerator
 {
-  private final ImmutableList <String> RANDOM_WORDS = ImmutableList.of ("Lorem", "ipsum", "dolor", "sit", "amet,",
-                                                                        "consectetur", "adipiscing", "elit.", "Mauris",
-                                                                        "elementum", "nunc", "id", "dolor",
-                                                                        "imperdiet", "tincidunt.", "Proin", "rutrum",
-                                                                        "leo", "orci,", "nec", "interdum", "mauris",
-                                                                        "pretium", "ut.", "Suspendisse", "faucibus,",
-                                                                        "purus", "vitae", "finibus", "euismod,",
-                                                                        "libero", "urna", "fermentum", "diam,", "at",
-                                                                        "pretium", "quam", "lacus", "vitae", "metus.",
-                                                                        "Suspendisse", "ac", "tincidunt", "leo.",
-                                                                        "Morbi", "a", "tellus", "purus.", "Aenean",
-                                                                        "a", "arcu", "ante.", "Nulla", "facilisi.",
-                                                                        "Aliquam", "pharetra", "sed", "urna", "nec",
-                                                                        "efficitur.", "Maecenas", "pulvinar", "libero",
-                                                                        "eget", "pellentesque", "sodales.", "Donec",
-                                                                        "a", "metus", "eget", "mi", "tempus",
-                                                                        "feugiat.", "Etiam", "fringilla",
-                                                                        "ullamcorper", "justo", "ut", "mattis.", "Nam",
-                                                                        "egestas", "elit", "at", "luctus", "molestie.");
+  private static final ImmutableList <String> RANDOM_WORDS = ImmutableList.of ("Lorem", "ipsum", "dolor", "sit",
+                                                                               "amet,", "consectetur", "adipiscing",
+                                                                               "elit.", "Mauris", "elementum", "nunc",
+                                                                               "id", "dolor", "imperdiet",
+                                                                               "tincidunt.", "Proin", "rutrum", "leo",
+                                                                               "orci,", "nec", "interdum", "mauris",
+                                                                               "pretium", "ut.", "Suspendisse",
+                                                                               "faucibus,", "purus", "vitae",
+                                                                               "finibus", "euismod,", "libero", "urna",
+                                                                               "fermentum", "diam,", "at", "pretium",
+                                                                               "quam", "lacus", "vitae", "metus.",
+                                                                               "Suspendisse", "ac", "tincidunt",
+                                                                               "leo.", "Morbi", "a", "tellus",
+                                                                               "purus.", "Aenean", "a", "arcu",
+                                                                               "ante.", "Nulla", "facilisi.",
+                                                                               "Aliquam", "pharetra", "sed", "urna",
+                                                                               "nec", "efficitur.", "Maecenas",
+                                                                               "pulvinar", "libero", "eget",
+                                                                               "pellentesque", "sodales.", "Donec",
+                                                                               "a", "metus", "eget", "mi", "tempus",
+                                                                               "feugiat.", "Etiam", "fringilla",
+                                                                               "ullamcorper", "justo", "ut", "mattis.",
+                                                                               "Nam", "egestas", "elit", "at",
+                                                                               "luctus", "molestie.");
 
-  private final ImmutableList <String> RANDOM_PLAYER_NAMES = ImmutableList.of ("Ben", "Bob", "Jerry", "Oscar",
-                                                                               "Evelyn", "Josh", "Eliza", "Aaron",
-                                                                               "Maddy", "Brittany", "Jonathan", "Adam",
-                                                                               "Brian", "[FG] 3xp0nn3t",
-                                                                               "[FG] Escendrix", "[LOLZ] nutButter",
-                                                                               "[WWWW] WWWWWWWWWWWWWWWW",
-                                                                               "[X] generalKiller");
+  private static final ImmutableList <String> RANDOM_PLAYER_NAMES = ImmutableList.of ("Ben", "Bob", "Jerry", "Oscar",
+                                                                                      "Evelyn", "Josh", "Eliza",
+                                                                                      "Aaron", "Maddy", "Brittany",
+                                                                                      "Jonathan", "Adam", "Brian",
+                                                                                      "[FG] 3xp0nn3t",
+                                                                                      "[FG] Escendrix",
+                                                                                      "[LOLZ] nutButter",
+                                                                                      "[WWWW] WWWWWWWWWWWWWWWW",
+                                                                                      "[X] generalKiller");
 
-  private final ImmutableList <String> COUNTRY_NAMES = ImmutableList.of ("Alaska", "Northwest Territory", "Greenland",
-                                                                         "Alberta", "Ontario", "Quebec", "Hawaii",
-                                                                         "Western United States",
-                                                                         "Eastern United States", "Central America",
-                                                                         "Caribbean Islands", "Svalbard", "Iceland",
-                                                                         "Scandinavia", "Great Britain",
-                                                                         "Northern Europe", "Ukraine",
-                                                                         "Western Europe", "Southern Europe", "Ural",
-                                                                         "Siberia", "Yakutsk", "Kamchatka",
-                                                                         "Afghanistan", "Irkutsk", "Mongolia", "Japan",
-                                                                         "Middle East", "India", "China", "Siam",
-                                                                         "Venezuela", "Peru", "Brazil", "Argentina",
-                                                                         "Falkland Islands", "North Africa", "Egypt",
-                                                                         "Congo", "East Africa", "South Africa",
-                                                                         "Madagascar", "Philippines", "Indonesia",
-                                                                         "New Guinea", "Western Australia",
-                                                                         "Eastern Australia", "New Zealand",
-                                                                         "Antarctica");
+  private static final ImmutableList <String> COUNTRY_NAMES = ImmutableList.of ("Alaska", "Northwest Territory",
+                                                                                "Greenland", "Alberta", "Ontario",
+                                                                                "Quebec", "Hawaii",
+                                                                                "Western United States",
+                                                                                "Eastern United States",
+                                                                                "Central America", "Caribbean Islands",
+                                                                                "Svalbard", "Iceland", "Scandinavia",
+                                                                                "Great Britain", "Northern Europe",
+                                                                                "Ukraine", "Western Europe",
+                                                                                "Southern Europe", "Ural", "Siberia",
+                                                                                "Yakutsk", "Kamchatka", "Afghanistan",
+                                                                                "Irkutsk", "Mongolia", "Japan",
+                                                                                "Middle East", "India", "China",
+                                                                                "Siam", "Venezuela", "Peru", "Brazil",
+                                                                                "Argentina", "Falkland Islands",
+                                                                                "North Africa", "Egypt", "Congo",
+                                                                                "East Africa", "South Africa",
+                                                                                "Madagascar", "Philippines",
+                                                                                "Indonesia", "New Guinea",
+                                                                                "Western Australia",
+                                                                                "Eastern Australia", "New Zealand",
+                                                                                "Antarctica");
 
   private final MBassador <Event> eventBus;
   private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator = PlayerTurnOrder.validValues ().iterator ();
-  private Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
+  private final Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
 
   public DebugEventGenerator (final MBassador <Event> eventBus)
   {
@@ -117,14 +128,19 @@ public final class DebugEventGenerator
     return new CountryName (getRandomCountryNameString ());
   }
 
+  private static int getRandomCountryDeltaArmyCount ()
+  {
+    return Randomness.getRandomIntegerFrom (0, 99);
+  }
+
+  private static UnmodifiableIterator <PlayerTurnOrder> createPlayerTurnOrderIterator ()
+  {
+    return PlayerTurnOrder.validValues ().iterator ();
+  }
+
   private String getRandomCountryNameString ()
   {
     return Randomness.getRandomElementFrom (COUNTRY_NAMES);
-  }
-
-  private int getRandomCountryDeltaArmyCount ()
-  {
-    return Randomness.getRandomIntegerFrom (0, 99);
   }
 
   private StatusMessage createStatusMessage ()
@@ -179,10 +195,5 @@ public final class DebugEventGenerator
     randomSubsetWordListStringBuilder.deleteCharAt (randomSubsetWordListStringBuilder.lastIndexOf (" "));
 
     return randomSubsetWordListStringBuilder.toString ();
-  }
-
-  private UnmodifiableIterator <PlayerTurnOrder> createPlayerTurnOrderIterator ()
-  {
-    return PlayerTurnOrder.validValues ().iterator ();
   }
 }

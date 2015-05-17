@@ -58,7 +58,7 @@ public final class MultiplayerController extends ControllerAdapter
   private String serverName;
   private int serverTcpPort;
   private Remote host;
-  private boolean shouldShutDown = false;
+  private final boolean shouldShutDown = false;
 
   public MultiplayerController (final String serverName,
                                 final int serverTcpPort,

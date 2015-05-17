@@ -72,11 +72,11 @@ public final class DefaultPlayerPacket extends AbstractGamePacket implements Pla
   }
 
   @Override
-  public boolean hasArmiesInHand (final int armiesInHand)
+  public boolean hasArmiesInHand (final int armies)
   {
-    Arguments.checkIsNotNegative (armiesInHand, "armiesInHand");
+    Arguments.checkIsNotNegative (armies, "armiesInHand");
 
-    return this.armiesInHand == armiesInHand;
+    return this.armiesInHand == armies;
   }
 
   @Override

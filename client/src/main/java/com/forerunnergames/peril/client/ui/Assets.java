@@ -72,7 +72,7 @@ public final class Assets
     perilModeAtlas.dispose ();
     skin.dispose ();
 
-    for (TextureAtlas atlas : countryAtlases)
+    for (final TextureAtlas atlas : countryAtlases)
     {
       atlas.dispose ();
     }
@@ -122,13 +122,9 @@ public final class Assets
     }
     else
     {
-      log.warn ("Assets are not being updated.\n"
-              + "To change this behavior, change "
-              + ClientApplicationProperties.UPDATE_ASSETS_KEY
-              + " in "
-              + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME
-              + " from false to true.\n"
-              + "Make sure to back up any customizations you made to any assets first, as your changes will be overwritten.");
+      log.warn ("Assets are not being updated.\nTo change this behavior, change {} in {} from false to true.\nMake sure to back up any customizations you made to any assets first, as your changes will be overwritten.",
+                ClientApplicationProperties.UPDATE_ASSETS_KEY,
+                ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME);
     }
 
     ShaderProgram.pedantic = false;

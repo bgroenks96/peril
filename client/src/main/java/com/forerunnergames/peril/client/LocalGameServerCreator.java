@@ -58,7 +58,7 @@ public final class LocalGameServerCreator implements GameServerCreator
 
       return Result.success ();
     }
-    catch (IOException e)
+    catch (final IOException e)
     {
       destroyServerProcess ();
 

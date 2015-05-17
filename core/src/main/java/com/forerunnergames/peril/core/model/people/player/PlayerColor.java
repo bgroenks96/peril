@@ -23,13 +23,13 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   TEAL,
   UNKNOWN;
 
-  private static ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
+  private static final ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
           .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
   {
     @Override
-    public boolean apply (final PlayerColor color)
+    public boolean apply (final PlayerColor input)
     {
-      return color.isNot (UNKNOWN);
+      return input.isNot (UNKNOWN);
     }
   }));
 
@@ -70,15 +70,15 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   }
 
   @Override
-  public boolean is (final PlayerColor color)
+  public boolean is (final PlayerColor e)
   {
-    return IterableEnumHelper.is (this, color);
+    return IterableEnumHelper.is (this, e);
   }
 
   @Override
-  public boolean isNot (final PlayerColor color)
+  public boolean isNot (final PlayerColor e)
   {
-    return IterableEnumHelper.isNot (this, color);
+    return IterableEnumHelper.isNot (this, e);
   }
 
   @Override

@@ -133,15 +133,15 @@ public final class LibGdxScreenSize implements ScreenSize
 
     if (currentWidth != previousWidth)
     {
-      actualToReferenceScaling.x = (float) GraphicsSettings.REFERENCE_SCREEN_WIDTH / (float) currentWidth;
-      referenceToActualScaling.x = (float) currentWidth / (float) GraphicsSettings.REFERENCE_SCREEN_WIDTH;
+      actualToReferenceScaling.x = GraphicsSettings.REFERENCE_SCREEN_WIDTH / (float) currentWidth;
+      referenceToActualScaling.x = currentWidth / (float) GraphicsSettings.REFERENCE_SCREEN_WIDTH;
       previousWidth = currentWidth;
     }
 
     if (currentHeight != previousHeight)
     {
-      actualToReferenceScaling.y = (float) GraphicsSettings.REFERENCE_SCREEN_HEIGHT / (float) currentHeight;
-      referenceToActualScaling.y = (float) currentHeight / (float) GraphicsSettings.REFERENCE_SCREEN_HEIGHT;
+      actualToReferenceScaling.y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT / (float) currentHeight;
+      referenceToActualScaling.y = currentHeight / (float) GraphicsSettings.REFERENCE_SCREEN_HEIGHT;
       previousHeight = currentHeight;
     }
   }

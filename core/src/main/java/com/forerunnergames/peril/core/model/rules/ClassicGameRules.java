@@ -149,7 +149,7 @@ public final class ClassicGameRules implements GameRules
     final int countryCount = getTotalCountryCount ();
     final int baseCountriesPerPlayer = countryCount / playerCount;
     int countryPerPlayerRemainder = countryCount % playerCount;
-    for (int i = 0; i < playerCount; i++)
+    for (int i = 0; i < playerCount; ++i)
     {
       int playerCountryCount = baseCountriesPerPlayer;
       // as long as there is a remainder left, add one to the country count
@@ -174,12 +174,12 @@ public final class ClassicGameRules implements GameRules
    * where 'P' is the number of armies returned in the set and 'n' is the number of players in the given PlayerModel.
    */
   // @formatter:on
-  private int calculateInitialArmies (final int playerLimit)
+  private static int calculateInitialArmies (final int playerLimit)
   {
     return playerLimit < 10 ? 40 - 5 * (playerLimit - 2) : 5;
   }
 
-  private int calculateMinWinPercentage (final int playerLimit, final int totalCountryCount)
+  private static int calculateMinWinPercentage (final int playerLimit, final int totalCountryCount)
   {
     // @formatter:off
     // If country distribution does not divide evenly, some players will receive at most one extra country.
@@ -195,7 +195,7 @@ public final class ClassicGameRules implements GameRules
     return maxOwnershipPercentageAnyPlayerWillBeDistributed + 1;
   }
 
-  private int calculateWinningCountryCount (final int winPercentage, final int totalCountryCount)
+  private static int calculateWinningCountryCount (final int winPercentage, final int totalCountryCount)
   {
     // The ceiling function ensures that if the win percentage includes a fraction of a country, that it will always
     // round up to the nearest country count.
