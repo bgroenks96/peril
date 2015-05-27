@@ -1,13 +1,12 @@
 package com.forerunnergames.peril.core.shared.net.packets.defaults;
 
-import com.forerunnergames.peril.core.shared.net.packets.AbstractGamePacket;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.AbstractPersonPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultPlayerPacket extends AbstractGamePacket implements PlayerPacket
+public final class DefaultPlayerPacket extends AbstractPersonPacket implements PlayerPacket
 {
-  private final String name;
   private final String color;
   private final int turnOrder;
   private final int armiesInHand;
@@ -18,23 +17,16 @@ public final class DefaultPlayerPacket extends AbstractGamePacket implements Pla
                               final int turnOrder,
                               final int armiesInHand)
   {
-    super (playerId);
+    super (name, playerId);
 
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNegative (turnOrder, "turnOrder");
     Arguments.checkIsNotNegative (armiesInHand, "armiesInHand");
 
-    this.name = name;
     this.color = color;
     this.turnOrder = turnOrder;
     this.armiesInHand = armiesInHand;
-  }
-
-  @Override
-  public String getName ()
-  {
-    return name;
   }
 
   @Override
@@ -98,9 +90,8 @@ public final class DefaultPlayerPacket extends AbstractGamePacket implements Pla
   @RequiredForNetworkSerialization
   private DefaultPlayerPacket ()
   {
-    super (0);
+    super (null, 0);
 
-    this.name = null;
     this.color = null;
     this.turnOrder = 0;
     this.armiesInHand = 0;

@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 

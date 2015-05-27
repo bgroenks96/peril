@@ -8,8 +8,8 @@ import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
-import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -31,8 +31,8 @@ public class GamePacketTest
   {
     final Player player = PlayerFactory.builder ("Test Player").build ();
 
-    final PlayerPacket packet0 = GamePackets.from (player);
-    final PlayerPacket packet1 = GamePackets.from (player);
+    final PlayerPacket packet0 = Packets.from (player);
+    final PlayerPacket packet1 = Packets.from (player);
 
     assertEquals (packet0, packet1);
   }
@@ -42,8 +42,8 @@ public class GamePacketTest
   {
     final Country country = CountryFactory.builder ("Test Country").build ();
 
-    final CountryPacket packet0 = GamePackets.from (country);
-    final CountryPacket packet1 = GamePackets.from (country);
+    final CountryPacket packet0 = Packets.from (country);
+    final CountryPacket packet1 = Packets.from (country);
 
     assertEquals (packet0, packet1);
   }
@@ -54,8 +54,8 @@ public class GamePacketTest
     final Player player0 = PlayerFactory.builder ("Test Player-0").build ();
     final Player player1 = PlayerFactory.builder ("Test Player-1").build ();
 
-    final PlayerPacket packet0 = GamePackets.from (player0);
-    final PlayerPacket packet1 = GamePackets.from (player1);
+    final PlayerPacket packet0 = Packets.from (player0);
+    final PlayerPacket packet1 = Packets.from (player1);
 
     assertNotEquals (packet0, packet1);
   }
@@ -69,7 +69,7 @@ public class GamePacketTest
     for (int i = 0; i < n; ++i)
     {
       final Player player = PlayerFactory.builder ("Player-" + i).build ();
-      final PlayerPacket packet = GamePackets.from (player);
+      final PlayerPacket packet = Packets.from (player);
 
       mapBuilder.put (packet, player);
     }
@@ -87,7 +87,7 @@ public class GamePacketTest
     for (int i = 0; i < n; ++i)
     {
       final Country country = CountryFactory.builder ("Country-" + i).build ();
-      final CountryPacket packet = GamePackets.from (country);
+      final CountryPacket packet = Packets.from (country);
 
       mapBuilder.put (packet, country);
     }
@@ -106,7 +106,7 @@ public class GamePacketTest
     {
       final int strLen = 3 + i % 20;
       final Player player = PlayerFactory.builder (generateRandomLetterString (strLen) + i).build ();
-      final PlayerPacket packet = GamePackets.from (player);
+      final PlayerPacket packet = Packets.from (player);
 
       mapBuilder.put (packet, player);
     }

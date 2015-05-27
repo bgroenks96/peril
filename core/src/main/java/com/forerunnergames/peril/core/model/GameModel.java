@@ -32,8 +32,8 @@ import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSel
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChangePlayerColorSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -100,7 +100,7 @@ public final class GameModel
       playerModel.changeTurnOrderOfPlayer (idOf (player), randomTurnOrderItr.next ());
     }
 
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (GamePackets.fromPlayers (playerModel.getPlayers ())));
+    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (Packets.fromPlayers (playerModel.getPlayers ())));
   }
 
   @StateMachineAction
@@ -115,7 +115,7 @@ public final class GameModel
       playerModel.addArmiesToHandOf (idOf (player), armies);
     }
 
-    eventBus.publish (new DistributeInitialArmiesCompleteEvent (GamePackets.fromPlayers (playerModel.getPlayers ())));
+    eventBus.publish (new DistributeInitialArmiesCompleteEvent (Packets.fromPlayers (playerModel.getPlayers ())));
   }
 
   @StateMachineAction
@@ -188,7 +188,7 @@ public final class GameModel
 
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
     final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
-    playMapViewPackets = GamePackets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+    playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
     eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
   }
 
@@ -201,14 +201,14 @@ public final class GameModel
     {
       // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
-      playMapViewPackets = GamePackets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+      playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
       eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
       return;
     }
 
     log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
     playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
-    eventBus.publish (new PlayerSelectCountryInputRequestEvent (GamePackets.from (currentPlayer)));
+    eventBus.publish (new PlayerSelectCountryInputRequestEvent (Packets.from (currentPlayer)));
   }
 
   @StateMachineAction
