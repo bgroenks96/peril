@@ -1,9 +1,8 @@
-package com.forerunnergames.peril.core.shared.net.packets;
+package com.forerunnergames.peril.core.shared.net.packets.person;
 
-public interface PlayerPacket extends GamePacket
+
+public interface PlayerPacket extends PersonPacket
 {
-  String getName ();
-
   String getColor ();
 
   int getTurnOrder ();

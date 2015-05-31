@@ -27,8 +27,8 @@ import com.forerunnergames.peril.core.shared.net.events.server.notification.Dist
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryInputRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -264,8 +264,8 @@ public class GameModelTest
       final Player player = playerModel.playerWith (playMapModel.getOwnerOf (idOf (country)));
       final PlayerCountryAssignmentCompleteEvent event = eventHandler
               .lastEvent (PlayerCountryAssignmentCompleteEvent.class);
-      final CountryPacket countryPacket = GamePackets.from (country);
-      assertTrue (GamePackets.playerMatchesPacket (player, event.getOwner (countryPacket)));
+      final CountryPacket countryPacket = Packets.from (country);
+      assertTrue (Packets.playerMatchesPacket (player, event.getOwner (countryPacket)));
     }
   }
 

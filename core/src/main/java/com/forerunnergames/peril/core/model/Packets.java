@@ -5,10 +5,10 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.packets.defaults.DefaultCountryPacket;
 import com.forerunnergames.peril.core.shared.net.packets.defaults.DefaultPlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 import java.util.Collection;
 import java.util.Map;
 
-public final class GamePackets
+public final class Packets
 {
   public static PlayerPacket from (final Player player)
   {
@@ -85,7 +85,7 @@ public final class GamePackets
     return from (country).is (countryPacket);
   }
 
-  private GamePackets ()
+  private Packets ()
   {
     Classes.instantiationNotAllowed ();
   }

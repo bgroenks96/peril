@@ -1,44 +1,28 @@
 package com.forerunnergames.peril.core.shared.net.packets.defaults;
 
-import com.forerunnergames.peril.core.shared.net.packets.AbstractGamePacket;
-import com.forerunnergames.peril.core.shared.net.packets.CountryPacket;
+import com.forerunnergames.peril.core.shared.net.packets.territory.AbstractTerritoryPacket;
+import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultCountryPacket extends AbstractGamePacket implements CountryPacket
+public final class DefaultCountryPacket extends AbstractTerritoryPacket implements CountryPacket
 {
-  private final String name;
   private final int armyCount;
 
   public DefaultCountryPacket (final int countryId, final String name, final int armyCount)
   {
-    super (countryId);
+    super (name, countryId);
 
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
-    this.name = name;
     this.armyCount = armyCount;
-  }
-
-  @Override
-  public String getCountryName ()
-  {
-    return name;
   }
 
   @Override
   public int getArmyCount ()
   {
     return armyCount;
-  }
-
-  @Override
-  public boolean has (final String name)
-  {
-    Arguments.checkIsNotNull (name, "name");
-
-    return this.name.equals (name);
   }
 
   @Override
@@ -58,9 +42,8 @@ public final class DefaultCountryPacket extends AbstractGamePacket implements Co
   @RequiredForNetworkSerialization
   private DefaultCountryPacket ()
   {
-    super (0);
+    super (null, 0);
 
-    this.name = null;
     this.armyCount = 0;
   }
 }

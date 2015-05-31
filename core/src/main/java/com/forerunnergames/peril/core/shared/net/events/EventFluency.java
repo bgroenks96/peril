@@ -14,7 +14,7 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrd
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Classes;

@@ -3,7 +3,7 @@ package com.forerunnergames.peril.core.shared.net.events.server.success;
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
-import com.forerunnergames.peril.core.shared.net.packets.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.ServerConfiguration;
