@@ -8,6 +8,15 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
 {
   private final String playerName;
 
+  public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)
+  {
+    super (reason);
+
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    this.playerName = playerName;
+  }
+
   public enum Reason
   {
     GAME_IS_FULL,
@@ -18,15 +27,6 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     DUPLICATE_TURN_ORDER
   }
 
-  public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)
-  {
-    super (reason);
-
-    Arguments.checkIsNotNull (playerName, "playerName");
-
-    this.playerName = playerName;
-  }
-
   public String getPlayerName ()
   {
     return playerName;
@@ -35,8 +35,8 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player name: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerName,
-                          super.toString ());
+    return String
+            .format ("%1$s: Player name: %2$s | %3$s", getClass ().getSimpleName (), playerName, super.toString ());
   }
 
   @RequiredForNetworkSerialization

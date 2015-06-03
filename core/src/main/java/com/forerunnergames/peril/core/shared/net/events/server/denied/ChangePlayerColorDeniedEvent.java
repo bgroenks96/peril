@@ -15,13 +15,6 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
 {
   private final PlayerColorEvent playerColorEvent;
 
-  public enum Reason
-  {
-    REQUESTED_COLOR_EQUALS_EXISTING_COLOR,
-    COLOR_ALREADY_TAKEN,
-    REQUESTED_COLOR_INVALID,
-  }
-
   public ChangePlayerColorDeniedEvent (final ChangePlayerColorRequestEvent event, final Reason reason)
   {
     this (colorFrom (event), reason);
@@ -36,6 +29,13 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
     playerColorEvent = new DefaultPlayerColorEvent (color);
   }
 
+  public enum Reason
+  {
+    REQUESTED_COLOR_EQUALS_EXISTING_COLOR,
+    COLOR_ALREADY_TAKEN,
+    REQUESTED_COLOR_INVALID,
+  }
+
   @Override
   public PlayerColor getRequestedColor ()
   {
@@ -45,8 +45,7 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), playerColorEvent,
-                          super.toString ());
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), playerColorEvent, super.toString ());
   }
 
   @RequiredForNetworkSerialization

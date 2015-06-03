@@ -33,22 +33,23 @@ public final class JoinGameServerSuccessEvent implements JoinGameServerEvent, Su
     this.playersInGame = playersInGame;
   }
 
-  public ImmutableSet <PlayerPacket> getPlayersInGame ()
-  {
-    return playersInGame;
-  }
-
   @Override
   public ServerConfiguration getConfiguration ()
   {
     return joinGameServerEvent.getConfiguration ();
   }
 
+  public ImmutableSet <PlayerPacket> getPlayersInGame ()
+  {
+    return playersInGame;
+  }
+
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Game Configuration: %2$s | Players In Game: %3$s | %4$s", ((Object) this).getClass ()
-            .getSimpleName (), gameConfig, Strings.toString (playersInGame), joinGameServerEvent);
+    return String.format ("%1$s: Game Configuration: %2$s | Players In Game: %3$s | %4$s",
+                          getClass ().getSimpleName (), gameConfig, Strings.toString (playersInGame),
+                          joinGameServerEvent);
   }
 
   @RequiredForNetworkSerialization

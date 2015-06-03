@@ -43,8 +43,7 @@ public final class CommandMessageDeniedEvent implements CommandMessageEvent, Den
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), commandMessageEvent,
-                          deniedEvent);
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), commandMessageEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization

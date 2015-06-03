@@ -47,7 +47,7 @@ public final class DefaultChatMessageEvent implements ChatMessageEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s : Message: %2$s", ((Object) this).getClass ().getSimpleName (), message);
+    return String.format ("%1$s : Message: %2$s", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization

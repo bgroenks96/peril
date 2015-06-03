@@ -25,7 +25,7 @@ public final class DefaultJoinGameServerEvent implements JoinGameServerEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Server Configuration: %2$s", ((Object) this).getClass ().getSimpleName (), config);
+    return String.format ("%1$s: Server Configuration: %2$s", getClass ().getSimpleName (), config);
   }
 
   @RequiredForNetworkSerialization

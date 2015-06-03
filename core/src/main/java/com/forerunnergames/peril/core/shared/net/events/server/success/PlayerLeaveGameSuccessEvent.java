@@ -23,7 +23,7 @@ public final class PlayerLeaveGameSuccessEvent implements SuccessEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), playerName);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), playerName);
   }
 
   @RequiredForNetworkSerialization

@@ -31,7 +31,7 @@ public final class DefaultCommandMessageEvent implements CommandMessageEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), message);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization

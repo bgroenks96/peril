@@ -37,8 +37,8 @@ public final class CreateGameServerDeniedEvent implements CreateGameServerEvent,
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Original request: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (),
-                          requestEvent, deniedEvent);
+    return String.format ("%1$s: Original request: %2$s | %3$s", getClass ().getSimpleName (), requestEvent,
+                          deniedEvent);
   }
 
   @RequiredForNetworkSerialization

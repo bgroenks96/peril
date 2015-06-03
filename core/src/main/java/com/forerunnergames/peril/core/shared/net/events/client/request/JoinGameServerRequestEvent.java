@@ -27,7 +27,7 @@ public final class JoinGameServerRequestEvent implements JoinGameServerEvent, Re
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), joinGameServerEvent);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), joinGameServerEvent);
   }
 
   @RequiredForNetworkSerialization

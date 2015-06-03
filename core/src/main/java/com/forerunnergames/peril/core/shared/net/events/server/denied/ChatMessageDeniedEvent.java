@@ -59,8 +59,7 @@ public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEve
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", ((Object) this).getClass ().getSimpleName (), chatMessageEvent,
-                          deniedEvent);
+    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), chatMessageEvent, deniedEvent);
   }
 
   @RequiredForNetworkSerialization

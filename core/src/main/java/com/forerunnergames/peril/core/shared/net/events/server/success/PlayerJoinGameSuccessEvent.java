@@ -41,7 +41,7 @@ public final class PlayerJoinGameSuccessEvent implements SuccessEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player: %2$s", ((Object) this).getClass ().getSimpleName (), player);
+    return String.format ("%1$s: Player: %2$s", getClass ().getSimpleName (), player);
   }
 
   @RequiredForNetworkSerialization

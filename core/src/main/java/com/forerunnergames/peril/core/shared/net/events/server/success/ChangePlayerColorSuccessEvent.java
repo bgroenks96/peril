@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.core.shared.net.events.server.success;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
-
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
@@ -9,6 +7,8 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEv
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.SuccessEvent;
+
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
 
 public final class ChangePlayerColorSuccessEvent implements PlayerColorEvent, SuccessEvent
 {
@@ -35,7 +35,7 @@ public final class ChangePlayerColorSuccessEvent implements PlayerColorEvent, Su
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", ((Object) this).getClass ().getSimpleName (), playerColorEvent);
+    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), playerColorEvent);
   }
 
   @RequiredForNetworkSerialization

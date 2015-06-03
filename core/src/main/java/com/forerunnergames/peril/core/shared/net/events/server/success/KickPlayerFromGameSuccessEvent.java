@@ -26,7 +26,7 @@ public final class KickPlayerFromGameSuccessEvent implements KickEvent, SuccessE
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: | %2$s", ((Object) this).getClass ().getSimpleName (), kickEvent);
+    return String.format ("%1$s: | %2$s", getClass ().getSimpleName (), kickEvent);
   }
 
   @RequiredForNetworkSerialization
