@@ -4,13 +4,17 @@ import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 public final class KryonetRemote implements Remote
 {
   private final int connectionId;
+  @Nullable
   private final InetSocketAddress address;
 
-  public KryonetRemote (final int connectionId, final InetSocketAddress address)
+  public KryonetRemote (final int connectionId, @Nullable final InetSocketAddress address)
   {
     this.connectionId = connectionId;
     this.address = address;
@@ -23,7 +27,7 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
-  public boolean has (final int connectionId)
+  public boolean hasConnectionId (final int connectionId)
   {
     return connectionId == this.connectionId;
   }
@@ -35,9 +39,27 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
+  public boolean hasPort ()
+  {
+    return address != null;
+  }
+
+  @Override
+  public boolean hasAddressAndPort ()
+  {
+    return address != null;
+  }
+
+  @Override
+  public boolean hasPort (final int port)
+  {
+    return address != null && address.getPort () == port;
+  }
+
+  @Override
   public boolean has (final InetSocketAddress address)
   {
-    return address != null ? this.address.equals (address) : this.address == null;
+    return Objects.equals (this.address, address);
   }
 
   @Override
@@ -59,6 +81,12 @@ public final class KryonetRemote implements Remote
   }
 
   @Override
+  public int getPort ()
+  {
+    return address != null ? address.getPort () : -1;
+  }
+
+  @Override
   public int hashCode ()
   {
     return connectionId;
@@ -73,7 +101,6 @@ public final class KryonetRemote implements Remote
     final KryonetRemote that = (KryonetRemote) obj;
 
     return connectionId == that.connectionId;
-
   }
 
   @Override

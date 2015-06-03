@@ -247,7 +247,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
   private static boolean idMatches (final int connectionId, final Remote client)
   {
-    return client.has (connectionId);
+    return client.hasConnectionId (connectionId);
   }
 
   private boolean isMatch (final Connection connection, final Remote client)
