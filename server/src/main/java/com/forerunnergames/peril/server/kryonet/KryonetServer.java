@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public final class KryonetServer extends com.esotericsoftware.kryonet.Server implements Server
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetServer.class);
-  private final Map <NetworkListener, Listener> listeners = new HashMap <> ();
+  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
   private final Kryo kryo;
   private boolean isRunning = false;
 
@@ -35,9 +35,9 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
   }
 
   @Override
-  public void add (final NetworkListener listener)
+  public void add (final NetworkListener networkListener)
   {
-    Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (networkListener, "networkListener");
 
     final Listener kryonetListener = new Listener ()
     {
@@ -46,7 +46,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       {
         if (connection == null) return;
 
-        listener.connected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
+        networkListener.connected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
 
       @Override
@@ -54,7 +54,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       {
         if (connection == null) return;
 
-        listener.disconnected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
+        networkListener.disconnected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
 
       @Override
@@ -62,21 +62,21 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       {
         if (object == null || object instanceof FrameworkMessage) return;
 
-        listener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
+        networkListener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
     };
 
     addListener (kryonetListener);
 
-    listeners.put (listener, kryonetListener);
+    networkToKryonetListeners.put (networkListener, kryonetListener);
   }
 
   @Override
-  public void remove (final NetworkListener listener)
+  public void remove (final NetworkListener networkListener)
   {
-    Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (networkListener, "networkListener");
 
-    removeListener (listeners.remove (listener));
+    removeListener (networkToKryonetListeners.remove (networkListener));
   }
 
   @Override
@@ -113,7 +113,9 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     }
     catch (final IOException e)
     {
-      stop ();
+      super.stop ();
+
+      isRunning = false;
 
       log.error ("Could not start the server on port [{}] (TCP). Reason: [{}].", tcpPort, Strings.toString (e));
     }

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public final class KryonetClient extends com.esotericsoftware.kryonet.Client implements Client
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
-  private final Map <NetworkListener, Listener> listeners = new HashMap <> ();
+  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
   private final Kryo kryo;
   private boolean isRunning = false;
 
@@ -37,22 +37,22 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
   }
 
   @Override
-  public void add (final NetworkListener listener)
+  public void add (final NetworkListener networkListener)
   {
-    Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (networkListener, "networkListener");
 
     final Listener kryonetListener = new Listener ()
     {
       @Override
       public void connected (final Connection connection)
       {
-        listener.connected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
+        networkListener.connected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
 
       @Override
       public void disconnected (final Connection connection)
       {
-        listener.disconnected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
+        networkListener.disconnected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
 
       @Override
@@ -60,22 +60,22 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
       {
         if (!(object instanceof FrameworkMessage))
         {
-          listener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
+          networkListener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
         }
       }
     };
 
     addListener (kryonetListener);
 
-    listeners.put (listener, kryonetListener);
+    networkToKryonetListeners.put (networkListener, kryonetListener);
   }
 
   @Override
-  public void remove (final NetworkListener listener)
+  public void remove (final NetworkListener networkListener)
   {
-    Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (networkListener, "networkListener");
 
-    removeListener (listeners.remove (listener));
+    removeListener (networkToKryonetListeners.remove (networkListener));
   }
 
   @Override
