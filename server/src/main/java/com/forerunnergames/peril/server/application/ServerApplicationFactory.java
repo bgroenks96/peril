@@ -4,6 +4,8 @@ import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
+import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.state.GameStateMachine;
@@ -11,6 +13,7 @@ import com.forerunnergames.peril.core.shared.application.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
+import com.forerunnergames.peril.server.controllers.PlayerCommunicator;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.peril.server.main.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
@@ -43,7 +46,8 @@ public final class ServerApplicationFactory
     final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), gameRules);
     final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
-    final Controller multiplayerController = new MultiplayerController (jArgs.serverName, jArgs.serverTcpPort, serverController, serverController, eventBus);
+    final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (), gameRules.getWinPercentage (), gameRules.getTotalCountryCount (), gameRules.getInitialCountryAssignment ());
+    final Controller multiplayerController = new MultiplayerController (jArgs.serverName, jArgs.serverTcpPort, config, serverController, new PlayerCommunicator(serverController), eventBus);
     // @formatter:on
 
     return new ServerApplication (gameStateMachine, eventBus, serverController, multiplayerController);

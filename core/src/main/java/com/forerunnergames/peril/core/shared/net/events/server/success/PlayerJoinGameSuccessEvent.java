@@ -1,24 +1,22 @@
 package com.forerunnergames.peril.core.shared.net.events.server.success;
 
-import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
-import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.SuccessEvent;
 
 public final class PlayerJoinGameSuccessEvent implements SuccessEvent
 {
-  private final Player player;
+  private final PlayerPacket player;
 
-  public PlayerJoinGameSuccessEvent (final Player player)
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
     this.player = player;
   }
 
-  public Player getPlayer ()
+  public PlayerPacket getPlayer ()
   {
     return player;
   }
@@ -28,12 +26,12 @@ public final class PlayerJoinGameSuccessEvent implements SuccessEvent
     return player.getName ();
   }
 
-  public PlayerColor getPlayerColor ()
+  public String getPlayerColor ()
   {
     return player.getColor ();
   }
 
-  public PlayerTurnOrder getPlayerTurnOrder ()
+  public int getPlayerTurnOrder ()
   {
     return player.getTurnOrder ();
   }

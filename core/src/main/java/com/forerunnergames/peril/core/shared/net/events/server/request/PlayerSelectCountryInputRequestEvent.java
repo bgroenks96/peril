@@ -16,6 +16,7 @@ public final class PlayerSelectCountryInputRequestEvent implements InputRequestE
     this.player = player;
   }
 
+  @Override
   public PlayerPacket getPlayer ()
   {
     return player;
