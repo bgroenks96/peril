@@ -57,6 +57,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.Strings;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -350,7 +351,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    playerBox.addMessage (new DefaultMessage (event.getPlayerTurnOrder ().toMixedOrdinal () + ". " + event.getPlayerName ()));
+    playerBox.addMessage (new DefaultMessage (Strings.toMixedOrdinal (event.getPlayerTurnOrder ()) + ". "
+            + event.getPlayerName ()));
   }
 
   @Handler

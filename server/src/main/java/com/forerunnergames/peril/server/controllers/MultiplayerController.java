@@ -1,23 +1,48 @@
 package com.forerunnergames.peril.server.controllers;
 
-import static com.google.common.collect.Maps.newHashMap;
+import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
+import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 
+import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent.Reason;
+import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerLeaveGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
-import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.net.ClientCommunicator;
 import com.forerunnergames.tools.net.ClientConnector;
+import com.forerunnergames.tools.net.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.Remote;
+import com.forerunnergames.tools.net.events.ClientCommunicationEvent;
+import com.forerunnergames.tools.net.events.ClientConnectionEvent;
+import com.forerunnergames.tools.net.events.ClientDisconnectionEvent;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// @formatter:off
 /* TODO Refactor:
  *
  * - This class should not be directly modifying game state.
@@ -46,35 +71,51 @@ import org.slf4j.LoggerFactory;
  *   from the server, and finally passing them on to the client UI logic, so that the UI can update it's state to
  *   accurately reflect the current state of the server.
  */
-// @formatter:on
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
-  private final Map <Id, Remote> playerIdsToClients = newHashMap ();
-  private final Map <Remote, Id> clientsToPlayerIds = newHashMap ();
+
+  private static final int CLIENT_CONNECTION_TIMEOUT = 5000;
+
+  private final Set <Remote> clientsInServer;
+  private final BiMap <Remote, PlayerPacket> clientsToPlayers;
   private final ClientConnector clientConnector;
-  private final ClientCommunicator clientCommunicator;
+  private final PlayerCommunicator playerCommunicator;
   private final MBassador <Event> eventBus;
+  private final GameConfiguration gameConfig;
   private String serverName;
   private int serverTcpPort;
   private Remote host;
   private final boolean shouldShutDown = false;
 
+  private final Map <String, Remote> playerJoinGameRequestCache;
+
   public MultiplayerController (final String serverName,
                                 final int serverTcpPort,
+                                final GameConfiguration gameConfig,
                                 final ClientConnector clientConnector,
-                                final ClientCommunicator clientCommunicator,
+                                final PlayerCommunicator playerCommunicator,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (serverName, "serverName");
     Arguments.checkIsNotNegative (serverTcpPort, "serverTcpPort");
+    Arguments.checkUpperInclusiveBound (serverTcpPort, NetworkSettings.MAX_PORT_VALUE, "serverTcpPort");
+    Arguments.checkIsNotNull (gameConfig, "gameConfig");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
-    Arguments.checkIsNotNull (clientCommunicator, "clientCommunicator");
+    Arguments.checkIsNotNull (playerCommunicator, "playerCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.serverName = serverName;
+    this.serverTcpPort = serverTcpPort;
+    this.gameConfig = gameConfig;
     this.clientConnector = clientConnector;
-    this.clientCommunicator = clientCommunicator;
+    this.playerCommunicator = playerCommunicator;
     this.eventBus = eventBus;
+
+    clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
+    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type.
+    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap.<Remote, PlayerPacket> create (gameConfig.getPlayerLimit ()));
+    playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   }
 
   @Override
@@ -89,7 +130,314 @@ public final class MultiplayerController extends ControllerAdapter
     return shouldShutDown;
   }
 
-  // @formatter:off
+  public String getServerName ()
+  {
+    return serverName;
+  }
+
+  public int getServerTcpPort ()
+  {
+    return serverTcpPort;
+  }
+
+  public GameConfiguration getGameConfiguration ()
+  {
+    return gameConfig;
+  }
+
+  public boolean isPlayerInGame (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    return clientsToPlayers.containsValue (player);
+  }
+
+  public boolean isClientInServer (final Remote client)
+  {
+    Arguments.checkIsNotNull (client, "client");
+
+    return clientsInServer.contains (client);
+  }
+
+  // <<<<< remote inbound/outbound event communication >>>>> //
+
+  @Handler
+  public void onClientConnectionEvent (final ClientConnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.info ("Client [{}] connected.", event.getClient ());
+
+    ClientConnectorDaemon connector = new ClientConnectorDaemon ();
+    connector.onConnect (event.getClient ());
+  }
+
+  @Handler
+  public void onClientDisconnectionEvent (final ClientDisconnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final Remote client = event.getClient ();
+
+    log.info ("Client [{}] disconnected.", client);
+
+    if (!clientsToPlayers.containsKey (client))
+    {
+      // TODO: PlayerLeaveGameDeniedEvent is pointless and should be changed or removed.
+      eventBus.publish (new PlayerLeaveGameDeniedEvent (Reason.PLAYER_DOES_NOT_EXIST));
+      return;
+    }
+
+    final PlayerPacket disconnectedPlayer = clientsToPlayers.get (client);
+    final Event leaveGameEvent = new PlayerLeaveGameSuccessEvent (disconnectedPlayer.getName ());
+    eventBus.publish (leaveGameEvent);
+    sendToAllPlayersExcept (disconnectedPlayer, leaveGameEvent);
+    remove (client);
+  }
+
+  @Handler
+  public void onClientCommunicationEvent (final ClientCommunicationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    if (messageFrom (event) instanceof JoinGameServerRequestEvent)
+    {
+      onEvent ((JoinGameServerRequestEvent) messageFrom (event), clientFrom (event));
+    }
+    else if (messageFrom (event) instanceof PlayerJoinGameRequestEvent)
+    {
+      onEvent ((PlayerJoinGameRequestEvent) messageFrom (event), clientFrom (event));
+    }
+    else
+    {
+      log.warn ("Received unrecognized message [{}] from client [{}].", messageFrom (event), clientFrom (event));
+    }
+  }
+
+  private void onEvent (final JoinGameServerRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    log.info ("Received join game server reqeust from {}", client);
+
+    if (!isClientHost (client) && host == null)
+    {
+      sendJoinGameServerDenied (client, event, "Waiting for host to connect...");
+      return;
+    }
+
+    final ImmutableSet <PlayerPacket> players = ImmutableSet.copyOf (clientsToPlayers.values ());
+
+    if (isClientHost (client) && host == null)
+    {
+      sendJoinGameServerSuccess (client, NetworkSettings.LOCALHOST_ADDRESS, client.getPort (), players);
+      host = client;
+      return;
+    }
+
+    // normal client join request after host has connected
+
+    // check if client is already in server
+    if (clientsInServer.contains (client))
+    {
+      sendJoinGameServerDenied (client, event, "Client already connected to game server.");
+      return;
+    }
+
+    // check if game server player limit has been reached
+    if (clientsInServer.size () >= gameConfig.getPlayerLimit ())
+    {
+      sendJoinGameServerDenied (client, event, "Game server is full.");
+      return;
+    }
+
+    // send join game success event to all clients
+    sendJoinGameServerSuccess (client, event.getConfiguration ().getServerAddress (), client.getPort (), players);
+  }
+
+  private void onEvent (final PlayerJoinGameRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    // client is connected but not in game server; just ignore request event
+    if (!clientsInServer.contains (client))
+    {
+      log.warn ("Ignoring join game request from player [{}] | REASON: unrecognized client [{}].",
+                event.getPlayerName (), client);
+      return;
+    }
+    // spam guard: if client request is already being processed, ignore new request event
+    if (playerJoinGameRequestCache.containsKey (event.getPlayerName ())) return;
+
+    log.info ("Received request to join game from player {}", event.getPlayerName ());
+
+    playerJoinGameRequestCache.put (event.getPlayerName (), client);
+
+    eventBus.publish (event);
+  }
+
+  // <<<<< event handlers for inbound core events >>>>> //
+
+  @Handler
+  public void onPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final String playerName = event.getPlayerName ();
+
+    // if no client mapping is available, silently ignore success event
+    // this is to prevent failure under cases such as client disconnecting while join request is being processed
+    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
+
+    final Remote client = playerJoinGameRequestCache.get (playerName);
+
+    final PlayerPacket newPlayer = event.getPlayer ();
+    final PlayerPacket oldPlayer = clientsToPlayers.forcePut (client, newPlayer);
+    if (oldPlayer != null)
+    {
+      // this generally shouldn't happen... but if it does, log a warning message
+      log.warn ("Overwrote previous player mapping for client [{}] | old player: [{}] | new player: [{}]", client,
+                oldPlayer, newPlayer);
+    }
+
+    sendToAllPlayers (event);
+
+    playerJoinGameRequestCache.remove (playerName);
+  }
+
+  @Handler
+  public void onPlayerJoinGameDeniedEvent (final PlayerJoinGameDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final String playerName = event.getPlayerName ();
+
+    // if no client mapping is available, silently ignore denied event
+    // this is to prevent failure under cases such as client disconnecting while join request is being processed
+    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
+
+    playerCommunicator.sendTo (playerJoinGameRequestCache.get (playerName), event);
+
+    playerJoinGameRequestCache.remove (playerName);
+  }
+
+  // <<<<< internal utility methods and types >>>>>> //
+
+  private void sendJoinGameServerSuccess (final Remote client,
+                                          final String addr,
+                                          final int port,
+                                          final ImmutableSet <PlayerPacket> players)
+  {
+    Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (addr, "addr");
+    Arguments.checkIsNotNegative (port, "port");
+    Arguments.checkUpperInclusiveBound (port, NetworkSettings.MAX_PORT_VALUE, "port");
+    Arguments.checkIsNotNull (players, "players");
+    Arguments.checkHasNoNullElements (players, "players");
+
+    final Event successEvent = new JoinGameServerSuccessEvent (getDefaultServerConfig (addr, port), gameConfig, players);
+    playerCommunicator.sendTo (client, successEvent);
+    clientsInServer.add (client);
+    log.info ("Client [{}] successfully joined game server.", client);
+  }
+
+  private void sendJoinGameServerDenied (final Remote client,
+                                         final JoinGameServerRequestEvent event,
+                                         final String reason)
+  {
+    Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (reason, "reason");
+
+    playerCommunicator.sendTo (client, new JoinGameServerDeniedEvent (event, reason));
+    clientConnector.disconnect (client);
+    log.warn ("Denied join game server request from [{}]; REASON: {}", client, reason);
+  }
+
+  private DefaultServerConfiguration getDefaultServerConfig (final String addr, final int port)
+  {
+    Arguments.checkIsNotNull (addr, "addr");
+    Arguments.checkIsNotNegative (port, "port");
+    Arguments.checkUpperInclusiveBound (port, NetworkSettings.MAX_PORT_VALUE, "port");
+
+    return new DefaultServerConfiguration (serverName, addr, port);
+  }
+
+  private boolean isClientHost (final Remote client)
+  {
+    Arguments.checkIsNotNull (client, "client");
+
+    return client.getAddress ().equals (NetworkSettings.LOCALHOST_ADDRESS);
+  }
+
+  private void sendToPlayer (final PlayerPacket player, final Object object)
+  {
+    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (object, "object");
+
+    playerCommunicator.sendToPlayer (ImmutableBiMap.copyOf (clientsToPlayers.inverse ()), player, object);
+  }
+
+  private void sendToAllPlayers (final Object object)
+  {
+    Arguments.checkIsNotNull (object, "object");
+
+    playerCommunicator.sendToAllPlayers (ImmutableBiMap.copyOf (clientsToPlayers.inverse ()), object);
+  }
+
+  private void sendToAllPlayersExcept (final PlayerPacket player, final Object object)
+  {
+    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (object, "object");
+
+    playerCommunicator.sendToAllPlayersExcept (ImmutableBiMap.copyOf (clientsToPlayers.inverse ()), player, object);
+  }
+
+  private void remove (final Remote client)
+  {
+    Arguments.checkIsNotNull (client, "client");
+
+    clientsInServer.remove (client);
+    clientsToPlayers.remove (client);
+  }
+
+  private class ClientConnectorDaemon implements Runnable
+  {
+    private Remote client;
+
+    public void onConnect (final Remote client)
+    {
+      Arguments.checkIsNotNull (client, "client");
+
+      this.client = client;
+
+      final Thread thread = new Thread (this);
+      thread.setDaemon (true);
+      thread.start ();
+    }
+
+    @Override
+    public void run ()
+    {
+      try
+      {
+        Thread.sleep (CLIENT_CONNECTION_TIMEOUT);
+      }
+      catch (InterruptedException e)
+      {
+        e.printStackTrace ();
+      }
+
+      if (clientsInServer.contains (client)) return;
+
+      clientConnector.disconnect (client);
+
+      log.info ("Client connection timed out [{}].", client.getAddress ());
+    }
+  }
+
   /*
   @EventSubscriber (eventClass = ClientConnectionEvent.class)
   public void onClientConnectionEvent (ClientConnectionEvent event)
@@ -562,5 +910,4 @@ public final class MultiplayerController extends ControllerAdapter
     shouldShutDown = true;
   }
   */
-  // @formatter:on
 }

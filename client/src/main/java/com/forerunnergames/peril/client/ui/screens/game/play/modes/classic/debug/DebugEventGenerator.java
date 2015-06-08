@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
+import com.forerunnergames.peril.core.model.Packets;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -108,7 +109,7 @@ public final class DebugEventGenerator
 
   public void generatePlayerJoinGameSuccessEvent ()
   {
-    eventBus.publish (new PlayerJoinGameSuccessEvent (createPlayer ()));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (Packets.from (createPlayer ())));
   }
 
   public void generateCountryArmiesChangedEvent ()

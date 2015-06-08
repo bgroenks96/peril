@@ -285,7 +285,7 @@ public final class GameModel
       return;
     }
 
-    eventBus.publish (new PlayerJoinGameSuccessEvent (player));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (Packets.from (player)));
   }
 
   public boolean isEmpty ()
@@ -329,7 +329,8 @@ public final class GameModel
     return playerModel.playerLimitIsAtLeast (limit);
   }
 
-  private static ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel, final PlayMapModel playMapModel)
+  private static ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel,
+                                                                      final PlayMapModel playMapModel)
   {
     final ImmutableSet <Country> countries = playMapModel.getCountries ();
     final ImmutableMap.Builder <Country, Player> playMapView = ImmutableMap.builder ();
