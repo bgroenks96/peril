@@ -66,7 +66,7 @@ public final class PlayerCommunicator implements ClientCommunicator
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
 
-    this.clientCommunicator.sendTo (client, object);
+    clientCommunicator.sendTo (client, object);
   }
 
   @Override
@@ -74,7 +74,7 @@ public final class PlayerCommunicator implements ClientCommunicator
   {
     Arguments.checkIsNotNull (object, "object");
 
-    this.clientCommunicator.sendToAll (object);
+    clientCommunicator.sendToAll (object);
   }
 
   @Override
@@ -83,6 +83,6 @@ public final class PlayerCommunicator implements ClientCommunicator
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
 
-    this.clientCommunicator.sendToAllExcept (client, object);
+    clientCommunicator.sendToAllExcept (client, object);
   }
 }

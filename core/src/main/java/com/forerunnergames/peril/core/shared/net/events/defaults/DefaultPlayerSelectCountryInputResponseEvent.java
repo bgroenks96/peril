@@ -24,6 +24,6 @@ public class DefaultPlayerSelectCountryInputResponseEvent implements PlayerSelec
   @RequiredForNetworkSerialization
   private DefaultPlayerSelectCountryInputResponseEvent ()
   {
-    this.selectedCountryName = null;
+    selectedCountryName = null;
   }
 }
