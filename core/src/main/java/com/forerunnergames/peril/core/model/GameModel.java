@@ -155,8 +155,8 @@ public final class GameModel
 
     final List <Country> countries = Randomness.shuffle (new HashSet <> (playMapModel.getCountries ()));
     final List <Player> players = Randomness.shuffle (playerModel.getPlayers ());
-    final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
-            .size ());
+    final ImmutableList <Integer> playerCountryDistribution = rules
+            .getInitialPlayerCountryDistribution (players.size ());
 
     log.info ("Randomly assigning {} countries to {} players...", countries.size (), players.size ());
 
@@ -286,6 +286,14 @@ public final class GameModel
     }
 
     eventBus.publish (new PlayerJoinGameSuccessEvent (Packets.from (player)));
+  }
+
+  @StateMachineAction
+  public void beginGameRound ()
+  {
+    log.info ("Round begin.");
+
+    // TODO
   }
 
   public boolean isEmpty ()

@@ -130,6 +130,11 @@
               </state>
             </state>
           </state>
+          <state name="BeginGameRound">
+            <onEntry action="gameModel.beginGameRound()" />
+            <state name="ReinforcementPhase">
+            </state>
+          </state>
           <state name="EndGame">
             <onEntry action="gameModel.endGame()" />
             <transition event="onCreateGameEvent" nextState="WaitForGameToBegin" />

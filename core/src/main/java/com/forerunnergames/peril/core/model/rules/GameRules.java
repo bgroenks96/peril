@@ -38,5 +38,7 @@ public interface GameRules
 
   ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount);
 
+  int calculateCountryReinforcements (final int ownedCountryCount);
+
   boolean isValidWinPercentage (final int winPercentage);
 }
