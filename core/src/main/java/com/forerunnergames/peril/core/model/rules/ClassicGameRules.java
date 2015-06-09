@@ -149,19 +149,29 @@ public final class ClassicGameRules implements GameRules
     final int countryCount = getTotalCountryCount ();
     final int baseCountriesPerPlayer = countryCount / playerCount;
     int countryPerPlayerRemainder = countryCount % playerCount;
-    for (int i = 0; i < playerCount; ++i)
+    for (int i = 0; i < playerCount; i++)
     {
       int playerCountryCount = baseCountriesPerPlayer;
       // as long as there is a remainder left, add one to the country count
       if (countryPerPlayerRemainder > 0)
       {
-        playerCountryCount++;
+        ++playerCountryCount;
       }
       listBuilder.add (playerCountryCount);
       // decrement country remainder
-      countryPerPlayerRemainder--;
+      --countryPerPlayerRemainder;
     }
     return listBuilder.build ();
+  }
+
+  /**
+   * Calculates number of reinforcements for a player with the given number of owned countries. Note that this method
+   * does not take into account any granted bonuses (i.e. continents, cards, etc).
+   */
+  @Override
+  public int calculateCountryReinforcements (final int ownedCountryCount)
+  {
+    return (int) Math.floor (ownedCountryCount / 3.0f); // floor function included for clarity
   }
 
   // @formatter:off
