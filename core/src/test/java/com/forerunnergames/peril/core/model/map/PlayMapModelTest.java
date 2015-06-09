@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.people.player.Player;
@@ -465,9 +466,9 @@ public class PlayMapModelTest
     assertFalse (modelTest.ownedCountryCountIsAtLeast (2));
   }
 
-  private static PlayMapModel createPlayMapModelTestWith (final ImmutableSet<Country> countries)
+  private static PlayMapModel createPlayMapModelTestWith (final ImmutableSet <Country> countries)
   {
     final GameRules classicRules = new ClassicGameRules.Builder ().build ();
-    return new PlayMapModel (countries, classicRules);
+    return new PlayMapModel (countries, ImmutableSet.<Continent> of (), classicRules);
   }
 }
