@@ -2,6 +2,7 @@ package com.forerunnergames.peril.server.application;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
@@ -43,7 +44,7 @@ public final class ServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort, KryonetRegistration.CLASSES, eventBus);
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage, jArgs.totalCountryCount, jArgs.initialCountryAssignment);
     final PlayerModel playerModel = new PlayerModel (gameRules);
-    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), gameRules);
+    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), ImmutableSet.<Continent> of(), gameRules);
     final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
     final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (), gameRules.getWinPercentage (), gameRules.getTotalCountryCount (), gameRules.getInitialCountryAssignment ());

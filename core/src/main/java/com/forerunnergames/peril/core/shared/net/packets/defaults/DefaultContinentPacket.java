@@ -8,8 +8,6 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-import java.util.Collection;
-
 public class DefaultContinentPacket extends AbstractTerritoryPacket implements ContinentPacket
 {
   private final ImmutableSet <CountryPacket> countries;
@@ -18,7 +16,7 @@ public class DefaultContinentPacket extends AbstractTerritoryPacket implements C
   public DefaultContinentPacket (final String name,
                                  final int id,
                                  final int reinforcementBonus,
-                                 final Collection <CountryPacket> countries)
+                                 final ImmutableSet <CountryPacket> countries)
   {
     super (name, id);
 

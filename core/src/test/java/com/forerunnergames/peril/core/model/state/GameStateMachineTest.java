@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
+import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
@@ -13,6 +14,8 @@ import com.forerunnergames.peril.core.shared.application.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
+
+import com.google.common.collect.ImmutableSet;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -35,8 +38,8 @@ public class GameStateMachineTest
 
   private static String getRandomPlayerName ()
   {
-    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron",
-                                            "Maddy", "Brittany", "Jonathan", "Adam", "Brian");
+    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy",
+                                            "Brittany", "Jonathan", "Adam", "Brian");
   }
 
   @BeforeClass
@@ -48,7 +51,7 @@ public class GameStateMachineTest
             .totalCountryCount (testCountryCount).build ();
     final PlayerModel playerModel = new PlayerModel (rules);
     final PlayMapModel playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (testCountryCount),
-            rules);
+            ImmutableSet.<Continent> of (), rules);
     final GameModel gameModel = new GameModel (playerModel, playMapModel, rules, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()

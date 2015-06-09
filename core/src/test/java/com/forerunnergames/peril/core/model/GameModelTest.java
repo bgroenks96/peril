@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
+import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -297,7 +298,8 @@ public class GameModelTest
     final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
             .totalCountryCount (totalCountryCount).build ();
     playerModel = new PlayerModel (gameRules);
-    playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (totalCountryCount), gameRules);
+    playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (totalCountryCount),
+            ImmutableSet.<Continent> of (), gameRules);
 
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
