@@ -38,18 +38,30 @@ public final class ServerApplicationFactory
 
     jCommander.parse (args);
 
-    // @formatter:off
     final MBassador <Event> eventBus = EventBusFactory.create ();
+
     final Server server = new KryonetServer ();
-    final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort, KryonetRegistration.CLASSES, eventBus);
-    final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage, jArgs.totalCountryCount, jArgs.initialCountryAssignment);
+
+    final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort,
+            KryonetRegistration.CLASSES, eventBus);
+
+    final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
+                                                         jArgs.totalCountryCount, jArgs.initialCountryAssignment);
+
     final PlayerModel playerModel = new PlayerModel (gameRules);
-    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), ImmutableSet.<Continent> of(), gameRules);
+
+    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), ImmutableSet.<Continent> of (),
+            gameRules);
+
     final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
+
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
-    final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (), gameRules.getWinPercentage (), gameRules.getTotalCountryCount (), gameRules.getInitialCountryAssignment ());
-    final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType, jArgs.serverTcpPort, config, serverController, new PlayerCommunicator(serverController), eventBus);
-    // @formatter:on
+
+    final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
+            gameRules.getWinPercentage (), gameRules.getTotalCountryCount (), gameRules.getInitialCountryAssignment ());
+
+    final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType,
+            jArgs.serverTcpPort, config, serverController, new PlayerCommunicator (serverController), eventBus);
 
     return new ServerApplication (gameStateMachine, eventBus, serverController, multiplayerController);
   }
