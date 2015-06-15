@@ -24,7 +24,6 @@ public final class PlayMapModel
 {
   private final Map <Id, Country> countryIds;
   private final Map <Id, Id> countryToOwnerMap;
-
   private final Map <Id, Continent> continentIds;
 
   public PlayMapModel (final ImmutableSet <Country> countries,
@@ -35,9 +34,11 @@ public final class PlayMapModel
     Arguments.checkHasNoNullElements (countries, "countries");
     Arguments.checkIsNotNull (rules, "rules");
     Preconditions.checkIsTrue (countries.size () >= rules.getMinTotalCountryCount (),
-                               "Country count is below minimum allowed!");
+                               "Country count of " + countries.size () + " is below minimum of "
+                                       + rules.getMinTotalCountryCount () + "!");
     Preconditions.checkIsTrue (countries.size () <= rules.getMaxTotalCountryCount (),
-                               "Country count is above maximum allowed!");
+                               "Country count " + countries.size () + " is above maximum of "
+                                       + rules.getMaxTotalCountryCount () + "!");
 
     // init country id map
     final Builder <Id, Country> countryMapBuilder = ImmutableMap.builder ();
