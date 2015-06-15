@@ -8,12 +8,13 @@ import java.util.regex.Pattern;
 public final class NetworkSettings
 {
   public static final int DEFAULT_TCP_PORT = 55555;
-  public static final int CONNECTION_TIMEOUT_MS = 1000;
+  public static final int CLIENT_CONNECTION_TIMEOUT_MS = 5000;
+  public static final int SERVER_CONNECTION_TIMEOUT_MS = 1000;
   public static final String LOCALHOST_ADDRESS = "127.0.0.1";
   public static final String LOCALHOST_NAME = "localhost";
-  public static final int MAX_CONNECTION_ATTEMPTS = 3;
+  public static final int MAX_SERVER_CONNECTION_ATTEMPTS = 3;
   public static final int MAX_PORT_VALUE = 65535;
-  public static final String SERVER_JAR_NAME = "peril-server-0.1-SNAPSHOT.jar";
+  public static final String SERVER_JAR_NAME = "peril-server-0.1-SNAPSHOT.jar"; // TODO This is bad...
   public static final int MIN_SERVER_ADDRESS_LENGTH = 4;
   public static final int MAX_SERVER_ADDRESS_LENGTH = 255;
   public static final int MIN_SERVER_NAME_LENGTH = 3;

@@ -5,5 +5,5 @@ import com.forerunnergames.tools.common.Event;
 
 public interface CreateGameServerEvent extends Event
 {
-  GameServerConfiguration getConfiguration ();
+  GameServerConfiguration getGameServerConfiguration ();
 }

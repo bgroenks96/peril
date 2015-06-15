@@ -9,13 +9,16 @@ import com.forerunnergames.tools.common.Strings;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class LocalGameServerCreator implements GameServerCreator
 {
   private static final Logger log = LoggerFactory.getLogger (LocalGameServerCreator.class);
-  private Process serverProcess;
+  @Nullable
+  private Process serverProcess = null;
   private boolean isCreated = false;
 
   @Override
@@ -30,19 +33,21 @@ public final class LocalGameServerCreator implements GameServerCreator
       return Result.failure ("The server is already running.");
     }
 
-    log.info ("Launching your local host & play server \"{}\" on port {} (TCP)...", config.getServerName (),
+    log.info ("Launching your local host & play server \"{}\" on port {} (TCP)...", config.getGameServerName (),
               config.getServerTcpPort ());
 
     try
     {
       // @formatter:off
+      // TODO ProcessBuilder is unportable between operating systems?!
       serverProcess = new ProcessBuilder ("java",
                       "-jar",
-                      "-ea", // TODO Remove -ea in production?
-                      NetworkSettings.SERVER_JAR_NAME,
+                      "-ea", // TODO Remove -ea in production
+                      NetworkSettings.SERVER_JAR_NAME, // TODO Specify the server jar name on the command line?
                       "--game-mode", config.getGameMode ().name(),
+                      "--server-type", "host-and-play",
                       "--countries", String.valueOf (config.getTotalCountryCount ()),
-                      "--title", config.getServerName (),
+                      "--title", config.getGameServerName (),
                       "--port", String.valueOf (config.getServerTcpPort ()),
                       "--players", String.valueOf (config.getPlayerLimit ()),
                       "--win-percent", String.valueOf (config.getWinPercentage ()),
@@ -76,7 +81,7 @@ public final class LocalGameServerCreator implements GameServerCreator
 
     log.info ("Destroying your local host & play server...");
 
-    serverProcess.destroy ();
+    destroyServerProcess ();
 
     isCreated = false;
   }

@@ -5,20 +5,26 @@ import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGam
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.net.ClientConfiguration;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.DeniedEvent;
 
 public final class CreateGameServerDeniedEvent implements CreateGameServerEvent, DeniedEvent <String>
 {
   private final CreateGameServerRequestEvent requestEvent;
+  private final ClientConfiguration clientConfig;
   private final DeniedEvent <String> deniedEvent;
 
-  public CreateGameServerDeniedEvent (final CreateGameServerRequestEvent event, final String reason)
+  public CreateGameServerDeniedEvent (final CreateGameServerRequestEvent requestEvent,
+                                      final ClientConfiguration clientConfig,
+                                      final String reason)
   {
-    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (requestEvent, "requestEvent");
+    Arguments.checkIsNotNull (clientConfig, "clientConfig");
     Arguments.checkIsNotNull (reason, "reason");
 
-    requestEvent = event;
+    this.requestEvent = requestEvent;
+    this.clientConfig = clientConfig;
     deniedEvent = new DefaultDeniedEvent (reason);
   }
 
@@ -29,22 +35,28 @@ public final class CreateGameServerDeniedEvent implements CreateGameServerEvent,
   }
 
   @Override
-  public GameServerConfiguration getConfiguration ()
+  public GameServerConfiguration getGameServerConfiguration ()
   {
-    return requestEvent.getConfiguration ();
+    return requestEvent.getGameServerConfiguration ();
+  }
+
+  public ClientConfiguration getClientConfiguration ()
+  {
+    return clientConfig;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Original request: %2$s | %3$s", getClass ().getSimpleName (), requestEvent,
-                          deniedEvent);
+    return String.format ("%1$s: Original request: %2$s | Client Configuration: %3$s | %4$s", getClass ()
+            .getSimpleName (), requestEvent, clientConfig, deniedEvent);
   }
 
   @RequiredForNetworkSerialization
   private CreateGameServerDeniedEvent ()
   {
     requestEvent = null;
+    clientConfig = null;
     deniedEvent = null;
   }
 }

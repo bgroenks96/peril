@@ -1,38 +1,45 @@
 package com.forerunnergames.peril.core.shared.net.events.client.request;
 
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinGameServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.ServerConfiguration;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.RequestEvent;
 
-public final class JoinGameServerRequestEvent implements JoinGameServerEvent, RequestEvent
+public final class JoinGameServerRequestEvent implements RequestEvent
 {
-  private final JoinGameServerEvent joinGameServerEvent;
+  private final ServerConfiguration config;
 
   public JoinGameServerRequestEvent (final ServerConfiguration config)
   {
     Arguments.checkIsNotNull (config, "config");
 
-    joinGameServerEvent = new DefaultJoinGameServerEvent (config);
+    this.config = config;
   }
 
-  @Override
-  public ServerConfiguration getConfiguration ()
+  public ServerConfiguration getServerConfiguration ()
   {
-    return joinGameServerEvent.getConfiguration ();
+    return config;
+  }
+
+  public String getServerAddress ()
+  {
+    return config.getServerAddress ();
+  }
+
+  public int getServerTcpPort ()
+  {
+    return config.getServerTcpPort ();
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), joinGameServerEvent);
+    return String.format ("%1$s: Server Configuration: %2$s", getClass ().getSimpleName (), config);
   }
 
   @RequiredForNetworkSerialization
   private JoinGameServerRequestEvent ()
   {
-    joinGameServerEvent = null;
+    config = null;
   }
 }

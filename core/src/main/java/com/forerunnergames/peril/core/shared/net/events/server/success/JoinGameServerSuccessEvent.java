@@ -1,42 +1,44 @@
 package com.forerunnergames.peril.core.shared.net.events.server.success;
 
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
-import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultJoinGameServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.ServerConfiguration;
+import com.forerunnergames.tools.net.ClientConfiguration;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.SuccessEvent;
 
 import com.google.common.collect.ImmutableSet;
 
-public final class JoinGameServerSuccessEvent implements JoinGameServerEvent, SuccessEvent
+public final class JoinGameServerSuccessEvent implements SuccessEvent
 {
-  private final GameConfiguration gameConfig;
-  private final JoinGameServerEvent joinGameServerEvent;
+  private final GameServerConfiguration gameServerConfig;
+  private final ClientConfiguration clientConfig;
   private final ImmutableSet <PlayerPacket> playersInGame;
 
-  public JoinGameServerSuccessEvent (final ServerConfiguration serverConfig,
-                                     final GameConfiguration gameConfig,
+  public JoinGameServerSuccessEvent (final GameServerConfiguration gameServerConfig,
+                                     final ClientConfiguration clientConfig,
                                      final ImmutableSet <PlayerPacket> playersInGame)
 
   {
-    Arguments.checkIsNotNull (serverConfig, "serverConfig");
-    Arguments.checkIsNotNull (gameConfig, "gameConfig");
+    Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
+    Arguments.checkIsNotNull (clientConfig, "clientConfig");
     Arguments.checkIsNotNull (playersInGame, "playersInGame");
     Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
 
-    joinGameServerEvent = new DefaultJoinGameServerEvent (serverConfig);
-    this.gameConfig = gameConfig;
+    this.gameServerConfig = gameServerConfig;
+    this.clientConfig = clientConfig;
     this.playersInGame = playersInGame;
   }
 
-  @Override
-  public ServerConfiguration getConfiguration ()
+  public GameServerConfiguration getGameServerConfiguration ()
   {
-    return joinGameServerEvent.getConfiguration ();
+    return gameServerConfig;
+  }
+
+  public ClientConfiguration getClientConfiguration ()
+  {
+    return clientConfig;
   }
 
   public ImmutableSet <PlayerPacket> getPlayersInGame ()
@@ -47,16 +49,16 @@ public final class JoinGameServerSuccessEvent implements JoinGameServerEvent, Su
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Game Configuration: %2$s | Players In Game: %3$s | %4$s",
-                          getClass ().getSimpleName (), gameConfig, Strings.toString (playersInGame),
-                          joinGameServerEvent);
+    return String.format ("%1$s: Game Server Configuration: %2$s | Client Configuration: %3$s | Players In Game: %4$s",
+                          getClass ().getSimpleName (), gameServerConfig, clientConfig,
+                          Strings.toString (playersInGame));
   }
 
   @RequiredForNetworkSerialization
   private JoinGameServerSuccessEvent ()
   {
-    gameConfig = null;
-    joinGameServerEvent = null;
+    gameServerConfig = null;
+    clientConfig = null;
     playersInGame = null;
   }
 }

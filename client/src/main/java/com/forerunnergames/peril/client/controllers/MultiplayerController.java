@@ -21,6 +21,7 @@ import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.net.ServerCommunicator;
 import com.forerunnergames.tools.net.ServerConfiguration;
 import com.forerunnergames.tools.net.ServerConnector;
+import com.forerunnergames.tools.net.UnknownClientConfiguration;
 import com.forerunnergames.tools.net.events.RequestEvent;
 import com.forerunnergames.tools.net.events.ServerCommunicationEvent;
 import com.forerunnergames.tools.net.events.ServerConnectionEvent;
@@ -86,6 +87,24 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
+  public static void onServerDisconnectionEvent (final ServerDisconnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event [{}] received.", event);
+    log.info ("Disconnected from server [{}].", serverFrom (event));
+  }
+
+  @Handler
+  public static void onSeverConnectionEvent (final ServerConnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event [{}] received.", event);
+    log.info ("Successfully connected to server [{}].", serverFrom (event));
+  }
+
+  @Handler
   public void onDestroyGameServerEvent (final DestroyGameServerEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -139,28 +158,11 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (messageFrom (event));
   }
 
-  @Handler
-  public static void onServerDisconnectEvent (final ServerDisconnectionEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event [{}] received.", event);
-    log.info ("Disconnected from server [{}].", serverFrom (event));
-  }
-
-  @Handler
-  public static void onSeverConnectionEvent (final ServerConnectionEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event [{}] received.", event);
-    log.info ("Successfully connected to server [{}].", serverFrom (event));
-  }
-
   private Result <String> joinGameServer (final ServerConfiguration config)
   {
     return connectToServer (config.getServerAddress (), config.getServerTcpPort (),
-                            NetworkSettings.CONNECTION_TIMEOUT_MS, NetworkSettings.MAX_CONNECTION_ATTEMPTS);
+                            NetworkSettings.SERVER_CONNECTION_TIMEOUT_MS,
+                            NetworkSettings.MAX_SERVER_CONNECTION_ATTEMPTS);
   }
 
   private Result <String> connectToServer (final String address,
@@ -183,7 +185,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void joinGameServerDenied (final JoinGameServerRequestEvent event, final String reason)
   {
-    eventBus.publish (new JoinGameServerDeniedEvent (event, reason));
+    eventBus.publish (new JoinGameServerDeniedEvent (event, new UnknownClientConfiguration (), reason));
   }
 
   private Result <String> createAndJoinGameServer (final GameServerConfiguration config)
@@ -203,7 +205,7 @@ public final class MultiplayerController extends ControllerAdapter
   {
     destroyServer ();
 
-    eventBus.publish (new CreateGameServerDeniedEvent (event, reason));
+    eventBus.publish (new CreateGameServerDeniedEvent (event, new UnknownClientConfiguration (), reason));
   }
 
   private void sendToServer (final RequestEvent event)

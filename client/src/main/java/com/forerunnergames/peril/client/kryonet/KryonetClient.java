@@ -58,10 +58,9 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
       @Override
       public void received (final Connection connection, final Object object)
       {
-        if (!(object instanceof FrameworkMessage))
-        {
-          networkListener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
-        }
+        if (object instanceof FrameworkMessage) return;
+
+        networkListener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
     };
 

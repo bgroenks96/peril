@@ -1,5 +1,8 @@
 package com.forerunnergames.peril.server.controllers;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -11,7 +14,6 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -22,10 +24,15 @@ import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.application.EventBusFactory;
+import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.GameServerType;
+import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerLeaveGameSuccessEvent;
@@ -36,6 +43,7 @@ import com.forerunnergames.peril.server.EventBusHandler;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.ClientCommunicator;
+import com.forerunnergames.tools.net.ClientConfiguration;
 import com.forerunnergames.tools.net.ClientConnector;
 import com.forerunnergames.tools.net.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.Remote;
@@ -55,15 +63,12 @@ import org.hamcrest.Description;
 
 import org.junit.Test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class MultiplayerControllerTest
 {
-  private static final Logger log = LoggerFactory.getLogger (MultiplayerControllerTest.class);
-  private static final String DEFAULT_TEST_SERVER_NAME = "test-server";
-  private static final String DEFAULT_TEST_SERVER_ADDR = "server@test";
-  private static final int DEFAULT_TEST_PORT = 8888;
+  private static final String DEFAULT_TEST_GAME_SERVER_NAME = "test-server";
+  private static final GameServerType DEFAULT_GAME_SERVER_TYPE = GameServerType.DEDICATED;
+  private static final String DEFAULT_TEST_SERVER_ADDRESS = "server@test";
+  private static final int DEFAULT_TEST_SERVER_PORT = 8888;
 
   private final ClientConnector mockConnector = mock (ClientConnector.class);
   private final ClientCommunicator mockCommunicator = mock (ClientCommunicator.class);
@@ -71,35 +76,45 @@ public class MultiplayerControllerTest
   private final EventBusHandler handler = new EventBusHandler (eventBus);
   private final MultiplayerControllerBuilder builder = builder (mockConnector,
                                                                 new PlayerCommunicator (mockCommunicator), eventBus);
-
-  private int clientCount;
+  private int clientCount = 0;
 
   @Test
-  public void testSuccessfulHostClientJoinGameServer ()
+  public void testSuccessfulHostClientCreateGameServer ()
   {
-    // for logging clarity
-    log.info ("<==== testSuccessfulHostClientJoinGameServer ====>");
+    final MultiplayerController mpc = builder.gameServerType (GameServerType.HOST_AND_PLAY).build ();
 
-    final MultiplayerController mpc = builder.build ();
     final Remote host = createHost ();
-
     connect (host);
-    final ServerConfiguration config = createConfig (mpc);
-    eventBus.publish (communication (new JoinGameServerRequestEvent (config), host));
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
 
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
+            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), createDefaultServerConfig ());
+    eventBus.publish (communication (new CreateGameServerRequestEvent (gameServerConfig), host));
+
+    final BaseMatcher <CreateGameServerSuccessEvent> successEventMatcher = new BaseMatcher <CreateGameServerSuccessEvent> ()
+    {
       @Override
-      public boolean matches (Object arg0)
+      public boolean matches (final Object arg0)
       {
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchConfig = matchEvent.getConfiguration ();
-        return matchConfig.getServerName ().equals (config.getServerName ())
-                && matchConfig.getServerTcpPort () == host.getPort ();
+        assertThat (arg0, instanceOf (CreateGameServerSuccessEvent.class));
+        final CreateGameServerSuccessEvent matchEvent = (CreateGameServerSuccessEvent) arg0;
+        final GameServerConfiguration matchGameServerConfig = matchEvent.getGameServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchGameServerConfig.getServerAddress ().equals (gameServerConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
+                && matchGameServerConfig.getServerTcpPort () == gameServerConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == host.getPort ()
+                && matchGameServerConfig.getGameServerName ().equals (gameServerConfig.getGameServerName ())
+                && matchGameServerConfig.getGameServerType () == gameServerConfig.getGameServerType ()
+                && matchGameServerConfig.getGameMode () == gameServerConfig.getGameMode ()
+                && matchGameServerConfig.getPlayerLimit () == gameServerConfig.getPlayerLimit ()
+                && matchGameServerConfig.getWinPercentage () == gameServerConfig.getWinPercentage ()
+                && matchGameServerConfig.getTotalCountryCount () == gameServerConfig.getTotalCountryCount ()
+                && matchGameServerConfig.getInitialCountryAssignment () == gameServerConfig
+                        .getInitialCountryAssignment ();
       }
 
       @Override
-      public void describeTo (Description arg0)
+      public void describeTo (final Description arg0)
       {
       }
     };
@@ -109,33 +124,31 @@ public class MultiplayerControllerTest
   @Test
   public void testSuccessfulClientJoinGameServer ()
   {
-    log.info ("<==== testSuccessfulClientJoinGameServer ====>");
-
     final MultiplayerController mpc = builder.build ();
-
-    // add and connect host client
-    addHost (mpc);
-    // weak verify for host; sufficient for this test case
-    verify (mockCommunicator, only ()).sendTo (any (Remote.class), isA (JoinGameServerSuccessEvent.class));
 
     final Remote client = createClient ();
     connect (client);
-    final ServerConfiguration config = createConfig (mpc);
-    eventBus.publish (communication (new JoinGameServerRequestEvent (config), client));
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    eventBus.publish (communication (new JoinGameServerRequestEvent (serverConfig), client));
+
     final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
     {
-
       @Override
-      public boolean matches (Object arg0)
+      public boolean matches (final Object arg0)
       {
+        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
         final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchConfig = matchEvent.getConfiguration ();
-        return matchConfig.getServerName ().equals (config.getServerName ())
-                && matchConfig.getServerTcpPort () == client.getPort ();
+        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == client.getPort ();
       }
 
       @Override
-      public void describeTo (Description arg0)
+      public void describeTo (final Description arg0)
       {
       }
     };
@@ -145,29 +158,31 @@ public class MultiplayerControllerTest
   @Test
   public void testClientJoinRequestBeforeHostDenied ()
   {
-    log.info ("<==== testClientJoinRequestBeforeHostDenied ====>");
+    final MultiplayerController mpc = builder.gameServerType (GameServerType.HOST_AND_PLAY).build ();
 
-    final MultiplayerController mpc = builder.build ();
     final Remote client = createClient ();
-
     connect (client);
-    final ServerConfiguration config = createConfig (mpc);
-    eventBus.publish (communication (new JoinGameServerRequestEvent (config), client));
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    eventBus.publish (communication (new JoinGameServerRequestEvent (serverConfig), client));
+
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
     {
-
       @Override
-      public boolean matches (Object arg0)
+      public boolean matches (final Object arg0)
       {
+        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
         final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchConfig = matchEvent.getConfiguration ();
-        // for future reference, JoinGameServerDenied even should really set the client IP for the return config...
-        return matchConfig.getServerName ().equals (config.getServerName ())
-                && matchConfig.getServerTcpPort () == config.getServerTcpPort ();
+        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == client.getPort ();
       }
 
       @Override
-      public void describeTo (Description arg0)
+      public void describeTo (final Description arg0)
       {
       }
     };
@@ -176,67 +191,21 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testClientJoinRequestWithGameServerFullDenied ()
-  {
-    log.info ("<==== testClientJoinRequestWithGameServerFullDenied ====>");
-
-    final MultiplayerController mpc = builder.build ();
-
-    // add and connect host client
-    addHost (mpc);
-    addClient (mpc);
-    // weak verify for host and client success events
-    verify (mockCommunicator, times (2)).sendTo (any (Remote.class), isA (JoinGameServerSuccessEvent.class));
-
-    final Remote client = createClient ();
-    connect (client);
-    final ServerConfiguration config = createConfig (mpc);
-    eventBus.publish (communication (new JoinGameServerRequestEvent (config), client));
-    final BaseMatcher <JoinGameServerDeniedEvent> deniedEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
-    {
-
-      @Override
-      public boolean matches (Object arg0)
-      {
-        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchConfig = matchEvent.getConfiguration ();
-        // for future reference, JoinGameServerDenied even should really set the client IP for the return config...
-        return matchConfig.getServerName ().equals (config.getServerName ())
-                && matchConfig.getServerTcpPort () == config.getServerTcpPort ();
-      }
-
-      @Override
-      public void describeTo (Description arg0)
-      {
-      }
-    };
-    verify (mockCommunicator).sendTo (eq (client), argThat (deniedEventMatcher));
-    verify (mockConnector, only ()).disconnect (eq (client));
-  }
-
-  @Test
   public void testValidPlayerJoinGameRequestPublished ()
   {
-    log.info ("<==== testValidPlayerJoinGameRequestPublished ====>");
-
     final MultiplayerController mpc = builder.build ();
 
-    final Remote host = addHost (mpc);
-    verify (mockCommunicator, only ()).sendTo (eq (host), isA (JoinGameServerSuccessEvent.class));
+    final Remote client = addClient ();
+    verify (mockCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     final String playerName = "Test-Player";
-    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), host);
+    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), client);
   }
 
   @Test
   public void testIgnorePlayerJoinGameRequestBeforeJoiningGameServer ()
   {
-    log.info ("<==== testIgnorePlayerJoinGameRequestBeforeJoiningGameServer ====>");
-
     final MultiplayerController mpc = builder.build ();
-
-    final Remote host = addHost (mpc);
-    verify (mockCommunicator, only ()).sendTo (eq (host), isA (JoinGameServerSuccessEvent.class));
 
     final Remote client = createClient ();
     connect (client);
@@ -252,36 +221,32 @@ public class MultiplayerControllerTest
   @Test
   public void testPlayerJoinGameSuccess ()
   {
-    log.info ("<==== testPlayerJoinGameSuccess ====>");
-
     final MultiplayerController mpc = builder.build ();
 
-    final Remote host = addHost (mpc);
-    verify (mockCommunicator, only ()).sendTo (eq (host), isA (JoinGameServerSuccessEvent.class));
+    final Remote client = addClient ();
+    verify (mockCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     final String playerName = "Test-Player-0";
-    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), host);
+    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), client);
 
     final PlayerPacket mockPacket = mock (PlayerPacket.class);
     when (mockPacket.getName ()).thenReturn (playerName);
     final SuccessEvent successEvent = new PlayerJoinGameSuccessEvent (mockPacket);
     eventBus.publish (successEvent);
-    verify (mockCommunicator).sendTo (eq (host), eq (successEvent));
+    verify (mockCommunicator).sendTo (eq (client), eq (successEvent));
     assertTrue (mpc.isPlayerInGame (mockPacket));
   }
 
   @Test
   public void testPlayerJoinGameDenied ()
   {
-    log.info ("<==== testPlayerJoinGameDenied ====>");
-
     final MultiplayerController mpc = builder.build ();
 
-    final Remote host = addHost (mpc);
-    verify (mockCommunicator, only ()).sendTo (eq (host), any (JoinGameServerSuccessEvent.class));
+    final Remote client = addClient ();
+    verify (mockCommunicator, only ()).sendTo (eq (client), any (JoinGameServerSuccessEvent.class));
 
     final String playerName = "Test-Player-0";
-    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), host);
+    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), client);
 
     final PlayerPacket mockPacket = mock (PlayerPacket.class);
     when (mockPacket.getName ()).thenReturn (playerName);
@@ -290,36 +255,43 @@ public class MultiplayerControllerTest
     final DeniedEvent <PlayerJoinGameDeniedEvent.Reason> deniedEvent = new PlayerJoinGameDeniedEvent (playerName,
             reason);
     eventBus.publish (deniedEvent);
-    verify (mockCommunicator).sendTo (eq (host), eq (deniedEvent));
+    verify (mockCommunicator).sendTo (eq (client), eq (deniedEvent));
     assertFalse (mpc.isPlayerInGame (mockPacket));
   }
 
   @Test
   public void testPlayerLeaveGameSuccess ()
   {
-    log.info ("<==== testPlayerLeaveGameSuccess ====>");
-
     final MultiplayerController mpc = builder.build ();
 
-    final Remote host = addHost (mpc);
-    verify (mockCommunicator, only ()).sendTo (eq (host), isA (JoinGameServerSuccessEvent.class));
+    final Remote client = addClient ();
+    verify (mockCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     final String playerName = "Test-Player-0";
     final PlayerPacket mockPacket = mock (PlayerPacket.class);
     when (mockPacket.getName ()).thenReturn (playerName);
-    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), host);
+    publishAndAssert (new PlayerJoinGameRequestEvent (playerName), client);
     eventBus.publish (new PlayerJoinGameSuccessEvent (mockPacket));
-    verify (mockCommunicator).sendTo (eq (host), isA (PlayerJoinGameSuccessEvent.class));
+    verify (mockCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (mockPacket));
 
-    eventBus.publish (new ClientDisconnectionEvent (host));
+    eventBus.publish (new ClientDisconnectionEvent (client));
     // make sure nothing was sent to the disconnecting player
-    verify (mockCommunicator, never ()).sendTo (eq (host), isA (PlayerLeaveGameSuccessEvent.class));
+    verify (mockCommunicator, never ()).sendTo (eq (client), isA (PlayerLeaveGameSuccessEvent.class));
     assertTrue (handler.lastEventWasType (PlayerLeaveGameSuccessEvent.class));
     assertFalse (mpc.isPlayerInGame (mockPacket));
   }
 
   // <<<<<<<<<<<< Test helper facilities >>>>>>>>>>>>>> //
+
+  // convenience method for fetching a new MultiplayerControllerBuilder
+  // Note: package private visibility is intended; other test classes in package should have access.
+  static MultiplayerControllerBuilder builder (final ClientConnector connector,
+                                               final PlayerCommunicator communicator,
+                                               final MBassador <Event> eventBus)
+  {
+    return new MultiplayerControllerBuilder (connector, communicator, eventBus);
+  }
 
   private void publishAndAssert (final Event event, final Remote client)
   {
@@ -361,48 +333,36 @@ public class MultiplayerControllerTest
     return new ClientCommunicationEvent (event, client);
   }
 
-  // create default server config using current builder settings
-  private ServerConfiguration createConfig (final MultiplayerController controller)
+  private ServerConfiguration createDefaultServerConfig ()
   {
-    Arguments.checkIsNotNull (controller, "controller");
-
-    return new DefaultServerConfiguration (builder.serverName, DEFAULT_TEST_SERVER_ADDR, builder.port);
+    return new DefaultServerConfiguration (DEFAULT_TEST_SERVER_ADDRESS, DEFAULT_TEST_SERVER_PORT);
   }
 
-  private Remote addHost (final MultiplayerController mpc)
+  private Remote addHost ()
   {
-    Arguments.checkIsNotNull (mpc, "mpc");
-
     final Remote host = createHost ();
-    addClient (host, mpc);
+    addClientWithServerAddress (host, NetworkSettings.LOCALHOST_ADDRESS);
     return host;
   }
 
-  private Remote addClient (final MultiplayerController mpc)
+  private Remote addClient ()
   {
-    Arguments.checkIsNotNull (mpc, "mpc");
-
     final Remote client = createClient ();
-    addClient (client, mpc);
+    addClient (client);
     return client;
   }
 
-  private void addClient (final Remote client, final MultiplayerController mpc)
+  private void addClient (final Remote client)
   {
-    Arguments.checkIsNotNull (client, "client");
-    Arguments.checkIsNotNull (mpc, "mpc");
-
     connect (client);
-    eventBus.publish (communication (new JoinGameServerRequestEvent (createConfig (mpc)), client));
+    eventBus.publish (communication (new JoinGameServerRequestEvent (createDefaultServerConfig ()), client));
   }
 
-  // convenience for fetching a new MultiplayerControllerBuilder
-  // Note: package private visibility is intended; other test classes in package should have access.
-  static final MultiplayerControllerBuilder builder (final ClientConnector connector,
-                                                     final PlayerCommunicator communicator,
-                                                     final MBassador <Event> eventBus)
+  private void addClientWithServerAddress (final Remote client, final String serverAddress)
   {
-    return new MultiplayerControllerBuilder (connector, communicator, eventBus);
+    connect (client);
+    eventBus.publish (communication (new JoinGameServerRequestEvent (new DefaultServerConfiguration (serverAddress,
+            DEFAULT_TEST_SERVER_PORT)), client));
   }
 
   /*
@@ -413,39 +373,40 @@ public class MultiplayerControllerTest
     private final MBassador <Event> eventBus;
     private final ClientConnector connector;
     private final PlayerCommunicator communicator;
-
-    private String serverName = DEFAULT_TEST_SERVER_NAME;
-    private int port = DEFAULT_TEST_PORT;
     // game configuration fields
-    private GameMode gameMode = GameMode.CLASSIC;
+    private final GameMode gameMode = GameMode.CLASSIC;
+    private final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
+    // game server configuration fields
+    private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;
+    private GameServerType gameServerType = DEFAULT_GAME_SERVER_TYPE;
+    // server configuration fields
+    private int serverPort = DEFAULT_TEST_SERVER_PORT;
     private int playerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
     private int winPercent = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
     private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
-    private InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
 
-    private MultiplayerControllerBuilder (final ClientConnector connector,
-                                          final PlayerCommunicator communicator,
-                                          final MBassador <Event> eventBus)
+    MultiplayerControllerBuilder gameServerName (final String gameServerName)
     {
-      this.connector = connector;
-      this.communicator = communicator;
-      this.eventBus = eventBus;
-    }
+      Arguments.checkIsNotNull (gameServerName, "gameServerName");
 
-    MultiplayerControllerBuilder serverName (final String serverName)
-    {
-      Arguments.checkIsNotNull (serverName, "serverName");
-
-      this.serverName = serverName;
+      this.gameServerName = gameServerName;
       return this;
     }
 
-    MultiplayerControllerBuilder serverPort (final int port)
+    MultiplayerControllerBuilder gameServerType (final GameServerType gameServerType)
     {
-      Arguments.checkIsNotNegative (port, "port");
-      Arguments.checkUpperInclusiveBound (port, NetworkSettings.MAX_PORT_VALUE, "port");
+      Arguments.checkIsNotNull (gameServerType, "gameServerType");
 
-      this.port = port;
+      this.gameServerType = gameServerType;
+      return this;
+    }
+
+    MultiplayerControllerBuilder serverPort (final int serverPort)
+    {
+      Arguments.checkIsNotNegative (serverPort, "serverPort");
+      Arguments.checkUpperInclusiveBound (serverPort, NetworkSettings.MAX_PORT_VALUE, "serverPort");
+
+      this.serverPort = serverPort;
       return this;
     }
 
@@ -474,16 +435,25 @@ public class MultiplayerControllerTest
       return this;
     }
 
-    // add game mode and/or initial-country-assignment later if needed
-
     MultiplayerController build ()
     {
-      GameConfiguration config = new DefaultGameConfiguration (gameMode, playerLimit, winPercent, totalCountryCount,
-              initialCountryAssignment);
-      MultiplayerController controller = new MultiplayerController (serverName, port, config, connector, communicator,
-              eventBus);
+      final GameConfiguration config = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
+              totalCountryCount, initialCountryAssignment);
+      final MultiplayerController controller = new MultiplayerController (gameServerName, gameServerType, serverPort,
+              config, connector, communicator, eventBus);
       controller.initialize ();
       return controller;
+    }
+
+    // add game mode and/or initial-country-assignment later if needed
+
+    private MultiplayerControllerBuilder (final ClientConnector connector,
+                                          final PlayerCommunicator communicator,
+                                          final MBassador <Event> eventBus)
+    {
+      this.connector = connector;
+      this.communicator = communicator;
+      this.eventBus = eventBus;
     }
   }
 }

@@ -48,7 +48,7 @@ public final class ServerApplicationFactory
     final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
     final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (), gameRules.getWinPercentage (), gameRules.getTotalCountryCount (), gameRules.getInitialCountryAssignment ());
-    final Controller multiplayerController = new MultiplayerController (jArgs.serverName, jArgs.serverTcpPort, config, serverController, new PlayerCommunicator(serverController), eventBus);
+    final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType, jArgs.serverTcpPort, config, serverController, new PlayerCommunicator(serverController), eventBus);
     // @formatter:on
 
     return new ServerApplication (gameStateMachine, eventBus, serverController, multiplayerController);

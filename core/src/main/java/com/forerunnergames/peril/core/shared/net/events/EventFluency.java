@@ -3,17 +3,21 @@ package com.forerunnergames.peril.core.shared.net.events;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.JoinGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
@@ -49,7 +53,21 @@ public final class EventFluency
     return event.getMessage ();
   }
 
+  public static PlayerPacket playerFrom (final PlayerJoinGameSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayer ();
+  }
+
   public static String playerNameFrom (final PlayerJoinGameRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getPlayerName ();
+  }
+
+  public static String playerNameFrom (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -129,14 +147,59 @@ public final class EventFluency
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getConfiguration ();
+    return event.getGameServerConfiguration ();
   }
 
-  public static ServerConfiguration withServerConfigurationFrom (final JoinGameServerEvent event)
+  public static GameServerConfiguration withGameServerConfigurationFrom (final JoinGameServerSuccessEvent event)
+  {
+    return gameServerConfigurationFrom (event);
+  }
+
+  public static GameServerConfiguration gameServerConfigurationFrom (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return event.getConfiguration ();
+    return event.getGameServerConfiguration ();
+  }
+
+  public static GameServerConfiguration gameServerConfigurationFrom (final CreateGameServerSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getGameServerConfiguration ();
+  }
+
+  public static ServerConfiguration withServerConfigurationFrom (final JoinGameServerRequestEvent event)
+  {
+    return serverConfigurationFrom (event);
+  }
+
+  public static ServerConfiguration withServerConfigurationFrom (final JoinGameServerDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerConfiguration ();
+  }
+
+  public static ServerConfiguration serverConfigurationFrom (final JoinGameServerRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerConfiguration ();
+  }
+
+  public static String serverAddressFrom (final CreateGameServerRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerAddress ();
+  }
+
+  public static String serverAddressFrom (final JoinGameServerRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getServerAddress ();
   }
 
   public static String withCountryNameFrom (final CountryArmiesChangedEvent event)

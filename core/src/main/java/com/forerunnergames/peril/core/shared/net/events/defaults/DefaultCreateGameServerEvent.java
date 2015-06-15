@@ -17,7 +17,7 @@ public final class DefaultCreateGameServerEvent implements CreateGameServerEvent
   }
 
   @Override
-  public GameServerConfiguration getConfiguration ()
+  public GameServerConfiguration getGameServerConfiguration ()
   {
     return config;
   }

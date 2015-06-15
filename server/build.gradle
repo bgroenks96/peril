@@ -30,6 +30,8 @@ task dist (type: Jar, dependsOn: classes) {
   }
 }
 
+test.testLogging.showStandardStreams = true;
+
 eclipse {
   project {
     name = appName + "-server"

@@ -5,4 +5,6 @@ import com.forerunnergames.tools.net.ServerConfiguration;
 
 public interface GameServerConfiguration extends GameConfiguration, ServerConfiguration
 {
+  String getGameServerName ();
+  GameServerType getGameServerType ();
 }

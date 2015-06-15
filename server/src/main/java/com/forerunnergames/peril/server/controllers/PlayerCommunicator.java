@@ -14,6 +14,8 @@ public final class PlayerCommunicator implements ClientCommunicator
 
   public PlayerCommunicator (final ClientCommunicator clientCommunicator)
   {
+    Arguments.checkIsNotNull (clientCommunicator, "clientCommunicator");
+
     this.clientCommunicator = clientCommunicator;
   }
 
@@ -45,7 +47,7 @@ public final class PlayerCommunicator implements ClientCommunicator
 
   public void sendToAllPlayersExcept (final ImmutableMap <PlayerPacket, Remote> playersToClients,
                                       final PlayerPacket player,
-                                      Object object)
+                                      final Object object)
   {
     Arguments.checkIsNotNull (playersToClients, "playersToClients");
     Arguments.checkHasNoNullKeysOrValues (playersToClients, "playersToClients");
