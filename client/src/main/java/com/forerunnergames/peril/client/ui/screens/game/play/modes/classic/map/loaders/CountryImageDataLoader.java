@@ -2,8 +2,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.math.Vector2;
 
-import com.forerunnergames.peril.client.io.AbstractDataLoader;
-import com.forerunnergames.peril.client.io.StreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
+import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
@@ -37,7 +37,7 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    streamParser = StreamParserFactory.create (fileName);
+    streamParser = LibGdxStreamParserFactory.create (fileName);
   }
 
   @Override

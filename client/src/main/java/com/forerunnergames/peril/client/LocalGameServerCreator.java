@@ -46,7 +46,6 @@ public final class LocalGameServerCreator implements GameServerCreator
                       NetworkSettings.SERVER_JAR_NAME, // TODO Specify the server jar name on the command line?
                       "--game-mode", config.getGameMode ().name(),
                       "--server-type", "host-and-play",
-                      "--countries", String.valueOf (config.getTotalCountryCount ()),
                       "--title", config.getGameServerName (),
                       "--port", String.valueOf (config.getServerTcpPort ()),
                       "--players", String.valueOf (config.getPlayerLimit ()),

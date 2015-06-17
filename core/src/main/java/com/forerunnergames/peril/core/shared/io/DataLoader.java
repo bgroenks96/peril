@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.io;
+package com.forerunnergames.peril.core.shared.io;
 
 import com.google.common.collect.ImmutableBiMap;
 

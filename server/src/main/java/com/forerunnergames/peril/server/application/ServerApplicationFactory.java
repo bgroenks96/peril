@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.server.application;
 
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
+import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
@@ -18,6 +20,7 @@ import com.forerunnergames.peril.server.controllers.PlayerCommunicator;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.peril.server.main.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
+import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
 import com.forerunnergames.tools.net.Server;
@@ -45,24 +48,28 @@ public final class ServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort,
             KryonetRegistration.CLASSES, eventBus);
 
+    final ImmutableSet <Country> countries = PlayMapModelDataFactory.createCountries ();
+    final ImmutableSet <Continent> continents = PlayMapModelDataFactory.createContinents (new DefaultCountryIdResolver (countries));
+
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
-                                                         jArgs.totalCountryCount, jArgs.initialCountryAssignment);
+                                                         countries.size (), jArgs.initialCountryAssignment);
 
+    final PlayMapModel playMapModel = new PlayMapModel (countries, continents, gameRules);
     final PlayerModel playerModel = new PlayerModel (gameRules);
-
-    final PlayMapModel playMapModel = new PlayMapModel (ImmutableSet.<Country> of (), ImmutableSet.<Continent> of (),
-            gameRules);
-
     final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
-
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
 
     final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
-            gameRules.getWinPercentage (), gameRules.getTotalCountryCount (), gameRules.getInitialCountryAssignment ());
+            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
 
     final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType,
             jArgs.serverTcpPort, config, serverController, new PlayerCommunicator (serverController), eventBus);
 
     return new ServerApplication (gameStateMachine, eventBus, serverController, multiplayerController);
+  }
+
+  private ServerApplicationFactory ()
+  {
+    Classes.instantiationNotAllowed ();
   }
 }

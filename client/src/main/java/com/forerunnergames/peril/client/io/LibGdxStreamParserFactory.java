@@ -7,7 +7,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.io.StreamParser;
 
-public final class StreamParserFactory
+public final class LibGdxStreamParserFactory
 {
   public static StreamParser create (final String fileName)
   {
@@ -20,7 +20,7 @@ public final class StreamParserFactory
     // @formatter:on
   }
 
-  private StreamParserFactory ()
+  private LibGdxStreamParserFactory ()
   {
     Classes.instantiationNotAllowed ();
   }

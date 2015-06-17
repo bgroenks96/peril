@@ -8,7 +8,5 @@ public interface GameConfiguration
 
   int getWinPercentage ();
 
-  int getTotalCountryCount ();
-
   InitialCountryAssignment getInitialCountryAssignment ();
 }

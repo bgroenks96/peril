@@ -10,24 +10,24 @@ import com.google.common.collect.ImmutableSet;
 public class DefaultContinent extends AbstractAsset implements Continent
 {
   private final ContinentName name;
-  private final ImmutableSet <Id> countries;
+  private final ImmutableSet <Id> countryIds;
   private final int reinforcementBonus;
 
   public DefaultContinent (final String name,
                            final Id id,
                            final int reinforcementBonus,
-                           final ImmutableSet <Id> countries)
+                           final ImmutableSet <Id> countryIds)
   {
     super (name, id);
 
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (id, "id");
     Arguments.checkIsNotNegative (reinforcementBonus, "reinforcementBonus");
-    Arguments.checkIsNotNull (countries, "countries");
-    Arguments.checkHasNoNullElements (countries, "countries");
+    Arguments.checkIsNotNull (countryIds, "countryIds");
+    Arguments.checkHasNoNullElements (countryIds, "countryIds");
 
     this.name = new ContinentName (name);
-    this.countries = countries;
+    this.countryIds = countryIds;
     this.reinforcementBonus = reinforcementBonus;
   }
 
@@ -40,7 +40,13 @@ public class DefaultContinent extends AbstractAsset implements Continent
   @Override
   public ImmutableSet <Id> getCountryIds ()
   {
-    return countries;
+    return countryIds;
+  }
+
+  @Override
+  public int getCountryCount ()
+  {
+    return countryIds.size ();
   }
 
   @Override
@@ -48,7 +54,7 @@ public class DefaultContinent extends AbstractAsset implements Continent
   {
     Arguments.checkIsNotNull (country, "country");
 
-    return countries.contains (country);
+    return countryIds.contains (country);
   }
 
   @Override
@@ -57,11 +63,18 @@ public class DefaultContinent extends AbstractAsset implements Continent
     return reinforcementBonus;
   }
 
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | %2$s | Reinforcement Bonus: %3$s | Country Count: %4$s | Country Id's: %5$s",
+                          super.toString (), name, reinforcementBonus, countryIds.size (), countryIds);
+  }
+
   @RequiredForNetworkSerialization
   private DefaultContinent ()
   {
     name = null;
-    countries = null;
+    countryIds = null;
     reinforcementBonus = 0;
   }
 }

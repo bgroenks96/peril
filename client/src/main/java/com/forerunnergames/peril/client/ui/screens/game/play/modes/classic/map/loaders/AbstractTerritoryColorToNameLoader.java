@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders;
 
-import com.forerunnergames.peril.client.io.AbstractDataLoader;
-import com.forerunnergames.peril.client.io.StreamParserFactory;
+import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
 import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
+import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParser;
 
@@ -16,10 +16,6 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
   private StreamParser streamParser;
   private int territoryColorComponentValue;
   private String territoryNameValue;
-
-  protected abstract T createTerritoryColor (final int colorComponentValue);
-
-  protected abstract U createTerritoryName (final String nameValue);
 
   @Override
   protected final ImmutableBiMap <T, U> finalizeData ()
@@ -35,7 +31,7 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    streamParser = StreamParserFactory.create (fileName);
+    streamParser = LibGdxStreamParserFactory.create (fileName);
   }
 
   @Override
@@ -53,4 +49,8 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
     territoryColorsToNames.put (createTerritoryColor (territoryColorComponentValue),
                                 createTerritoryName (territoryNameValue));
   }
+
+  protected abstract T createTerritoryColor (final int colorComponentValue);
+
+  protected abstract U createTerritoryName (final String nameValue);
 }

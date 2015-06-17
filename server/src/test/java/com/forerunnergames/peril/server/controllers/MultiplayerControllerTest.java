@@ -108,7 +108,6 @@ public class MultiplayerControllerTest
                 && matchGameServerConfig.getGameMode () == gameServerConfig.getGameMode ()
                 && matchGameServerConfig.getPlayerLimit () == gameServerConfig.getPlayerLimit ()
                 && matchGameServerConfig.getWinPercentage () == gameServerConfig.getWinPercentage ()
-                && matchGameServerConfig.getTotalCountryCount () == gameServerConfig.getTotalCountryCount ()
                 && matchGameServerConfig.getInitialCountryAssignment () == gameServerConfig
                         .getInitialCountryAssignment ();
       }
@@ -383,7 +382,6 @@ public class MultiplayerControllerTest
     private int serverPort = DEFAULT_TEST_SERVER_PORT;
     private int playerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
     private int winPercent = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
-    private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
 
     MultiplayerControllerBuilder gameServerName (final String gameServerName)
     {
@@ -427,18 +425,10 @@ public class MultiplayerControllerTest
       return this;
     }
 
-    MultiplayerControllerBuilder countryCount (final int totalCountryCount)
-    {
-      Arguments.checkIsNotNegative (totalCountryCount, "totalCountryCount");
-
-      this.totalCountryCount = totalCountryCount;
-      return this;
-    }
-
     MultiplayerController build ()
     {
       final GameConfiguration config = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
-              totalCountryCount, initialCountryAssignment);
+              initialCountryAssignment);
       final MultiplayerController controller = new MultiplayerController (gameServerName, gameServerType, serverPort,
               config, connector, communicator, eventBus);
       controller.initialize ();

@@ -11,6 +11,8 @@ public interface Continent extends Territory
 
   ImmutableSet <Id> getCountryIds ();
 
+  int getCountryCount ();
+
   boolean hasCountry (final Id country);
 
   int getReinforcementBonus ();

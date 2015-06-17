@@ -7,14 +7,6 @@ import javax.annotation.Nullable;
 
 public final class GameRulesFactory
 {
-  public static GameRules create (final GameConfiguration config)
-  {
-    Arguments.checkIsNotNull (config, "config");
-
-    return create (config.getGameMode (), config.getPlayerLimit (), config.getWinPercentage (),
-                   config.getTotalCountryCount (), config.getInitialCountryAssignment ());
-  }
-
   public static GameRules create (final GameMode gameMode,
                                   @Nullable final Integer playerLimit,
                                   @Nullable final Integer winPercentage,

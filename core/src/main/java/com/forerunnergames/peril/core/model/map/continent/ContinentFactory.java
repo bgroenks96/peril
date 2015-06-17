@@ -70,11 +70,11 @@ public final class ContinentFactory
       return this;
     }
 
-    public ContinentBuilder addCountry (final Id country)
+    public ContinentBuilder country (final Id country)
     {
       Arguments.checkIsNotNull (country, "country");
 
-      this.countries.add (country);
+      countries.add (country);
       return this;
     }
 

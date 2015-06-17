@@ -49,12 +49,6 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
-  public int getTotalCountryCount ()
-  {
-    return gameConfig.getTotalCountryCount ();
-  }
-
-  @Override
   public InitialCountryAssignment getInitialCountryAssignment ()
   {
     return gameConfig.getInitialCountryAssignment ();
