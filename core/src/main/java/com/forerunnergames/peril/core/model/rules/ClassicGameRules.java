@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.core.model.rules;
 
+import com.forerunnergames.peril.core.model.TurnPhase;
+import com.forerunnergames.peril.core.model.card.CardType;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableList;
@@ -17,10 +19,16 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_TOTAL_COUNTRY_COUNT = 1000;
   public static final int MIN_ARMIES_IN_HAND = 0;
   public static final int MAX_ARMIES_IN_HAND = Integer.MAX_VALUE;
+  public static final int CARD_TRADE_IN_COUNT = 3;
   public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
   public static final InitialCountryAssignment DEFAULT_INITIAL_COUNTRY_ASSIGNMENT = InitialCountryAssignment.RANDOM;
+  private static final int MAX_CARDS_IN_HAND_REINFORCE_PHASE = 6;
+  private static final int MAX_CARDS_IN_HAND_ATTACK_PHASE = 9;
+  private static final int MAX_CARDS_IN_HAND_FORTIFY_PHASE = MAX_CARDS_IN_HAND_REINFORCE_PHASE;
+  private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_REINFORCE_PHASE = 5;
+  private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_ATTACK_PHASE = 6;
   private final int playerLimit;
   private final int winPercentage;
   private final int minWinPercentage;
@@ -126,8 +134,87 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
+  public int getCardTradeInCount ()
+  {
+    return CARD_TRADE_IN_COUNT;
+  }
+
+  @Override
+  public int getMaxCardsInHand (final TurnPhase turnPhase)
+  {
+    Arguments.checkIsNotNull (turnPhase, "turnPhase");
+
+    switch (turnPhase)
+    {
+      case REINFORCE:
+      {
+        return MAX_CARDS_IN_HAND_REINFORCE_PHASE;
+      }
+      case ATTACK:
+      {
+        return MAX_CARDS_IN_HAND_ATTACK_PHASE;
+      }
+      case FORTIFY:
+      {
+        return MAX_CARDS_IN_HAND_FORTIFY_PHASE;
+      }
+      default:
+      {
+        throw new IllegalArgumentException ("Illegal value for turn phase.");
+      }
+    }
+  }
+
+  @Override
+  public int getMinCardsInHandToRequireTradeIn (final TurnPhase turnPhase)
+  {
+    Arguments.checkIsNotNull (turnPhase, "turnPhase");
+
+    switch (turnPhase)
+    {
+      case REINFORCE:
+      {
+        return MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_REINFORCE_PHASE;
+      }
+      case ATTACK:
+      {
+        return MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_ATTACK_PHASE;
+      }
+      default:
+      {
+        throw new IllegalArgumentException ("Illegal value for turn phase.");
+      }
+    }
+  }
+
+  @Override
+  public boolean isValidCardSet (final ImmutableList <CardType> cardTypes)
+  {
+    Arguments.checkIsNotNull (cardTypes, "cardTypes");
+    Arguments.checkHasNoNullElements (cardTypes, "cardTypes");
+
+    final int matchLen = cardTypes.size ();
+    if (matchLen != getCardTradeInCount ()) return false;
+
+    // build the match string (string of type values) from cardTypes
+    final StringBuilder matchStrBuilder = new StringBuilder ();
+    for (final CardType type : cardTypes)
+    {
+      matchStrBuilder.append (type.getTypeValue ());
+    }
+    final String matchStr = matchStrBuilder.toString ();
+    // pattern 1: "(\\d)\\1{2}" matches repeating integers, excluding zero; i.e. 3 matching non-wild cards
+    // pattern 2: ^(?:(\\d)(?!.*\\2)){3,} matches strings of integers with no repeats; i.e. 3 unique types
+    // wildcard logic is implied by pattern 2; for example, wildcard (0) + 2 unique types is a unique int string
+    final String matchExp = String.format ("([1-9])\\1{%d}|^(?:(\\d)(?!.*\\2)){%d,}", matchLen - 1, matchLen);
+    return matchStr.matches (matchExp);
+  }
+
+  @Override
   public boolean isValidWinPercentage (final int winPercentage)
   {
+    Arguments.checkIsNotNegative (winPercentage, "winPercentage");
+
     return winPercentage >= minWinPercentage && winPercentage <= MAX_WIN_PERCENTAGE;
   }
 
@@ -171,17 +258,46 @@ public final class ClassicGameRules implements GameRules
   @Override
   public int calculateCountryReinforcements (final int ownedCountryCount)
   {
+    Arguments.checkIsNotNegative (ownedCountryCount, "ownedCountryCount");
+    Arguments.checkLowerExclusiveBound (ownedCountryCount, 0, "ownedCountryCount");
+
     return (int) Math.floor (ownedCountryCount / 3.0f); // floor function included for clarity
+  }
+
+  // @formatter:off
+  /**
+   * Calculates number of bonus reinforcements a player should get for a valid card trade-in with the given
+   * 'globalTradeInCount.' This is defined in ClassicGameRules by the following piecewise function:
+   *
+   * F(n) = | 4 + 2n          if 0 <= n < 5
+   *        | 15 + 5(n - 5)   if n >= 5
+   *
+   * @param globalTradeInCount
+   *          number of card sets traded in by players so far in the game
+   */
+  // @formatter:on
+  public int calculateTradeInBonusReinforcements (final int globalTradeInCount)
+  {
+    Arguments.checkIsNotNegative (globalTradeInCount, "globalTradeInCount");
+
+    if (globalTradeInCount < 5)
+    {
+      return 4 + 2 * globalTradeInCount;
+    }
+    else
+    {
+      return 15 + 5 * (globalTradeInCount - 5);
+    }
   }
 
   // @formatter:off
   /**
    * Defined in ClassicGameRules by the following piecewise function:
    *
-   * P(n) = | 5               if n = 10
+   * F(n) = | 5               if n = 10
    *        | 40 - 5*(n - 2)  if n < 10
    *
-   * where 'P' is the number of armies returned in the set and 'n' is the number of players in the given PlayerModel.
+   * where 'F' is the number of armies returned in the set and 'n' is the number of players in the given PlayerModel.
    */
   // @formatter:on
   private static int calculateInitialArmies (final int playerLimit)
@@ -286,5 +402,4 @@ public final class ClassicGameRules implements GameRules
     winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
     // @formatter:on
   }
-
 }
