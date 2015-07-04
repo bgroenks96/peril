@@ -74,8 +74,8 @@ public class MultiplayerControllerTest
   private static final EventBusHandler eventHandler = new EventBusHandler ();
   private final ClientConnector mockConnector = mock (ClientConnector.class);
   private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class);
-  private final MultiplayerControllerBuilder mpcBuilder = builder (mockConnector, new PlayerCommunicator (
-          mockClientCommunicator));
+  private final MultiplayerControllerBuilder mpcBuilder = builder (mockConnector,
+                                                                   new PlayerCommunicator (mockClientCommunicator));
   private int clientCount = 0;
   private MBassador <Event> eventBus;
 
@@ -139,7 +139,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSuccessfulClientJoinGameServer ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventBus);
 
     final Remote client = createClient ();
     connect (client);
@@ -173,7 +173,7 @@ public class MultiplayerControllerTest
   @Test
   public void testClientJoinRequestBeforeHostDenied ()
   {
-    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
     final Remote client = createClient ();
     connect (client);
@@ -208,7 +208,7 @@ public class MultiplayerControllerTest
   @Test
   public void testValidPlayerJoinGameRequestPublished ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventBus);
 
     final Remote client = addClient ();
     verify (mockClientCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
@@ -222,7 +222,7 @@ public class MultiplayerControllerTest
   @Test
   public void testIgnorePlayerJoinGameRequestBeforeJoiningGameServer ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventBus);
 
     // Connect client to server, but do not join client to game server.
     final Remote client = createClient ();
@@ -304,15 +304,15 @@ public class MultiplayerControllerTest
   public void testInvalidPlayerSelectCountryResponseRequestEventIgnoredBecauseClientIsNotAPlayer ()
   {
     // Create a game server with manual initial country assignment.
-    final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
-            .build (eventBus);
+    mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL).build (eventBus);
 
     final Remote client = joinClientToGameServer ();
     final PlayerPacket player = mock (PlayerPacket.class);
     when (player.getName ()).thenReturn ("Test Player 1");
 
     // Simulate player/client selecting a country.
-    final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"), client);
+    final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"),
+                                                    client);
 
     // Verify that player/client's country selection was NOT published.
     assertLastEventWas (event);
@@ -442,7 +442,8 @@ public class MultiplayerControllerTest
     return new MultiplayerControllerBuilder (connector, communicator);
   }
 
-  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName, final MultiplayerController mpc)
+  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
+                                                                final MultiplayerController mpc)
   {
     final Remote client = joinClientToGameServer ();
     final PlayerPacket player = addMockPlayerToGameWithName (playerName, client, mpc);
@@ -476,22 +477,22 @@ public class MultiplayerControllerTest
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
-                        + eventHandler.lastEventType () + "] All events (newest to oldest): ["
-                        + eventHandler.getAllEvents () + "].", eventHandler.lastEventWasType (eventType));
+            + eventHandler.lastEventType () + "] All events (newest to oldest): [" + eventHandler.getAllEvents ()
+            + "].", eventHandler.lastEventWasType (eventType));
   }
 
   private void assertLastEventWas (final Event event)
   {
     assertEquals ("Expected last event was [" + event + "], but was [" + eventHandler.lastEvent ()
-                          + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
+            + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
                   eventHandler.lastEvent ());
   }
 
   private void assertEventFiredExactlyOnce (final Class <?> eventType)
   {
     assertTrue ("Expected event type [" + eventType.getSimpleName () + "] was fired exactly once, but was fired ["
-                        + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
-                        + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
+            + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
+            + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
   }
 
   private ClientCommunicationEvent communicateEventFromClient (final Event event, final Remote client)
@@ -533,13 +534,6 @@ public class MultiplayerControllerTest
     return new DefaultServerConfiguration (DEFAULT_TEST_SERVER_ADDRESS, DEFAULT_TEST_SERVER_PORT);
   }
 
-  private Remote addHost ()
-  {
-    final Remote host = createHost ();
-    addClientWithServerAddress (host, NetworkSettings.LOCALHOST_ADDRESS);
-    return host;
-  }
-
   private Remote addClient ()
   {
     final Remote client = createClient ();
@@ -552,18 +546,6 @@ public class MultiplayerControllerTest
     connect (client);
     eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (createDefaultServerConfig ()),
             client));
-  }
-
-  private void addClientWithServerAddress (final Remote client, final String serverAddress)
-  {
-    connect (client);
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (new DefaultServerConfiguration (
-            serverAddress, DEFAULT_TEST_SERVER_PORT)), client));
-  }
-
-  private void startTwoPlayerGame (final MultiplayerController mpc)
-  {
-
   }
 
   /*
