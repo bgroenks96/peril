@@ -1,5 +1,8 @@
 package com.forerunnergames.peril.core.model.rules;
 
+import com.forerunnergames.peril.core.model.TurnPhase;
+import com.forerunnergames.peril.core.model.card.CardType;
+
 import com.google.common.collect.ImmutableList;
 
 public interface GameRules
@@ -36,9 +39,19 @@ public interface GameRules
 
   int getWinningCountryCount ();
 
+  int getCardTradeInCount ();
+
+  int getMaxCardsInHand (final TurnPhase phase);
+
+  int getMinCardsInHandToRequireTradeIn (final TurnPhase turnPhase);
+
   ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount);
 
   int calculateCountryReinforcements (final int ownedCountryCount);
 
+  int calculateTradeInBonusReinforcements (final int globalTradeInCount);
+
   boolean isValidWinPercentage (final int winPercentage);
+
+  boolean isValidCardSet (final ImmutableList <CardType> cardTypes);
 }

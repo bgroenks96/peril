@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.core.model.card.CardType;
 import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.map.country.Country;
 
@@ -247,17 +248,23 @@ public class ClassicGameRulesTest
     assertTrue (rules.isValidWinPercentage (minWinPercentage));
     assertTrue (rules.isValidWinPercentage (minWinPercentage));
     assertFalse (rules.isValidWinPercentage (minWinPercentage - 1));
-    assertFalse (rules.isValidWinPercentage (Integer.MIN_VALUE));
     assertFalse (rules.isValidWinPercentage (0));
     assertFalse (rules.isValidWinPercentage (maxWinPercentage + 1));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testIllegalWinPercentage ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    rules.isValidWinPercentage (Integer.MIN_VALUE);
   }
 
   @Test
   public void testGetInitialPlayerCountryDistributionUniformMaxPlayers ()
   {
     final Integer expectedUniformDistributionValue = 3;
-    final ImmutableSet <Country> testCountrySet = PlayMapModelTest.generateTestCountries (ClassicGameRules.MAX_PLAYERS
-            * expectedUniformDistributionValue);
+    final ImmutableSet <Country> testCountrySet = PlayMapModelTest
+            .generateTestCountries (ClassicGameRules.MAX_PLAYERS * expectedUniformDistributionValue);
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
             .totalCountryCount (testCountrySet.size ()).build ();
 
@@ -274,8 +281,8 @@ public class ClassicGameRulesTest
   {
     final int testPlayerCount = ClassicGameRules.MAX_PLAYERS;
     final int expectedBaseDistributionValue = 3, expectedRemainderValue = testPlayerCount - 3;
-    final ImmutableSet <Country> testCountrySet = PlayMapModelTest.generateTestCountries (testPlayerCount
-            * expectedBaseDistributionValue + expectedRemainderValue);
+    final ImmutableSet <Country> testCountrySet = PlayMapModelTest
+            .generateTestCountries (testPlayerCount * expectedBaseDistributionValue + expectedRemainderValue);
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (testPlayerCount)
             .totalCountryCount (testCountrySet.size ()).build ();
 
@@ -295,8 +302,8 @@ public class ClassicGameRulesTest
   {
     final int testPlayerCount = ClassicGameRules.MIN_PLAYERS;
     final int expectedBaseDistributionValue = 10, expectedRemainderValue = 1;
-    final ImmutableSet <Country> testCountrySet = PlayMapModelTest.generateTestCountries (testPlayerCount
-            * expectedBaseDistributionValue + expectedRemainderValue);
+    final ImmutableSet <Country> testCountrySet = PlayMapModelTest
+            .generateTestCountries (testPlayerCount * expectedBaseDistributionValue + expectedRemainderValue);
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (testPlayerCount)
             .totalCountryCount (testCountrySet.size ()).build ();
 
@@ -308,6 +315,77 @@ public class ClassicGameRulesTest
     for (int i = expectedRemainderValue; i < testPlayerCount; ++i)
     {
       assertTrue (expectedBaseDistributionValue == testDistribution.get (i));
+    }
+  }
+
+  @Test
+  public void testIsValidCardSetAllMatching ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertTrue (rules.isValidCardSet (ImmutableList.of (CardType.TYPE1, CardType.TYPE1, CardType.TYPE1)));
+  }
+
+  @Test
+  public void testIsValidCardSetAllUnique ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertTrue (rules.isValidCardSet (ImmutableList.of (CardType.TYPE3, CardType.TYPE1, CardType.TYPE2)));
+  }
+
+  @Test
+  public void testIsValidCardSetUniqueWithWildcard ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertTrue (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.TYPE2, CardType.TYPE3)));
+  }
+
+  @Test
+  public void testNotValidCardSetTwoWildcards ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.WILDCARD, CardType.TYPE3)));
+  }
+
+  @Test
+  public void testNotValidCardSetAllWildcards ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.WILDCARD, CardType.WILDCARD)));
+  }
+
+  @Test
+  public void testNotValidCardSetMismatchOrder1 ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.TYPE1, CardType.TYPE1, CardType.TYPE2)));
+  }
+
+  @Test
+  public void testNotValidCardSetMismatchOrder2 ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.TYPE2, CardType.TYPE1, CardType.TYPE2)));
+  }
+
+  @Test
+  public void testCalculateTradeInBonusReinforcementsZeroToFive ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    int expected = 4; // 4 at first trade in
+    for (int i = 0; i < 5; i++, expected += 2)
+    {
+      assertEquals (expected, rules.calculateTradeInBonusReinforcements (i));
+    }
+  }
+
+  @Test
+  public void testCalculateTradeInBonusReinforcementsAfterFive ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    int expected = 15; // 15 after fifth trade in
+    for (int i = 5; i < 100; i++, expected += 5)
+    {
+      assertEquals (expected, rules.calculateTradeInBonusReinforcements (i));
     }
   }
 }

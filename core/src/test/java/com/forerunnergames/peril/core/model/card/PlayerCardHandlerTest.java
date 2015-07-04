@@ -1,0 +1,113 @@
+package com.forerunnergames.peril.core.model.card;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
+import com.forerunnergames.peril.core.model.rules.GameRules;
+
+import com.google.common.collect.ImmutableSet;
+
+import org.junit.Test;
+
+public abstract class PlayerCardHandlerTest
+{
+  protected abstract PlayerCardHandler createPlayerCardHandler ();
+
+  @Test
+  public void testAddCardToHandOfPlayer ()
+  {
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+    assertTrue (cardHandler.isCardInHand (testPlayer.getId (), card));
+  }
+
+  @Test
+  public void testRemoveAllCardsFromHandOfPlayer ()
+  {
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final ImmutableSet.Builder <Card> cards = ImmutableSet.builder ();
+    for (int i = 0; i < 3; i++)
+    {
+      final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+      cards.add (card);
+    }
+    final CardSet toRemove = createCardSetFrom (cards.build ());
+    cardHandler.removeCardsFromHand (testPlayer.getId (), toRemove);
+    assertTrue (cardHandler.getCardsInHand (testPlayer.getId ()).size () == 0);
+  }
+
+  @Test
+  public void testRemoveSomeCardsFromHandOfPlayer ()
+  {
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final ImmutableSet.Builder <Card> cardsToRetain = ImmutableSet.builder ();
+    final ImmutableSet.Builder <Card> cardsToRemove = ImmutableSet.builder ();
+    for (int i = 0; i < 5; i++)
+    {
+      final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+      if (i < 2)
+      {
+        cardsToRetain.add (card);
+      }
+      else
+      {
+        cardsToRemove.add (card);
+      }
+    }
+
+    final CardSet retainSet = createCardSetFrom (cardsToRetain.build ());
+    final CardSet removeSet = createCardSetFrom (cardsToRemove.build ());
+    cardHandler.removeCardsFromHand (testPlayer.getId (), removeSet);
+    assertFalse (cardHandler.getCardsInHand (testPlayer.getId ()).containsAny (removeSet));
+    assertTrue (cardHandler.getCardsInHand (testPlayer.getId ()).contains (retainSet));
+  }
+
+  @Test
+  public void testIsCardInHand ()
+  {
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+    assertTrue (cardHandler.isCardInHand (testPlayer.getId (), card));
+  }
+
+  @Test
+  public void testIsCardNotInHand ()
+  {
+    final Card card = CardFactory.create ("TestCard", CardType.random ());
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    assertFalse (cardHandler.isCardInHand (testPlayer.getId (), card));
+  }
+
+  @Test
+  public void testAreCardsInHand ()
+  {
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Card card1 = cardHandler.addCardToHand (testPlayer.getId ());
+    final Card card2 = cardHandler.addCardToHand (testPlayer.getId ());
+    assertTrue (cardHandler.areCardsInHand (testPlayer.getId (), createCardSetFrom (ImmutableSet.of (card1, card2))));
+  }
+
+  @Test
+  public void testAreCardsNotInHand ()
+  {
+    final ImmutableSet <Card> cards = CardDealerTest.generateCards (CardType.random (), 3);
+    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    assertFalse (cardHandler.areCardsInHand (testPlayer.getId (), createCardSetFrom (cards)));
+  }
+
+  private CardSet createCardSetFrom (final ImmutableSet <Card> cards)
+  {
+    final GameRules defaultRules = new ClassicGameRules.Builder ().build ();
+    return new CardSet (defaultRules, cards);
+  }
+}
