@@ -4,11 +4,13 @@ import com.forerunnergames.tools.common.id.Id;
 
 interface PlayerCardHandler
 {
-  Card addCardToHand (final Id playerId);
+  void addCardToHand (final Id playerId, final Card card);
 
   void removeCardsFromHand (final Id playerId, final CardSet cards);
 
   CardSet getCardsInHand (final Id playerId);
+
+  int countCardsInHand (final Id playerId);
 
   boolean isCardInHand (final Id playerId, final Card card);
 

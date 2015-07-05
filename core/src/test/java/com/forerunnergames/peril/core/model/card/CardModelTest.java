@@ -3,12 +3,15 @@ package com.forerunnergames.peril.core.model.card;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.core.model.TurnPhase;
+import com.forerunnergames.peril.core.model.card.CardModel.FailureReason;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.tools.common.Result;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -32,7 +35,7 @@ public abstract class CardModelTest
                                                 final CardDealer dealer,
                                                 final ImmutableSet <Card> cards);
 
-  protected abstract CardDealer createCardDealer ();
+  protected abstract CardDealer createCardDealer (final ImmutableSet <Card> cardDeck);
 
   @Test (expected = IllegalStateException.class)
   public void testGiveCardFailsWhenHandFullReinforceTurnPhase ()
@@ -76,13 +79,14 @@ public abstract class CardModelTest
     // make deck size only enough to do one trade in; this is important so that we can test
     // whether or not CardModel is managing the deck correctly via hasCardsRemainingInDeck()
     final int deckSize = rules.getCardTradeInCount ();
-    final CardSet cards = new CardSet (rules, CardDealerTest.generateCards (CardType.TYPE3, deckSize));
+    final ImmutableSet <Card> generatedCards = CardDealerTest.generateCards (CardType.TYPE3, deckSize);
+    final CardDealer dealer = createCardDealer (generatedCards);
+    final CardSet cardSet = new CardSet (rules, generatedCards);
 
     // just as a formality...
-    assertTrue (cards.isMatch ());
+    assertTrue (cardSet.isMatch ());
 
-    final CardSet.Match match = cards.match ();
-    final CardDealer dealer = createCardDealer ();
+    final CardSet.Match match = cardSet.match ();
     final CardModel cardModel = createCardModel (rules, dealer, match.getCards ());
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
     for (int i = 0; i < deckSize; i++)
@@ -90,7 +94,11 @@ public abstract class CardModelTest
       cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
     }
 
-    cardModel.tradeInCards (testPlayer.getId (), match, TurnPhase.REINFORCE);
+    final Result <FailureReason> result = cardModel.requestTradeInCards (testPlayer.getId (), match,
+                                                                         TurnPhase.REINFORCE);
+    // use if/fail so failure reason can be printed;
+    // assertTrue causes Result to throw IllegalStateException when successful
+    if (result.failed ()) fail (result.getFailureReason ().toString ());
 
     // make sure cards were moved from hand back to the deck/discard-pile
     assertFalse (cardModel.areCardsInHand (testPlayer.getId (), createCardSetFrom (match.getCards ())));
@@ -111,7 +119,8 @@ public abstract class CardModelTest
   public void testNextTradeInBonusGlobalCountIs2 ()
   {
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, 6));
-    for (int i = 0; i < 4; i++)
+    final int tradeInCount = 2;
+    for (int i = 0; i < tradeInCount; i++)
     {
       final Player testPlayer = PlayerFactory.create ("TestPlayer-" + i);
       for (int k = 0; k < 3; k++)
@@ -120,7 +129,7 @@ public abstract class CardModelTest
       }
       final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayer.getId ());
       // there will only be one match; turn set into list and fetch it
-      cardModel.tradeInCards (testPlayer.getId (), matches.asList ().get (0), TurnPhase.REINFORCE);
+      cardModel.requestTradeInCards (testPlayer.getId (), matches.asList ().get (0), TurnPhase.REINFORCE);
     }
     assertEquals (rules.calculateTradeInBonusReinforcements (2), cardModel.getNextTradeInBonus ());
   }
@@ -129,7 +138,8 @@ public abstract class CardModelTest
   public void testNextTradeInBonusGlobalCountIs7 ()
   {
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, 21));
-    for (int i = 0; i < 4; i++)
+    final int tradeInCount = 7;
+    for (int i = 0; i < tradeInCount; i++)
     {
       final Player testPlayer = PlayerFactory.create ("TestPlayer-" + i);
       for (int k = 0; k < 3; k++)
@@ -138,7 +148,7 @@ public abstract class CardModelTest
       }
       final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayer.getId ());
       // there will only be one match; turn set into list and fetch it
-      cardModel.tradeInCards (testPlayer.getId (), matches.asList ().get (0), TurnPhase.REINFORCE);
+      cardModel.requestTradeInCards (testPlayer.getId (), matches.asList ().get (0), TurnPhase.REINFORCE);
     }
     assertEquals (rules.calculateTradeInBonusReinforcements (7), cardModel.getNextTradeInBonus ());
   }

@@ -47,6 +47,6 @@ public enum CardType
 
   public static CardType random ()
   {
-    return fromValue (Randomness.getRandomIntegerFrom (0, values ().length));
+    return fromValue (Randomness.getRandomIntegerFrom (0, values ().length - 1));
   }
 }

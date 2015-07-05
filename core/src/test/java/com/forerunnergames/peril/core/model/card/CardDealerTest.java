@@ -52,31 +52,10 @@ public abstract class CardDealerTest
   {
     final CardDealer deckHandler = createCardDealer (defaultCards);
     final Card card = deckHandler.take ();
+    assertFalse (deckHandler.isInDeck (card));
     deckHandler.discard (card);
     assertFalse (deckHandler.isInDeck (card));
     assertTrue (deckHandler.isInDiscardPile (card));
-  }
-
-  @Test
-  public void testDiscardReturnsToDeckWhenEmpty ()
-  {
-    final Card testCard1 = CardFactory.create ("TestCard-1", CardType.TYPE1);
-    final Card testCard2 = CardFactory.create ("TestCard-2", CardType.TYPE2);
-    final CardDealer deckHandler = createCardDealer (ImmutableSet.of (testCard1, testCard2));
-    final Card card1 = deckHandler.take ();
-    final Card card2 = deckHandler.take ();
-    assertTrue (deckHandler.isInDeck (card1));
-    assertFalse (deckHandler.isInDeck (card2));
-  }
-
-  @Test
-  public void testDiscardReturnsToDeckWhenBothEmpty ()
-  {
-    final Card testCard = CardFactory.create ("TestCard", CardType.TYPE1);
-    final CardDealer deckHandler = createCardDealer (ImmutableSet.of (testCard));
-    final Card card = deckHandler.take ();
-    deckHandler.discard (card);
-    assertTrue (deckHandler.isInDeck (card));
   }
 
   @Test
