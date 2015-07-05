@@ -5,11 +5,13 @@ import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.UUID;
+
 public final class DefaultCountryPacket extends AbstractTerritoryPacket implements CountryPacket
 {
   private final int armyCount;
 
-  public DefaultCountryPacket (final int countryId, final String name, final int armyCount)
+  public DefaultCountryPacket (final UUID countryId, final String name, final int armyCount)
   {
     super (name, countryId);
 
@@ -42,7 +44,7 @@ public final class DefaultCountryPacket extends AbstractTerritoryPacket implemen
   @RequiredForNetworkSerialization
   private DefaultCountryPacket ()
   {
-    super (null, 0);
+    super (null, null);
 
     this.armyCount = 0;
   }

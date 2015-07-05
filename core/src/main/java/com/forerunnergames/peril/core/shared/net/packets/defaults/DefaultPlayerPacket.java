@@ -5,13 +5,15 @@ import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.UUID;
+
 public final class DefaultPlayerPacket extends AbstractPersonPacket implements PlayerPacket
 {
   private final String color;
   private final int turnOrder;
   private final int armiesInHand;
 
-  public DefaultPlayerPacket (final int playerId,
+  public DefaultPlayerPacket (final UUID playerId,
                               final String name,
                               final String color,
                               final int turnOrder,
@@ -90,7 +92,7 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   @RequiredForNetworkSerialization
   private DefaultPlayerPacket ()
   {
-    super (null, 0);
+    super (null, null);
 
     this.color = null;
     this.turnOrder = 0;
