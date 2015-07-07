@@ -8,13 +8,15 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.UUID;
+
 public class DefaultContinentPacket extends AbstractTerritoryPacket implements ContinentPacket
 {
   private final ImmutableSet <CountryPacket> countries;
   private final int reinforcementBonus;
 
   public DefaultContinentPacket (final String name,
-                                 final int id,
+                                 final UUID id,
                                  final int reinforcementBonus,
                                  final ImmutableSet <CountryPacket> countries)
   {
@@ -53,7 +55,7 @@ public class DefaultContinentPacket extends AbstractTerritoryPacket implements C
   @RequiredForNetworkSerialization
   private DefaultContinentPacket ()
   {
-    super (null, 0);
+    super (null, null);
 
     countries = null;
     reinforcementBonus = 0;

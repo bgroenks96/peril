@@ -21,6 +21,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlay
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -315,7 +316,7 @@ public class PlayerModelTest
 
     assertTrue (playerModel.isEmpty ());
 
-    playerModel.playerWith (new Id (5));
+    playerModel.playerWith (IdGenerator.generateUniqueId ());
   }
 
   @Test (expected = IllegalStateException.class)
@@ -434,11 +435,11 @@ public class PlayerModelTest
   public void testPlayerWithId ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Id player1Id = new Id (1);
+    final Id player1Id = IdGenerator.generateUniqueId ();
     final Player player1 = new DefaultPlayer ("Test Player 1", player1Id, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
             PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("Test Player 2", new Id (2), PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-            PlayerTurnOrder.UNKNOWN);
+    final Player player2 = new DefaultPlayer ("Test Player 2", IdGenerator.generateUniqueId (), PersonIdentity.UNKNOWN,
+            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
 
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
@@ -521,11 +522,11 @@ public class PlayerModelTest
   public void testRequestAddPlayerFailedWithDuplicateId ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Id duplicateId = new Id (1);
-    final Player player1 = new DefaultPlayer ("Test Player 1", duplicateId, PersonIdentity.UNKNOWN,
-            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("Test Player 2", duplicateId, PersonIdentity.UNKNOWN,
-            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+    final Id duplicateId = IdGenerator.generateUniqueId ();
+    final Player player1 = new DefaultPlayer ("Test Player 1", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
+            PlayerTurnOrder.UNKNOWN);
+    final Player player2 = new DefaultPlayer ("Test Player 2", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
+            PlayerTurnOrder.UNKNOWN);
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID));
@@ -688,7 +689,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveById (new Id (1))
+    assertTrue (playerModel.requestToRemoveById (IdGenerator.generateUniqueId ())
             .failedBecauseOf (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
   }
 

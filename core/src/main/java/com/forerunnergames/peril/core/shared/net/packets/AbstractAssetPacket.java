@@ -3,12 +3,14 @@ package com.forerunnergames.peril.core.shared.net.packets;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.UUID;
+
 public abstract class AbstractAssetPacket implements AssetPacket
 {
   private final String name;
-  private final int id;
+  private final UUID id;
 
-  protected AbstractAssetPacket (final String name, final int id)
+  protected AbstractAssetPacket (final String name, final UUID id)
   {
     Arguments.checkIsNotNull (name, "name");
 
@@ -39,13 +41,13 @@ public abstract class AbstractAssetPacket implements AssetPacket
   }
 
   @Override
-  public boolean hasId (final int id)
+  public boolean hasId (final UUID id)
   {
-    return this.id == id;
+    return this.id.equals (id);
   }
 
   @Override
-  public boolean doesNotHaveId (final int id)
+  public boolean doesNotHaveId (final UUID id)
   {
     return !hasId (id);
   }
@@ -76,13 +78,13 @@ public abstract class AbstractAssetPacket implements AssetPacket
   @Override
   public int hashCode ()
   {
-    return id;
+    return id.hashCode ();
   }
 
   @RequiredForNetworkSerialization
   private AbstractAssetPacket ()
   {
     name = null;
-    id = 0;
+    id = null;
   }
 }

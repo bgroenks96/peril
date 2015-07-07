@@ -5,11 +5,13 @@ import com.forerunnergames.peril.core.shared.net.packets.AbstractAssetPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.UUID;
+
 public abstract class AbstractPersonPacket extends AbstractAssetPacket implements PersonPacket
 {
   private PersonIdentity identity = PersonIdentity.UNKNOWN;
 
-  protected AbstractPersonPacket (final String name, final int id)
+  protected AbstractPersonPacket (final String name, final UUID id)
   {
     super (name, id);
 
@@ -41,7 +43,7 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   @RequiredForNetworkSerialization
   private AbstractPersonPacket ()
   {
-    super (null, 0);
+    super (null, null);
 
     this.identity = null;
   }
