@@ -30,4 +30,10 @@ public final class DefaultCard extends AbstractAsset implements Card
 
     return this.type == level;
   }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%s | Type: %s", super.toString (), type.toString ());
+  }
 }

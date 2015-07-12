@@ -14,26 +14,30 @@ import org.junit.Test;
 
 public abstract class PlayerCardHandlerTest
 {
-  protected abstract PlayerCardHandler createPlayerCardHandler ();
+  private final GameRules defaultRules = new ClassicGameRules.Builder ().build ();
+
+  protected abstract PlayerCardHandler createPlayerCardHandler (final GameRules rules);
 
   @Test
   public void testAddCardToHandOfPlayer ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
-    final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+    final Card card = CardFactory.create ("TestCard", CardType.TYPE1);
+    cardHandler.addCardToHand (testPlayer.getId (), card);
     assertTrue (cardHandler.isCardInHand (testPlayer.getId (), card));
   }
 
   @Test
   public void testRemoveAllCardsFromHandOfPlayer ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
     final ImmutableSet.Builder <Card> cards = ImmutableSet.builder ();
     for (int i = 0; i < 3; i++)
     {
-      final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+      final Card card = CardFactory.create ("TestCard-" + i, CardType.TYPE2);
+      cardHandler.addCardToHand (testPlayer.getId (), card);
       cards.add (card);
     }
     final CardSet toRemove = createCardSetFrom (cards.build ());
@@ -44,13 +48,14 @@ public abstract class PlayerCardHandlerTest
   @Test
   public void testRemoveSomeCardsFromHandOfPlayer ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
     final ImmutableSet.Builder <Card> cardsToRetain = ImmutableSet.builder ();
     final ImmutableSet.Builder <Card> cardsToRemove = ImmutableSet.builder ();
     for (int i = 0; i < 5; i++)
     {
-      final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+      final Card card = CardFactory.create ("TestCard-" + i, CardType.TYPE3);
+      cardHandler.addCardToHand (testPlayer.getId (), card);
       if (i < 2)
       {
         cardsToRetain.add (card);
@@ -65,15 +70,16 @@ public abstract class PlayerCardHandlerTest
     final CardSet removeSet = createCardSetFrom (cardsToRemove.build ());
     cardHandler.removeCardsFromHand (testPlayer.getId (), removeSet);
     assertFalse (cardHandler.getCardsInHand (testPlayer.getId ()).containsAny (removeSet));
-    assertTrue (cardHandler.getCardsInHand (testPlayer.getId ()).contains (retainSet));
+    assertTrue (cardHandler.getCardsInHand (testPlayer.getId ()).containsAll (retainSet));
   }
 
   @Test
   public void testIsCardInHand ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
-    final Card card = cardHandler.addCardToHand (testPlayer.getId ());
+    final Card card = CardFactory.create ("TestCard", CardType.TYPE1);
+    cardHandler.addCardToHand (testPlayer.getId (), card);
     assertTrue (cardHandler.isCardInHand (testPlayer.getId (), card));
   }
 
@@ -81,7 +87,7 @@ public abstract class PlayerCardHandlerTest
   public void testIsCardNotInHand ()
   {
     final Card card = CardFactory.create ("TestCard", CardType.random ());
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
     assertFalse (cardHandler.isCardInHand (testPlayer.getId (), card));
   }
@@ -89,10 +95,12 @@ public abstract class PlayerCardHandlerTest
   @Test
   public void testAreCardsInHand ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
-    final Card card1 = cardHandler.addCardToHand (testPlayer.getId ());
-    final Card card2 = cardHandler.addCardToHand (testPlayer.getId ());
+    final Card card1 = CardFactory.create ("TestCard-1", CardType.TYPE1);
+    final Card card2 = CardFactory.create ("TestCard-2", CardType.TYPE2);
+    cardHandler.addCardToHand (testPlayer.getId (), card1);
+    cardHandler.addCardToHand (testPlayer.getId (), card2);
     assertTrue (cardHandler.areCardsInHand (testPlayer.getId (), createCardSetFrom (ImmutableSet.of (card1, card2))));
   }
 
@@ -100,7 +108,7 @@ public abstract class PlayerCardHandlerTest
   public void testAreCardsNotInHand ()
   {
     final ImmutableSet <Card> cards = CardDealerTest.generateCards (CardType.random (), 3);
-    final PlayerCardHandler cardHandler = createPlayerCardHandler ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
     assertFalse (cardHandler.areCardsInHand (testPlayer.getId (), createCardSetFrom (cards)));
   }

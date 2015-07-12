@@ -19,16 +19,18 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_TOTAL_COUNTRY_COUNT = 1000;
   public static final int MIN_ARMIES_IN_HAND = 0;
   public static final int MAX_ARMIES_IN_HAND = Integer.MAX_VALUE;
-  public static final int CARD_TRADE_IN_COUNT = 3;
   public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
   public static final InitialCountryAssignment DEFAULT_INITIAL_COUNTRY_ASSIGNMENT = InitialCountryAssignment.RANDOM;
+  private static final int CARD_TRADE_IN_COUNT = 3;
   private static final int MAX_CARDS_IN_HAND_REINFORCE_PHASE = 6;
   private static final int MAX_CARDS_IN_HAND_ATTACK_PHASE = 9;
   private static final int MAX_CARDS_IN_HAND_FORTIFY_PHASE = MAX_CARDS_IN_HAND_REINFORCE_PHASE;
+  private static final int MIN_CARDS_IN_HAND_FOR_TRADE_IN_REINFORCE_PHASE = CARD_TRADE_IN_COUNT;
+  private static final int MIN_CARDS_IN_HAND_FOR_TRADE_IN_ATTACK_PHASE = 6;
   private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_REINFORCE_PHASE = 5;
-  private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_ATTACK_PHASE = 6;
+  private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_ATTACK_PHASE = MIN_CARDS_IN_HAND_FOR_TRADE_IN_ATTACK_PHASE;
   private final int playerLimit;
   private final int winPercentage;
   private final int minWinPercentage;
@@ -160,9 +162,15 @@ public final class ClassicGameRules implements GameRules
       }
       default:
       {
-        throw new IllegalArgumentException ("Illegal value for turn phase.");
+        throw new IllegalArgumentException ("Illegal value for [" + TurnPhase.class.getSimpleName () + "].");
       }
     }
+  }
+
+  @Override
+  public int getMinCardsInHandForTradeInReinforcePhase ()
+  {
+    return MIN_CARDS_IN_HAND_FOR_TRADE_IN_REINFORCE_PHASE;
   }
 
   @Override
@@ -182,7 +190,7 @@ public final class ClassicGameRules implements GameRules
       }
       default:
       {
-        throw new IllegalArgumentException ("Illegal value for turn phase.");
+        throw new IllegalArgumentException ("Cannot trade in during: [" + turnPhase + "].");
       }
     }
   }
@@ -276,6 +284,7 @@ public final class ClassicGameRules implements GameRules
    *          number of card sets traded in by players so far in the game
    */
   // @formatter:on
+  @Override
   public int calculateTradeInBonusReinforcements (final int globalTradeInCount)
   {
     Arguments.checkIsNotNegative (globalTradeInCount, "globalTradeInCount");

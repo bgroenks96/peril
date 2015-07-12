@@ -43,6 +43,8 @@ public interface GameRules
 
   int getMaxCardsInHand (final TurnPhase phase);
 
+  int getMinCardsInHandForTradeInReinforcePhase ();
+
   int getMinCardsInHandToRequireTradeIn (final TurnPhase turnPhase);
 
   ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount);

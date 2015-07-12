@@ -9,17 +9,25 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.UnmodifiableIterator;
 
+import java.util.Collection;
+import java.util.Set;
+
 /**
  * An immutable, set-like data structure for holding sets of cards. A CardSet can be verified as a valid trade-in match
  * through the {@link #isMatch()} method and obtained via the {@link #match()} method. Any CardSets referenced through a
  * {@link Match} object are guaranteed to be validated card sets.
  */
-public final class CardSet implements Iterable <Card>
+public final class CardSet implements Collection <Card>
 {
   private final ImmutableSet <Card> cards;
   private final GameRules rules;
 
   private final boolean isMatch;
+
+  public CardSet (final GameRules rules, final Card... cards)
+  {
+    this (rules, ImmutableSet.copyOf (cards));
+  }
 
   /**
    * Creates this CardTuple with the given rules and cards.
@@ -67,11 +75,22 @@ public final class CardSet implements Iterable <Card>
     return new CardSet (rules, Sets.union (cardSet.cards, cards).immutableCopy ());
   }
 
-  public boolean contains (final CardSet cardSet)
+  public CardSet difference (final CardSet cardSet)
   {
     Arguments.checkIsNotNull (cardSet, "cardSet");
 
-    return cards.contains (cardSet.cards);
+    return new CardSet (rules, Sets.difference (cards, cardSet.cards).immutableCopy ());
+  }
+
+  public ImmutableSet <CardSet> powerSet ()
+  {
+    final Set <Set <Card>> powerSet = Sets.powerSet (cards);
+    final ImmutableSet.Builder <CardSet> builder = ImmutableSet.builder ();
+    for (final Set <Card> set : powerSet)
+    {
+      builder.add (new CardSet (rules, ImmutableSet.copyOf (set)));
+    }
+    return builder.build ();
   }
 
   public boolean containsAny (final CardSet cardSet)
@@ -79,17 +98,6 @@ public final class CardSet implements Iterable <Card>
     Arguments.checkIsNotNull (cardSet, "cardSet");
 
     return Sets.intersection (cardSet.cards, cards).size () > 0;
-  }
-
-  public int size ()
-  {
-    return cards.size ();
-  }
-
-  @Override
-  public UnmodifiableIterator <Card> iterator ()
-  {
-    return cards.iterator ();
   }
 
   private boolean validateMatch ()
@@ -105,7 +113,7 @@ public final class CardSet implements Iterable <Card>
   }
 
   /**
-   * Immutable view of the Cards in a validated CardSet.
+   * Immutable view of a validated CardSet.
    */
   public final class Match
   {
@@ -114,8 +122,123 @@ public final class CardSet implements Iterable <Card>
       return cards;
     }
 
+    public CardSet getCardSet ()
+    {
+      return CardSet.this;
+    }
+
     private Match ()
     {
     }
+  }
+
+  // --- delegated methods --- //
+
+  @Override
+  public boolean contains (final Object card)
+  {
+    Arguments.checkIsNotNull (card, "card");
+
+    return cards.contains (card);
+  }
+
+  @Override
+  public boolean containsAll (final Collection <?> cardSet)
+  {
+    Arguments.checkIsNotNull (cardSet, "cardSet");
+
+    return cards.containsAll (cardSet);
+  }
+
+  @Override
+  public int size ()
+  {
+    return cards.size ();
+  }
+
+  @Override
+  public UnmodifiableIterator <Card> iterator ()
+  {
+    return cards.iterator ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return cards.toString ();
+  }
+
+  @Override
+  public boolean isEmpty ()
+  {
+    return cards.isEmpty ();
+  }
+
+  @Override
+  public Object[] toArray ()
+  {
+    return cards.toArray ();
+  }
+
+  @Override
+  public <T> T[] toArray (final T[] a)
+  {
+    Arguments.checkIsNotNull (a, "a");
+
+    return cards.toArray (a);
+  }
+
+  // --- unsupported collection methods --- //
+
+  @Override
+  @Deprecated
+  public boolean add (final Card e) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (e, "e");
+
+    return cards.add (e);
+  }
+
+  @Override
+  @Deprecated
+  public boolean addAll (final Collection <? extends Card> c) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (c, "c");
+
+    return cards.addAll (c);
+  }
+
+  @Override
+  @Deprecated
+  public void clear () throws UnsupportedOperationException
+  {
+    cards.clear ();
+  }
+
+  @Override
+  @Deprecated
+  public boolean remove (final Object o) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (o, "o");
+
+    return cards.remove (o);
+  }
+
+  @Override
+  @Deprecated
+  public boolean removeAll (final Collection <?> c) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (c, "c");
+
+    return cards.removeAll (c);
+  }
+
+  @Override
+  @Deprecated
+  public boolean retainAll (final Collection <?> c) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (c, "c");
+
+    return cards.retainAll (c);
   }
 }

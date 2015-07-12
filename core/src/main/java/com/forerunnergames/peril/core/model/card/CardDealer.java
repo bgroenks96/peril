@@ -6,6 +6,8 @@ interface CardDealer
 
   void discard (final Card card);
 
+  void discard (final CardSet cards);
+
   Card cardWith (final String name);
 
   boolean existsCardWith (final String name);
