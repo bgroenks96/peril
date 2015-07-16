@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.card;
 
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 
 import java.util.HashMap;
@@ -42,7 +43,12 @@ public enum CardType
 
   public static CardType fromValue (final int typeValue)
   {
-    return valueMap.get (typeValue);
+    Arguments.checkIsNotNegative (typeValue, "typeValue");
+
+    final CardType type = valueMap.get (typeValue);
+    if (type == null) throw new IllegalArgumentException ("Unrecognized type value [" + typeValue + "].");
+
+    return type;
   }
 
   public static CardType random ()

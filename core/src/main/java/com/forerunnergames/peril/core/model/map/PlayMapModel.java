@@ -11,14 +11,13 @@ import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public final class PlayMapModel
 {
@@ -33,12 +32,10 @@ public final class PlayMapModel
     Arguments.checkIsNotNull (countries, "countries");
     Arguments.checkHasNoNullElements (countries, "countries");
     Arguments.checkIsNotNull (rules, "rules");
-    Preconditions.checkIsTrue (countries.size () >= rules.getMinTotalCountryCount (),
-                               "Country count of " + countries.size () + " is below minimum of "
-                                       + rules.getMinTotalCountryCount () + "!");
-    Preconditions.checkIsTrue (countries.size () <= rules.getMaxTotalCountryCount (),
-                               "Country count " + countries.size () + " is above maximum of "
-                                       + rules.getMaxTotalCountryCount () + "!");
+    Preconditions.checkIsTrue (countries.size () >= rules.getMinTotalCountryCount (), "Country count of "
+            + countries.size () + " is below minimum of " + rules.getMinTotalCountryCount () + "!");
+    Preconditions.checkIsTrue (countries.size () <= rules.getMaxTotalCountryCount (), "Country count "
+            + countries.size () + " is above maximum of " + rules.getMaxTotalCountryCount () + "!");
 
     // init country id map
     final Builder <Id, Country> countryMapBuilder = ImmutableMap.builder ();
@@ -85,9 +82,10 @@ public final class PlayMapModel
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    final Country country = getCountryByName (countryName);
-    if (country == null) throw new IllegalStateException ("Cannot find any country named: [" + countryName + "].");
-    return country;
+    final Optional <Country> country = getCountryByName (countryName);
+    if (!country.isPresent ())
+      throw new IllegalStateException ("Cannot find any country named: [" + countryName + "].");
+    return country.get ();
   }
 
   public boolean existsContinentWith (final Id id)
@@ -117,12 +115,12 @@ public final class PlayMapModel
   {
     Arguments.checkIsNotNull (continentName, "continentName");
 
-    final Continent continent = getContinentByName (continentName);
-    if (continent == null)
+    final Optional <Continent> continent = getContinentByName (continentName);
+    if (!continent.isPresent ())
     {
       throw new IllegalStateException ("Cannot find any continent named: [" + continentName + "].");
     }
-    return continent;
+    return continent.get ();
   }
 
   public boolean hasAnyUnownedCountries ()
@@ -244,8 +242,7 @@ public final class PlayMapModel
     return getOwnedCountryCount () >= n;
   }
 
-  @Nullable
-  private Country getCountryByName (final String name)
+  private Optional <Country> getCountryByName (final String name)
   {
     assert name != null;
     //@formatter:off
@@ -255,13 +252,12 @@ public final class PlayMapModel
     for (final Map.Entry <Id, Country> idCountryEntry : countryIds.entrySet ())
     {
       final Country country = idCountryEntry.getValue ();
-      if (country.hasName (name)) return country;
+      if (country.hasName (name)) return Optional.of (country);
     }
-    return null;
+    return Optional.absent ();
   }
 
-  @Nullable
-  private Continent getContinentByName (final String name)
+  private Optional <Continent> getContinentByName (final String name)
   {
     assert name != null;
     //@formatter:off
@@ -271,9 +267,9 @@ public final class PlayMapModel
     for (final Map.Entry <Id, Continent> idCountryEntry : continentIds.entrySet ())
     {
       final Continent continent = idCountryEntry.getValue ();
-      if (continent.hasName (name)) return continent;
+      if (continent.hasName (name)) return Optional.of (continent);
     }
-    return null;
+    return Optional.absent ();
   }
 
   private ImmutableSet <Country> getOwnedCountries ()
