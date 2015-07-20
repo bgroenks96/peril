@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.objenesis.instantiator.ObjectInstantiator;
 import org.objenesis.strategy.InstantiatorStrategy;
@@ -39,6 +40,7 @@ import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.javakaffee.kryoserializers.UUIDSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
@@ -148,8 +150,10 @@ public final class KryonetRegistration
     ImmutableSetSerializer.registerSerializers (kryo);
     ImmutableMapSerializer.registerSerializers (kryo);
 
-    log.debug ("Registered custom serializers for [{}, {}, {}]", ImmutableList.class.getSimpleName (),
-               ImmutableSet.class.getSimpleName (), ImmutableMap.class.getSimpleName ());
+    kryo.register (UUID.class, new UUIDSerializer ());
+
+    log.debug ("Registered custom serializers for [{}, {}, {}, {}]", ImmutableList.class.getSimpleName (),
+               ImmutableSet.class.getSimpleName (), ImmutableMap.class.getSimpleName (), UUID.class.getSimpleName ());
   }
 
   private KryonetRegistration ()
