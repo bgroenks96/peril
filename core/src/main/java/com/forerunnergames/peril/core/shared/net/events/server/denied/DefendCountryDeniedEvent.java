@@ -3,7 +3,7 @@ package com.forerunnergames.peril.core.shared.net.events.server.denied;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 public final class DefendCountryDeniedEvent implements DeniedEvent <String>
 {

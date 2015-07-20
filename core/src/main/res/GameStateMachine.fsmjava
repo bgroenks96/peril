@@ -31,14 +31,14 @@
         <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent"
           name="event" />
       </event>
-      <event id="onPlayerSelectCountryInputResponseRequestEvent">
+      <event id="onPlayerSelectCountryResponseRequestEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.client.response.PlayerSelectCountryInputResponseRequestEvent"
+          type="com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent"
           name="event" />
       </event>
-      <event id="onPlayerSelectCountryInputResponseSuccessEvent">
+      <event id="onPlayerSelectCountryResponseSuccessEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent"
+          type="com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent"
           name="event" />
       </event>
       <event id="onPlayerCountryAssignmentCompleteEvent">
@@ -56,19 +56,23 @@
     <eventSource name="Players">
       <event id="onPlayerJoinGameRequestEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent"
-          name="event" />
+                   name="event" />
       </event>
       <event id="onPlayerJoinGameSuccessEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent"
-          name="event" />
+                   name="event" />
       </event>
       <event id="onPlayerJoinGameDeniedEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent"
-          name="event" />
+                   name="event"/>
+      </event>
+      <event id="onPlayerLeaveGameEvent">
+        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent"
+                   name="event" />
       </event>
       <event id="onChangePlayerColorRequestEvent">
         <parameter type="com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent"
-          name="event" />
+                   name="event" />
       </event>
     </eventSource>
   </events>
@@ -88,59 +92,69 @@
 
         <!-- First parallel section -->
         <state name="PlayerHandler">
-          <state name="WaitForPlayerRequest">
+          <state name="WaitForPlayerEvent">
             <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)"
-              nextState="WaitForPlayerRequest" />
-            <transition event="onChangePlayerColorRequestEvent" action="gameModel.handleChangePlayerColorRequest (event)"
-              nextState="WaitForPlayerRequest" />
+                        nextState="WaitForPlayerEvent" />
+            <transition event="onPlayerLeaveGameEvent" action="gameModel.handlePlayerLeaveGame (event)"
+                        nextState="WaitForPlayerEvent" />
+            <transition event="onChangePlayerColorRequestEvent"
+                        action="gameModel.handleChangePlayerColorRequest (event)" nextState="WaitForPlayerEvent" />
           </state>
         </state>
 
         <!-- Second parallel section -->
         <state name="GameHandler">
           <state name="WaitForGameToBegin">
-            <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()" nextState="DeterminePlayerTurnOrder" />
+            <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()"
+                        action="gameModel.beginGame()" nextState="DeterminePlayerTurnOrder" />
           </state>
-          <state name="DeterminePlayerTurnOrder">
-            <onEntry action="gameModel.determinePlayerTurnOrder()" />
-            <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies" />
-          </state>
-          <state name="DistributeInitialArmies">
-            <onEntry action="gameModel.distributeInitialArmies()" />
-            <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries" />
-          </state>
-          <state name="AssignPlayerCountries">
-            <state name="WaitForCountrySelectionToBegin">
-              <onEntry action="gameModel.waitForCountrySelectionToBegin()" />
-              <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries" />
-              <transition event="onBeginManualCountrySelectionEvent" nextState="ManuallyAssignPlayerCountries" />
+          <state name="PlayingGame">
+            <!-- A player leaving during the game should end the game, for now -->
+            <transition event="onPlayerLeaveGameEvent" nextState="EndGame" />
+            <!-- Ending the game can occur at any time during the game -->
+            <transition event="onEndGameEvent" nextState="EndGame" />
+            <state name="DeterminePlayerTurnOrder">
+              <onEntry action="gameModel.determinePlayerTurnOrder()" />
+              <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies" />
             </state>
-            <state name="RandomlyAssignPlayerCountries">
-              <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
-              <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
+            <state name="DistributeInitialArmies">
+              <onEntry action="gameModel.distributeInitialArmies()" />
+              <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries" />
             </state>
-            <state name="ManuallyAssignPlayerCountries">
-              <state name="WaitForPlayersToSelectInitialCountries">
-                <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
-                <transition event="onPlayerSelectCountryInputResponseRequestEvent" action="gameModel.handlePlayerCountrySelectionRequest(event)"
-                            nextState="WaitForPlayersToSelectInitialCountries" />
-                <transition event="onPlayerSelectCountryInputResponseSuccessEvent" action="gameModel.waitForPlayersToSelectInitialCountries()"
-                            nextState="WaitForPlayersToSelectInitialCountries" />
+            <state name="AssignPlayerCountries">
+              <state name="WaitForCountrySelectionToBegin">
+                <onEntry action="gameModel.waitForCountrySelectionToBegin()" />
+                <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries" />
+                <transition event="onBeginManualCountrySelectionEvent" nextState="ManuallyAssignPlayerCountries" />
+              </state>
+              <state name="RandomlyAssignPlayerCountries">
+                <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
                 <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
               </state>
+              <state name="ManuallyAssignPlayerCountries">
+                <state name="WaitForPlayersToSelectInitialCountries">
+                  <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
+                  <transition event="onPlayerSelectCountryResponseRequestEvent"
+                              action="gameModel.handlePlayerCountrySelectionRequest(event)"
+                              nextState="WaitForPlayersToSelectInitialCountries" />
+                  <transition event="onPlayerSelectCountryResponseSuccessEvent"
+                              nextState="WaitForPlayersToSelectInitialCountries" />
+                  <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
+                </state>
+              </state>
             </state>
-          </state>
-          <state name="BeginGameRound">
-            <onEntry action="gameModel.beginGameRound()" />
-            <state name="ReinforcementPhase">
+            <state name="BeginGameRound">
+              <onEntry action="gameModel.beginGameRound()" />
+              <state name="ReinforcementPhase">
+              </state>
             </state>
           </state>
           <state name="EndGame">
             <onEntry action="gameModel.endGame()" />
-            <transition event="onCreateGameEvent" nextState="WaitForGameToBegin" />
+            <transition event="onCreateGameEvent" condition="gameModel.isNotFull()" nextState="WaitForGameToBegin" />
+            <transition event="onCreateGameEvent" condition="gameModel.isFull()" nextState="DeterminePlayerTurnOrder" />
           </state>
         </state>
-
       </parallel>
     </state>
 

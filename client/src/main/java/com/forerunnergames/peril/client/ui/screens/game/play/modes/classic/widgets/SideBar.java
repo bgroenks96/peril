@@ -8,8 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+
+import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -28,15 +31,16 @@ public final class SideBar extends Table
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     top ().padTop (SIDEBAR_INNER_PADDING_TOP).padLeft (SIDEBAR_INNER_PADDING_LEFT)
-      .padRight (SIDEBAR_INNER_PADDING_RIGHT);
+            .padRight (SIDEBAR_INNER_PADDING_RIGHT);
 
     add (widgetFactory.createSideBarIcon (IconType.TRADE_IN, new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
+        // TODO Production: Remove
         eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (
-                "You clicked the 'Trade-In' sidebar icon.")));
+                "You clicked the 'Trade-In' sidebar icon."), ImmutableSet.<PlayerPacket> of ()));
       }
     })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 
@@ -47,8 +51,9 @@ public final class SideBar extends Table
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
+        // TODO Production: Remove
         eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (
-                "You clicked the 'Reinforce' sidebar icon.")));
+                "You clicked the 'Reinforce' sidebar icon."), ImmutableSet.<PlayerPacket> of ()));
       }
     })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 
@@ -59,8 +64,9 @@ public final class SideBar extends Table
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
+        // TODO Production: Remove
         eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (
-                "You clicked the 'End Turn' sidebar icon.")));
+                "You clicked the 'End Turn' sidebar icon."), ImmutableSet.<PlayerPacket> of ()));
       }
     })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 
@@ -71,8 +77,9 @@ public final class SideBar extends Table
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
+        // TODO Production: Remove
         eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (
-                "You clicked the 'My Settings' sidebar icon.")));
+                "You clicked the 'My Settings' sidebar icon."), ImmutableSet.<PlayerPacket> of ()));
       }
     })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
   }

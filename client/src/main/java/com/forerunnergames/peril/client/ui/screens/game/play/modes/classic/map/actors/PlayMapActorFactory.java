@@ -10,15 +10,21 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.common.Event;
 
 import com.google.common.collect.ImmutableMap;
 
+import net.engio.mbassy.bus.MBassador;
+
 public final class PlayMapActorFactory
 {
-  public static PlayMapActor create (final ScreenSize screenSize, final MouseInput mouseInput)
+  public static PlayMapActor create (final ScreenSize screenSize,
+                                     final MouseInput mouseInput,
+                                     final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create (screenSize);
     final CountryImageRepository countryImageRepository = new CountryImageRepository ();
@@ -35,7 +41,7 @@ public final class PlayMapActorFactory
     }
 
     return new PlayMapActor (countryNamesToActorsBuilder.build (), playMapInputDetection,
-            new HoveredTerritoryTextActor (playMapInputDetection, mouseInput));
+            new HoveredTerritoryTextActor (playMapInputDetection, mouseInput), eventBus);
   }
 
   private PlayMapActorFactory ()

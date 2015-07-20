@@ -78,11 +78,25 @@ public final class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public int getTurnOrderPosition ()
+  {
+    return turnOrder.getPosition ();
+  }
+
+  @Override
   public void setTurnOrder (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
     this.turnOrder = turnOrder;
+  }
+
+  @Override
+  public void setTurnOrderByPosition (final int position)
+  {
+    Arguments.checkIsNotNegative (position, "position");
+
+    turnOrder = PlayerTurnOrder.getNthValidTurnOrder (position);
   }
 
   @Override
@@ -118,6 +132,12 @@ public final class DefaultPlayer extends AbstractPerson implements Player
             + "] than are currently in hand [" + armiesInHand + "].");
 
     armiesInHand -= armies;
+  }
+
+  @Override
+  public void removeAllArmiesFromHand ()
+  {
+    armiesInHand = 0;
   }
 
   @Override

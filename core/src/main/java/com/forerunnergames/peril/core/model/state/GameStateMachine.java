@@ -1,19 +1,21 @@
 package com.forerunnergames.peril.core.model.state;
 
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.response.PlayerSelectCountryInputResponseRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.stateforge.statemachine.context.IContextEnd;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * This is accomplished in the following manner:
  *
  * First, subscribe to (listen for) relevant external events on the event bus.
- * Then, when an external even is received, delegate to the corresponding state machine context method.
+ * Then, when an external event is received, delegate to the corresponding state machine context method.
  *
  * "External" events can come from anywhere, including inside the state machine's action-handling classes.
  */
@@ -108,6 +110,16 @@ public final class GameStateMachine
   }
 
   @Handler
+  public void onEndGameEvent (final EndGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onEndGameEvent (event);
+  }
+
+  @Handler
   public void onDeterminePlayerTurnOrderCompleteEvent (final DeterminePlayerTurnOrderCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -128,6 +140,16 @@ public final class GameStateMachine
   }
 
   @Handler
+  public void onBeginManualCountrySelectionEvent (final BeginManualCountrySelectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onBeginManualCountrySelectionEvent (event);
+  }
+
+  @Handler
   public void onRandomlyAssignPlayerCountriesEvent (final RandomlyAssignPlayerCountriesEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -138,23 +160,23 @@ public final class GameStateMachine
   }
 
   @Handler
-  public void onPlayerSelectCountryInputResponseRequestEvent (final PlayerSelectCountryInputResponseRequestEvent event)
+  public void onPlayerSelectCountryResponseRequestEvent (final PlayerSelectCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Received event {}", event);
 
-    context.onPlayerSelectCountryInputResponseRequestEvent (event);
+    context.onPlayerSelectCountryResponseRequestEvent (event);
   }
 
   @Handler
-  public void onPlayerSelectCountryInputResponseSuccessEvent (final PlayerSelectCountryInputResponseSuccessEvent event)
+  public void onPlayerSelectCountryResponseSuccessEvent (final PlayerSelectCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Received event {}", event);
 
-    context.onPlayerSelectCountryInputResponseSuccessEvent (event);
+    context.onPlayerSelectCountryResponseSuccessEvent (event);
   }
 
   @Handler
@@ -165,16 +187,6 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onPlayerCountryAssignmentCompleteEvent (event);
-  }
-
-  @Handler
-  public void onEndGameEvent (final EndGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onEndGameEvent (event);
   }
 
   @Handler
@@ -205,5 +217,15 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onPlayerJoinGameSuccessEvent (event);
+  }
+
+  @Handler
+  public void onPlayerLeaveGameEvent (final PlayerLeaveGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Received event {}", event);
+
+    context.onPlayerLeaveGameEvent (event);
   }
 }

@@ -7,7 +7,7 @@ import com.forerunnergames.tools.common.enums.IterableEnumHelper;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 import java.util.EnumSet;
 
@@ -25,15 +25,15 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   NINTH,
   TENTH;
 
-  private static final ImmutableSet <PlayerTurnOrder> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
-          .allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
-  {
-    @Override
-    public boolean apply (final PlayerTurnOrder input)
-    {
-      return input.isNot (UNKNOWN);
-    }
-  }));
+  private static final ImmutableSortedSet <PlayerTurnOrder> validSortedValues = ImmutableSortedSet.copyOf (Collections2
+          .filter (EnumSet.allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
+          {
+            @Override
+            public boolean apply (final PlayerTurnOrder input)
+            {
+              return input.isNot (UNKNOWN);
+            }
+          }));
 
   @Override
   public boolean hasNext ()
@@ -86,13 +86,16 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   @Override
   public int getPosition ()
   {
-    return IterableEnumHelper.getPosition (this);
+    // UNKNOWN is position 1, FIRST is position 2, etc, so we must subtract 1.
+    return IterableEnumHelper.getPosition (this) - 1;
   }
 
   @Override
   public String toMixedOrdinalPosition ()
   {
-    return IterableEnumHelper.toMixedOrdinalPosition (this);
+    // UNKNOWN is position 1, FIRST is position 2, etc, so we must subtract 1, so we can't use
+    // IterableEnumHelper#toMixedOrdinalPosition(Enum) or we would be off by 1.
+    return Strings.toMixedOrdinal (getPosition ());
   }
 
   public static int count ()
@@ -100,19 +103,19 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
     return IterableEnumHelper.count (values ());
   }
 
-  public static ImmutableSet <PlayerTurnOrder> validValues ()
+  public static ImmutableSortedSet <PlayerTurnOrder> validSortedValues ()
   {
-    return validValues;
+    return validSortedValues;
   }
 
   public boolean hasNextValid ()
   {
-    return IterableEnumHelper.hasNextValid (this, values (), validValues);
+    return IterableEnumHelper.hasNextValid (this, values (), validSortedValues);
   }
 
   public PlayerTurnOrder nextValid ()
   {
-    return IterableEnumHelper.nextValid (this, values (), validValues);
+    return IterableEnumHelper.nextValid (this, values (), validSortedValues);
   }
 
   public String toLowerCase ()
@@ -130,7 +133,7 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
     return IterableEnumHelper.toProperCase (this);
   }
 
-  public static PlayerTurnOrder getNthTurnOrder (final int nthPlayerTurnOrder)
+  public static PlayerTurnOrder getNthValidTurnOrder (final int nthPlayerTurnOrder)
   {
     Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
     Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");

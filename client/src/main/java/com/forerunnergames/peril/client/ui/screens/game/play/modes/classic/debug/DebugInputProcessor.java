@@ -10,13 +10,13 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Randomness;
 
 import net.engio.mbassy.bus.MBassador;
@@ -27,7 +27,7 @@ public final class DebugInputProcessor extends InputAdapter
   private final PlayMapActor playMapActor;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
-  private final MessageBox <Message> playerBox;
+  private final PlayerBox playerBox;
   private final MandatoryOccupationPopup mandatoryOccupationPopup;
   private final DebugEventGenerator eventGenerator;
 
@@ -35,7 +35,7 @@ public final class DebugInputProcessor extends InputAdapter
                               final PlayMapActor playMapActor,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
-                              final MessageBox <Message> playerBox,
+                              final PlayerBox playerBox,
                               final MandatoryOccupationPopup mandatoryOccupationPopup,
                               final MBassador <Event> eventBus)
   {

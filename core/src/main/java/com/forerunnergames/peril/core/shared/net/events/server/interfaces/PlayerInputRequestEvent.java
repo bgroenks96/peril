@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.shared.net.events.server.interfaces;
 
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.net.events.RequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public interface InputRequestEvent extends RequestEvent
+public interface PlayerInputRequestEvent extends ServerRequestEvent
 {
   PlayerPacket getPlayer ();
 }

@@ -1,16 +1,17 @@
 package com.forerunnergames.peril.core.shared.net.events.server.success;
 
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
+
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
-
-public final class ChangePlayerColorSuccessEvent implements PlayerColorEvent, SuccessEvent
+public final class ChangePlayerColorSuccessEvent implements PlayerColorEvent, ServerEvent, SuccessEvent
 {
   private final PlayerColorEvent playerColorEvent;
 

@@ -5,17 +5,21 @@ import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.t
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 
+import static com.google.common.base.Predicates.equalTo;
+import static com.google.common.base.Predicates.not;
+
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.math.IntMath;
 
 import java.util.Collection;
@@ -164,7 +168,17 @@ public final class PlayerModel
 
   public ImmutableSet <Player> getPlayers ()
   {
-    return ImmutableSet.copyOf (players.values ());
+    return ImmutableSet.copyOf (players ());
+  }
+
+  public ImmutableSortedSet <Player> getTurnOrderedPlayers ()
+  {
+    return ImmutableSortedSet.copyOf (Player.TURN_ORDER_COMPARATOR, players ());
+  }
+
+  public ImmutableSet <Player> getAllPlayersExcept (final Player player)
+  {
+    return ImmutableSet.copyOf (Collections2.filter (players.values (), not (equalTo (player))));
   }
 
   public boolean hasArmiesInHandOf (final Id playerId, final int armies)
@@ -269,6 +283,14 @@ public final class PlayerModel
     return playerWith (name);
   }
 
+  public void removeAllArmiesFromHandsOfAllPlayers ()
+  {
+    for (final Player player : players ())
+    {
+      player.removeAllArmiesFromHand ();
+    }
+  }
+
   public void removeArmiesFromHandOf (final Id playerId, final int armies)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -318,54 +340,74 @@ public final class PlayerModel
     return Result.success ();
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemove (final Player player)
+  public void remove (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (!existsPlayerWith (idOf (player))) return Result
-            .failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (idOf (player))) return;
 
     deregister (player);
-
-    return Result.success ();
+    fixTurnOrdersAfterRemovalOfPlayer (player);
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveByColor (final PlayerColor color)
+  private void fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
+  {
+    // Ensure the removed player is really removed, or this will not work.
+    assert !  players.containsValue (removedPlayer);
+
+    final int danglingTurnOrderPosition = removedPlayer.getTurnOrderPosition ();
+
+    // Lower the turn orders of all players having a turn order higher than the discontinuity, by one.
+    // For example, consider where the 2nd player is removed, leaving: 1st, ___, 3rd, 4th, 5th
+    // 2nd is the dangling turn order position
+    // All positions after the dangling must be bumped up by one, IN ORDER FROM LOWEST TO HIGHEST, to avoid conflicts:
+    // 1st, 3rd => 2nd, 4th => 3rd, 5th => 4th, leaving:
+    // 1st, 2nd, 3rd, 4th, effectively filling the gap left by the player that was removed.
+    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validSortedValues ())
+    {
+      if (!existsPlayerWith (turnOrder)) continue;
+      if (turnOrder.getPosition () <= danglingTurnOrderPosition) continue;
+
+      playerWith (turnOrder).setTurnOrderByPosition (turnOrder.getPosition () - 1);
+    }
+  }
+
+  public void removeByColor (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
 
-    if (!existsPlayerWith (color)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (color)) return;
 
-    return requestToRemove (playerWith (color));
+    remove (playerWith (color));
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveById (final Id id)
+  public void removeById (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
 
-    if (!existsPlayerWith (id)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (id)) return;
 
-    return requestToRemove (playerWith (id));
+    remove (playerWith (id));
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveByName (final String name)
+  public void removeByName (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
-    if (!existsPlayerWith (name)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (name)) return;
 
-    return requestToRemove (playerWithName (name));
+    remove (playerWithName (name));
   }
 
-  public Result <PlayerLeaveGameDeniedEvent.Reason> requestToRemoveByTurnOrder (final PlayerTurnOrder turnOrder)
+  public void removeByTurnOrder (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
     Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
 
-    if (!existsPlayerWith (turnOrder)) return Result.failure (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST);
+    if (!existsPlayerWith (turnOrder)) return;
 
-    return requestToRemove (playerWith (turnOrder));
+    remove (playerWith (turnOrder));
   }
 
   private void add (final Player player)
@@ -401,7 +443,7 @@ public final class PlayerModel
 
   private PlayerTurnOrder nextAvailableTurnOrder ()
   {
-    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validValues ())
+    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validSortedValues ())
     {
       if (!existsPlayerWith (turnOrder)) return turnOrder;
     }

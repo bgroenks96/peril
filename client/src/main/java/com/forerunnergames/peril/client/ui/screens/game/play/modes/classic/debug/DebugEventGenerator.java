@@ -13,12 +13,14 @@ import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.HashSet;
@@ -87,8 +89,8 @@ public final class DebugEventGenerator
                                                                                 "Antarctica");
 
   private final MBassador <Event> eventBus;
-  private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator = PlayerTurnOrder.validValues ().iterator ();
   private final Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
+  private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator = PlayerTurnOrder.validSortedValues ().iterator ();
 
   public DebugEventGenerator (final MBassador <Event> eventBus)
   {
@@ -99,7 +101,8 @@ public final class DebugEventGenerator
 
   public void generateStatusMessageEvent ()
   {
-    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage ()));
+    // TODO Production: Remove
+    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage (), ImmutableSet.<PlayerPacket> of ()));
   }
 
   public void generateChatMessageSuccessEvent ()
@@ -136,7 +139,7 @@ public final class DebugEventGenerator
 
   private static UnmodifiableIterator <PlayerTurnOrder> createPlayerTurnOrderIterator ()
   {
-    return PlayerTurnOrder.validValues ().iterator ();
+    return PlayerTurnOrder.validSortedValues ().iterator ();
   }
 
   private String getRandomCountryNameString ()

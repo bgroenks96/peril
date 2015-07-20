@@ -89,6 +89,13 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
     return this.turnOrder != turnOrder;
   }
 
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | Color: %2$s | Turn Order: %3$s | Armies in Hand: %4$s", super.toString (), color,
+                          turnOrder, armiesInHand);
+  }
+
   @RequiredForNetworkSerialization
   private DefaultPlayerPacket ()
   {

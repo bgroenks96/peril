@@ -3,9 +3,10 @@ package com.forerunnergames.peril.core.shared.net.events.server.success;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class PlayerJoinGameSuccessEvent implements SuccessEvent
+public final class PlayerJoinGameSuccessEvent implements ServerEvent, SuccessEvent
 {
   private final PlayerPacket player;
 

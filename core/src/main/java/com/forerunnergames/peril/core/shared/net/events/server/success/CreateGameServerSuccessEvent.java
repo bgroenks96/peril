@@ -4,11 +4,12 @@ import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultCreateGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.net.ClientConfiguration;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class CreateGameServerSuccessEvent implements CreateGameServerEvent, SuccessEvent
+public final class CreateGameServerSuccessEvent implements CreateGameServerEvent, ServerEvent, SuccessEvent
 {
   private final CreateGameServerEvent createGameServerEvent;
   private final ClientConfiguration clientConfig;

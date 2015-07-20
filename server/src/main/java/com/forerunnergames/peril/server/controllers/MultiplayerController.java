@@ -2,45 +2,61 @@ package com.forerunnergames.peril.server.controllers;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.recipientsFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.serverAddressFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withMessageTextFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
+import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent.Reason;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerLeaveGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
-import com.forerunnergames.tools.net.ClientConfiguration;
-import com.forerunnergames.tools.net.ClientConnector;
-import com.forerunnergames.tools.net.DefaultClientConfiguration;
-import com.forerunnergames.tools.net.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.events.ClientCommunicationEvent;
-import com.forerunnergames.tools.net.events.ClientConnectionEvent;
-import com.forerunnergames.tools.net.events.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.client.ClientConnector;
+import com.forerunnergames.tools.net.client.DefaultClientConfiguration;
+import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
+import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
+import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,13 +103,14 @@ import org.slf4j.LoggerFactory;
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
+  private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
   private final Set <Remote> clientsInServer;
   private final BiMap <Remote, PlayerPacket> clientsToPlayers;
   private final ClientConnector clientConnector;
   private final PlayerCommunicator playerCommunicator;
   private final MBassador <Event> eventBus;
   private final GameConfiguration gameConfig;
-  private final boolean shouldShutDown = false;
+  private boolean shouldShutDown = false;
   private final Map <String, Remote> playerJoinGameRequestCache;
   private final String gameServerName;
   private final GameServerType gameServerType;
@@ -136,6 +153,7 @@ public final class MultiplayerController extends ControllerAdapter
   public void initialize ()
   {
     eventBus.subscribe (this);
+    eventBus.publish (new CreateGameEvent ());
   }
 
   @Override
@@ -144,32 +162,23 @@ public final class MultiplayerController extends ControllerAdapter
     return shouldShutDown;
   }
 
-  boolean isPlayerInGame (final PlayerPacket player)
+  @Override
+  public void shutDown ()
   {
-    Arguments.checkIsNotNull (player, "player");
+    log.debug ("Shutting down [{}]", this);
 
-    return clientsToPlayers.containsValue (player);
+    eventBus.publish (new DestroyGameEvent ());
+    if (host != null) playerCommunicator.sendTo (host, new DestroyGameServerEvent ());
+    eventBus.unsubscribe (this);
+    shouldShutDown = true;
   }
-
-  GameConfiguration getGameConfiguration ()
-  {
-    return gameConfig;
-  }
-
-  boolean isClientInServer (final Remote client)
-  {
-    Arguments.checkIsNotNull (client, "client");
-
-    return clientsInServer.contains (client);
-  }
-
-  // <<<<< remote inbound/outbound event communication >>>>> //
 
   @Handler
   public void onClientConnectionEvent (final ClientConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Event received [{}]", event);
     log.info ("Client [{}] connected.", clientFrom (event));
 
     final ClientConnectorDaemon connector = new ClientConnectorDaemon ();
@@ -181,28 +190,33 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Event received [{}]", event);
+
     final Remote client = clientFrom (event);
 
     log.info ("Client [{}] disconnected.", client);
 
     if (!clientsToPlayers.containsKey (client))
     {
-      // TODO: PlayerLeaveGameDeniedEvent is pointless and should be changed or removed.
-      eventBus.publish (new PlayerLeaveGameDeniedEvent (Reason.PLAYER_DOES_NOT_EXIST));
+      log.warn ("Client [{}] disconnected but did not exist as a player.", client);
       return;
     }
 
     final PlayerPacket disconnectedPlayer = clientsToPlayers.get (client);
-    final Event leaveGameEvent = new PlayerLeaveGameSuccessEvent (disconnectedPlayer.getName ());
+    final Event leaveGameEvent = new PlayerLeaveGameEvent (disconnectedPlayer);
     eventBus.publish (leaveGameEvent);
     sendToAllPlayersExcept (disconnectedPlayer, leaveGameEvent);
     remove (client);
   }
 
+  // <<<<< remote inbound/outbound event communication >>>>> //
+
   @Handler
   public void onClientCommunicationEvent (final ClientCommunicationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
 
     if (messageFrom (event) instanceof CreateGameServerRequestEvent)
     {
@@ -216,6 +230,14 @@ public final class MultiplayerController extends ControllerAdapter
     {
       onEvent ((PlayerJoinGameRequestEvent) messageFrom (event), clientFrom (event));
     }
+    else if (messageFrom (event) instanceof ChatMessageRequestEvent)
+    {
+      onEvent ((ChatMessageRequestEvent) messageFrom (event), clientFrom (event));
+    }
+    else if (messageFrom (event) instanceof PlayerSelectCountryResponseRequestEvent)
+    {
+      onEvent ((PlayerSelectCountryResponseRequestEvent) messageFrom (event), clientFrom (event));
+    }
     else
     {
       log.warn ("Received unrecognized message [{}] from client [{}].", messageFrom (event), clientFrom (event));
@@ -227,11 +249,17 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Event received [{}]", event);
+
     final String playerName = playerNameFrom (event);
 
     // if no client mapping is available, silently ignore success event
     // this is to prevent failure under cases such as client disconnecting while join request is being processed
-    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
+    if (!playerJoinGameRequestCache.containsKey (playerName))
+    {
+      log.warn ("Ignoring invalid event [{}]", event);
+      return;
+    }
 
     final Remote client = playerJoinGameRequestCache.get (playerName);
 
@@ -254,6 +282,8 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Event received [{}]", event);
+
     final String playerName = playerNameFrom (event);
 
     // if no client mapping is available, silently ignore denied event
@@ -265,11 +295,94 @@ public final class MultiplayerController extends ControllerAdapter
     playerJoinGameRequestCache.remove (playerName);
   }
 
+  @Handler
+  public void onStatusMessageEvent (final StatusMessageEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    for (final PlayerPacket recipient : recipientsFrom (event))
+    {
+      sendToPlayer (recipient, event);
+    }
+  }
+
+  @Handler
+  public void onServerNotificationEvent (final ServerNotificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    // We have separate handlers / senders for these ServerNotificationEvent's, so don't send twice.
+    if (event instanceof PlayerLeaveGameEvent || event instanceof StatusMessageEvent) return;
+
+    sendToAllPlayers (event);
+  }
+
+  @Handler
+  public void onPlayerInputRequestEvent (final PlayerInputRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    final boolean wasAdded = playerInputRequestEventCache.put (playerFrom (event), event);
+    assert wasAdded;
+
+    sendToPlayer (playerFrom (event), event);
+  }
+
+  @Handler
+  public void onResponseSuccessEvent (final ResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    sendToAllPlayers (event);
+  }
+
+  @Handler
+  public void onResponseDeniedEvent (final ResponseDeniedEvent <?> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    // TODO Only send to the requesting player.
+    // TODO We need a sub-interface of ResponseDeniedEvent that includes the PlayerPacket.
+
+    sendToAllPlayers (event);
+  }
+
+  boolean isPlayerInGame (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    return clientsToPlayers.containsValue (player);
+  }
+
+  GameConfiguration getGameConfiguration ()
+  {
+    return gameConfig;
+  }
+
+  boolean isClientInServer (final Remote client)
+  {
+    Arguments.checkIsNotNull (client, "client");
+
+    return clientsInServer.contains (client);
+  }
+
   // <<<<< event handlers for inbound core events >>>>> //
 
-  // This event is for joining host-and-play servers only as the host (the host created and connected to a local server).
+  // This event is for joining host-and-play servers only as the host (the host created and connected to a local
+  // server).
   private void onEvent (final CreateGameServerRequestEvent event, final Remote client)
   {
+    log.debug ("Event received [{}]", event);
     log.info ("Received create game server request from {}", client);
 
     // check if client is already in server
@@ -289,16 +402,28 @@ public final class MultiplayerController extends ControllerAdapter
     // CreateGameServerRequestEvent implies host-and-play, so if this is a dedicated server, we have a problem
     if (isDedicated ())
     {
-      sendCreateGameServerDenied (client, event, "Cannot create a host-and-play game server. This is a dedicated game server.");
+      sendCreateGameServerDenied (client, event,
+                                  "Cannot create a host-and-play game server. This is a dedicated game server.");
+      return;
+    }
+
+    // CreateGameServerRequestEvent implies host-and-play, so if this isn't a host-and-play server, we have a problem
+    if (!isHostAndPlay ())
+    {
+      sendCreateGameServerDenied (client, event,
+                                  "Cannot create a host-and-play game server. This is not a host-and-play game server.");
       return;
     }
 
     // if someone else already joined the game server, we have a problem
     if (!clientsInServer.isEmpty ())
     {
-      sendCreateGameServerDenied (client, event, "Cannot create a host-and-play game server after others have already joined it.");
+      sendCreateGameServerDenied (client, event,
+                                  "Cannot create a host-and-play game server after others have already joined this game server.");
       return;
     }
+
+    if (isLocalHost (client)) host = client;
 
     sendCreateGameServerSuccess (client, serverAddressFrom (event));
   }
@@ -306,6 +431,7 @@ public final class MultiplayerController extends ControllerAdapter
   // This event is for joining dedicated servers only as a non-host.
   private void onEvent (final JoinGameServerRequestEvent event, final Remote client)
   {
+    log.debug ("Event received [{}]", event);
     log.info ("Received join game server request from {}", client);
 
     // check if client is already in server
@@ -329,8 +455,6 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    if (isHostAndPlay () && isLocalHost (client)) host = client;
-
     sendJoinGameServerSuccess (client, serverAddressFrom (event), ImmutableSet.copyOf (clientsToPlayers.values ()));
   }
 
@@ -339,13 +463,15 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
+    log.debug ("Event received [{}]", event);
+
     // client is connected but not in game server; just ignore request event
     if (!clientsInServer.contains (client))
     {
-      log.warn ("Ignoring join game request from player [{}] | REASON: unrecognized client [{}].",
-                playerNameFrom (event), client);
+      log.warn ("Ignoring join game request from player [{}] | REASON: unrecognized client [{}].", playerNameFrom (event), client);
       return;
     }
+
     // spam guard: if client request is already being processed, ignore new request event
     if (playerJoinGameRequestCache.containsKey (playerNameFrom (event))) return;
 
@@ -354,6 +480,47 @@ public final class MultiplayerController extends ControllerAdapter
     playerJoinGameRequestCache.put (playerNameFrom (event), client);
 
     eventBus.publish (event);
+  }
+
+  private void onEvent (final ChatMessageRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    log.debug ("Event received [{}]", event);
+
+    if (!clientsToPlayers.containsKey (client))
+    {
+      log.warn ("Ignoring chat message [{}] from non-player client [{}]", event, client);
+      return;
+    }
+
+    sendToAllPlayers (new ChatMessageSuccessEvent (new DefaultChatMessage (clientsToPlayers.get (client), withMessageTextFrom (event))));
+  }
+
+  private void onEvent (final PlayerSelectCountryResponseRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    log.debug ("Event received [{}]", event);
+
+    if (!clientsToPlayers.containsKey (client))
+    {
+      log.warn ("Ignoring event [{}] from non-player client [{}]", event, client);
+      return;
+    }
+
+    final PlayerPacket player = clientsToPlayers.get (client);
+
+    if (!waitingForResponseToEventFromPlayer (PlayerSelectCountryRequestEvent.class, player))
+    {
+      log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding server request of type [{}] was sent to that player.",
+                event, player, PlayerSelectCountryRequestEvent.class);
+      return;
+    }
+
+    handlePlayerResponseTo (PlayerSelectCountryRequestEvent.class, event, player);
   }
 
   // <<<<< internal utility methods and types >>>>>> //
@@ -372,9 +539,7 @@ public final class MultiplayerController extends ControllerAdapter
                                            final CreateGameServerRequestEvent event,
                                            final String reason)
   {
-    playerCommunicator.sendTo (client,
-                               new CreateGameServerDeniedEvent (event, new DefaultClientConfiguration (client
-                                       .getAddress (), client.getPort ()), reason));
+    playerCommunicator.sendTo (client, new CreateGameServerDeniedEvent (event, new DefaultClientConfiguration (client.getAddress (), client.getPort ()), reason));
     clientConnector.disconnect (client);
     log.warn ("Denied create game server request from [{}]; REASON: {}", client, reason);
   }
@@ -436,23 +601,53 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void sendToPlayer (final PlayerPacket player, final Object object)
   {
-    playerCommunicator.sendToPlayer (ImmutableBiMap.copyOf (clientsToPlayers.inverse ()), player, object);
+    playerCommunicator.sendToPlayer (player, object, ImmutableBiMap.copyOf (clientsToPlayers.inverse ()));
   }
 
   private void sendToAllPlayers (final Object object)
   {
-    playerCommunicator.sendToAllPlayers (ImmutableBiMap.copyOf (clientsToPlayers.inverse ()), object);
+    playerCommunicator.sendToAllPlayers (object, ImmutableBiMap.copyOf (clientsToPlayers.inverse ()));
   }
 
   private void sendToAllPlayersExcept (final PlayerPacket player, final Object object)
   {
-    playerCommunicator.sendToAllPlayersExcept (ImmutableBiMap.copyOf (clientsToPlayers.inverse ()), player, object);
+    playerCommunicator.sendToAllPlayersExcept (player, object, ImmutableBiMap.copyOf (clientsToPlayers.inverse ()));
   }
 
   private void remove (final Remote client)
   {
     clientsInServer.remove (client);
     clientsToPlayers.remove (client);
+  }
+
+  private boolean waitingForResponseToEventFromPlayer (final Class <? extends PlayerInputRequestEvent> requestClass,
+                                                       final PlayerPacket player)
+  {
+    for (final PlayerInputRequestEvent request : playerInputRequestEventCache.get (player))
+    {
+      if (requestClass.isInstance (request)) return true;
+    }
+
+    return false;
+  }
+
+  private void handlePlayerResponseTo (final Class <? extends PlayerInputRequestEvent> requestClass,
+                                       final ResponseRequestEvent responseRequest,
+                                       final PlayerPacket player)
+  {
+    for (final PlayerInputRequestEvent request : playerInputRequestEventCache.get (player))
+    {
+      if (requestClass.isInstance (request))
+      {
+        eventBus.publish (responseRequest);
+        final boolean wasRemoved = playerInputRequestEventCache.remove (player, request);
+        assert wasRemoved;
+        return;
+      }
+    }
+
+    log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding request of type [{}] was sent to that player.",
+              responseRequest, player, requestClass);
   }
 
   private final class ClientConnectorDaemon implements Runnable
@@ -488,477 +683,4 @@ public final class MultiplayerController extends ControllerAdapter
       thread.start ();
     }
   }
-
-  /*
-  @EventSubscriber (eventClass = ClientConnectionEvent.class)
-  public void onClientConnectionEvent (ClientConnectionEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.info ("Client [{}] connected.", clientFrom (event));
-  }
-
-  @EventSubscriber (eventClass = ClientDisconnectionEvent.class)
-  public void onClientDisconnectionEvent (ClientDisconnectionEvent disconnectionEvent)
-  {
-    Arguments.checkIsNotNull (disconnectionEvent, "disconnectionEvent");
-
-    if (! existsPlayerWith (clientFrom (disconnectionEvent)))
-    {
-      log.warn ("Client [{}] disconnected, but did not exist as a player.", clientFrom (disconnectionEvent));
-      return;
-    }
-
-    log.info ("Player [{}] disconnected.", playerWith (clientFrom (disconnectionEvent)));
-
-    final PlayerLeaveGameSuccessEvent playerLeaveGameSuccessEvent =
-            new PlayerLeaveGameSuccessEvent (playerWith (clientFrom (disconnectionEvent)));
-
-    removePlayerWith (clientFrom (disconnectionEvent));
-    sendToAll (playerLeaveGameSuccessEvent);
-    sendToAll (statusMessage (playerNameFrom (playerLeaveGameSuccessEvent) + " left the game."));
-  }
-
-  private boolean existsPlayerWith (final Remote client)
-  {
-    return clientsToPlayerIds.containsKey (client) && playerIdsToClients.containsValue (client);
-  }
-
-  private void removePlayerWith (final Remote client)
-  {
-    remove (playerWith (client));
-  }
-
-  private Player playerWith (final Remote client)
-  {
-    assert clientsToPlayerIds.containsKey (client);
-    assert playerIdsToClients.containsValue (client);
-
-    return playerModel.playerWith (clientsToPlayerIds.get (client));
-  }
-
-  private void remove (final Player player)
-  {
-    playerModel.remove (player);
-    clientsToPlayerIds.remove (playerIdsToClients.remove (idOf (player)));
-  }
-
-  private Remote clientOf (final Player player)
-  {
-    assert playerIdsToClients.containsKey (idOf (player));
-    assert clientsToPlayerIds.containsValue (idOf (player));
-
-    return playerIdsToClients.get (idOf (player));
-  }
-
-  private void sendToAll (final Object object)
-  {
-    clientCommunicator.sendToAll (object);
-  }
-
-  @EventSubscriber (eventClass = ClientCommunicationEvent.class)
-  public void onClientCommunicationEvent (final ClientCommunicationEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event [{}] received.", event);
-
-    if (questionFrom (event) instanceof ChatMessageRequestEvent)
-    {
-      onEvent ((ChatMessageRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof PlayerJoinGameRequestEvent)
-    {
-      onEvent ((PlayerJoinGameRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof ChangePlayerColorRequestEvent)
-    {
-      onEvent ((ChangePlayerColorRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof ChangePlayerLimitRequestEvent)
-    {
-      onEvent ((ChangePlayerLimitRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof ChangePlayerTurnOrderRequestEvent)
-    {
-      onEvent ((ChangePlayerTurnOrderRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof JoinMultiplayerServerRequestEvent)
-    {
-      onEvent ((JoinMultiplayerServerRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof OpenMultiplayerServerRequestEvent)
-    {
-      onEvent ((OpenMultiplayerServerRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof QuitMultiplayerServerRequestEvent)
-    {
-      onEvent ((QuitMultiplayerServerRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else if (questionFrom (event) instanceof KickPlayerFromGameRequestEvent)
-    {
-      onEvent ((KickPlayerFromGameRequestEvent) questionFrom (event), clientFrom (event));
-    }
-    else
-    {
-      log.warn ("Received unrecognized message [{}] from client [{}].", questionFrom (event), clientFrom (event));
-    }
-  }
-
-  private void onEvent (final PlayerJoinGameRequestEvent requestEvent, final Remote sender)
-  {
-    Result result = addClientToGame (sender);
-
-    if (result.isFailure())
-    {
-      playerJoinGameDenied (playerNameFrom (requestEvent), result.getMessage(), sender);
-      return;
-    }
-
-    Player player = createPlayer (withPlayerNameFrom (requestEvent));
-    result = addPlayerToGame (player);
-
-    if (result.isFailure())
-    {
-      playerJoinGameDenied (playerNameFrom (requestEvent), result.getMessage(), sender);
-      return;
-    }
-
-    playerJoinGameSuccess (player, sender);
-  }
-
-  private Result addClientToGame (final Remote requestingClient)
-  {
-    if (shouldWaitForHostToJoinFirst (requestingClient))
-    {
-      return Result.failure ("Please wait for the host to join the game first!");
-    }
-
-    return Result.success();
-  }
-
-  private boolean shouldWaitForHostToJoinFirst (final Remote joiningClient)
-  {
-    return host != null && ! existsPlayerWith (host) && joiningClient.isNot (host);
-  }
-
-  private void playerJoinGameDenied (final String playerName,
-                                     final PlayerJoinGameDeniedEvent.REASON reason,
-                                     final Remote sender)
-  {
-    PlayerJoinGameDeniedEvent deniedEvent = new PlayerJoinGameDeniedEvent (playerName, reason);
-    sendTo (sender, deniedEvent);
-    if (isHost (sender)) sendTo (sender, new CloseMultiplayerServerSuccessEvent());
-    disconnect (sender);
-  }
-
-  private Player createPlayer (final String name)
-  {
-    return PlayerFactory.create (name, playerModel.nextAvailableId());
-  }
-
-  private Result addPlayerToGame (final Player player)
-  {
-    return playerModel.add (player);
-  }
-
-  private void playerJoinGameSuccess (final Player player, final Remote client)
-  {
-    register (idOf (player), client);
-    PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player);
-    playerFrom(successEvent).setIdentity (PersonIdentity.NON_SELF);
-    sendToAllExcept (client, successEvent);
-    sendToAllExcept (client, statusMessage (player.getName() + " joined the game as a player."));
-    playerFrom(successEvent).setIdentity (PersonIdentity.SELF);
-    sendTo (client, successEvent);
-    sendTo (client, statusMessage ("You successfully joined \"" + gameServerName + "\" multiplayer game."));
-  }
-
-  private void sendTo (final Remote client, final Object object)
-  {
-    clientCommunicator.sendTo (client, object);
-  }
-
-  private void sendToAllExcept (final Remote client, final Object object)
-  {
-    clientCommunicator.sendToAllExcept (client, object);
-  }
-
-  private void register (final Id playerId, final Remote playerClient)
-  {
-    playerIdsToClients.put (playerId, playerClient);
-    clientsToPlayerIds.put (playerClient, playerId);
-  }
-
-  private void onEvent (final KickPlayerFromGameRequestEvent requestEvent, final Remote sender)
-  {
-    if (! isHost (sender))
-    {
-      kickPlayerNonSelfFromGameDenied (requestEvent, sender);
-    }
-    else if (! isHost (clientOf (playerFrom (requestEvent))))
-    {
-      kickPlayerNonSelfFromGameSuccess (requestEvent, sender);
-    }
-    else
-    {
-      kickPlayerSelfFromGameDenied (requestEvent, sender);
-    }
-  }
-
-  private boolean isHost (final Remote remote)
-  {
-    return host != null && remote.equals (host);
-  }
-
-  private void kickPlayerNonSelfFromGameSuccess (final KickPlayerFromGameRequestEvent requestEvent, final Remote sender)
-  {
-    disconnect (clientOf (playerFrom (requestEvent)));
-    KickPlayerFromGameSuccessEvent successEvent =
-            new KickPlayerFromGameSuccessEvent (playerFrom (requestEvent), reasonForKickFrom (requestEvent));
-    playerFrom(requestEvent).setIdentity (PersonIdentity.NON_SELF);
-    sendToAll (successEvent);
-    sendTo (sender, statusMessage ("You kicked " + playerNameFrom (requestEvent) + " from the game. Reason: " +
-            reasonForKickFrom (requestEvent)));
-    sendToAllExcept (sender, statusMessage (playerNameFrom (requestEvent) + " was kicked from the game. Reason: " +
-            reasonForKickFrom (requestEvent)));
-  }
-
-  private void kickPlayerSelfFromGameDenied (final KickPlayerFromGameRequestEvent requestEvent, final Remote sender)
-  {
-    KickPlayerFromGameDeniedEvent deniedEvent =
-            new KickPlayerFromGameDeniedEvent (
-                    playerFrom (requestEvent), reasonForKickFrom (requestEvent), "You can't kick yourself!");
-    playerFrom(deniedEvent).setIdentity (PersonIdentity.SELF);
-    sendTo (sender, deniedEvent);
-  }
-
-  private void kickPlayerNonSelfFromGameDenied (final KickPlayerFromGameRequestEvent requestEvent, final Remote sender)
-  {
-    KickPlayerFromGameDeniedEvent deniedEvent =
-            new KickPlayerFromGameDeniedEvent (
-                    playerFrom (requestEvent), reasonForKickFrom (requestEvent), "Only the host can kick players!");
-    playerFrom(deniedEvent).setIdentity (PersonIdentity.NON_SELF);
-    sendTo (sender, deniedEvent);
-  }
-
-  private void disconnect (final Remote client)
-  {
-    clientConnector.disconnect (client);
-  }
-
-  private void onEvent (final ChatMessageRequestEvent requestEvent, final Remote sender)
-  {
-    sendToAll (new ChatMessageSuccessEvent (withMessageFrom (requestEvent)));
-  }
-
-  private Author withAuthorOf (final Remote sender)
-  {
-    return existsPlayerWith (sender) ? playerWith (sender) : null;
-  }
-
-  private void onEvent (final ChangePlayerColorRequestEvent requestEvent, final Remote sender)
-  {
-    if (! clientOf (playerFrom (requestEvent)).equals (sender))
-    {
-      changePlayerColorDenied (requestEvent, sender, "You can only change your own color!");
-      return;
-    }
-
-    Result result =
-            playerModel.changeColorOf (
-                    idOf (playerFrom (requestEvent)),
-                    previousColorFrom (requestEvent),
-                    currentColorFrom (requestEvent));
-
-    if (result.isFailure())
-    {
-      changePlayerColorDenied (requestEvent, sender, result.getMessage());
-      return;
-    }
-
-    changePlayerColorSuccess (currentColorFrom (requestEvent), previousColorFrom (requestEvent), sender);
-  }
-
-  private void changePlayerColorDenied (final ChangePlayerColorRequestEvent requestEvent,
-                                        final Remote sender,
-                                        final String reason)
-  {
-    ChangePlayerColorDeniedEvent deniedEvent = new ChangePlayerColorDeniedEvent (requestEvent, reason);
-    sendTo (sender, deniedEvent);
-    sendTo (sender, statusMessage (reason));
-  }
-
-  private void changePlayerColorSuccess (final PlayerColor currentColor,
-                                         final PlayerColor previousColor,
-                                         final Remote sender)
-  {
-    final ChangePlayerColorSuccessEvent successEvent =
-            new ChangePlayerColorSuccessEvent (playerWith (sender), currentColor, previousColor);
-
-    sendToAllExcept (sender, successEvent);
-    sendToAllExcept (sender, statusMessage (playerNameFrom (successEvent) + " changed colors from " +
-            previousColorFrom(successEvent).toLowerCase() + " to " + currentColorFrom(successEvent).toLowerCase() + "."));
-  }
-
-  private StatusMessageEvent statusMessage (final String text)
-  {
-    return new DefaultStatusMessage (text);
-  }
-
-  private void onEvent (final ChangePlayerLimitRequestEvent requestEvent, final Remote sender)
-  {
-    if (! isHost (sender))
-    {
-      changePlayerLimitDenied (deltaFrom (requestEvent), sender, "Only the host can change the player limit.");
-      return;
-    }
-
-    playerModel.changePlayerLimitBy (deltaFrom (requestEvent));
-
-    changePlayerLimitSuccess (deltaFrom (requestEvent), sender);
-  }
-
-  private void changePlayerLimitDenied (final int playerLimitDelta, final Remote sender, final String reason)
-  {
-    ChangePlayerLimitDeniedEvent deniedEvent = new ChangePlayerLimitDeniedEvent (playerLimitDelta, reason);
-    sendTo (sender, deniedEvent);
-  }
-
-  private void changePlayerLimitSuccess (final int playerLimitDelta, final Remote sender)
-  {
-    ChangePlayerLimitSuccessEvent successEvent = new ChangePlayerLimitSuccessEvent (playerLimitDelta);
-    sendToAllExcept (sender, statusMessage ("The maximum number of players was changed from " +
-            (playerModel.getPlayerLimit() - successEvent.getPlayerLimitDelta()) + " to " +
-            playerModel.getPlayerLimit() + "."));
-    sendToAll (successEvent);
-  }
-
-  private void onEvent (final ChangePlayerTurnOrderRequestEvent requestEvent, final Remote sender)
-  {
-    // TODO The Model should check if the turn order change is valid.
-    // TODO If not, then send PlayerTurnOrderChangeDeniedEvent to the sender only.
-
-    changeTurnOrderOf (playerFrom (requestEvent), currentTurnOrderFrom (requestEvent));
-    ChangePlayerTurnOrderSuccessEvent successEvent = new ChangePlayerTurnOrderSuccessEvent (requestEvent);
-    sendTo (sender, statusMessage ("You are now the " + currentTurnOrderFrom(successEvent).toMixedOrdinal() +
-            " player."));
-    sendToAllExcept (sender, statusMessage (playerNameFrom (successEvent) + " is now the " +
-            currentTurnOrderFrom(successEvent).toMixedOrdinal() + " player."));
-    sendToAll (successEvent);
-  }
-
-  private void changeTurnOrderOf (final Player player, final PlayerTurnOrder turnOrder)
-  {
-    player.setTurnOrder (turnOrder);
-  }
-
-  private void onEvent (final OpenMultiplayerServerRequestEvent requestEvent, Remote sender)
-  {
-    Result result = checkServerIsEmpty();
-
-    if (result.isFailure())
-    {
-      openMultiplayerServerDenied (requestEvent, sender, result.getMessage());
-      return;
-    }
-
-    result = checkIsValid (serverNameFrom (requestEvent), serverTcpPortFrom (requestEvent), addressOf (sender));
-
-    if (result.isFailure())
-    {
-      openMultiplayerServerDenied (requestEvent, sender, result.getMessage());
-      return;
-    }
-
-    openMultiplayerServerSuccess (sender);
-  }
-
-  private Result checkServerIsEmpty()
-  {
-    return playerModel.isEmpty() ? Result.success() : Result.failure ("There are already players in the server.");
-  }
-
-  private Result checkIsValid (final String name, final int tcpPort, final String address)
-  {
-    if (! serverNameMatches (name))
-    {
-      return Result.failure ("Requested server name doesn't match the actual server name.");
-    }
-    else if (! serverTcpPortMatches (tcpPort))
-    {
-      return Result.failure ("Requested server port doesn't match the actual server port.");
-    }
-    else if (! isLocal (address))
-    {
-      return Result.failure ("You can only host & play on the same machine as the server!");
-    }
-
-    return Result.success();
-  }
-
-  private boolean serverNameMatches (final String gameServerName)
-  {
-    return this.gameServerName.equals (gameServerName);
-  }
-
-  private boolean serverTcpPortMatches (final int tcpPort)
-  {
-    return serverTcpPort == tcpPort;
-  }
-
-  private boolean isLocal (final String address)
-  {
-    return address.equals (NetworkSettings.LOCALHOST_ADDRESS);
-  }
-
-  private void openMultiplayerServerDenied (final OpenMultiplayerServerRequestEvent event,
-                                            final Remote sender,
-                                            final String reason)
-  {
-    sendTo (sender, new OpenMultiplayerServerDeniedEvent (event, reason));
-  }
-
-  private void openMultiplayerServerSuccess (final Remote sender)
-  {
-    host = sender;
-    sendTo (sender, new OpenMultiplayerServerSuccessEvent (gameServerName, serverTcpPort));
-  }
-
-  private void onEvent (final JoinMultiplayerServerRequestEvent requestEvent, Remote sender)
-  {
-    joinMultiplayerServerSuccess (serverAddressFrom (requestEvent), sender);
-  }
-
-  private void joinMultiplayerServerSuccess (final String serverAddress, final Remote joiningClient)
-  {
-    sendTo (joiningClient,
-            new JoinMultiplayerServerSuccessEvent (
-                    gameServerName, serverAddress, serverTcpPort, playerModel.getPlayers(), playerModel.getPlayerLimit()));
-  }
-
-  private void onEvent (final QuitMultiplayerServerRequestEvent event, final Remote sender)
-  {
-    if (isHost (sender))
-    {
-      closeServer();
-    }
-    else if (existsPlayerWith (sender))
-    {
-      disconnect (sender);
-    }
-    else
-    {
-      log.warn ("Client [{}] sent event [{}], but does not exist as a player.", sender, event);
-    }
-  }
-
-  private void closeServer()
-  {
-    sendTo (host, new CloseMultiplayerServerSuccessEvent());
-    sendToAllExcept (host, statusMessage ("The host is shutting down the server."));
-    clientConnector.disconnectAll();
-    shouldShutDown = true;
-  }
-  */
 }

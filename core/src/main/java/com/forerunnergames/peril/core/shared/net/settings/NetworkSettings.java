@@ -24,6 +24,10 @@ public final class NetworkSettings
   public static final Pattern SERVER_ADDRESS_PATTERN = Pattern.compile ("[A-Za-z0-9.]");
   public static final Pattern SERVER_PORT_PATTERN = Pattern.compile ("[0-9]{1,5}");
   public static final Pattern SERVER_NAME_PATTERN = Pattern.compile ("[A-Za-z0-9 ]");
+  public static final int CLIENT_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 8192;
+  public static final int CLIENT_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
+  public static final int SERVER_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 16382;
+  public static final int SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
 
   public static boolean isLocalhostAddress (final String address)
   {

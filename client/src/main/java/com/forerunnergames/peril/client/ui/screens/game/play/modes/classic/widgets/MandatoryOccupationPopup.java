@@ -37,9 +37,12 @@ import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
+
+import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
 
@@ -155,7 +158,8 @@ public class MandatoryOccupationPopup extends Dialog
 
     // TODO Production: Remove
     eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage ("You occupied " + destinationCountryName
-            + " with " + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + ".")));
+            + " with " + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
+            ImmutableSet.<PlayerPacket> of ()));
 
     // TODO Production: Remove
     eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));

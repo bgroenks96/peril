@@ -5,11 +5,11 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.CompositeController;
 import com.forerunnergames.tools.common.controllers.Controller;
 
-public class EventBasedApplication implements Application
+public class DefaultApplication implements Application
 {
   private final CompositeController compositeController;
 
-  public EventBasedApplication (final Controller... controllers)
+  public DefaultApplication (final Controller... controllers)
   {
     Arguments.checkIsNotNull (controllers, "controllers");
     Arguments.checkHasNoNullElements (controllers, "controllers");

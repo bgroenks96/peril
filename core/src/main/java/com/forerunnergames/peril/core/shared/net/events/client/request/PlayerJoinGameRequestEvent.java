@@ -2,9 +2,9 @@ package com.forerunnergames.peril.core.shared.net.events.client.request;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.RequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class PlayerJoinGameRequestEvent implements RequestEvent
+public final class PlayerJoinGameRequestEvent implements ClientRequestEvent
 {
   private final String playerName;
 

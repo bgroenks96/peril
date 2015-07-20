@@ -333,6 +333,20 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     screenTransitionInProgress = false;
   }
 
+  protected final void toPreviousScreenOr (final ScreenId defaultScreenId)
+  {
+    Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
+
+    if (screenTransitionInProgress)
+    {
+      return;
+    }
+
+    screenTransitionInProgress = true;
+    screenChanger.toPreviousScreenOr (defaultScreenId);
+    screenTransitionInProgress = false;
+  }
+
   protected final void expandMenuBar ()
   {
     expandMenuBar (new Runnable ()

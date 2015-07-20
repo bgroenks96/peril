@@ -5,9 +5,10 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.CommandMessag
 import com.forerunnergames.peril.core.shared.net.messages.CommandMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class CommandMessageSuccessEvent implements CommandMessageEvent, SuccessEvent
+public final class CommandMessageSuccessEvent implements CommandMessageEvent, ServerEvent, SuccessEvent
 {
   private final CommandMessageEvent event;
 

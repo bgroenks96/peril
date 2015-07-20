@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.server.main;
 
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
+import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 
 import java.io.File;
@@ -27,7 +28,24 @@ public final class Main
       }
     });
 
-    ServerApplicationFactory.create (args).initialize ();
+    final Application application = ServerApplicationFactory.create (args);
+
+    application.initialize ();
+
+    // TODO Use a ScheduledExecutorService
+    while (! application.shouldShutDown ())
+    {
+      application.update ();
+
+      try
+      {
+        Thread.sleep (250);
+      }
+      catch (final InterruptedException e)
+      {
+        Thread.currentThread ().interrupt ();
+      }
+    }
   }
 
   private Main ()

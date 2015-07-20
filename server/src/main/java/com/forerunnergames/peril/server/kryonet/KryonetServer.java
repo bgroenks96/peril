@@ -5,18 +5,18 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 
+import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
+import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkListener;
 import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.Server;
+import com.forerunnergames.tools.net.server.Server;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.objenesis.strategy.StdInstantiatorStrategy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +30,13 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
   public KryonetServer ()
   {
+    super (NetworkSettings.SERVER_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES,
+           NetworkSettings.SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES);
+
     kryo = getKryo ();
-    kryo.setInstantiatorStrategy (new StdInstantiatorStrategy ());
+
+    KryonetRegistration.initialize (kryo);
+    KryonetRegistration.registerCustomSerializers (kryo);
   }
 
   @Override
@@ -86,7 +91,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
     kryo.register (type);
 
-    log.trace ("Registered class [{}] with the server for network serialization.", type);
+    log.debug ("Registered class [{}] with the server for network serialization.", type);
   }
 
   @Override

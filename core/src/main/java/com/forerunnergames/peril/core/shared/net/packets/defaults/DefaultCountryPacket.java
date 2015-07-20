@@ -41,6 +41,12 @@ public final class DefaultCountryPacket extends AbstractTerritoryPacket implemen
     return armyCount >= n;
   }
 
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | Army Count: %2$s", super.toString (), armyCount);
+  }
+
   @RequiredForNetworkSerialization
   private DefaultCountryPacket ()
   {

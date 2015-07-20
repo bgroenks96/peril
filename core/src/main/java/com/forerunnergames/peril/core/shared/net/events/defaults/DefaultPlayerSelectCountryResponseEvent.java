@@ -1,14 +1,14 @@
 package com.forerunnergames.peril.core.shared.net.events.defaults;
 
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerSelectCountryInputResponseEvent;
+import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerSelectCountryResponseEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class DefaultPlayerSelectCountryInputResponseEvent implements PlayerSelectCountryInputResponseEvent
+public class DefaultPlayerSelectCountryResponseEvent implements PlayerSelectCountryResponseEvent
 {
   private final String selectedCountryName;
 
-  public DefaultPlayerSelectCountryInputResponseEvent (final String selectedCountryName)
+  public DefaultPlayerSelectCountryResponseEvent (final String selectedCountryName)
   {
     Arguments.checkIsNotNull (selectedCountryName, "selectedCountryName");
 
@@ -21,8 +21,14 @@ public class DefaultPlayerSelectCountryInputResponseEvent implements PlayerSelec
     return selectedCountryName;
   }
 
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s: Selected Country Name: %2$s", getClass ().getSimpleName (), selectedCountryName);
+  }
+
   @RequiredForNetworkSerialization
-  private DefaultPlayerSelectCountryInputResponseEvent ()
+  private DefaultPlayerSelectCountryResponseEvent ()
   {
     selectedCountryName = null;
   }

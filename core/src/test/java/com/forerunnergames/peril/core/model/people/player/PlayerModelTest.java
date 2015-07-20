@@ -3,7 +3,6 @@ package com.forerunnergames.peril.core.model.people.player;
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,7 +18,6 @@ import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerLeaveGameDeniedEvent;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
@@ -249,6 +247,30 @@ public class PlayerModelTest
     }
 
     final ImmutableSet <Player> actualPlayers = playerModel.getPlayers ();
+
+    assertTrue (actualPlayers.containsAll (expectedPlayers));
+    assertTrue (expectedPlayers.containsAll (actualPlayers));
+  }
+
+  @Test
+  public void testGetAllPlayersExcept ()
+  {
+    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("Test Player 1"),
+            PlayerFactory.create ("Test Player 2"),
+            PlayerFactory.create ("Test Player 3"));
+
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size () + 1);
+
+    for (final Player player : expectedPlayers)
+    {
+      assertTrue (playerModel.requestToAdd (player).succeeded ());
+    }
+
+    final Player unwantedPlayer = PlayerFactory.create ("Test Player 4");
+
+    assertTrue (playerModel.requestToAdd (unwantedPlayer).succeeded ());
+
+    final ImmutableSet <Player> actualPlayers = playerModel.getAllPlayersExcept (unwantedPlayer);
 
     assertTrue (actualPlayers.containsAll (expectedPlayers));
     assertTrue (expectedPlayers.containsAll (actualPlayers));
@@ -654,103 +676,103 @@ public class PlayerModelTest
   }
 
   @Test (expected = IllegalArgumentException.class)
-  public void testRequestToRemovePlayerByColorFailedWithIllegalArgumentException ()
+  public void testRemovePlayerByUnknownColorThrowsException ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
     addNPlayersTo (playerModel, 1);
 
-    playerModel.requestToRemoveByColor (PlayerColor.UNKNOWN);
+    playerModel.removeByColor (PlayerColor.UNKNOWN);
   }
 
   @Test
-  public void testRequestToRemovePlayerByColorFailedWithPlayerDoesNotExist ()
+  public void testRemoveNonExistentPlayerByColorDoesNotThrowException ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveByColor (PlayerColor.BROWN)
-            .failedBecauseOf (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
+    playerModel.removeByColor (PlayerColor.BROWN);
   }
 
   @Test
-  public void testRequestToRemovePlayerByColorSucceeded ()
+  public void testRemovePlayerByColorSuccessful ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
     final PlayerColor color = PlayerColor.PINK;
 
     playerModel.requestToAdd (PlayerFactory.builder ("Test Player").color (color).build ());
+    playerModel.removeByColor (color);
 
-    assertTrue (playerModel.requestToRemoveByColor (color).succeeded ());
+    assertFalse (playerModel.existsPlayerWith (color));
   }
 
   @Test
-  public void testRequestToRemovePlayerByIdFailedWithPlayerDoesNotExist ()
+  public void testRemoveNonExistentPlayerByIdDoesNotThrowException ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveById (IdGenerator.generateUniqueId ())
-            .failedBecauseOf (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
+    playerModel.removeById (IdGenerator.generateUniqueId ());
   }
 
   @Test
-  public void testRequestToRemovePlayerByIdSucceeded ()
+  public void testRemovePlayerByIdSuccessful ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final Player player = PlayerFactory.create ("Test Player");
     final Id id = idOf (player);
 
     playerModel.requestToAdd (player);
+    playerModel.removeById (id);
 
-    assertTrue (playerModel.requestToRemoveById (id).succeeded ());
+    assertFalse (playerModel.existsPlayerWith (id));
   }
 
   @Test
-  public void testRequestToRemovePlayerByNameFailedWithPlayerDoesNotExist ()
+  public void testRemoveNonExistentPlayerByNameDoesNotThrowException ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
-    assertTrue (playerModel.requestToRemoveByName ("Non-Existent Player")
-            .failedBecauseOf (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
+    playerModel.removeByName ("Non-Existent Player");
   }
 
   @Test
-  public void testRequestToRemovePlayerByNameSucceeded ()
+  public void testRemovePlayerByNameSuccessful ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final Player player = addSinglePlayerTo (playerModel);
 
-    assertTrue (playerModel.requestToRemoveByName (nameOf (player)).succeeded ());
+    playerModel.removeByName (player.getName ());
+
+    assertFalse (playerModel.existsPlayerWithName (player.getName ()));
   }
 
   @Test (expected = IllegalArgumentException.class)
-  public void testRequestToRemovePlayerByTurnOrderFailedWithIllegalArgumentException ()
+  public void testRemovePlayerByUnknownTurnOrderThrowsException ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
 
     addSinglePlayerTo (playerModel);
 
-    playerModel.requestToRemoveByTurnOrder (PlayerTurnOrder.UNKNOWN);
+    playerModel.removeByTurnOrder (PlayerTurnOrder.UNKNOWN);
   }
 
   @Test
-  public void testRequestToRemovePlayerByTurnOrderFailedWithPlayerDoesNotExist ()
+  public void testRemoveNonExistentPlayerByTurnOrderDoesNotThrowException ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-
-    assertTrue (playerModel.requestToRemoveByTurnOrder (PlayerTurnOrder.FIFTH)
-            .failedBecauseOf (PlayerLeaveGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
+    playerModel.removeByTurnOrder (PlayerTurnOrder.FIFTH);
   }
 
   @Test
-  public void testRequestToRemovePlayerByTurnOrderSucceeded ()
+  public void testRemovePlayerByTurnOrderSuccessful ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
 
     playerModel.requestToAdd (PlayerFactory.builder ("Test Player").turnOrder (turnOrder).build ());
+    playerModel.removeByTurnOrder (turnOrder);
 
-    assertTrue (playerModel.requestToRemoveByTurnOrder (turnOrder).succeeded ());
+    assertFalse (playerModel.existsPlayerWith (turnOrder));
   }
 
   private static ImmutableSet <Player> addNPlayersTo (final PlayerModel playerModel, final int playerCount)
@@ -803,7 +825,7 @@ public class PlayerModelTest
   {
     for (final Player player : playerModel.getPlayers ())
     {
-      assertTrue (playerModel.requestToRemove (player).succeeded ());
+      playerModel.remove (player);
     }
 
     assertTrue (playerModel.isEmpty ());

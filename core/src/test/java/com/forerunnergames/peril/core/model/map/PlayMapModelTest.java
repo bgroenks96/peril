@@ -13,7 +13,7 @@ import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 
@@ -80,10 +80,10 @@ public class PlayMapModelTest
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
 
-    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
     // assign wrong id
     result = modelTest.requestToAssignCountryOwner (idOf (testPlayer), idOf (testPlayer));
-    assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+    assertTrue (result.failedBecauseOf (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
   }
 
   @Test
@@ -97,9 +97,9 @@ public class PlayMapModelTest
 
     final Player testPlayer2 = PlayerFactory.create ("TestPlayer-2");
 
-    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
     result = modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer2));
-    assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED));
+    assertTrue (result.failedBecauseOf (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED));
   }
 
   @Test
@@ -120,10 +120,10 @@ public class PlayMapModelTest
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
     final Player testPlayer = PlayerFactory.create ("TestPlayer");
 
-    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
     // assign wrong id
     result = modelTest.requestToUnassignCountry (idOf (testPlayer));
-    assertTrue (result.failedBecauseOf (PlayerSelectCountryInputResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+    assertTrue (result.failedBecauseOf (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
   }
 
   @Test

@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.client.request;
 
-import com.forerunnergames.tools.net.events.RequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class AttackCountryRequestEvent implements RequestEvent
+public final class AttackCountryRequestEvent implements ClientRequestEvent
 {
 }

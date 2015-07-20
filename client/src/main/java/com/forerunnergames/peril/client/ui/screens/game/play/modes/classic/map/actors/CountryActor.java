@@ -111,17 +111,11 @@ public final class CountryActor extends Group
   {
     if (!isEnabled || !ClassicPlayMapSettings.ENABLE_CLICK_EFFECTS) return;
     if (currentImageState == CountryImageState.DISABLED) return;
-
-    hide (currentImageState);
-    show (CountryImageState.DISABLED);
   }
 
   public void onTouchUp ()
   {
     if (!isEnabled || !ClassicPlayMapSettings.ENABLE_CLICK_EFFECTS) return;
-
-    hide (CountryImageState.DISABLED);
-    show (currentImageState);
   }
 
   public Image getCurrentImage ()

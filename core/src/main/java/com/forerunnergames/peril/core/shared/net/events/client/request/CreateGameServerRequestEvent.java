@@ -4,9 +4,9 @@ import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.RequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class CreateGameServerRequestEvent implements CreateGameServerEvent, RequestEvent
+public final class CreateGameServerRequestEvent implements CreateGameServerEvent, ClientRequestEvent
 {
   private final GameServerConfiguration config;
 

@@ -52,6 +52,13 @@ public class DefaultContinentPacket extends AbstractTerritoryPacket implements C
     return reinforcementBonus;
   }
 
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | Reinforcement Bonus: %2$s | Countries: %3$s", super.toString (), reinforcementBonus,
+                          countries);
+  }
+
   @RequiredForNetworkSerialization
   private DefaultContinentPacket ()
   {

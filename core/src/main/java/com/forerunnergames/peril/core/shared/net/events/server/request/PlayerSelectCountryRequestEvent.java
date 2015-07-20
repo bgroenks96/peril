@@ -1,15 +1,15 @@
 package com.forerunnergames.peril.core.shared.net.events.server.request;
 
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.InputRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectCountryInputRequestEvent implements InputRequestEvent
+public final class PlayerSelectCountryRequestEvent implements PlayerInputRequestEvent
 {
   private final PlayerPacket player;
 
-  public PlayerSelectCountryInputRequestEvent (final PlayerPacket player)
+  public PlayerSelectCountryRequestEvent (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
@@ -22,8 +22,14 @@ public final class PlayerSelectCountryInputRequestEvent implements InputRequestE
     return player;
   }
 
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s: Player: %2$s", getClass ().getSimpleName (), player);
+  }
+
   @RequiredForNetworkSerialization
-  private PlayerSelectCountryInputRequestEvent ()
+  private PlayerSelectCountryRequestEvent ()
   {
     player = null;
   }

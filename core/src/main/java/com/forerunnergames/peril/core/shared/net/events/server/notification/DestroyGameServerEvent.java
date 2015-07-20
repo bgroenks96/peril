@@ -1,12 +1,12 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
-public final class DestroyGameServerEvent implements GameNotificationEvent
+public final class DestroyGameServerEvent implements ServerNotificationEvent
 {
   @RequiredForNetworkSerialization
-  private DestroyGameServerEvent ()
+  public DestroyGameServerEvent ()
   {
   }
 }

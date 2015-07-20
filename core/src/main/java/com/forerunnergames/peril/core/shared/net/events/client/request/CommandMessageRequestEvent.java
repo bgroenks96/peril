@@ -5,9 +5,9 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.CommandMessag
 import com.forerunnergames.peril.core.shared.net.messages.CommandMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.RequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class CommandMessageRequestEvent implements CommandMessageEvent, RequestEvent
+public final class CommandMessageRequestEvent implements CommandMessageEvent, ClientRequestEvent
 {
   private final CommandMessageEvent event;
 

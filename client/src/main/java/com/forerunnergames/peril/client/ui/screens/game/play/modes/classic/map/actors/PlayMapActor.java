@@ -5,12 +5,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
+import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
 import com.google.common.collect.ImmutableCollection;
@@ -24,27 +26,33 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import net.engio.mbassy.bus.MBassador;
+
 public final class PlayMapActor extends Group
 {
   private final ImmutableMap <CountryName, CountryActor> countryNamesToActors;
   private final PlayMapInputDetection inputDetection;
   private final HoveredTerritoryTextActor hoveredTerritoryTextActor;
+  private final MBassador <Event> eventBus;
   private CountryActor hoveredCountryActor;
   private CountryActor touchedCountryActor;
   private boolean isEnabled = true;
 
   public PlayMapActor (final ImmutableMap <CountryName, CountryActor> countryNamesToActors,
                        final PlayMapInputDetection inputDetection,
-                       final HoveredTerritoryTextActor hoveredTerritoryTextActor)
+                       final HoveredTerritoryTextActor hoveredTerritoryTextActor,
+                       final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (countryNamesToActors, "countryNamesToActors");
     Arguments.checkHasNoNullKeysOrValues (countryNamesToActors, "countryNamesToActors");
     Arguments.checkIsNotNull (inputDetection, "inputDetection");
     Arguments.checkIsNotNull (hoveredTerritoryTextActor, "hoveredTerritoryTextActor");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.countryNamesToActors = countryNamesToActors;
     this.inputDetection = inputDetection;
     this.hoveredTerritoryTextActor = hoveredTerritoryTextActor;
+    this.eventBus = eventBus;
 
     final Image backgroundImage = new Image (Assets.playMapBackground);
     backgroundImage.setSize (ClassicPlayMapSettings.ACTUAL_WIDTH, ClassicPlayMapSettings.ACTUAL_HEIGHT);
@@ -122,8 +130,6 @@ public final class PlayMapActor extends Group
       case Input.Buttons.LEFT:
       {
         touchedDownCountryActor.onTouchDown ();
-        touchedDownCountryActor.changeStateRandomly ();
-        touchedDownCountryActor.incrementArmies ();
 
         if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedDownCountryActor.getName ()))
         {
@@ -131,13 +137,6 @@ public final class PlayMapActor extends Group
         }
 
         touchedCountryActor = touchedDownCountryActor;
-
-        return true;
-      }
-      case Input.Buttons.RIGHT:
-      {
-        touchedDownCountryActor.nextState ();
-        touchedDownCountryActor.decrementArmies ();
 
         return true;
       }
@@ -177,9 +176,15 @@ public final class PlayMapActor extends Group
     hoveredCountryActor = touchedUpCountryActor;
     hoveredCountryActor.onHoverStart ();
 
-    if (touchedCountryActor != null && !touchedCountryActor.getName ().equals (touchedUpCountryActor.getName ()))
+    if (touchedCountryActor == null) return true;
+
+    if (!touchedCountryActor.getName ().equals (touchedUpCountryActor.getName ()))
     {
       touchedCountryActor.onTouchUp ();
+    }
+    else
+    {
+      eventBus.publish (new SelectCountryEvent (touchedUpCountryActor.getName ()));
     }
 
     touchedCountryActor = null;
@@ -274,6 +279,14 @@ public final class PlayMapActor extends Group
     }
 
     return countryActor;
+  }
+
+  public boolean currentImageStateOfCountryIs (final CountryImageState state, final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (state, "state");
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return getCurrentImageStateOf (countryName) == state;
   }
 
   @Nullable

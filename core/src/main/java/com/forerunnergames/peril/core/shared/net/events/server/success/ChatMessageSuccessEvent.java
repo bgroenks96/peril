@@ -6,11 +6,12 @@ import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageSuccessEvent implements ChatMessageEvent, SuccessEvent
+public final class ChatMessageSuccessEvent implements ChatMessageEvent, ServerEvent, SuccessEvent
 {
   private final ChatMessageEvent event;
 

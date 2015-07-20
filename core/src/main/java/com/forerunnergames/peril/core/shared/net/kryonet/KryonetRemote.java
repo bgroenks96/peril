@@ -77,7 +77,7 @@ public final class KryonetRemote implements Remote
   @Override
   public String getAddress ()
   {
-    return address != null ? address.getAddress ().getHostAddress () : "";
+    return address != null && address.getAddress () != null ? address.getAddress ().getHostAddress () : "";
   }
 
   @Override

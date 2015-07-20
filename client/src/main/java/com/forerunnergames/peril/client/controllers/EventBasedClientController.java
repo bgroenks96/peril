@@ -1,17 +1,18 @@
 package com.forerunnergames.peril.client.controllers;
 
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.GameNotificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.AbstractClientController;
-import com.forerunnergames.tools.net.Client;
 import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.events.AnswerEvent;
-import com.forerunnergames.tools.net.events.ServerCommunicationEvent;
-import com.forerunnergames.tools.net.events.ServerConnectionEvent;
-import com.forerunnergames.tools.net.events.ServerDisconnectionEvent;
+import com.forerunnergames.tools.net.client.AbstractClientController;
+import com.forerunnergames.tools.net.client.Client;
+import com.forerunnergames.tools.net.events.local.ServerCommunicationEvent;
+import com.forerunnergames.tools.net.events.local.ServerConnectionEvent;
+import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.collect.ImmutableSet;
+
+import de.matthiasmann.AsyncExecution;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -22,16 +23,20 @@ public final class EventBasedClientController extends AbstractClientController
 {
   private static final Logger log = LoggerFactory.getLogger (EventBasedClientController.class);
   private final MBassador <Event> eventBus;
+  private final AsyncExecution mainThreadExecutor;
 
   public EventBasedClientController (final Client client,
                                      final ImmutableSet <Class <?>> classesToRegisterForNetworkSerialization,
-                                     final MBassador <Event> eventBus)
+                                     final MBassador <Event> eventBus,
+                                     final AsyncExecution mainThreadExecutor)
   {
     super (client, classesToRegisterForNetworkSerialization);
 
     Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (mainThreadExecutor, "mainThreadExecutor");
 
     this.eventBus = eventBus;
+    this.mainThreadExecutor = mainThreadExecutor;
   }
 
   @Override
@@ -39,9 +44,16 @@ public final class EventBasedClientController extends AbstractClientController
   {
     Arguments.checkIsNotNull (server, "server");
 
-    log.info ("Connected to server [{}].", server);
+    mainThreadExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        log.info ("Connected to server [{}].", server);
 
-    eventBus.publish (new ServerConnectionEvent (server));
+        eventBus.publish (new ServerConnectionEvent (server));
+      }
+    });
   }
 
   @Override
@@ -49,9 +61,16 @@ public final class EventBasedClientController extends AbstractClientController
   {
     Arguments.checkIsNotNull (server, "server");
 
-    log.info ("Disconnected from server [{}].", server);
+    mainThreadExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        log.info ("Disconnected from server [{}].", server);
 
-    eventBus.publish (new ServerDisconnectionEvent (server));
+        eventBus.publish (new ServerDisconnectionEvent (server));
+      }
+    });
   }
 
   @Override
@@ -59,20 +78,22 @@ public final class EventBasedClientController extends AbstractClientController
   {
     Arguments.checkIsNotNull (server, "server");
 
-    log.debug ("Received object [{}] from server [{}].", object, server);
-
-    if (!isValidCommunicationEvent (object))
+    mainThreadExecutor.invokeLater (new Runnable ()
     {
-      log.warn ("Received unrecognized object [{}] from server [{}].", object, server);
+      @Override
+      public void run ()
+      {
+        log.debug ("Received object [{}] from server [{}].", object, server);
 
-      return;
-    }
+        if (!(object instanceof ServerEvent))
+        {
+          log.warn ("Ignoring unrecognized object [{}] from server [{}].", object, server);
 
-    eventBus.publish (new ServerCommunicationEvent ((Event) object, server));
-  }
+          return;
+        }
 
-  private static boolean isValidCommunicationEvent (final Object eventObject)
-  {
-    return eventObject instanceof AnswerEvent || eventObject instanceof GameNotificationEvent;
+        eventBus.publish (new ServerCommunicationEvent ((Event) object, server));
+      }
+    });
   }
 }

@@ -11,15 +11,17 @@ import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
-import com.forerunnergames.peril.core.shared.application.EventBusFactory;
+import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
-import com.forerunnergames.tools.net.Client;
-import com.forerunnergames.tools.net.ClientController;
+import com.forerunnergames.tools.net.client.Client;
+import com.forerunnergames.tools.net.client.ClientController;
+
+import de.matthiasmann.AsyncExecution;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -35,11 +37,12 @@ public final class LibGdxGameFactory
 
     // @formatter:off
     final Client client = new KryonetClient ();
-    final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES, eventBus);
+    final AsyncExecution mainThreadExecutor = new AsyncExecution ();
+    final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
     final GameServerCreator gameServerCreator = new LocalGameServerCreator ();
     final Controller multiplayerController = new MultiplayerController (gameServerCreator, clientController, clientController, eventBus);
     final MusicController musicController = new MusicController (new MusicFactory (), new MusicSettings ());
-    final Application application = new ClientApplication (clientController, multiplayerController, musicController);
+    final Application application = new ClientApplication (mainThreadExecutor, clientController, multiplayerController, musicController);
     final Game libGdxGame = new LibGdxGameWrapper (application);
     final Controller screenController = new ScreenController (libGdxGame, musicController, eventBus);
     // @formatter:on

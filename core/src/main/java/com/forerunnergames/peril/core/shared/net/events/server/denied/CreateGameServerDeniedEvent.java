@@ -5,9 +5,9 @@ import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGam
 import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.net.ClientConfiguration;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.DeniedEvent;
+import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 public final class CreateGameServerDeniedEvent implements CreateGameServerEvent, DeniedEvent <String>
 {

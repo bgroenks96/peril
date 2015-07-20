@@ -19,6 +19,12 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   }
 
   @Override
+  public PersonIdentity getIdentity ()
+  {
+    return identity;
+  }
+
+  @Override
   public void setIdentity (final PersonIdentity identity)
   {
     Arguments.checkIsNotNull (identity, "identity");
@@ -27,17 +33,17 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   }
 
   @Override
-  public PersonIdentity getIdentity ()
-  {
-    return identity;
-  }
-
-  @Override
   public boolean has (final PersonIdentity identity)
   {
     Arguments.checkIsNotNull (identity, "identity");
 
     return this.identity == identity;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String.format ("%1$s | Person Identity: %2$s", super.toString (), identity);
   }
 
   @RequiredForNetworkSerialization

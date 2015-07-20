@@ -1,8 +1,29 @@
 package com.forerunnergames.peril.core.shared.net.packets.person;
 
+import java.util.Comparator;
 
 public interface PlayerPacket extends PersonPacket
 {
+  Comparator <PlayerPacket> TURN_ORDER_COMPARATOR = new Comparator <PlayerPacket> ()
+  {
+    @Override
+    public int compare (final PlayerPacket o1, final PlayerPacket o2)
+    {
+      if (o1.getTurnOrder () < o2.getTurnOrder ())
+      {
+        return -1;
+      }
+      else if (o1.getTurnOrder () > o2.getTurnOrder ())
+      {
+        return 1;
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  };
+
   String getColor ();
 
   int getTurnOrder ();

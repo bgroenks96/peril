@@ -4,9 +4,10 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultKickEven
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class KickPlayerFromGameSuccessEvent implements KickEvent, SuccessEvent
+public final class KickPlayerFromGameSuccessEvent implements KickEvent, ServerEvent, SuccessEvent
 {
   private final KickEvent kickEvent;
 

@@ -77,6 +77,8 @@ public final class Assets
       atlas.dispose ();
     }
 
+    log.info ("Successfully disposed all assets.");
+
     isLoaded = false;
   }
 
@@ -159,6 +161,8 @@ public final class Assets
 
       distanceFieldFontShader = new ShaderProgram (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/skins/fonts/distancefield/shaders/font.vert"), Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/skins/fonts/distancefield/shaders/font.frag"));
       // @formatter:on
+
+      log.info ("Successfully loaded assets from: \"{}\"...", destAssetsDir.file ());
     }
     catch (final GdxRuntimeException e)
     {

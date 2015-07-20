@@ -13,6 +13,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.ChatBox;
 import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
@@ -65,12 +66,15 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     labelFactory = new LabelFactory (skin.get (Label.LabelStyle.class));
   }
 
-  public static PlayMapActor createPlayMapActor (final ScreenSize screenSize, final MouseInput mouseInput)
+  public static PlayMapActor createPlayMapActor (final ScreenSize screenSize,
+                                                 final MouseInput mouseInput,
+                                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return PlayMapActorFactory.create (screenSize, mouseInput);
+    return PlayMapActorFactory.create (screenSize, mouseInput, eventBus);
   }
 
   public MessageBox <StatusMessage> createStatusBox ()
@@ -86,7 +90,12 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
             skin.get (TextField.TextFieldStyle.class), eventBus);
   }
 
-  public MessageBox <Message> createPlayerBox ()
+  public PlayerBox createPlayerBox ()
+  {
+    return new PlayerBox (createMessageBox ());
+  }
+
+  public <T extends Message> MessageBox <T> createMessageBox ()
   {
     return new DefaultMessageBox <> (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle);
   }

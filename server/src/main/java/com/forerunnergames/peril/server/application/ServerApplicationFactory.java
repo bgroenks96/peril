@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.server.application;
 
+import com.beust.jcommander.JCommander;
+
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
@@ -12,7 +14,7 @@ import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.state.GameStateMachine;
-import com.forerunnergames.peril.core.shared.application.EventBusFactory;
+import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
@@ -23,14 +25,14 @@ import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
-import com.forerunnergames.tools.net.Server;
-import com.forerunnergames.tools.net.ServerController;
+import com.forerunnergames.tools.net.server.Server;
+import com.forerunnergames.tools.net.server.ServerController;
 
 import com.google.common.collect.ImmutableSet;
 
-import net.engio.mbassy.bus.MBassador;
+import de.matthiasmann.AsyncExecution;
 
-import com.beust.jcommander.JCommander;
+import net.engio.mbassy.bus.MBassador;
 
 public final class ServerApplicationFactory
 {
@@ -45,11 +47,14 @@ public final class ServerApplicationFactory
 
     final Server server = new KryonetServer ();
 
+    final AsyncExecution mainThreadExecutor = new AsyncExecution ();
+
     final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort,
-            KryonetRegistration.CLASSES, eventBus);
+            KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
     final ImmutableSet <Country> countries = PlayMapModelDataFactory.createCountries ();
-    final ImmutableSet <Continent> continents = PlayMapModelDataFactory.createContinents (new DefaultCountryIdResolver (countries));
+    final ImmutableSet <Continent> continents = PlayMapModelDataFactory.createContinents (new DefaultCountryIdResolver (
+            countries));
 
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
                                                          countries.size (), jArgs.initialCountryAssignment);
@@ -65,7 +70,8 @@ public final class ServerApplicationFactory
     final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType,
             jArgs.serverTcpPort, config, serverController, new PlayerCommunicator (serverController), eventBus);
 
-    return new ServerApplication (gameStateMachine, eventBus, serverController, multiplayerController);
+    return new ServerApplication (gameStateMachine, eventBus, mainThreadExecutor, serverController,
+            multiplayerController);
   }
 
   private ServerApplicationFactory ()

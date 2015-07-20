@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
+import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
@@ -17,27 +18,30 @@ import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
-import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.response.PlayerSelectCountryInputResponseRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryInputResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.factories.StatusMessageEventFactory;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryInputRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChangePlayerColorSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryInputResponseSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableList;
@@ -81,26 +85,60 @@ public final class GameModel
   }
 
   @StateMachineAction
-  public static void beginGame ()
+  public void beginGame ()
   {
-    log.info ("Starting the game...");
+    log.info ("Starting a new game...");
+
+    playerModel.removeAllArmiesFromHandsOfAllPlayers ();
+    playMapModel.unassignAllCountries ();
+
+    // TODO Clear all country armies.
+    // TODO Reset entire game state.
+
+    eventBus.publish (StatusMessageEventFactory.create ("Starting a new " + rules.getPlayerLimit ()
+            + " player classic game. Remember, you must conquer " + rules.getWinPercentage ()
+            + "% of the map to achieve victory.", playerModel.getPlayers ()));
   }
 
   @StateMachineAction
   public void determinePlayerTurnOrder ()
   {
-    log.info ("Determining player turn order...");
+    log.info ("Determining player turn order randomly...");
+
+    eventBus.publish (StatusMessageEventFactory.create ("Determining player turn order randomly...",
+                                                        playerModel.getPlayers ()));
 
     final ImmutableSet <Player> players = playerModel.getPlayers ();
-    final List <PlayerTurnOrder> randomTurnOrders = Randomness.shuffle (PlayerTurnOrder.validValues ());
-    final Iterator <PlayerTurnOrder> randomTurnOrderItr = randomTurnOrders.iterator ();
+    final List <Player> shuffledPlayers = Randomness.shuffle (players);
+    final Iterator <Player> randomPlayerItr = shuffledPlayers.iterator ();
 
-    for (final Player player : players)
+    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validSortedValues ())
     {
-      playerModel.changeTurnOrderOfPlayer (idOf (player), randomTurnOrderItr.next ());
+      if (! randomPlayerItr.hasNext ()) break;
+
+      final Player player = randomPlayerItr.next ();
+      playerModel.changeTurnOrderOfPlayer (player.getId (), turnOrder);
+
+      log.info ("Set turn order of player [{}] to [{}].", player.getName (), turnOrder);
     }
 
     eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (Packets.fromPlayers (playerModel.getPlayers ())));
+
+    // Create a status message listing which player is going in which turn order.
+    final StringBuilder statusMessageBuilder = new StringBuilder ();
+    for (final Player player : playerModel.getTurnOrderedPlayers ())
+    {
+      // @formatter:off
+      statusMessageBuilder
+              .append (player.getName ())
+              .append (" is going ")
+              .append (Strings.toMixedOrdinal (player.getTurnOrderPosition ()))
+              .append (".\n");
+      // @formatter:on
+    }
+    if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
+
+    eventBus.publish (StatusMessageEventFactory.create (statusMessageBuilder.toString (), playerModel.getPlayers ()));
   }
 
   @StateMachineAction
@@ -110,12 +148,27 @@ public final class GameModel
 
     log.info ("Distributing {} armies each to {} players...", armies, playerModel.getPlayerCount ());
 
-    for (final Player player : playerModel.getPlayers ())
+    eventBus.publish (StatusMessageEventFactory.create ("Distributing " + armies + " armies to each player...",
+                                                        playerModel.getPlayers ()));
+
+    // Create a status message listing which player received how many armies.
+    final StringBuilder statusMessageBuilder = new StringBuilder ();
+    for (final Player player : playerModel.getTurnOrderedPlayers ())
     {
       playerModel.addArmiesToHandOf (idOf (player), armies);
+
+      // @formatter:off
+      statusMessageBuilder
+              .append (player.getName ())
+              .append (" received ")
+              .append (armies)
+              .append (" armies.\n");
+      // @formatter:on
     }
+    if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
 
     eventBus.publish (new DistributeInitialArmiesCompleteEvent (Packets.fromPlayers (playerModel.getPlayers ())));
+    eventBus.publish (StatusMessageEventFactory.create (statusMessageBuilder.toString (), playerModel.getPlayers ()));
   }
 
   @StateMachineAction
@@ -153,10 +206,13 @@ public final class GameModel
       return;
     }
 
+    eventBus.publish (StatusMessageEventFactory.create ("Randomly assigning all countries to players...",
+                                                        playerModel.getPlayers ()));
+
     final List <Country> countries = Randomness.shuffle (new HashSet <> (playMapModel.getCountries ()));
     final List <Player> players = Randomness.shuffle (playerModel.getPlayers ());
-    final ImmutableList <Integer> playerCountryDistribution = rules
-            .getInitialPlayerCountryDistribution (players.size ());
+    final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
+            .size ());
 
     log.info ("Randomly assigning {} countries to {} players...", countries.size (), players.size ());
 
@@ -170,7 +226,7 @@ public final class GameModel
       for (int count = 0; count < playerCountryCount && countryItr.hasNext (); count++)
       {
         final Country toAssign = countryItr.next ();
-        final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+        final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
         result = playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (nextPlayer));
         if (result.failed ())
         {
@@ -189,7 +245,23 @@ public final class GameModel
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
     final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
     playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+
+    // Create a status message listing which player has which countries.
+    final StringBuilder statusMessageBuilder = new StringBuilder ();
+    for (final Player player : playerModel.getTurnOrderedPlayers ())
+    {
+      // @formatter:off
+      statusMessageBuilder
+              .append (player.getName ())
+              .append (":\n")
+              .append (Strings.toStringList (playMapModel.getCountryNamesOwnedBy (player.getId ()), "\n", LetterCase.PROPER, false))
+              .append ("\n\n");
+      // @formatter:on
+    }
+    if (statusMessageBuilder.length () > 1) statusMessageBuilder.delete (statusMessageBuilder.length () - 2, statusMessageBuilder.length ());
+
     eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
+    eventBus.publish (StatusMessageEventFactory.create (statusMessageBuilder.toString (), playerModel.getPlayers ()));
   }
 
   @StateMachineAction
@@ -203,32 +275,67 @@ public final class GameModel
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
       playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
       eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
+
+      // Create a status message listing which player has which countries.
+      final StringBuilder statusMessageBuilder = new StringBuilder ();
+      for (final Player player : playerModel.getTurnOrderedPlayers ())
+      {
+        // @formatter:off
+        statusMessageBuilder
+                .append (player.getName ())
+                .append (":\n")
+                .append (Strings.toStringList (playMapModel.getCountryNamesOwnedBy (player.getId ()), "\n", LetterCase.PROPER, false))
+                .append ("\n\n");
+        // @formatter:on
+      }
+      if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
+
+      eventBus.publish (StatusMessageEventFactory.create (statusMessageBuilder.toString (), playerModel.getPlayers ()));
+
       return;
     }
 
     log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
-    playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
-    eventBus.publish (new PlayerSelectCountryInputRequestEvent (Packets.from (currentPlayer)));
+    eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+    eventBus.publish (StatusMessageEventFactory.create ("Waiting for " + currentPlayer.getName ()
+            + " to select a country...", playerModel.getPlayers ()));
   }
 
   @StateMachineAction
-  public void handlePlayerCountrySelectionRequest (final PlayerSelectCountryInputResponseRequestEvent event)
+  public void handlePlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Event received [{}]", event);
+
     final String selectedCountryName = event.getSelectedCountryName ();
+
+    if (!playMapModel.existsCountryWith (selectedCountryName))
+    {
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName,
+              PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+      return;
+    }
+
     final Player currentPlayer = playerModel.playerWith (playerTurn);
-    final Result <PlayerSelectCountryInputResponseDeniedEvent.Reason> result;
+    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
     result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
                                                        idOf (currentPlayer));
     if (result.failed ())
     {
-      eventBus.publish (new PlayerSelectCountryInputResponseDeniedEvent (selectedCountryName,
-              failureReasonFrom (result)));
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName, failureReasonFrom (result)));
       return;
     }
 
-    eventBus.publish (new PlayerSelectCountryInputResponseSuccessEvent (selectedCountryName));
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (selectedCountryName, Packets.from (currentPlayer)));
+    eventBus.publish (StatusMessageEventFactory.create (currentPlayer.getName () + " chose " + selectedCountryName
+            + ".", playerModel.getPlayers ()));
+
+    do
+    {
+      playerTurn = playerTurn.hasNextValid () ? playerTurn.nextValid () : playerTurn.first ();
+    }
+    while (! playerModel.existsPlayerWith (playerTurn));
   }
 
   @StateMachineAction
@@ -236,24 +343,17 @@ public final class GameModel
   {
     log.info ("Game over.");
 
-    // TODO Production: Remove
-    eventBus.publish (new DestroyGameEvent ());
-  }
+    eventBus.publish (StatusMessageEventFactory.create ("Game over.", playerModel.getPlayers ()));
 
-  public int getPlayerCount ()
-  {
-    return playerModel.getPlayerCount ();
-  }
-
-  public int getPlayerLimit ()
-  {
-    return playerModel.getPlayerLimit ();
+    // TODO End the game gracefully - this can be called DURING ANY GAME STATE
   }
 
   @StateMachineAction
   public void handleChangePlayerColorRequest (final ChangePlayerColorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
 
     final Player player = playerModel.playerWith (colorFrom (event));
 
@@ -274,6 +374,8 @@ public final class GameModel
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Event received [{}]", event);
+
     final Player player = PlayerFactory.create (withPlayerNameFrom (event));
     final Result <PlayerJoinGameDeniedEvent.Reason> result;
 
@@ -285,7 +387,50 @@ public final class GameModel
       return;
     }
 
-    eventBus.publish (new PlayerJoinGameSuccessEvent (Packets.from (player)));
+    final PlayerPacket playerPacket = Packets.from (player);
+
+    eventBus.publish (new PlayerJoinGameSuccessEvent (playerPacket));
+    eventBus.publish (StatusMessageEventFactory.create (player.getName () + " joined the game.", playerModel.getAllPlayersExcept (player)));
+    eventBus.publish (StatusMessageEventFactory.create ("Welcome, " + player.getName () + ".", player));
+
+    if (isFull ()) return;
+
+    // We aren't full yet, let's do some talking...
+
+    eventBus.publish (StatusMessageEventFactory.create ("This is a " + rules.getPlayerLimit ()
+            + " player classic game. You must conquer " + rules.getWinPercentage ()
+            + "% of the map to achieve victory.", player));
+
+    if (playerCountIs (1))
+    {
+      eventBus.publish (StatusMessageEventFactory.create ("It looks like you're the first one here.", player));
+    }
+
+    final int nMorePlayers = getAdditionalPlayerCountToBeFull ();
+
+    eventBus.publish (StatusMessageEventFactory.create ("The game will begin when "
+                                                                + Strings.pluralizeS (nMorePlayers, "more player")
+                                                                + Strings.pluralizeWord (nMorePlayers, " joins.",
+                                                                                         " join."),
+                                                        playerModel.getPlayers ()));
+  }
+
+  @StateMachineAction
+  public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    if (! playerModel.existsPlayerWith (playerNameFrom (event))) return;
+
+    final Player player = playerModel.playerWith (playerNameFrom (event));
+
+    playMapModel.unassignAllCountriesOwnedBy (player.getId ());
+    playerModel.remove (player);
+
+    eventBus.publish (StatusMessageEventFactory.create (player.getName () + " left the game.",
+                                                        playerModel.getPlayers ()));
   }
 
   @StateMachineAction
@@ -296,25 +441,21 @@ public final class GameModel
     // TODO
   }
 
-  public boolean isEmpty ()
-  {
-    return playerModel.isEmpty ();
-  }
-
   @StateMachineCondition
   public boolean isFull ()
   {
     return playerModel.isFull ();
   }
 
-  public boolean isNotEmpty ()
-  {
-    return playerModel.isNotEmpty ();
-  }
-
+  @StateMachineCondition
   public boolean isNotFull ()
   {
     return playerModel.isNotFull ();
+  }
+
+  public boolean isEmpty ()
+  {
+    return playerModel.isEmpty ();
   }
 
   public boolean playerCountIs (final int count)
@@ -322,19 +463,24 @@ public final class GameModel
     return playerModel.playerCountIs (count);
   }
 
-  public boolean playerCountIsNot (final int count)
-  {
-    return playerModel.playerCountIsNot (count);
-  }
-
   public boolean playerLimitIs (final int limit)
   {
     return playerModel.playerLimitIs (limit);
   }
 
-  public boolean playerLimitIsAtLeast (final int limit)
+  public int getAdditionalPlayerCountToBeFull ()
   {
-    return playerModel.playerLimitIsAtLeast (limit);
+    return getPlayerLimit () - getPlayerCount ();
+  }
+
+  public int getPlayerCount ()
+  {
+    return playerModel.getPlayerCount ();
+  }
+
+  public int getPlayerLimit ()
+  {
+    return playerModel.getPlayerLimit ();
   }
 
   private static ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel,
