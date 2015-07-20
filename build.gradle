@@ -24,7 +24,7 @@ allprojects {
   }
 
   repositories {
-    maven { url "${System.env.HOME}/.m2/repository/" }
+    mavenLocal()
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
