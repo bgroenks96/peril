@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Iterator;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -29,10 +28,8 @@ public final class EventBusHandler
   {
     Arguments.checkIsNotNull (type, "type");
 
-    for (final Iterator <Event> itr = events.iterator (); itr.hasNext ();)
+    for (final Event event : events)
     {
-      final Event event = itr.next ();
-
       if (type.isInstance (event)) return (T) event;
     }
 
@@ -101,6 +98,30 @@ public final class EventBusHandler
     return getLastEvent ().getClass ();
   }
 
+  public <T> T secondToLastEvent (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+    
+    return type.cast (getSecondToLastEvent ());
+  }
+
+  public Event secondToLastEvent ()
+  {
+    return getSecondToLastEvent ();
+  }
+
+  public <T> boolean secondToLastEventWasType (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    return type.isInstance (getSecondToLastEvent ());
+  }
+
+  public Class <?> seocndToLastEventType ()
+  {
+    return getSecondToLastEvent ().getClass ();
+  }
+
   public ImmutableCollection <Event> getAllEvents ()
   {
     return ImmutableList.copyOf (events);
@@ -149,5 +170,17 @@ public final class EventBusHandler
     if (event == null) throw new IllegalStateException (EventBusHandler.class.getSimpleName () + " is empty.");
 
     return event;
+  }
+
+  private Event getSecondToLastEvent ()
+  {
+    final Event last = events.poll ();
+    final Event prev = events.peekFirst ();
+
+    if (prev == null) throw new IllegalStateException (EventBusHandler.class.getSimpleName () + " is empty.");
+
+    events.push (last);
+
+    return prev;
   }
 }

@@ -6,12 +6,16 @@ import com.forerunnergames.tools.common.Arguments;
 /**
  * Model class for tracking player turn.
  */
-public class PlayerTurnModel
+public final class PlayerTurnModel
 {
   private static final int FIRST = 0;
-  private final int turnCount;
+  private int turnCount;
   private int turn = FIRST;
 
+  /**
+   * @param turnCount
+   *          the number of turns in this PlayerTurnModel's turn cycle
+   */
   public PlayerTurnModel (final int turnCount)
   {
     Arguments.checkIsNotNegative (turnCount, "turnCount");
@@ -51,5 +55,20 @@ public class PlayerTurnModel
   public boolean isLastTurn ()
   {
     return getTurnOrder ().hasNextValid ();
+  }
+
+  public int getTurnCount ()
+  {
+    return turnCount;
+  }
+
+  public void setTurnCount (final int newTurnCount)
+  {
+    Arguments.checkIsNotNegative (newTurnCount, "newTurnCount");
+    Arguments.checkUpperInclusiveBound (newTurnCount, PlayerTurnOrder.validCount (), "newTurnCount");
+
+    this.turnCount = newTurnCount;
+
+    if (newTurnCount >= turn) reset ();
   }
 }
