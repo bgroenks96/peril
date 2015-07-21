@@ -3,6 +3,7 @@ package com.forerunnergames.peril.core.model.state;
 import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.PlayerTurnModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
@@ -68,7 +69,8 @@ public class GameStateMachineTest
     final PlayerModel playerModel = new PlayerModel (rules);
     final PlayMapModel playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (testCountryCount),
             ImmutableSet.<Continent> of (), rules);
-    final GameModel gameModel = new GameModel (playerModel, playMapModel, rules, eventBus);
+    final PlayerTurnModel playerTurnModel = new PlayerTurnModel (playerModel.getPlayerLimit ());
+    final GameModel gameModel = new GameModel (playerModel, playMapModel, playerTurnModel, rules, eventBus);
 
     gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()
     {

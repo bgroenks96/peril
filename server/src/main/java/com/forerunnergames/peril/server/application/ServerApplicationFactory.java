@@ -3,6 +3,7 @@ package com.forerunnergames.peril.server.application;
 import com.beust.jcommander.JCommander;
 
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.PlayerTurnModel;
 import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
@@ -53,15 +54,16 @@ public final class ServerApplicationFactory
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
     final ImmutableSet <Country> countries = PlayMapModelDataFactory.createCountries ();
-    final ImmutableSet <Continent> continents = PlayMapModelDataFactory.createContinents (new DefaultCountryIdResolver (
-            countries));
+    final ImmutableSet <Continent> continents = PlayMapModelDataFactory
+            .createContinents (new DefaultCountryIdResolver (countries));
 
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
                                                          countries.size (), jArgs.initialCountryAssignment);
 
     final PlayMapModel playMapModel = new PlayMapModel (countries, continents, gameRules);
     final PlayerModel playerModel = new PlayerModel (gameRules);
-    final GameModel gameModel = new GameModel (playerModel, playMapModel, gameRules, eventBus);
+    final PlayerTurnModel playerTurnModel = new PlayerTurnModel (playerModel.getPlayerLimit ());
+    final GameModel gameModel = new GameModel (playerModel, playMapModel, playerTurnModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
 
     final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
