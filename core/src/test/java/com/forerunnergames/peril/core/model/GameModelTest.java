@@ -32,6 +32,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoi
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Randomness;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -156,7 +157,7 @@ public class GameModelTest
 
     assertFalse (playMapModel.hasAnyUnownedCountries ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
-    assertPlayerCountryAssignmentCompleteEvent ();
+    verifyPlayerCountryAssignmentCompleteEvent ();
   }
 
   @Test
@@ -170,7 +171,7 @@ public class GameModelTest
 
     assertTrue (playMapModel.allCountriesAreOwned ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
-    assertPlayerCountryAssignmentCompleteEvent ();
+    verifyPlayerCountryAssignmentCompleteEvent ();
   }
 
   @Test
@@ -193,7 +194,11 @@ public class GameModelTest
     gameModel.waitForPlayersToSelectInitialCountries ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryRequestEvent.class));
-    // TODO: check event contents once finalized
+    assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
+
+    final PlayerPacket expectedPlayer = Packets.from (playerModel.playerWith (PlayerTurnOrder.FIRST));
+    assertTrue (eventHandler.secondToLastEvent (PlayerSelectCountryRequestEvent.class).getPlayer ()
+            .is (expectedPlayer));
   }
 
   @Test
@@ -212,7 +217,7 @@ public class GameModelTest
     gameModel.waitForPlayersToSelectInitialCountries ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
-    assertPlayerCountryAssignmentCompleteEvent ();
+    verifyPlayerCountryAssignmentCompleteEvent ();
   }
 
   @Test
@@ -259,14 +264,15 @@ public class GameModelTest
     assertTrue (gameModel.isFull ());
   }
 
-  private void assertPlayerCountryAssignmentCompleteEvent ()
+  private void verifyPlayerCountryAssignmentCompleteEvent ()
   {
     for (final Country country : playMapModel.getCountries ())
     {
-      final Player player = playerModel.playerWith (playMapModel.getOwnerOf (idOf (country)));
+      assertTrue (playMapModel.isCountryOwned (country.getId ()));
       final PlayerCountryAssignmentCompleteEvent event = eventHandler
               .lastEventOfType (PlayerCountryAssignmentCompleteEvent.class);
       final CountryPacket countryPacket = Packets.from (country);
+      final Player player = playerModel.playerWith (playMapModel.getOwnerOf (idOf (country)));
       assertTrue (Packets.playerMatchesPacket (player, event.getOwner (countryPacket)));
     }
   }
@@ -292,6 +298,11 @@ public class GameModelTest
 
     assertTrue (gameModel.playerCountIs (1));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameSuccessEvent.class));
+  }
+
+  private Country randomCountry ()
+  {
+    return Randomness.getRandomElementFrom (playMapModel.getCountries ());
   }
 
   private GameModel createGameModelWithTotalCountryCount (final int totalCountryCount)

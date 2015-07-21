@@ -428,6 +428,7 @@ public final class GameModel
 
     playMapModel.unassignAllCountriesOwnedBy (player.getId ());
     playerModel.remove (player);
+    playerTurnModel.setTurnCount (getPlayerLimit ());
 
     eventBus.publish (StatusMessageEventFactory.create (player.getName () + " left the game.",
                                                         playerModel.getPlayers ()));
