@@ -51,6 +51,7 @@ public class GameModelTest
   private GameModel gameModel;
   private PlayerModel playerModel;
   private PlayMapModel playMapModel;
+  private PlayerTurnModel playerTurnModel;
 
   @BeforeClass
   public static void setupClass ()
@@ -300,10 +301,11 @@ public class GameModelTest
     playerModel = new PlayerModel (gameRules);
     playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (totalCountryCount),
             ImmutableSet.<Continent> of (), gameRules);
+    playerTurnModel = new PlayerTurnModel (playerModel.getPlayerLimit ());
 
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxPlayers ();
-    return new GameModel (playerModel, playMapModel, gameRules, eventBus);
+    return new GameModel (playerModel, playMapModel, playerTurnModel, gameRules, eventBus);
   }
 }
