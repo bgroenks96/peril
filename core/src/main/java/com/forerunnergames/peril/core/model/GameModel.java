@@ -326,6 +326,8 @@ public final class GameModel
     if (result.failed ())
     {
       eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName, failureReasonFrom (result)));
+      // send a new request
+      eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
       return;
     }
 
