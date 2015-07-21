@@ -70,8 +70,9 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
-      "default": { "titleFont": "default-font", "background": "default-window", "titleFontColor": "white"},
-       "dialog": { "titleFont": "default-font", "background": "default-window", "titleFontColor": "white", "stageBackground": "dialogDim"}
+      "default": { "titleFont": "default-font", "background": "default-window",   "titleFontColor": "white"},
+       "dialog": { "titleFont": "default-font", "background": "default-window",   "titleFontColor": "white", "stageBackground": "dialogDim"},
+        "popup": { "titleFont": "pirulen-28",   "background": "popup-background", "titleFontColor": "white", "stageBackground": "dialogDim"}
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle": {
