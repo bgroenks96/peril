@@ -7,8 +7,10 @@ import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -73,7 +75,7 @@ public final class PlayMapModel
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return getCountryByName (countryName) != null;
+    return getCountryByName (countryName).isPresent ();
   }
 
   public Country countryWith (final String countryName)
@@ -81,8 +83,7 @@ public final class PlayMapModel
     Arguments.checkIsNotNull (countryName, "countryName");
 
     final Optional <Country> country = getCountryByName (countryName);
-    if (!country.isPresent ())
-      throw new IllegalStateException ("Cannot find any country named: [" + countryName + "].");
+    if (!country.isPresent ()) Exceptions.throwIllegalArg ("Cannot find any country named: [{}].", countryName);
     return country.get ();
   }
 
@@ -98,7 +99,7 @@ public final class PlayMapModel
     Arguments.checkIsNotNull (id, "id");
 
     final Continent continent = continentIdsToContinents.get (id);
-    if (continent == null) throw new IllegalStateException ("Cannot find any continent with Id: [" + id + "].");
+    if (continent == null) Exceptions.throwIllegalArg ("Cannot find any continent with Id: [{}].", id);
     return continent;
   }
 
@@ -116,7 +117,7 @@ public final class PlayMapModel
     final Optional <Continent> continent = getContinentByName (continentName);
     if (!continent.isPresent ())
     {
-      throw new IllegalStateException ("Cannot find any continent named: [" + continentName + "].");
+      Exceptions.throwIllegalArg ("Cannot find any continent named: [" + continentName + "].");
     }
     return continent.get ();
   }
@@ -202,7 +203,7 @@ public final class PlayMapModel
     checkValidCountryId (countryId);
 
     if (isCountryOwned (countryId)) return countryIdsToOwnerIds.get (countryId);
-    else throw new IllegalStateException ("Country with id [" + countryId + "] has no owner.");
+    else throw new IllegalStateException (Strings.format ("Country with id [{}] has no owner.", countryId));
   }
 
   public ImmutableSet <Country> getCountries ()
@@ -214,13 +215,13 @@ public final class PlayMapModel
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
 
-    if (! countryIdsToOwnerIds.containsValue (ownerId)) return ImmutableSet.of ();
+    if (!countryIdsToOwnerIds.containsValue (ownerId)) return ImmutableSet.of ();
 
     final ImmutableSet.Builder <Country> countryBuilder = ImmutableSet.builder ();
 
     for (final Map.Entry <Id, Id> countryIdToOwnerIdEntry : countryIdsToOwnerIds.entrySet ())
     {
-      if (! countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
+      if (!countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
 
       final Country country = countryIdsToCountries.get (countryIdToOwnerIdEntry.getKey ());
 
@@ -234,13 +235,13 @@ public final class PlayMapModel
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
 
-    if (! countryIdsToOwnerIds.containsValue (ownerId)) return ImmutableSet.of ();
+    if (!countryIdsToOwnerIds.containsValue (ownerId)) return ImmutableSet.of ();
 
     final ImmutableSet.Builder <String> countryNameBuilder = ImmutableSet.builder ();
 
     for (final Map.Entry <Id, Id> countryIdToOwnerIdEntry : countryIdsToOwnerIds.entrySet ())
     {
-      if (! countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
+      if (!countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
 
       final Country country = countryIdsToCountries.get (countryIdToOwnerIdEntry.getKey ());
 
