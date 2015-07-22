@@ -135,13 +135,9 @@
                 <state name="WaitForPlayersToSelectInitialCountries">
                   <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
                   <transition event="onPlayerSelectCountryResponseRequestEvent"
-                              action="gameModel.handlePlayerCountrySelectionRequest(event)"
-                              nextState="VerifyPlayerCountrySelection" />
-                  <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
-                </state>
-                <state name="VerifyPlayerCountrySelection">
-                  <transition event="onPlayerSelectCountryResponseSuccessEvent"
+                              condition="gameModel.verifyPlayerCountrySelectionRequest(event)"
                               nextState="WaitForPlayersToSelectInitialCountries" />
+                  <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
                 </state>
               </state>
             </state>
