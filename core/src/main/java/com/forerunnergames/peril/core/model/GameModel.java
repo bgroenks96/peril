@@ -15,6 +15,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.core.model.state.StateEntryAction;
+import com.forerunnergames.peril.core.model.state.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
@@ -86,6 +88,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateTransitionAction
   public void beginGame ()
   {
     log.info ("Starting a new game...");
@@ -102,6 +105,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateEntryAction
   public void determinePlayerTurnOrder ()
   {
     log.info ("Determining player turn order randomly...");
@@ -143,6 +147,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateEntryAction
   public void distributeInitialArmies ()
   {
     final int armies = rules.getInitialArmies ();
@@ -173,6 +178,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateEntryAction
   public void waitForCountrySelectionToBegin ()
   {
     switch (rules.getInitialCountryAssignment ())
@@ -198,6 +204,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateEntryAction
   public void randomlyAssignPlayerCountries ()
   {
     // if there are no players, just give up now!
@@ -267,6 +274,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateEntryAction
   public void waitForPlayersToSelectInitialCountries ()
   {
     final Player currentPlayer = getCurrentPlayer ();
@@ -304,41 +312,16 @@ public final class GameModel
   }
 
   @StateMachineAction
-  public void handlePlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
+  @StateEntryAction
+  public void beginGameRound ()
   {
-    Arguments.checkIsNotNull (event, "event");
+    log.info ("Round begin.");
 
-    log.debug ("Event received [{}]", event);
-
-    final String selectedCountryName = event.getSelectedCountryName ();
-
-    if (!playMapModel.existsCountryWith (selectedCountryName))
-    {
-      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName,
-              PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      return;
-    }
-
-    final Player currentPlayer = getCurrentPlayer ();
-    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
-    result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
-                                                       idOf (currentPlayer));
-    if (result.failed ())
-    {
-      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName, failureReasonFrom (result)));
-      // send a new request
-      eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
-      return;
-    }
-
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (selectedCountryName, Packets.from (currentPlayer)));
-    eventBus.publish (StatusMessageEventFactory
-            .create (currentPlayer.getName () + " chose " + selectedCountryName + ".", playerModel.getPlayers ()));
-
-    playerTurnModel.advance ();
+    // TODO
   }
 
   @StateMachineAction
+  @StateEntryAction
   public void endGame ()
   {
     log.info ("Game over.");
@@ -349,6 +332,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateTransitionAction
   public void handleChangePlayerColorRequest (final ChangePlayerColorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -370,6 +354,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateTransitionAction
   public void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -418,6 +403,7 @@ public final class GameModel
   }
 
   @StateMachineAction
+  @StateTransitionAction
   public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -436,12 +422,44 @@ public final class GameModel
                                                         playerModel.getPlayers ()));
   }
 
-  @StateMachineAction
-  public void beginGameRound ()
+  @StateMachineCondition
+  public boolean verifyPlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
   {
-    log.info ("Round begin.");
+    Arguments.checkIsNotNull (event, "event");
 
-    // TODO
+    log.debug ("Event received [{}]", event);
+
+    final Player currentPlayer = getCurrentPlayer ();
+
+    final String selectedCountryName = event.getSelectedCountryName ();
+
+    if (!playMapModel.existsCountryWith (selectedCountryName))
+    {
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName,
+              PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+      // send a new request
+      eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+      return false;
+    }
+
+    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
+    result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
+                                                       idOf (currentPlayer));
+    if (result.failed ())
+    {
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName, failureReasonFrom (result)));
+      // send a new request
+      eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+      return false;
+    }
+
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (selectedCountryName, Packets.from (currentPlayer)));
+    eventBus.publish (StatusMessageEventFactory
+            .create (currentPlayer.getName () + " chose " + selectedCountryName + ".", playerModel.getPlayers ()));
+
+    playerTurnModel.advance ();
+
+    return true;
   }
 
   @StateMachineCondition
