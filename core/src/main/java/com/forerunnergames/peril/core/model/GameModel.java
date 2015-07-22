@@ -106,6 +106,17 @@ public final class GameModel
 
   @StateMachineAction
   @StateEntryAction
+  public void endGame ()
+  {
+    log.info ("Game over.");
+
+    eventBus.publish (StatusMessageEventFactory.create ("Game over.", playerModel.getPlayers ()));
+
+    // TODO End the game gracefully - this can be called DURING ANY GAME STATE
+  }
+
+  @StateMachineAction
+  @StateEntryAction
   public void determinePlayerTurnOrder ()
   {
     log.info ("Determining player turn order randomly...");
@@ -275,60 +286,11 @@ public final class GameModel
 
   @StateMachineAction
   @StateEntryAction
-  public void waitForPlayersToSelectInitialCountries ()
-  {
-    final Player currentPlayer = getCurrentPlayer ();
-
-    if (playMapModel.allCountriesAreOwned ())
-    {
-      // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
-      final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
-      playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
-      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
-
-      // Create a status message listing which player has which countries.
-      final StringBuilder statusMessageBuilder = new StringBuilder ();
-      for (final Player player : playerModel.getTurnOrderedPlayers ())
-      {
-        // @formatter:off
-        statusMessageBuilder
-                .append (player.getName ())
-                .append (":\n")
-                .append (Strings.toStringList (playMapModel.getCountryNamesOwnedBy (player.getId ()), "\n", LetterCase.PROPER, false))
-                .append ("\n\n");
-        // @formatter:on
-      }
-      if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
-
-      eventBus.publish (StatusMessageEventFactory.create (statusMessageBuilder.toString (), playerModel.getPlayers ()));
-
-      return;
-    }
-
-    log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
-    eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
-    eventBus.publish (StatusMessageEventFactory
-            .create ("Waiting for " + currentPlayer.getName () + " to select a country...", playerModel.getPlayers ()));
-  }
-
-  @StateMachineAction
-  @StateEntryAction
   public void beginGameRound ()
   {
     log.info ("Round begin.");
 
     // TODO
-  }
-
-  @StateMachineAction
-  @StateEntryAction
-  public void endGame ()
-  {
-    log.info ("Game over.");
-
-    eventBus.publish (StatusMessageEventFactory.create ("Game over.", playerModel.getPlayers ()));
-
-    // TODO End the game gracefully - this can be called DURING ANY GAME STATE
   }
 
   @StateMachineAction
@@ -420,6 +382,44 @@ public final class GameModel
 
     eventBus.publish (StatusMessageEventFactory.create (player.getName () + " left the game.",
                                                         playerModel.getPlayers ()));
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForPlayersToSelectInitialCountries ()
+  {
+    final Player currentPlayer = getCurrentPlayer ();
+
+    if (playMapModel.allCountriesAreOwned ())
+    {
+      // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
+      final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
+      playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
+
+      // Create a status message listing which player has which countries.
+      final StringBuilder statusMessageBuilder = new StringBuilder ();
+      for (final Player player : playerModel.getTurnOrderedPlayers ())
+      {
+        // @formatter:off
+        statusMessageBuilder
+                .append (player.getName ())
+                .append (":\n")
+                .append (Strings.toStringList (playMapModel.getCountryNamesOwnedBy (player.getId ()), "\n", LetterCase.PROPER, false))
+                .append ("\n\n");
+        // @formatter:on
+      }
+      if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
+
+      eventBus.publish (StatusMessageEventFactory.create (statusMessageBuilder.toString (), playerModel.getPlayers ()));
+
+      return;
+    }
+
+    log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
+    eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+    eventBus.publish (StatusMessageEventFactory
+            .create ("Waiting for " + currentPlayer.getName () + " to select a country...", playerModel.getPlayers ()));
   }
 
   @StateMachineCondition

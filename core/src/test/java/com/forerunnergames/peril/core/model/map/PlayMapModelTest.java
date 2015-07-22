@@ -171,6 +171,14 @@ public class PlayMapModelTest
   }
 
   @Test
+  public void testDoesNotExistsCountryWithName ()
+  {
+    final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
+
+    assertFalse (modelTest.existsCountryWith ("invalid-name"));
+  }
+
+  @Test
   public void testGetOwnerOf ()
   {
     final PlayMapModel modelTest = createPlayMapModelTestWith (defaultTestCountries);
