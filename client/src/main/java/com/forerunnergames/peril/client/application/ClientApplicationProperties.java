@@ -7,11 +7,13 @@ import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.io.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -102,11 +104,15 @@ public final class ClientApplicationProperties
     defaults.setProperty (UPDATE_ASSETS_KEY, String.valueOf (AssetSettings.UPDATE_ASSETS));
     defaults.setProperty (UPDATED_ASSETS_DIRECTORY_KEY, AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY);
 
+    final String propertiesFileContents = FileUtils.loadFile (PROPERTIES_FILE_PATH_AND_NAME, StandardCharsets.UTF_8);
+
     properties = new Properties (defaults);
 
     try
     {
-      properties.load (new FileInputStream (PROPERTIES_FILE_PATH_AND_NAME));
+      // Deal with Windows path single backslashes being erased because it's a reserved character for continuing lines
+      // by the Properties class.
+      properties.load (new StringReader (propertiesFileContents.replace ("\\", "\\\\")));
     }
     catch (final IOException e)
     {
