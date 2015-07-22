@@ -137,7 +137,7 @@ public final class Assets
 
       // @formatter:off
       menuAtlas = new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/atlases/menus.atlas"));
-      menuMusic = Gdx.audio.newMusic (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/music/peril.mp3"));
+      menuMusic = Gdx.audio.newMusic (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/music/peril.ogg"));
       menuNormalCursor = new Pixmap (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/cursors/normalCursor.png"));
       playMapBackground = new Texture (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/background.png"), GraphicsSettings.TEXTURE_MIPMAPPING);
       playMapInputDetection = new Pixmap (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/game/play/modes/classic/maps/classic/inputDetection.png"));
