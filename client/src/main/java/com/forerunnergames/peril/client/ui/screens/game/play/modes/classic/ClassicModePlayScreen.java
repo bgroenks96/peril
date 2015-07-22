@@ -44,8 +44,6 @@ import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventProcessor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
@@ -90,7 +88,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final MessageBox <ChatMessage> chatBox;
   private final PlayerBox playerBox;
   private final InputProcessor inputProcessor;
-  private final DebugEventProcessor debugEventProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
@@ -112,8 +109,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
     this.eventBus = eventBus;
-
-    debugEventProcessor = new DebugEventProcessor (eventBus);
 
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
@@ -232,10 +227,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    final DebugInputProcessor debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox,
-            chatBox, playerBox, mandatoryOccupationPopup, eventBus);
-
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
+    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this);
   }
 
   @Override
