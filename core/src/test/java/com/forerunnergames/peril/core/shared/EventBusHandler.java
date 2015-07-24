@@ -43,11 +43,25 @@ public final class EventBusHandler
     return Collections2.filter (events, Predicates.instanceOf (type)).isEmpty ();
   }
 
+  public boolean wasNeverFired (final Event event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Collections2.filter (events, Predicates.equalTo (event)).isEmpty ();
+  }
+
   public <T> boolean wasFiredExactlyOnce (final Class <T> type)
   {
     Arguments.checkIsNotNull (type, "type");
 
     return Collections2.filter (events, Predicates.instanceOf (type)).size () == 1;
+  }
+
+  public boolean wasFiredExactlyOnce (final Event event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Collections2.filter (events, Predicates.equalTo (event)).size () == 1;
   }
 
   public <T> boolean wasFiredExactlyNTimes (final Class <T> type, final int n)
@@ -58,6 +72,13 @@ public final class EventBusHandler
     return Collections2.filter (events, Predicates.instanceOf (type)).size () == n;
   }
 
+  public boolean wasFiredExactlyNTimes (final Event event, final int n)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Collections2.filter (events, Predicates.equalTo (event)).size () == n;
+  }
+
   public <T> boolean wasFiredAtLeastNTimes (final Class <T> type, final int n)
   {
     Arguments.checkIsNotNull (type, "type");
@@ -66,12 +87,26 @@ public final class EventBusHandler
     return Collections2.filter (events, Predicates.instanceOf (type)).size () >= n;
   }
 
+  public boolean wasFiredAtLeastNTimes (final Event event, final int n)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Collections2.filter (events, Predicates.equalTo (event)).size () >= n;
+  }
+
   public <T> boolean wasFiredAtMostNTimes (final Class <T> type, final int n)
   {
     Arguments.checkIsNotNull (type, "type");
     Arguments.checkIsNotNegative (n, "n");
 
     return Collections2.filter (events, Predicates.instanceOf (type)).size () <= n;
+  }
+
+  public boolean wasFiredAtMostNTimes (final Event event, final int n)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Collections2.filter (events, Predicates.equalTo (event)).size () <= n;
   }
 
   public <T> T lastEvent (final Class <T> type)
@@ -101,7 +136,7 @@ public final class EventBusHandler
   public <T> T secondToLastEvent (final Class <T> type)
   {
     Arguments.checkIsNotNull (type, "type");
-    
+
     return type.cast (getSecondToLastEvent ());
   }
 

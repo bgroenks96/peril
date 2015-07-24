@@ -39,6 +39,8 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoi
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
+import com.forerunnergames.peril.server.communicators.CoreCommunicator;
+import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.Remote;
@@ -52,16 +54,21 @@ import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.net.InetSocketAddress;
 
 import net.engio.mbassy.bus.MBassador;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.mockito.Mockito;
 
 public class MultiplayerControllerTest
 {
@@ -70,10 +77,13 @@ public class MultiplayerControllerTest
   private static final String DEFAULT_TEST_SERVER_ADDRESS = "server@test";
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
   private static final EventBusHandler eventHandler = new EventBusHandler ();
-  private final ClientConnector mockConnector = mock (ClientConnector.class);
-  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class);
+  private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
+  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
+                                                                  Mockito.RETURNS_SMART_NULLS);
+  private final CoreCommunicator mockCoreCommunicator = mock (CoreCommunicator.class, Mockito.RETURNS_SMART_NULLS);
   private final MultiplayerControllerBuilder mpcBuilder = builder (mockConnector,
-                                                                   new PlayerCommunicator (mockClientCommunicator));
+                                                                   new PlayerCommunicator (mockClientCommunicator),
+                                                                   mockCoreCommunicator);
   private int clientCount = 0;
   private MBassador <Event> eventBus;
 
@@ -298,11 +308,13 @@ public class MultiplayerControllerTest
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
 
+    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.of (clientPlayer.player ()));
+
     eventBus.publish (new ClientDisconnectionEvent (clientPlayer.client ()));
 
     // make sure nothing was sent to the disconnecting player
     verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), isA (PlayerLeaveGameEvent.class));
-    assertLastEventWasType (PlayerLeaveGameEvent.class);
+    assertEventFiredExactlyOnce (PlayerLeaveGameEvent.class);
     assertFalse (mpc.isPlayerInGame (clientPlayer.player ()));
   }
 
@@ -315,6 +327,8 @@ public class MultiplayerControllerTest
 
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
 
+    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.of (clientPlayer.player ()));
+
     // Request that the player/client select an available country.
     eventBus.publish (new PlayerSelectCountryRequestEvent (clientPlayer.player ()));
     verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerSelectCountryRequestEvent.class));
@@ -324,8 +338,8 @@ public class MultiplayerControllerTest
     communicateEventFromClient (event, clientPlayer.client ());
 
     // Verify that player/client's country selection was published.
-    assertLastEventWas (event);
     assertEventFiredExactlyOnce (PlayerSelectCountryResponseRequestEvent.class);
+    assertEventFiredExactlyOnce (event);
   }
 
   @Test
@@ -377,6 +391,9 @@ public class MultiplayerControllerTest
 
     final ClientPlayerTuple first = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
     final ClientPlayerTuple second = addClientAndMockPlayerToGameServer ("Test Player 2", mpc);
+
+    when (mockCoreCommunicator.fetchCurrentPlayerData ())
+            .thenReturn (ImmutableSet.of (first.player (), second.player ()));
 
     // Request that the first player/client select an available country.
     final Event selectCountryRequestEvent1 = new PlayerSelectCountryRequestEvent (first.player ());
@@ -458,16 +475,55 @@ public class MultiplayerControllerTest
     assertLastEventWas (event);
   }
 
+  @Test
+  public void testStalePlayerPacketDataIsUpdatedOnAccess ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+
+    final String playerName = "TestPlayer";
+    addClientAndMockPlayerToGameServer (playerName, mpc);
+
+    final PlayerPacket player = mock (PlayerPacket.class);
+    when (player.getName ()).thenReturn (playerName);
+
+    // setup mock core-communicator
+    final Matcher <PlayerPacket> playerMatcher = new BaseMatcher <PlayerPacket> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        if (!(arg0 instanceof PlayerPacket)) return false;
+        return ((PlayerPacket) arg0).hasName (playerName);
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+
+    final PlayerPacket updatedPlayerPacket = mock (PlayerPacket.class);
+    when (updatedPlayerPacket.getName ()).thenReturn (playerName);
+    // here's the updated part
+    final int newArmiesInHandValue = 5;
+    when (updatedPlayerPacket.getArmiesInHand ()).thenReturn (5);
+    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.of (updatedPlayerPacket));
+
+    // TODO ... need some mechanism for polling player data from core/server
+  }
+
   // <<<<<<<<<<<< Test helper facilities >>>>>>>>>>>>>> //
 
   // convenience method for fetching a new MultiplayerControllerBuilder
   // Note: package private visibility is intended; other test classes in package should have access.
-  static MultiplayerControllerBuilder builder (final ClientConnector connector, final PlayerCommunicator communicator)
+  static MultiplayerControllerBuilder builder (final ClientConnector connector,
+                                               final PlayerCommunicator communicator,
+                                               final CoreCommunicator coreCommunicator)
   {
     Arguments.checkIsNotNull (connector, "connector");
     Arguments.checkIsNotNull (communicator, "communicator");
 
-    return new MultiplayerControllerBuilder (connector, communicator);
+    return new MultiplayerControllerBuilder (connector, communicator, coreCommunicator);
   }
 
   private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
@@ -521,6 +577,14 @@ public class MultiplayerControllerTest
     assertTrue ("Expected event type [" + eventType.getSimpleName () + "] was fired exactly once, but was fired ["
             + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
             + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
+  }
+
+  private void assertEventFiredExactlyOnce (final Event event)
+  {
+    assertTrue ("Expected event type [" + event.getClass ().getSimpleName ()
+            + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
+            + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
+                eventHandler.wasFiredExactlyOnce (event));
   }
 
   private ClientCommunicationEvent communicateEventFromClient (final Event event, final Remote client)
@@ -583,6 +647,7 @@ public class MultiplayerControllerTest
   {
     private final ClientConnector connector;
     private final PlayerCommunicator communicator;
+    private final CoreCommunicator coreCommunicator;
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
     private InitialCountryAssignment initialCountryAssignment = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
@@ -651,17 +716,20 @@ public class MultiplayerControllerTest
       final GameConfiguration config = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
               initialCountryAssignment);
       final MultiplayerController controller = new MultiplayerController (gameServerName, gameServerType, serverPort,
-              config, connector, communicator, eventBus);
+              config, connector, communicator, coreCommunicator, eventBus);
       controller.initialize ();
       return controller;
     }
 
     // add game mode and/or initial-country-assignment later if needed
 
-    private MultiplayerControllerBuilder (final ClientConnector connector, final PlayerCommunicator communicator)
+    private MultiplayerControllerBuilder (final ClientConnector connector,
+                                          final PlayerCommunicator communicator,
+                                          final CoreCommunicator coreCommunicator)
     {
       this.connector = connector;
       this.communicator = communicator;
+      this.coreCommunicator = coreCommunicator;
     }
   }
 

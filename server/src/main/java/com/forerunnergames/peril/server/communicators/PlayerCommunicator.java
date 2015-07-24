@@ -1,11 +1,12 @@
-package com.forerunnergames.peril.server.controllers;
+package com.forerunnergames.peril.server.communicators;
 
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.server.controllers.ClientPlayerMapping;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,51 +51,52 @@ public final class PlayerCommunicator implements ClientCommunicator
 
   public void sendToPlayer (final PlayerPacket player,
                             final Object object,
-                            final ImmutableMap <PlayerPacket, Remote> playersToClients)
+                            final ClientPlayerMapping clientPlayerMapping)
   {
-    Arguments.checkIsNotNull (playersToClients, "playersToClients");
-    Arguments.checkHasNoNullKeysOrValues (playersToClients, "playersToClients");
+    Arguments.checkIsNotNull (clientPlayerMapping, "clientPlayerMapping");
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (object, "object");
 
-    if (!playersToClients.containsKey (player))
+    final Optional <Remote> clientQuery = clientPlayerMapping.clientFor (player);
+
+    if (!clientQuery.isPresent ())
     {
       log.warn ("Ignoring attempt to send object [{}] to disconnected player [{}]", object, player);
       return;
     }
 
-    clientCommunicator.sendTo (playersToClients.get (player), object);
+    clientCommunicator.sendTo (clientQuery.get (), object);
   }
 
-  public void sendToAllPlayers (final Object object, final ImmutableMap <PlayerPacket, Remote> playersToClients)
+  public void sendToAllPlayers (final Object object, final ClientPlayerMapping clientPlayerMapping)
   {
-    Arguments.checkIsNotNull (playersToClients, "playersToClients");
-    Arguments.checkHasNoNullKeysOrValues (playersToClients, "playersToClients");
+    Arguments.checkIsNotNull (clientPlayerMapping, "clientPlayerMapping");
     Arguments.checkIsNotNull (object, "object");
 
-    for (final PlayerPacket player : playersToClients.keySet ())
+    for (final PlayerPacket player : clientPlayerMapping.players ())
     {
-      sendToPlayer (player, object, playersToClients);
+      sendToPlayer (player, object, clientPlayerMapping);
     }
   }
 
   public void sendToAllPlayersExcept (final PlayerPacket player,
                                       final Object object,
-                                      final ImmutableMap <PlayerPacket, Remote> playersToClients)
+                                      final ClientPlayerMapping clientPlayerMapping)
   {
-    Arguments.checkIsNotNull (playersToClients, "playersToClients");
-    Arguments.checkHasNoNullKeysOrValues (playersToClients, "playersToClients");
+    Arguments.checkIsNotNull (clientPlayerMapping, "clientPlayerMapping");
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (object, "object");
 
-    if (!playersToClients.containsKey (player))
+    final Optional <Remote> clientQuery = clientPlayerMapping.clientFor (player);
+
+    if (!clientQuery.isPresent ())
     {
       log.warn ("Ignoring attempt to exclude disconnected player [{}] from receiving object [{}]", player, object);
     }
 
-    for (final PlayerPacket targetPlayer : playersToClients.keySet ())
+    for (final PlayerPacket targetPlayer : clientPlayerMapping.players ())
     {
-      if (targetPlayer.isNot (player)) sendToPlayer (targetPlayer, object, playersToClients);
+      if (targetPlayer.isNot (player)) sendToPlayer (targetPlayer, object, clientPlayerMapping);
     }
   }
 }

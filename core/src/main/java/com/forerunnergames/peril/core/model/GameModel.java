@@ -22,6 +22,8 @@ import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondit
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
+import com.forerunnergames.peril.core.shared.event.player.UpdatePlayerDataRequestEvent;
+import com.forerunnergames.peril.core.shared.event.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -56,6 +58,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -461,6 +464,16 @@ public final class GameModel
     playerTurnModel.advance ();
 
     return true;
+  }
+
+  // TODO (?) consider moving to a new type; especially if more of these are needed
+  @Handler
+  public void onEvent (final UpdatePlayerDataRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final ImmutableSet <PlayerPacket> players = Packets.fromPlayers (playerModel.getPlayers ());
+    eventBus.publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
   }
 
   @StateMachineCondition
