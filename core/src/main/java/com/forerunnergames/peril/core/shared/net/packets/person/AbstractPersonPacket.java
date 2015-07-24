@@ -15,8 +15,6 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   protected AbstractPersonPacket (final String name, final UUID id)
   {
     super (name, id);
-
-    Arguments.checkIsNotNull (name, "name");
   }
 
   @Override

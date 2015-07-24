@@ -77,6 +77,5 @@ public final class PlayerBox
                 + player.getName ()));
       }
     }
-
   }
 }
