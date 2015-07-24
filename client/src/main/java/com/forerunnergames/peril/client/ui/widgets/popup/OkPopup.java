@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -138,8 +139,7 @@ public class OkPopup implements Popup
 
       labelStyle = skin.get (Label.LabelStyle.class);
 
-      // TODO Production: Remove
-      // debug ();
+      if (popupStyle.isDebug ()) debug ();
 
       configureWindow ();
       configureButtonTable ();
@@ -247,9 +247,9 @@ public class OkPopup implements Popup
     {
       setResizable (popupStyle.isResizable ());
       setMovable (popupStyle.isMovable ());
-      pad (popupStyle.getBorderThicknessPixels ());
+      pad (popupStyle.getBorderThickness ());
 
-      if (Math.round (popupStyle.getTitleHeight ()) == PopupStyle.AUTO_HEIGHT)
+      if (popupStyle.getTitleHeight () == PopupStyle.AUTO_HEIGHT)
       {
         padTop (getPadTop () + getTitleTable ().getPrefHeight ());
       }
@@ -265,7 +265,9 @@ public class OkPopup implements Popup
       label.setWrap (true);
       label.setAlignment (Align.topLeft);
 
-      getContentTable ().add (label).expand ().fill ().top ();
+      getContentTable ().add (label).expand ().fill ().top ().left ().padLeft (popupStyle.getTextPaddingLeft ())
+              .padRight (popupStyle.getTextPaddingRight ()).padTop (popupStyle.getTextPaddingTop ())
+              .padBottom (popupStyle.getTextPaddingBottom ());
     }
 
     public void addButtons ()
@@ -280,10 +282,16 @@ public class OkPopup implements Popup
 
       final TextButton textButton = new TextButton (buttonText, skin.get (popupStyle.getTextButtonStyleName (),
                                                                           TextButton.TextButtonStyle.class));
-      textButton.padLeft (12).padRight (12).padTop (0).padBottom (0);
-      textButton.getLabelCell ();
 
-      button (textButton, popupAction);
+      textButton.padLeft (popupStyle.getButtonTextPaddingLeft ()).padRight (popupStyle.getButtonTextPaddingRight ())
+              .padTop (popupStyle.getButtonTextPaddingTop ()).padBottom (popupStyle.getButtonTextPaddingBottom ());
+
+      final Cell <TextButton> textButtonCell = getButtonTable().add (textButton);
+
+      if (popupStyle.getButtonWidth () != PopupStyle.AUTO_WIDTH) textButtonCell.width (popupStyle.getButtonWidth ());
+      if (popupStyle.getButtonHeight () != PopupStyle.AUTO_HEIGHT) textButtonCell.height (popupStyle.getButtonHeight ());
+
+      setObject (textButton, popupAction);
 
       buttonTextToTextButtons.put (textButton.getText ().toString (), textButton);
     }
@@ -312,30 +320,31 @@ public class OkPopup implements Popup
     private void configureContentTable ()
     {
       getContentTable ().left ();
-      getCell (getContentTable ()).pad (20);
+      getCell (getContentTable ()).padLeft (popupStyle.getTextBoxPaddingLeft ())
+              .padRight (popupStyle.getTextBoxPaddingRight ()).padTop (popupStyle.getTextBoxPaddingTop ())
+              .padBottom (popupStyle.getTextBoxPaddingBottom ());
     }
 
     private void configureButtonTable ()
     {
-      getButtonTable ().defaults ().space (20);
-      getButtonTable ().padLeft (20).padRight (20).padBottom (16).padTop (16);
+      getButtonTable ().defaults ().space (popupStyle.getButtonSpacing ());
       getCell (getButtonTable ()).right ();
     }
 
     private void setPosition ()
     {
-      if (Math.round (popupStyle.getPositionUpperLeftReferenceScreenSpaceX ()) == PopupStyle.AUTO_H_CENTER)
+      if (popupStyle.getPositionUpperLeftReferenceScreenSpaceX () == PopupStyle.AUTO_H_CENTER)
       {
-        setX (Math.round ((stage.getWidth () - getWidth ()) / 2));
+        setX ((stage.getWidth () - getWidth ()) / 2);
       }
       else
       {
         setX (popupStyle.getPositionUpperLeftReferenceScreenSpaceX ());
       }
 
-      if (Math.round (popupStyle.getPositionUpperLeftReferenceScreenSpaceY ()) == PopupStyle.AUTO_V_CENTER)
+      if (popupStyle.getPositionUpperLeftReferenceScreenSpaceY () == PopupStyle.AUTO_V_CENTER)
       {
-        setY (Math.round ((stage.getHeight () - getHeight ()) / 2));
+        setY ((stage.getHeight () - getHeight ()) / 2);
       }
       else
       {
@@ -345,12 +354,12 @@ public class OkPopup implements Popup
 
     private void setSize ()
     {
-      if (Math.round (popupStyle.getWidthReferenceScreenSpace ()) != PopupStyle.AUTO_WIDTH)
+      if (popupStyle.getWidthReferenceScreenSpace () != PopupStyle.AUTO_WIDTH)
       {
         setWidth (popupStyle.getWidthReferenceScreenSpace ());
       }
 
-      if (Math.round (popupStyle.getHeightReferenceScreenSpace ()) != PopupStyle.AUTO_HEIGHT)
+      if (popupStyle.getHeightReferenceScreenSpace () != PopupStyle.AUTO_HEIGHT)
       {
         setHeight (popupStyle.getHeightReferenceScreenSpace ());
       }
