@@ -476,8 +476,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
         playMapActor.setCountryState (selectedCountryNameFrom (event), CountryPrimaryImageState.valueOf (Strings
                 .toCase (playerColorFrom (event), LetterCase.UPPER)));
-
-        playMapActor.changeArmiesBy (1, new CountryName (selectedCountryNameFrom (event)));
       }
     });
   }
