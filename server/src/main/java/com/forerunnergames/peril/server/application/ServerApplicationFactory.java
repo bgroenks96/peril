@@ -1,20 +1,21 @@
 package com.forerunnergames.peril.server.application;
 
-import com.beust.jcommander.JCommander;
-
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.PlayerTurnModel;
 import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
+import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
+import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
@@ -34,6 +35,8 @@ import com.google.common.collect.ImmutableSet;
 import de.matthiasmann.AsyncExecution;
 
 import net.engio.mbassy.bus.MBassador;
+
+import com.beust.jcommander.JCommander;
 
 public final class ServerApplicationFactory
 {
@@ -60,9 +63,9 @@ public final class ServerApplicationFactory
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
                                                          countries.size (), jArgs.initialCountryAssignment);
 
-    final PlayMapModel playMapModel = new PlayMapModel (countries, continents, gameRules);
-    final PlayerModel playerModel = new PlayerModel (gameRules);
-    final PlayerTurnModel playerTurnModel = new PlayerTurnModel (playerModel.getPlayerLimit ());
+    final PlayMapModel playMapModel = new DefaultPlayMapModel (countries, continents, gameRules);
+    final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
+    final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (playerModel.getPlayerLimit ());
     final GameModel gameModel = new GameModel (playerModel, playMapModel, playerTurnModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
 

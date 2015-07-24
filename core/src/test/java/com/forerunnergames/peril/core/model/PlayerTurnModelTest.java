@@ -3,6 +3,8 @@ package com.forerunnergames.peril.core.model;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
+import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 
 import org.junit.Test;
 
@@ -13,7 +15,7 @@ public class PlayerTurnModelTest
   @Test
   public void testStartsAtFirstTurn ()
   {
-    final PlayerTurnModel turnModel = new PlayerTurnModel (DEFAULT_TURN_COUNT);
+    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
     assertTrue (turnModel.isFirstTurn ());
     assertTrue (turnModel.getTurn () == 0);
     assertTrue (turnModel.getTurnOrder () == PlayerTurnOrder.FIRST);
@@ -22,7 +24,7 @@ public class PlayerTurnModelTest
   @Test
   public void testAdvanceFromFirstToSecondTurn ()
   {
-    final PlayerTurnModel turnModel = new PlayerTurnModel (DEFAULT_TURN_COUNT);
+    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
     turnModel.advance ();
     assertTrue (turnModel.getTurn () == 1);
     assertTrue (turnModel.getTurnOrder () == PlayerTurnOrder.SECOND);
@@ -31,7 +33,7 @@ public class PlayerTurnModelTest
   @Test
   public void testAdvanceFromLastToFirstTurn ()
   {
-    final PlayerTurnModel turnModel = new PlayerTurnModel (DEFAULT_TURN_COUNT);
+    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
     for (int i = 0; i < DEFAULT_TURN_COUNT - 1; i++)
     {
       turnModel.advance ();

@@ -3,15 +3,18 @@ package com.forerunnergames.peril.core.model.state;
 import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.PlayerTurnModel;
+import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
+import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
+import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Event;
@@ -70,10 +73,10 @@ public class GameStateMachineTest
     final int testCountryCount = 20;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
             .totalCountryCount (testCountryCount).initialCountryAssignment (initialCountryAssignment).build ();
-    final PlayerModel playerModel = new PlayerModel (rules);
-    final PlayMapModel playMapModel = new PlayMapModel (PlayMapModelTest.generateTestCountries (testCountryCount),
-            ImmutableSet.<Continent> of (), rules);
-    final PlayerTurnModel playerTurnModel = new PlayerTurnModel (playerModel.getPlayerLimit ());
+    final PlayerModel playerModel = new DefaultPlayerModel (rules);
+    final PlayMapModel playMapModel = new DefaultPlayMapModel (
+            PlayMapModelTest.generateTestCountries (testCountryCount), ImmutableSet.<Continent> of (), rules);
+    final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (playerModel.getPlayerLimit ());
     final GameModel gameModel = new GameModel (playerModel, playMapModel, playerTurnModel, rules, eventBus);
 
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel, new GameStateMachineListener ()

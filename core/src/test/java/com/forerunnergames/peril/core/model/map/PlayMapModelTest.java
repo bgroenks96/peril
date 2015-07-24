@@ -57,7 +57,7 @@ public class PlayMapModelTest
     for (final Country testCountry : defaultTestCountries)
     {
       assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer)).succeeded ());
-      assertTrue (modelTest.getOwnerOf (idOf (testCountry)).is (idOf (testPlayer)));
+      assertTrue (modelTest.ownerOf (idOf (testCountry)).is (idOf (testPlayer)));
     }
   }
 
@@ -70,7 +70,7 @@ public class PlayMapModelTest
     {
       final Player testPlayer = PlayerFactory.create ("TestPlayer");
       assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testPlayer)).succeeded ());
-      assertTrue (modelTest.getOwnerOf (idOf (testCountry)).is (idOf (testPlayer)));
+      assertTrue (modelTest.ownerOf (idOf (testCountry)).is (idOf (testPlayer)));
     }
   }
 
@@ -186,7 +186,7 @@ public class PlayMapModelTest
     final Player testOwner = PlayerFactory.create ("TestPlayer");
 
     assertTrue (modelTest.requestToAssignCountryOwner (idOf (testCountry), idOf (testOwner)).succeeded ());
-    assertEquals (idOf (testOwner), modelTest.getOwnerOf (idOf (testCountry)));
+    assertEquals (idOf (testOwner), modelTest.ownerOf (idOf (testCountry)));
   }
 
   @Test (expected = IllegalStateException.class)
@@ -196,7 +196,7 @@ public class PlayMapModelTest
     final Player testOwner = PlayerFactory.create ("TestPlayer");
 
     // request owner with invalid country Id
-    modelTest.getOwnerOf (idOf (testOwner));
+    modelTest.ownerOf (idOf (testOwner));
   }
 
   @Test
@@ -477,6 +477,6 @@ public class PlayMapModelTest
   private static PlayMapModel createPlayMapModelTestWith (final ImmutableSet <Country> countries)
   {
     final GameRules classicRules = new ClassicGameRules.Builder ().build ();
-    return new PlayMapModel (countries, ImmutableSet.<Continent> of (), classicRules);
+    return new DefaultPlayMapModel (countries, ImmutableSet.<Continent> of (), classicRules);
   }
 }

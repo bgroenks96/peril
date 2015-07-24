@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.packets;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import java.util.UUID;
@@ -79,6 +80,12 @@ public abstract class AbstractAssetPacket implements AssetPacket
   public int hashCode ()
   {
     return id.hashCode ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Name: {} | Id: {}", getClass ().getSimpleName (), name, id);
   }
 
   @RequiredForNetworkSerialization

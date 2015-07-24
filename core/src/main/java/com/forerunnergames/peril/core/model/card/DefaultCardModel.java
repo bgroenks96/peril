@@ -69,7 +69,7 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
-  public Result <FailureReason> requestTradeInCards (final Id playerId,
+  public Result <DenialReason> requestTradeInCards (final Id playerId,
                                                      final Match tradeInCards,
                                                      final TurnPhase turnPhase)
   {
@@ -83,12 +83,12 @@ public final class DefaultCardModel implements CardModel
     final boolean isRequiredTradeInNotAllowed = numCards >= rules.getMinCardsInHandToRequireTradeIn (turnPhase);
     if (isOptionalTradeInNotAllowed && isRequiredTradeInNotAllowed)
     {
-      return Result.failure (FailureReason.TRADE_IN_NOT_ALLOWED);
+      return Result.failure (DenialReason.TRADE_IN_NOT_ALLOWED);
     }
 
     final CardSet playerHand = playerCardHandler.getCardsInHand (playerId);
     final CardSet matchSet = tradeInCards.getCardSet ();
-    if (!playerHand.containsAll (matchSet)) return Result.failure (FailureReason.CARD_NOT_IN_HAND);
+    if (!playerHand.containsAll (matchSet)) return Result.failure (DenialReason.CARD_NOT_IN_HAND);
     playerCardHandler.removeCardsFromHand (playerId, matchSet);
     cardDealer.discard (matchSet);
     tradeInCount++;
