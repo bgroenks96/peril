@@ -12,12 +12,14 @@ import com.forerunnergames.tools.common.Strings;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TreeSet;
 
 public final class PlayerBox
 {
   private final MessageBox <Message> messageBox;
-  private final Collection <PlayerPacket> turnOrderedPlayers = new TreeSet <> (PlayerPacket.TURN_ORDER_COMPARATOR);
+  private final Collection <PlayerPacket> turnOrderedPlayers = Collections.synchronizedSortedSet (new TreeSet <> (
+          PlayerPacket.TURN_ORDER_COMPARATOR));
 
   public PlayerBox (final MessageBox <Message> messageBox)
   {
@@ -67,10 +69,14 @@ public final class PlayerBox
   {
     messageBox.clear ();
 
-    for (final PlayerPacket player : turnOrderedPlayers)
+    synchronized (turnOrderedPlayers)
     {
-      messageBox.addMessage (new DefaultMessage (Strings.toMixedOrdinal (player.getTurnOrder ()) + ". "
-              + player.getName ()));
+      for (final PlayerPacket player : turnOrderedPlayers)
+      {
+        messageBox.addMessage (new DefaultMessage (Strings.toMixedOrdinal (player.getTurnOrder ()) + ". "
+                + player.getName ()));
+      }
     }
+
   }
 }
