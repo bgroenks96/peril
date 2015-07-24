@@ -515,6 +515,11 @@ public final class GameModel
     return playerModel.getPlayerLimit ();
   }
 
+  public PlayerTurnOrder getTurn ()
+  {
+    return playerTurnModel.getTurnOrder ();
+  }
+
   public boolean playerLimitIsAtLeast (final int limit)
   {
     Arguments.checkIsNotNegative (limit, "limit");

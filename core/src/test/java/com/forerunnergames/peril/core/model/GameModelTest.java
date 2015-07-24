@@ -23,12 +23,15 @@ import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.EventBusHandler;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Event;
@@ -218,6 +221,58 @@ public class GameModelTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     verifyPlayerCountryAssignmentCompleteEvent ();
+  }
+
+  @Test
+  public void testVerifyPlayerCountrySelectionRequestWhenValid ()
+  {
+    addMaxPlayers ();
+
+    final String randomCountryName = randomCountry ().getName ();
+
+    final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
+            randomCountryName);
+    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
+    // verify that game model advanced the turn, as expected
+    assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
+  }
+
+  @Test
+  public void testVerifyPlayerCountrySelectionRequestInvalidCountryDoesNotExist ()
+  {
+    addMaxPlayers ();
+
+    final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
+            "Transylvania");
+    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseDeniedEvent.class));
+    assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
+    // verify that GameModel did NOT advance the turn
+    assertTrue (gameModel.getTurn () == PlayerTurnOrder.FIRST);
+  }
+
+  @Test
+  public void testVerifyPlayerCountrySelectionRequestInvalidCountryAlreadyOwned ()
+  {
+    addMaxPlayers ();
+
+    final Country country = randomCountry ();
+    final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
+            country.getName ());
+    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
+
+    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseDeniedEvent.class));
+    assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
+    assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
   }
 
   @Test
