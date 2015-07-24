@@ -22,7 +22,7 @@ public interface CardModel
 
   ImmutableSet <CardSet.Match> computeMatchesFor (final Id playerId);
 
-  Result <FailureReason> requestTradeInCards (final Id playerId,
+  Result <DenialReason> requestTradeInCards (final Id playerId,
                                               final CardSet.Match tradeInCards,
                                               final TurnPhase turnPhase);
 
@@ -30,7 +30,7 @@ public interface CardModel
 
   boolean areCardsInHand (final Id playerId, final CardSet cards);
 
-  public enum FailureReason
+  public enum DenialReason
   {
     CARD_NOT_IN_HAND,
     MAX_CARDS_IN_HAND_REACHED,

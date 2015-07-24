@@ -3,6 +3,7 @@ package com.forerunnergames.peril.core.shared.net.packets.defaults;
 import com.forerunnergames.peril.core.shared.net.packets.person.AbstractPersonPacket;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import java.util.UUID;
@@ -92,8 +93,8 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Color: %2$s | Turn Order: %3$s | Armies in Hand: %4$s", super.toString (), color,
-                          turnOrder, armiesInHand);
+    return Strings.format ("{} | Color: {} | Turn Order: {} | Armies in Hand: {}", super.toString (), color, turnOrder,
+                           armiesInHand);
   }
 
   @RequiredForNetworkSerialization

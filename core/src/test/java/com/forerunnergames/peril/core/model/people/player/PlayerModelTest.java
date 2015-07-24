@@ -41,7 +41,7 @@ public class PlayerModelTest
     final int armyCount = 10;
     playerModel.addArmiesToHandOf (player.getId (), armyCount);
 
-    assertTrue (playerModel.getArmiesInHandOf (idOf (player)) == armyCount);
+    assertTrue (playerModel.getArmiesInHand (idOf (player)) == armyCount);
   }
 
   @Test (expected = IllegalStateException.class)
@@ -207,7 +207,7 @@ public class PlayerModelTest
     final int armyCount = 10;
     playerModel.addArmiesToHandOf (idOf (player), armyCount);
 
-    assertTrue (playerModel.getArmiesInHandOf (idOf (player)) == armyCount);
+    assertTrue (playerModel.getArmiesInHand (idOf (player)) == armyCount);
   }
 
   @Test
@@ -256,8 +256,8 @@ public class PlayerModelTest
   public void testGetAllPlayersExcept ()
   {
     final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("Test Player 1"),
-            PlayerFactory.create ("Test Player 2"),
-            PlayerFactory.create ("Test Player 3"));
+                                                                   PlayerFactory.create ("Test Player 2"),
+                                                                   PlayerFactory.create ("Test Player 3"));
 
     final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size () + 1);
 
@@ -514,7 +514,7 @@ public class PlayerModelTest
     playerModel.addArmiesToHandOf (idOf (player), armies);
     playerModel.removeArmiesFromHandOf (idOf (player), armies);
 
-    assertTrue (playerModel.getArmiesInHandOf (idOf (player)) == 0);
+    assertTrue (playerModel.getArmiesInHand (idOf (player)) == 0);
   }
 
   @Test (expected = IllegalStateException.class)
@@ -818,7 +818,7 @@ public class PlayerModelTest
     when (gameRulesMock.getMinArmiesInHand ()).thenReturn (MIN_ARMIES_IN_PLAYER_HAND);
     when (gameRulesMock.getMaxArmiesInHand ()).thenReturn (MAX_ARMIES_IN_PLAYER_HAND);
 
-    return new PlayerModel (gameRulesMock);
+    return new DefaultPlayerModel (gameRulesMock);
   }
 
   private static void removeAllPlayersFrom (final PlayerModel playerModel)

@@ -4,6 +4,7 @@ import com.forerunnergames.peril.core.shared.net.packets.territory.AbstractTerri
 import com.forerunnergames.peril.core.shared.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
@@ -55,8 +56,8 @@ public class DefaultContinentPacket extends AbstractTerritoryPacket implements C
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Reinforcement Bonus: %2$s | Countries: %3$s", super.toString (), reinforcementBonus,
-                          countries);
+    return Strings.format ("{} | Reinforcement Bonus: {} | Countries: {}", super.toString (), reinforcementBonus,
+                           countries);
   }
 
   @RequiredForNetworkSerialization

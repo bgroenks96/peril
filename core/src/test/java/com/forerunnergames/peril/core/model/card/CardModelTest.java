@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.core.model.TurnPhase;
-import com.forerunnergames.peril.core.model.card.CardModel.FailureReason;
+import com.forerunnergames.peril.core.model.card.CardModel.DenialReason;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
@@ -94,7 +94,7 @@ public abstract class CardModelTest
       cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
     }
 
-    final Result <FailureReason> result = cardModel.requestTradeInCards (testPlayer.getId (), match,
+    final Result <DenialReason> result = cardModel.requestTradeInCards (testPlayer.getId (), match,
                                                                          TurnPhase.REINFORCE);
     // use if/fail so failure reason can be printed;
     // assertTrue causes Result to throw IllegalStateException when successful

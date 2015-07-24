@@ -21,6 +21,7 @@ import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
+import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -544,7 +545,7 @@ public final class GameModel
     {
       if (!playMapModel.isCountryOwned (idOf (country))) continue;
 
-      final Id ownerId = playMapModel.getOwnerOf (idOf (country));
+      final Id ownerId = playMapModel.ownerOf (idOf (country));
       playMapView.put (country, playerModel.playerWith (ownerId));
     }
     return playMapView.build ();

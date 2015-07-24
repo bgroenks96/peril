@@ -3,6 +3,7 @@ package com.forerunnergames.peril.core.shared.net.packets.defaults;
 import com.forerunnergames.peril.core.shared.net.packets.territory.AbstractTerritoryPacket;
 import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import java.util.UUID;
@@ -44,7 +45,7 @@ public final class DefaultCountryPacket extends AbstractTerritoryPacket implemen
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Army Count: %2$s", super.toString (), armyCount);
+    return Strings.format ("{} | Army Count: {}", super.toString (), armyCount);
   }
 
   @RequiredForNetworkSerialization
