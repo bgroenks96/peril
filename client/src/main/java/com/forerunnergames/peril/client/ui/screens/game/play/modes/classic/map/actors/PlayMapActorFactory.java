@@ -4,7 +4,7 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepositoryFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageRepository;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetectionFactory;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
@@ -27,10 +27,10 @@ public final class PlayMapActorFactory
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create (screenSize);
-    final CountryImageRepository countryImageRepository = new CountryImageRepository ();
+    final CountryImageLoader countryImageLoader = new CountryImageLoader ();
     final CountryImageDataRepository countryImageDataRepository = CountryImageDataRepositoryFactory.create ();
 
-    final CountryActorFactory countryActorFactory = new CountryActorFactory (countryImageRepository,
+    final CountryActorFactory countryActorFactory = new CountryActorFactory (countryImageLoader,
             countryImageDataRepository);
 
     final ImmutableMap.Builder <CountryName, CountryActor> countryNamesToActorsBuilder = ImmutableMap.builder ();
@@ -40,8 +40,15 @@ public final class PlayMapActorFactory
       countryNamesToActorsBuilder.put (countryName, countryActorFactory.create (countryName));
     }
 
-    return new PlayMapActor (countryNamesToActorsBuilder.build (), playMapInputDetection,
+    final PlayMapActor playMapActor = new PlayMapActor (countryNamesToActorsBuilder.build (), playMapInputDetection,
             new HoveredTerritoryTextActor (playMapInputDetection, mouseInput), eventBus);
+
+    final HoveredTerritoryTextActor hoveredTerritoryTextActor = new HoveredTerritoryTextActor (playMapInputDetection,
+            mouseInput);
+
+    hoveredTerritoryTextActor.setPlayMapActor (playMapActor);
+
+    return playMapActor;
   }
 
   private PlayMapActorFactory ()

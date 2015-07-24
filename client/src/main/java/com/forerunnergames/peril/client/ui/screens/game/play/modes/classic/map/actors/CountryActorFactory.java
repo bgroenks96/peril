@@ -2,22 +2,22 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageRepository;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageLoader;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryActorFactory
 {
-  private final CountryImageRepository countryImageRepository;
+  private final CountryImageLoader countryImageLoader;
   private final CountryImageDataRepository countryImageDataRepository;
 
-  public CountryActorFactory (final CountryImageRepository countryImageRepository,
+  public CountryActorFactory (final CountryImageLoader countryImageLoader,
                               final CountryImageDataRepository countryImageDataRepository)
   {
-    Arguments.checkIsNotNull (countryImageRepository, "countryImageRepository");
+    Arguments.checkIsNotNull (countryImageLoader, "countryImagesRepository");
     Arguments.checkIsNotNull (countryImageDataRepository, "countryImageDataRepository");
 
-    this.countryImageRepository = countryImageRepository;
+    this.countryImageLoader = countryImageLoader;
     this.countryImageDataRepository = countryImageDataRepository;
   }
 
@@ -27,7 +27,8 @@ public final class CountryActorFactory
 
     final CountryImageData countryImageData = countryImageDataRepository.get (countryName);
 
-    return new CountryActor (countryImageRepository.getAll (countryName), countryImageData,
+    return new CountryActor (countryImageLoader.getAllPrimary (countryName),
+            countryImageLoader.getAllSecondary (countryName), countryImageData,
             CountryArmyTextActorFactory.create (countryImageData));
   }
 }

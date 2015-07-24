@@ -45,7 +45,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
@@ -474,7 +474,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.debug ("Event received [{}].", event);
 
-        playMapActor.setCountryState (selectedCountryNameFrom (event), CountryImageState.valueOf (Strings.toCase (playerColorFrom (event), LetterCase.UPPER)));
+        playMapActor.setCountryState (selectedCountryNameFrom (event), CountryPrimaryImageState.valueOf (Strings
+                .toCase (playerColorFrom (event), LetterCase.UPPER)));
+
         playMapActor.changeArmiesBy (1, new CountryName (selectedCountryNameFrom (event)));
       }
     });
@@ -494,11 +496,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
         for (final CountryPacket country : countriesFrom (event))
         {
-          final CountryImageState state = CountryImageState.valueOf (Strings.toCase (event.getOwnerColor (country),
-                                                                                     LetterCase.UPPER));
+          final CountryPrimaryImageState state = CountryPrimaryImageState.valueOf (Strings.toCase (event
+                  .getOwnerColor (country), LetterCase.UPPER));
 
           // The country already has the correct state - don't do anything.
-          if (playMapActor.currentImageStateOfCountryIs (state, new CountryName (country.getName ()))) continue;
+          if (playMapActor.currentPrimaryImageStateOfCountryIs (state, new CountryName (country.getName ()))) continue;
 
           playMapActor.setCountryState (country.getName (), state);
         }

@@ -8,7 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
@@ -19,9 +20,13 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -54,19 +59,38 @@ public final class PlayMapActor extends Group
     this.hoveredTerritoryTextActor = hoveredTerritoryTextActor;
     this.eventBus = eventBus;
 
+    setTransform (false);
+
     final Image backgroundImage = new Image (Assets.playMapBackground);
     backgroundImage.setSize (ClassicPlayMapSettings.ACTUAL_WIDTH, ClassicPlayMapSettings.ACTUAL_HEIGHT);
 
     addActor (backgroundImage);
 
-    for (final CountryActor countryActor : countryNamesToActors.values ())
+    final List <CountryActor> countryActorsSortedByAtlasIndex = new ArrayList <> (countryNamesToActors.values ());
+
+    Collections.sort (countryActorsSortedByAtlasIndex, new Comparator <CountryActor> ()
+    {
+      @Override
+      public int compare (final CountryActor o1, final CountryActor o2)
+      {
+        Arguments.checkIsNotNull (o1, "o1");
+        Arguments.checkIsNotNull (o2, "o2");
+
+        return Integer.compare (o1.getAtlasIndex (), o2.getAtlasIndex ());
+      }
+    });
+
+    for (final CountryActor countryActor : countryActorsSortedByAtlasIndex)
     {
       addActor (countryActor);
     }
 
-    addActor (hoveredTerritoryTextActor);
+    for (final CountryActor countryActor : countryActorsSortedByAtlasIndex)
+    {
+      addActor (countryActor.getArmyTextActor ());
+    }
 
-    hoveredTerritoryTextActor.setPlayMapActor (this);
+    addActor (hoveredTerritoryTextActor);
   }
 
   public boolean mouseMoved (final Vector2 mouseCoordinate)
@@ -192,13 +216,13 @@ public final class PlayMapActor extends Group
     return true;
   }
 
-  public void setCountriesTo (final CountryImageState state)
+  public void setCountriesTo (final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
 
     for (final CountryActor countryActor : getCountryActors ())
     {
-      countryActor.changeStateTo (state);
+      countryActor.changePrimaryStateTo (state);
     }
   }
 
@@ -206,21 +230,21 @@ public final class PlayMapActor extends Group
   {
     for (final CountryActor countryActor : getCountryActors ())
     {
-      countryActor.changeStateRandomly ();
+      countryActor.changePrimaryStateRandomly ();
     }
   }
 
   public void randomizeCountryStatesUsingNRandomStates (final int n)
   {
     Arguments.checkLowerInclusiveBound (n, 1, "n");
-    Arguments.checkUpperInclusiveBound (n, CountryImageState.values ().length, "n");
+    Arguments.checkUpperInclusiveBound (n, CountryPrimaryImageState.values ().length, "n");
 
-    final ImmutableSet.Builder <CountryImageState> nStatesBuilder = ImmutableSet.builder ();
-    final Set <CountryImageState> states = EnumSet.allOf (CountryImageState.class);
+    final ImmutableSet.Builder <CountryPrimaryImageState> nStatesBuilder = ImmutableSet.builder ();
+    final Set <CountryPrimaryImageState> states = EnumSet.allOf (CountryPrimaryImageState.class);
 
     for (int i = 0; i < n; ++i)
     {
-      final CountryImageState randomState = Randomness.getRandomElementFrom (states);
+      final CountryPrimaryImageState randomState = Randomness.getRandomElementFrom (states);
       nStatesBuilder.add (randomState);
       states.remove (randomState);
     }
@@ -228,7 +252,7 @@ public final class PlayMapActor extends Group
     randomizeCountryStatesUsingOnly (nStatesBuilder.build ());
   }
 
-  public void randomizeCountryStatesUsingOnly (final CountryImageState... states)
+  public void randomizeCountryStatesUsingOnly (final CountryPrimaryImageState... states)
   {
     randomizeCountryStatesUsingOnly (Arrays.asList (states));
   }
@@ -241,7 +265,7 @@ public final class PlayMapActor extends Group
 
   public void resetCountryStates ()
   {
-    setCountriesTo (CountryImageState.UNOWNED);
+    setCountriesTo (CountryPrimaryImageState.UNOWNED);
   }
 
   public void resetArmies ()
@@ -256,14 +280,14 @@ public final class PlayMapActor extends Group
     getCountryActorWithName (countryName).changeArmiesBy (deltaArmies);
   }
 
-  public void setCountryState (final String countryName, final CountryImageState state)
+  public void setCountryState (final String countryName, final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
 
     final CountryName name = new CountryName (countryName);
 
-    if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).changeStateTo (state);
+    if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).changePrimaryStateTo (state);
   }
 
   public CountryActor getCountryActorWithName (final CountryName countryName)
@@ -281,22 +305,42 @@ public final class PlayMapActor extends Group
     return countryActor;
   }
 
-  public boolean currentImageStateOfCountryIs (final CountryImageState state, final CountryName countryName)
+  public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state,
+                                                      final CountryName countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return getCurrentImageStateOf (countryName) == state;
+    return getCurrentPrimaryImageStateOf (countryName) == state;
+  }
+
+  public boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
+                                                        final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (state, "state");
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return getCurrentSecondaryImageStateOf (countryName) == state;
   }
 
   @Nullable
-  public CountryImageState getCurrentImageStateOf (final CountryName countryName)
+  public CountryPrimaryImageState getCurrentPrimaryImageStateOf (final CountryName countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
     if (!countryNamesToActors.containsKey (countryName)) return null;
 
-    return countryNamesToActors.get (countryName).getCurrentImageState ();
+    return countryNamesToActors.get (countryName).getCurrentPrimaryImageState ();
+  }
+
+  @Nullable
+  public CountrySecondaryImageState getCurrentSecondaryImageStateOf (final CountryName countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    if (!countryNamesToActors.containsKey (countryName)) return null;
+
+    return countryNamesToActors.get (countryName).getCurrentSecondaryImageState ();
   }
 
   public void disable ()
@@ -344,15 +388,15 @@ public final class PlayMapActor extends Group
     return countryActor;
   }
 
-  private void randomizeCountryStatesUsingOnly (final Collection <CountryImageState> states)
+  private void randomizeCountryStatesUsingOnly (final Collection <CountryPrimaryImageState> states)
   {
-    CountryImageState randomState;
+    CountryPrimaryImageState randomState;
 
     for (final CountryActor countryActor : getCountryActors ())
     {
       randomState = Randomness.getRandomElementFrom (states);
 
-      countryActor.changeStateTo (randomState);
+      countryActor.changePrimaryStateTo (randomState);
     }
   }
 

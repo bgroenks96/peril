@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.SnapshotArray;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Maths;
@@ -13,6 +14,7 @@ import com.forerunnergames.tools.common.Message;
 
 public abstract class AbstractMessageBox <T extends Message> extends ScrollPane implements MessageBox <T>
 {
+  private static final int MAX_ROWS = 40;
   private static final int V_SCROLLBAR_WIDTH = 14;
   private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
   private final Table table;
@@ -42,6 +44,7 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
 
     scrollPaneStyle.vScrollKnob.setMinWidth (V_SCROLLBAR_WIDTH);
 
+    // @formatter:off
     addListener (new InputListener ()
     {
       @Override
@@ -56,6 +59,7 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
         getStage ().setScrollFocus (null);
       }
     });
+    // @formatter:on
   }
 
   @Override
@@ -63,12 +67,16 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   {
     Arguments.checkIsNotNull (message, "message");
 
+    limitOldRows ();
+
     final Actor row = createRow (message);
     table.row ().expandX ().fillX ().prefHeight (messageBoxRowStyle.getHeight ());
     final Cell <Actor> messageCell = table.add (row);
+
     table.layout ();
     layout ();
-    messageCell.height (Maths.nextHigherMultiple (Math.round (row.getHeight ()), Math.round (messageBoxRowStyle.getHeight ())));
+    messageCell.height (Maths.nextHigherMultiple (Math.round (row.getHeight ()),
+                                                  Math.round (messageBoxRowStyle.getHeight ())));
     table.invalidateHierarchy ();
     layout ();
   }
@@ -103,5 +111,21 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
   {
     table.top ().padLeft (messageBoxRowStyle.getPaddingLeft ()).padRight (messageBoxRowStyle.getPaddingRight ())
             .padTop (SCROLLPANE_INNER_PADDING_TOP);
+  }
+
+  private void limitOldRows ()
+  {
+    if (table.getRows () < MAX_ROWS) return;
+
+    final SnapshotArray <Actor> children = table.getChildren ();
+    children.ordered = false;
+
+    for (int i = 0; i < children.size - 1; ++i)
+    {
+      children.swap (i, i + 1);
+    }
+
+    table.removeActor (children.get (children.size - 1));
+    table.getCells ().removeIndex (0);
   }
 }

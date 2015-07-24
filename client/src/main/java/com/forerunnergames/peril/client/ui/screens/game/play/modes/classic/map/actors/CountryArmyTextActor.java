@@ -6,7 +6,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
+import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.math.IntMath;
@@ -18,16 +19,17 @@ public final class CountryArmyTextActor extends Actor
   private static final Vector2 FONT_METRICS_ADJUSTMENT = new Vector2 (0, 1);
   private final BitmapFont font;
   private final GlyphLayout glyphLayout = new GlyphLayout ();
-  private String armiesText;
-  private int armies = 0;
   private final Vector2 circleTopLeft = new Vector2 ();
   private final Vector2 circleSize = new Vector2 ();
   private final Vector2 initialPosition = new Vector2 ();
   private final Vector2 finalPosition = new Vector2 ();
+  private String armiesText;
+  private int armies = 0;
 
   public CountryArmyTextActor ()
   {
-    font = new BitmapFont ();
+    font = Assets.defaultFont;
+
     setArmies (0);
   }
 
@@ -86,7 +88,7 @@ public final class CountryArmyTextActor extends Actor
     changeText (String.valueOf (newArmies));
   }
 
-  public void onStateChange (final CountryImageState state)
+  public void onPrimaryStateChange (final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
 

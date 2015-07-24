@@ -21,6 +21,7 @@ public final class GraphicsSettings
   public static final Texture.TextureFilter FONT_TEXTURE_MAGNIFICATION_FILTER = Texture.TextureFilter.Linear;
   public static final boolean               FONT_TEXTURE_MIPMAPPING           = true;
   public static final Scaling               VIEWPORT_SCALING                  = Scaling.stretch;
+  public static final int                   SPRITES_IN_BATCH                  = 5460;
 
   public static int     INITIAL_WINDOW_WIDTH  = REFERENCE_SCREEN_WIDTH;
   public static int     INITIAL_WINDOW_HEIGHT = REFERENCE_SCREEN_HEIGHT;

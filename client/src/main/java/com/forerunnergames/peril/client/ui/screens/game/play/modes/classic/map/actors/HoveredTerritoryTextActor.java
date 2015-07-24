@@ -6,13 +6,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
+
+import javax.annotation.Nullable;
 
 public final class HoveredTerritoryTextActor extends Actor
 {
@@ -24,7 +27,10 @@ public final class HoveredTerritoryTextActor extends Actor
   private final Vector2 textPosition = new Vector2 ();
   private String text = "";
   private PlayMapActor playMapActor;
-  private CountryImageState countryImageState;
+  @Nullable
+  private CountryPrimaryImageState countryPrimaryImageState;
+  @Nullable
+  private CountrySecondaryImageState countrySecondaryImageState;
 
   public HoveredTerritoryTextActor (final PlayMapInputDetection playMapInputDetection, final MouseInput mouseInput)
   {
@@ -52,12 +58,17 @@ public final class HoveredTerritoryTextActor extends Actor
     final CountryName countryName = playMapInputDetection.getCountryNameAt (mousePosition);
     final ContinentName continentName = playMapInputDetection.getContinentNameAt (mousePosition);
 
-    if (playMapActor != null) countryImageState = playMapActor.getCurrentImageStateOf (countryName);
+    if (playMapActor != null)
+    {
+      countryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (countryName);
+      countrySecondaryImageState = playMapActor.getCurrentSecondaryImageStateOf (countryName);
+    }
 
     text = Strings.toStringList (", ", LetterCase.PROPER, false, countryName.asString (), continentName.asString (),
-                                 countryImageState != null ? countryImageState.toString () : "");
+                                 countryPrimaryImageState != null ? countryPrimaryImageState.toString () : "",
+                                 countrySecondaryImageState != null ? countrySecondaryImageState.toString () : "");
 
-    screenToLocalCoordinates (mousePosition);
+    getStage ().screenToStageCoordinates (mousePosition);
 
     textPosition.set (mousePosition.x + TEXT_OFFSET.x, mousePosition.y + TEXT_OFFSET.y);
   }

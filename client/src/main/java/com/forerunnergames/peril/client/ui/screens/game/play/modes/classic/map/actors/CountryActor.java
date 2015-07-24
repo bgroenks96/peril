@@ -2,115 +2,142 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImages;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 
-import java.util.SortedMap;
-
 public final class CountryActor extends Group
 {
-  private final SortedMap <CountryImageState, Image> countryImageStatesToImages;
-  private final CountryImageData countryImageData;
-  private final CountryArmyTextActor countryArmyTextActor;
-  private CountryImageState currentImageState = CountryImageState.UNOWNED;
+  private final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages;
+  private final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages;
+  private final CountryImageData imageData;
+  private final CountryArmyTextActor armyTextActor;
+  private CountryPrimaryImageState currentPrimaryImageState = CountryPrimaryImageState.UNOWNED;
+  private CountrySecondaryImageState currentSecondaryImageState = CountrySecondaryImageState.NONE;
   private boolean isEnabled = true;
-  private Image currentImage;
+  private CountryImage <CountryPrimaryImageState> currentPrimaryImage;
+  private CountryImage <CountrySecondaryImageState> currentSecondaryImage;
 
-  public CountryActor (final SortedMap <CountryImageState, Image> countryImageStatesToImages,
-                       final CountryImageData countryImageData,
-                       final CountryArmyTextActor countryArmyTextActor)
+  public CountryActor (final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages,
+                       final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages,
+                       final CountryImageData imageData,
+                       final CountryArmyTextActor armyTextActor)
   {
-    Arguments.checkIsNotNull (countryImageStatesToImages, "countryImageStatesToImages");
-    Arguments.checkHasNoNullKeysOrValues (countryImageStatesToImages, "countryImageStatesToImages");
-    Arguments.checkIsNotNull (countryImageData, "countryImageData");
-    Arguments.checkIsNotNull (countryArmyTextActor, "countryArmyTextActor");
+    Arguments.checkIsNotNull (primaryImages, "primaryImages");
+    Arguments.checkIsNotNull (secondaryImages, "secondaryImages");
+    Arguments.checkIsNotNull (imageData, "imageData");
+    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
 
-    this.countryImageStatesToImages = countryImageStatesToImages;
-    this.countryImageData = countryImageData;
-    this.countryArmyTextActor = countryArmyTextActor;
+    this.primaryImages = primaryImages;
+    this.secondaryImages = secondaryImages;
+    this.imageData = imageData;
+    this.armyTextActor = armyTextActor;
 
-    final Vector2 tempPosition = new Vector2 (countryImageData.getReferenceDestination ());
+    final Vector2 tempPosition = new Vector2 (imageData.getReferenceDestination ());
     tempPosition.y = ClassicPlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
     tempPosition.scl (ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
 
-    setName (countryImageData.getName ());
+    setName (imageData.getName ());
+    setTransform (false);
 
-    for (final Image countryImage : countryImageStatesToImages.values ())
+    for (final CountryPrimaryImage primaryImage : primaryImages.getAll ())
     {
-      countryImage.setVisible (false);
-      countryImage.setPosition (tempPosition.x, tempPosition.y);
-      countryImage.setScale (ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.x,
-                             ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING.y);
-      addActor (countryImage);
+      primaryImage.setVisible (false);
+      primaryImage.setPosition (tempPosition);
+      primaryImage.setScale (ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+      addActor (primaryImage);
     }
 
-    addActor (countryArmyTextActor);
+    for (final CountrySecondaryImage countrySecondaryImage : secondaryImages.getAll ())
+    {
+      countrySecondaryImage.setVisible (false);
+      countrySecondaryImage.setPosition (tempPosition);
+      countrySecondaryImage.setScale (ClassicPlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+      addActor (countrySecondaryImage);
+    }
 
-    changeStateTo (CountryImageState.UNOWNED);
+    changePrimaryStateTo (currentPrimaryImageState);
+    changeSecondaryStateTo (currentSecondaryImageState);
   }
 
-  public CountryImageState getCurrentImageState ()
+  public CountryPrimaryImageState getCurrentPrimaryImageState ()
   {
-    return currentImageState;
+    return currentPrimaryImageState;
   }
 
-  public void changeStateRandomly ()
+  public CountrySecondaryImageState getCurrentSecondaryImageState ()
   {
-    CountryImageState randomState;
+    return currentSecondaryImageState;
+  }
+
+  public void changePrimaryStateRandomly ()
+  {
+    CountryPrimaryImageState randomState;
 
     do
     {
-      randomState = Randomness.getRandomElementFrom (CountryImageState.values ());
+      randomState = Randomness.getRandomElementFrom (CountryPrimaryImageState.values ());
     }
-    while (randomState.is (currentImageState));
+    while (randomState.is (currentPrimaryImageState));
 
-    changeStateTo (randomState);
+    changePrimaryStateTo (randomState);
   }
 
-  public void changeStateTo (final CountryImageState state)
+  public void changePrimaryStateTo (final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
 
-    if (state.is (CountryImageState.HIGHLIGHT)) return;
-
-    hide (currentImageState);
-    currentImageState = state;
-    currentImage = countryImageStatesToImages.get (currentImageState);
-    countryArmyTextActor.onStateChange (state);
-    show (currentImageState);
+    hide (currentPrimaryImageState);
+    currentPrimaryImageState = state;
+    currentPrimaryImage = primaryImages.get (state);
+    armyTextActor.onPrimaryStateChange (state);
+    show (state);
   }
 
-  public void nextState ()
+  public void changeSecondaryStateTo (final CountrySecondaryImageState state)
   {
-    final CountryImageState state = getCurrentImageState ();
+    Arguments.checkIsNotNull (state, "state");
 
-    changeStateTo (state.hasNextValid () ? state.nextValid () : state.first ());
+    hide (currentSecondaryImageState);
+    currentSecondaryImageState = state;
+    currentSecondaryImage = secondaryImages.get (state);
+    show (state);
+  }
+
+  public void nextPrimaryState ()
+  {
+    changePrimaryStateTo (currentPrimaryImageState.hasNext () ? currentPrimaryImageState.next ()
+            : currentPrimaryImageState.first ());
   }
 
   public void onHoverStart ()
   {
     if (!isEnabled || !ClassicPlayMapSettings.ENABLE_HOVER_EFFECTS) return;
-    if (currentImageState == CountryImageState.DISABLED) return;
+    if (currentPrimaryImageState == CountryPrimaryImageState.DISABLED) return;
 
-    show (CountryImageState.HIGHLIGHT);
+    show (CountrySecondaryImageState.HOVERED);
   }
 
   public void onHoverEnd ()
   {
     if (!isEnabled || !ClassicPlayMapSettings.ENABLE_HOVER_EFFECTS) return;
 
-    hide (CountryImageState.HIGHLIGHT);
+    hide (CountrySecondaryImageState.HOVERED);
   }
 
   public void onTouchDown ()
   {
     if (!isEnabled || !ClassicPlayMapSettings.ENABLE_CLICK_EFFECTS) return;
-    if (currentImageState == CountryImageState.DISABLED) return;
+    if (currentPrimaryImageState == CountryPrimaryImageState.DISABLED) return;
   }
 
   public void onTouchUp ()
@@ -118,49 +145,49 @@ public final class CountryActor extends Group
     if (!isEnabled || !ClassicPlayMapSettings.ENABLE_CLICK_EFFECTS) return;
   }
 
-  public Image getCurrentImage ()
+  public Drawable getCurrentPrimaryDrawable ()
   {
-    return currentImage;
+    return currentPrimaryImage.getDrawable ();
   }
 
   public Vector2 getReferenceDestination ()
   {
-    return countryImageData.getReferenceDestination ();
+    return imageData.getReferenceDestination ();
   }
 
   public Vector2 getReferenceTextUpperLeft ()
   {
-    return countryImageData.getReferenceTextUpperLeft ();
+    return imageData.getReferenceTextUpperLeft ();
   }
 
   public float getReferenceWidth ()
   {
-    return countryImageData.getReferenceWidth ();
+    return imageData.getReferenceWidth ();
   }
 
   public float getReferenceHeight ()
   {
-    return countryImageData.getReferenceHeight ();
+    return imageData.getReferenceHeight ();
   }
 
   public void setArmies (final int armies)
   {
-    countryArmyTextActor.setArmies (armies);
+    armyTextActor.setArmies (armies);
   }
 
   public void incrementArmies ()
   {
-    countryArmyTextActor.incrementArmies ();
+    armyTextActor.incrementArmies ();
   }
 
   public void decrementArmies ()
   {
-    countryArmyTextActor.decrementArmies ();
+    armyTextActor.decrementArmies ();
   }
 
   public void changeArmiesBy (final int deltaArmies)
   {
-    countryArmyTextActor.changeArmiesBy (deltaArmies);
+    armyTextActor.changeArmiesBy (deltaArmies);
   }
 
   public void disable ()
@@ -173,18 +200,45 @@ public final class CountryActor extends Group
     isEnabled = true;
   }
 
-  private void hide (final CountryImageState state)
+  public int getAtlasIndex ()
   {
-    setStateVisibility (state, false);
+    return primaryImages.getAtlasIndex ();
   }
 
-  private void show (final CountryImageState state)
+  public CountryArmyTextActor getArmyTextActor ()
   {
-    setStateVisibility (state, true);
+    return armyTextActor;
   }
 
-  private void setStateVisibility (final CountryImageState state, final boolean isVisible)
+  private void hide (final CountryPrimaryImageState state)
   {
-    countryImageStatesToImages.get (state).setVisible (isVisible);
+    primaryImages.hide (state);
+  }
+
+  private void hide (final CountrySecondaryImageState state)
+  {
+    secondaryImages.hide (state);
+  }
+
+  private void show (final CountryPrimaryImageState state)
+  {
+    primaryImages.show (state);
+  }
+
+  private void show (final CountrySecondaryImageState state)
+  {
+    secondaryImages.show (state);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return String
+            .format ("%1$s | Name: %2$s | Current Primary Image State: %3$s | Current Secondary Image State: %4$s"
+                             + " | Current Primary Image: %5$s  | Current Secondary Image: %6$s | Enabled: %7$s | "
+                             + "Image Data: %8$s | Army Text Actor: %9$s | Primary Images: %10$s "
+                             + "| Secondary Images: %11$s", getClass ().getSimpleName (), getName (),
+                     currentPrimaryImageState, currentSecondaryImageState, currentPrimaryImage, currentSecondaryImage,
+                     isEnabled, imageData, armyTextActor, primaryImages, secondaryImages);
   }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
@@ -87,13 +88,6 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   {
     private final MBassador <Event> eventBus;
 
-    public TextFieldInputListener (final MBassador <Event> eventBus)
-    {
-      Arguments.checkIsNotNull (eventBus, "eventBus");
-
-      this.eventBus = eventBus;
-    }
-
     @Override
     public boolean keyDown (final InputEvent event, final int keycode)
     {
@@ -117,6 +111,13 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
           return false;
         }
       }
+    }
+
+    private TextFieldInputListener (final MBassador <Event> eventBus)
+    {
+      Arguments.checkIsNotNull (eventBus, "eventBus");
+
+      this.eventBus = eventBus;
     }
   }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GLTexture;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 // TODO: Use AssetManager.
 public final class Assets
 {
+  public static BitmapFont defaultFont;
   public static TextureAtlas menuAtlas;
   public static Music menuMusic;
   public static Texture playScreenBackground;
@@ -55,6 +57,7 @@ public final class Assets
       return;
     }
 
+    defaultFont.dispose ();
     menuAtlas.dispose ();
     menuNormalCursor.dispose ();
     menuMusic.dispose ();
@@ -136,6 +139,7 @@ public final class Assets
       log.info ("Attempting to load assets from: \"{}\"...", destAssetsDir.file ());
 
       // @formatter:off
+      defaultFont = new BitmapFont ();
       menuAtlas = new TextureAtlas (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/atlases/menus.atlas"));
       menuMusic = Gdx.audio.newMusic (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/menus/shared/music/peril.ogg"));
       menuNormalCursor = new Pixmap (Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + "/screens/shared/cursors/normalCursor.png"));

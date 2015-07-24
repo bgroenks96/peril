@@ -44,7 +44,7 @@ antarcticaGreen
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaHighlight
+antarcticaHovered
   rotate: false
   xy: 0, 936
   size: 2048, 154

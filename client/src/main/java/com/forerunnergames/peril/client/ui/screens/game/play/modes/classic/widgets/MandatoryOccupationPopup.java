@@ -609,7 +609,7 @@ public class MandatoryOccupationPopup extends Dialog
 
   private static Image asImage (final CountryActor countryActor)
   {
-    return new Image (countryActor.getCurrentImage ().getDrawable (), Scaling.none);
+    return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
   }
 
   private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,

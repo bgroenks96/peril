@@ -2,1165 +2,1277 @@ countries2.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-afghanistanBlue
-  rotate: false
-  xy: 799, 608
-  size: 207, 112
-  orig: 207, 112
-  offset: 0, 0
-  index: -1
-afghanistanBrown
+chinaBlue
   rotate: true
-  xy: 799, 1551
-  size: 207, 112
-  orig: 207, 112
+  xy: 168, 846
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanCyan
+chinaBrown
   rotate: true
-  xy: 888, 1760
-  size: 207, 112
-  orig: 207, 112
+  xy: 334, 168
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanDisabled
+chinaCyan
   rotate: true
-  xy: 913, 1551
-  size: 207, 112
-  orig: 207, 112
+  xy: 334, 447
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanGold
+chinaDisabled
   rotate: true
-  xy: 931, 1342
-  size: 207, 112
-  orig: 207, 112
+  xy: 510, 168
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanGreen
+chinaGold
   rotate: true
-  xy: 1002, 1760
-  size: 207, 112
-  orig: 207, 112
+  xy: 510, 447
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanHighlight
+chinaGreen
   rotate: true
-  xy: 1027, 1551
-  size: 207, 112
-  orig: 207, 112
+  xy: 168, 1125
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanPink
+chinaHovered
   rotate: true
-  xy: 1116, 1760
-  size: 207, 112
-  orig: 207, 112
+  xy: 168, 1404
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanPurple
+chinaPink
+  rotate: false
+  xy: 168, 1683
+  size: 277, 174
+  orig: 277, 174
+  offset: 0, 0
+  index: -1
+chinaPurple
   rotate: true
-  xy: 874, 722
-  size: 207, 112
-  orig: 207, 112
+  xy: 344, 830
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanRed
+chinaRed
   rotate: true
-  xy: 874, 931
-  size: 207, 112
-  orig: 207, 112
+  xy: 686, 168
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanSilver
+chinaSilver
   rotate: true
-  xy: 1045, 1339
-  size: 207, 112
-  orig: 207, 112
+  xy: 686, 447
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanTeal
+chinaTeal
   rotate: true
-  xy: 1141, 1548
-  size: 207, 112
-  orig: 207, 112
+  xy: 344, 1109
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
-afghanistanUnowned
+chinaUnowned
   rotate: true
-  xy: 1230, 1757
-  size: 207, 112
-  orig: 207, 112
-  offset: 0, 0
-  index: -1
-alaskaBrown
-  rotate: false
-  xy: 550, 2
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaCyan
-  rotate: false
-  xy: 773, 2
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaDisabled
-  rotate: false
-  xy: 996, 2
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaGold
-  rotate: false
-  xy: 1219, 2
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaGreen
-  rotate: false
-  xy: 1442, 2
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaHighlight
-  rotate: false
-  xy: 1665, 2
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaPink
-  rotate: false
-  xy: 550, 109
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaPurple
-  rotate: false
-  xy: 773, 109
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaRed
-  rotate: false
-  xy: 996, 109
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaSilver
-  rotate: false
-  xy: 1219, 109
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaTeal
-  rotate: false
-  xy: 1442, 109
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-alaskaUnowned
-  rotate: false
-  xy: 1665, 109
-  size: 221, 105
-  orig: 221, 105
-  offset: 0, 0
-  index: -1
-albertaBrown
-  rotate: false
-  xy: 1447, 385
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaCyan
-  rotate: false
-  xy: 1447, 452
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaDisabled
-  rotate: false
-  xy: 1447, 519
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaGold
-  rotate: false
-  xy: 1839, 466
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaGreen
-  rotate: false
-  xy: 1839, 533
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaHighlight
-  rotate: false
-  xy: 1447, 586
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaPink
-  rotate: false
-  xy: 1447, 653
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaPurple
-  rotate: false
-  xy: 1447, 720
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaRed
-  rotate: false
-  xy: 1839, 600
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaSilver
-  rotate: false
-  xy: 1839, 667
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaTeal
-  rotate: false
-  xy: 1839, 734
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-albertaUnowned
-  rotate: false
-  xy: 1447, 787
-  size: 206, 65
-  orig: 206, 65
-  offset: 0, 0
-  index: -1
-argentinaGold
-  rotate: false
-  xy: 2, 1830
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaGreen
-  rotate: false
-  xy: 129, 1830
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaHighlight
-  rotate: false
-  xy: 256, 1830
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaPink
-  rotate: false
-  xy: 392, 282
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaPurple
-  rotate: false
-  xy: 392, 500
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaRed
-  rotate: false
-  xy: 392, 718
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaSilver
-  rotate: false
-  xy: 392, 936
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaTeal
-  rotate: false
-  xy: 392, 1154
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-argentinaUnowned
-  rotate: false
-  xy: 503, 1571
-  size: 125, 216
-  orig: 125, 216
-  offset: 0, 0
-  index: -1
-brazilHighlight
-  rotate: false
-  xy: 2, 2
-  size: 221, 227
-  orig: 221, 227
-  offset: 0, 0
-  index: -1
-brazilPink
-  rotate: false
-  xy: 2, 231
-  size: 221, 227
-  orig: 221, 227
-  offset: 0, 0
-  index: -1
-brazilPurple
-  rotate: false
-  xy: 2, 460
-  size: 221, 227
-  orig: 221, 227
-  offset: 0, 0
-  index: -1
-brazilRed
-  rotate: false
-  xy: 2, 689
-  size: 221, 227
-  orig: 221, 227
-  offset: 0, 0
-  index: -1
-brazilSilver
-  rotate: false
-  xy: 2, 918
-  size: 221, 227
-  orig: 221, 227
-  offset: 0, 0
-  index: -1
-brazilTeal
-  rotate: false
-  xy: 2, 1147
-  size: 221, 227
-  orig: 221, 227
-  offset: 0, 0
-  index: -1
-brazilUnowned
-  rotate: false
-  xy: 2, 1376
-  size: 221, 227
-  orig: 221, 227
+  xy: 344, 1388
+  size: 277, 174
+  orig: 277, 174
   offset: 0, 0
   index: -1
 congoBlue
   rotate: true
-  xy: 1801, 1535
+  xy: 1684, 1276
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaCyan
-  rotate: false
-  xy: 2, 1605
-  size: 165, 223
-  orig: 165, 223
+congoBrown
+  rotate: true
+  xy: 1528, 1335
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaDisabled
-  rotate: false
-  xy: 169, 1605
-  size: 165, 223
-  orig: 165, 223
+congoCyan
+  rotate: true
+  xy: 1378, 1339
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaGold
-  rotate: false
-  xy: 225, 2
-  size: 165, 223
-  orig: 165, 223
+congoDisabled
+  rotate: true
+  xy: 1222, 1384
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaGreen
-  rotate: false
-  xy: 225, 227
-  size: 165, 223
-  orig: 165, 223
+congoGold
+  rotate: true
+  xy: 1011, 1413
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaHighlight
-  rotate: false
-  xy: 225, 452
-  size: 165, 223
-  orig: 165, 223
+congoGreen
+  rotate: true
+  xy: 1011, 1541
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaPink
+congoHovered
   rotate: false
-  xy: 225, 677
-  size: 165, 223
-  orig: 165, 223
+  xy: 1011, 1669
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaPurple
-  rotate: false
-  xy: 225, 902
-  size: 165, 223
-  orig: 165, 223
+congoPink
+  rotate: true
+  xy: 1823, 1332
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaRed
-  rotate: false
-  xy: 225, 1127
-  size: 165, 223
-  orig: 165, 223
+congoPurple
+  rotate: true
+  xy: 1667, 1404
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaSilver
-  rotate: false
-  xy: 225, 1352
-  size: 165, 223
-  orig: 165, 223
+congoRed
+  rotate: true
+  xy: 1517, 1463
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaTeal
-  rotate: false
-  xy: 336, 1577
-  size: 165, 223
-  orig: 165, 223
+congoSilver
+  rotate: true
+  xy: 1361, 1467
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaUnowned
-  rotate: false
-  xy: 383, 1802
-  size: 165, 223
-  orig: 165, 223
+congoTeal
+  rotate: true
+  xy: 1222, 1512
+  size: 126, 137
+  orig: 126, 137
+  offset: 0, 0
+  index: -1
+congoUnowned
+  rotate: true
+  xy: 1806, 1460
+  size: 126, 137
+  orig: 126, 137
   offset: 0, 0
   index: -1
 easternAustraliaBlue
   rotate: false
-  xy: 688, 1153
+  xy: 210, 1859
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaBrown
   rotate: false
-  xy: 829, 1153
+  xy: 351, 1859
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaCyan
-  rotate: true
-  xy: 1839, 801
+  rotate: false
+  xy: 447, 1667
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaDisabled
-  rotate: true
-  xy: 1839, 942
+  rotate: false
+  xy: 492, 1856
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaGold
-  rotate: true
-  xy: 1646, 982
+  rotate: false
+  xy: 588, 1666
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaGreen
-  rotate: true
-  xy: 1447, 1038
+  rotate: false
+  xy: 633, 1855
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaHighlight
-  rotate: true
-  xy: 1835, 1083
+easternAustraliaHovered
+  rotate: false
+  xy: 729, 1666
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaPink
-  rotate: true
-  xy: 1636, 1123
+  rotate: false
+  xy: 774, 1855
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaPurple
-  rotate: true
-  xy: 1447, 1179
+  rotate: false
+  xy: 870, 1666
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaRed
-  rotate: true
-  xy: 1825, 1224
+  rotate: false
+  xy: 915, 1855
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaSilver
   rotate: true
-  xy: 1636, 1264
+  xy: 1443, 168
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaTeal
   rotate: true
-  xy: 1447, 1320
+  xy: 1632, 168
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
 easternAustraliaUnowned
-  rotate: false
-  xy: 1344, 1756
+  rotate: true
+  xy: 1821, 168
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternUnitedStatesGold
+egyptBlue
   rotate: false
-  xy: 988, 722
-  size: 169, 135
-  orig: 169, 135
+  xy: 1856, 1101
+  size: 148, 75
+  orig: 148, 75
   offset: 0, 0
   index: -1
-easternUnitedStatesGreen
+egyptBrown
   rotate: false
-  xy: 988, 859
-  size: 169, 135
-  orig: 169, 135
+  xy: 1700, 1122
+  size: 148, 75
+  orig: 148, 75
   offset: 0, 0
   index: -1
-easternUnitedStatesHighlight
+egyptCyan
   rotate: false
-  xy: 988, 996
-  size: 169, 135
-  orig: 169, 135
+  xy: 1540, 1181
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+egyptDisabled
+  rotate: false
+  xy: 1384, 1185
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+egyptGold
+  rotate: false
+  xy: 1228, 1230
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+egyptGreen
+  rotate: false
+  xy: 1011, 1259
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+egyptHovered
+  rotate: false
+  xy: 1850, 1178
+  size: 148, 75
+  orig: 148, 75
   offset: 0, 0
   index: -1
 egyptPink
   rotate: false
-  xy: 1147, 1969
+  xy: 1690, 1199
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
 egyptPurple
   rotate: false
-  xy: 1297, 1966
+  xy: 1534, 1258
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
 egyptRed
   rotate: false
-  xy: 1254, 897
+  xy: 1378, 1262
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
+egyptSilver
+  rotate: false
+  xy: 1228, 1307
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+egyptTeal
+  rotate: false
+  xy: 1011, 1336
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+egyptUnowned
+  rotate: false
+  xy: 1840, 1255
+  size: 148, 75
+  orig: 148, 75
+  offset: 0, 0
+  index: -1
+falklandIslandsBlue
+  rotate: false
+  xy: 1050, 882
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
 falklandIslandsBrown
   rotate: false
-  xy: 1159, 1013
-  size: 89, 89
+  xy: 892, 1282
+  size: 85, 85
   orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsCyan
+  rotate: false
+  xy: 892, 1369
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsDisabled
+  rotate: true
+  xy: 2036, 2
+  size: 21, 7
+  orig: 89, 89
+  offset: 34, 41
+  index: -1
+falklandIslandsGold
+  rotate: false
+  xy: 892, 1456
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsGreen
+  rotate: false
+  xy: 892, 1543
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsHovered
+  rotate: false
+  xy: 1962, 1332
+  size: 80, 80
+  orig: 89, 89
+  offset: 4, 5
+  index: -1
+falklandIslandsPink
+  rotate: false
+  xy: 1945, 1475
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsPurple
+  rotate: false
+  xy: 1945, 1562
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsRed
+  rotate: false
+  xy: 1932, 1649
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsSilver
+  rotate: false
+  xy: 1637, 1670
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsTeal
+  rotate: false
+  xy: 1495, 1729
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+falklandIslandsUnowned
+  rotate: false
+  xy: 1357, 1733
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+indiaBlue
+  rotate: true
+  xy: 520, 830
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaBrown
+  rotate: true
+  xy: 862, 168
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaCyan
+  rotate: true
+  xy: 862, 377
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaDisabled
+  rotate: true
+  xy: 520, 1039
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaGold
+  rotate: true
+  xy: 520, 1248
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaGreen
+  rotate: true
+  xy: 520, 1457
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaHovered
+  rotate: true
+  xy: 706, 830
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaPink
+  rotate: true
+  xy: 1048, 168
+  size: 207, 184
+  orig: 207, 184
+  offset: 0, 0
+  index: -1
+indiaPurple
+  rotate: true
+  xy: 1048, 377
+  size: 207, 184
+  orig: 207, 184
   offset: 0, 0
   index: -1
 indiaRed
-  rotate: false
-  xy: 995, 385
+  rotate: true
+  xy: 706, 1039
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
 indiaSilver
   rotate: true
-  xy: 688, 735
+  xy: 706, 1248
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
 indiaTeal
   rotate: true
-  xy: 688, 944
+  xy: 706, 1457
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
 indiaUnowned
-  rotate: true
-  xy: 745, 1342
+  rotate: false
+  xy: 1234, 168
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indonesiaHighlight
+indonesiaBlue
   rotate: true
-  xy: 888, 216
+  xy: 2, 1863
+  size: 182, 102
+  orig: 182, 102
+  offset: 0, 0
+  index: -1
+indonesiaBrown
+  rotate: true
+  xy: 106, 1863
+  size: 182, 102
+  orig: 182, 102
+  offset: 0, 0
+  index: -1
+indonesiaCyan
+  rotate: false
+  xy: 334, 726
+  size: 182, 102
+  orig: 182, 102
+  offset: 0, 0
+  index: -1
+indonesiaDisabled
+  rotate: false
+  xy: 518, 726
+  size: 182, 102
+  orig: 182, 102
+  offset: 0, 0
+  index: -1
+indonesiaGold
+  rotate: false
+  xy: 702, 726
+  size: 182, 102
+  orig: 182, 102
+  offset: 0, 0
+  index: -1
+indonesiaGreen
+  rotate: false
+  xy: 886, 726
+  size: 182, 102
+  orig: 182, 102
+  offset: 0, 0
+  index: -1
+indonesiaHovered
+  rotate: false
+  xy: 1443, 309
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
 indonesiaPink
-  rotate: true
-  xy: 888, 400
+  rotate: false
+  xy: 1234, 354
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
 indonesiaPurple
-  rotate: true
-  xy: 1485, 1756
+  rotate: false
+  xy: 1627, 309
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
 indonesiaRed
-  rotate: true
-  xy: 1589, 1756
+  rotate: false
+  xy: 1811, 309
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
 indonesiaSilver
   rotate: false
-  xy: 1604, 1940
+  xy: 1418, 413
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
 indonesiaTeal
-  rotate: true
-  xy: 1693, 1753
+  rotate: false
+  xy: 1234, 458
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
 indonesiaUnowned
-  rotate: true
-  xy: 1797, 1753
+  rotate: false
+  xy: 1602, 413
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-japanGreen
-  rotate: true
-  xy: 799, 216
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanHighlight
-  rotate: true
-  xy: 799, 314
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanPink
-  rotate: true
-  xy: 799, 412
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanPurple
-  rotate: true
-  xy: 799, 510
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanRed
-  rotate: true
-  xy: 1255, 701
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanSilver
-  rotate: true
-  xy: 1255, 799
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanTeal
-  rotate: true
-  xy: 1255, 1332
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-japanUnowned
-  rotate: true
-  xy: 1255, 1430
-  size: 96, 87
-  orig: 96, 87
-  offset: 0, 0
-  index: -1
-madagascarTeal
-  rotate: true
-  xy: 550, 216
-  size: 49, 83
-  orig: 49, 83
-  offset: 0, 0
-  index: -1
-madagascarUnowned
-  rotate: true
-  xy: 635, 216
-  size: 49, 83
-  orig: 49, 83
-  offset: 0, 0
-  index: -1
-middleEastBlue
-  rotate: true
-  xy: 550, 1789
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastBrown
-  rotate: true
-  xy: 519, 282
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastCyan
-  rotate: true
-  xy: 519, 494
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastDisabled
-  rotate: true
-  xy: 519, 706
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastGold
-  rotate: true
-  xy: 519, 918
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastGreen
-  rotate: true
-  xy: 519, 1130
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastHighlight
-  rotate: true
-  xy: 576, 1342
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastPink
-  rotate: true
-  xy: 630, 1554
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastPurple
-  rotate: true
-  xy: 719, 1766
-  size: 210, 167
-  orig: 210, 167
-  offset: 0, 0
-  index: -1
-middleEastRed
+kamchatkaBlue
   rotate: false
-  xy: 995, 216
-  size: 210, 167
-  orig: 210, 167
+  xy: 2, 2
+  size: 337, 164
+  orig: 337, 164
   offset: 0, 0
   index: -1
-middleEastSilver
+kamchatkaBrown
   rotate: false
-  xy: 1207, 216
-  size: 210, 167
-  orig: 210, 167
+  xy: 341, 2
+  size: 337, 164
+  orig: 337, 164
   offset: 0, 0
   index: -1
-middleEastTeal
+kamchatkaCyan
   rotate: false
-  xy: 1419, 216
-  size: 210, 167
-  orig: 210, 167
+  xy: 680, 2
+  size: 337, 164
+  orig: 337, 164
   offset: 0, 0
   index: -1
-middleEastUnowned
+kamchatkaDisabled
   rotate: false
-  xy: 1631, 216
-  size: 210, 167
-  orig: 210, 167
+  xy: 1019, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaGold
+  rotate: false
+  xy: 1358, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaGreen
+  rotate: false
+  xy: 1697, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaHovered
+  rotate: true
+  xy: 2, 168
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaPink
+  rotate: true
+  xy: 2, 507
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaPurple
+  rotate: true
+  xy: 2, 846
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaRed
+  rotate: true
+  xy: 2, 1185
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaSilver
+  rotate: true
+  xy: 2, 1524
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaTeal
+  rotate: true
+  xy: 168, 168
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaUnowned
+  rotate: true
+  xy: 168, 507
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+newGuineaBlue
+  rotate: true
+  xy: 1150, 1634
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaBrown
+  rotate: false
+  xy: 1656, 1532
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaCyan
+  rotate: false
+  xy: 1794, 1588
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaDisabled
+  rotate: true
+  xy: 1169, 738
+  size: 130, 61
+  orig: 136, 67
+  offset: 3, 3
+  index: -1
+newGuineaGold
+  rotate: false
+  xy: 1500, 1591
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaGreen
+  rotate: false
+  xy: 1361, 1595
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaHovered
+  rotate: false
+  xy: 1219, 1640
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaPink
+  rotate: false
+  xy: 1638, 1601
+  size: 136, 67
+  orig: 136, 67
   offset: 0, 0
   index: -1
 newGuineaPurple
   rotate: false
-  xy: 719, 1978
+  xy: 1499, 1660
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
 newGuineaRed
   rotate: false
-  xy: 857, 1978
+  xy: 1357, 1664
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
+newGuineaSilver
+  rotate: false
+  xy: 1219, 1709
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaTeal
+  rotate: false
+  xy: 1776, 1657
+  size: 136, 67
+  orig: 136, 67
+  offset: 0, 0
+  index: -1
+newGuineaUnowned
+  rotate: true
+  xy: 1169, 870
+  size: 130, 61
+  orig: 136, 67
+  offset: 3, 3
+  index: -1
+newZealandBlue
+  rotate: true
+  xy: 1139, 1772
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandBrown
+  rotate: false
+  xy: 1117, 1869
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandCyan
+  rotate: false
+  xy: 1117, 1947
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandDisabled
+  rotate: true
+  xy: 1150, 1494
+  size: 68, 70
+  orig: 74, 76
+  offset: 3, 3
+  index: -1
+newZealandGold
+  rotate: false
+  xy: 1193, 1848
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandGreen
+  rotate: false
+  xy: 1193, 1926
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandHovered
+  rotate: true
+  xy: 1724, 1726
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandPink
+  rotate: true
+  xy: 1802, 1726
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandPurple
+  rotate: true
+  xy: 1582, 1757
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandRed
+  rotate: true
+  xy: 1444, 1816
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
+newZealandSilver
+  rotate: true
+  xy: 1299, 1820
+  size: 74, 76
+  orig: 74, 76
+  offset: 0, 0
+  index: -1
 newZealandTeal
   rotate: false
-  xy: 995, 1969
+  xy: 1269, 1896
   size: 74, 76
   orig: 74, 76
   offset: 0, 0
   index: -1
 newZealandUnowned
-  rotate: false
-  xy: 1071, 1969
-  size: 74, 76
+  rotate: true
+  xy: 1150, 1564
+  size: 68, 70
   orig: 74, 76
-  offset: 0, 0
+  offset: 3, 3
   index: -1
-ontarioGold
-  rotate: true
-  xy: 1344, 385
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioGreen
-  rotate: true
-  xy: 1344, 542
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioHighlight
-  rotate: true
-  xy: 1344, 699
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioPink
-  rotate: true
-  xy: 1344, 1133
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioPurple
-  rotate: true
-  xy: 1344, 1290
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioRed
-  rotate: true
-  xy: 1344, 1447
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioSilver
+philippinesBlue
   rotate: false
-  xy: 1447, 1945
-  size: 155, 101
-  orig: 155, 101
+  xy: 1167, 1002
+  size: 59, 80
+  orig: 59, 80
   offset: 0, 0
   index: -1
-ontarioTeal
-  rotate: true
-  xy: 1944, 1365
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-ontarioUnowned
-  rotate: true
-  xy: 1944, 1522
-  size: 155, 101
-  orig: 155, 101
-  offset: 0, 0
-  index: -1
-quebecBlue
-  rotate: true
-  xy: 688, 267
-  size: 154, 109
-  orig: 154, 109
-  offset: 0, 0
-  index: -1
-quebecBrown
-  rotate: true
-  xy: 688, 423
-  size: 154, 109
-  orig: 154, 109
-  offset: 0, 0
-  index: -1
-quebecCyan
-  rotate: true
-  xy: 688, 579
-  size: 154, 109
-  orig: 154, 109
-  offset: 0, 0
-  index: -1
-quebecDisabled
+philippinesBrown
   rotate: false
-  xy: 1788, 1937
-  size: 154, 109
-  orig: 154, 109
+  xy: 1167, 1084
+  size: 59, 80
+  orig: 59, 80
   offset: 0, 0
   index: -1
-quebecGold
-  rotate: true
-  xy: 1936, 1679
-  size: 154, 109
-  orig: 154, 109
+philippinesCyan
+  rotate: false
+  xy: 1167, 1166
+  size: 59, 80
+  orig: 59, 80
   offset: 0, 0
   index: -1
-scandinaviaBlue
-  rotate: true
-  xy: 1254, 982
-  size: 149, 90
-  orig: 149, 90
+philippinesDisabled
+  rotate: false
+  xy: 1178, 586
+  size: 53, 74
+  orig: 59, 80
+  offset: 3, 3
+  index: -1
+philippinesGold
+  rotate: false
+  xy: 1167, 1248
+  size: 59, 80
+  orig: 59, 80
   offset: 0, 0
+  index: -1
+philippinesGreen
+  rotate: false
+  xy: 1161, 1330
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesHovered
+  rotate: false
+  xy: 1161, 1412
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesPink
+  rotate: true
+  xy: 1962, 1414
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesPurple
+  rotate: true
+  xy: 1056, 1808
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesRed
+  rotate: true
+  xy: 1217, 1778
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesSilver
+  rotate: false
+  xy: 1056, 1869
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesTeal
+  rotate: false
+  xy: 1056, 1951
+  size: 59, 80
+  orig: 59, 80
+  offset: 0, 0
+  index: -1
+philippinesUnowned
+  rotate: false
+  xy: 1178, 662
+  size: 53, 74
+  orig: 59, 80
+  offset: 3, 3
   index: -1
 siamBlue
   rotate: false
-  xy: 1346, 974
+  xy: 1944, 413
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaGreen
-  rotate: true
-  xy: 392, 1372
-  size: 197, 182
-  orig: 197, 182
-  offset: 0, 0
-  index: -1
-siberiaHighlight
+siamBrown
   rotate: false
-  xy: 1843, 282
-  size: 197, 182
-  orig: 197, 182
+  xy: 1070, 726
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaPink
+siamCyan
   rotate: true
-  xy: 970, 1140
-  size: 197, 182
-  orig: 197, 182
+  xy: 1892, 569
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaPurple
+siamDisabled
   rotate: true
-  xy: 1655, 385
-  size: 197, 182
-  orig: 197, 182
+  xy: 1892, 668
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaRed
+siamGold
   rotate: true
-  xy: 1655, 584
-  size: 197, 182
-  orig: 197, 182
+  xy: 1391, 797
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaSilver
+siamGreen
   rotate: true
-  xy: 1655, 783
-  size: 197, 182
-  orig: 197, 182
+  xy: 1232, 842
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaTeal
+siamHovered
   rotate: true
-  xy: 1154, 1133
-  size: 197, 182
-  orig: 197, 182
+  xy: 1011, 970
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-siberiaUnowned
-  rotate: false
-  xy: 1447, 854
-  size: 197, 182
-  orig: 197, 182
+siamPink
+  rotate: true
+  xy: 1547, 797
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-southernEuropeGold
-  rotate: false
-  xy: 1801, 1679
-  size: 133, 70
-  orig: 133, 70
+siamPurple
+  rotate: true
+  xy: 1703, 833
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-uralPurple
+siamRed
   rotate: false
-  xy: 1255, 1604
-  size: 180, 150
-  orig: 180, 150
+  xy: 892, 970
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-uralRed
-  rotate: false
-  xy: 1437, 1604
-  size: 180, 150
-  orig: 180, 150
+siamSilver
+  rotate: true
+  xy: 1859, 907
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
-uralSilver
-  rotate: false
-  xy: 1619, 1601
-  size: 180, 150
-  orig: 180, 150
+siamTeal
+  rotate: true
+  xy: 1388, 896
+  size: 97, 154
+  orig: 97, 154
+  offset: 0, 0
+  index: -1
+siamUnowned
+  rotate: true
+  xy: 1232, 941
+  size: 97, 154
+  orig: 97, 154
   offset: 0, 0
   index: -1
 venezuelaBlue
-  rotate: true
-  xy: 1159, 701
+  rotate: false
+  xy: 1544, 896
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
 venezuelaBrown
-  rotate: true
-  xy: 1159, 857
+  rotate: false
+  xy: 1700, 932
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
 venezuelaCyan
-  rotate: true
-  xy: 1159, 1332
+  rotate: false
+  xy: 1544, 991
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
+venezuelaDisabled
+  rotate: false
+  xy: 1388, 995
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaGold
+  rotate: false
+  xy: 1011, 1069
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaGreen
+  rotate: false
+  xy: 1228, 1040
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaHovered
+  rotate: false
+  xy: 1011, 1164
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaPink
+  rotate: true
+  xy: 892, 1126
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaPurple
+  rotate: false
+  xy: 1856, 1006
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaRed
+  rotate: false
+  xy: 1700, 1027
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaSilver
+  rotate: false
+  xy: 1544, 1086
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaTeal
+  rotate: false
+  xy: 1384, 1090
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaUnowned
+  rotate: false
+  xy: 1228, 1135
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+westernAustraliaBlue
+  rotate: false
+  xy: 862, 586
+  size: 156, 138
+  orig: 156, 138
+  offset: 0, 0
+  index: -1
+westernAustraliaBrown
+  rotate: false
+  xy: 1020, 586
+  size: 156, 138
+  orig: 156, 138
+  offset: 0, 0
+  index: -1
 westernAustraliaCyan
   rotate: false
-  xy: 392, 2
+  xy: 1786, 413
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
 westernAustraliaDisabled
   rotate: false
-  xy: 1888, 2
+  xy: 1418, 517
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
 westernAustraliaGold
   rotate: false
-  xy: 392, 142
+  xy: 1234, 562
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
 westernAustraliaGreen
   rotate: false
-  xy: 1888, 142
+  xy: 892, 830
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaHighlight
-  rotate: true
-  xy: 1204, 385
+westernAustraliaHovered
+  rotate: false
+  xy: 1576, 517
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
 westernAustraliaPink
-  rotate: true
-  xy: 1204, 543
+  rotate: false
+  xy: 1734, 553
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
 westernAustraliaPurple
   rotate: false
-  xy: 1447, 1461
+  xy: 1392, 657
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
 westernAustraliaRed
   rotate: false
-  xy: 1605, 1461
+  xy: 1233, 702
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernEuropeBlue
-  rotate: true
-  xy: 1901, 1835
-  size: 97, 85
-  orig: 97, 85
+westernAustraliaSilver
+  rotate: false
+  xy: 1550, 657
+  size: 156, 138
+  orig: 156, 138
   offset: 0, 0
   index: -1
-westernEuropeBrown
+westernAustraliaTeal
   rotate: false
-  xy: 1944, 1934
-  size: 97, 85
-  orig: 97, 85
+  xy: 1708, 693
+  size: 156, 138
+  orig: 156, 138
   offset: 0, 0
   index: -1
-westernUnitedStatesHighlight
+westernAustraliaUnowned
   rotate: false
-  xy: 1008, 571
-  size: 176, 128
-  orig: 176, 128
-  offset: 0, 0
-  index: -1
-westernUnitedStatesPink
-  rotate: false
-  xy: 1763, 1405
-  size: 176, 128
-  orig: 176, 128
+  xy: 1866, 767
+  size: 156, 138
+  orig: 156, 138
   offset: 0, 0
   index: -1

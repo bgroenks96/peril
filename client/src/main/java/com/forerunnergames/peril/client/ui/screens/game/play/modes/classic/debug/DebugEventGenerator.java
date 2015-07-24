@@ -2,13 +2,14 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debu
 
 import com.forerunnergames.peril.core.model.Packets;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
-import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
@@ -90,7 +91,8 @@ public final class DebugEventGenerator
 
   private final MBassador <Event> eventBus;
   private final Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
-  private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator = PlayerTurnOrder.validSortedValues ().iterator ();
+  private UnmodifiableIterator <PlayerColor> playerColorIterator = createPlayerColorIterator ();
+  private UnmodifiableIterator <PlayerTurnOrder> playerTurnOrderIterator = createPlayerTurnOrderIterator ();
 
   public DebugEventGenerator (final MBassador <Event> eventBus)
   {
@@ -112,7 +114,7 @@ public final class DebugEventGenerator
 
   public void generatePlayerJoinGameSuccessEvent ()
   {
-    eventBus.publish (new PlayerJoinGameSuccessEvent (Packets.from (createPlayer ())));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (createPlayer ()));
   }
 
   public void generateCountryArmiesChangedEvent ()
@@ -120,8 +122,14 @@ public final class DebugEventGenerator
     eventBus.publish (new CountryArmiesChangedEvent (getRandomCountryNameString (), getRandomCountryDeltaArmyCount ()));
   }
 
+  public void generatePlayerSelectCountryResponseSuccessEvent ()
+  {
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (getRandomCountryNameString (), createPlayer ()));
+  }
+
   public void resetPlayers ()
   {
+    playerColorIterator = createPlayerColorIterator ();
     playerTurnOrderIterator = createPlayerTurnOrderIterator ();
     availablePlayerNames.clear ();
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
@@ -135,6 +143,11 @@ public final class DebugEventGenerator
   private static int getRandomCountryDeltaArmyCount ()
   {
     return Randomness.getRandomIntegerFrom (0, 99);
+  }
+
+  private static UnmodifiableIterator <PlayerColor> createPlayerColorIterator ()
+  {
+    return PlayerColor.validValues ().iterator ();
   }
 
   private static UnmodifiableIterator <PlayerTurnOrder> createPlayerTurnOrderIterator ()
@@ -159,16 +172,16 @@ public final class DebugEventGenerator
     return new DefaultChatMessage (author, createMessageText ());
   }
 
-  private Player createPlayer ()
+  private PlayerPacket createPlayer ()
   {
     if (shouldResetPlayers ()) resetPlayers ();
 
-    return PlayerFactory.builder (createPlayerName ()).turnOrder (createPlayerTurnOrder ()).build ();
+    return Packets.from (PlayerFactory.builder (createPlayerName ()).color (createPlayerColor ()).turnOrder (createPlayerTurnOrder ()).build ());
   }
 
   private boolean shouldResetPlayers ()
   {
-    return !playerTurnOrderIterator.hasNext () || availablePlayerNames.isEmpty ();
+    return !playerColorIterator.hasNext () || !playerTurnOrderIterator.hasNext () || availablePlayerNames.isEmpty ();
   }
 
   private String createPlayerName ()
@@ -178,6 +191,11 @@ public final class DebugEventGenerator
     availablePlayerNames.remove (playerName);
 
     return playerName;
+  }
+
+  private PlayerColor createPlayerColor ()
+  {
+    return playerColorIterator.next ();
   }
 
   private PlayerTurnOrder createPlayerTurnOrder ()
