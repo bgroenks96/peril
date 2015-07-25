@@ -49,8 +49,8 @@ public final class PlayerCountryAssignmentCompleteEvent implements ServerNotific
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Country Packets to Player Packets: %2$s", getClass ().getSimpleName (),
-                          Strings.toString (countryToPlayerPackets));
+    return Strings.format ("{}: Country Packets to Player Packets: {}", getClass ().getSimpleName (),
+                           Strings.toString (countryToPlayerPackets));
   }
 
   @RequiredForNetworkSerialization

@@ -8,6 +8,7 @@ import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerCo
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <ChangePlayerColorDeniedEvent.Reason>
@@ -45,7 +46,7 @@ public final class ChangePlayerColorDeniedEvent extends AbstractDeniedEvent <Cha
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), playerColorEvent, super.toString ());
+    return Strings.format ("{} | {}", super.toString (), playerColorEvent);
   }
 
   @RequiredForNetworkSerialization

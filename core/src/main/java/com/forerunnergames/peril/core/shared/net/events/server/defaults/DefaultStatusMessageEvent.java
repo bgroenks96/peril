@@ -4,6 +4,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.interfaces.Status
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
@@ -43,7 +44,7 @@ public final class DefaultStatusMessageEvent implements StatusMessageEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Message: %2$s | Recipients: %3$s", getClass ().getSimpleName (), message, recipients);
+    return Strings.format ("%{}: Message: {} | Recipients: {}", getClass ().getSimpleName (), message, recipients);
   }
 
   @RequiredForNetworkSerialization

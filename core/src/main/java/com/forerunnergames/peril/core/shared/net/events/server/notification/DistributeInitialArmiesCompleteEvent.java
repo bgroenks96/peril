@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
@@ -22,6 +23,12 @@ public final class DistributeInitialArmiesCompleteEvent implements ServerNotific
   public ImmutableSet <PlayerPacket> getPlayers ()
   {
     return players;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Players: {}", getClass ().getSimpleName (), players);
   }
 
   @RequiredForNetworkSerialization

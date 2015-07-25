@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.server.defaults;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
@@ -30,6 +31,6 @@ public abstract class AbstractDeniedEvent <T> implements DeniedEvent<T>
   @Override
   public String toString ()
   {
-    return String.format ("Reason for denial: %1$s", reason);
+    return Strings.format ("{}: Reason for denial: {}", getClass ().getSimpleName (), reason);
   }
 }

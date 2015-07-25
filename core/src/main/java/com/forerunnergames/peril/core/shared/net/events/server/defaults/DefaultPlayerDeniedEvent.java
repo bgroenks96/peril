@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.server.defaults;
 
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
@@ -25,7 +26,7 @@ public final class DefaultPlayerDeniedEvent implements PlayerDeniedEvent <String
   @Override
   public String toString ()
   {
-    return String.format ("%1$s", deniedEvent);
+    return Strings.format ("{}: {}", getClass ().getSimpleName (), deniedEvent);
   }
 
   @RequiredForNetworkSerialization

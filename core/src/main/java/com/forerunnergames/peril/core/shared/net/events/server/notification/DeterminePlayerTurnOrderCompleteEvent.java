@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
@@ -22,6 +23,12 @@ public final class DeterminePlayerTurnOrderCompleteEvent implements ServerNotifi
   public ImmutableSet <PlayerPacket> getOrderedPlayers ()
   {
     return turnOrderedPlayers;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Turn Ordered Players: {}", getClass ().getSimpleName (), turnOrderedPlayers);
   }
 
   @RequiredForNetworkSerialization

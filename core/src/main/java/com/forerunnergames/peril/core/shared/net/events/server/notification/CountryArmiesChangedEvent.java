@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
@@ -25,6 +26,13 @@ public final class CountryArmiesChangedEvent implements ServerNotificationEvent
   public int getDeltaArmyCount ()
   {
     return deltaArmyCount;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Country Name: {} | Delta Army Count: {}", getClass ().getSimpleName (), countryName,
+                           deltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
