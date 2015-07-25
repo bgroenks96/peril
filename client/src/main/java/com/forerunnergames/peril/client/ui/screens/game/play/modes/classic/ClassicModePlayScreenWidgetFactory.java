@@ -3,7 +3,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -16,7 +15,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.ChatBox;
-import com.forerunnergames.peril.client.ui.widgets.LabelFactory;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
@@ -38,7 +36,6 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
   private static final int MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
   private static final int MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private final Skin skin;
-  private final LabelFactory labelFactory;
   private final MessageBoxRowStyle messageBoxRowStyle;
   private final ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle;
 
@@ -62,8 +59,6 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     {
       messageBoxScrollPaneStyle.hScrollKnob.setMinHeight (MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT);
     }
-
-    labelFactory = new LabelFactory (skin.get (Label.LabelStyle.class));
   }
 
   public static PlayMapActor createPlayMapActor (final ScreenSize screenSize,
@@ -79,14 +74,14 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
 
   public MessageBox <StatusMessage> createStatusBox ()
   {
-    return new DefaultMessageBox <> (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle);
+    return new DefaultMessageBox <> (messageBoxScrollPaneStyle, this, messageBoxRowStyle);
   }
 
   public MessageBox <ChatMessage> createChatBox (final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return new ChatBox (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle,
+    return new ChatBox (messageBoxScrollPaneStyle, this, messageBoxRowStyle,
             skin.get (TextField.TextFieldStyle.class), eventBus);
   }
 
@@ -97,7 +92,7 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
 
   public <T extends Message> MessageBox <T> createMessageBox ()
   {
-    return new DefaultMessageBox <> (messageBoxScrollPaneStyle, labelFactory, messageBoxRowStyle);
+    return new DefaultMessageBox <> (messageBoxScrollPaneStyle, this, messageBoxRowStyle);
   }
 
   public Actor createSideBar (final MBassador <Event> eventBus)

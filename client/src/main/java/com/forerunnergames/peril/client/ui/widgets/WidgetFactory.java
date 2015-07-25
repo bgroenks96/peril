@@ -75,12 +75,25 @@ public class WidgetFactory
     return new QuitPopup (skin, message, stage, listener);
   }
 
-  public Label createLabel (final String text, final int alignment)
+  public Label createLabel (final String text, final int alignment, final String labelStyle)
   {
     Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNull (labelStyle, "labelStyle");
 
-    final Label label = new Label (text, skin);
+    final Label label = new Label (text, skin, labelStyle);
     label.setAlignment (alignment);
+
+    return label;
+  }
+
+  public Label createWrappingLabel (final String text, final int alignment, final String labelStyle)
+  {
+    Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNull (labelStyle, "labelStyle");
+
+    final Label label = new Label (text, skin, labelStyle);
+    label.setAlignment (alignment);
+    label.setWrap (true);
 
     return label;
   }

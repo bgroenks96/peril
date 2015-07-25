@@ -22,7 +22,7 @@ public final class MultiplayerPerilGameModeMenuScreen extends AbstractMenuScreen
     super (widgetFactory, screenChanger, screenSize, batch);
 
     addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
-    addTitle ("PERIL MODE", Align.topLeft, 40);
+    addSubTitle ("PERIL MODE", Align.topLeft, 40);
 
     addMenuChoiceSpacer (22);
 

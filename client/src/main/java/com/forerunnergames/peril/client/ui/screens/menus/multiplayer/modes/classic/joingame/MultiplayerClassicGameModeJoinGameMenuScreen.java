@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeJoinGameMenuScreen.class);
-  private static final int COUNTRY_COUNT = 49;
   private final MBassador <Event> eventBus;
   private final TextField playerNameTextField;
   private final TextField playerClanTagTextField;
@@ -75,7 +74,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     this.eventBus = eventBus;
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
-    addTitle ("CLASSIC MODE", Align.topLeft, 40);
+    addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
 
     playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH,
                                                          GameSettings.PLAYER_NAME_PATTERN);
@@ -106,15 +105,15 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     final Table playerSettingsTable = new Table ().top ().left ();
     playerSettingsTable.add ().height (23).colspan (5);
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createLabel ("Your Player", Align.left)).size (538, 42).fill ().padLeft (60)
+    playerSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Your Player")).size (538, 42).fill ().padLeft (60)
             .padRight (60).left ().colspan (5);
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createLabel ("Name", Align.left)).size (150, 40).fill ().padLeft (90)
+    playerSettingsTable.add (widgetFactory.createMenuSettingText ("Name")).size (150, 40).fill ().padLeft (90)
             .left ().spaceRight (10);
     playerSettingsTable.add (playerNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
     playerSettingsTable.add ().expandX ().fill ();
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createLabel ("Clan Tag", Align.left)).size (150, 40).fill ().padLeft (90)
+    playerSettingsTable.add (widgetFactory.createMenuSettingText ("Clan Tag")).size (150, 40).fill ().padLeft (90)
             .left ().spaceRight (10);
     playerSettingsTable.add (playerClanTagCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
     playerSettingsTable.add (playerClanTagTextField).size (74, 28).fill ().left ().spaceLeft (10);
@@ -126,10 +125,10 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     gameSettingsTable.row ();
     gameSettingsTable.add ().height (18).colspan (3);
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createLabel ("Game Settings", Align.left)).size (538, 42).fill ().padLeft (60)
+    gameSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Game Settings")).size (538, 42).fill ().padLeft (60)
             .padRight (60).left ().colspan (3);
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createLabel ("Server Address", Align.left)).size (150, 40).fill ()
+    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Server Address")).size (150, 40).fill ()
             .padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (serverAddressTextField).size (204, 28).fill ().left ().spaceLeft (10);
     gameSettingsTable.add ().expandX ().fill ();

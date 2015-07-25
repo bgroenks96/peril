@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
@@ -31,7 +32,8 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
 
     menuChoiceTextButtonStyle = new ImageTextButton.ImageTextButtonStyle ();
     menuChoiceTextButtonStyle.over = new SpriteDrawable (Assets.menuAtlas.createSprite ("menuChoiceOver"));
-    menuChoiceTextButtonStyle.font = skin.getFont ("default-font");
+    menuChoiceTextButtonStyle.font = skin.getFont ("pirulen-22");
+    menuChoiceTextButtonStyle.fontColor = skin.getColor ("light-gray");
 
     topBackgroundShadowSprite = Assets.menuAtlas.createSprite ("topAndBottomShadow");
     bottomBackgroundShadowSprite = new Sprite (topBackgroundShadowSprite);
@@ -90,9 +92,15 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
   public Actor createTitle (final String titleText, final int alignment)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (titleText, "titleText");
-    Arguments.checkIsNotNegative (alignment, "alignment");
 
-    return createLabel (titleText, alignment);
+    return createLabel (titleText, alignment, "menu-title");
+  }
+
+  public Actor createSubTitle (final String titleText, final int alignment)
+  {
+    Arguments.checkIsNotNullOrEmptyOrBlank (titleText, "titleText");
+
+    return createLabel (titleText, alignment, "menu-subtitle");
   }
 
   public Actor createMenuChoice (final String choiceText, final EventListener listener)
@@ -109,5 +117,19 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
     menuChoiceButton.addListener (listener);
 
     return menuChoiceButton;
+  }
+
+  public Actor createMenuSettingSectionTitleText (final String text)
+  {
+    Arguments.checkIsNotNull (text, "text");
+
+    return createLabel (text, Align.left, "menu-settings-section-title");
+  }
+
+  public Actor createMenuSettingText (final String text)
+  {
+    Arguments.checkIsNotNull (text, "text");
+
+    return createLabel (text, Align.left, "menu-settings-label");
   }
 }

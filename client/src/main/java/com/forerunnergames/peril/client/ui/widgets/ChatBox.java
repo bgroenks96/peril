@@ -30,12 +30,12 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   private final TextField textField;
 
   public ChatBox (final ScrollPane.ScrollPaneStyle scrollPaneStyle,
-                  final LabelFactory labelFactory,
+                  final WidgetFactory widgetFactory,
                   final MessageBoxRowStyle messageBoxRowStyle,
                   final TextFieldStyle textFieldStyle,
                   final MBassador <Event> eventBus)
   {
-    super (scrollPaneStyle, labelFactory, messageBoxRowStyle);
+    super (scrollPaneStyle, widgetFactory, messageBoxRowStyle);
 
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");

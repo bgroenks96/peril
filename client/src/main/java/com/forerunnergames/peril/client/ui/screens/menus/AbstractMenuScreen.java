@@ -284,6 +284,17 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
   }
 
+  protected final void addSubTitle (final String text, final int alignment, final int height)
+  {
+    Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNegative (height, "height");
+
+    titleTable.row ();
+    titleTable.add (widgetFactory.createSubTitle (text, alignment)).expandX ().height (height).fill ().align (alignment);
+    titlesTableCell.height (titlesTableCell.getPrefHeight () + height);
+    titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
+  }
+
   protected final void addTitleSpacer (final int height)
   {
     titleTable.row ();
