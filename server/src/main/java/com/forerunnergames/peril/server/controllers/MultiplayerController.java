@@ -159,7 +159,7 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
     log.info ("Client [{}] connected.", clientFrom (event));
 
     final ClientConnectorDaemon connector = new ClientConnectorDaemon ();
@@ -171,7 +171,7 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     final Remote client = clientFrom (event);
 
@@ -196,6 +196,8 @@ public final class MultiplayerController extends ControllerAdapter
   public void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
 
     final String playerName = playerNameFrom (event);
 
@@ -224,6 +226,8 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.trace ("Event received [{}]", event);
+
     final String playerName = playerNameFrom (event);
 
     // if no client mapping is available, silently ignore denied event
@@ -236,11 +240,11 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onStatusMessageEvent (final StatusMessageEvent event)
+  public void onEvent (final StatusMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     for (final PlayerPacket recipient : recipientsFrom (event))
     {
@@ -249,11 +253,11 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onServerNotificationEvent (final ServerNotificationEvent event)
+  public void onEvent (final ServerNotificationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     // We have separate handlers / senders for these ServerNotificationEvent's, so don't send twice.
     if (event instanceof PlayerLeaveGameEvent || event instanceof StatusMessageEvent) return;
@@ -262,11 +266,11 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onPlayerInputRequestEvent (final PlayerInputRequestEvent event)
+  public void onEvent (final PlayerInputRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     final boolean wasAdded = playerInputRequestEventCache.put (playerFrom (event), event);
     assert wasAdded;
@@ -275,21 +279,21 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onResponseSuccessEvent (final ResponseSuccessEvent event)
+  public void onEvent (final ResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     sendToAllPlayers (event);
   }
 
   @Handler
-  public void onResponseDeniedEvent (final ResponseDeniedEvent <?> event)
+  public void onEvent (final ResponseDeniedEvent <?> event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     // TODO Only send to the requesting player.
     // TODO We need a sub-interface of ResponseDeniedEvent that includes the PlayerPacket.
@@ -303,6 +307,8 @@ public final class MultiplayerController extends ControllerAdapter
   void onEvent (final ClientCommunicationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
 
     networkEventHandler.handle (event.getMessage (), event.getClient ());
   }
@@ -359,7 +365,7 @@ public final class MultiplayerController extends ControllerAdapter
   // This event is for joining dedicated servers only as a non-host.
   void onEvent (final JoinGameServerRequestEvent event, final Remote client)
   {
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
     log.info ("Received join game server request from {}", client);
 
     // check if client is already in server
@@ -391,7 +397,7 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     // client is connected but not in game server; just ignore request event
     if (!clientsInServer.contains (client))
@@ -416,7 +422,7 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     if (!clientsToPlayers.containsKey (client))
     {
