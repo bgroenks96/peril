@@ -26,13 +26,8 @@ import com.forerunnergames.tools.net.server.ServerConfiguration;
 
 import net.engio.mbassy.bus.MBassador;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
-  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeJoinGameMenuScreen.class);
-  private final MBassador <Event> eventBus;
   private final TextField playerNameTextField;
   private final TextField playerClanTagTextField;
   private final TextField serverAddressTextField;
@@ -45,8 +40,6 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
                                                        final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, batch);
-
-    this.eventBus = eventBus;
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
