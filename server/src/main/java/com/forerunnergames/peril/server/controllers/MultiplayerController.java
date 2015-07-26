@@ -27,6 +27,9 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameS
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
+import com.forerunnergames.peril.server.communicators.CoreCommunicator;
+import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
+import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
@@ -43,12 +46,9 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccess
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import java.util.Collections;
@@ -56,6 +56,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
@@ -69,14 +71,15 @@ public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
+  private final Map <String, Remote> playerJoinGameRequestCache;
   private final Set <Remote> clientsInServer;
-  private final BiMap <Remote, PlayerPacket> clientsToPlayers;
+  private final ClientPlayerMapping clientsToPlayers;
+  private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final ClientConnector clientConnector;
   private final PlayerCommunicator playerCommunicator;
   private final MBassador <Event> eventBus;
   private final GameConfiguration gameConfig;
   private boolean shouldShutDown = false;
-  private final Map <String, Remote> playerJoinGameRequestCache;
   private final String gameServerName;
   private final GameServerType gameServerType;
   private final int serverTcpPort;
@@ -91,6 +94,7 @@ public final class MultiplayerController extends ControllerAdapter
                                 final GameConfiguration gameConfig,
                                 final ClientConnector clientConnector,
                                 final PlayerCommunicator playerCommunicator,
+                                final CoreCommunicator coreCommunicator,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (gameServerName, "gameServerName");
@@ -100,6 +104,7 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (gameConfig, "gameConfig");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
     Arguments.checkIsNotNull (playerCommunicator, "playerCommunicator");
+    Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.gameServerName = gameServerName;
@@ -112,7 +117,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type.
-    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap.<Remote, PlayerPacket> create (gameConfig.getPlayerLimit ()));
+    clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameConfig.getPlayerLimit ());
     playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   }
 
@@ -138,6 +143,7 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (new DestroyGameEvent ());
     if (host != null) playerCommunicator.sendTo (host, new DestroyGameServerEvent ());
     eventBus.unsubscribe (this);
+    connectorDaemon.threadPool.shutdown ();
     shouldShutDown = true;
   }
 
@@ -148,7 +154,9 @@ public final class MultiplayerController extends ControllerAdapter
 
   public boolean isPlayerInGame (final PlayerPacket player)
   {
-    return clientsToPlayers.containsValue (player);
+    Arguments.checkIsNotNull (player, "player");
+
+    return clientsToPlayers.clientFor (player).isPresent ();
   }
 
   @Handler
@@ -159,8 +167,7 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event received [{}]", event);
     log.info ("Client [{}] connected.", clientFrom (event));
 
-    final ClientConnectorDaemon connector = new ClientConnectorDaemon ();
-    connector.onConnect (clientFrom (event));
+    connectorDaemon.onConnect (clientFrom (event));
   }
 
   @Handler
@@ -174,13 +181,24 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.info ("Client [{}] disconnected.", client);
 
-    if (!clientsToPlayers.containsKey (client))
+    Optional <PlayerPacket> playerQuery;
+    try
+    {
+      playerQuery = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+      return;
+    }
+
+    if (!playerQuery.isPresent ())
     {
       log.warn ("Client [{}] disconnected but did not exist as a player.", client);
       return;
     }
 
-    final PlayerPacket disconnectedPlayer = clientsToPlayers.get (client);
+    final PlayerPacket disconnectedPlayer = playerQuery.get ();
     final Event leaveGameEvent = new PlayerLeaveGameEvent (disconnectedPlayer);
     eventBus.publish (leaveGameEvent);
     sendToAllPlayersExcept (disconnectedPlayer, leaveGameEvent);
@@ -205,12 +223,12 @@ public final class MultiplayerController extends ControllerAdapter
     final Remote client = playerJoinGameRequestCache.get (playerName);
 
     final PlayerPacket newPlayer = playerFrom (event);
-    final PlayerPacket oldPlayer = clientsToPlayers.forcePut (client, newPlayer);
-    if (oldPlayer != null)
+    final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
+    if (oldPlayer.isPresent ())
     {
       // this generally shouldn't happen... but if it does, log a warning message
       log.warn ("Overwrote previous player mapping for client [{}] | old player: [{}] | new player: [{}]", client,
-                oldPlayer, newPlayer);
+                oldPlayer.get (), newPlayer);
     }
 
     sendToAllPlayers (event);
@@ -312,6 +330,9 @@ public final class MultiplayerController extends ControllerAdapter
 
   void onEvent (final JoinGameServerRequestEvent event, final Remote client)
   {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
     log.trace ("Event received [{}]", event);
     log.info ("Received join game server request from {}", client);
 
@@ -336,7 +357,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendJoinGameServerSuccess (client, serverAddressFrom (event), ImmutableSet.copyOf (clientsToPlayers.values ()));
+    sendJoinGameServerSuccess (client, serverAddressFrom (event), clientsToPlayers.players ());
   }
 
   void onEvent (final PlayerJoinGameRequestEvent event, final Remote client)
@@ -371,13 +392,24 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    if (!clientsToPlayers.containsKey (client))
+    Optional <PlayerPacket> playerQuery;
+    try
+    {
+      playerQuery = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+      return;
+    }
+
+    if (!playerQuery.isPresent ())
     {
       log.warn ("Ignoring event [{}] from non-player client [{}]", event, client);
       return;
     }
 
-    final PlayerPacket player = clientsToPlayers.get (client);
+    final PlayerPacket player = playerQuery.get ();
 
     if (!waitingForResponseToEventFromPlayer (PlayerSelectCountryRequestEvent.class, player))
     {
@@ -391,17 +423,17 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void sendToPlayer (final PlayerPacket player, final Object object)
   {
-    playerCommunicator.sendToPlayer (player, object, ImmutableBiMap.copyOf (clientsToPlayers.inverse ()));
+    playerCommunicator.sendToPlayer (player, object, clientsToPlayers);
   }
 
   private void sendToAllPlayers (final Object object)
   {
-    playerCommunicator.sendToAllPlayers (object, ImmutableBiMap.copyOf (clientsToPlayers.inverse ()));
+    playerCommunicator.sendToAllPlayers (object, clientsToPlayers);
   }
 
   private void sendToAllPlayersExcept (final PlayerPacket player, final Object object)
   {
-    playerCommunicator.sendToAllPlayersExcept (player, object, ImmutableBiMap.copyOf (clientsToPlayers.inverse ()));
+    playerCommunicator.sendToAllPlayersExcept (player, object, clientsToPlayers);
   }
 
   private void remove (final Remote client)
@@ -496,37 +528,45 @@ public final class MultiplayerController extends ControllerAdapter
               responseRequest, player, requestClass);
   }
 
-  private final class ClientConnectorDaemon implements Runnable
+  private final class ClientConnectorDaemon
   {
-    private Remote client;
-
-    @Override
-    public void run ()
-    {
-      try
-      {
-        Thread.sleep (NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS);
-      }
-      catch (final InterruptedException ignored)
-      {
-      }
-
-      if (clientsInServer.contains (client)) return;
-
-      clientConnector.disconnect (client);
-
-      log.info ("Client connection timed out [{}].", client.getAddress ());
-    }
+    private final ExecutorService threadPool = Executors.newCachedThreadPool ();
 
     public void onConnect (final Remote client)
     {
       Arguments.checkIsNotNull (client, "client");
 
-      this.client = client;
+      threadPool.execute (new WaitForConnectionTask (client));
+    }
 
-      final Thread thread = new Thread (this);
-      thread.setDaemon (true);
-      thread.start ();
+    private class WaitForConnectionTask implements Runnable
+    {
+      private final Remote client;
+
+      WaitForConnectionTask (final Remote client)
+      {
+        Arguments.checkIsNotNull (client, "client");
+
+        this.client = client;
+      }
+
+      @Override
+      public void run ()
+      {
+        try
+        {
+          Thread.sleep (NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS);
+        }
+        catch (final InterruptedException ignored)
+        {
+        }
+
+        if (clientsInServer.contains (client)) return;
+
+        clientConnector.disconnect (client);
+
+        log.info ("Client connection timed out [{}].", client.getAddress ());
+      }
     }
   }
 }

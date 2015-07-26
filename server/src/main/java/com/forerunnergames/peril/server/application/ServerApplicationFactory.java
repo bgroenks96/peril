@@ -20,9 +20,10 @@ import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
+import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
-import com.forerunnergames.peril.server.controllers.PlayerCommunicator;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.peril.server.main.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
@@ -73,7 +74,8 @@ public final class ServerApplicationFactory
             gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
 
     final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType,
-            jArgs.serverTcpPort, config, serverController, new PlayerCommunicator (serverController), eventBus);
+            jArgs.serverTcpPort, config, serverController, new PlayerCommunicator (serverController),
+            new DefaultCoreCommunicator (eventBus), eventBus);
 
     return new ServerApplication (gameStateMachine, eventBus, mainThreadExecutor, serverController,
             multiplayerController);
