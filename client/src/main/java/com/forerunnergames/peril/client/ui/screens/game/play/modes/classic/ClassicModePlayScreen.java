@@ -32,7 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import com.forerunnergames.peril.client.events.JoinGameEvent;
+import com.forerunnergames.peril.client.events.JoinGameSuccessEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
@@ -53,12 +53,12 @@ import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
@@ -339,34 +339,34 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  public void onJoinGameEvent (final JoinGameEvent event)
+  void onEvent (final JoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         playerBox.setPlayers (playersFrom (event));
       }
     });
   }
 
   @Handler
-  public void onStatusMessageEvent (final StatusMessageEvent event)
+  void onEvent (final StatusMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         statusBox.addMessage (withMessageFrom (event));
         statusBox.showLastMessage ();
       }
@@ -374,9 +374,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  public void onChatMessageSuccessEvent (final ChatMessageEvent event)
+  void onEvent (final ChatMessageSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -385,8 +387,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.debug ("Event received [{}].", event);
 
-        if (!hasAuthorFrom (event))
-          return;
+        if (!hasAuthorFrom (event)) return;
 
         chatBox.addMessage (new DefaultChatMessage (withAuthorNameFrom (event) + ": " + withMessageTextFrom (event)));
         chatBox.showLastMessage ();
@@ -395,24 +396,24 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  public void onPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
+  void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         playerBox.addPlayer (playerFrom (event));
       }
     });
   }
 
   @Handler
-  public void onPlayerLeaveGameEvent (final PlayerLeaveGameEvent event)
+  void onEvent (final PlayerLeaveGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -421,7 +422,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
+        log.trace ("Event received [{}].", event);
 
         playerBox.removePlayer (playerFrom (event));
       }
@@ -429,73 +430,73 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  public void onCountryArmiesChangedEvent (final CountryArmiesChangedEvent event)
+  void onEvent (final CountryArmiesChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         playMapActor.changeArmiesBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
       }
     });
   }
 
   @Handler
-  public void onDeterminePlayerTurnOrderCompleteEvent (final DeterminePlayerTurnOrderCompleteEvent event)
+  void onEvent (final DeterminePlayerTurnOrderCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         playerBox.setPlayers (event.getOrderedPlayers ());
       }
     });
   }
 
   @Handler
-  public void onPlayerSelectCountryResponseSuccessEvent (final PlayerSelectCountryResponseSuccessEvent event)
+  void onEvent (final PlayerSelectCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
-        playMapActor.setCountryState (selectedCountryNameFrom (event), CountryPrimaryImageState.valueOf (Strings
-                .toCase (playerColorFrom (event), LetterCase.UPPER)));
+        playMapActor.setCountryState (selectedCountryNameFrom (event), CountryPrimaryImageState
+                .valueOf (Strings.toCase (playerColorFrom (event), LetterCase.UPPER)));
       }
     });
   }
 
   @Handler
-  public void onPlayerCountryAssignmentCompleteEvent (final PlayerCountryAssignmentCompleteEvent event)
+  void onEvent (final PlayerCountryAssignmentCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         for (final CountryPacket country : countriesFrom (event))
         {
-          final CountryPrimaryImageState state = CountryPrimaryImageState.valueOf (Strings.toCase (event
-                  .getOwnerColor (country), LetterCase.UPPER));
+          final CountryPrimaryImageState state = CountryPrimaryImageState
+                  .valueOf (Strings.toCase (event.getOwnerColor (country), LetterCase.UPPER));
 
           // The country already has the correct state - don't do anything.
           if (playMapActor.currentPrimaryImageStateOfCountryIs (state, new CountryName (country.getName ()))) continue;
@@ -507,17 +508,17 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  public void onQuitGameEvent (final QuitGameEvent event)
+  void onEvent (final QuitGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
       }
     });

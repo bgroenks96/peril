@@ -5,19 +5,20 @@ import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.server.ServerConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 
 public final class EventFluency
 {
-  public static ImmutableSet <PlayerPacket> playersFrom (final JoinGameEvent event)
+  public static ImmutableSet <PlayerPacket> playersFrom (final JoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     return event.getPlayers ();
   }
 
-  public static GameServerConfiguration gameServerConfigurationFrom (final JoinGameEvent event)
+  public static GameServerConfiguration gameServerConfigurationFrom (final JoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -31,7 +32,12 @@ public final class EventFluency
     return event.getGameServerConfiguration ();
   }
 
-  public static ClientConfiguration clientConfigurationFrom (final JoinGameEvent event)
+  public static ServerConfiguration withServerConfigurationFrom (final CreateGameRequestEvent event)
+  {
+    return withGameServerConfigurationFrom (event);
+  }
+
+  public static ClientConfiguration clientConfigurationFrom (final JoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

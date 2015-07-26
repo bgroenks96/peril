@@ -357,6 +357,16 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
+    // only one local host can join a host-and-play server
+    if (isHostAndPlay () && isHostConnected () && isLocalHost (client))
+    {
+      sendJoinGameServerDenied (client, event, "The host has already joined this server.");
+      return;
+    }
+
+    // local host has joined the host-and-play server
+    if (isHostAndPlay () && !isHostConnected () && isLocalHost (client)) host = client;
+
     sendJoinGameServerSuccess (client, serverAddressFrom (event), clientsToPlayers.players ());
   }
 

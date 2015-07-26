@@ -7,12 +7,13 @@ import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
+import com.forerunnergames.peril.client.GameServerCreator;
 import com.forerunnergames.peril.client.events.CreateGameDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameRequestEvent;
+import com.forerunnergames.peril.client.events.CreateGameSuccessEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
-import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
@@ -94,7 +95,7 @@ public final class MultiplayerController extends ControllerAdapter
   public void shutDown ()
   {
     eventBus.unsubscribe (this);
-    serverConnector.disconnect ();
+    disconnectFromServer ();
     destroyServer ();
   }
 
@@ -128,16 +129,22 @@ public final class MultiplayerController extends ControllerAdapter
     destroyServer ();
   }
 
-  @Handler (priority = CALL_FIRST)
+  @Handler
   public void onEvent (final CreateGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}].", event);
 
-    final Result <String> result = createAndJoinGameServer (withGameServerConfigurationFrom (event));
+    final Result <String> result = createGameServer (withGameServerConfigurationFrom (event));
 
-    if (result.isFailure ()) createGameServerDenied (event, failureReasonFrom (result));
+    if (result.isFailure ())
+    {
+      createGameDenied (event, failureReasonFrom (result));
+      return;
+    }
+
+    eventBus.publish (new CreateGameSuccessEvent (event));
   }
 
   @Handler (priority = CALL_FIRST)
@@ -147,7 +154,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}].", event);
 
-    final Result <String> result = joinGameServer (withServerConfigurationFrom (event));
+    final Result <String> result = connectToServer (withServerConfigurationFrom (event));
 
     if (result.isFailure ()) joinGameServerDenied (event, failureReasonFrom (result));
   }
@@ -196,8 +203,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    respondToServerRequest (PlayerSelectCountryRequestEvent.class,
-                            new PlayerSelectCountryResponseRequestEvent (selectedCountryNameFrom (event)));
+    respondToServerRequest (PlayerSelectCountryRequestEvent.class, new PlayerSelectCountryResponseRequestEvent (selectedCountryNameFrom (event)));
   }
 
   @Handler
@@ -209,10 +215,10 @@ public final class MultiplayerController extends ControllerAdapter
 
     if (!serverConnector.isConnected ()) return;
 
-    serverConnector.disconnect ();
+    disconnectFromServer ();
   }
 
-  private Result <String> joinGameServer (final ServerConfiguration config)
+  private Result <String> connectToServer (final ServerConfiguration config)
   {
     return connectToServer (config.getServerAddress (), config.getServerTcpPort (),
                             NetworkSettings.SERVER_CONNECTION_TIMEOUT_MS,
@@ -232,6 +238,11 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerCreator.create (config);
   }
 
+  private void disconnectFromServer ()
+  {
+    serverConnector.disconnect ();
+  }
+
   private void destroyServer ()
   {
     gameServerCreator.destroy ();
@@ -242,24 +253,11 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (new JoinGameServerDeniedEvent (event, new UnknownClientConfiguration (), reason));
   }
 
-  private Result <String> createAndJoinGameServer (final GameServerConfiguration config)
-  {
-    Result <String> result = createGameServer (config);
-
-    if (result.isFailure ()) return result;
-
-    result = joinGameServer (config);
-
-    if (result.isFailure ()) destroyServer ();
-
-    return result;
-  }
-
-  private void createGameServerDenied (final CreateGameRequestEvent event, final String reason)
+  private void createGameDenied (final CreateGameRequestEvent event, final String reason)
   {
     destroyServer ();
 
-    eventBus.publish (new CreateGameDeniedEvent (event, new UnknownClientConfiguration (), reason));
+    eventBus.publish (new CreateGameDeniedEvent (event, reason));
   }
 
   private void sendToServer (final RequestEvent event)

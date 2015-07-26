@@ -244,6 +244,86 @@ public class MultiplayerControllerTest
   }
 
   @Test
+  public void testNonHostClientJoinGameServerAfterHostSuccessful ()
+  {
+    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+
+    final Remote host = createHost ();
+    connect (host);
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
+            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
+    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+
+    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
+        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == host.getPort ();
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+    verify (mockClientCommunicator, only ()).sendTo (eq (host), argThat (successEventMatcher));
+
+    final Remote client = addClient ();
+    verify (mockClientCommunicator).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
+  }
+
+  @Test
+  public void testHostClientJoinGameServerAfterHostDenied ()
+  {
+    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+
+    final Remote host = createHost ();
+    connect (host);
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
+            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
+    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+
+    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
+        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == host.getPort ();
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+    verify (mockClientCommunicator, only ()).sendTo (eq (host), argThat (successEventMatcher));
+
+    final Remote duplicateHost = createHost ();
+    connect (duplicateHost);
+    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), duplicateHost);
+    verify (mockClientCommunicator).sendTo (eq (duplicateHost), isA (JoinGameServerDeniedEvent.class));
+  }
+
+  @Test
   public void testValidPlayerJoinGameRequestPublished ()
   {
     mpcBuilder.build (eventBus);

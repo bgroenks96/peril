@@ -9,15 +9,15 @@ import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 import com.google.common.collect.ImmutableSet;
 
-public final class JoinGameEvent implements LocalEvent
+public final class JoinGameSuccessEvent implements LocalEvent
 {
   private final ImmutableSet <PlayerPacket> players;
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;
 
-  public JoinGameEvent (final ImmutableSet <PlayerPacket> players,
-                        final GameServerConfiguration gameServerConfig,
-                        final ClientConfiguration clientConfig)
+  public JoinGameSuccessEvent (final ImmutableSet <PlayerPacket> players,
+                               final GameServerConfiguration gameServerConfig,
+                               final ClientConfiguration clientConfig)
   {
     Arguments.checkIsNotNull (players, "players");
     Arguments.checkHasNoNullElements (players, "players");

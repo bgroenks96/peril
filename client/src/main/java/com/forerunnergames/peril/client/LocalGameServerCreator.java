@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.client;
 
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
-import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
@@ -42,10 +41,10 @@ public final class LocalGameServerCreator implements GameServerCreator
       // TODO ProcessBuilder is unportable between operating systems?!
       serverProcess = new ProcessBuilder ("java",
                       "-jar",
-                      "-ea", // TODO Remove -ea in production
+                      "-ea", // TODO Production: Remove
                       NetworkSettings.SERVER_JAR_NAME, // TODO Specify the server jar name on the command line?
                       "--game-mode", config.getGameMode ().name(),
-                      "--server-type", "host-and-play",
+                      "--server-type", config.getGameServerType ().name (),
                       "--title", config.getGameServerName (),
                       "--port", String.valueOf (config.getServerTcpPort ()),
                       "--players", String.valueOf (config.getPlayerLimit ()),

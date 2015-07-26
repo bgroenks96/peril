@@ -22,18 +22,20 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
+import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
+import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
-import com.forerunnergames.tools.common.Event;
-
-import net.engio.mbassy.bus.MBassador;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.LetterCase;
+import com.forerunnergames.tools.common.Strings;
 
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
-  private static final int COUNTRY_COUNT = 49;
-  private final MBassador <Event> eventBus;
+  private static final int COUNTRY_COUNT = 49; // TODO Production: Remove
   private final TextField playerNameTextField;
   private final TextField playerClanTagTextField;
   private final TextField serverNameTextField;
@@ -50,11 +52,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
                                                          final ScreenChanger screenChanger,
                                                          final ScreenSize screenSize,
                                                          final Batch batch,
-                                                         final MBassador <Event> eventBus)
+                                                         final CreateGameHandler createGameHandler)
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
-    this.eventBus = eventBus;
+    Arguments.checkIsNotNull (createGameHandler, "createGameHandler");
 
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
@@ -116,7 +118,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     });
 
     spectatorsSelectBox = widgetFactory.createSelectBox ();
-    final Array <Integer> spectatorCounts = new Array <> (GameSettings.MAX_SPECTATORS - GameSettings.MIN_SPECTATORS + 1);
+    final Array <Integer> spectatorCounts = new Array <> (
+            GameSettings.MAX_SPECTATORS - GameSettings.MIN_SPECTATORS + 1);
     for (int i = GameSettings.MIN_SPECTATORS; i <= GameSettings.MAX_SPECTATORS; ++i)
     {
       spectatorCounts.add (i);
@@ -143,11 +146,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     final Table playerSettingsTable = new Table ().top ().left ();
     playerSettingsTable.add ().height (23).colspan (5);
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Your Player")).size (538, 42).fill ().padLeft (60)
-            .padRight (60).left ().colspan (5);
+    playerSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Your Player")).size (538, 42).fill ()
+            .padLeft (60).padRight (60).left ().colspan (5);
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createMenuSettingText ("Name")).size (150, 40).fill ().padLeft (90)
-            .left ().spaceRight (10);
+    playerSettingsTable.add (widgetFactory.createMenuSettingText ("Name")).size (150, 40).fill ().padLeft (90).left ()
+            .spaceRight (10);
     playerSettingsTable.add (playerNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
     playerSettingsTable.add ().expandX ().fill ();
     playerSettingsTable.row ();
@@ -163,16 +166,16 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     gameSettingsTable.row ();
     gameSettingsTable.add ().height (18).colspan (5);
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Game Settings")).size (538, 42).fill ().padLeft (60)
-            .padRight (60).left ().colspan (5);
+    gameSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Game Settings")).size (538, 42).fill ()
+            .padLeft (60).padRight (60).left ().colspan (5);
     gameSettingsTable.row ();
     gameSettingsTable.add (widgetFactory.createMenuSettingText ("Title")).size (150, 40).fill ().padLeft (90).left ()
             .spaceRight (10);
     gameSettingsTable.add (serverNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
     gameSettingsTable.add ().expandX ().fill ();
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Players")).size (150, 40).fill ().padLeft (90)
-            .left ().spaceRight (10);
+    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Players")).size (150, 40).fill ().padLeft (90).left ()
+            .spaceRight (10);
     gameSettingsTable.add (playerLimitLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
     gameSettingsTable.add (customizePlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
     gameSettingsTable.add ().width (102).fill ();
@@ -224,16 +227,22 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // final String rawPlayerName = playerNameTextField.getText ();
-        // final String rawPlayerClanTag = playerClanTagTextField.getText ();
-        // final String finalPlayerName = rawPlayerClanTag.isEmpty () ? rawPlayerName
-        // : GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag
-        // + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL + " " + rawPlayerName;
-        // final String finalServerName = serverNameTextField.getText ();
+        final String rawPlayerName = playerNameTextField.getText ();
+        final String rawPlayerClanTag = playerClanTagTextField.getText ();
+        final String finalPlayerName = rawPlayerClanTag.isEmpty () ? rawPlayerName
+                : GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL
+                        + " " + rawPlayerName;
+        final String finalServerName = serverNameTextField.getText ();
+        final int finalPlayerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
+        final int finalWinPercent = winPercentSelectBox.getSelected ();
+        final InitialCountryAssignment finalInitialCountryAssignment = InitialCountryAssignment
+                .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
+        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, finalPlayerLimit,
+                finalWinPercent, finalInitialCountryAssignment);
 
         // TODO Go to loading screen
-        // TODO connect to the local server.
-        toScreen (ScreenId.PLAY_CLASSIC);
+
+        createGameHandler.createGame (finalServerName, gameConfig, finalPlayerName);
       }
     });
   }
@@ -261,15 +270,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
   private void updateWinPercentSelectBox ()
   {
-    final GameRules gameRules = new ClassicGameRules.Builder ()
-            .totalCountryCount (COUNTRY_COUNT)
+    final GameRules gameRules = new ClassicGameRules.Builder ().totalCountryCount (COUNTRY_COUNT)
             .playerLimit (Integer.valueOf (playerLimitLabel.getText ().toString ()))
-            .winPercentage (ClassicGameRules.MAX_WIN_PERCENTAGE)
-            .initialCountryAssignment (InitialCountryAssignment.valueOf (initialCountryAssignmentSelectBox
-                                               .getSelected ().toUpperCase ())).build ();
+            .winPercentage (ClassicGameRules.MAX_WIN_PERCENTAGE).initialCountryAssignment (InitialCountryAssignment
+                    .valueOf (initialCountryAssignmentSelectBox.getSelected ().toUpperCase ()))
+            .build ();
 
-    final Array <Integer> winPercentCounts = new Array <> (gameRules.getMaxWinPercentage ()
-            - gameRules.getMinWinPercentage () + 1);
+    final Array <Integer> winPercentCounts = new Array <> (
+            gameRules.getMaxWinPercentage () - gameRules.getMinWinPercentage () + 1);
 
     for (int i = gameRules.getMinWinPercentage (); i <= gameRules.getMaxWinPercentage (); ++i)
     {

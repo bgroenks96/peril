@@ -10,8 +10,11 @@ import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.MultiplayerGameModesMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.MultiplayerClassicGameModeMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.DefaultCreateGameHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.MultiplayerClassicGameModeCreateGameMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.MultiplayerClassicGameModeJoinGameMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.DefaultJoinGameHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.peril.MultiplayerPerilGameModeMenuScreen;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.tools.common.Arguments;
@@ -28,6 +31,7 @@ public final class ScreenFactory
   private final MBassador <Event> eventBus;
   private final Batch batch;
   private final MenuScreenWidgetFactory menuScreenWidgetFactory;
+  private final JoinGameHandler joinGameHandler;
 
   public ScreenFactory (final Skin skin,
                         final ScreenChanger screenChanger,
@@ -50,6 +54,7 @@ public final class ScreenFactory
     this.eventBus = eventBus;
     this.batch = batch;
     menuScreenWidgetFactory = new MenuScreenWidgetFactory (skin);
+    joinGameHandler = new DefaultJoinGameHandler (screenChanger, eventBus);
   }
 
   public Screen create (final ScreenId screenId)
@@ -77,17 +82,17 @@ public final class ScreenFactory
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       {
         return new MultiplayerClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, eventBus);
+                batch, new DefaultCreateGameHandler (joinGameHandler, eventBus));
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {
         return new MultiplayerClassicGameModeJoinGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, eventBus);
+                batch, joinGameHandler);
       }
       case PLAY_CLASSIC:
       {
-        return PlayScreenFactory
-                .create (GameMode.CLASSIC, skin, screenChanger, screenSize, mouseInput, batch, eventBus);
+        return PlayScreenFactory.create (GameMode.CLASSIC, skin, screenChanger, screenSize, mouseInput, batch,
+                                         eventBus);
       }
       case PLAY_PERIL:
       {

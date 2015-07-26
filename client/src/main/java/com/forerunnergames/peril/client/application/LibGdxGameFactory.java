@@ -12,7 +12,7 @@ import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
-import com.forerunnergames.peril.core.shared.net.GameServerCreator;
+import com.forerunnergames.peril.client.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;

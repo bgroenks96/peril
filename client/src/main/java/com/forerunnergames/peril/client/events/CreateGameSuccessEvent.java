@@ -3,37 +3,27 @@ package com.forerunnergames.peril.client.events;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 public final class CreateGameSuccessEvent implements LocalEvent
 {
-  private final GameServerConfiguration gameServerConfig;
-  private final ClientConfiguration clientConfig;
+  private final CreateGameRequestEvent originalRequestEvent;
 
-  public CreateGameSuccessEvent (final GameServerConfiguration gameServerConfig, final ClientConfiguration clientConfig)
+  public CreateGameSuccessEvent (final CreateGameRequestEvent originalRequestEvent)
   {
-    Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
-    Arguments.checkIsNotNull (clientConfig, "clientConfig");
+    Arguments.checkIsNotNull (originalRequestEvent, "originalRequestEvent");
 
-    this.gameServerConfig = gameServerConfig;
-    this.clientConfig = clientConfig;
+    this.originalRequestEvent = originalRequestEvent;
   }
 
   public GameServerConfiguration getGameServerConfiguration ()
   {
-    return gameServerConfig;
-  }
-
-  public ClientConfiguration getClientConfiguration ()
-  {
-    return clientConfig;
+    return originalRequestEvent.getGameServerConfiguration ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}", getClass ().getSimpleName (),
-                           gameServerConfig, clientConfig);
+    return Strings.format ("{}: Original Request Event: {}", getClass ().getSimpleName (), originalRequestEvent);
   }
 }

@@ -20,11 +20,7 @@ import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
 import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
-import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
-
-import net.engio.mbassy.bus.MBassador;
+import com.forerunnergames.tools.common.Arguments;
 
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
@@ -37,9 +33,11 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
                                                        final ScreenChanger screenChanger,
                                                        final ScreenSize screenSize,
                                                        final Batch batch,
-                                                       final MBassador <Event> eventBus)
+                                                       final JoinGameHandler joinGameHandler)
   {
     super (widgetFactory, screenChanger, screenSize, batch);
+
+    Arguments.checkIsNotNull (joinGameHandler, "joinGameHandler");
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
@@ -131,12 +129,10 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
                 : GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL
                         + " " + rawPlayerName;
         final String finalServerAddress = serverAddressTextField.getText ();
-        final ServerConfiguration serverConfig = new DefaultServerConfiguration (finalServerAddress,
-                NetworkSettings.DEFAULT_TCP_PORT);
 
         // TODO Go to loading screen.
 
-        new JoinGameHandler (finalPlayerName, serverConfig, screenChanger, eventBus).joinGame ();
+        joinGameHandler.joinGame (finalPlayerName, finalServerAddress);
       }
     });
   }
