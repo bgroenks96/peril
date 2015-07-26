@@ -11,13 +11,22 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.listener.Handler;
 
 public abstract class NetworkEventHandler
 {
   protected static final int CALL_LAST = -1;
   private final Map <Event, Remote> eventClientCache = Maps.newConcurrentMap ();
-  private final MBassador <Event> internalEventBus = EventBusFactory.create ();
+  private final MBassador <Event> internalEventBus;
+
+  protected NetworkEventHandler (final Iterable <IPublicationErrorHandler> internalBusErrorHandlers)
+  {
+    Arguments.checkIsNotNull (internalBusErrorHandlers, "persistedErrorHandlers");
+    Arguments.checkHasNoNullElements (internalBusErrorHandlers, "persistedErrorHandlers");
+
+    internalEventBus = EventBusFactory.create (internalBusErrorHandlers);
+  }
 
   protected abstract void subscribe (final MBassador <Event> eventBus);
 

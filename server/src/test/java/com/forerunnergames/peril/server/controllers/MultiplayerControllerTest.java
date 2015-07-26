@@ -76,7 +76,7 @@ public class MultiplayerControllerTest
   private static final GameServerType DEFAULT_GAME_SERVER_TYPE = GameServerType.DEDICATED;
   private static final String DEFAULT_TEST_SERVER_ADDRESS = "server@test";
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
-  private static final EventBusHandler eventHandler = new EventBusHandler ();
+  private final EventBusHandler eventHandler = new EventBusHandler ();
   private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
   private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
                                                                   Mockito.RETURNS_SMART_NULLS);
@@ -90,8 +90,7 @@ public class MultiplayerControllerTest
   @Before
   public void setup ()
   {
-    eventBus = EventBusFactory.create ();
-    eventHandler.clearEvents ();
+    eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
     eventHandler.subscribe (eventBus);
   }
 
@@ -99,7 +98,7 @@ public class MultiplayerControllerTest
   public void tearDown ()
   {
     eventHandler.unsubscribe (eventBus);
-    eventHandler.clearEvents ();
+    eventBus.shutdown ();
   }
 
   @Test
@@ -388,7 +387,7 @@ public class MultiplayerControllerTest
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
 
-    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.of (clientPlayer.player ()));
+    mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
     eventBus.publish (new ClientDisconnectionEvent (clientPlayer.client ()));
 
@@ -407,7 +406,7 @@ public class MultiplayerControllerTest
 
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
 
-    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.of (clientPlayer.player ()));
+    mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
     // Request that the player/client select an available country.
     eventBus.publish (new PlayerSelectCountryRequestEvent (clientPlayer.player ()));
@@ -454,6 +453,8 @@ public class MultiplayerControllerTest
     eventBus.publish (new PlayerSelectCountryRequestEvent (first.player ()));
     verify (mockClientCommunicator).sendTo (eq (first.client ()), isA (PlayerSelectCountryRequestEvent.class));
 
+    mockCoreCommunicatorPlayersWith (first.player (), second.player ());
+
     // Simulate WRONG player/client selecting a country.
     final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"),
                                                     second.client ());
@@ -472,8 +473,7 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple first = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
     final ClientPlayerTuple second = addClientAndMockPlayerToGameServer ("Test Player 2", mpc);
 
-    when (mockCoreCommunicator.fetchCurrentPlayerData ())
-            .thenReturn (ImmutableSet.of (first.player (), second.player ()));
+    mockCoreCommunicatorPlayersWith (first.player (), second.player ());
 
     // Request that the first player/client select an available country.
     final Event selectCountryRequestEvent1 = new PlayerSelectCountryRequestEvent (first.player ());
@@ -547,6 +547,8 @@ public class MultiplayerControllerTest
 
     final ClientPlayerTuple first = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
 
+    mockCoreCommunicatorPlayersWith (first.player ());
+
     // Simulate player/client selecting a country BEFORE receiving a request to do so from the server.
     final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"),
                                                     first.client ());
@@ -587,7 +589,7 @@ public class MultiplayerControllerTest
     // here's the updated part
     final int newArmiesInHandValue = 5;
     when (updatedPlayerPacket.getArmiesInHand ()).thenReturn (5);
-    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.of (updatedPlayerPacket));
+    mockCoreCommunicatorPlayersWith (updatedPlayerPacket);
 
     // TODO ... need some mechanism for polling player data from core/server
   }
@@ -636,6 +638,11 @@ public class MultiplayerControllerTest
     assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
 
     return mockPlayerPacket;
+  }
+
+  private void mockCoreCommunicatorPlayersWith (final PlayerPacket... players)
+  {
+    when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.copyOf (players));
   }
 
   private void assertLastEventWasType (final Class <?> eventType)

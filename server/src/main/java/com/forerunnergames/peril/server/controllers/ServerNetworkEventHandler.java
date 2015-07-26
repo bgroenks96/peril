@@ -8,14 +8,24 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.listener.Handler;
 
 public class ServerNetworkEventHandler extends NetworkEventHandler
 {
   private final MultiplayerController controller;
 
-  public ServerNetworkEventHandler (final MultiplayerController controller)
+  /**
+   * @param controller
+   *          MultiplayerController to which registered network events will be dispatched
+   * @param internalBusErrorHandlers
+   *          any error handlers that should be registered with the NetworkEventHandler internal event bus.
+   */
+  public ServerNetworkEventHandler (final MultiplayerController controller,
+                                    final Iterable <IPublicationErrorHandler> internalBusErrorHandlers)
   {
+    super (internalBusErrorHandlers);
+
     Arguments.checkIsNotNull (controller, "controller");
 
     this.controller = controller;
