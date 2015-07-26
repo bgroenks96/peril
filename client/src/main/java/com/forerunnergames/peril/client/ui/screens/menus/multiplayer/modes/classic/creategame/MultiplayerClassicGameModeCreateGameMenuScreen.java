@@ -231,28 +231,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         // + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL + " " + rawPlayerName;
         // final String finalServerName = serverNameTextField.getText ();
 
-        // TODO Go to loading screen, which will listen for a CreateGameServerRequestEvent and attempt to launch &
+        // TODO Go to loading screen
         // TODO connect to the local server.
         toScreen (ScreenId.PLAY_CLASSIC);
-
-        // Gdx.app.postRunnable (new Runnable ()
-        // {
-        // @Override
-        // public void run ()
-        // {
-        // // TODO Production: Remove.
-        // eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (finalPlayerName + " joined "
-        // + finalServerName + ".")));
-        //
-        // // TODO Replace GameServerConfiguration values with real values.
-        // // TODO Uncomment.
-        // eventBus.publish (new CreateGameServerRequestEvent (new DefaultGameServerConfiguration (
-        // new DefaultGameConfiguration (GameMode.CLASSIC, 2, winPercentSelectBox.getSelected (), COUNTRY_COUNT,
-        // InitialCountryAssignment.valueOf (initialCountryAssignmentSelectBox.getSelected ()
-        // .toUpperCase ())), new DefaultServerConfiguration (finalServerName,
-        // NetworkSettings.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT))));
-        // }
-        // });
       }
     });
   }

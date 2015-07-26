@@ -13,11 +13,9 @@ import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
-import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
@@ -25,7 +23,6 @@ import com.forerunnergames.peril.core.shared.net.events.server.interfaces.Status
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
@@ -313,56 +310,6 @@ public final class MultiplayerController extends ControllerAdapter
     networkEventHandler.handle (event.getMessage (), event.getClient ());
   }
 
-  // This event is for joining host-and-play servers only as the host (the host created and connected to a local
-  // server).
-  void onEvent (final CreateGameServerRequestEvent event, final Remote client)
-  {
-    log.trace ("Received [{}] from [{}]", event, client);
-
-    // check if client is already in server
-    if (clientsInServer.contains (client))
-    {
-      sendCreateGameServerDenied (client, event, "You have already joined this game server.");
-      return;
-    }
-
-    // if someone other than the local host is attempting to join via CreateGameServerRequestEvent, we have a problem
-    if (!isLocalHost (client))
-    {
-      sendCreateGameServerDenied (client, event, "Only the host can create a host-and-play gmae server.");
-      return;
-    }
-
-    // CreateGameServerRequestEvent implies host-and-play, so if this is a dedicated server, we have a problem
-    if (isDedicated ())
-    {
-      sendCreateGameServerDenied (client, event,
-                                  "Cannot create a host-and-play game server. This is a dedicated game server.");
-      return;
-    }
-
-    // CreateGameServerRequestEvent implies host-and-play, so if this isn't a host-and-play server, we have a problem
-    if (!isHostAndPlay ())
-    {
-      sendCreateGameServerDenied (client, event,
-                                  "Cannot create a host-and-play game server. This is not a host-and-play game server.");
-      return;
-    }
-
-    // if someone else already joined the game server, we have a problem
-    if (!clientsInServer.isEmpty ())
-    {
-      sendCreateGameServerDenied (client, event,
-                                  "Cannot create a host-and-play game server after others have already joined this game server.");
-      return;
-    }
-
-    if (isLocalHost (client)) host = client;
-
-    sendCreateGameServerSuccess (client, serverAddressFrom (event));
-  }
-
-  // This event is for joining dedicated servers only as a non-host.
   void onEvent (final JoinGameServerRequestEvent event, final Remote client)
   {
     log.trace ("Event received [{}]", event);
@@ -375,14 +322,14 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    // local host can only join via CreateGameServerRequestEvent
-    if (isLocalHost (client))
+    // local host cannot join a dedicated server
+    if (! isHostAndPlay () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, event, "You cannot join this server as the host.");
+      sendJoinGameServerDenied (client, event, "You cannot join a dedicated server as localhost.");
       return;
     }
 
-    // local host must join first via CreateGameServerRequestEvent in a host-and-play server
+    // local host must join first in a host-and-play server
     if (isHostAndPlay () && !isHostConnected () && !isLocalHost (client))
     {
       sendJoinGameServerDenied (client, event, "Waiting for the host to connect...");
@@ -464,26 +411,6 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   // <<<<< internal event utility methods and types >>>>>> //
-
-  private void sendCreateGameServerSuccess (final Remote client, final String serverAddress)
-
-  {
-    final Event successEvent = new CreateGameServerSuccessEvent (createGameServerConfig (serverAddress),
-            createClientConfig (client.getAddress (), client.getPort ()));
-    playerCommunicator.sendTo (client, successEvent);
-    clientsInServer.add (client);
-    log.info ("Client [{}] successfully created & joined game server.", client);
-  }
-
-  private void sendCreateGameServerDenied (final Remote client,
-                                           final CreateGameServerRequestEvent event,
-                                           final String reason)
-  {
-    playerCommunicator.sendTo (client, new CreateGameServerDeniedEvent (event,
-            new DefaultClientConfiguration (client.getAddress (), client.getPort ()), reason));
-    clientConnector.disconnect (client);
-    log.warn ("Denied [{}] from [{}]; REASON: {}", event, client, reason);
-  }
 
   private void sendJoinGameServerSuccess (final Remote client,
                                           final String serverAddress,

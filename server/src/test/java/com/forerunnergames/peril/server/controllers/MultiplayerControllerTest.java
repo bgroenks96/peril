@@ -27,7 +27,6 @@ import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
-import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -35,7 +34,6 @@ import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameSe
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
@@ -95,37 +93,31 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testSuccessfulHostClientCreateGameServer ()
+  public void testSuccessfulHostClientJoinGameServer ()
   {
     final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
     final Remote host = createHost ();
     connect (host);
 
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
-            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), createDefaultServerConfig ());
-    communicateEventFromClient (new CreateGameServerRequestEvent (gameServerConfig), host);
+            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
+    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
 
-    final BaseMatcher <CreateGameServerSuccessEvent> successEventMatcher = new BaseMatcher <CreateGameServerSuccessEvent> ()
+    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
     {
       @Override
       public boolean matches (final Object arg0)
       {
-        assertThat (arg0, instanceOf (CreateGameServerSuccessEvent.class));
-        final CreateGameServerSuccessEvent matchEvent = (CreateGameServerSuccessEvent) arg0;
-        final GameServerConfiguration matchGameServerConfig = matchEvent.getGameServerConfiguration ();
+        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
+        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
         final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchGameServerConfig.getServerAddress ().equals (gameServerConfig.getServerAddress ())
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
                 && matchClientConfig.getClientAddress ().equals (host.getAddress ())
-                && matchGameServerConfig.getServerTcpPort () == gameServerConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == host.getPort ()
-                && matchGameServerConfig.getGameServerName ().equals (gameServerConfig.getGameServerName ())
-                && matchGameServerConfig.getGameServerType () == gameServerConfig.getGameServerType ()
-                && matchGameServerConfig.getGameMode () == gameServerConfig.getGameMode ()
-                && matchGameServerConfig.getPlayerLimit () == gameServerConfig.getPlayerLimit ()
-                && matchGameServerConfig.getWinPercentage () == gameServerConfig.getWinPercentage ()
-                && matchGameServerConfig.getInitialCountryAssignment () == gameServerConfig
-                        .getInitialCountryAssignment ();
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == host.getPort ();
       }
 
       @Override
@@ -203,6 +195,42 @@ public class MultiplayerControllerTest
     };
     verify (mockClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
     verify (mockConnector, only ()).disconnect (eq (client));
+  }
+
+  @Test
+  public void testHostClientJoinDedicatedGameServerDenied ()
+  {
+    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.DEDICATED).build (eventBus);
+
+    final Remote host = createHost ();
+    connect (host);
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
+            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
+    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+
+    final BaseMatcher <JoinGameServerDeniedEvent> deniedEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
+        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == host.getPort ();
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+    verify (mockClientCommunicator, only ()).sendTo (eq (host), argThat (deniedEventMatcher));
   }
 
   @Test

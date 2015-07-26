@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.events;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 public final class SelectCountryEvent implements LocalEvent
@@ -22,6 +23,6 @@ public final class SelectCountryEvent implements LocalEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Selected Country Name: %2$s", getClass ().getSimpleName (), selectedCountryName);
+    return Strings.format ("{}: Selected Country Name: {}", getClass ().getSimpleName (), selectedCountryName);
   }
 }

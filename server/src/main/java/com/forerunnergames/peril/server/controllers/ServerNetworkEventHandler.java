@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.server.controllers;
 
 import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
-import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -30,14 +29,6 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     eventBus.subscribe (this);
-  }
-
-  @Handler
-  public void onEvent (final CreateGameServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    controller.onEvent (event, clientFor (event));
   }
 
   @Handler

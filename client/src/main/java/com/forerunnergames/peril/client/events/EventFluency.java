@@ -24,6 +24,13 @@ public final class EventFluency
     return event.getGameServerConfiguration ();
   }
 
+  public static GameServerConfiguration withGameServerConfigurationFrom (final CreateGameRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getGameServerConfiguration ();
+  }
+
   public static ClientConfiguration clientConfigurationFrom (final JoinGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");

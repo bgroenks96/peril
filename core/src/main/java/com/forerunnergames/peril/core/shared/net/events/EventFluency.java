@@ -3,11 +3,9 @@ package com.forerunnergames.peril.core.shared.net.events;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
-import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.CreateGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
@@ -20,7 +18,6 @@ import com.forerunnergames.peril.core.shared.net.events.server.interfaces.Status
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
@@ -149,7 +146,8 @@ public final class EventFluency
   public static String withAuthorNameFrom (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsTrue (event.hasAuthor (), "Cannot get author name for non-existent author in event [" + event + "].");
+    Arguments.checkIsTrue (event.hasAuthor (),
+                           "Cannot get author name for non-existent author in event [" + event + "].");
 
     return event.getAuthor ().getName ();
   }
@@ -171,26 +169,12 @@ public final class EventFluency
     return playerNameFrom (event);
   }
 
-  public static GameServerConfiguration withGameServerConfigurationFrom (final CreateGameServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getGameServerConfiguration ();
-  }
-
   public static GameServerConfiguration withGameServerConfigurationFrom (final JoinGameServerSuccessEvent event)
   {
     return gameServerConfigurationFrom (event);
   }
 
   public static GameServerConfiguration gameServerConfigurationFrom (final JoinGameServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getGameServerConfiguration ();
-  }
-
-  public static GameServerConfiguration gameServerConfigurationFrom (final CreateGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -235,13 +219,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getClientConfiguration ();
-  }
-
-  public static String serverAddressFrom (final CreateGameServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerAddress ();
   }
 
   public static String serverAddressFrom (final JoinGameServerRequestEvent event)

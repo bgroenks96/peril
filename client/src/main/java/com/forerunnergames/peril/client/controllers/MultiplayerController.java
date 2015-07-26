@@ -1,20 +1,20 @@
 package com.forerunnergames.peril.client.controllers;
 
 import static com.forerunnergames.peril.client.events.EventFluency.selectedCountryNameFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withGameServerConfigurationFrom;
+import static com.forerunnergames.peril.client.events.EventFluency.withGameServerConfigurationFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withServerConfigurationFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
+import com.forerunnergames.peril.client.events.CreateGameDeniedEvent;
+import com.forerunnergames.peril.client.events.CreateGameRequestEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerCreator;
-import com.forerunnergames.peril.core.shared.net.events.client.request.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
@@ -99,41 +99,41 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public static void onSeverConnectionEvent (final ServerConnectionEvent event)
+  public static void onEvent (final ServerConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
     log.info ("Successfully connected to server [{}].", serverFrom (event));
   }
 
   @Handler
-  public void onServerDisconnectionEvent (final ServerDisconnectionEvent event)
+  public void onEvent (final ServerDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event [{}] received.", event);
+    log.trace ("Event [{}] received.", event);
     log.info ("Disconnected from server [{}].", serverFrom (event));
 
     eventBus.publish (new QuitGameEvent ());
   }
 
   @Handler
-  public void onDestroyGameServerEvent (final DestroyGameServerEvent event)
+  public void onEvent (final DestroyGameServerEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     destroyServer ();
   }
 
   @Handler (priority = CALL_FIRST)
-  public void onCreateGameServerRequestEvent (final CreateGameServerRequestEvent event)
+  public void onEvent (final CreateGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     final Result <String> result = createAndJoinGameServer (withGameServerConfigurationFrom (event));
 
@@ -141,11 +141,11 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler (priority = CALL_FIRST)
-  public void onJoinGameServerRequestEvent (final JoinGameServerRequestEvent event)
+  public void onEvent (final JoinGameServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     final Result <String> result = joinGameServer (withServerConfigurationFrom (event));
 
@@ -153,41 +153,41 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler (priority = CALL_LAST)
-  public void onClientRequestEvent (final ClientRequestEvent event)
+  public void onEvent (final ClientRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     sendToServer (event);
   }
 
   @Handler
-  public void onServerCommunicationEvent (final ServerCommunicationEvent event)
+  public void onEvent (final ServerCommunicationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     eventBus.publish (messageFrom (event));
   }
 
   @Handler
-  public void onServerRequestEvent (final ServerRequestEvent event)
+  public void onEvent (final ServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     serverRequestEventCache.add (event);
   }
 
   @Handler
-  public void onSelectCountryEvent (final SelectCountryEvent event)
+  public void onEvent (final SelectCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     if (!waitingForResponseTo (PlayerSelectCountryRequestEvent.class))
     {
@@ -196,16 +196,16 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    respondToServerRequest (PlayerSelectCountryRequestEvent.class, new PlayerSelectCountryResponseRequestEvent (
-            selectedCountryNameFrom (event)));
+    respondToServerRequest (PlayerSelectCountryRequestEvent.class,
+                            new PlayerSelectCountryResponseRequestEvent (selectedCountryNameFrom (event)));
   }
 
   @Handler
-  public void onQuitGameEvent (final QuitGameEvent event)
+  public void onEvent (final QuitGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.trace ("Event received [{}].", event);
 
     if (!serverConnector.isConnected ()) return;
 
@@ -255,11 +255,11 @@ public final class MultiplayerController extends ControllerAdapter
     return result;
   }
 
-  private void createGameServerDenied (final CreateGameServerRequestEvent event, final String reason)
+  private void createGameServerDenied (final CreateGameRequestEvent event, final String reason)
   {
     destroyServer ();
 
-    eventBus.publish (new CreateGameServerDeniedEvent (event, new UnknownClientConfiguration (), reason));
+    eventBus.publish (new CreateGameDeniedEvent (event, new UnknownClientConfiguration (), reason));
   }
 
   private void sendToServer (final RequestEvent event)
