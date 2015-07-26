@@ -7,6 +7,7 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.serv
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
@@ -122,6 +123,7 @@ public final class MultiplayerController extends ControllerAdapter
   public void initialize ()
   {
     eventBus.subscribe (this);
+    eventBus.publish (new CreateGameEvent ());
     networkEventHandler = new ServerNetworkEventHandler (this);
   }
 
