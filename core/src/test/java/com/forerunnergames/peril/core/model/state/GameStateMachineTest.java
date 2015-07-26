@@ -38,7 +38,6 @@ public class GameStateMachineTest
   private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch (1);
   private static final long COUNT_DOWN_LATCH_WAIT_TIME = 5;
   private static final TimeUnit COUNT_DOWN_LATCH_WAIT_TIME_UNIT = TimeUnit.SECONDS;
-
   private final MBassador <Event> eventBus = EventBusFactory.create ();
 
   @Test

@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.server.application;
 
+import com.beust.jcommander.JCommander;
+
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
@@ -35,8 +37,6 @@ import com.google.common.collect.ImmutableSet;
 import de.matthiasmann.AsyncExecution;
 
 import net.engio.mbassy.bus.MBassador;
-
-import com.beust.jcommander.JCommander;
 
 public final class ServerApplicationFactory
 {
