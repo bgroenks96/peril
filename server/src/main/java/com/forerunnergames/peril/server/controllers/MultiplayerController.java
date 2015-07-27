@@ -13,6 +13,7 @@ import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
+import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -23,8 +24,10 @@ import com.forerunnergames.peril.core.shared.net.events.server.interfaces.Status
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
@@ -393,6 +396,34 @@ public final class MultiplayerController extends ControllerAdapter
     playerJoinGameRequestCache.put (playerNameFrom (event), client);
 
     eventBus.publish (event);
+  }
+
+  void onEvent (final ChatMessageRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    log.debug ("Event received [{}]", event);
+
+    Optional <PlayerPacket> playerQuery;
+    try
+    {
+      playerQuery = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+      return;
+    }
+
+    if (!playerQuery.isPresent ())
+    {
+      log.warn ("Ignoring chat message [{}] from non-player client [{}]", event, client);
+      return;
+    }
+
+    sendToAllPlayers (new ChatMessageSuccessEvent (
+            new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
   void onEvent (final PlayerSelectCountryResponseRequestEvent event, final Remote client)
