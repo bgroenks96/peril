@@ -126,7 +126,7 @@ public final class MultiplayerController extends ControllerAdapter
   {
     eventBus.subscribe (this);
     eventBus.publish (new CreateGameEvent ());
-    networkEventHandler = new ServerNetworkEventHandler (this);
+    networkEventHandler = new ServerNetworkEventHandler (this, eventBus.getRegisteredErrorHandlers ());
   }
 
   @Override
@@ -344,7 +344,7 @@ public final class MultiplayerController extends ControllerAdapter
     }
 
     // local host cannot join a dedicated server
-    if (! isHostAndPlay () && isLocalHost (client))
+    if (!isHostAndPlay () && isLocalHost (client))
     {
       sendJoinGameServerDenied (client, event, "You cannot join a dedicated server as localhost.");
       return;
