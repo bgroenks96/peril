@@ -104,12 +104,12 @@ public final class ClientApplicationProperties
     defaults.setProperty (UPDATE_ASSETS_KEY, String.valueOf (AssetSettings.UPDATE_ASSETS));
     defaults.setProperty (UPDATED_ASSETS_DIRECTORY_KEY, AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY);
 
-    final String propertiesFileContents = FileUtils.loadFile (PROPERTIES_FILE_PATH_AND_NAME, StandardCharsets.UTF_8);
-
     properties = new Properties (defaults);
 
     try
     {
+      final String propertiesFileContents = FileUtils.loadFile (PROPERTIES_FILE_PATH_AND_NAME, StandardCharsets.UTF_8);
+
       // Deal with Windows path single backslashes being erased because it's a reserved character for continuing lines
       // by the Properties class.
       properties.load (new StringReader (propertiesFileContents.replace ("\\", "\\\\")));
