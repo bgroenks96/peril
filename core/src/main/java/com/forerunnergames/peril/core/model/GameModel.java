@@ -33,6 +33,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSele
 import com.forerunnergames.peril.core.shared.net.events.server.factories.StatusMessageEventFactory;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
@@ -176,7 +177,9 @@ public final class GameModel
     final StringBuilder statusMessageBuilder = new StringBuilder ();
     for (final Player player : playerModel.getTurnOrderedPlayers ())
     {
-      playerModel.addArmiesToHandOf (idOf (player), armies);
+      playerModel.addArmiesToHandOf (player.getId (), armies);
+
+      eventBus.publish (new PlayerArmiesChangedEvent (player.getName (), armies));
 
       // @formatter:off
       statusMessageBuilder
@@ -258,11 +261,14 @@ public final class GameModel
         }
         else
         {
+          playerModel.removeArmiesFromHandOf (nextPlayer.getId (), 1);
           assignSuccessCount++;
         }
         countryItr.remove ();
       }
+
       log.info ("Assigned {} countries to [{}].", assignSuccessCount, nextPlayer.getName ());
+      eventBus.publish (new PlayerArmiesChangedEvent (nextPlayer.getName (), -1 * assignSuccessCount));
     }
 
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
@@ -458,6 +464,7 @@ public final class GameModel
     }
 
     eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (selectedCountryName, Packets.from (currentPlayer)));
+    eventBus.publish (new PlayerArmiesChangedEvent (currentPlayer.getName (), -1));
     eventBus.publish (StatusMessageEventFactory
             .create (currentPlayer.getName () + " chose " + selectedCountryName + ".", playerModel.getPlayers ()));
 

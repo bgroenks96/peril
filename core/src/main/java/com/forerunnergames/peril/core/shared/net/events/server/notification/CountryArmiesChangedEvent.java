@@ -1,21 +1,22 @@
 package com.forerunnergames.peril.core.shared.net.events.server.notification;
 
+import com.forerunnergames.peril.core.shared.net.events.server.defaults.AbstractArmiesChangedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
-public final class CountryArmiesChangedEvent implements ServerNotificationEvent
+public final class CountryArmiesChangedEvent extends AbstractArmiesChangedEvent
 {
   private final String countryName;
-  private final int deltaArmyCount;
 
-  public CountryArmiesChangedEvent (final String countryName, final int deltaArmyCount)
+  public CountryArmiesChangedEvent (final String countryName, @AllowNegative final int deltaArmyCount)
   {
+    super (deltaArmyCount);
+
     Arguments.checkIsNotNull (countryName, "countryName");
 
     this.countryName = countryName;
-    this.deltaArmyCount = deltaArmyCount;
   }
 
   public String getCountryName ()
@@ -23,22 +24,16 @@ public final class CountryArmiesChangedEvent implements ServerNotificationEvent
     return countryName;
   }
 
-  public int getDeltaArmyCount ()
-  {
-    return deltaArmyCount;
-  }
-
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Country Name: {} | Delta Army Count: {}", getClass ().getSimpleName (), countryName,
-                           deltaArmyCount);
+    return Strings.format ("{} | Country Name: {}", super.toString (), countryName);
   }
 
   @RequiredForNetworkSerialization
   private CountryArmiesChangedEvent ()
   {
+    super (0);
     countryName = null;
-    deltaArmyCount = 0;
   }
 }

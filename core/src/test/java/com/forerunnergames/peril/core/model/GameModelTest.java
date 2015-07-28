@@ -32,6 +32,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoin
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -46,13 +47,12 @@ import com.google.common.collect.ImmutableSet;
 import net.engio.mbassy.bus.MBassador;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GameModelTest
 {
-  private static MBassador <Event> eventBus;
-  private static EventBusHandler eventHandler;
+  private MBassador <Event> eventBus;
+  private EventBusHandler eventHandler;
   private int playerLimit;
   private int initialArmies;
   private int maxPlayers;
@@ -61,20 +61,14 @@ public class GameModelTest
   private PlayMapModel playMapModel;
   private PlayerTurnModel playerTurnModel;
 
-  @BeforeClass
-  public static void setupClass ()
-  {
-    eventBus = EventBusFactory.create ();
-    eventHandler = new EventBusHandler ();
-    eventHandler.subscribe (eventBus);
-  }
-
   @Before
   public void setup ()
   {
+    eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
+    eventHandler = new EventBusHandler ();
+    eventHandler.subscribe (eventBus);
     final int defaultTestCountryCount = 30;
     gameModel = createGameModelWithTotalCountryCount (defaultTestCountryCount);
-    eventHandler.clearEvents ();
   }
 
   @Test
@@ -123,6 +117,11 @@ public class GameModelTest
     }
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DistributeInitialArmiesCompleteEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, players.size ()));
+    for (final PlayerArmiesChangedEvent event : eventHandler.allEventsOfType (PlayerArmiesChangedEvent.class))
+    {
+      assertEquals (initialArmies, event.getDeltaArmyCount ());
+    }
   }
 
   @Test
@@ -133,6 +132,7 @@ public class GameModelTest
     gameModel.distributeInitialArmies ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DistributeInitialArmiesCompleteEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
   }
 
   @Test
@@ -140,10 +140,16 @@ public class GameModelTest
   {
     addMaxPlayers ();
 
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.addArmiesToHandOf (player.getId (), initialArmies);
+    }
+
     gameModel.randomlyAssignPlayerCountries ();
 
     assertFalse (playMapModel.hasAnyUnownedCountries ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, playerModel.getPlayerCount ()));
   }
 
   @Test
@@ -160,11 +166,17 @@ public class GameModelTest
     assertTrue (gameModel.playerCountIs (10));
     assertTrue (playMapModel.countryCountIs (10));
 
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.addArmiesToHandOf (player.getId (), playMapModel.getCountryCount () / gameModel.getPlayerCount ());
+    }
+
     gameModel.randomlyAssignPlayerCountries ();
 
     assertFalse (playMapModel.hasAnyUnownedCountries ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     verifyPlayerCountryAssignmentCompleteEvent ();
+    assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, playerModel.getPlayerCount ()));
   }
 
   @Test
@@ -174,11 +186,17 @@ public class GameModelTest
 
     addMaxPlayers ();
 
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.addArmiesToHandOf (player.getId (), playMapModel.getCountryCount () / gameModel.getPlayerCount ());
+    }
+
     gameModel.randomlyAssignPlayerCountries ();
 
     assertTrue (playMapModel.allCountriesAreOwned ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     verifyPlayerCountryAssignmentCompleteEvent ();
+    assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, playerModel.getPlayerCount ()));
   }
 
   @Test
@@ -189,6 +207,7 @@ public class GameModelTest
     gameModel.randomlyAssignPlayerCountries ();
 
     assertTrue (playMapModel.allCountriesAreUnowned ());
+    assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
   }
 
   @Test
@@ -240,6 +259,7 @@ public class GameModelTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     // verify that game model advanced the turn, as expected
     assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
   }
@@ -257,6 +277,7 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerSelectCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
     // verify that GameModel did NOT advance the turn
     assertTrue (gameModel.getTurn () == PlayerTurnOrder.FIRST);
   }
@@ -270,12 +291,17 @@ public class GameModelTest
     final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
             country.getName ());
     gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseSuccessEvent.class));
+    // should be successful for first player
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
 
     gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    // unsuccessful for second player
     assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseDeniedEvent.class));
     assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
+    // should not have received any more PlayerArmiesChangedEvents
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
   }
 
