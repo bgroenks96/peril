@@ -140,6 +140,11 @@ public class GameModelTest
   {
     addMaxPlayers ();
 
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.addArmiesToHandOf (player.getId (), playMapModel.getCountryCount () / gameModel.getPlayerCount ());
+    }
+
     gameModel.randomlyAssignPlayerCountries ();
 
     assertFalse (playMapModel.hasAnyUnownedCountries ());
@@ -160,6 +165,11 @@ public class GameModelTest
     assertTrue (gameModel.playerCountIs (10));
     assertTrue (playMapModel.countryCountIs (10));
 
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.addArmiesToHandOf (player.getId (), playMapModel.getCountryCount () / gameModel.getPlayerCount ());
+    }
+
     gameModel.randomlyAssignPlayerCountries ();
 
     assertFalse (playMapModel.hasAnyUnownedCountries ());
@@ -173,6 +183,11 @@ public class GameModelTest
     gameModel = createGameModelWithTotalCountryCount (ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT);
 
     addMaxPlayers ();
+
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.addArmiesToHandOf (player.getId (), playMapModel.getCountryCount () / gameModel.getPlayerCount ());
+    }
 
     gameModel.randomlyAssignPlayerCountries ();
 
@@ -270,7 +285,7 @@ public class GameModelTest
     final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
             country.getName ());
     gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
     assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
 
     gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
