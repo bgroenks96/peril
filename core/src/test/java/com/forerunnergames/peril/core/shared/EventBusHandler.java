@@ -29,17 +29,37 @@ public final class EventBusHandler
     events.clear ();
   }
 
-  @SuppressWarnings ("unchecked")
+  /**
+   * @throws IllegalStateException
+   *           if no event of the given type was published
+   */
   public <T> T lastEventOfType (final Class <T> type)
   {
     Arguments.checkIsNotNull (type, "type");
 
     for (final Event event : events)
     {
-      if (type.isInstance (event)) return (T) event;
+      if (type.isInstance (event)) return type.cast (event);
     }
 
     throw new IllegalStateException ("No event of type [" + type + "] was fired.");
+  }
+
+  /**
+   * @return an ImmutableList of events of the given type, in the order that they were published
+   */
+  public <T> ImmutableList <T> allEventsOfType (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    final ImmutableList.Builder <T> listBuilder = ImmutableList.builder ();
+
+    for (final Event event : events)
+    {
+      if (type.isInstance (event)) listBuilder.add (type.cast (event));
+    }
+
+    return listBuilder.build ();
   }
 
   public <T> boolean wasNeverFired (final Class <T> type)
