@@ -21,6 +21,7 @@ public final class ContinentModelDataLoader extends AbstractDataLoader <Id, Cont
 {
   private static final Logger log = LoggerFactory.getLogger (ContinentModelDataLoader.class);
   private final ImmutableBiMap.Builder <Id, Continent> continentsBuilder = new ImmutableBiMap.Builder <> ();
+  private final StreamParserFactory streamParserFactory;
   private final CountryIdResolver countryIdResolver;
   private final Set <Id> countryIds = new HashSet <> ();
   private String fileName;
@@ -29,10 +30,13 @@ public final class ContinentModelDataLoader extends AbstractDataLoader <Id, Cont
   private int reinforcementBonus;
   private Collection <String> countryNames;
 
-  public ContinentModelDataLoader (final CountryIdResolver countryIdResolver)
+  public ContinentModelDataLoader (final StreamParserFactory streamParserFactory,
+                                   final CountryIdResolver countryIdResolver)
   {
+    Arguments.checkIsNotNull (streamParserFactory, "streamParserFactory");
     Arguments.checkIsNotNull (countryIdResolver, "countryIdResolver");
 
+    this.streamParserFactory = streamParserFactory;
     this.countryIdResolver = countryIdResolver;
   }
 
@@ -50,8 +54,8 @@ public final class ContinentModelDataLoader extends AbstractDataLoader <Id, Cont
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    streamParser = ModelStreamParserFactory.create (fileName);
     this.fileName = fileName;
+    streamParser = streamParserFactory.create (fileName);
   }
 
   @Override

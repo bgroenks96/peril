@@ -1,12 +1,14 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepositoryFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetectionFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.CountryImageDataLoader;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
@@ -28,7 +30,8 @@ public final class PlayMapActorFactory
 
     final PlayMapInputDetection playMapInputDetection = PlayMapInputDetectionFactory.create (screenSize);
     final CountryImageLoader countryImageLoader = new CountryImageLoader ();
-    final CountryImageDataRepository countryImageDataRepository = CountryImageDataRepositoryFactory.create ();
+    final CountryImageDataRepository countryImageDataRepository = new CountryImageDataRepositoryFactory (
+            new CountryImageDataLoader (new LibGdxStreamParserFactory ())).create ();
 
     final CountryActorFactory countryActorFactory = new CountryActorFactory (countryImageLoader,
             countryImageDataRepository);

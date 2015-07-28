@@ -13,14 +13,22 @@ import com.google.common.collect.ImmutableBiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CardModelDataLoader extends AbstractDataLoader <Id, Card>
+public final class CardModelDataLoader extends AbstractDataLoader <Id, Card>
 {
   private static final Logger log = LoggerFactory.getLogger (CardModelDataLoader.class);
   private final ImmutableBiMap.Builder <Id, Card> cardsBuilder = ImmutableBiMap.builder ();
+  private final StreamParserFactory streamParserFactory;
   private StreamParser parser;
   private String fileName;
   private String nextCardName;
   private int nextCardType;
+
+  public CardModelDataLoader (final StreamParserFactory streamParserFactory)
+  {
+    Arguments.checkIsNotNull (streamParserFactory, "streamParserFactory");
+
+    this.streamParserFactory = streamParserFactory;
+  }
 
   @Override
   protected ImmutableBiMap <Id, Card> finalizeData ()
@@ -39,7 +47,7 @@ public class CardModelDataLoader extends AbstractDataLoader <Id, Card>
     log.trace ("Initializing [{}] with file [{}].", getClass ().getSimpleName (), fileName);
 
     this.fileName = fileName;
-    parser = ModelStreamParserFactory.create (fileName);
+    parser = streamParserFactory.create (fileName);
   }
 
   @Override
@@ -62,5 +70,4 @@ public class CardModelDataLoader extends AbstractDataLoader <Id, Card>
 
     cardsBuilder.put (card.getId (), card);
   }
-
 }

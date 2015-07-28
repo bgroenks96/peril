@@ -14,16 +14,23 @@ public final class PlayMapModelDataFactory
 {
   public static ImmutableSet <Country> createCountries ()
   {
-    return ImmutableSet.copyOf (new CountryModelDataLoader ().load (AssetSettings.COUNTRY_DATA_FILENAME).values ());
+    return ImmutableSet.copyOf (new CountryModelDataLoader (new ExternalStreamParserFactory ())
+            .load (AssetSettings.ABSOLUTE_EXTERNAL_CLASSIC_MODE_CLASSIC_MAP_COUNTRY_DATA_DIRECTORY
+                    + AssetSettings.COUNTRY_DATA_FILENAME)
+            .values ());
   }
 
   public static ImmutableSet <Continent> createContinents (final CountryIdResolver countryIdResolver)
   {
     Arguments.checkIsNotNull (countryIdResolver, "countryIdResolver");
 
-    final DataLoader <Id, Continent> continentLoader = new ContinentModelDataLoader (countryIdResolver);
+    final DataLoader <Id, Continent> continentLoader = new ContinentModelDataLoader (new ExternalStreamParserFactory (),
+            countryIdResolver);
 
-    return ImmutableSet.copyOf (continentLoader.load (AssetSettings.CONTINENT_DATA_FILENAME).values ());
+    return ImmutableSet.copyOf (continentLoader
+            .load (AssetSettings.ABSOLUTE_EXTERNAL_CLASSIC_MODE_CLASSIC_MAP_CONTINENT_DATA_DIRECTORY
+                    + AssetSettings.CONTINENT_DATA_FILENAME)
+            .values ());
   }
 
   private PlayMapModelDataFactory ()

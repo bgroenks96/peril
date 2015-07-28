@@ -40,7 +40,7 @@ public class CountryModelDataLoaderTest extends DataLoaderTest <Id, Country>
   @Override
   public DataLoader <Id, Country> createDataLoader ()
   {
-    return new CountryModelDataLoader ();
+    return new CountryModelDataLoader (new InternalStreamParserFactory ());
   }
 
   @Override

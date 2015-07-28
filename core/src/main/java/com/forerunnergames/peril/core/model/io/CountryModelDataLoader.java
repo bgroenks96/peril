@@ -16,9 +16,17 @@ public final class CountryModelDataLoader extends AbstractDataLoader <Id, Countr
 {
   private static final Logger log = LoggerFactory.getLogger (CountryModelDataLoader.class);
   private final ImmutableBiMap.Builder <Id, Country> countriesBuilder = new ImmutableBiMap.Builder <> ();
+  private final StreamParserFactory streamParserFactory;
   private StreamParser streamParser;
   private String fileName;
   private String name;
+
+  public CountryModelDataLoader (final StreamParserFactory streamParserFactory)
+  {
+    Arguments.checkIsNotNull (streamParserFactory, "streamParserFactory");
+
+    this.streamParserFactory = streamParserFactory;
+  }
 
   @Override
   protected ImmutableBiMap <Id, Country> finalizeData ()
@@ -35,7 +43,7 @@ public final class CountryModelDataLoader extends AbstractDataLoader <Id, Countr
     Arguments.checkIsNotNull (fileName, "fileName");
 
     this.fileName = fileName;
-    streamParser = ModelStreamParserFactory.create (fileName);
+    streamParser = streamParserFactory.create (fileName);
   }
 
   @Override

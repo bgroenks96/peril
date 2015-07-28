@@ -1,21 +1,24 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data;
 
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.CountryImageDataLoader;
-import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.peril.core.model.map.country.CountryName;
+import com.forerunnergames.peril.core.shared.io.DataLoader;
+import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryImageDataRepositoryFactory
 {
-  private static final CountryImageDataLoader COUNTRY_IMAGE_DATA_LOADER = new CountryImageDataLoader ();
+  private final DataLoader <CountryName, CountryImageData> countryImageDataLoader;
 
-  public static CountryImageDataRepository create ()
+  public CountryImageDataRepositoryFactory (final DataLoader <CountryName, CountryImageData> countryImageDataLoader)
   {
-    return new CountryImageDataRepository (
-            COUNTRY_IMAGE_DATA_LOADER.load (ClassicPlayMapSettings.COUNTRY_IMAGE_DATA_FILENAME));
+    Arguments.checkIsNotNull (countryImageDataLoader, "countryImageDataLoader");
+
+    this.countryImageDataLoader = countryImageDataLoader;
   }
 
-  private CountryImageDataRepositoryFactory ()
+  public CountryImageDataRepository create ()
   {
-    Classes.instantiationNotAllowed ();
+    return new CountryImageDataRepository (
+            countryImageDataLoader.load (ClassicPlayMapSettings.COUNTRY_IMAGE_DATA_FILENAME));
   }
 }

@@ -56,7 +56,7 @@ public class ContinentModelDataLoaderTest extends DataLoaderTest <Id, Continent>
   @Override
   public DataLoader <Id, Continent> createDataLoader ()
   {
-    return new ContinentModelDataLoader (countryIdResolver);
+    return new ContinentModelDataLoader (new InternalStreamParserFactory (), countryIdResolver);
   }
 
   @Override

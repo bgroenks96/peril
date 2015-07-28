@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
+import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
+import com.forerunnergames.peril.core.model.io.StreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;
@@ -46,9 +48,6 @@ public final class PlayMapInputDetectionFactory
     final PlayMapCoordinateToTerritoryColorConverter <CountryColor> playMapCoordinateToCountryColorConverter;
     final PlayMapCoordinateToTerritoryColorConverter <ContinentColor> playMapCoordinateToContinentColorConverter;
 
-    final DataLoader <CountryColor, CountryName> countryColorToNameLoader = new CountryColorToNameLoader ();
-    final DataLoader <ContinentColor, ContinentName> continentColorToNameLoader = new ContinentColorToNameLoader ();
-
     final TerritoryColorToNameConverter <CountryColor, CountryName> countryColorToNameConverter;
     final TerritoryColorToNameConverter <ContinentColor, ContinentName> continentColorToNameConverter;
 
@@ -69,6 +68,10 @@ public final class PlayMapInputDetectionFactory
 
     playMapCoordinateToCountryColorConverter = new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
     playMapCoordinateToContinentColorConverter = new PlayMapCoordinateToContinentColorConverter (playMapCoordinateToRgbaColorConverter);
+
+    final StreamParserFactory streamParserFactory = new LibGdxStreamParserFactory ();
+    final DataLoader <CountryColor, CountryName> countryColorToNameLoader = new CountryColorToNameLoader (streamParserFactory);
+    final DataLoader <ContinentColor, ContinentName> continentColorToNameLoader = new ContinentColorToNameLoader (streamParserFactory);
 
     countryColorToNameConverter = new CountryColorToNameConverter (countryColorToNameLoader.load (ClassicPlayMapSettings.COUNTRY_NAME_TO_COLOR_FILENAME));
     continentColorToNameConverter = new ContinentColorToNameConverter (continentColorToNameLoader.load (ClassicPlayMapSettings.CONTINENT_NAME_TO_COLOR_FILENAME));

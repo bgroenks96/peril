@@ -2,10 +2,10 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.math.Vector2;
 
-import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
-import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
+import com.forerunnergames.peril.core.model.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
+import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParser;
 
@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableBiMap;
 public final class CountryImageDataLoader extends AbstractDataLoader <CountryName, CountryImageData>
 {
   private final ImmutableBiMap.Builder <CountryName, CountryImageData> countryImageDataBuilder = new ImmutableBiMap.Builder <> ();
+  private final StreamParserFactory streamParserFactory;
   private StreamParser streamParser;
   private String nameValue;
   private int referenceWidth;
@@ -22,6 +23,13 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   private int referenceDestinationY;
   private int referenceTextUpperLeftX;
   private int referenceTextUpperLeftY;
+
+  public CountryImageDataLoader (final StreamParserFactory streamParserFactory)
+  {
+    Arguments.checkIsNotNull (streamParserFactory, "streamParserFactory");
+
+    this.streamParserFactory = streamParserFactory;
+  }
 
   @Override
   protected ImmutableBiMap <CountryName, CountryImageData> finalizeData ()
@@ -37,7 +45,7 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    streamParser = LibGdxStreamParserFactory.create (fileName);
+    streamParser = streamParserFactory.create (fileName);
   }
 
   @Override

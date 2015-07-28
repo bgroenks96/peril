@@ -43,7 +43,7 @@ public class CardModelDataLoaderTest extends DataLoaderTest <Id, Card>
   @Override
   protected DataLoader <Id, Card> createDataLoader ()
   {
-    return new CardModelDataLoader ();
+    return new CardModelDataLoader (new InternalStreamParserFactory ());
   }
 
   @Override
