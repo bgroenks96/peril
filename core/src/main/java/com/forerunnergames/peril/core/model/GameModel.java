@@ -177,7 +177,9 @@ public final class GameModel
     final StringBuilder statusMessageBuilder = new StringBuilder ();
     for (final Player player : playerModel.getTurnOrderedPlayers ())
     {
-      playerModel.addArmiesToHandOf (idOf (player), armies);
+      playerModel.addArmiesToHandOf (player.getId (), armies);
+
+      eventBus.publish (new PlayerArmiesChangedEvent (player.getName (), armies));
 
       // @formatter:off
       statusMessageBuilder
