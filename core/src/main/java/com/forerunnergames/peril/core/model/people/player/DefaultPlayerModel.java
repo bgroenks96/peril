@@ -388,28 +388,6 @@ public final class DefaultPlayerModel implements PlayerModel
     fixTurnOrdersAfterRemovalOfPlayer (player);
   }
 
-  private void fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
-  {
-    // Ensure the removed player is really removed, or this will not work.
-    assert!players.containsValue (removedPlayer);
-
-    final int danglingTurnOrderPosition = removedPlayer.getTurnOrderPosition ();
-
-    // Lower the turn orders of all players having a turn order higher than the discontinuity, by one.
-    // For example, consider where the 2nd player is removed, leaving: 1st, ___, 3rd, 4th, 5th
-    // 2nd is the dangling turn order position
-    // All positions after the dangling must be bumped up by one, IN ORDER FROM LOWEST TO HIGHEST, to avoid conflicts:
-    // 1st, 3rd => 2nd, 4th => 3rd, 5th => 4th, leaving:
-    // 1st, 2nd, 3rd, 4th, effectively filling the gap left by the player that was removed.
-    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validSortedValues ())
-    {
-      if (!existsPlayerWith (turnOrder)) continue;
-      if (turnOrder.getPosition () <= danglingTurnOrderPosition) continue;
-
-      playerWith (turnOrder).setTurnOrderByPosition (turnOrder.getPosition () - 1);
-    }
-  }
-
   @Override
   public void removeByColor (final PlayerColor color)
   {
@@ -478,6 +456,30 @@ public final class DefaultPlayerModel implements PlayerModel
     assert players.containsValue (player);
 
     players.remove (idOf (player));
+  }
+
+  private void fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
+  {
+    // Ensure the removed player is really removed, or this will not work.
+    // @formatter:off
+    assert !players.containsValue (removedPlayer);
+    // @formatter:on
+
+    final int danglingTurnOrderPosition = removedPlayer.getTurnOrderPosition ();
+
+    // Lower the turn orders of all players having a turn order higher than the discontinuity, by one.
+    // For example, consider where the 2nd player is removed, leaving: 1st, ___, 3rd, 4th, 5th
+    // 2nd is the dangling turn order position
+    // All positions after the dangling must be bumped up by one, IN ORDER FROM LOWEST TO HIGHEST, to avoid conflicts:
+    // 1st, 3rd => 2nd, 4th => 3rd, 5th => 4th, leaving:
+    // 1st, 2nd, 3rd, 4th, effectively filling the gap left by the player that was removed.
+    for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validSortedValues ())
+    {
+      if (!existsPlayerWith (turnOrder)) continue;
+      if (turnOrder.getPosition () <= danglingTurnOrderPosition) continue;
+
+      playerWith (turnOrder).setTurnOrderByPosition (turnOrder.getPosition () - 1);
+    }
   }
 
   private PlayerColor nextAvailableColor ()

@@ -95,7 +95,7 @@
           <state name="WaitForPlayerEvent">
             <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)"
                         nextState="WaitForPlayerEvent" />
-            <transition event="onPlayerLeaveGameEvent" action="gameModel.handlePlayerLeaveGame (event)"
+            <transition event="onPlayerLeaveGameEvent" action="gameModel.handlePlayerLeaveGame(event)"
                         nextState="WaitForPlayerEvent" />
             <transition event="onChangePlayerColorRequestEvent"
                         action="gameModel.handleChangePlayerColorRequest (event)" nextState="WaitForPlayerEvent" />

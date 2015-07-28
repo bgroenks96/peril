@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model;
+package com.forerunnergames.peril.core.model.turn;
 
 import static org.junit.Assert.assertTrue;
 

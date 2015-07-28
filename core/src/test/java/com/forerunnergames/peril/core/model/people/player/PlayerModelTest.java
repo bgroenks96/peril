@@ -8,6 +8,7 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,9 @@ import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -773,6 +777,93 @@ public class PlayerModelTest
     playerModel.removeByTurnOrder (turnOrder);
 
     assertFalse (playerModel.existsPlayerWith (turnOrder));
+  }
+
+  @Test
+  public void testRemovePlayerByTurnOrderCorrectsTurnOrdersFirstPlayer ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
+    addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
+    final Map <Player, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.changeTurnOrderOfPlayer (player.getId (), turnOrder);
+      originalTurnOrders.put (player, turnOrder);
+      if (turnOrder.hasNextValid ()) turnOrder = turnOrder.nextValid ();
+    }
+
+    final Player removedPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    playerModel.removeByTurnOrder (PlayerTurnOrder.FIRST);
+    assertFalse (playerModel.existsPlayerWith (removedPlayer.getId ()));
+
+    for (final Player player : playerModel.getPlayers ())
+    {
+      final PlayerTurnOrder originalTurnOrder = originalTurnOrders.get (player);
+      // assert that each player's turn order went down by one since the first player was removed
+      assertEquals (originalTurnOrder.getPosition () - 1, player.getTurnOrder ().getPosition ());
+    }
+  }
+
+  @Test
+  public void testRemovePlayerByTurnOrderCorrectsTurnOrdersSixthPlayer ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
+    addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
+    final Map <Player, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.changeTurnOrderOfPlayer (player.getId (), turnOrder);
+      originalTurnOrders.put (player, turnOrder);
+      if (turnOrder.hasNextValid ()) turnOrder = turnOrder.nextValid ();
+    }
+
+    final PlayerTurnOrder removedTurnOrder = PlayerTurnOrder.SIXTH;
+    final Player removedPlayer = playerModel.playerWith (removedTurnOrder);
+    playerModel.removeByTurnOrder (removedTurnOrder);
+    assertFalse (playerModel.existsPlayerWith (removedPlayer.getId ()));
+
+    for (final Player player : playerModel.getPlayers ())
+    {
+      final PlayerTurnOrder originalTurnOrder = originalTurnOrders.get (player);
+      // if the original turn order precedes the removed index, it should stay the same.
+      // otherwise, if it is subsequent, it should have been decremented
+      if (originalTurnOrder.compareTo (removedTurnOrder) < 0)
+      {
+        assertEquals (originalTurnOrder.getPosition (), player.getTurnOrder ().getPosition ());
+      }
+      else
+      {
+        assertEquals (originalTurnOrder.getPosition () - 1, player.getTurnOrder ().getPosition ());
+      }
+    }
+  }
+
+  @Test
+  public void testRemovePlayerByTurnOrderCorrectsTurnOrdersLastPlayer ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
+    addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
+    final Map <Player, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
+    for (final Player player : playerModel.getPlayers ())
+    {
+      playerModel.changeTurnOrderOfPlayer (player.getId (), turnOrder);
+      originalTurnOrders.put (player, turnOrder);
+      if (turnOrder.hasNextValid ()) turnOrder = turnOrder.nextValid ();
+    }
+
+    final PlayerTurnOrder removedTurnOrder = PlayerTurnOrder.TENTH;
+    final Player removedPlayer = playerModel.playerWith (removedTurnOrder);
+    playerModel.removeByTurnOrder (removedTurnOrder);
+    assertFalse (playerModel.existsPlayerWith (removedPlayer.getId ()));
+
+    for (final Player player : playerModel.getPlayers ())
+    {
+      final PlayerTurnOrder originalTurnOrder = originalTurnOrders.get (player);
+      assertEquals (originalTurnOrder.getPosition (), player.getTurnOrder ().getPosition ());
+    }
   }
 
   private static ImmutableSet <Player> addNPlayersTo (final PlayerModel playerModel, final int playerCount)

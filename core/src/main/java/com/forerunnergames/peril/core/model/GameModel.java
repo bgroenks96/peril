@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.core.model;
 
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
@@ -22,8 +21,9 @@ import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondit
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
-import com.forerunnergames.peril.core.shared.event.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.core.shared.event.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.core.shared.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataRequestEvent;
+import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -90,6 +90,7 @@ public final class GameModel
     this.playerTurnModel = playerTurnModel;
     this.rules = rules;
     this.eventBus = eventBus;
+    eventBus.subscribe (new InternalCommunicationHandler ());
   }
 
   @StateMachineAction
@@ -374,23 +375,27 @@ public final class GameModel
                                                         playerModel.getPlayers ()));
   }
 
+  /**
+   * This method will be called after {@link InternalCommunicationHandler} has already handled the
+   * {@link InternalPlayerLeaveGameEvent}.
+   */
   @StateMachineAction
   @StateTransitionAction
   public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}].", event);
 
-    if (!playerModel.existsPlayerWith (playerNameFrom (event))) return;
+    // if the player is somehow still in the game, log a warning and return;
+    // this might indicate a bug in one of the event handlers
+    if (playerModel.existsPlayerWith (event.getPlayerName ()))
+    {
+      log.warn ("Received [{}], but player [{}] still exists.", event, event.getPlayer ());
+      return;
+    }
 
-    final Player player = playerModel.playerWith (playerNameFrom (event));
-
-    playMapModel.unassignAllCountriesOwnedBy (player.getId ());
-    playerModel.remove (player);
-    playerTurnModel.setTurnCount (getPlayerLimit ());
-
-    eventBus.publish (StatusMessageEventFactory.create (player.getName () + " left the game.",
+    eventBus.publish (StatusMessageEventFactory.create (event.getPlayerName () + " left the game.",
                                                         playerModel.getPlayers ()));
   }
 
@@ -471,16 +476,6 @@ public final class GameModel
     playerTurnModel.advance ();
 
     return true;
-  }
-
-  // TODO (?) consider moving to a new type; especially if more of these are needed
-  @Handler
-  public void onEvent (final UpdatePlayerDataRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final ImmutableSet <PlayerPacket> players = Packets.fromPlayers (playerModel.getPlayers ());
-    eventBus.publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
   }
 
   @StateMachineCondition
@@ -569,5 +564,36 @@ public final class GameModel
       playMapView.put (country, playerModel.playerWith (ownerId));
     }
     return playMapView.build ();
+  }
+
+  // Handler class for internal communication events from server
+  private class InternalCommunicationHandler
+  {
+    @Handler
+    void onEvent (final UpdatePlayerDataRequestEvent event)
+    {
+      Arguments.checkIsNotNull (event, "event");
+
+      final ImmutableSet <PlayerPacket> players = Packets.fromPlayers (playerModel.getPlayers ());
+      eventBus.publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
+    }
+
+    @Handler
+    void onEvent (final InternalPlayerLeaveGameEvent event)
+    {
+      Arguments.checkIsNotNull (event, "event");
+
+      log.debug ("Event received [{}]", event);
+
+      if (!playerModel.existsPlayerWith (event.getPlayerName ())) return;
+
+      final Player player = playerModel.playerWith (event.getPlayerName ());
+
+      playMapModel.unassignAllCountriesOwnedBy (player.getId ());
+      playerModel.remove (player);
+      playerTurnModel.setTurnCount (getPlayerLimit ());
+
+      eventBus.publish (new PlayerLeaveGameEvent (event.getPlayer (), Packets.fromPlayers (playerModel.getPlayers ())));
+    }
   }
 }

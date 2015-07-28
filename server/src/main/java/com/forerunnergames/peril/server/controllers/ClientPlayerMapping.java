@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.server.controllers;
 
+import com.esotericsoftware.minlog.Log;
+
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.Remote;
 
@@ -50,7 +51,9 @@ public final class ClientPlayerMapping
     if (!clientsToPlayers.containsKey (client)) return Optional.absent ();
 
     final PlayerPacket oldPlayerPacket = clientsToPlayers.get (client);
-    final Optional <PlayerPacket> newPlayerQuery = updatedPlayerDataFor (client);
+    // fetch updated player from core
+    syncPlayerData ();
+    final Optional <PlayerPacket> newPlayerQuery = Optional.fromNullable (clientsToPlayers.get (client));
     if (!newPlayerQuery.isPresent ())
     {
       throw new RegisteredClientPlayerNotFoundException (oldPlayerPacket.getName (), client);
@@ -67,6 +70,7 @@ public final class ClientPlayerMapping
 
   public ImmutableSet <PlayerPacket> players ()
   {
+    syncPlayerData ();
     return ImmutableSet.copyOf (clientsToPlayers.values ());
   }
 
@@ -82,19 +86,6 @@ public final class ClientPlayerMapping
     return Optional.fromNullable (clientsToPlayers.remove (client));
   }
 
-  public Optional <Remote> remove (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-
-    return Optional.fromNullable (clientsToPlayers.inverse ().remove (player));
-  }
-
-  private Optional <PlayerPacket> updatedPlayerDataFor (final Remote client)
-  {
-    syncPlayerData ();
-    return Optional.fromNullable (clientsToPlayers.get (client));
-  }
-
   private void syncPlayerData ()
   {
     final ImmutableSet <PlayerPacket> updatedPlayerData = coreCommunicator.fetchCurrentPlayerData ();
@@ -103,8 +94,11 @@ public final class ClientPlayerMapping
       // PlayerPackets by contract must evaluate as equal for the same player, so get will work here even
       // with updated data.
       final Optional <Remote> client = Optional.fromNullable (clientsToPlayers.inverse ().get (current));
-      // this can only indicate a serious internal bug in core, so it's worth a crash
-      if (!client.isPresent ()) Exceptions.throwIllegalState ("Received unregistered player [{}] from core.", current);
+      if (!client.isPresent ())
+      {
+        Log.warn ("Received player [{}] from core with no client mapping.");
+        continue;
+      }
       clientsToPlayers.forcePut (client.get (), current);
     }
   }

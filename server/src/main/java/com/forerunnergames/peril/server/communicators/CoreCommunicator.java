@@ -7,4 +7,6 @@ import com.google.common.collect.ImmutableSet;
 public interface CoreCommunicator
 {
   ImmutableSet <PlayerPacket> fetchCurrentPlayerData ();
+
+  void notifyRemovePlayerFromGame (final PlayerPacket player);
 }

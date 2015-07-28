@@ -92,6 +92,8 @@ public class MultiplayerControllerTest
   {
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
     eventHandler.subscribe (eventBus);
+    // default mock for core communicator - returns empty player data
+    mockCoreCommunicatorPlayersWith ();
   }
 
   @After
@@ -390,10 +392,11 @@ public class MultiplayerControllerTest
     mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
     eventBus.publish (new ClientDisconnectionEvent (clientPlayer.client ()));
+    verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (clientPlayer.player ()));
+    eventBus.publish (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet.<PlayerPacket> of ()));
 
     // make sure nothing was sent to the disconnecting player
     verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), isA (PlayerLeaveGameEvent.class));
-    assertEventFiredExactlyOnce (PlayerLeaveGameEvent.class);
     assertFalse (mpc.isPlayerInGame (clientPlayer.player ()));
   }
 
