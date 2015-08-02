@@ -83,6 +83,12 @@ public final class LocalGameServerCreator implements GameServerCreator
     isCreated = false;
   }
 
+  @Override
+  public boolean isCreated ()
+  {
+    return isCreated;
+  }
+
   private void addShutDownHook ()
   {
     Runtime.getRuntime ().addShutdownHook (new Thread (new Runnable ()

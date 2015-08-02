@@ -46,6 +46,8 @@ public final class Main
         Thread.currentThread ().interrupt ();
       }
     }
+
+    application.shutDown ();
   }
 
   private Main ()

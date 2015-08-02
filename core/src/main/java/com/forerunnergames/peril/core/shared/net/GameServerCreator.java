@@ -7,4 +7,6 @@ public interface GameServerCreator
   Result <String> create (final GameServerConfiguration config);
 
   void destroy ();
+
+  boolean isCreated ();
 }

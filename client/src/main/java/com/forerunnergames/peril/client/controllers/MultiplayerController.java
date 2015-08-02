@@ -17,7 +17,6 @@ import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -96,7 +95,7 @@ public final class MultiplayerController extends ControllerAdapter
   {
     eventBus.unsubscribe (this);
     disconnectFromServer ();
-    destroyServer ();
+    destroyGameServer ();
   }
 
   @Handler
@@ -117,16 +116,6 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Disconnected from server [{}].", serverFrom (event));
 
     eventBus.publish (new QuitGameEvent ());
-  }
-
-  @Handler
-  public void onEvent (final DestroyGameServerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    destroyServer ();
   }
 
   @Handler
@@ -203,7 +192,8 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    respondToServerRequest (PlayerSelectCountryRequestEvent.class, new PlayerSelectCountryResponseRequestEvent (selectedCountryNameFrom (event)));
+    respondToServerRequest (PlayerSelectCountryRequestEvent.class,
+                            new PlayerSelectCountryResponseRequestEvent (selectedCountryNameFrom (event)));
   }
 
   @Handler
@@ -213,9 +203,8 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}].", event);
 
-    if (!serverConnector.isConnected ()) return;
-
-    disconnectFromServer ();
+    if (connectedToServer ()) disconnectFromServer ();
+    if (gameServerIsCreated ()) destroyGameServer ();
   }
 
   private Result <String> connectToServer (final ServerConfiguration config)
@@ -243,7 +232,7 @@ public final class MultiplayerController extends ControllerAdapter
     serverConnector.disconnect ();
   }
 
-  private void destroyServer ()
+  private void destroyGameServer ()
   {
     gameServerCreator.destroy ();
   }
@@ -255,7 +244,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void createGameDenied (final CreateGameRequestEvent event, final String reason)
   {
-    destroyServer ();
+    destroyGameServer ();
 
     eventBus.publish (new CreateGameDeniedEvent (event, reason));
   }
@@ -298,5 +287,15 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.warn ("Ignoring invalid client response [{}] because no prior corresponding server request of type [{}] was received.",
               response, serverRequestEventClass);
+  }
+
+  private boolean connectedToServer ()
+  {
+    return serverConnector.isConnected ();
+  }
+
+  private boolean gameServerIsCreated ()
+  {
+    return gameServerCreator.isCreated ();
   }
 }

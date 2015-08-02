@@ -21,7 +21,6 @@ import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameSe
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.notification.DestroyGameServerEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
@@ -142,10 +141,9 @@ public final class MultiplayerController extends ControllerAdapter
   @Override
   public void shutDown ()
   {
-    log.debug ("Shutting down [{}]", this);
+    log.debug ("Shutting down...");
 
     eventBus.publish (new DestroyGameEvent ());
-    if (host != null) playerCommunicator.sendTo (host, new DestroyGameServerEvent ());
     eventBus.unsubscribe (this);
     connectorDaemon.threadPool.shutdown ();
     shouldShutDown = true;
@@ -534,11 +532,6 @@ public final class MultiplayerController extends ControllerAdapter
   private boolean isHostAndPlay ()
   {
     return gameServerType.is (GameServerType.HOST_AND_PLAY);
-  }
-
-  private boolean isDedicated ()
-  {
-    return gameServerType.is (GameServerType.DEDICATED);
   }
 
   private GameServerConfiguration createGameServerConfig (final String serverAddress)
