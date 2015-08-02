@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
-import com.forerunnergames.peril.core.model.io.StreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
 import com.forerunnergames.tools.common.Arguments;

@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.CountryColor;
-import com.forerunnergames.peril.core.model.io.StreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 

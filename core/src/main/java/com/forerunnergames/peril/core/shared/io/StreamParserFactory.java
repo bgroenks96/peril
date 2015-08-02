@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.io;
+package com.forerunnergames.peril.core.shared.io;
 
 import com.forerunnergames.tools.common.io.StreamParser;
 

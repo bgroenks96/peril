@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
 import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
-import com.forerunnergames.peril.core.model.io.StreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.ui.Assets;

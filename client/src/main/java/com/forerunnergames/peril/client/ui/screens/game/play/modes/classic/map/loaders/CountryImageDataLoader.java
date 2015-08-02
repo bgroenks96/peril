@@ -3,7 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 import com.badlogic.gdx.math.Vector2;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
-import com.forerunnergames.peril.core.model.io.StreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
 import com.forerunnergames.tools.common.Arguments;

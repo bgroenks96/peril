@@ -3,6 +3,7 @@ package com.forerunnergames.peril.core.model.io;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
 import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.io.StreamParser;
