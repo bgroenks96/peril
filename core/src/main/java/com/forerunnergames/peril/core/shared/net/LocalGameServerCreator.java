@@ -1,6 +1,5 @@
-package com.forerunnergames.peril.client;
+package com.forerunnergames.peril.core.shared.net;
 
-import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;

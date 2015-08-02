@@ -7,13 +7,13 @@ import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
-import com.forerunnergames.peril.client.GameServerCreator;
 import com.forerunnergames.peril.client.events.CreateGameDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameSuccessEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.GameServerCreator;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
