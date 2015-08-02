@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.core.shared.net.events;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
-import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
@@ -10,7 +9,6 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerSelectCountryResponseEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerTurnOrderEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
@@ -112,13 +110,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getPlayersInGame ();
-  }
-
-  public static PlayerTurnOrder turnOrderFrom (final PlayerTurnOrderEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getRequestedTurnOrder ();
   }
 
   public static String reasonForKickFrom (final KickEvent event)
