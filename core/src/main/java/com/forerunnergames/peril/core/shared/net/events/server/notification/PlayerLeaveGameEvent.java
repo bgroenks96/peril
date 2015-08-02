@@ -5,15 +5,19 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
+import com.google.common.collect.ImmutableSet;
+
 public final class PlayerLeaveGameEvent implements ServerNotificationEvent
 {
   private final PlayerPacket player;
+  private final ImmutableSet <PlayerPacket> playersLeftInGame;
 
-  public PlayerLeaveGameEvent (final PlayerPacket player)
+  public PlayerLeaveGameEvent (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersLeftInGame)
   {
     Arguments.checkIsNotNull (player, "player");
 
     this.player = player;
+    this.playersLeftInGame = playersLeftInGame;
   }
 
   public PlayerPacket getPlayer ()
@@ -26,6 +30,11 @@ public final class PlayerLeaveGameEvent implements ServerNotificationEvent
     return player.getName ();
   }
 
+  public ImmutableSet <PlayerPacket> getPlayersLeftInGame ()
+  {
+    return playersLeftInGame;
+  }
+
   @Override
   public String toString ()
   {
@@ -36,5 +45,6 @@ public final class PlayerLeaveGameEvent implements ServerNotificationEvent
   private PlayerLeaveGameEvent ()
   {
     player = null;
+    playersLeftInGame = null;
   }
 }

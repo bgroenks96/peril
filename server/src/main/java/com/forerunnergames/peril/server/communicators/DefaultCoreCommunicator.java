@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.server.communicators;
 
-import com.forerunnergames.peril.core.shared.event.InternalRequestEvent;
-import com.forerunnergames.peril.core.shared.event.InternalResponseEvent;
-import com.forerunnergames.peril.core.shared.event.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.core.shared.event.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.core.shared.events.InternalRequestEvent;
+import com.forerunnergames.peril.core.shared.events.InternalResponseEvent;
+import com.forerunnergames.peril.core.shared.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataRequestEvent;
+import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -44,6 +45,13 @@ public class DefaultCoreCommunicator implements CoreCommunicator
     if (!responseEvent.isPresent ()) return ImmutableSet.of ();
     final UpdatePlayerDataResponseEvent playerDataResponse = (UpdatePlayerDataResponseEvent) responseEvent.get ();
     return playerDataResponse.getUpdatedPlayers ();
+  }
+
+  @Override
+  public void notifyRemovePlayerFromGame (final PlayerPacket player)
+  {
+    final InternalPlayerLeaveGameEvent leaveGameEvent = new InternalPlayerLeaveGameEvent (player);
+    eventBus.publish (leaveGameEvent);
   }
 
   // --- response handlers --- //

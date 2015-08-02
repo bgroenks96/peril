@@ -1,6 +1,6 @@
-package com.forerunnergames.peril.core.shared.event.player;
+package com.forerunnergames.peril.core.shared.events.player;
 
-import com.forerunnergames.peril.core.shared.event.AbstractInternalResponseEvent;
+import com.forerunnergames.peril.core.shared.events.AbstractInternalResponseEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;

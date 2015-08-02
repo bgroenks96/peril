@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.shared.event;
+package com.forerunnergames.peril.core.shared.events;
 
 import com.forerunnergames.tools.common.id.Id;
 

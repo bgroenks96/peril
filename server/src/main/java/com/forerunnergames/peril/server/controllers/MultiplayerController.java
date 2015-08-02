@@ -80,6 +80,7 @@ public final class MultiplayerController extends ControllerAdapter
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final ClientConnector clientConnector;
   private final PlayerCommunicator playerCommunicator;
+  private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
   private final GameConfiguration gameConfig;
   private boolean shouldShutDown = false;
@@ -116,10 +117,10 @@ public final class MultiplayerController extends ControllerAdapter
     this.gameConfig = gameConfig;
     this.clientConnector = clientConnector;
     this.playerCommunicator = playerCommunicator;
+    this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
 
     clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
-    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type.
     clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameConfig.getPlayerLimit ());
     playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   }
@@ -202,10 +203,7 @@ public final class MultiplayerController extends ControllerAdapter
     }
 
     final PlayerPacket disconnectedPlayer = playerQuery.get ();
-    final Event leaveGameEvent = new PlayerLeaveGameEvent (disconnectedPlayer);
-    eventBus.publish (leaveGameEvent);
-    sendToAllPlayersExcept (disconnectedPlayer, leaveGameEvent);
-    remove (client);
+    coreCommunicator.notifyRemovePlayerFromGame (disconnectedPlayer);
   }
 
   // <<<<< inbound events from core module >>>>> //
@@ -255,6 +253,21 @@ public final class MultiplayerController extends ControllerAdapter
     playerCommunicator.sendTo (playerJoinGameRequestCache.get (playerName), event);
 
     playerJoinGameRequestCache.remove (playerName);
+  }
+
+  @Handler
+  public void onEvent (final PlayerLeaveGameEvent event)
+  {
+    final Optional <Remote> client = clientsToPlayers.clientFor (event.getPlayer ());
+    if (!client.isPresent ())
+    {
+      log.warn ("No client mapping for player in received event [{}].", event);
+      return;
+    }
+    // remove client mapping
+    remove (client.get ());
+    // send to all players still in the server
+    sendToAllPlayers (event);
   }
 
   @Handler
