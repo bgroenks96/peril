@@ -39,6 +39,7 @@ import com.forerunnergames.tools.common.Strings;
 import com.google.common.collect.ImmutableSet;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label mapNameLabel;
   private final ImageButton customizePlayersButton;
   private final ImageButton customizeMapButton;
+  private final ImmutableSet <String> mapNames;
+  private Iterator <String> mapNameIterator;
   private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
   private String currentMapName;
 
@@ -105,7 +108,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT),
                                                             Align.left);
 
-    currentMapName = loadMapNames ().iterator ().next ();
+    mapNames = loadMapNames ();
+    currentMapName = nextMapName ();
     mapNameLabel = widgetFactory.createBackgroundLabel (currentMapName, Align.left);
     updateTotalCountryCount ();
 
@@ -115,6 +119,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       public void clicked (final InputEvent event, final float x, final float y)
       {
         // TODO Implement CustomizePlayersPopup.
+
         if (Integer.valueOf (playerLimitLabel.getText ().toString ()) < ClassicGameRules.MAX_PLAYERS)
         {
           playerLimitLabel.setText (String.valueOf (Integer.valueOf (playerLimitLabel.getText ().toString ()) + 1));
@@ -134,14 +139,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       public void clicked (final InputEvent event, final float x, final float y)
       {
         // TODO Implement CustomizeMapPopup.
-        for (final String mapName : loadMapNames ())
-        {
-          if (!mapNameLabel.textEquals (mapName))
-          {
-            mapNameLabel.setText (mapName);
-            break;
-          }
-        }
+
+        currentMapName = nextMapName ();
+        mapNameLabel.setText (currentMapName);
 
         updateTotalCountryCount ();
         updateWinPercentSelectBox ();
@@ -268,6 +268,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final int finalWinPercent = winPercentSelectBox.getSelected ();
         final InitialCountryAssignment finalInitialCountryAssignment = InitialCountryAssignment
                 .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
+
+        // TODO Pass currentMapName into GameConfiguratino
         final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, finalPlayerLimit,
                 finalWinPercent, finalInitialCountryAssignment);
 
@@ -304,6 +306,26 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     throw new IllegalStateException (Strings.format ("Cannot find any maps in {}", directory));
   }
 
+  private static ImmutableSet <String> loadMapNames ()
+  {
+    final ImmutableSet.Builder <String> mapNamesBuilder = ImmutableSet.builder ();
+    final File classicModeMapsDirectory = new File (AssetSettings.ABSOLUTE_EXTERNAL_CLASSIC_MODE_MAPS_DIRECTORY);
+    final File[] childPathFiles = classicModeMapsDirectory.listFiles ();
+
+    if (childPathFiles == null) cannotFindAnyMapsIn (classicModeMapsDirectory);
+
+    for (final File childPathFile : childPathFiles)
+    {
+      if (childPathFile.isDirectory ()) mapNamesBuilder.add (Strings.toProperCase (childPathFile.getName ()));
+    }
+
+    final ImmutableSet <String> mapNames = mapNamesBuilder.build ();
+
+    if (mapNames.isEmpty ()) cannotFindAnyMapsIn (classicModeMapsDirectory);
+
+    return mapNames;
+  }
+
   private void updateWinPercentSelectBox ()
   {
     final GameRules gameRules = new ClassicGameRules.Builder ().totalCountryCount (totalCountryCount)
@@ -333,23 +355,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
             .size ();
   }
 
-  private ImmutableSet <String> loadMapNames ()
+  private String nextMapName ()
   {
-    final ImmutableSet.Builder <String> mapNamesBuilder = ImmutableSet.builder ();
-    final File classicModeMapsDirectory = new File (AssetSettings.ABSOLUTE_EXTERNAL_CLASSIC_MODE_MAPS_DIRECTORY);
-    final File[] childPathFiles = classicModeMapsDirectory.listFiles ();
+    if (mapNameIterator == null || !mapNameIterator.hasNext ()) mapNameIterator = mapNames.iterator ();
 
-    if (childPathFiles == null) cannotFindAnyMapsIn (classicModeMapsDirectory);
-
-    for (final File childPathFile : childPathFiles)
-    {
-      if (childPathFile.isDirectory ()) mapNamesBuilder.add (Strings.toProperCase (childPathFile.getName ()));
-    }
-
-    final ImmutableSet <String> mapNames = mapNamesBuilder.build ();
-
-    if (mapNames.isEmpty ()) cannotFindAnyMapsIn (classicModeMapsDirectory);
-
-    return mapNamesBuilder.build ();
+    return mapNameIterator.next ();
   }
 }
