@@ -1,0 +1,12 @@
+// Name of Country, Names of All Adjacent Countries...
+
+"Alaska", "Northwest Territory", "Alberta"
+"Northwest Territory", "Alaska", "Alberta", "Ontario", "Greenland"
+"Greenland", "Northwest Territory", "Ontario", "Quebec", "Iceland"
+"Alberta", "Northwest Territory", "Alaska", "Ontario", "Western United States"
+"Ontario", "Northwest Territory", "Alberta", "Quebec", "Greenland", "Western United States", "Eastern United States"
+"Quebec", "Ontario", "Greenland", "Eastern United States"
+"Western United States", "Alberta", "Ontario", "Eastern United States", "Central America"
+"Eastern United States", "Ontario", "Quebec", "Western United States", "Central America"
+"Central America", "Eastern United States", "Western United States", "Venezuela"
+"Venezuela", "Central America"

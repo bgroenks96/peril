@@ -1,0 +1,4 @@
+// Continent Name, Green Value
+
+"North America", 1
+"South America", 4

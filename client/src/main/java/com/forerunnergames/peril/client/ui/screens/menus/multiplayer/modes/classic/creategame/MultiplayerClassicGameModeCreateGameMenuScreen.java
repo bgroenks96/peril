@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import com.forerunnergames.peril.client.io.CountryNamesDataLoader;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -27,15 +28,26 @@ import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
-import com.forerunnergames.peril.core.model.settings.GameSettings;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
+import com.forerunnergames.peril.core.shared.settings.AssetSettings;
+import com.forerunnergames.peril.core.shared.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
+import com.forerunnergames.tools.common.Maths;
 import com.forerunnergames.tools.common.Strings;
+
+import com.google.common.collect.ImmutableSet;
+
+import java.io.File;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
-  private static final int COUNTRY_COUNT = 49; // TODO Production: Remove
+  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
+  private static final int WIN_PERCENT_INCREMENT = 5;
+  private final CountryNamesDataLoader countryNamesDataLoader;
   private final TextField playerNameTextField;
   private final TextField playerClanTagTextField;
   private final TextField serverNameTextField;
@@ -47,16 +59,22 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label mapNameLabel;
   private final ImageButton customizePlayersButton;
   private final ImageButton customizeMapButton;
+  private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
+  private String currentMapName;
 
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                          final ScreenChanger screenChanger,
                                                          final ScreenSize screenSize,
                                                          final Batch batch,
-                                                         final CreateGameHandler createGameHandler)
+                                                         final CreateGameHandler createGameHandler,
+                                                         final CountryNamesDataLoader countryNamesDataLoader)
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
     Arguments.checkIsNotNull (createGameHandler, "createGameHandler");
+    Arguments.checkIsNotNull (countryNamesDataLoader, "countryNamesDataLoader");
+
+    this.countryNamesDataLoader = countryNamesDataLoader;
 
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
@@ -87,7 +105,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT),
                                                             Align.left);
 
-    mapNameLabel = widgetFactory.createBackgroundLabel (String.valueOf ("Classic"), Align.left);
+    currentMapName = loadMapNames ().iterator ().next ();
+    mapNameLabel = widgetFactory.createBackgroundLabel (currentMapName, Align.left);
+    updateTotalCountryCount ();
 
     customizePlayersButton = widgetFactory.createImageButton ("options", new ClickListener (Input.Buttons.LEFT)
     {
@@ -113,7 +133,18 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // TODO Implement CustomizePlayersPopup.
+        // TODO Implement CustomizeMapPopup.
+        for (final String mapName : loadMapNames ())
+        {
+          if (!mapNameLabel.textEquals (mapName))
+          {
+            mapNameLabel.setText (mapName);
+            break;
+          }
+        }
+
+        updateTotalCountryCount ();
+        updateWinPercentSelectBox ();
       }
     });
 
@@ -268,9 +299,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     });
   }
 
+  private static void cannotFindAnyMapsIn (final File directory)
+  {
+    throw new IllegalStateException (Strings.format ("Cannot find any maps in {}", directory));
+  }
+
   private void updateWinPercentSelectBox ()
   {
-    final GameRules gameRules = new ClassicGameRules.Builder ().totalCountryCount (COUNTRY_COUNT)
+    final GameRules gameRules = new ClassicGameRules.Builder ().totalCountryCount (totalCountryCount)
             .playerLimit (Integer.valueOf (playerLimitLabel.getText ().toString ()))
             .winPercentage (ClassicGameRules.MAX_WIN_PERCENTAGE).initialCountryAssignment (InitialCountryAssignment
                     .valueOf (initialCountryAssignmentSelectBox.getSelected ().toUpperCase ()))
@@ -279,11 +315,41 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     final Array <Integer> winPercentCounts = new Array <> (
             gameRules.getMaxWinPercentage () - gameRules.getMinWinPercentage () + 1);
 
-    for (int i = gameRules.getMinWinPercentage (); i <= gameRules.getMaxWinPercentage (); ++i)
+    for (int i = Maths.nextHigherMultiple (gameRules.getMinWinPercentage (), WIN_PERCENT_INCREMENT); i <= gameRules
+            .getMaxWinPercentage (); i += WIN_PERCENT_INCREMENT)
     {
       winPercentCounts.add (i);
     }
 
     winPercentSelectBox.setItems (winPercentCounts);
+  }
+
+  private void updateTotalCountryCount ()
+  {
+    final String mapName = mapNameLabel.getText ().toString ().toLowerCase ();
+
+    totalCountryCount = countryNamesDataLoader.load ("screens/game/play/modes/classic/maps/" + mapName
+            + "/countries/data/" + com.forerunnergames.peril.core.shared.settings.AssetSettings.COUNTRY_DATA_FILENAME)
+            .size ();
+  }
+
+  private ImmutableSet <String> loadMapNames ()
+  {
+    final ImmutableSet.Builder <String> mapNamesBuilder = ImmutableSet.builder ();
+    final File classicModeMapsDirectory = new File (AssetSettings.ABSOLUTE_EXTERNAL_CLASSIC_MODE_MAPS_DIRECTORY);
+    final File[] childPathFiles = classicModeMapsDirectory.listFiles ();
+
+    if (childPathFiles == null) cannotFindAnyMapsIn (classicModeMapsDirectory);
+
+    for (final File childPathFile : childPathFiles)
+    {
+      if (childPathFile.isDirectory ()) mapNamesBuilder.add (Strings.toProperCase (childPathFile.getName ()));
+    }
+
+    final ImmutableSet <String> mapNames = mapNamesBuilder.build ();
+
+    if (mapNames.isEmpty ()) cannotFindAnyMapsIn (classicModeMapsDirectory);
+
+    return mapNamesBuilder.build ();
   }
 }

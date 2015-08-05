@@ -1,0 +1,14 @@
+// AUTO-GENERATED FILE - DO NOT MODIFY
+// All numerical data is specified in reference play map space (top left origin).
+// "Country Name", Width, Height, Destination Bottom Left X, Destination Bottom Left Y, Text Upper Left X, Text Upper Left Y
+
+"Alaska", 221, 105, 2, 210, 81, 121
+"Northwest Territory", 453, 131, 161, 169, 254, 128
+"Greenland", 348, 136, 548, 171, 716, 70
+"Alberta", 206, 65, 178, 236, 290, 187
+"Ontario", 155, 101, 383, 272, 429, 196
+"Quebec", 154, 109, 509, 264, 542, 188
+"Western United States", 176, 128, 253, 361, 328, 269
+"Eastern United States", 169, 135, 411, 368, 457, 291
+"Central America", 228, 144, 296, 470, 360, 353
+"Venezuela", 154, 93, 514, 533, 556, 461

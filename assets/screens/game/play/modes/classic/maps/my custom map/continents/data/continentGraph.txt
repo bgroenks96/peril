@@ -1,0 +1,4 @@
+// Name of Continent, Names of All Adjacent Continents...
+
+"North America", "South America"
+"South America", "North America"

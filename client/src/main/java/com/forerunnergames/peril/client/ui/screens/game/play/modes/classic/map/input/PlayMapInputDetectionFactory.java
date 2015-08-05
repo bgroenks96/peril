@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
-import com.forerunnergames.peril.client.io.LibGdxStreamParserFactory;
+import com.forerunnergames.peril.client.io.LibGdxExternalStreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
@@ -69,7 +69,7 @@ public final class PlayMapInputDetectionFactory
     playMapCoordinateToCountryColorConverter = new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
     playMapCoordinateToContinentColorConverter = new PlayMapCoordinateToContinentColorConverter (playMapCoordinateToRgbaColorConverter);
 
-    final StreamParserFactory streamParserFactory = new LibGdxStreamParserFactory ();
+    final StreamParserFactory streamParserFactory = new LibGdxExternalStreamParserFactory ();
     final DataLoader <CountryColor, CountryName> countryColorToNameLoader = new CountryColorToNameLoader (streamParserFactory);
     final DataLoader <ContinentColor, ContinentName> continentColorToNameLoader = new ContinentColorToNameLoader (streamParserFactory);
 

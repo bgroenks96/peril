@@ -2,7 +2,7 @@ package com.forerunnergames.peril.core.model.io;
 
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.settings.AssetSettings;
+import com.forerunnergames.peril.core.shared.settings.AssetSettings;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;

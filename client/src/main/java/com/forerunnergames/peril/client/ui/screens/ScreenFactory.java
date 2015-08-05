@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.io.CountryNamesDataLoader;
+import com.forerunnergames.peril.client.io.LibGdxExternalStreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
@@ -82,7 +84,8 @@ public final class ScreenFactory
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       {
         return new MultiplayerClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, new DefaultCreateGameHandler (joinGameHandler, eventBus));
+                batch, new DefaultCreateGameHandler (joinGameHandler, eventBus),
+                new CountryNamesDataLoader (new LibGdxExternalStreamParserFactory ()));
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {

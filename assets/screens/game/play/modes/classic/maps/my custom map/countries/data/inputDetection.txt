@@ -1,0 +1,12 @@
+// Country Name, Red Value
+
+"Alaska",                255
+"Northwest Territory",   254
+"Greenland",             253
+"Alberta",               252
+"Ontario",               251
+"Quebec",                250
+"Western United States", 248
+"Eastern United States", 247
+"Central America",       246
+"Venezuela",             224
