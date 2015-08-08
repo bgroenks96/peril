@@ -1,0 +1,39 @@
+[compileJava]*.options*.encoding = "UTF-8"
+
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integration/java')
+        resources.srcDir file('src/integration/res')
+    }
+}
+
+task integrationTest (type: Test) {
+  description 'Run integration tests'
+  include '**/*Test*.*'
+  testClassesDir = sourceSets.integrationTest.output.classesDir
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  useTestNG() {
+    parallel "tests"
+  }
+  // configure testng suites
+  options.suites(getSuitesToRun())
+}
+
+def getSuitesToRun() {
+  // run standalone tests by default
+  if (!project.hasProperty("tests")) {
+    return smokeTestsStandalone
+  }
+  if (project.property("tests") == "all") {
+    return allTests
+  }
+  if (project.property("tests") == "smomke.all") {
+    return smokeTestsAll
+  }
+}
+
+test.testLogging.showStandardStreams = true;
+
+eclipse.project {
+  name = appName + "-core"
+}

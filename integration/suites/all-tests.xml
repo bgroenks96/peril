@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<!--
+
+The full test suite runs in a "bottom-up" fashion. The test runner will
+descend and run the test stages in the following order:
+
+Smoke Tests -> Regression Tests -> Functionality Tests -> Experimental Tests
+
+NOTE: Only smoke and functionality tests will be run (or even exist) at this time.
+
+Each test stage consists of one or more suites. Usually, the suites will be divided into
+one or more sub-suites. All test stages have a 'standalone' sub-suite that will (usually) hold
+the bulk of the tests. The 'standalone' suites are guaranteed to be portable, and do not require external
+system configuration (or specific platforms) to run. Other test groups may specify certain system-level
+dependencies, such as network configurations or platform-specific requirements. Each test stage should
+specify a parent suite that will run all tests in the stage (standalone et cetera).
+
+ -->
+
+<suite name="Peril Full Integration Test Suite">
+    <suite-files>
+        <suite-file path="smoke-tests-all.xml" />
+    </suite-files>
+</suite>

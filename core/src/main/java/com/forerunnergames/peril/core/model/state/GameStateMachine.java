@@ -18,8 +18,14 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoi
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 
+import com.google.common.base.Optional;
+
 import com.stateforge.statemachine.context.IContextEnd;
+import com.stateforge.statemachine.listener.IObserver;
 import com.stateforge.statemachine.listener.ObserverConsole;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.engio.mbassy.listener.Handler;
 
@@ -44,6 +50,8 @@ public final class GameStateMachine
 {
   private static final Logger log = LoggerFactory.getLogger (GameStateMachine.class);
   private final GameStateMachineContext context;
+  private final StateMachineListener stateListener = new StateMachineListener ();
+  private Optional <Throwable> errorState = Optional.absent ();
 
   public GameStateMachine (final GameModel gameModel)
   {
@@ -62,21 +70,53 @@ public final class GameStateMachine
     Arguments.checkIsNotNull (listener, "listener");
 
     context = new GameStateMachineContext (gameModel);
-    context.setObserver (ObserverConsole.getInstance ());
+    context.setObserver (stateListener);
 
     context.setEndHandler (new IContextEnd ()
     {
       @Override
       public void end (final Throwable throwable)
       {
+        Arguments.checkIsNotNull (throwable, "throwable");
+
         if (throwable != null)
         {
           log.error ("The state machine ended with an error.", throwable);
         }
 
+        errorState = Optional.fromNullable (throwable);
+
         listener.onEnd ();
       }
     });
+  }
+
+  public String getCurrentGameStateName ()
+  {
+    final GameStateMachineOperatingParallel operatingState = context.getGameStateMachineOperatingParallel ();
+    final GameStateMachineGameHandlerState current = operatingState.getGameStateMachineGameHandlerContext ()
+            .getStateCurrent ();
+    if (current == null) throw new IllegalStateException ("State machine is no longer in main game state.");
+    return current.getName ();
+  }
+
+  public Optional <Throwable> checkError ()
+  {
+    return errorState;
+  }
+
+  public void addStateListener (final StateListener stateMachineListener)
+  {
+    Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
+
+    stateListener.add (stateMachineListener);
+  }
+
+  public void removeStateListener (final StateListener stateMachineListener)
+  {
+    Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
+
+    stateListener.remove (stateMachineListener);
   }
 
   @Handler
@@ -227,5 +267,128 @@ public final class GameStateMachine
     log.debug ("Received event {}", event);
 
     context.onPlayerLeaveGameEvent (event);
+  }
+
+  public interface StateListener extends IObserver
+  {
+  }
+
+  private class StateMachineListener implements StateListener
+  {
+    private final List <IObserver> observers = new CopyOnWriteArrayList <> ();
+
+    StateMachineListener ()
+    {
+      observers.add (ObserverConsole.getInstance ());
+    }
+
+    public void add (final StateListener stateMachineListener)
+    {
+      Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
+
+      observers.add (stateMachineListener);
+    }
+
+    public void remove (final StateListener stateMachineListener)
+    {
+      Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
+
+      observers.remove (stateMachineListener);
+    }
+
+    @Override
+    public void onEntry (final String context, final String state)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (state, "state");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onEntry (context, state);
+      }
+    }
+
+    @Override
+    public void onExit (final String context, final String state)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (state, "state");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onExit (context, state);
+      }
+    }
+
+    @Override
+    public void onTransitionBegin (final String context,
+                                   final String statePrevious,
+                                   final String stateNext,
+                                   final String transition)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (statePrevious, "statePrevious");
+      Arguments.checkIsNotNull (stateNext, "stateNext");
+      Arguments.checkIsNotNull (transition, "transition");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onTransitionBegin (context, statePrevious, stateNext, transition);
+      }
+    }
+
+    @Override
+    public void onTransitionEnd (final String context,
+                                 final String statePrevious,
+                                 final String stateNext,
+                                 final String transition)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (statePrevious, "statePrevious");
+      Arguments.checkIsNotNull (stateNext, "stateNext");
+      Arguments.checkIsNotNull (transition, "transition");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onTransitionBegin (context, statePrevious, stateNext, transition);
+      }
+    }
+
+    @Override
+    public void onTimerStart (final String context, final String name, final long duration)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (name, "name");
+      Arguments.checkIsNotNegative (duration, "duration");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onTimerStart (context, name, duration);
+      }
+    }
+
+    @Override
+    public void onTimerStop (final String context, final String name)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (name, "name");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onTimerStop (context, name);
+      }
+    }
+
+    @Override
+    public void onActionException (final String context, final Throwable throwable)
+    {
+      Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (throwable, "throwable");
+
+      for (final IObserver observer : observers)
+      {
+        observer.onActionException (context, throwable);
+      }
+    }
   }
 }
