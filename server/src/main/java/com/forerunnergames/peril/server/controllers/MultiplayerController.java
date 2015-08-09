@@ -68,10 +68,11 @@ import org.slf4j.LoggerFactory;
 
 public final class MultiplayerController extends ControllerAdapter
 {
+  // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
-  private final Map <String, Remote> playerJoinGameRequestCache;
-  private final Set <Remote> clientsInServer;
+  private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap<String, Remote> ());
+  private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final ClientConnector clientConnector;
@@ -79,15 +80,16 @@ public final class MultiplayerController extends ControllerAdapter
   private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
   private final GameConfiguration gameConfig;
-  private boolean shouldShutDown = false;
   private final String gameServerName;
   private final GameServerType gameServerType;
   private final int serverTcpPort;
+  private boolean shouldShutDown = false;
   private int connectionTimeoutMillis = NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS;
   @Nullable
   private Remote host = null;
   @Nullable
   private NetworkEventHandler networkEventHandler = null;
+  // @formatter:on
 
   public MultiplayerController (final String gameServerName,
                                 final GameServerType gameServerType,
@@ -117,9 +119,7 @@ public final class MultiplayerController extends ControllerAdapter
     this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
 
-    clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
     clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameConfig.getPlayerLimit ());
-    playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   }
 
   @Override
