@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.integration.server;
 
-import com.forerunnergames.peril.core.model.GameModelBuilder;
+import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
@@ -10,7 +11,7 @@ import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
-import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
@@ -59,15 +60,15 @@ public class ServerFactory
     final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.size (),
                                                          initialCountryAssignment);
     final GameStateMachineConfig config = new GameStateMachineConfig ();
-    config.setGameModel (new GameModelBuilder (gameRules).build ());
-    final GameStateMachine stateMachine = CoreFactory.createGameStateMachine (config);
+    config.setGameModel (new StateMachineActionHandler (GameModel.builder (gameRules).eventBus (eventBus).build ()));
+    final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
     return newTestServer (eventBus, type, gameMode, gameRules, stateMachine, serverAddress, serverPort);
   }
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
                                                         final GameServerType type,
                                                         final GameRules gameRules,
-                                                        final GameStateMachine stateMachine,
+                                                        final StateMachineEventHandler stateMachine,
                                                         final String serverAddress,
                                                         final int serverPort)
   {
@@ -85,7 +86,7 @@ public class ServerFactory
                                                       final GameServerType type,
                                                       final GameMode gameMode,
                                                       final GameRules gameRules,
-                                                      final GameStateMachine stateMachine,
+                                                      final StateMachineEventHandler stateMachine,
                                                       final String serverAddress,
                                                       final int serverPort)
   {

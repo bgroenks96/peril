@@ -3,6 +3,7 @@ package com.forerunnergames.peril.server.application;
 import com.beust.jcommander.JCommander;
 
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
@@ -15,7 +16,7 @@ import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
-import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
@@ -74,8 +75,13 @@ public final class ServerApplicationFactory
     final PlayMapModel playMapModel = new DefaultPlayMapModel (countries, continents, gameRules);
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
     final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (playerModel.getPlayerLimit ());
-    final GameModel gameModel = new GameModel (playerModel, playMapModel, playerTurnModel, gameRules, eventBus);
-    final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
+    final GameModel.Builder gameHandlerBuilder = GameModel.builder (gameRules);
+    gameHandlerBuilder.playMapModel (playMapModel);
+    gameHandlerBuilder.playerModel (playerModel);
+    gameHandlerBuilder.playerTurnModel (playerTurnModel);
+    gameHandlerBuilder.eventBus (eventBus);
+    final StateMachineActionHandler gameModel = new StateMachineActionHandler (gameHandlerBuilder.build ());
+    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
             gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());

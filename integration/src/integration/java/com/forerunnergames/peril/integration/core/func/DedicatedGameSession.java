@@ -3,9 +3,10 @@ package com.forerunnergames.peril.integration.core.func;
 import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.GameModelBuilder;
+import com.forerunnergames.peril.core.model.StateMachineActionHandler;
+import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
@@ -36,8 +37,8 @@ public class DedicatedGameSession implements TestSession
   private final String serverAddress;
   private final int serverPort;
   private final TestClientPool clientPool = new TestClientPool ();
-  private GameModel gameModel;
-  private GameStateMachine stateMachine;
+  private StateMachineActionHandler gameModel;
+  private StateMachineEventHandler stateMachine;
   private TestServerApplication serverApplication;
 
   public DedicatedGameSession (final GameRules gameRules, final String serverAddress, final int serverPort)
@@ -72,12 +73,12 @@ public class DedicatedGameSession implements TestSession
     return isShutDown.get ();
   }
 
-  public GameModel getGameModel ()
+  public StateMachineActionHandler getGameModel ()
   {
     return gameModel;
   }
 
-  public GameStateMachine getStateMachine ()
+  public StateMachineEventHandler getStateMachine ()
   {
     return stateMachine;
   }
@@ -99,7 +100,7 @@ public class DedicatedGameSession implements TestSession
 
   private void initializeServer ()
   {
-    gameModel = new GameModelBuilder (gameRules).eventBus (eventBus).build ();
+    gameModel = new StateMachineActionHandler (GameModel.builder (gameRules).eventBus (eventBus).build ());
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     config.setGameModel (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);
