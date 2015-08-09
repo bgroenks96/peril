@@ -4,9 +4,7 @@ import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.GameModelBuilder;
-import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.model.state.GameStateMachine;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
@@ -19,38 +17,38 @@ import com.forerunnergames.peril.integration.server.TestClientPool;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.DefaultExternalAddressResolver;
+import com.forerunnergames.tools.net.ExternalAddressResolver;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.engio.mbassy.bus.MBassador;
 
-public class GameSession implements TestSession
+public class DedicatedGameSession implements TestSession
 {
+  public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
   public static final int DEFAULT_SERVER_PORT = NetworkSettings.DEFAULT_TCP_PORT;
+  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
+          NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
-  private final GameServerType serverType;
   private final GameRules gameRules;
+  private final String serverAddress;
   private final int serverPort;
   private final TestClientPool clientPool = new TestClientPool ();
   private GameModel gameModel;
   private GameStateMachine stateMachine;
   private TestServerApplication serverApplication;
 
-  public GameSession (final GameServerType serverType, final GameRules gameRules, final int serverPort)
+  public DedicatedGameSession (final GameRules gameRules, final String serverAddress, final int serverPort)
   {
-    Arguments.checkIsNotNull (serverType, "serverType");
     Arguments.checkIsNotNull (gameRules, "gameRules");
+    Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    this.serverType = serverType;
     this.gameRules = gameRules;
+    this.serverAddress = serverAddress;
     this.serverPort = serverPort;
-  }
-
-  public GameSession ()
-  {
-    this (GameServerType.HOST_AND_PLAY, createDefaultTestGameRules (), DEFAULT_SERVER_PORT);
   }
 
   @Override
@@ -105,18 +103,13 @@ public class GameSession implements TestSession
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     config.setGameModel (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);
-    serverApplication = ServerFactory.createTestServer (eventBus, serverType, gameRules, stateMachine, serverPort);
+    serverApplication = ServerFactory.createTestServer (eventBus, GameServerType.DEDICATED, gameRules, stateMachine,
+                                                        serverAddress, serverPort);
     serverApplication.start ();
   }
 
   private void initializeClients ()
   {
-    clientPool.connectNew ("localhost", serverPort, gameRules.getPlayerLimit ());
-  }
-
-  private static GameRules createDefaultTestGameRules ()
-  {
-    return new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT)
-            .initialCountryAssignment (InitialCountryAssignment.MANUAL).build ();
+    clientPool.connectNew (externalAddressResolver.resolveIp (), serverPort, gameRules.getPlayerLimit ());
   }
 }

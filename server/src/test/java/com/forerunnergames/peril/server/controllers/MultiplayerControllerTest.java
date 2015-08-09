@@ -745,6 +745,7 @@ public class MultiplayerControllerTest
     private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;
     private GameServerType gameServerType = DEFAULT_GAME_SERVER_TYPE;
     // server configuration fields
+    private String serverAddress = DEFAULT_TEST_SERVER_ADDRESS;
     private int serverPort = DEFAULT_TEST_SERVER_PORT;
     private int playerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
     private int winPercent = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
@@ -762,6 +763,14 @@ public class MultiplayerControllerTest
       Arguments.checkIsNotNull (gameServerType, "gameServerType");
 
       this.gameServerType = gameServerType;
+      return this;
+    }
+
+    MultiplayerControllerBuilder serverAddress (final String serverAddress)
+    {
+      Arguments.checkIsNotNull (serverAddress, "serverAddress");
+
+      this.serverAddress = serverAddress;
       return this;
     }
 
@@ -803,11 +812,19 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
 
-      final GameConfiguration config = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
+      final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
               initialCountryAssignment);
-      final MultiplayerController controller = new MultiplayerController (gameServerName, gameServerType, serverPort,
-              config, connector, communicator, coreCommunicator, eventBus);
+
+      final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
+
+      final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName,
+              gameServerType, gameConfig, serverConfig);
+
+      final MultiplayerController controller = new MultiplayerController (gameServerConfig, connector, communicator,
+              coreCommunicator, eventBus);
+
       controller.initialize ();
+
       return controller;
     }
 

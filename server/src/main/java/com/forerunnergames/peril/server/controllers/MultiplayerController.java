@@ -1,12 +1,10 @@
 package com.forerunnergames.peril.server.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.serverAddressFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
-import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
@@ -43,7 +41,6 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
 import com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
@@ -72,17 +69,14 @@ public final class MultiplayerController extends ControllerAdapter
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
   private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap<String, Remote> ());
-  private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
+  private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet<Remote> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
+  private final GameServerConfiguration gameServerConfig;
   private final ClientConnector clientConnector;
   private final PlayerCommunicator playerCommunicator;
   private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
-  private final GameConfiguration gameConfig;
-  private final String gameServerName;
-  private final GameServerType gameServerType;
-  private final int serverTcpPort;
   private boolean shouldShutDown = false;
   private int connectionTimeoutMillis = NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS;
   @Nullable
@@ -91,41 +85,33 @@ public final class MultiplayerController extends ControllerAdapter
   private NetworkEventHandler networkEventHandler = null;
   // @formatter:on
 
-  public MultiplayerController (final String gameServerName,
-                                final GameServerType gameServerType,
-                                final int serverTcpPort,
-                                final GameConfiguration gameConfig,
+  public MultiplayerController (final GameServerConfiguration gameServerConfig,
                                 final ClientConnector clientConnector,
                                 final PlayerCommunicator playerCommunicator,
                                 final CoreCommunicator coreCommunicator,
                                 final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (gameServerName, "gameServerName");
-    Arguments.checkIsNotNull (gameServerType, "gameServerType");
-    Arguments.checkIsNotNegative (serverTcpPort, "serverTcpPort");
-    Arguments.checkUpperInclusiveBound (serverTcpPort, NetworkSettings.MAX_PORT_VALUE, "serverTcpPort");
-    Arguments.checkIsNotNull (gameConfig, "gameConfig");
+    Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
     Arguments.checkIsNotNull (playerCommunicator, "playerCommunicator");
     Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.gameServerName = gameServerName;
-    this.gameServerType = gameServerType;
-    this.serverTcpPort = serverTcpPort;
-    this.gameConfig = gameConfig;
+    this.gameServerConfig = gameServerConfig;
     this.clientConnector = clientConnector;
     this.playerCommunicator = playerCommunicator;
     this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
 
-    clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameConfig.getPlayerLimit ());
+    clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameServerConfig.getPlayerLimit ());
   }
 
   @Override
   public void initialize ()
   {
-    log.trace ("Initializing {} for game server '{}'", getClass ().getSimpleName (), gameServerName);
+    log.trace ("Initializing {} for game server '{}'", getClass ().getSimpleName (),
+               gameServerConfig.getGameServerName ());
+
     eventBus.subscribe (this);
     eventBus.publish (new CreateGameEvent ());
     networkEventHandler = new ServerNetworkEventHandler (this, eventBus.getRegisteredErrorHandlers ());
@@ -155,7 +141,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   public GameConfiguration getGameConfiguration ()
   {
-    return gameConfig;
+    return gameServerConfig;
   }
 
   public boolean isPlayerInGame (final PlayerPacket player)
@@ -387,7 +373,7 @@ public final class MultiplayerController extends ControllerAdapter
     // local host has joined the host-and-play server
     if (isHostAndPlay () && !isHostConnected () && isLocalHost (client)) host = client;
 
-    sendJoinGameServerSuccess (client, serverAddressFrom (event), clientsToPlayers.players ());
+    sendJoinGameServerSuccess (client, clientsToPlayers.players ());
   }
 
   void onEvent (final PlayerJoinGameRequestEvent event, final Remote client)
@@ -479,6 +465,18 @@ public final class MultiplayerController extends ControllerAdapter
     handlePlayerResponseTo (PlayerSelectCountryRequestEvent.class, event, player);
   }
 
+  // <<<<< internal event utility methods and types >>>>>> //
+
+  private static boolean isLocalHost (final Remote client)
+  {
+    return client.getAddress ().equals (NetworkSettings.LOCALHOST_ADDRESS);
+  }
+
+  private static ClientConfiguration createClientConfig (final String clientAddress, final int clientPort)
+  {
+    return new DefaultClientConfiguration (clientAddress, clientPort);
+  }
+
   private void sendToPlayer (final PlayerPacket player, final Object object)
   {
     playerCommunicator.sendToPlayer (player, object, clientsToPlayers);
@@ -500,16 +498,14 @@ public final class MultiplayerController extends ControllerAdapter
     clientsToPlayers.remove (client);
   }
 
-  // <<<<< internal event utility methods and types >>>>>> //
-
-  private void sendJoinGameServerSuccess (final Remote client,
-                                          final String serverAddress,
-                                          final ImmutableSet <PlayerPacket> players)
+  private void sendJoinGameServerSuccess (final Remote client, final ImmutableSet <PlayerPacket> players)
   {
-    final Event successEvent = new JoinGameServerSuccessEvent (createGameServerConfig (serverAddress),
+    final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig,
             createClientConfig (client.getAddress (), client.getPort ()), players);
+
     playerCommunicator.sendTo (client, successEvent);
     clientsInServer.add (client);
+
     log.info ("Client [{}] successfully joined game server.", client);
   }
 
@@ -519,15 +515,10 @@ public final class MultiplayerController extends ControllerAdapter
   {
     playerCommunicator.sendTo (client, new JoinGameServerDeniedEvent (event,
             new DefaultClientConfiguration (client.getAddress (), client.getPort ()), reason));
+
     clientConnector.disconnect (client);
+
     log.warn ("Denied [{}] from [{}]; REASON: {}", event, client, reason);
-  }
-
-  private boolean isLocalHost (final Remote client)
-  {
-    Arguments.checkIsNotNull (client, "client");
-
-    return client.getAddress ().equals (NetworkSettings.LOCALHOST_ADDRESS);
   }
 
   private boolean isHostConnected ()
@@ -537,18 +528,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   private boolean isHostAndPlay ()
   {
-    return gameServerType.is (GameServerType.HOST_AND_PLAY);
-  }
-
-  private GameServerConfiguration createGameServerConfig (final String serverAddress)
-  {
-    return new DefaultGameServerConfiguration (gameServerName, gameServerType, gameConfig,
-            new DefaultServerConfiguration (serverAddress, serverTcpPort));
-  }
-
-  private ClientConfiguration createClientConfig (final String clientAddress, final int clientPort)
-  {
-    return new DefaultClientConfiguration (clientAddress, clientPort);
+    return gameServerConfig.getGameServerType () == GameServerType.HOST_AND_PLAY;
   }
 
   private boolean waitingForResponseToEventFromPlayer (final Class <? extends PlayerInputRequestEvent> requestClass,

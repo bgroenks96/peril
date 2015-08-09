@@ -27,7 +27,7 @@ public class InitialGamePhaseTest
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseTest.class);
 
   private final String sessionName;
-  private GameSession session;
+  private DedicatedGameSession session;
 
   public InitialGamePhaseTest (final String sessionName)
   {
@@ -41,7 +41,7 @@ public class InitialGamePhaseTest
   {
     log.trace ("Initializing {} with session {}.", getClass ().getSimpleName (), sessionName);
 
-    session = (GameSession) TestSessionProvider.get (sessionName);
+    session = (DedicatedGameSession) TestSessionProvider.get (sessionName);
   }
 
   @Test

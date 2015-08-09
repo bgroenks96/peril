@@ -28,6 +28,7 @@ public final class NetworkSettings
   public static final int CLIENT_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
   public static final int SERVER_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 16382;
   public static final int SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
+  public static final String EXTERNAL_IP_RESOLVER_URL = "http://ci.forerunnergames.com:8888/get-wan-ip/getwanip";
 
   public static boolean isLocalhostAddress (final String address)
   {

@@ -19,7 +19,10 @@ import com.forerunnergames.peril.core.model.state.GameStateMachine;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
+import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
@@ -30,7 +33,11 @@ import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
+import com.forerunnergames.tools.net.DefaultExternalAddressResolver;
+import com.forerunnergames.tools.net.ExternalAddressResolver;
+import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.Server;
+import com.forerunnergames.tools.net.server.ServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerController;
 
 import com.google.common.collect.ImmutableSet;
@@ -70,12 +77,20 @@ public final class ServerApplicationFactory
     final GameModel gameModel = new GameModel (playerModel, playMapModel, playerTurnModel, gameRules, eventBus);
     final GameStateMachine gameStateMachine = new GameStateMachine (gameModel);
 
-    final GameConfiguration config = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
             gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
 
-    final Controller multiplayerController = new MultiplayerController (jArgs.gameServerName, jArgs.gameServerType,
-            jArgs.serverTcpPort, config, serverController, new PlayerCommunicator (serverController),
-            new DefaultCoreCommunicator (eventBus), eventBus);
+    final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
+            NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
+
+    final ServerConfiguration serverConfig = new DefaultServerConfiguration (externalAddressResolver.resolveIp (),
+            jArgs.serverTcpPort);
+
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (jArgs.gameServerName,
+            jArgs.gameServerType, gameConfig, serverConfig);
+
+    final Controller multiplayerController = new MultiplayerController (gameServerConfig, serverController,
+            new PlayerCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventBus);
 
     return new ServerApplication (gameStateMachine, eventBus, mainThreadExecutor, serverController,
             multiplayerController);

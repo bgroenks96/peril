@@ -13,8 +13,10 @@ import com.forerunnergames.peril.integration.server.ServerFactory;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.DefaultExternalAddressResolver;
+import com.forerunnergames.tools.net.ExternalAddressResolver;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
+import com.forerunnergames.tools.net.server.UnknownServerConfiguration;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -32,21 +34,21 @@ public class ServerMultiplayerControllerSmokeTest
   private static final String DEDICATED = "serverType:dedicated";
   private static final String HOSTNPLAY = "serverType:hostnplay";
   // ------------------------------ //
-
+  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
+          NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
+  private final String fakeExternalServerAddress = "0.0.0.0";
+  private final int serverPort = NetworkSettings.DEFAULT_TCP_PORT;
   private MBassador <Event> eventBus;
   private TestServerApplication server;
   private TestClient client;
-  private String serverAddr;
-  private final int serverPort = NetworkSettings.DEFAULT_TCP_PORT;
 
   @BeforeGroups (value = { DEDICATED })
   public void setUpDedicated ()
   {
     log.trace ("Setting up test client/server for test group [{}]...", DEDICATED);
-    serverAddr = "ci.forerunnergames.com";
     eventBus = EventBusFactory.create ();
     server = ServerFactory.createTestServer (eventBus, GameServerType.DEDICATED, ClassicGameRules.DEFAULT_PLAYER_LIMIT,
-                                             serverPort);
+                                             fakeExternalServerAddress, serverPort);
     client = new TestClient (new KryonetClient ());
     client.initialize ();
     server.start ();
@@ -56,10 +58,10 @@ public class ServerMultiplayerControllerSmokeTest
   public void setUpHostNPlay ()
   {
     log.trace ("Setting up test client/server for test group [{}]...", HOSTNPLAY);
-    serverAddr = "localhost";
     eventBus = EventBusFactory.create ();
     server = ServerFactory.createTestServer (eventBus, GameServerType.HOST_AND_PLAY,
-                                             ClassicGameRules.DEFAULT_PLAYER_LIMIT, serverPort);
+                                             ClassicGameRules.DEFAULT_PLAYER_LIMIT, fakeExternalServerAddress,
+                                             serverPort);
     client = new TestClient (new KryonetClient ());
     client.initialize ();
     server.start ();
@@ -69,7 +71,7 @@ public class ServerMultiplayerControllerSmokeTest
   @Test (groups = { DEDICATED })
   public void testConnectToDedicatedServer ()
   {
-    assertTrue (client.connect ("ci.forerunnergames.com", serverPort).isSuccessful ());
+    assertTrue (client.connect (externalAddressResolver.resolveIp (), serverPort).isSuccessful ());
   }
 
   @Test (groups = { DEDICATED })
@@ -100,7 +102,7 @@ public class ServerMultiplayerControllerSmokeTest
 
   private void joinServer ()
   {
-    final ServerConfiguration config = new DefaultServerConfiguration (serverAddr, serverPort);
+    final ServerConfiguration config = new UnknownServerConfiguration ();
     client.sendEvent (new JoinGameServerRequestEvent (config));
     client.waitForEventCommunication (JoinGameServerSuccessEvent.class, true);
   }

@@ -18,7 +18,9 @@ import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.client.DefaultClientConfiguration;
+import com.forerunnergames.tools.net.client.UnknownClientConfiguration;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.server.UnknownServerConfiguration;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -76,7 +78,9 @@ public final class KryonetRegistration
           PlayerColor.class,
           PlayerJoinGameDeniedEvent.Reason.class,
           PlayerSelectCountryResponseDeniedEvent.Reason.class,
-          PlayerTurnOrder.class);
+          PlayerTurnOrder.class,
+          UnknownClientConfiguration.class,
+          UnknownServerConfiguration.class);
   // @formatter:on
 
   /*

@@ -11,6 +11,8 @@ import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
+import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.integration.core.CoreFactory;
@@ -23,7 +25,9 @@ import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.Server;
+import com.forerunnergames.tools.net.server.ServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerController;
 
 import com.google.common.collect.ImmutableSet;
@@ -39,11 +43,13 @@ public class ServerFactory
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
                                                         final GameServerType type,
                                                         final int playerLimit,
+                                                        final String serverAddress,
                                                         final int serverPort)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (type, "type");
     Arguments.checkIsNotNegative (playerLimit, "playerLimit");
+    Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
     final GameMode gameMode = GameMode.CLASSIC;
@@ -55,22 +61,24 @@ public class ServerFactory
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     config.setGameModel (new GameModelBuilder (gameRules).build ());
     final GameStateMachine stateMachine = CoreFactory.createGameStateMachine (config);
-    return newTestServer (eventBus, type, gameMode, gameRules, stateMachine, serverPort);
+    return newTestServer (eventBus, type, gameMode, gameRules, stateMachine, serverAddress, serverPort);
   }
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
                                                         final GameServerType type,
                                                         final GameRules gameRules,
                                                         final GameStateMachine stateMachine,
+                                                        final String serverAddress,
                                                         final int serverPort)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (type, "type");
     Arguments.checkIsNotNull (gameRules, "gameRules");
     Arguments.checkIsNotNull (stateMachine, "stateMachine");
+    Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    return newTestServer (eventBus, type, GameMode.CLASSIC, gameRules, stateMachine, serverPort);
+    return newTestServer (eventBus, type, GameMode.CLASSIC, gameRules, stateMachine, serverAddress, serverPort);
   }
 
   private static TestServerApplication newTestServer (final MBassador <Event> eventBus,
@@ -78,6 +86,7 @@ public class ServerFactory
                                                       final GameMode gameMode,
                                                       final GameRules gameRules,
                                                       final GameStateMachine stateMachine,
+                                                      final String serverAddress,
                                                       final int serverPort)
   {
     final String gameServerName = "TestGameServer-" + testGameServerId++;
@@ -90,12 +99,16 @@ public class ServerFactory
     final ServerController serverController = new EventBasedServerController (server, gameServerPort,
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
-    final GameConfiguration config = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
             gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
 
-    final MultiplayerController multiplayerController = new MultiplayerController (gameServerName, type, gameServerPort,
-            config, serverController, new PlayerCommunicator (serverController), new DefaultCoreCommunicator (eventBus),
-            eventBus);
+    final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
+
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName, type,
+            gameConfig, serverConfig);
+
+    final MultiplayerController multiplayerController = new MultiplayerController (gameServerConfig, serverController,
+            new PlayerCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventBus);
 
     final ServerApplication serverApplication = new ServerApplication (stateMachine, eventBus, mainThreadExecutor,
             serverController, multiplayerController);

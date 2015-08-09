@@ -157,10 +157,10 @@ project (":integration") {
   }
 
   dependencies {
-    integrationTestCompile project(":core")
-    integrationTestCompile project(":server")
-    integrationTestCompile project(":client")
-    integrationTestCompile "org.testng:testng:6.9.6"
+    testCompile project (":core")
+    testCompile project (":server")
+    testCompile project (":client")
+    testCompile "org.testng:testng:6.9.6"
   }
 
   test {

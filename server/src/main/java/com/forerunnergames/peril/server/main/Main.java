@@ -21,8 +21,7 @@ public final class Main
       public void uncaughtException (final Thread t, final Throwable e)
       {
         log.error ("The server application has crashed!\n\nA crash file has been created in \""
-                + System.getProperty ("user.home") + File.separator + "peril" + File.separator
-                + "crashes\".\n", e);
+                + System.getProperty ("user.home") + File.separator + "peril" + File.separator + "crashes\".\n", e);
 
         System.exit (1);
       }
@@ -33,7 +32,7 @@ public final class Main
     application.initialize ();
 
     // TODO Use a ScheduledExecutorService
-    while (! application.shouldShutDown ())
+    while (!application.shouldShutDown ())
     {
       application.update ();
 
