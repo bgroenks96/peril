@@ -1,8 +1,5 @@
 package com.forerunnergames.peril.server.controllers;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.playerNameFrom;
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.recipientsFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.serverAddressFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
@@ -86,6 +83,7 @@ public final class MultiplayerController extends ControllerAdapter
   private final String gameServerName;
   private final GameServerType gameServerType;
   private final int serverTcpPort;
+  private int connectionTimeoutMillis = NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS;
   @Nullable
   private Remote host = null;
   @Nullable
@@ -127,6 +125,7 @@ public final class MultiplayerController extends ControllerAdapter
   @Override
   public void initialize ()
   {
+    log.trace ("Initializing {} for game server '{}'", getClass ().getSimpleName (), gameServerName);
     eventBus.subscribe (this);
     eventBus.publish (new CreateGameEvent ());
     networkEventHandler = new ServerNetworkEventHandler (this, eventBus.getRegisteredErrorHandlers ());
@@ -149,6 +148,11 @@ public final class MultiplayerController extends ControllerAdapter
     shouldShutDown = true;
   }
 
+  public void setClientConnectTimeout (final int connectionTimeoutMillis)
+  {
+    this.connectionTimeoutMillis = connectionTimeoutMillis;
+  }
+
   public GameConfiguration getGameConfiguration ()
   {
     return gameConfig;
@@ -161,49 +165,6 @@ public final class MultiplayerController extends ControllerAdapter
     return clientsToPlayers.clientFor (player).isPresent ();
   }
 
-  @Handler
-  public void onEvent (final ClientConnectionEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-    log.info ("Client [{}] connected.", clientFrom (event));
-
-    connectorDaemon.onConnect (clientFrom (event));
-  }
-
-  @Handler
-  public void onEvent (final ClientDisconnectionEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    final Remote client = clientFrom (event);
-
-    log.info ("Client [{}] disconnected.", client);
-
-    Optional <PlayerPacket> playerQuery;
-    try
-    {
-      playerQuery = clientsToPlayers.playerFor (client);
-    }
-    catch (final RegisteredClientPlayerNotFoundException e)
-    {
-      log.error ("Error resolving client to player.", e);
-      return;
-    }
-
-    if (!playerQuery.isPresent ())
-    {
-      log.warn ("Client [{}] disconnected but did not exist as a player.", client);
-      return;
-    }
-
-    final PlayerPacket disconnectedPlayer = playerQuery.get ();
-    coreCommunicator.notifyRemovePlayerFromGame (disconnectedPlayer);
-  }
-
   // <<<<< inbound events from core module >>>>> //
 
   @Handler
@@ -213,7 +174,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    final String playerName = playerNameFrom (event);
+    final String playerName = event.getPlayerName ();
 
     // if no client mapping is available, silently ignore success event
     // this is to prevent failure under cases such as client disconnecting while join request is being processed
@@ -221,7 +182,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     final Remote client = playerJoinGameRequestCache.get (playerName);
 
-    final PlayerPacket newPlayer = playerFrom (event);
+    final PlayerPacket newPlayer = event.getPlayer ();
     final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
     if (oldPlayer.isPresent ())
     {
@@ -242,7 +203,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    final String playerName = playerNameFrom (event);
+    final String playerName = event.getPlayerName ();
 
     // if no client mapping is available, silently ignore denied event
     // this is to prevent failure under cases such as client disconnecting while join request is being processed
@@ -275,7 +236,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    for (final PlayerPacket recipient : recipientsFrom (event))
+    for (final PlayerPacket recipient : event.getRecipients ())
     {
       sendToPlayer (recipient, event);
     }
@@ -301,10 +262,10 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    final boolean wasAdded = playerInputRequestEventCache.put (playerFrom (event), event);
+    final boolean wasAdded = playerInputRequestEventCache.put (event.getPlayer (), event);
     assert wasAdded;
 
-    sendToPlayer (playerFrom (event), event);
+    sendToPlayer (event.getPlayer (), event);
   }
 
   @Handler
@@ -331,6 +292,51 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   // <<<<< remote inbound/outbound event communication >>>>> //
+
+  @Handler
+  public void onEvent (final ClientConnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+    log.info ("Client [{}] connected.", clientFrom (event));
+
+    connectorDaemon.onConnect (clientFrom (event));
+  }
+
+  @Handler
+  public void onEvent (final ClientDisconnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final Remote client = clientFrom (event);
+
+    log.info ("Client [{}] disconnected.", client);
+
+    Optional <PlayerPacket> playerQuery;
+    try
+    {
+      playerQuery = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+      remove (client);
+      return;
+    }
+
+    if (!playerQuery.isPresent ())
+    {
+      log.warn ("Client [{}] disconnected but did not exist as a player.", client);
+      remove (client);
+      return;
+    }
+
+    final PlayerPacket disconnectedPlayer = playerQuery.get ();
+    coreCommunicator.notifyRemovePlayerFromGame (disconnectedPlayer);
+  }
 
   @Handler
   void onEvent (final ClientCommunicationEvent event)
@@ -395,16 +401,16 @@ public final class MultiplayerController extends ControllerAdapter
     if (!clientsInServer.contains (client))
     {
       log.warn ("Ignoring join game request from player [{}] | REASON: unrecognized client [{}].",
-                playerNameFrom (event), client);
+                event.getPlayerName (), client);
       return;
     }
 
     // spam guard: if client request is already being processed, ignore new request event
-    if (playerJoinGameRequestCache.containsKey (playerNameFrom (event))) return;
+    if (playerJoinGameRequestCache.containsKey (event.getPlayerName ())) return;
 
-    log.trace ("Received [{}] from player [{}]", event, playerNameFrom (event));
+    log.trace ("Received [{}] from player [{}]", event, event.getPlayerName ());
 
-    playerJoinGameRequestCache.put (playerNameFrom (event), client);
+    playerJoinGameRequestCache.put (event.getPlayerName (), client);
 
     eventBus.publish (event);
   }
@@ -602,7 +608,7 @@ public final class MultiplayerController extends ControllerAdapter
       {
         try
         {
-          Thread.sleep (NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS);
+          Thread.sleep (connectionTimeoutMillis);
         }
         catch (final InterruptedException ignored)
         {

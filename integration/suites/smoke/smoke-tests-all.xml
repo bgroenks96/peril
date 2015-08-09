@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Peril Smoke Tests">
+  <suite-files>
+    <suite-file path="standalone/smoke-tests-standalone.xml" />
+  </suite-files>
+
+  <!-- Runs only smoke tests for dedicated servers (requires environment configuration) -->
+  <test name="Dedicated Server Smoke Tests">
+    <packages>
+      <package name="com.forerunnergames.peril.integration.server.smoke" />
+    </packages>
+    <groups>
+      <run>
+        <include name="serverType:dedicated"/>
+      </run>
+    </groups>
+  </test>
+</suite>

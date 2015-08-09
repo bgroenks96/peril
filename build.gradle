@@ -145,6 +145,29 @@ project (":server") {
   }
 }
 
+project (":integration") {
+  apply plugin: "java"
+
+  sourceCompatibility = projectSourceCompatibility
+  targetCompatibility = projectTargetCompatibility
+
+  configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+  }
+
+  dependencies {
+    integrationTestCompile project(":core")
+    integrationTestCompile project(":server")
+    integrationTestCompile project(":client")
+    integrationTestCompile "org.testng:testng:6.9.6"
+  }
+
+  test {
+    useTestNG()
+  }
+}
+
 idea {
   project {
     languageLevel = "${projectSourceCompatibility}"

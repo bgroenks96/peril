@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public final class NetworkSettings
 {
   public static final int DEFAULT_TCP_PORT = 55555;
-  public static final int CLIENT_CONNECTION_TIMEOUT_MS = 5000;
+  public static final int CLIENT_CONNECTION_TIMEOUT_MS = 10000;
   public static final int SERVER_CONNECTION_TIMEOUT_MS = 1000;
   public static final String LOCALHOST_ADDRESS = "127.0.0.1";
   public static final String LOCALHOST_NAME = "localhost";

@@ -65,6 +65,9 @@ build/
 
 ## OS Specific
 .DS_Store
+.directory
 
 ## Clover
 .clover
+test-output/
+
