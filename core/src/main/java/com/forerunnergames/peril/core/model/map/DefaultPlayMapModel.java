@@ -4,6 +4,7 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -382,5 +383,17 @@ public final class DefaultPlayMapModel implements PlayMapModel
   private void checkValidCountryId (final Id countryId)
   {
     Preconditions.checkIsTrue (countryIdsToCountries.containsKey (countryId), "Unrecognized country id.");
+  }
+
+  public static ImmutableSet <Country> generateDefaultCountries (final GameRules gameRules)
+  {
+    final int count = gameRules.getMinTotalCountryCount ();
+    final ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
+    for (int i = 0; i < count; ++i)
+    {
+      final Country country = CountryFactory.create ("Country-" + i);
+      countrySetBuilder.add (country);
+    }
+    return countrySetBuilder.build ();
   }
 }

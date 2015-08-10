@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.integration.core.smoke;
 
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.GameModelBuilder;
+import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
@@ -28,8 +28,8 @@ public class GameStateMachineSmokeTest
   private static final int TEST_COUNTRY_COUNT = 20;
   // TODO: handle event bus errors
   private final MBassador <Event> eventBus = EventBusFactory.create ();
-  private GameStateMachine gameStateMachine;
-  private GameModel gameModel;
+  private StateMachineEventHandler gameStateMachine;
+  private StateMachineActionHandler gameModel;
 
   @BeforeClass
   public void setUp ()
@@ -37,9 +37,9 @@ public class GameStateMachineSmokeTest
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
             .totalCountryCount (TEST_COUNTRY_COUNT).build ();
-    final GameModelBuilder builder = new GameModelBuilder (rules);
+    final GameModel.Builder builder = GameModel.builder (rules);
     builder.eventBus (eventBus);
-    gameModel = builder.build ();
+    gameModel = new StateMachineActionHandler (builder.build ());
     config.setGameModel (gameModel);
     gameStateMachine = CoreFactory.createGameStateMachine (config);
     eventBus.subscribe (gameStateMachine);

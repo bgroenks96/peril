@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.application;
 
-import com.forerunnergames.peril.core.model.state.GameStateMachine;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.shared.application.DefaultApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -12,11 +12,11 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class ServerApplication extends DefaultApplication
 {
-  private final GameStateMachine gameStateMachine;
+  private final StateMachineEventHandler gameStateMachine;
   private final MBassador <Event> eventBus;
   private final AsyncExecution mainThreadExecutor;
 
-  public ServerApplication (final GameStateMachine gameStateMachine,
+  public ServerApplication (final StateMachineEventHandler gameStateMachine,
                             final MBassador <Event> eventBus,
                             final AsyncExecution mainThreadExecutor,
                             final Controller... controllers)

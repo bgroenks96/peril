@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.state;
 
-import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
@@ -21,8 +21,6 @@ import com.forerunnergames.tools.common.Arguments;
 import com.google.common.base.Optional;
 
 import com.stateforge.statemachine.context.IContextEnd;
-import com.stateforge.statemachine.listener.IObserver;
-import com.stateforge.statemachine.listener.ObserverConsole;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,31 +44,19 @@ import org.slf4j.LoggerFactory;
  * "External" events can come from anywhere, including inside the state machine's action-handling classes.
  */
 // @formatter:on
-public final class GameStateMachine
+public final class StateMachineEventHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (GameStateMachine.class);
+  private static final Logger log = LoggerFactory.getLogger (StateMachineEventHandler.class);
   private final GameStateMachineContext context;
-  private final StateMachineListener stateListener = new StateMachineListener ();
+  private final CompositeStateMachineListener stateMachineListener = new CompositeStateMachineListener ();
   private Optional <Throwable> errorState = Optional.absent ();
 
-  public GameStateMachine (final GameModel gameModel)
+  public StateMachineEventHandler (final StateMachineActionHandler stateMachineActionHandler)
   {
-    this (gameModel, new GameStateMachineListener ()
-    {
-      @Override
-      public void onEnd ()
-      {
-      }
-    });
-  }
+    Arguments.checkIsNotNull (stateMachineActionHandler, "stateMachineActionHandler");
 
-  public GameStateMachine (final GameModel gameModel, final GameStateMachineListener listener)
-  {
-    Arguments.checkIsNotNull (gameModel, "gameModel");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    context = new GameStateMachineContext (gameModel);
-    context.setObserver (stateListener);
+    context = new GameStateMachineContext (stateMachineActionHandler);
+    context.setObserver (stateMachineListener);
 
     context.setEndHandler (new IContextEnd ()
     {
@@ -79,14 +65,9 @@ public final class GameStateMachine
       {
         Arguments.checkIsNotNull (throwable, "throwable");
 
-        if (throwable != null)
-        {
-          log.error ("The state machine ended with an error.", throwable);
-        }
-
         errorState = Optional.fromNullable (throwable);
 
-        listener.onEnd ();
+        stateMachineListener.end (throwable);
       }
     });
   }
@@ -105,18 +86,18 @@ public final class GameStateMachine
     return errorState;
   }
 
-  public void addStateListener (final StateListener stateMachineListener)
+  public void addStateMachineListener (final StateMachineListener stateMachineListener)
   {
     Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
 
-    stateListener.add (stateMachineListener);
+    this.stateMachineListener.add (stateMachineListener);
   }
 
-  public void removeStateListener (final StateListener stateMachineListener)
+  public void removeStateListener (final StateMachineListener stateMachineListener)
   {
     Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
 
-    stateListener.remove (stateMachineListener);
+    this.stateMachineListener.remove (stateMachineListener);
   }
 
   @Handler
@@ -269,31 +250,27 @@ public final class GameStateMachine
     context.onPlayerLeaveGameEvent (event);
   }
 
-  public interface StateListener extends IObserver
+  private class CompositeStateMachineListener implements StateMachineListener
   {
-  }
+    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList <> ();
 
-  private class StateMachineListener implements StateListener
-  {
-    private final List <IObserver> observers = new CopyOnWriteArrayList <> ();
-
-    StateMachineListener ()
+    CompositeStateMachineListener ()
     {
-      observers.add (ObserverConsole.getInstance ());
+      stateMachineListeners.add (new LoggingStateMachineListener ());
     }
 
-    public void add (final StateListener stateMachineListener)
+    public void add (final StateMachineListener listener)
     {
-      Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
+      Arguments.checkIsNotNull (listener, "listener");
 
-      observers.add (stateMachineListener);
+      stateMachineListeners.add (listener);
     }
 
-    public void remove (final StateListener stateMachineListener)
+    public void remove (final StateMachineListener listener)
     {
-      Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
+      Arguments.checkIsNotNull (listener, "listener");
 
-      observers.remove (stateMachineListener);
+      stateMachineListeners.remove (listener);
     }
 
     @Override
@@ -302,9 +279,9 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (context, "context");
       Arguments.checkIsNotNull (state, "state");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onEntry (context, state);
+        listener.onEntry (context, state);
       }
     }
 
@@ -314,9 +291,9 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (context, "context");
       Arguments.checkIsNotNull (state, "state");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onExit (context, state);
+        listener.onExit (context, state);
       }
     }
 
@@ -331,9 +308,9 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (stateNext, "stateNext");
       Arguments.checkIsNotNull (transition, "transition");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onTransitionBegin (context, statePrevious, stateNext, transition);
+        listener.onTransitionBegin (context, statePrevious, stateNext, transition);
       }
     }
 
@@ -348,9 +325,9 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (stateNext, "stateNext");
       Arguments.checkIsNotNull (transition, "transition");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onTransitionBegin (context, statePrevious, stateNext, transition);
+        listener.onTransitionBegin (context, statePrevious, stateNext, transition);
       }
     }
 
@@ -361,9 +338,9 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (name, "name");
       Arguments.checkIsNotNegative (duration, "duration");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onTimerStart (context, name, duration);
+        listener.onTimerStart (context, name, duration);
       }
     }
 
@@ -373,9 +350,9 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (context, "context");
       Arguments.checkIsNotNull (name, "name");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onTimerStop (context, name);
+        listener.onTimerStop (context, name);
       }
     }
 
@@ -385,9 +362,20 @@ public final class GameStateMachine
       Arguments.checkIsNotNull (context, "context");
       Arguments.checkIsNotNull (throwable, "throwable");
 
-      for (final IObserver observer : observers)
+      for (final StateMachineListener listener : stateMachineListeners)
       {
-        observer.onActionException (context, throwable);
+        listener.onActionException (context, throwable);
+      }
+    }
+
+    @Override
+    public void end (final Throwable throwable)
+    {
+      Arguments.checkIsNotNull (throwable, "throwable");
+
+      for (final StateMachineListener listener : stateMachineListeners)
+      {
+        listener.end (throwable);
       }
     }
   }

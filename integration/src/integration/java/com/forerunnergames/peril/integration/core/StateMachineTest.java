@@ -4,8 +4,8 @@ package com.forerunnergames.peril.integration.core;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
-import com.forerunnergames.peril.core.model.state.GameStateMachine;
-import com.forerunnergames.peril.core.model.state.GameStateMachine.StateListener;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
+import com.forerunnergames.peril.core.model.state.StateMachineListener;
 import com.forerunnergames.tools.common.Arguments;
 
 import java.util.concurrent.Phaser;
@@ -21,10 +21,10 @@ public final class StateMachineTest
 {
   public static final int DEFAULT_TEST_TIMEOUT = 5000;
   public static final int DEFAULT_STATE_CHANGE_TIMOUT = 3000;
-  private final GameStateMachine stateMachine;
+  private final StateMachineEventHandler stateMachine;
   private final Logger log;
 
-  public StateMachineTest (final GameStateMachine stateMachine, final Logger log)
+  public StateMachineTest (final StateMachineEventHandler stateMachine, final Logger log)
   {
     Arguments.checkIsNotNull (stateMachine, "stateMachine");
     Arguments.checkIsNotNull (log, "log");
@@ -52,7 +52,7 @@ public final class StateMachineTest
     Arguments.checkIsNotNegative (timeout, "timeout");
 
     final StateChangeBarrier barrier = new StateChangeBarrier (newStateName);
-    stateMachine.addStateListener (barrier);
+    stateMachine.addStateMachineListener (barrier);
     try
     {
       barrier.waitForNewStateEntry (timeout);
@@ -94,7 +94,7 @@ public final class StateMachineTest
     }
   }
 
-  private class StateMachineEventAdapter implements StateListener
+  private class StateMachineEventAdapter implements StateMachineListener
   {
     @Override
     public void onEntry (final String context, final String state)
@@ -153,6 +153,12 @@ public final class StateMachineTest
     public void onActionException (final String context, final Throwable throwable)
     {
       Arguments.checkIsNotNull (context, "context");
+      Arguments.checkIsNotNull (throwable, "throwable");
+    }
+
+    @Override
+    public void end (final Throwable throwable)
+    {
       Arguments.checkIsNotNull (throwable, "throwable");
     }
   }
