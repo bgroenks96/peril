@@ -269,7 +269,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final InitialCountryAssignment finalInitialCountryAssignment = InitialCountryAssignment
                 .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
 
-        // TODO Pass currentMapName into GameConfiguratino
+        // TODO Pass currentMapName into GameConfiguration
         final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, finalPlayerLimit,
                 finalWinPercent, finalInitialCountryAssignment);
 
