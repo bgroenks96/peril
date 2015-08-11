@@ -19,8 +19,8 @@ import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
 import com.forerunnergames.peril.core.shared.settings.GameSettings;
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.net.NetworkConstants;
 
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
@@ -48,8 +48,8 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     playerClanTagTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_CLAN_TAG_LENGTH,
                                                             GameSettings.PLAYER_CLAN_TAG_PATTERN);
 
-    serverAddressTextField = widgetFactory.createTextField (NetworkSettings.MAX_SERVER_ADDRESS_LENGTH,
-                                                            NetworkSettings.SERVER_ADDRESS_PATTERN);
+    serverAddressTextField = widgetFactory.createTextField (NetworkConstants.MAX_SERVER_ADDRESS_STRING_LENGTH,
+                                                            NetworkConstants.SERVER_ADDRESS_PATTERN);
 
     playerClanTagCheckBox = widgetFactory.createCheckBox ();
     playerClanTagCheckBox.addListener (new ChangeListener ()
