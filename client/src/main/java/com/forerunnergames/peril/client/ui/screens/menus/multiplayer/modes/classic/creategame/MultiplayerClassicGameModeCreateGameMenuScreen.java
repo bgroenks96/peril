@@ -301,11 +301,6 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     });
   }
 
-  private static void cannotFindAnyMapsIn (final File directory)
-  {
-    throw new IllegalStateException (Strings.format ("Cannot find any maps in {}", directory));
-  }
-
   private static ImmutableSet <String> loadMapNames ()
   {
     final ImmutableSet.Builder <String> mapNamesBuilder = ImmutableSet.builder ();
@@ -324,6 +319,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     if (mapNames.isEmpty ()) cannotFindAnyMapsIn (classicModeMapsDirectory);
 
     return mapNames;
+  }
+
+  private static void cannotFindAnyMapsIn (final File directory)
+  {
+    throw new IllegalStateException (Strings.format ("Cannot find any maps in {}", directory));
   }
 
   private void updateWinPercentSelectBox ()
