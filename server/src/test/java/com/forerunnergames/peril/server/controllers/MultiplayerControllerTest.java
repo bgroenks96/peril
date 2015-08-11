@@ -42,6 +42,7 @@ import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
@@ -322,6 +323,111 @@ public class MultiplayerControllerTest
     connect (duplicateHost);
     communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), duplicateHost);
     verify (mockClientCommunicator).sendTo (eq (duplicateHost), isA (JoinGameServerDeniedEvent.class));
+  }
+
+  @Test
+  public void testClientJoinRequestDeniedBecauseInvalidIpEmpty ()
+  {
+    mpcBuilder.build (eventBus);
+
+    final Remote client = createClientWith ("");
+    connect (client);
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+
+    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
+        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == client.getPort ();
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+    verify (mockClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
+    verify (mockConnector, only ()).disconnect (eq (client));
+  }
+
+  @Test
+  public void testClientJoinRequestDeniedBecauseInvalidIpLetters ()
+  {
+    mpcBuilder.build (eventBus);
+
+    final Remote client = createClientWith ("invalidip1234");
+    connect (client);
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+
+    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
+        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == client.getPort ();
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+    verify (mockClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
+    verify (mockConnector, only ()).disconnect (eq (client));
+  }
+
+  @Test
+  public void testClientJoinRequestDeniedBecauseMatchesServerIp ()
+  {
+    mpcBuilder.serverAddress ("1.2.3.4").build (eventBus);
+
+    final Remote client = createClientWith ("1.2.3.4");
+    connect (client);
+
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+
+    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
+        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
+        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
+        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                && matchClientConfig.getClientTcpPort () == client.getPort ();
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+      }
+    };
+    verify (mockClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
+    verify (mockConnector, only ()).disconnect (eq (client));
   }
 
   @Test
@@ -884,7 +990,7 @@ public class MultiplayerControllerTest
     @Override
     public String toString ()
     {
-      return String.format ("%1$s: Client: %2$s | Player %3$s", getClass ().getSimpleName (), client, player);
+      return Strings.format ("{}: Client: {} | Player: {}", getClass ().getSimpleName (), client, player);
     }
   }
 }

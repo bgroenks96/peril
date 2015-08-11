@@ -343,6 +343,27 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event received [{}]", event);
     log.info ("Received join game server request from {}", client);
 
+    // Clients should not be able to join if they do not have a valid ip address.
+    // This reeks of hacking...
+    if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
+    {
+      sendJoinGameServerDenied (client, event, "Your IP address [" + client.getAddress () + "] is invalid.");
+      return;
+    }
+
+    // Client cannot join if its external address matches that of the server.
+    // Reason: Servers only allow clients to join on separate machines to help prevent
+    // a single user from controlling multiple players to manipulate the game's outcome.
+    // While clients could be on a LAN sharing an external address and actually be on separate machines, it
+    // is required for LAN clients to join using the server's internal network address, which circumvents this problem.
+    if (serverHasAddress () && client.getAddress ().equals (getServerAddress ()))
+    {
+      sendJoinGameServerDenied (client, event, "You cannot join this game having the same IP address ["
+              + client.getAddress ()
+              + "] as the game server.\nIf you are on the same network as the server, you can join using the game server's internal IP address to play a LAN game.");
+      return;
+    }
+
     // check if client is already in server
     if (clientsInServer.contains (client))
     {
@@ -353,7 +374,7 @@ public final class MultiplayerController extends ControllerAdapter
     // local host cannot join a dedicated server
     if (!isHostAndPlay () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, event, "You cannot join a dedicated server as localhost.");
+      sendJoinGameServerDenied (client, event, "You cannot join a dedicated game server as localhost.");
       return;
     }
 
@@ -367,7 +388,7 @@ public final class MultiplayerController extends ControllerAdapter
     // only one local host can join a host-and-play server
     if (isHostAndPlay () && isHostConnected () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, event, "The host has already joined this server.");
+      sendJoinGameServerDenied (client, event, "The host has already joined this game server.");
       return;
     }
 
@@ -426,8 +447,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayers (new ChatMessageSuccessEvent (
-            new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
+    sendToAllPlayers (new ChatMessageSuccessEvent (new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
   void onEvent (final PlayerSelectCountryResponseRequestEvent event, final Remote client)
@@ -476,6 +496,16 @@ public final class MultiplayerController extends ControllerAdapter
   private static ClientConfiguration createClientConfig (final String clientAddress, final int clientPort)
   {
     return new DefaultClientConfiguration (clientAddress, clientPort);
+  }
+
+  private boolean serverHasAddress ()
+  {
+    return !gameServerConfig.getServerAddress ().isEmpty ();
+  }
+
+  private String getServerAddress ()
+  {
+    return gameServerConfig.getServerAddress ();
   }
 
   private void sendToPlayer (final PlayerPacket player, final Object object)
