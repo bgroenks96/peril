@@ -11,6 +11,7 @@ import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
+import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 
 import javax.annotation.Nullable;
@@ -33,8 +34,7 @@ public final class DefaultCreateGameHandler implements CreateGameHandler
   private String playerName = null;
   private boolean createGameIsInProgress = false;
 
-  public DefaultCreateGameHandler (final JoinGameHandler joinGameHandler,
-                                   final MBassador <Event> eventBus)
+  public DefaultCreateGameHandler (final JoinGameHandler joinGameHandler, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (joinGameHandler, "joinGameHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -58,7 +58,7 @@ public final class DefaultCreateGameHandler implements CreateGameHandler
 
     final CreateGameRequestEvent event = new CreateGameRequestEvent (new DefaultGameServerConfiguration (serverName,
             GameServerType.HOST_AND_PLAY, gameConfig,
-            new DefaultServerConfiguration (NetworkSettings.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT)));
+            new DefaultServerConfiguration (NetworkConstants.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT)));
 
     log.info ("Attempting to create game... [{}]", event);
 
@@ -80,7 +80,7 @@ public final class DefaultCreateGameHandler implements CreateGameHandler
 
     // Attempt to join the created game.
     // When JoinGameHandler#joinGame returns, it will be subscribed
-    joinGameHandler.joinGame (playerName, NetworkSettings.LOCALHOST_ADDRESS);
+    joinGameHandler.joinGame (playerName, NetworkConstants.LOCALHOST_ADDRESS);
 
     // Don't unsubscribe until we're already subscribed in the JoinGameHandler.
     eventBus.unsubscribe (this);

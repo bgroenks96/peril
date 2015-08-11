@@ -38,11 +38,11 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameS
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
 import com.forerunnergames.tools.net.client.ClientConfiguration;
@@ -688,7 +688,7 @@ public class MultiplayerControllerTest
 
   private Remote createHost ()
   {
-    return createClientWith (NetworkSettings.LOCALHOST_ADDRESS);
+    return createClientWith (NetworkConstants.LOCALHOST_ADDRESS);
   }
 
   private Remote createClient ()
@@ -777,7 +777,7 @@ public class MultiplayerControllerTest
     MultiplayerControllerBuilder serverPort (final int serverPort)
     {
       Arguments.checkIsNotNegative (serverPort, "serverPort");
-      Arguments.checkUpperInclusiveBound (serverPort, NetworkSettings.MAX_PORT_VALUE, "serverPort");
+      Arguments.checkUpperInclusiveBound (serverPort, NetworkConstants.MAX_PORT, "serverPort");
 
       this.serverPort = serverPort;
       return this;

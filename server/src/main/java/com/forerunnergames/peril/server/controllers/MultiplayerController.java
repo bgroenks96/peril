@@ -30,6 +30,7 @@ import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.Register
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
+import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientConfiguration;
 import com.forerunnergames.tools.net.client.ClientConnector;
@@ -469,7 +470,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   private static boolean isLocalHost (final Remote client)
   {
-    return client.getAddress ().equals (NetworkSettings.LOCALHOST_ADDRESS);
+    return client.getAddress ().equals (NetworkConstants.LOCALHOST_ADDRESS);
   }
 
   private static ClientConfiguration createClientConfig (final String clientAddress, final int clientPort)
