@@ -87,7 +87,7 @@ public final class ServerApplicationFactory
             gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-            NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
+            NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (externalAddressResolver.resolveIp (),
             jArgs.serverTcpPort);

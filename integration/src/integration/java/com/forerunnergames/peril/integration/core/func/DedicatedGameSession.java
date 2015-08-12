@@ -4,7 +4,6 @@ import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
@@ -30,7 +29,7 @@ public class DedicatedGameSession implements TestSession
   public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
   public static final int DEFAULT_SERVER_PORT = NetworkSettings.DEFAULT_TCP_PORT;
   private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-          NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
+          NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
   private final GameRules gameRules;

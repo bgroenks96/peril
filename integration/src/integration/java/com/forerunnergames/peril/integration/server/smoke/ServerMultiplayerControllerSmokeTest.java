@@ -35,7 +35,7 @@ public class ServerMultiplayerControllerSmokeTest
   private static final String HOSTNPLAY = "serverType:hostnplay";
   // ------------------------------ //
   private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-          NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
+          NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
   private final String fakeExternalServerAddress = "0.0.0.0";
   private final int serverPort = NetworkSettings.DEFAULT_TCP_PORT;
   private MBassador <Event> eventBus;
