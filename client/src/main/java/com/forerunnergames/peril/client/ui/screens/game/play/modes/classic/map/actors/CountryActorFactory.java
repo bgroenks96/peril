@@ -2,7 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.CountryImageLoader;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 

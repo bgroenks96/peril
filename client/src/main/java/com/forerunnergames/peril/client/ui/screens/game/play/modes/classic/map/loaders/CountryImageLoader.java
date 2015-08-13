@@ -1,9 +1,17 @@
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImages;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImages;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImages;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
@@ -116,8 +124,7 @@ public final class CountryImageLoader
     return countryNamesToPrimaryImages.get (countryName);
   }
 
-  public CountryImages <CountrySecondaryImageState, CountrySecondaryImage>
-          getAllSecondary (final CountryName countryName)
+  public CountryImages <CountrySecondaryImageState, CountrySecondaryImage> getAllSecondary (final CountryName countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
     Preconditions.checkIsTrue (countryNamesToSecondaryImages.containsKey (countryName), "Cannot find any "
@@ -145,23 +152,20 @@ public final class CountryImageLoader
     return region.name.contains ("-");
   }
 
-  // @formatter:off
-  private static <E extends Enum <E> & CountryImageState <E>> E createCountryImageStateFrom (
-          final Class <E> countryImageStateClass, final String... countryAtlasRegionNameSegments)
+  private static <E extends Enum <E> & CountryImageState <E>> E createCountryImageStateFrom (final Class <E> countryImageStateClass,
+                                                                                             final String... countryAtlasRegionNameSegments)
   {
     return E.valueOf (countryImageStateClass,
                       countryAtlasRegionNameSegments [countryAtlasRegionNameSegments.length - 1].toUpperCase ());
   }
-  // @formatter:on
 
   // @formatter:off
-  private static <E extends Enum <E> & CountryImageState <E>> boolean containsImageState (
-          final Class <E> countryImageStateClass, final String... countryAtlasRegionNameSegments)
+  private static <E extends Enum <E> & CountryImageState <E>> boolean containsImageState (final Class <E> countryImageStateClass,
+                                                                                          final String... countryAtlasRegionNameSegments)
   {
     for (final E countryImageState : EnumSet.allOf (countryImageStateClass))
     {
-      if (countryImageState.name ().equalsIgnoreCase (
-              countryAtlasRegionNameSegments [countryAtlasRegionNameSegments.length - 1]))
+      if (countryImageState.name ().equalsIgnoreCase (countryAtlasRegionNameSegments [countryAtlasRegionNameSegments.length - 1]))
       {
         return true;
       }
@@ -177,10 +181,10 @@ public final class CountryImageLoader
 
     if (oldAtlasIndex != null && atlasIndex != oldAtlasIndex)
     {
-      throw new IllegalStateException ("Atlas mismatch detected for country images with "
-              + CountryName.class.getSimpleName () + " [" + countryName + "].\nExpected atlas index [" + oldAtlasIndex
-              + "], but found atlas index [" + atlasIndex
-              + "].\nAll images of a country must be in the same texture atlas.");
+      throw new IllegalStateException (
+              "Atlas mismatch detected for country images with " + CountryName.class.getSimpleName () + " ["
+                      + countryName + "].\nExpected atlas index [" + oldAtlasIndex + "], but found atlas index ["
+                      + atlasIndex + "].\nAll images of a country must be in the same texture atlas.");
     }
   }
 }
