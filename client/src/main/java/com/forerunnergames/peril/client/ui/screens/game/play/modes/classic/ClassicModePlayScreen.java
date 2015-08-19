@@ -247,7 +247,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Gdx.input.setInputProcessor (inputProcessor);
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
-    if (playMapActor != null) playMapActor.mouseMoved (mouseInput.position ());
+    playMapActor.mouseMoved (mouseInput.position ());
   }
 
   @Override
