@@ -395,8 +395,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.debug ("Event received [{}].", event);
 
-        if (!hasAuthorFrom (event))
-          return;
+        if (!hasAuthorFrom (event)) return;
 
         chatBox.addMessage (new DefaultChatMessage (withAuthorNameFrom (event) + ": " + withMessageTextFrom (event)));
         chatBox.showLastMessage ();
@@ -533,16 +532,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     });
   }
 
+  private static void hideCursor ()
+  {
+    Gdx.input.setCursorImage (null, 0, 0);
+  }
+
   private void showCursor ()
   {
     Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
-  }
-
-  private static void hideCursor ()
-  {
-    Gdx.input.setCursorImage (null, 0, 0);
   }
 
   private void updatePlayMapActor (final MapMetadata mapMetadata)
