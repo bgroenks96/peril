@@ -16,10 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
-import com.forerunnergames.peril.client.io.CountryNamesDataLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.ClientMapMetadataLoaderFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.CountryCounter;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
@@ -28,8 +29,10 @@ import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.core.shared.map.MapType;
+import com.forerunnergames.peril.core.shared.map.io.MapMetadataLoader;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
-import com.forerunnergames.peril.core.shared.settings.AssetSettings;
 import com.forerunnergames.peril.core.shared.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
@@ -38,17 +41,16 @@ import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.io.File;
 import java.util.Iterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
-  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
+  // @formatter:off
+  private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC).create (MapType.STOCK, MapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
-  private final CountryNamesDataLoader countryNamesDataLoader;
+  private final CountryCounter countryCounter;
   private final TextField playerNameTextField;
   private final TextField playerClanTagTextField;
   private final TextField serverNameTextField;
@@ -60,24 +62,27 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label mapNameLabel;
   private final ImageButton customizePlayersButton;
   private final ImageButton customizeMapButton;
-  private final ImmutableSet <String> mapNames;
-  private Iterator <String> mapNameIterator;
+  private final ImmutableSet <MapMetadata> maps;
   private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
-  private String currentMapName;
+  @Nullable
+  private Iterator <MapMetadata> mapIterator = null;
+  private MapMetadata currentMap;
+  // @formatter:on
 
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                          final ScreenChanger screenChanger,
                                                          final ScreenSize screenSize,
                                                          final Batch batch,
                                                          final CreateGameHandler createGameHandler,
-                                                         final CountryNamesDataLoader countryNamesDataLoader)
+                                                         final CountryCounter countryCounter)
+
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
     Arguments.checkIsNotNull (createGameHandler, "createGameHandler");
-    Arguments.checkIsNotNull (countryNamesDataLoader, "countryNamesDataLoader");
+    Arguments.checkIsNotNull (countryCounter, "countryCounter");
 
-    this.countryNamesDataLoader = countryNamesDataLoader;
+    this.countryCounter = countryCounter;
 
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
@@ -108,9 +113,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT),
                                                             Align.left);
 
-    mapNames = loadMapNames ();
-    currentMapName = nextMapName ();
-    mapNameLabel = widgetFactory.createBackgroundLabel (currentMapName, Align.left);
+    maps = MAPS_LOADER.load ();
+    currentMap = nextMap ();
+    mapNameLabel = widgetFactory.createBackgroundLabel (asMapNameLabelText (currentMap), Align.left);
     updateTotalCountryCount ();
 
     customizePlayersButton = widgetFactory.createImageButton ("options", new ClickListener (Input.Buttons.LEFT)
@@ -140,8 +145,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       {
         // TODO Implement CustomizeMapPopup.
 
-        currentMapName = nextMapName ();
-        mapNameLabel.setText (currentMapName);
+        currentMap = nextMap ();
+        mapNameLabel.setText (asMapNameLabelText (currentMap));
 
         updateTotalCountryCount ();
         updateWinPercentSelectBox ();
@@ -268,10 +273,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final int finalWinPercent = winPercentSelectBox.getSelected ();
         final InitialCountryAssignment finalInitialCountryAssignment = InitialCountryAssignment
                 .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
-
-        // TODO Pass currentMapName into GameConfiguration
         final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, finalPlayerLimit,
-                finalWinPercent, finalInitialCountryAssignment);
+                finalWinPercent, finalInitialCountryAssignment, currentMap);
 
         // TODO Go to loading screen
 
@@ -301,29 +304,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     });
   }
 
-  private static ImmutableSet <String> loadMapNames ()
+  private static String asMapNameLabelText (final MapMetadata map)
   {
-    final ImmutableSet.Builder <String> mapNamesBuilder = ImmutableSet.builder ();
-    final File classicModeMapsDirectory = new File (AssetSettings.ABSOLUTE_EXTERNAL_CLASSIC_MODE_MAPS_DIRECTORY);
-    final File[] childPathFiles = classicModeMapsDirectory.listFiles ();
-
-    if (childPathFiles == null) cannotFindAnyMapsIn (classicModeMapsDirectory);
-
-    for (final File childPathFile : childPathFiles)
-    {
-      if (childPathFile.isDirectory ()) mapNamesBuilder.add (Strings.toProperCase (childPathFile.getName ()));
-    }
-
-    final ImmutableSet <String> mapNames = mapNamesBuilder.build ();
-
-    if (mapNames.isEmpty ()) cannotFindAnyMapsIn (classicModeMapsDirectory);
-
-    return mapNames;
-  }
-
-  private static void cannotFindAnyMapsIn (final File directory)
-  {
-    throw new IllegalStateException (Strings.format ("Cannot find any maps in {}", directory));
+    return Strings.toProperCase (map.getName ());
   }
 
   private void updateWinPercentSelectBox ()
@@ -348,17 +331,13 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
   private void updateTotalCountryCount ()
   {
-    final String mapName = mapNameLabel.getText ().toString ().toLowerCase ();
-
-    totalCountryCount = countryNamesDataLoader.load ("screens/game/play/modes/classic/maps/" + mapName
-            + "/countries/data/" + com.forerunnergames.peril.core.shared.settings.AssetSettings.COUNTRY_DATA_FILENAME)
-            .size ();
+    totalCountryCount = countryCounter.count (currentMap);
   }
 
-  private String nextMapName ()
+  private MapMetadata nextMap ()
   {
-    if (mapNameIterator == null || !mapNameIterator.hasNext ()) mapNameIterator = mapNames.iterator ();
+    if (mapIterator == null || !mapIterator.hasNext ()) mapIterator = maps.iterator ();
 
-    return mapNameIterator.next ();
+    return mapIterator.next ();
   }
 }

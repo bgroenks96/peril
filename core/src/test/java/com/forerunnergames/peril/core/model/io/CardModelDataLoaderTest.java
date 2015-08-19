@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardType;
+import com.forerunnergames.peril.core.model.card.io.CardModelDataLoader;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.tools.common.id.Id;
 

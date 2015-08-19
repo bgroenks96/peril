@@ -26,20 +26,23 @@ public final class HoveredTerritoryTextActor extends Actor
   private final Vector2 mousePosition = new Vector2 ();
   private final Vector2 textPosition = new Vector2 ();
   private String text = "";
-  private PlayMapActor playMapActor;
+  private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
   @Nullable
   private CountryPrimaryImageState countryPrimaryImageState;
   @Nullable
   private CountrySecondaryImageState countrySecondaryImageState;
 
-  public HoveredTerritoryTextActor (final PlayMapInputDetection playMapInputDetection, final MouseInput mouseInput)
+  public HoveredTerritoryTextActor (final PlayMapInputDetection playMapInputDetection,
+                                    final MouseInput mouseInput,
+                                    final BitmapFont font)
   {
     Arguments.checkIsNotNull (playMapInputDetection, "playMapInputDetection");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (font, "font");
 
     this.playMapInputDetection = playMapInputDetection;
     this.mouseInput = mouseInput;
-    font = new BitmapFont ();
+    this.font = font;
   }
 
   @Override
@@ -58,11 +61,8 @@ public final class HoveredTerritoryTextActor extends Actor
     final CountryName countryName = playMapInputDetection.getCountryNameAt (mousePosition);
     final ContinentName continentName = playMapInputDetection.getContinentNameAt (mousePosition);
 
-    if (playMapActor != null)
-    {
-      countryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (countryName);
-      countrySecondaryImageState = playMapActor.getCurrentSecondaryImageStateOf (countryName);
-    }
+    countryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (countryName);
+    countrySecondaryImageState = playMapActor.getCurrentSecondaryImageStateOf (countryName);
 
     text = Strings.toStringList (", ", LetterCase.PROPER, false, countryName.asString (), continentName.asString (),
                                  countryPrimaryImageState != null ? countryPrimaryImageState.toString () : "",

@@ -1,15 +1,16 @@
 package com.forerunnergames.peril.server.main;
 
+import com.beust.jcommander.Parameter;
+
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
-
-import com.beust.jcommander.Parameter;
+import com.forerunnergames.peril.core.shared.settings.GameSettings;
 
 public final class CommandLineArgs
 {
-  @Parameter (names = { "-m", "--game-mode" }, description = "Game mode", required = true,
+  @Parameter (names = { "-md", "--game-mode" }, description = "Game mode", required = true,
           converter = GameModeParameterConverter.class, validateWith = GameModeParameterValidator.class)
   public GameMode gameMode;
 
@@ -20,6 +21,9 @@ public final class CommandLineArgs
 
   @Parameter (names = { "-t", "--title" }, description = "Server title", required = true)
   public String gameServerName;
+
+  @Parameter (names = { "-mp", "--map-name" }, description = "Map name", validateWith = MapNameParameterValidator.class)
+  public String mapName = GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME;
 
   @Parameter (names = { "-p", "--port" }, description = "TCP port number")
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;

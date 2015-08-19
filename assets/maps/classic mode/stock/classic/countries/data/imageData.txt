@@ -1,0 +1,46 @@
+// AUTO-GENERATED FILE - DO NOT MODIFY
+// All numerical data is specified in reference play map space (top left origin).
+// "Country Name", Width, Height, Destination Bottom Left X, Destination Bottom Left Y, Text Upper Left X, Text Upper Left Y
+
+"Alaska", 221, 105, 2, 210, 81, 121
+"Northwest Territory", 453, 131, 161, 169, 254, 128
+"Greenland", 348, 136, 548, 171, 716, 70
+"Alberta", 206, 65, 178, 236, 290, 187
+"Ontario", 155, 101, 383, 272, 429, 196
+"Quebec", 154, 109, 509, 264, 542, 188
+"Western United States", 176, 128, 253, 361, 328, 269
+"Eastern United States", 169, 135, 411, 368, 457, 291
+"Central America", 228, 144, 296, 470, 360, 353
+"Iceland", 66, 41, 822, 161, 839, 126
+"Scandinavia", 149, 90, 990, 196, 1023, 146
+"Great Britain", 75, 56, 900, 230, 924, 188
+"Northern Europe", 120, 66, 978, 249, 1008, 206
+"Ukraine", 273, 203, 1081, 276, 1176, 175
+"Western Europe", 97, 85, 908, 306, 960, 231
+"Southern Europe", 133, 70, 1000, 303, 1084, 245
+"Ural", 180, 150, 1288, 243, 1361, 152
+"Siberia", 197, 182, 1413, 231, 1486, 115
+"Yakutsk", 312, 116, 1566, 194, 1674, 126
+"Kamchatka", 337, 164, 1706, 268, 1904, 128
+"Afghanistan", 207, 112, 1228, 309, 1327, 236
+"Irkutsk", 258, 91, 1470, 238, 1572, 188
+"Mongolia", 263, 109, 1462, 316, 1542, 241
+"Japan", 96, 87, 1696, 337, 1736, 289
+"Middle East", 210, 167, 1111, 439, 1186, 310
+"India", 207, 184, 1306, 477, 1377, 344
+"China", 277, 174, 1382, 407, 1512, 306
+"Siam", 97, 154, 1487, 504, 1522, 398
+"Venezuela", 154, 93, 514, 533, 556, 461
+"Peru", 154, 163, 499, 666, 578, 592
+"Brazil", 221, 227, 543, 710, 654, 557
+"Argentina", 125, 216, 531, 828, 575, 681
+"North Africa", 233, 200, 864, 499, 952, 385
+"Egypt", 148, 75, 1017, 398, 1076, 342
+"Congo", 126, 137, 1012, 586, 1072, 498
+"East Africa", 165, 223, 1089, 604, 1144, 441
+"South Africa", 165, 164, 1029, 709, 1083, 615
+"Madagascar", 49, 83, 1203, 660, 1208, 609
+"Indonesia", 182, 102, 1504, 573, 1594, 498
+"New Guinea", 136, 67, 1700, 575, 1753, 531
+"Western Australia", 156, 138, 1607, 728, 1642, 647
+"Eastern Australia", 139, 187, 1697, 759, 1783, 661

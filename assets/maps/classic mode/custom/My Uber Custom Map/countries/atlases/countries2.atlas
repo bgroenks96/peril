@@ -1,0 +1,95 @@
+countries2.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+venezuelaBlue
+  rotate: false
+  xy: 1544, 896
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaBrown
+  rotate: false
+  xy: 1700, 932
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaCyan
+  rotate: false
+  xy: 1544, 991
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaDisabled
+  rotate: false
+  xy: 1388, 995
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaGold
+  rotate: false
+  xy: 1011, 1069
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaGreen
+  rotate: false
+  xy: 1228, 1040
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaHovered
+  rotate: false
+  xy: 1011, 1164
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaPink
+  rotate: true
+  xy: 892, 1126
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaPurple
+  rotate: false
+  xy: 1856, 1006
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaRed
+  rotate: false
+  xy: 1700, 1027
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaSilver
+  rotate: false
+  xy: 1544, 1086
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaTeal
+  rotate: false
+  xy: 1384, 1090
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1
+venezuelaUnowned
+  rotate: false
+  xy: 1228, 1135
+  size: 154, 93
+  orig: 154, 93
+  offset: 0, 0
+  index: -1

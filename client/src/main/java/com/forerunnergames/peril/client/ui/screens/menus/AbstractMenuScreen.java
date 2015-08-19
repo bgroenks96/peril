@@ -26,7 +26,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -74,9 +73,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
 
-    menuBarActor = MenuScreenWidgetFactory.createMenuBar ();
-    rightBackgroundShadowActor = MenuScreenWidgetFactory.createRightBackgroundShadow ();
-    titleBackgroundActor = MenuScreenWidgetFactory.createTitleBackground ();
+    menuBarActor = widgetFactory.createMenuBar ();
+    rightBackgroundShadowActor = widgetFactory.createRightBackgroundShadow ();
+    titleBackgroundActor = widgetFactory.createTitleBackground ();
     rightMenuBarShadowActor = widgetFactory.createRightMenuBarShadow ();
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
@@ -89,9 +88,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     final Table tableL0 = new Table ().top ().left ();
-    tableL0.add (MenuScreenWidgetFactory.createScreenBackgroundLeft ());
+    tableL0.add (widgetFactory.createScreenBackgroundLeft ());
     tableL0.add ().expandX ();
-    tableL0.add (MenuScreenWidgetFactory.createScreenBackgroundRight ());
+    tableL0.add (widgetFactory.createScreenBackgroundRight ());
     rootStack.add (tableL0);
 
     // Layer 1 - menu bar & right background shadow
@@ -290,7 +289,8 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNegative (height, "height");
 
     titleTable.row ();
-    titleTable.add (widgetFactory.createSubTitle (text, alignment)).expandX ().height (height).fill ().align (alignment);
+    titleTable.add (widgetFactory.createSubTitle (text, alignment)).expandX ().height (height).fill ()
+            .align (alignment);
     titlesTableCell.height (titlesTableCell.getPrefHeight () + height);
     titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
   }
@@ -507,13 +507,14 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     buttonTable.add (widgetFactory.createTextButton (text, listener)).width (220);
   }
 
-  private static void showCursor ()
+  private void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.menuNormalCursor, Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
+                              Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
                               Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
 
-  private static void hideCursor ()
+  private void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
   }

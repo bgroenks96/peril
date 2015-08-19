@@ -27,6 +27,6 @@ public class DefaultMessageBox <T extends Message> extends AbstractMessageBox <T
   {
     Arguments.checkIsNotNull (message, "message");
 
-    return widgetFactory.createWrappingLabel (message.getText (), Align.left, "chat-and-status-message-text");
+    return widgetFactory.createWrappingLabel (message.getText (), Align.left, "label-chat-and-status-message-text");
   }
 }

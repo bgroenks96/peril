@@ -1,0 +1,9 @@
+// Continent Name, Reinforcement Bonus, Names of Countries in Continent...
+
+"North America", 7, "Alaska", "Alberta", "Ontario", "Quebec", "Northwest Territory", "Greenland", "Eastern United States", "Western United States", "Central America", "Hawaii", "Caribbean Islands"
+"South America", 4, "Venezuela", "Argentina", "Peru", "Brazil", "Falkland Islands"
+"Africa", 5, "North Africa", "Egypt", "East Africa", "Congo", "South Africa", "Madagascar"
+"Europe", 6, "Ukraine", "Scandinavia", "Iceland", "Great Britain", "Western Europe", "Northern Europe", "Southern Europe", "Svalbard"
+"Asia", 9, "Middle East", "India", "Siam", "Afghanistan", "China", "Ural", "Siberia", "Irkutsk", "Yakutsk", "Mongolia", "Kamchatka", "Japan"
+"Australia", 3, "Indonesia", "New Guinea", "Eastern Australia", "Western Australia", "Philippines", "New Zealand"
+"Antarctica", 2, "Antarctica"

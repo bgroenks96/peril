@@ -2,6 +2,7 @@ package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.music.MusicChanger;
@@ -24,26 +25,32 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
   private final Game game;
   private final MusicChanger musicChanger;
+  private final AssetManager assetManager;
   private final MBassador <Event> eventBus;
   private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
   private ScreenId previousScreenId = null;
 
-  public ScreenController (final Game game, final MusicChanger musicChanger, final MBassador <Event> eventBus)
+  public ScreenController (final Game game,
+                           final MusicChanger musicChanger,
+                           final AssetManager assetManager,
+                           final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (game, "game");
     Arguments.checkIsNotNull (musicChanger, "musicChanger");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.game = game;
     this.musicChanger = musicChanger;
+    this.assetManager = assetManager;
     this.eventBus = eventBus;
   }
 
   @Override
   public void initialize ()
   {
-    final ScreenFactory screenFactory = ScreenFactoryCreator.create (this, eventBus);
+    final ScreenFactory screenFactory = ScreenFactoryCreator.create (this, assetManager, eventBus);
 
     for (final ScreenId screenId : ScreenId.values ())
     {

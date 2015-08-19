@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.events;
 
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -27,6 +28,11 @@ public final class JoinGameSuccessEvent implements LocalEvent
     this.players = players;
     this.gameServerConfig = gameServerConfig;
     this.clientConfig = clientConfig;
+  }
+
+  public MapMetadata getMapMetadata ()
+  {
+    return gameServerConfig.getMapMetadata ();
   }
 
   public GameServerConfiguration getGameServerConfiguration ()

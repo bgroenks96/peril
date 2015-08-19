@@ -2,10 +2,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debu
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.Texture;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
@@ -270,24 +268,6 @@ public final class DebugInputProcessor extends InputAdapter
       case Input.Keys.RIGHT_BRACKET:
       {
         playMapActor.setCountriesTo (CountryPrimaryImageState.DISABLED);
-
-        return true;
-      }
-      case Input.Keys.F:
-      {
-        Assets.playMapBackground.setFilter (Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-        return true;
-      }
-      case Input.Keys.G:
-      {
-        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
-
-        return true;
-      }
-      case Input.Keys.H:
-      {
-        Assets.playMapBackground.setFilter (Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
         return true;
       }

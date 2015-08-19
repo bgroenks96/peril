@@ -2,7 +2,7 @@ package com.forerunnergames.peril.integration.server.smoke;
 
 import static org.testng.Assert.assertTrue;
 
-import com.forerunnergames.peril.client.kryonet.KryonetClient;
+import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerType;

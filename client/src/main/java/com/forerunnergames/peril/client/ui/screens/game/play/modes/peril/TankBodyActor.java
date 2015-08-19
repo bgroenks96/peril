@@ -5,15 +5,17 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.tools.common.Arguments;
 
 public final class TankBodyActor extends Actor
 {
   private final TextureRegion tankBody;
 
-  public TankBodyActor ()
+  public TankBodyActor (final TextureRegion tankBody)
   {
-    tankBody = Assets.perilModeAtlas.findRegion ("tankBody");
+    Arguments.checkIsNotNull (tankBody, "tankBody");
+
+    this.tankBody = tankBody;
 
     setOrigin (12, 26);
   }

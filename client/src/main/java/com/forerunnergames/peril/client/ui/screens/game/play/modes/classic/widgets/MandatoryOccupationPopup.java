@@ -1,8 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -26,11 +28,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
-import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
+import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
-import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
@@ -72,9 +75,12 @@ public class MandatoryOccupationPopup extends Dialog
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
   private final Color tempColor = new Color ();
-  private final CountryArmyTextActor sourceCountryArmyTextActor = new CountryArmyTextActor ();
-  private final CountryArmyTextActor destinationCountryArmyTextActor = new CountryArmyTextActor ();
+  private final BitmapFont countryArmyTextFont = new BitmapFont ();
+  private final CountryArmyTextActor sourceCountryArmyTextActor = new DefaultCountryArmyTextActor (countryArmyTextFont);
+  private final CountryArmyTextActor destinationCountryArmyTextActor = new DefaultCountryArmyTextActor (
+          countryArmyTextFont);
   private final Stage stage;
+  private final AssetManager assetManager;
   private final MBassador <Event> eventBus;
   private final PopupListener listener;
   private Image title;
@@ -101,6 +107,7 @@ public class MandatoryOccupationPopup extends Dialog
 
   public MandatoryOccupationPopup (final Skin skin,
                                    final Stage stage,
+                                   final AssetManager assetManager,
                                    final MBassador <Event> eventBus,
                                    final PopupListener listener)
   {
@@ -108,10 +115,12 @@ public class MandatoryOccupationPopup extends Dialog
 
     Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
     this.stage = stage;
+    this.assetManager = assetManager;
     this.eventBus = eventBus;
     this.listener = listener;
 
@@ -157,8 +166,9 @@ public class MandatoryOccupationPopup extends Dialog
     final String destinationCountryName = getDestinationCountryName ();
 
     // TODO Production: Remove
-    eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage ("You occupied " + destinationCountryName
-            + " with " + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
+    eventBus.publish (new DefaultStatusMessageEvent (
+            new DefaultStatusMessage ("You occupied " + destinationCountryName + " with "
+                    + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
             ImmutableSet.<PlayerPacket> of ()));
 
     // TODO Production: Remove
@@ -207,8 +217,8 @@ public class MandatoryOccupationPopup extends Dialog
     tempColor.set (getColor ());
     batch.setColor (tempColor.r, tempColor.g, tempColor.b, tempColor.a * parentAlpha);
     foregroundArrow.draw (batch, getX (), getY (), getX () + tempSize.x, getY () + tempSize.y);
-    foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.x, getY ()
-                                      + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.y,
+    foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.x,
+                              getY () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.y,
                               FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.x,
                               FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.y);
   }
@@ -266,11 +276,28 @@ public class MandatoryOccupationPopup extends Dialog
     }
   }
 
+  private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
+  {
+    return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
+            - (COUNTRY_BOX_WIDTH - (COUNTRY_BOX_INNER_PADDING * 2.0f) - countryImagePostLayout.getImageWidth ())));
+  }
+
+  private static Image asImage (final CountryActor countryActor)
+  {
+    return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
+  }
+
   private void createWidgets (final Skin skin)
   {
-    title = new Image (Assets.armyMovementOccupationTitle);
-    foregroundArrow = new TextureRegionDrawable (new TextureRegion (Assets.armyMovementForegroundArrow));
-    foregroundArrowText = new TextureRegionDrawable (new TextureRegion (Assets.armyMovementForegroundArrowText));
+    title = new Image (
+            assetManager.get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR));
+
+    foregroundArrow = new TextureRegionDrawable (new TextureRegion (
+            assetManager.get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR)));
+
+    foregroundArrowText = new TextureRegionDrawable (new TextureRegion (assetManager
+            .get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR)));
+
     slider = new Slider (0, 0, SLIDER_STEP_SIZE, IS_SLIDER_VERTICAL, skin);
     sourceCountryNameLabel = new Label (null, skin);
     destinationCountryNameLabel = new Label (null, skin);
@@ -293,7 +320,8 @@ public class MandatoryOccupationPopup extends Dialog
 
   private void addBackgroundImage ()
   {
-    setBackground (new TextureRegionDrawable (new TextureRegion (Assets.armyMovementBackground)));
+    setBackground (new TextureRegionDrawable (new TextureRegion (assetManager
+            .get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR))));
   }
 
   private void addTitleImage ()
@@ -386,7 +414,11 @@ public class MandatoryOccupationPopup extends Dialog
     minButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
+      public boolean touchDown (final InputEvent event,
+                                final float x,
+                                final float y,
+                                final int pointer,
+                                final int button)
       {
         setSliderToMinValue ();
         return true;
@@ -396,7 +428,11 @@ public class MandatoryOccupationPopup extends Dialog
     minusButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
+      public boolean touchDown (final InputEvent event,
+                                final float x,
+                                final float y,
+                                final int pointer,
+                                final int button)
       {
         decrementSlider ();
         return true;
@@ -406,7 +442,11 @@ public class MandatoryOccupationPopup extends Dialog
     plusButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
+      public boolean touchDown (final InputEvent event,
+                                final float x,
+                                final float y,
+                                final int pointer,
+                                final int button)
       {
         incrementSlider ();
         return true;
@@ -416,7 +456,11 @@ public class MandatoryOccupationPopup extends Dialog
     maxButton.addListener (new InputListener ()
     {
       @Override
-      public boolean touchDown (final InputEvent event, final float x, final float y, final int pointer, final int button)
+      public boolean touchDown (final InputEvent event,
+                                final float x,
+                                final float y,
+                                final int pointer,
+                                final int button)
       {
         setSliderToMaxValue ();
         return true;
@@ -541,7 +585,7 @@ public class MandatoryOccupationPopup extends Dialog
 
   private void setCountryNames (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
   {
-    setCountryNames (sourceCountryActor.getName (), destinationCountryActor.getName ());
+    setCountryNames (sourceCountryActor.asActor ().getName (), destinationCountryActor.asActor ().getName ());
   }
 
   private void setCountryImages (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
@@ -564,7 +608,7 @@ public class MandatoryOccupationPopup extends Dialog
 
     countryStack.clear ();
     countryStack.add (countryImage);
-    countryStack.add (countryArmyTextActor);
+    countryStack.add (countryArmyTextActor.asActor ());
 
     getContentTable ().layout ();
 
@@ -589,27 +633,16 @@ public class MandatoryOccupationPopup extends Dialog
                                          final CountryActor countryActor,
                                          final Image countryImage)
   {
-    countryArmyTextActor.setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (countryActor,
-                                                                                              countryImage));
+    countryArmyTextActor
+            .setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (countryActor, countryImage));
   }
 
   private void setCountryArmyCirclePosition (final CountryArmyTextActor countryArmyTextActor,
                                              final CountryActor countryActor,
                                              final Image countryImage)
   {
-    countryArmyTextActor.setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor,
-                                                                                                    countryImage));
-  }
-
-  private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
-  {
-    return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
-            - (COUNTRY_BOX_WIDTH - (COUNTRY_BOX_INNER_PADDING * 2.0f) - countryImagePostLayout.getImageWidth ())));
-  }
-
-  private static Image asImage (final CountryActor countryActor)
-  {
-    return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
+    countryArmyTextActor
+            .setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor, countryImage));
   }
 
   private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,
@@ -624,7 +657,7 @@ public class MandatoryOccupationPopup extends Dialog
   private Vector2 calculateCountryArmyTextCircleSizeActualCountrySpace (final CountryActor countryActor,
                                                                         final Image countryImagePostLayout)
   {
-    return tempSize.set (ClassicPlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE)
+    return tempSize.set (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE)
             .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout));
   }
 

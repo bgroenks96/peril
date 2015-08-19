@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class BattleGrid extends Table implements InputProcessor
@@ -15,8 +14,9 @@ public final class BattleGrid extends Table implements InputProcessor
   private final UnitActor unitActor;
   private final Table unitActorTable;
 
-  public BattleGrid (final UnitActor unitActor)
+  public BattleGrid (final Image gridLinesImage, final UnitActor unitActor)
   {
+    Arguments.checkIsNotNull (gridLinesImage, "gridLinesImage");
     Arguments.checkIsNotNull (unitActor, "unitActor");
 
     this.unitActor = unitActor;
@@ -29,10 +29,10 @@ public final class BattleGrid extends Table implements InputProcessor
     {
       for (int column = 0; column < BattleGridSettings.BATTLE_GRID_COLUMN_COUNT; ++column)
       {
-        gridLinesTable.add (new Image (Assets.perilModeGridLines)).width (BattleGridSettings.BATTLE_GRID_CELL_WIDTH)
-            .height (BattleGridSettings.BATTLE_GRID_CELL_HEIGHT);
+        gridLinesTable.add (gridLinesImage).width (BattleGridSettings.BATTLE_GRID_CELL_WIDTH)
+                .height (BattleGridSettings.BATTLE_GRID_CELL_HEIGHT);
         unitActorTable.add ().width (BattleGridSettings.BATTLE_GRID_CELL_WIDTH)
-            .height (BattleGridSettings.BATTLE_GRID_CELL_HEIGHT);
+                .height (BattleGridSettings.BATTLE_GRID_CELL_HEIGHT);
       }
 
       gridLinesTable.row ();
@@ -102,36 +102,15 @@ public final class BattleGrid extends Table implements InputProcessor
     return unitActor.scrolled (amount);
   }
 
-  private boolean shouldUpdateGridPositionOf (final UnitActor unitActor)
-  {
-    return ! areEqual (previousCellOf (unitActor), currentCellOf (unitActor));
-  }
-
-  private static boolean areEqual (final Cell<?> cell1, final Cell<?> cell2)
+  private static boolean areEqual (final Cell <?> cell1, final Cell <?> cell2)
   {
     return cell1 != null && cell2 != null && cell1.getRow () == cell2.getRow ()
-        && cell1.getColumn () == cell2.getColumn ();
+            && cell1.getColumn () == cell2.getColumn ();
   }
 
-  private void updateGridPositionOf (final UnitActor unitActor)
-  {
-    removeUnitActorFrom (previousCellOf (unitActor));
-    addUnitActorTo (currentCellOf (unitActor), unitActor);
-  }
-
-  private static void removeUnitActorFrom (final Cell<?> cell)
+  private static void removeUnitActorFrom (final Cell <?> cell)
   {
     setCellActor (cell, null);
-  }
-
-  private Cell <?> previousCellOf (final UnitActor unitActor)
-  {
-    return cellAt (gridPositionToCellIndex (previousGridPositionOf (unitActor)));
-  }
-
-  private Cell <?> cellAt (final int cellIndex)
-  {
-    return (Cell <?>) unitActorTable.getCells ().get (cellIndex);
   }
 
   private static int gridPositionToCellIndex (final Vector2 gridPosition)
@@ -144,23 +123,44 @@ public final class BattleGrid extends Table implements InputProcessor
     return unitActor.getPreviousPosition ();
   }
 
-  private static void addUnitActorTo (final Cell<?> cell, final UnitActor unitActor)
+  private static void addUnitActorTo (final Cell <?> cell, final UnitActor unitActor)
   {
     setCellActor (cell, unitActor.asActor ());
   }
 
-  private static void setCellActor (final Cell<?> cell, final Actor actor)
+  private static void setCellActor (final Cell <?> cell, final Actor actor)
   {
     cell.setActor (actor);
-  }
-
-  private Cell <?> currentCellOf (final UnitActor unitActor)
-  {
-    return cellAt (gridPositionToCellIndex (currentGridPositionOf (unitActor)));
   }
 
   private static Vector2 currentGridPositionOf (final UnitActor unitActor)
   {
     return unitActor.getCurrentPosition ();
+  }
+
+  private boolean shouldUpdateGridPositionOf (final UnitActor unitActor)
+  {
+    return !areEqual (previousCellOf (unitActor), currentCellOf (unitActor));
+  }
+
+  private void updateGridPositionOf (final UnitActor unitActor)
+  {
+    removeUnitActorFrom (previousCellOf (unitActor));
+    addUnitActorTo (currentCellOf (unitActor), unitActor);
+  }
+
+  private Cell <?> previousCellOf (final UnitActor unitActor)
+  {
+    return cellAt (gridPositionToCellIndex (previousGridPositionOf (unitActor)));
+  }
+
+  private Cell <?> cellAt (final int cellIndex)
+  {
+    return (Cell <?>) unitActorTable.getCells ().get (cellIndex);
+  }
+
+  private Cell <?> currentCellOf (final UnitActor unitActor)
+  {
+    return cellAt (gridPositionToCellIndex (currentGridPositionOf (unitActor)));
   }
 }

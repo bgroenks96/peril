@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class TankActor extends Actor implements UnitActor
@@ -28,10 +27,14 @@ public final class TankActor extends Actor implements UnitActor
   private boolean completedTurningTurretAround = false;
   private boolean turretActive = false;
 
-  public TankActor ()
+  public TankActor (final Sprite bodySprite, final Sprite turretSprite)
   {
-    bodySprite = Assets.perilModeAtlas.createSprite ("tankBody");
-    turretSprite = Assets.perilModeAtlas.createSprite ("tankTurret");
+    Arguments.checkIsNotNull (bodySprite, "bodySprite");
+    Arguments.checkIsNotNull (turretSprite, "turretSprite");
+
+    this.bodySprite = bodySprite;
+    this.turretSprite = turretSprite;
+
     bodySprite.setOrigin (bodySprite.getWidth () / 2.0f, 22);
     turretSprite.setOrigin (turretSprite.getWidth () / 2.0f, 22);
   }

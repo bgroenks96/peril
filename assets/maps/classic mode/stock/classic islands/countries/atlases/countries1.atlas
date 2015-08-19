@@ -1,0 +1,1460 @@
+countries1.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+alaskaBlue
+  rotate: false
+  xy: 1822, 2
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaBrown
+  rotate: true
+  xy: 728, 1048
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaCyan
+  rotate: false
+  xy: 498, 1402
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaDisabled
+  rotate: false
+  xy: 498, 1509
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaGold
+  rotate: false
+  xy: 498, 1616
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaGreen
+  rotate: false
+  xy: 498, 1723
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaHovered
+  rotate: false
+  xy: 498, 1830
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaPink
+  rotate: true
+  xy: 835, 1048
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaPurple
+  rotate: false
+  xy: 728, 1271
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaRed
+  rotate: false
+  xy: 1822, 109
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaSilver
+  rotate: false
+  xy: 728, 1378
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaTeal
+  rotate: false
+  xy: 721, 1485
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+alaskaUnowned
+  rotate: false
+  xy: 721, 1592
+  size: 221, 105
+  orig: 221, 105
+  offset: 0, 0
+  index: -1
+albertaBlue
+  rotate: true
+  xy: 352, 667
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaBrown
+  rotate: true
+  xy: 944, 1485
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaCyan
+  rotate: true
+  xy: 874, 818
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaDisabled
+  rotate: false
+  xy: 942, 539
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaGold
+  rotate: false
+  xy: 942, 606
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaGreen
+  rotate: true
+  xy: 1011, 1440
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaHovered
+  rotate: true
+  xy: 1078, 1440
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaPink
+  rotate: true
+  xy: 1145, 1440
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaPurple
+  rotate: false
+  xy: 1011, 1648
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaRed
+  rotate: true
+  xy: 1212, 1440
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaSilver
+  rotate: true
+  xy: 1279, 1440
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaTeal
+  rotate: true
+  xy: 1355, 1262
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+albertaUnowned
+  rotate: false
+  xy: 1219, 1648
+  size: 206, 65
+  orig: 206, 65
+  offset: 0, 0
+  index: -1
+caribbeanIslandsBlue
+  rotate: true
+  xy: 810, 1928
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsBrown
+  rotate: true
+  xy: 1993, 909
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsCyan
+  rotate: false
+  xy: 1466, 1887
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsDisabled
+  rotate: true
+  xy: 911, 1939
+  size: 107, 43
+  orig: 113, 52
+  offset: 3, 5
+  index: -1
+caribbeanIslandsGold
+  rotate: true
+  xy: 875, 539
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsGreen
+  rotate: true
+  xy: 1585, 1683
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsHovered
+  rotate: false
+  xy: 1221, 759
+  size: 113, 49
+  orig: 113, 52
+  offset: 0, 2
+  index: -1
+caribbeanIslandsPink
+  rotate: false
+  xy: 1606, 1535
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsPurple
+  rotate: true
+  xy: 1637, 1674
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsRed
+  rotate: true
+  xy: 1689, 1674
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsSilver
+  rotate: true
+  xy: 1741, 1674
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsTeal
+  rotate: false
+  xy: 1721, 1535
+  size: 113, 50
+  orig: 113, 52
+  offset: 0, 1
+  index: -1
+caribbeanIslandsUnowned
+  rotate: true
+  xy: 862, 1939
+  size: 107, 47
+  orig: 113, 52
+  offset: 3, 3
+  index: -1
+centralAmericaBlue
+  rotate: false
+  xy: 1367, 273
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaBrown
+  rotate: false
+  xy: 419, 672
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaCyan
+  rotate: false
+  xy: 649, 672
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaDisabled
+  rotate: true
+  xy: 352, 875
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaGold
+  rotate: true
+  xy: 352, 1105
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaGreen
+  rotate: true
+  xy: 352, 1335
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaHovered
+  rotate: true
+  xy: 352, 1565
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaPink
+  rotate: true
+  xy: 352, 1795
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaPurple
+  rotate: false
+  xy: 498, 818
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaRed
+  rotate: false
+  xy: 498, 964
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaSilver
+  rotate: true
+  xy: 728, 818
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaTeal
+  rotate: false
+  xy: 498, 1110
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+centralAmericaUnowned
+  rotate: false
+  xy: 498, 1256
+  size: 228, 144
+  orig: 228, 144
+  offset: 0, 0
+  index: -1
+easternUnitedStatesBlue
+  rotate: true
+  xy: 1597, 273
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesBrown
+  rotate: false
+  xy: 721, 1699
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesCyan
+  rotate: false
+  xy: 1365, 419
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesDisabled
+  rotate: false
+  xy: 879, 673
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesGold
+  rotate: false
+  xy: 1050, 673
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesGreen
+  rotate: true
+  xy: 1071, 810
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesHovered
+  rotate: true
+  xy: 951, 1269
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesPink
+  rotate: true
+  xy: 1088, 1269
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesPurple
+  rotate: true
+  xy: 1208, 810
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesRed
+  rotate: false
+  xy: 1365, 556
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesSilver
+  rotate: false
+  xy: 1714, 622
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesTeal
+  rotate: false
+  xy: 1864, 216
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+easternUnitedStatesUnowned
+  rotate: false
+  xy: 1864, 353
+  size: 169, 135
+  orig: 169, 135
+  offset: 0, 0
+  index: -1
+greatBritainBlue
+  rotate: true
+  xy: 1649, 704
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainBrown
+  rotate: false
+  xy: 1422, 1410
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainCyan
+  rotate: false
+  xy: 1637, 1963
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainDisabled
+  rotate: false
+  xy: 419, 818
+  size: 70, 50
+  orig: 75, 56
+  offset: 2, 3
+  index: -1
+greatBritainGold
+  rotate: true
+  xy: 1714, 1963
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainGreen
+  rotate: false
+  xy: 1772, 1975
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainHovered
+  rotate: false
+  xy: 1954, 1217
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainPink
+  rotate: false
+  xy: 1862, 1223
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainPurple
+  rotate: false
+  xy: 1849, 1281
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainRed
+  rotate: false
+  xy: 1849, 1339
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainSilver
+  rotate: true
+  xy: 1893, 1397
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainTeal
+  rotate: false
+  xy: 1893, 1474
+  size: 75, 56
+  orig: 75, 56
+  offset: 0, 0
+  index: -1
+greatBritainUnowned
+  rotate: false
+  xy: 1836, 1532
+  size: 70, 50
+  orig: 75, 56
+  offset: 2, 3
+  index: -1
+greenlandBlue
+  rotate: false
+  xy: 1367, 135
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandBrown
+  rotate: false
+  xy: 2, 667
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandCyan
+  rotate: false
+  xy: 2, 805
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandDisabled
+  rotate: false
+  xy: 2, 943
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandGold
+  rotate: false
+  xy: 2, 1081
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandGreen
+  rotate: false
+  xy: 2, 1219
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandHovered
+  rotate: false
+  xy: 2, 1357
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandPink
+  rotate: false
+  xy: 2, 1495
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandPurple
+  rotate: false
+  xy: 2, 1633
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandRed
+  rotate: false
+  xy: 2, 1771
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandSilver
+  rotate: false
+  xy: 2, 1909
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandTeal
+  rotate: false
+  xy: 457, 534
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+greenlandUnowned
+  rotate: false
+  xy: 912, 401
+  size: 348, 136
+  orig: 348, 136
+  offset: 0, 0
+  index: -1
+hawaiiBlue
+  rotate: false
+  xy: 1697, 1587
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiBrown
+  rotate: false
+  xy: 1784, 1587
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiCyan
+  rotate: false
+  xy: 1550, 1939
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiDisabled
+  rotate: false
+  xy: 874, 1026
+  size: 33, 20
+  orig: 89, 89
+  offset: 28, 35
+  index: -1
+hawaiiGold
+  rotate: false
+  xy: 1774, 1888
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiGreen
+  rotate: false
+  xy: 1871, 1584
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiHovered
+  rotate: false
+  xy: 1413, 1177
+  size: 80, 80
+  orig: 89, 89
+  offset: 4, 5
+  index: -1
+hawaiiPink
+  rotate: false
+  xy: 1880, 1671
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiPurple
+  rotate: false
+  xy: 1880, 1758
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiRed
+  rotate: false
+  xy: 1861, 1845
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiSilver
+  rotate: false
+  xy: 1861, 1932
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiTeal
+  rotate: false
+  xy: 1948, 1845
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+hawaiiUnowned
+  rotate: false
+  xy: 1948, 1932
+  size: 85, 85
+  orig: 89, 89
+  offset: 2, 2
+  index: -1
+icelandBlue
+  rotate: false
+  xy: 1221, 713
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandBrown
+  rotate: false
+  xy: 1581, 1897
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandCyan
+  rotate: false
+  xy: 1908, 1532
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandDisabled
+  rotate: false
+  xy: 879, 654
+  size: 60, 17
+  orig: 66, 41
+  offset: 3, 12
+  index: -1
+icelandGold
+  rotate: true
+  xy: 1926, 1281
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandGreen
+  rotate: true
+  xy: 1965, 1275
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandHovered
+  rotate: true
+  xy: 1340, 558
+  size: 66, 23
+  orig: 66, 41
+  offset: 0, 9
+  index: -1
+icelandPink
+  rotate: true
+  xy: 2004, 1275
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandPurple
+  rotate: false
+  xy: 1926, 1349
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandRed
+  rotate: true
+  xy: 1951, 1388
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandSilver
+  rotate: true
+  xy: 1994, 1343
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandTeal
+  rotate: true
+  xy: 1990, 1411
+  size: 66, 37
+  orig: 66, 41
+  offset: 0, 2
+  index: -1
+icelandUnowned
+  rotate: true
+  xy: 1320, 626
+  size: 60, 37
+  orig: 66, 41
+  offset: 3, 2
+  index: -1
+northernEuropeBlue
+  rotate: true
+  xy: 807, 534
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeBrown
+  rotate: true
+  xy: 1717, 135
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeCyan
+  rotate: true
+  xy: 1150, 539
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeDisabled
+  rotate: false
+  xy: 872, 1856
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeGold
+  rotate: false
+  xy: 1495, 1177
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeGreen
+  rotate: true
+  xy: 1757, 1410
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeHovered
+  rotate: false
+  xy: 1476, 1547
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropePink
+  rotate: false
+  xy: 1476, 1615
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropePurple
+  rotate: false
+  xy: 1218, 558
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeRed
+  rotate: true
+  xy: 1825, 1410
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeSilver
+  rotate: false
+  xy: 1463, 1683
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeTeal
+  rotate: false
+  xy: 1463, 1751
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northernEuropeUnowned
+  rotate: false
+  xy: 1466, 1819
+  size: 120, 66
+  orig: 120, 66
+  offset: 0, 0
+  index: -1
+northwestTerritoryBlue
+  rotate: false
+  xy: 2, 2
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryBrown
+  rotate: false
+  xy: 2, 135
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryCyan
+  rotate: false
+  xy: 457, 2
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryDisabled
+  rotate: false
+  xy: 2, 268
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryGold
+  rotate: false
+  xy: 457, 135
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryGreen
+  rotate: false
+  xy: 912, 2
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryHovered
+  rotate: false
+  xy: 2, 401
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryPink
+  rotate: false
+  xy: 457, 268
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryPurple
+  rotate: false
+  xy: 912, 135
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryRed
+  rotate: false
+  xy: 1367, 2
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritorySilver
+  rotate: false
+  xy: 2, 534
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryTeal
+  rotate: false
+  xy: 457, 401
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+northwestTerritoryUnowned
+  rotate: false
+  xy: 912, 268
+  size: 453, 131
+  orig: 453, 131
+  offset: 0, 0
+  index: -1
+ontarioBlue
+  rotate: true
+  xy: 1262, 401
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioBrown
+  rotate: false
+  xy: 942, 1166
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioCyan
+  rotate: false
+  xy: 1099, 1159
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioDisabled
+  rotate: false
+  xy: 1256, 1159
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioGold
+  rotate: true
+  xy: 892, 1699
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioGreen
+  rotate: false
+  xy: 995, 1826
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioHovered
+  rotate: false
+  xy: 1152, 1826
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioPink
+  rotate: false
+  xy: 1309, 1826
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioPurple
+  rotate: false
+  xy: 1492, 704
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioRed
+  rotate: false
+  xy: 1462, 1074
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioSilver
+  rotate: true
+  xy: 1684, 918
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioTeal
+  rotate: true
+  xy: 1787, 915
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+ontarioUnowned
+  rotate: true
+  xy: 1890, 909
+  size: 155, 101
+  orig: 155, 101
+  offset: 0, 0
+  index: -1
+quebecBlue
+  rotate: false
+  xy: 498, 1937
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecBrown
+  rotate: false
+  xy: 654, 1937
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecCyan
+  rotate: false
+  xy: 995, 1715
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecDisabled
+  rotate: false
+  xy: 1151, 1715
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecGold
+  rotate: false
+  xy: 1307, 1715
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecGreen
+  rotate: false
+  xy: 1336, 693
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecHovered
+  rotate: true
+  xy: 1345, 804
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecPink
+  rotate: false
+  xy: 1456, 807
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecPurple
+  rotate: true
+  xy: 1462, 918
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecRed
+  rotate: true
+  xy: 1573, 918
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecSilver
+  rotate: false
+  xy: 1612, 807
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecTeal
+  rotate: true
+  xy: 1768, 759
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+quebecUnowned
+  rotate: false
+  xy: 1879, 798
+  size: 154, 109
+  orig: 154, 109
+  offset: 0, 0
+  index: -1
+scandinaviaBlue
+  rotate: false
+  xy: 721, 1836
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaBrown
+  rotate: false
+  xy: 1619, 1075
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaCyan
+  rotate: false
+  xy: 1619, 1167
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaDisabled
+  rotate: true
+  xy: 1770, 1075
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaGold
+  rotate: true
+  xy: 1862, 1072
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaGreen
+  rotate: true
+  xy: 1954, 1066
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaHovered
+  rotate: true
+  xy: 1422, 1259
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaPink
+  rotate: true
+  xy: 1514, 1245
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaPurple
+  rotate: false
+  xy: 1606, 1259
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaRed
+  rotate: false
+  xy: 1606, 1351
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaSilver
+  rotate: true
+  xy: 1757, 1259
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaTeal
+  rotate: true
+  xy: 1514, 1396
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+scandinaviaUnowned
+  rotate: false
+  xy: 1606, 1443
+  size: 149, 90
+  orig: 149, 90
+  offset: 0, 0
+  index: -1
+westernEuropeBlue
+  rotate: false
+  xy: 1221, 626
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeBrown
+  rotate: false
+  xy: 956, 1929
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeCyan
+  rotate: false
+  xy: 1055, 1929
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeDisabled
+  rotate: false
+  xy: 1154, 1929
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeGold
+  rotate: false
+  xy: 1253, 1929
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeGreen
+  rotate: false
+  xy: 1352, 1929
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeHovered
+  rotate: false
+  xy: 1451, 1939
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropePink
+  rotate: false
+  xy: 1598, 1587
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropePurple
+  rotate: true
+  xy: 1793, 1674
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeRed
+  rotate: true
+  xy: 1588, 1798
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeSilver
+  rotate: false
+  xy: 1675, 1789
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeTeal
+  rotate: false
+  xy: 1675, 1876
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernEuropeUnowned
+  rotate: true
+  xy: 1774, 1789
+  size: 97, 85
+  orig: 97, 85
+  offset: 0, 0
+  index: -1
+westernUnitedStatesBlue
+  rotate: false
+  xy: 1536, 444
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesBrown
+  rotate: true
+  xy: 941, 810
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesCyan
+  rotate: true
+  xy: 942, 988
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesDisabled
+  rotate: true
+  xy: 1072, 981
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesGold
+  rotate: true
+  xy: 1225, 1262
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesGreen
+  rotate: true
+  xy: 1202, 981
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesHovered
+  rotate: true
+  xy: 1332, 981
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesPink
+  rotate: true
+  xy: 1346, 1470
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesPurple
+  rotate: false
+  xy: 1536, 574
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesRed
+  rotate: true
+  xy: 1714, 444
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesSilver
+  rotate: true
+  xy: 1734, 257
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesTeal
+  rotate: false
+  xy: 1844, 490
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1
+westernUnitedStatesUnowned
+  rotate: true
+  xy: 1885, 620
+  size: 176, 128
+  orig: 176, 128
+  offset: 0, 0
+  index: -1

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.io.CountryModelDataLoader;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.tools.common.id.Id;
 

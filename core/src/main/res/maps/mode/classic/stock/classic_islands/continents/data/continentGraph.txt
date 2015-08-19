@@ -1,0 +1,9 @@
+// Name of Continent, Names of All Adjacent Continents...
+
+"North America", "South America", "Asia", "Europe"
+"South America", "North America", "Africa", "Australia", "Antarctica"
+"Africa", "South America", "Asia", "Europe"
+"Europe", "North America", "Africa", "Asia"
+"Asia", "North America", "Africa", "Europe", "Australia"
+"Australia", "Asia", "South America", "Antarctica"
+"Antarctica", "South America", "Australia"

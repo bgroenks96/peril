@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -20,10 +19,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.PerilModePlayScreenWidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -31,27 +30,27 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PerilModePlayScreen extends InputAdapter implements Screen
 {
+  private final PerilModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public PerilModePlayScreen (final Skin skin,
+  public PerilModePlayScreen (final PerilModePlayScreenWidgetFactory widgetFactory,
                               final ScreenChanger screenChanger,
-                              final TankActor2 tankActor2,
                               final ScreenSize screenSize,
                               final MouseInput mouseInput,
                               final Batch batch,
                               final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (skin, "skin");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
-    Arguments.checkIsNotNull (tankActor2, "tankActor2");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.eventBus = eventBus;
 
@@ -67,6 +66,8 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
         return keyCode != Input.Keys.ESCAPE && super.keyDown (keyCode);
       }
     };
+
+    final TankActor2 tankActor2 = widgetFactory.createTankActor2 ();
 
     stage.addActor (tankActor2);
 
@@ -189,9 +190,9 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     return false;
   }
 
-  private static void showCursor ()
+  private void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
+    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }

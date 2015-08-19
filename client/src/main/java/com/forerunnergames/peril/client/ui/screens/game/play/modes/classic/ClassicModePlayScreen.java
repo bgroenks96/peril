@@ -18,13 +18,16 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -37,10 +40,9 @@ import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -53,6 +55,7 @@ import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
@@ -78,8 +81,8 @@ import org.slf4j.LoggerFactory;
 
 public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
-  private static Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
-  private final PlayMapActor playMapActor;
+  private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
+  private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
   private final MBassador <Event> eventBus;
@@ -91,37 +94,39 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final GdxKeyRepeatSystem keyRepeat;
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
+  private final Cell <Actor> playMapActorCell;
+  private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
 
-  public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
-                                final ScreenChanger screenChanger,
+  public ClassicModePlayScreen (final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
                                 final MouseInput mouseInput,
                                 final Batch batch,
+                                final AssetManager assetManager,
                                 final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
     this.eventBus = eventBus;
+    widgetFactory = new ClassicModePlayScreenWidgetFactory (assetManager, screenSize, mouseInput, eventBus);
 
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
-    playMapActor = ClassicModePlayScreenWidgetFactory.createPlayMapActor (screenSize, mouseInput, eventBus);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (new Image (Assets.playScreenBackground));
+    rootStack.add (new Image (widgetFactory.createBackground ()));
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapAndSideBarTable.add (playMapActor)
-            .size (ClassicPlayMapSettings.ACTUAL_WIDTH, ClassicPlayMapSettings.ACTUAL_HEIGHT).padRight (16);
+    playMapActorCell = playMapAndSideBarTable.add (playMapActor.asActor ())
+            .size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT).padRight (16);
     playMapAndSideBarTable.add (widgetFactory.createSideBar (eventBus)).top ();
 
     final Table foregroundTable = new Table ().pad (12);
@@ -155,29 +160,31 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               }
             });
 
-    quitPopup = widgetFactory
-            .createQuitPopup ("Are you sure you want to quit?\nQuitting will end the game for everyone.", stage,
-                              new PopupListener ()
-                              {
-                                @Override
-                                public void onSubmit ()
-                                {
-                                  screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
-                                  eventBus.publishAsync (new QuitGameEvent ());
-                                }
+    // @formatter:off
+    quitPopup = widgetFactory.createQuitPopup (
+            "Are you sure you want to quit?\nQuitting will end the game for everyone.",
+            stage, new PopupListener ()
+            {
+              @Override
+              public void onSubmit ()
+              {
+                screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
+                eventBus.publishAsync (new QuitGameEvent ());
+              }
 
-                                @Override
-                                public void onShow ()
-                                {
-                                  playMapActor.disable ();
-                                }
+              @Override
+              public void onShow ()
+              {
+                playMapActor.disable ();
+              }
 
-                                @Override
-                                public void onHide ()
-                                {
-                                  playMapActor.enable (mouseInput.position ());
-                                }
-                              });
+              @Override
+              public void onHide ()
+              {
+                playMapActor.enable (mouseInput.position ());
+              }
+            });
+    // @formatter:on
 
     stage.addActor (rootStack);
 
@@ -240,7 +247,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Gdx.input.setInputProcessor (inputProcessor);
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
-    playMapActor.mouseMoved (mouseInput.position ());
+    if (playMapActor != null) playMapActor.mouseMoved (mouseInput.position ());
   }
 
   @Override
@@ -286,7 +293,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox.clear ();
     statusBox.clear ();
     playerBox.clear ();
-    playMapActor.reset ();
+    clearPlayMapActor ();
   }
 
   @Override
@@ -350,6 +357,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
+        updatePlayMapActor (event.getMapMetadata ());
         playerBox.setPlayers (playersFrom (event));
       }
     });
@@ -387,7 +395,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.debug ("Event received [{}].", event);
 
-        if (!hasAuthorFrom (event)) return;
+        if (!hasAuthorFrom (event))
+          return;
 
         chatBox.addMessage (new DefaultChatMessage (withAuthorNameFrom (event) + ": " + withMessageTextFrom (event)));
         chatBox.showLastMessage ();
@@ -524,9 +533,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     });
   }
 
-  private static void showCursor ()
+  private void showCursor ()
   {
-    Gdx.input.setCursorImage (Assets.playScreenNormalCursor,
+    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
@@ -534,5 +543,20 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private static void hideCursor ()
   {
     Gdx.input.setCursorImage (null, 0, 0);
+  }
+
+  private void updatePlayMapActor (final MapMetadata mapMetadata)
+  {
+    playMapActor = widgetFactory.createPlayMapActor (mapMetadata);
+    playMapActorCell.setActor (playMapActor.asActor ());
+  }
+
+  private void clearPlayMapActor ()
+  {
+    playMapActor.reset ();
+    playMapActorCell.clearActor ();
+    widgetFactory.destroyPlayMapActor (playMapActor.getMapMetadata ());
+    playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
+    playMapActorCell.setActor (playMapActor.asActor ());
   }
 }

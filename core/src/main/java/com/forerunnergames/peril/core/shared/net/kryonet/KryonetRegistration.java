@@ -9,6 +9,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;
+import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -65,6 +67,7 @@ public final class KryonetRegistration
           Classes.class,
           DefaultClientConfiguration.class,
           DefaultGameConfiguration.class,
+          DefaultMapMetadata.class,
           DefaultMessage.class,
           DefaultPlayer.class,
           DefaultServerConfiguration.class,
@@ -74,6 +77,7 @@ public final class KryonetRegistration
           Id.class,
           InetSocketAddress.class,
           InitialCountryAssignment.class,
+          MapType.class,
           PersonIdentity.class,
           PlayerColor.class,
           PlayerJoinGameDeniedEvent.Reason.class,

@@ -2,7 +2,7 @@ package com.forerunnergames.peril.integration.server;
 
 import static org.testng.Assert.fail;
 
-import com.forerunnergames.peril.client.kryonet.KryonetClient;
+import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;

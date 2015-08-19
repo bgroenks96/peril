@@ -1,14 +1,24 @@
 package com.forerunnergames.peril.client.ui.music;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 
-import com.forerunnergames.peril.client.ui.Assets;
+import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class MusicFactory
 {
-  public static Music create (final ScreenId screenId)
+  private final AssetManager assetManager;
+
+  public MusicFactory (final AssetManager assetManager)
+  {
+    Arguments.checkIsNotNull (assetManager, "assetManager");
+
+    this.assetManager = assetManager;
+  }
+
+  public Music create (final ScreenId screenId)
   {
     Arguments.checkIsNotNull (screenId, "screenId");
 
@@ -21,12 +31,12 @@ public final class MusicFactory
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {
-        return Assets.menuMusic;
+        return assetManager.get (AssetSettings.MENU_MUSIC_ASSET_DESCRIPTOR);
       }
       case PLAY_CLASSIC:
       case PLAY_PERIL:
       {
-        return Assets.playScreenMusic;
+        return assetManager.get (AssetSettings.PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
       }
       default:
       {

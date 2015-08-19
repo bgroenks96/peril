@@ -1,34 +1,37 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.CountryImageLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.CountryImagesLoader;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryActorFactory
 {
-  private final CountryImageLoader countryImageLoader;
+  private final CountryImagesLoader countryImagesLoader;
   private final CountryImageDataRepository countryImageDataRepository;
 
-  public CountryActorFactory (final CountryImageLoader countryImageLoader,
+  public CountryActorFactory (final CountryImagesLoader countryImagesLoader,
                               final CountryImageDataRepository countryImageDataRepository)
   {
-    Arguments.checkIsNotNull (countryImageLoader, "countryImagesRepository");
+    Arguments.checkIsNotNull (countryImagesLoader, "countryImagesLoader");
     Arguments.checkIsNotNull (countryImageDataRepository, "countryImageDataRepository");
 
-    this.countryImageLoader = countryImageLoader;
+    this.countryImagesLoader = countryImagesLoader;
     this.countryImageDataRepository = countryImageDataRepository;
   }
 
-  public CountryActor create (final CountryName countryName)
+  public CountryActor create (final CountryName countryName, final BitmapFont countryArmyTextFont)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNull (countryArmyTextFont, "countryArmyTextFont");
 
     final CountryImageData countryImageData = countryImageDataRepository.get (countryName);
 
-    return new CountryActor (countryImageLoader.getAllPrimary (countryName),
-            countryImageLoader.getAllSecondary (countryName), countryImageData,
-            CountryArmyTextActorFactory.create (countryImageData));
+    return new DefaultCountryActor (countryImagesLoader.getAllPrimary (countryName),
+            countryImagesLoader.getAllSecondary (countryName), countryImageData,
+            CountryArmyTextActorFactory.create (countryImageData, countryArmyTextFont));
   }
 }

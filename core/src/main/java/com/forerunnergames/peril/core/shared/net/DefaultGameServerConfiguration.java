@@ -3,6 +3,7 @@ package com.forerunnergames.peril.core.shared.net;
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
@@ -55,6 +56,18 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
+  public String getMapName ()
+  {
+    return gameConfig.getMapName ();
+  }
+
+  @Override
+  public MapMetadata getMapMetadata ()
+  {
+    return gameConfig.getMapMetadata ();
+  }
+
+  @Override
   public String getServerAddress ()
   {
     return serverConfig.getServerAddress ();
@@ -81,10 +94,10 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Game Server Name: %2$s | Game Server Type: %3$s | Game Configuration: %4$s"
-                                  + " | Server Configuration: %5$s", getClass ().getSimpleName (), gameServerName,
-                          gameServerType,
-                          gameConfig, serverConfig);
+    return String.format (
+                          "%1$s: Game Server Name: %2$s | Game Server Type: %3$s | Game Configuration: %4$s"
+                                  + " | Server Configuration: %5$s",
+                          getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig);
   }
 
   @RequiredForNetworkSerialization

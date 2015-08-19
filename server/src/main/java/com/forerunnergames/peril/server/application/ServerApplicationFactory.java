@@ -4,12 +4,13 @@ import com.beust.jcommander.JCommander;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.io.DefaultCountryIdResolver;
-import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.io.CoreMapMetadataFinderFactory;
+import com.forerunnergames.peril.core.model.map.io.DefaultCountryIdResolver;
+import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
@@ -20,6 +21,8 @@ import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.core.shared.map.io.MapMetadataFinder;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
@@ -65,9 +68,14 @@ public final class ServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort,
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
-    final ImmutableSet <Country> countries = PlayMapModelDataFactory.createCountries ();
-    final ImmutableSet <Continent> continents = PlayMapModelDataFactory
-            .createContinents (new DefaultCountryIdResolver (countries));
+    final MapMetadataFinder mapMetadataFinder = CoreMapMetadataFinderFactory.create (jArgs.gameMode);
+    final MapMetadata mapMetadata = mapMetadataFinder.find (jArgs.mapName);
+
+    final ImmutableSet <Country> countries = PlayMapModelDataFactoryCreator.create (jArgs.gameMode)
+            .createCountries (mapMetadata);
+
+    final ImmutableSet <Continent> continents = PlayMapModelDataFactoryCreator.create (jArgs.gameMode)
+            .createContinents (mapMetadata, new DefaultCountryIdResolver (countries));
 
     final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
                                                          countries.size (), jArgs.initialCountryAssignment);
@@ -84,7 +92,7 @@ public final class ServerApplicationFactory
     final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
-            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
+            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);

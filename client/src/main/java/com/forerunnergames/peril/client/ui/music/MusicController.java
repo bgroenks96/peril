@@ -32,7 +32,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   {
     for (final ScreenId screenId : ScreenId.values ())
     {
-      music.put (screenId, MusicFactory.create (screenId));
+      music.put (screenId, musicFactory.create (screenId));
     }
   }
 

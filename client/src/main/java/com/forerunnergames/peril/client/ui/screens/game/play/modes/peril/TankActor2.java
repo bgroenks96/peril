@@ -25,10 +25,13 @@ public final class TankActor2 extends Actor implements UnitActor
   private Action forwardTurretAction;
   private Action reverseTurretAction;
 
-  public TankActor2 ()
+  public TankActor2 (final TankBodyActor bodyActor, final TankTurretActor turretActor)
   {
-    bodyActor = new TankBodyActor ();
-    turretActor = new TankTurretActor ();
+    Arguments.checkIsNotNull (bodyActor, "bodyActor");
+    Arguments.checkIsNotNull (turretActor, "turretActor");
+
+    this.bodyActor = bodyActor;
+    this.turretActor = turretActor;
   }
 
   @Override

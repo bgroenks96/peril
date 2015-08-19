@@ -1,10 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
-import com.forerunnergames.peril.client.io.LibGdxExternalStreamParserFactory;
-import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
-import com.forerunnergames.peril.core.shared.io.DataLoader;
-import com.forerunnergames.peril.client.settings.ClassicPlayMapSettings;
-import com.forerunnergames.peril.client.ui.Assets;
+import com.badlogic.gdx.assets.AssetManager;
+
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.ContinentColor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.CountryColor;
@@ -29,93 +26,117 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.c
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToContinentNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToCountryNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToTerritoryNameConverter;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.ContinentColorToNameLoader;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.loaders.CountryColorToNameLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.AbsoluteMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.ContinentColorToNameLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.CountryColorToNameLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.DefaultPlayMapInputDetectionImageLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.MapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.PlayMapInputDetectionImageLoader;
+import com.forerunnergames.peril.core.model.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
+import com.forerunnergames.peril.core.shared.io.DataLoader;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Classes;
 
-// @formatter:off
 public final class PlayMapInputDetectionFactory
 {
-  public static PlayMapInputDetection create (final ScreenSize screenSize)
+  private final ScreenSize screenSize;
+  private final PlayMapInputDetectionImageLoader imageLoader;
+
+  public PlayMapInputDetectionFactory (final AssetManager assetManager, final ScreenSize screenSize)
   {
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (screenSize, "screenSize");
 
-    final PlayMapCoordinateToRgbaColorConverter playMapCoordinateToRgbaColorConverter;
-
-    final PlayMapCoordinateToTerritoryColorConverter <CountryColor> playMapCoordinateToCountryColorConverter;
-    final PlayMapCoordinateToTerritoryColorConverter <ContinentColor> playMapCoordinateToContinentColorConverter;
-
-    final TerritoryColorToNameConverter <CountryColor, CountryName> countryColorToNameConverter;
-    final TerritoryColorToNameConverter <ContinentColor, ContinentName> continentColorToNameConverter;
-
-    final PlayMapCoordinateToTerritoryNameConverter <CountryName> playMapCoordinateToCountryNameConverter;
-    final PlayMapCoordinateToTerritoryNameConverter <ContinentName> playMapCoordinateToContinentNameConverter;
-
-    final ScreenToPlayMapCoordinateConverter screenToPlayMapCoordinateConverter;
-
-    final ScreenCoordinateToTerritoryNameConverter <CountryName> screenCoordinateToCountryNameConverter;
-    final ScreenCoordinateToTerritoryNameConverter <ContinentName> screenCoordinateToContinentNameConverter;
-
-    final InputToScreenCoordinateConverter inputToScreenCoordinateConverter;
-
-    final InputCoordinateToTerritoryNameConverter <CountryName> inputCoordinateToCountryNameConverter;
-    final InputCoordinateToTerritoryNameConverter <ContinentName> inputCoordinateToContinentNameConverter;
-
-    playMapCoordinateToRgbaColorConverter = new DefaultPlayMapCoordinateToRgbaColorConverter (Assets.playMapInputDetection);
-
-    playMapCoordinateToCountryColorConverter = new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
-    playMapCoordinateToContinentColorConverter = new PlayMapCoordinateToContinentColorConverter (playMapCoordinateToRgbaColorConverter);
-
-    final StreamParserFactory streamParserFactory = new LibGdxExternalStreamParserFactory ();
-    final DataLoader <CountryColor, CountryName> countryColorToNameLoader = new CountryColorToNameLoader (streamParserFactory);
-    final DataLoader <ContinentColor, ContinentName> continentColorToNameLoader = new ContinentColorToNameLoader (streamParserFactory);
-
-    countryColorToNameConverter = new CountryColorToNameConverter (countryColorToNameLoader.load (ClassicPlayMapSettings.COUNTRY_NAME_TO_COLOR_FILENAME));
-    continentColorToNameConverter = new ContinentColorToNameConverter (continentColorToNameLoader.load (ClassicPlayMapSettings.CONTINENT_NAME_TO_COLOR_FILENAME));
-
-    playMapCoordinateToCountryNameConverter =
-                    new PlayMapCoordinateToCountryNameConverter (
-                                    playMapCoordinateToCountryColorConverter,
-                                    countryColorToNameConverter);
-
-    playMapCoordinateToContinentNameConverter =
-                    new PlayMapCoordinateToContinentNameConverter (
-                                    playMapCoordinateToContinentColorConverter,
-                                    continentColorToNameConverter);
-
-    screenToPlayMapCoordinateConverter = new DefaultScreenToPlayMapCoordinateConverter (screenSize);
-
-    screenCoordinateToCountryNameConverter =
-                    new ScreenCoordinateToCountryNameConverter (
-                                    screenToPlayMapCoordinateConverter,
-                                    playMapCoordinateToCountryNameConverter);
-
-    screenCoordinateToContinentNameConverter =
-                    new ScreenCoordinateToContinentNameConverter (
-                                    screenToPlayMapCoordinateConverter,
-                                    playMapCoordinateToContinentNameConverter);
-
-    inputToScreenCoordinateConverter = new DefaultInputToScreenCoordinateConverter ();
-
-    inputCoordinateToCountryNameConverter =
-                    new InputCoordinateToCountryNameConverter (
-                                    inputToScreenCoordinateConverter,
-                                    screenCoordinateToCountryNameConverter);
-
-    inputCoordinateToContinentNameConverter =
-                    new InputCoordinateToContinentNameConverter (
-                                    inputToScreenCoordinateConverter,
-                                    screenCoordinateToContinentNameConverter);
-
-    return new PlayMapInputDetection (inputCoordinateToCountryNameConverter, inputCoordinateToContinentNameConverter);
+    this.screenSize = screenSize;
+    imageLoader = new DefaultPlayMapInputDetectionImageLoader (assetManager);
   }
-  // @formatter:on
 
-  private PlayMapInputDetectionFactory ()
+  public PlayMapInputDetection create (final MapMetadata mapMetadata)
   {
-    Classes.instantiationNotAllowed ();
+    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+
+    // @formatter:off
+
+    final PlayMapCoordinateToRgbaColorConverter playMapCoordinateToRgbaColorConverter =
+            new DefaultPlayMapCoordinateToRgbaColorConverter (imageLoader.load (mapMetadata));
+
+    final PlayMapCoordinateToTerritoryColorConverter <CountryColor> playMapCoordinateToCountryColorConverter =
+            new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
+
+    final PlayMapCoordinateToTerritoryColorConverter <ContinentColor> playMapCoordinateToContinentColorConverter =
+            new PlayMapCoordinateToContinentColorConverter (playMapCoordinateToRgbaColorConverter);
+
+    final StreamParserFactory streamParserFactory = new ExternalStreamParserFactory ();
+
+    final DataLoader <CountryColor, CountryName> countryColorToNameLoader =
+            new CountryColorToNameLoader (streamParserFactory);
+
+    final DataLoader <ContinentColor, ContinentName> continentColorToNameLoader =
+            new ContinentColorToNameLoader (streamParserFactory);
+
+    final MapResourcesPathParser absoluteMapResourcesPathParser =
+            new AbsoluteMapResourcesPathParser (mapMetadata.getMode ());
+
+    final TerritoryColorToNameConverter <CountryColor, CountryName> countryColorToNameConverter =
+            new CountryColorToNameConverter (
+                    countryColorToNameLoader.load (
+                            absoluteMapResourcesPathParser.parseCountryInputDetectionDataFileNamePath (
+                                    mapMetadata)));
+
+    final TerritoryColorToNameConverter <ContinentColor, ContinentName> continentColorToNameConverter =
+            new ContinentColorToNameConverter (
+                    continentColorToNameLoader.load (
+                            absoluteMapResourcesPathParser.parseContinentInputDetectionDataFileNamePath (
+                                    mapMetadata)));
+
+    final PlayMapCoordinateToTerritoryNameConverter <CountryName> playMapCoordinateToCountryNameConverter =
+            new PlayMapCoordinateToCountryNameConverter (
+                    playMapCoordinateToCountryColorConverter,
+                    countryColorToNameConverter);
+
+    final PlayMapCoordinateToTerritoryNameConverter <ContinentName> playMapCoordinateToContinentNameConverter =
+            new PlayMapCoordinateToContinentNameConverter (
+                    playMapCoordinateToContinentColorConverter,
+                    continentColorToNameConverter);
+
+    final ScreenToPlayMapCoordinateConverter screenToPlayMapCoordinateConverter =
+            new DefaultScreenToPlayMapCoordinateConverter (screenSize);
+
+    final ScreenCoordinateToTerritoryNameConverter <CountryName> screenCoordinateToCountryNameConverter =
+            new ScreenCoordinateToCountryNameConverter (
+                    screenToPlayMapCoordinateConverter,
+                    playMapCoordinateToCountryNameConverter);
+
+    final ScreenCoordinateToTerritoryNameConverter <ContinentName> screenCoordinateToContinentNameConverter =
+            new ScreenCoordinateToContinentNameConverter (
+                    screenToPlayMapCoordinateConverter,
+                    playMapCoordinateToContinentNameConverter);
+
+    final InputToScreenCoordinateConverter inputToScreenCoordinateConverter =
+            new DefaultInputToScreenCoordinateConverter ();
+
+    final InputCoordinateToTerritoryNameConverter <CountryName> inputCoordinateToCountryNameConverter =
+            new InputCoordinateToCountryNameConverter (
+                    inputToScreenCoordinateConverter,
+                    screenCoordinateToCountryNameConverter);
+
+    final InputCoordinateToTerritoryNameConverter <ContinentName> inputCoordinateToContinentNameConverter =
+            new InputCoordinateToContinentNameConverter (
+                    inputToScreenCoordinateConverter,
+                    screenCoordinateToContinentNameConverter);
+
+    return new DefaultPlayMapInputDetection (
+            inputCoordinateToCountryNameConverter,
+            inputCoordinateToContinentNameConverter);
+  }
+
+  public void destroy (final MapMetadata mapMetadata)
+  {
+    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+
+    imageLoader.unload (mapMetadata);
   }
 }

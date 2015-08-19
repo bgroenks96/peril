@@ -48,7 +48,8 @@ public final class LocalGameServerCreator implements GameServerCreator
                       "--port", String.valueOf (config.getServerTcpPort ()),
                       "--players", String.valueOf (config.getPlayerLimit ()),
                       "--win-percent", String.valueOf (config.getWinPercentage ()),
-                      "--assignment", config.getInitialCountryAssignment ().name())
+                      "--assignment", config.getInitialCountryAssignment ().name(),
+                      "--map-name", config.getMapName ())
                       .redirectErrorStream (true)
                       .inheritIO ()
                       .start ();

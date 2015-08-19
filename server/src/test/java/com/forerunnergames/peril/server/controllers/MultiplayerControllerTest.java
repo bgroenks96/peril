@@ -24,6 +24,9 @@ import com.forerunnergames.peril.core.model.rules.GameMode;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.EventBusHandler;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
+import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
@@ -38,6 +41,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameS
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.shared.settings.GameSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.tools.common.Arguments;
@@ -846,6 +850,7 @@ public class MultiplayerControllerTest
     private final CoreCommunicator coreCommunicator;
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
+    private final MapMetadata mapMetadata = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME, MapType.STOCK, gameMode);
     private InitialCountryAssignment initialCountryAssignment = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
     // game server configuration fields
     private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;
@@ -919,7 +924,7 @@ public class MultiplayerControllerTest
       Arguments.checkIsNotNull (eventBus, "eventBus");
 
       final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
-              initialCountryAssignment);
+              initialCountryAssignment, mapMetadata);
 
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

@@ -2,8 +2,8 @@ package com.forerunnergames.peril.integration.server;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.model.rules.GameConfiguration;
@@ -12,10 +12,14 @@ import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
+import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;
+import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.core.shared.settings.GameSettings;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.server.application.ServerApplication;
@@ -39,6 +43,8 @@ import net.engio.mbassy.bus.MBassador;
 
 public class ServerFactory
 {
+  private static final MapMetadata MAP_METADATA = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME,
+          MapType.STOCK, GameMode.CLASSIC);
   private static volatile int testGameServerId = 0;
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
@@ -53,16 +59,17 @@ public class ServerFactory
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
+    // @formatter:off
     final GameMode gameMode = GameMode.CLASSIC;
     final int winPercentage = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
     final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
-    final ImmutableSet <Country> countries = PlayMapModelDataFactory.createCountries ();
-    final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.size (),
-                                                         initialCountryAssignment);
+    final ImmutableSet <Country> countries = PlayMapModelDataFactoryCreator.create (gameMode).createCountries (MAP_METADATA);
+    final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.size (), initialCountryAssignment);
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     config.setGameModel (new StateMachineActionHandler (GameModel.builder (gameRules).eventBus (eventBus).build ()));
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
-    return newTestServer (eventBus, type, gameMode, gameRules, stateMachine, serverAddress, serverPort);
+    return newTestServer (eventBus, type, gameMode, MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
+    // @formatter:on
   }
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
@@ -79,12 +86,14 @@ public class ServerFactory
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    return newTestServer (eventBus, type, GameMode.CLASSIC, gameRules, stateMachine, serverAddress, serverPort);
+    return newTestServer (eventBus, type, GameMode.CLASSIC, MAP_METADATA, gameRules, stateMachine, serverAddress,
+                          serverPort);
   }
 
   private static TestServerApplication newTestServer (final MBassador <Event> eventBus,
                                                       final GameServerType type,
                                                       final GameMode gameMode,
+                                                      final MapMetadata mapMetadata,
                                                       final GameRules gameRules,
                                                       final StateMachineEventHandler stateMachine,
                                                       final String serverAddress,
@@ -101,7 +110,7 @@ public class ServerFactory
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
-            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment ());
+            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

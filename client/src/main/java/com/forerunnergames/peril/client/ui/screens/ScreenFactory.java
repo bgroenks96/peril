@@ -1,13 +1,12 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.io.CountryNamesDataLoader;
-import com.forerunnergames.peril.client.io.LibGdxExternalStreamParserFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.CountryCounterFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.MultiplayerGameModesMenuScreen;
@@ -26,7 +25,6 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class ScreenFactory
 {
-  private final Skin skin;
   private final ScreenChanger screenChanger;
   private final ScreenSize screenSize;
   private final MouseInput mouseInput;
@@ -34,28 +32,29 @@ public final class ScreenFactory
   private final Batch batch;
   private final MenuScreenWidgetFactory menuScreenWidgetFactory;
   private final JoinGameHandler joinGameHandler;
+  private final AssetManager assetManager;
 
-  public ScreenFactory (final Skin skin,
-                        final ScreenChanger screenChanger,
+  public ScreenFactory (final ScreenChanger screenChanger,
                         final ScreenSize screenSize,
                         final MouseInput mouseInput,
                         final Batch batch,
+                        final AssetManager assetManager,
                         final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.skin = skin;
     this.screenChanger = screenChanger;
     this.screenSize = screenSize;
     this.mouseInput = mouseInput;
-    this.eventBus = eventBus;
     this.batch = batch;
-    menuScreenWidgetFactory = new MenuScreenWidgetFactory (skin);
+    this.assetManager = assetManager;
+    this.eventBus = eventBus;
+    menuScreenWidgetFactory = new MenuScreenWidgetFactory (assetManager);
     joinGameHandler = new DefaultJoinGameHandler (screenChanger, eventBus);
   }
 
@@ -85,7 +84,7 @@ public final class ScreenFactory
       {
         return new MultiplayerClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
                 batch, new DefaultCreateGameHandler (joinGameHandler, eventBus),
-                new CountryNamesDataLoader (new LibGdxExternalStreamParserFactory ()));
+                CountryCounterFactory.create (GameMode.CLASSIC));
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {
@@ -94,12 +93,13 @@ public final class ScreenFactory
       }
       case PLAY_CLASSIC:
       {
-        return PlayScreenFactory.create (GameMode.CLASSIC, skin, screenChanger, screenSize, mouseInput, batch,
+        return PlayScreenFactory.create (GameMode.CLASSIC, screenChanger, screenSize, mouseInput, batch, assetManager,
                                          eventBus);
       }
       case PLAY_PERIL:
       {
-        return PlayScreenFactory.create (GameMode.PERIL, skin, screenChanger, screenSize, mouseInput, batch, eventBus);
+        return PlayScreenFactory.create (GameMode.PERIL, screenChanger, screenSize, mouseInput, batch, assetManager,
+                                         eventBus);
       }
       default:
       {

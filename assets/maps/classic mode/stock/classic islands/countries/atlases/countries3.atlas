@@ -1,0 +1,823 @@
+countries3.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+afghanistanBlue
+  rotate: false
+  xy: 634, 718
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanBrown
+  rotate: false
+  xy: 522, 1660
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanCyan
+  rotate: false
+  xy: 843, 718
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanDisabled
+  rotate: false
+  xy: 731, 1657
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanGold
+  rotate: false
+  xy: 940, 1657
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanGreen
+  rotate: false
+  xy: 1052, 718
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanHovered
+  rotate: false
+  xy: 1149, 1627
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanPink
+  rotate: false
+  xy: 1800, 168
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanPurple
+  rotate: false
+  xy: 1800, 282
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanRed
+  rotate: false
+  xy: 1800, 396
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanSilver
+  rotate: false
+  xy: 1800, 510
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanTeal
+  rotate: false
+  xy: 1800, 624
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+afghanistanUnowned
+  rotate: false
+  xy: 1540, 726
+  size: 207, 112
+  orig: 207, 112
+  offset: 0, 0
+  index: -1
+irkutskBlue
+  rotate: true
+  xy: 201, 1788
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskBrown
+  rotate: true
+  xy: 294, 1788
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskCyan
+  rotate: true
+  xy: 387, 1788
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskDisabled
+  rotate: false
+  xy: 1540, 168
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskGold
+  rotate: true
+  xy: 1261, 207
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskGreen
+  rotate: false
+  xy: 1540, 261
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskHovered
+  rotate: true
+  xy: 1261, 467
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskPink
+  rotate: false
+  xy: 1540, 354
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskPurple
+  rotate: false
+  xy: 1540, 447
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskRed
+  rotate: false
+  xy: 1540, 540
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskSilver
+  rotate: true
+  xy: 1261, 727
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskTeal
+  rotate: true
+  xy: 1154, 832
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+irkutskUnowned
+  rotate: false
+  xy: 1540, 633
+  size: 258, 91
+  orig: 258, 91
+  offset: 0, 0
+  index: -1
+kamchatkaBlue
+  rotate: false
+  xy: 2, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaBrown
+  rotate: false
+  xy: 341, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaCyan
+  rotate: false
+  xy: 680, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaDisabled
+  rotate: false
+  xy: 1019, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaGold
+  rotate: false
+  xy: 1358, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaGreen
+  rotate: false
+  xy: 1697, 2
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaHovered
+  rotate: true
+  xy: 2, 168
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaPink
+  rotate: true
+  xy: 2, 507
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaPurple
+  rotate: true
+  xy: 2, 846
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaRed
+  rotate: true
+  xy: 2, 1185
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaSilver
+  rotate: true
+  xy: 2, 1524
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaTeal
+  rotate: true
+  xy: 168, 168
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+kamchatkaUnowned
+  rotate: true
+  xy: 168, 507
+  size: 337, 164
+  orig: 337, 164
+  offset: 0, 0
+  index: -1
+mongoliaBlue
+  rotate: true
+  xy: 480, 1777
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaBrown
+  rotate: true
+  xy: 591, 1774
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaCyan
+  rotate: true
+  xy: 702, 1774
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaDisabled
+  rotate: true
+  xy: 932, 832
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaGold
+  rotate: true
+  xy: 932, 1097
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaGreen
+  rotate: true
+  xy: 932, 1362
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaHovered
+  rotate: true
+  xy: 1018, 1771
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaPink
+  rotate: true
+  xy: 1129, 1771
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaPurple
+  rotate: true
+  xy: 1043, 832
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaRed
+  rotate: true
+  xy: 1043, 1097
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaSilver
+  rotate: true
+  xy: 1043, 1362
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaTeal
+  rotate: true
+  xy: 1240, 1741
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+mongoliaUnowned
+  rotate: true
+  xy: 1351, 1741
+  size: 263, 109
+  orig: 263, 109
+  offset: 0, 0
+  index: -1
+siberiaBlue
+  rotate: false
+  xy: 2, 1863
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaBrown
+  rotate: false
+  xy: 1749, 738
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaCyan
+  rotate: false
+  xy: 1540, 840
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaDisabled
+  rotate: false
+  xy: 1739, 922
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaGold
+  rotate: false
+  xy: 1540, 1024
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaGreen
+  rotate: false
+  xy: 1154, 1092
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaHovered
+  rotate: false
+  xy: 1739, 1106
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaPink
+  rotate: false
+  xy: 1540, 1208
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaPurple
+  rotate: false
+  xy: 1154, 1276
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaRed
+  rotate: true
+  xy: 1358, 1536
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaSilver
+  rotate: true
+  xy: 1462, 1735
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaTeal
+  rotate: false
+  xy: 1739, 1290
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+siberiaUnowned
+  rotate: true
+  xy: 1542, 1392
+  size: 197, 182
+  orig: 197, 182
+  offset: 0, 0
+  index: -1
+svalbardBlue
+  rotate: false
+  xy: 334, 796
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardBrown
+  rotate: false
+  xy: 434, 796
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardCyan
+  rotate: false
+  xy: 534, 796
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardDisabled
+  rotate: false
+  xy: 1032, 1627
+  size: 92, 22
+  orig: 98, 41
+  offset: 3, 10
+  index: -1
+svalbardGold
+  rotate: false
+  xy: 1240, 2006
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardGreen
+  rotate: false
+  xy: 1340, 2006
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardHovered
+  rotate: false
+  xy: 932, 1627
+  size: 98, 28
+  orig: 98, 41
+  offset: 0, 7
+  index: -1
+svalbardPink
+  rotate: false
+  xy: 1440, 2006
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardPurple
+  rotate: true
+  xy: 1185, 168
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardRed
+  rotate: true
+  xy: 1185, 268
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardSilver
+  rotate: true
+  xy: 1185, 368
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardTeal
+  rotate: true
+  xy: 2009, 168
+  size: 98, 37
+  orig: 98, 41
+  offset: 0, 2
+  index: -1
+svalbardUnowned
+  rotate: false
+  xy: 1261, 168
+  size: 92, 37
+  orig: 98, 41
+  offset: 3, 2
+  index: -1
+ukraineBlue
+  rotate: true
+  xy: 522, 835
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineBrown
+  rotate: true
+  xy: 570, 168
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineCyan
+  rotate: true
+  xy: 570, 443
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineDisabled
+  rotate: true
+  xy: 775, 168
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineGold
+  rotate: true
+  xy: 775, 443
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineGreen
+  rotate: true
+  xy: 522, 1110
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineHovered
+  rotate: true
+  xy: 522, 1385
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukrainePink
+  rotate: true
+  xy: 727, 832
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukrainePurple
+  rotate: true
+  xy: 980, 168
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineRed
+  rotate: true
+  xy: 980, 443
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineSilver
+  rotate: true
+  xy: 727, 1107
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineTeal
+  rotate: true
+  xy: 727, 1382
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+ukraineUnowned
+  rotate: true
+  xy: 813, 1771
+  size: 273, 203
+  orig: 273, 203
+  offset: 0, 0
+  index: -1
+uralBlue
+  rotate: false
+  xy: 1358, 168
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralBrown
+  rotate: false
+  xy: 1358, 320
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralCyan
+  rotate: false
+  xy: 1358, 472
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralDisabled
+  rotate: false
+  xy: 1358, 624
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralGold
+  rotate: false
+  xy: 1358, 776
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralGreen
+  rotate: false
+  xy: 1358, 928
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralHovered
+  rotate: false
+  xy: 1358, 1080
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralPink
+  rotate: false
+  xy: 1358, 1232
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralPurple
+  rotate: false
+  xy: 1358, 1384
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralRed
+  rotate: false
+  xy: 1154, 1460
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralSilver
+  rotate: false
+  xy: 1726, 1474
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralTeal
+  rotate: false
+  xy: 1646, 1626
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+uralUnowned
+  rotate: false
+  xy: 1828, 1626
+  size: 180, 150
+  orig: 180, 150
+  offset: 0, 0
+  index: -1
+yakutskBlue
+  rotate: true
+  xy: 168, 846
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskBrown
+  rotate: true
+  xy: 168, 1160
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskCyan
+  rotate: true
+  xy: 168, 1474
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskDisabled
+  rotate: true
+  xy: 286, 846
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskGold
+  rotate: true
+  xy: 286, 1160
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskGreen
+  rotate: true
+  xy: 286, 1474
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskHovered
+  rotate: true
+  xy: 334, 168
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskPink
+  rotate: true
+  xy: 334, 482
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskPurple
+  rotate: true
+  xy: 404, 835
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskRed
+  rotate: true
+  xy: 452, 168
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskSilver
+  rotate: true
+  xy: 452, 482
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskTeal
+  rotate: true
+  xy: 404, 1149
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1
+yakutskUnowned
+  rotate: true
+  xy: 404, 1463
+  size: 312, 116
+  orig: 312, 116
+  offset: 0, 0
+  index: -1

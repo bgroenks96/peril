@@ -2,7 +2,6 @@ package com.forerunnergames.peril.client.application;
 
 import com.badlogic.gdx.Gdx;
 
-import com.forerunnergames.peril.client.ui.Assets;
 import com.forerunnergames.peril.core.shared.application.DefaultApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.Controller;
@@ -41,8 +40,6 @@ public final class ClientApplication extends DefaultApplication
       }
     }));
 
-    Assets.load ();
-
     super.initialize ();
   }
 
@@ -54,13 +51,5 @@ public final class ClientApplication extends DefaultApplication
     if (shouldShutDown ()) Gdx.app.exit ();
 
     mainThreadExecutor.executeQueuedJobs ();
-  }
-
-  @Override
-  public void shutDown ()
-  {
-    super.shutDown ();
-
-    Assets.dispose ();
   }
 }
