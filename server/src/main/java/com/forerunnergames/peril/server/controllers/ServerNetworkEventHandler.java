@@ -47,7 +47,7 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    controller.onEvent (event, clientFor (event));
+    controller.handleEvent (event, clientFor (event));
   }
 
   @Handler
@@ -55,7 +55,7 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    controller.onEvent (event, clientFor (event));
+    controller.handleEvent (event, clientFor (event));
   }
 
   @Handler
@@ -63,7 +63,7 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    controller.onEvent (event, clientFor (event));
+    controller.handleEvent (event, clientFor (event));
   }
 
   @Handler
@@ -71,6 +71,6 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    controller.onEvent (event, clientFor (event));
+    controller.handleEvent (event, clientFor (event));
   }
 }

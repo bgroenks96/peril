@@ -335,7 +335,7 @@ public final class MultiplayerController extends ControllerAdapter
     networkEventHandler.handle (event.getMessage (), event.getClient ());
   }
 
-  void onEvent (final JoinGameServerRequestEvent event, final Remote client)
+  void handleEvent (final JoinGameServerRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -398,7 +398,7 @@ public final class MultiplayerController extends ControllerAdapter
     sendJoinGameServerSuccess (client, clientsToPlayers.players ());
   }
 
-  void onEvent (final PlayerJoinGameRequestEvent event, final Remote client)
+  void handleEvent (final PlayerJoinGameRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -423,7 +423,7 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (event);
   }
 
-  void onEvent (final ChatMessageRequestEvent event, final Remote client)
+  void handleEvent (final ChatMessageRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -450,7 +450,7 @@ public final class MultiplayerController extends ControllerAdapter
     sendToAllPlayers (new ChatMessageSuccessEvent (new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
-  void onEvent (final PlayerSelectCountryResponseRequestEvent event, final Remote client)
+  void handleEvent (final PlayerSelectCountryResponseRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
