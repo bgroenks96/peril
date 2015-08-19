@@ -3,7 +3,6 @@ package com.forerunnergames.peril.core.shared.net.kryonet;
 import com.esotericsoftware.kryo.Kryo;
 
 import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.people.player.DefaultPlayer;
 import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
@@ -69,7 +68,6 @@ public final class KryonetRegistration
           DefaultGameConfiguration.class,
           DefaultMapMetadata.class,
           DefaultMessage.class,
-          DefaultPlayer.class,
           DefaultServerConfiguration.class,
           GameMode.class,
           GameServerType.class,
