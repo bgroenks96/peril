@@ -9,7 +9,7 @@ import com.forerunnergames.tools.common.Classes;
  * They are used to help locate required assets.
  *
  * The path sections should match up according to their append / prepend comments.
- * For example, if SECTION_1 says "Append: ABC (at runtime)", and SECTION_2 says "Prepend: ABC (at rutime),
+ * For example, if SECTION_1 says "Append: ABC (at runtime)", and SECTION_2 says "Prepend: ABC (at runtime),
  * these sections can be safely concatenated at runtime with ABC in between them:
  *
  *    SECTION_1 + getABC() + SECTION2
