@@ -24,7 +24,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
-import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;

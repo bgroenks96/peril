@@ -2,7 +2,6 @@ package com.forerunnergames.peril.core.shared.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
 
-import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.core.shared.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.shared.game.GameMode;
 import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
@@ -11,6 +10,7 @@ import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.DefaultMessage;

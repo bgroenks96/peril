@@ -55,7 +55,7 @@ import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
+import com.forerunnergames.peril.client.events.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
@@ -65,7 +65,7 @@ import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoi
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
-import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;

@@ -10,7 +10,6 @@ import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerSelectC
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
@@ -222,13 +221,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getDeltaArmyCount ();
-  }
-
-  public static ImmutableSet <PlayerPacket> recipientsFrom (final StatusMessageEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getRecipients ();
   }
 
   public static String playerColorFrom (final PlayerSelectCountryResponseSuccessEvent event)

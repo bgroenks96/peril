@@ -1,11 +1,9 @@
-package com.forerunnergames.peril.core.shared.net.events.server.defaults;
+package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
-import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -45,12 +43,5 @@ public final class DefaultStatusMessageEvent implements StatusMessageEvent
   public String toString ()
   {
     return Strings.format ("%{}: Message: {} | Recipients: {}", getClass ().getSimpleName (), message, recipients);
-  }
-
-  @RequiredForNetworkSerialization
-  private DefaultStatusMessageEvent ()
-  {
-    message = null;
-    recipients = null;
   }
 }

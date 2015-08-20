@@ -222,7 +222,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
 
     final PlayerPacket expectedPlayer = Packets.from (playerModel.playerWith (PlayerTurnOrder.FIRST));
-    assertTrue (eventHandler.secondToLastEvent (PlayerSelectCountryRequestEvent.class).getPlayer ()
+    assertTrue (eventHandler.lastEvent (PlayerSelectCountryRequestEvent.class).getPlayer ()
             .is (expectedPlayer));
   }
 

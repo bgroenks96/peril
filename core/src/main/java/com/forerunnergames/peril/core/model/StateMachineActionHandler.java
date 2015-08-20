@@ -15,7 +15,6 @@ import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataReque
 import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.factories.StatusMessageEventFactory;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -63,10 +62,6 @@ public final class StateMachineActionHandler
 
     // TODO Clear all country armies.
     // TODO Reset entire game state.
-
-    eventBus.publish (StatusMessageEventFactory
-            .create ("Starting a new " + rules.getPlayerLimit () + " player classic game. Remember, you must conquer "
-                    + rules.getWinPercentage () + "% of the map to achieve victory.", playerModel.getPlayers ()));
   }
 
   @StateMachineAction
@@ -74,8 +69,6 @@ public final class StateMachineActionHandler
   public void endGame ()
   {
     log.info ("Game over.");
-
-    eventBus.publish (StatusMessageEventFactory.create ("Game over.", playerModel.getPlayers ()));
 
     // TODO End the game gracefully - this can be called DURING ANY GAME STATE
   }
@@ -188,11 +181,6 @@ public final class StateMachineActionHandler
     Arguments.checkIsNotNegative (limit, "limit");
 
     return gameModel.playerLimitIs (limit);
-  }
-
-  public int getAdditionalPlayerCountToBeFull ()
-  {
-    return gameModel.getAdditionalPlayerCountToBeFull ();
   }
 
   public int getPlayerCount ()

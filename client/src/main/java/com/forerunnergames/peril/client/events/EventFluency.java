@@ -51,6 +51,13 @@ public final class EventFluency
     return event.getSelectedCountryName ();
   }
 
+  public static ImmutableSet <PlayerPacket> recipientsFrom (final StatusMessageEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getRecipients ();
+  }
+
   private EventFluency ()
   {
     Classes.instantiationNotAllowed ();

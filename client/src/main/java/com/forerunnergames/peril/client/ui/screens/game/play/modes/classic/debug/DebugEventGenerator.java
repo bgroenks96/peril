@@ -1,14 +1,14 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
-import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultStatusMessageEvent;
+import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.DefaultChatMessage;
-import com.forerunnergames.peril.core.shared.net.messages.DefaultStatusMessage;
-import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
+import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.core.shared.net.packets.defaults.DefaultPlayerPacket;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;

@@ -1,9 +1,8 @@
-package com.forerunnergames.peril.core.shared.net.messages;
+package com.forerunnergames.peril.client.messages;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultStatusMessage implements StatusMessage
 {
@@ -26,11 +25,5 @@ public final class DefaultStatusMessage implements StatusMessage
   public String toString ()
   {
     return String.format ("%1$s: Message: %2$s", getClass ().getSimpleName (), message);
-  }
-
-  @RequiredForNetworkSerialization
-  private DefaultStatusMessage ()
-  {
-    message = null;
   }
 }

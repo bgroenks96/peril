@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.shared.net.messages;
+package com.forerunnergames.peril.client.messages;
 
 import com.forerunnergames.tools.common.Message;
 

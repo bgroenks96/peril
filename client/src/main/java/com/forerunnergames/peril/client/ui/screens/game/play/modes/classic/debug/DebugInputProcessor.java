@@ -11,7 +11,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
-import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;

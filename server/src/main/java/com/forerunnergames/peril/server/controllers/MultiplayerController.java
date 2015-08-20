@@ -2,9 +2,9 @@ package com.forerunnergames.peril.server.controllers;
 
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
-import com.forerunnergames.peril.core.shared.game.GameConfiguration;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
@@ -15,7 +15,6 @@ import com.forerunnergames.peril.core.shared.net.events.client.request.response.
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
@@ -217,27 +216,14 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final StatusMessageEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    for (final PlayerPacket recipient : event.getRecipients ())
-    {
-      sendToPlayer (recipient, event);
-    }
-  }
-
-  @Handler
   public void onEvent (final ServerNotificationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
-    // We have separate handlers / senders for these ServerNotificationEvent's, so don't send twice.
-    if (event instanceof PlayerLeaveGameEvent || event instanceof StatusMessageEvent) return;
+    // We have a separate handler / sender for this ServerNotificationEvent, so don't send twice.
+    if (event instanceof PlayerLeaveGameEvent) return;
 
     sendToAllPlayers (event);
   }
