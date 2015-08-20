@@ -12,10 +12,5 @@
     <packages>
       <package name="com.forerunnergames.peril.integration.server.smoke" />
     </packages>
-    <groups>
-      <run>
-        <exclude name="serverType:dedicated" />
-      </run>
-    </groups>
   </test>
 </suite>

@@ -9,7 +9,8 @@ import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
-import com.forerunnergames.peril.integration.TestSessionProvider.TestSession;
+import com.forerunnergames.peril.integration.NetworkPortPool;
+import com.forerunnergames.peril.integration.TestSessions.TestSession;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.integration.server.ServerFactory;
@@ -27,9 +28,9 @@ import net.engio.mbassy.bus.MBassador;
 public class DedicatedGameSession implements TestSession
 {
   public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
-  public static final int DEFAULT_SERVER_PORT = NetworkSettings.DEFAULT_TCP_PORT;
   private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
           NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
+  private final NetworkPortPool portPool = NetworkPortPool.getInstance ();
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
   private final GameRules gameRules;
@@ -40,15 +41,14 @@ public class DedicatedGameSession implements TestSession
   private StateMachineEventHandler stateMachine;
   private TestServerApplication serverApplication;
 
-  public DedicatedGameSession (final GameRules gameRules, final String serverAddress, final int serverPort)
+  public DedicatedGameSession (final GameRules gameRules, final String serverAddress)
   {
     Arguments.checkIsNotNull (gameRules, "gameRules");
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
-    Arguments.checkIsNotNegative (serverPort, "serverPort");
 
     this.gameRules = gameRules;
     this.serverAddress = serverAddress;
-    this.serverPort = serverPort;
+    serverPort = portPool.getAvailablePort ();
   }
 
   @Override
@@ -63,6 +63,7 @@ public class DedicatedGameSession implements TestSession
   {
     clientPool.disposeAll ();
     serverApplication.shutDown ();
+    portPool.releasePort (serverPort);
     isShutDown.set (true);
   }
 

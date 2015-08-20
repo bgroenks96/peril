@@ -24,6 +24,8 @@ import com.stateforge.statemachine.context.IContextEnd;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.annotation.Nullable;
+
 import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
@@ -60,10 +62,8 @@ public final class StateMachineEventHandler
     context.setEndHandler (new IContextEnd ()
     {
       @Override
-      public void end (final Throwable throwable)
+      public void end (@Nullable final Throwable throwable)
       {
-        Arguments.checkIsNotNull (throwable, "throwable");
-
         errorState = Optional.fromNullable (throwable);
 
         stateMachineListener.end (throwable);
@@ -358,10 +358,8 @@ public final class StateMachineEventHandler
     }
 
     @Override
-    public void end (final Throwable throwable)
+    public void end (@Nullable final Throwable throwable)
     {
-      Arguments.checkIsNotNull (throwable, "throwable");
-
       for (final StateMachineListener listener : stateMachineListeners)
       {
         listener.end (throwable);

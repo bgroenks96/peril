@@ -89,7 +89,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 
     kryo.register (type);
 
-    log.debug ("Registered class [{}] with the server for network serialization.", type);
+    log.trace ("Registered class [{}] with the server for network serialization.", type);
   }
 
   @Override

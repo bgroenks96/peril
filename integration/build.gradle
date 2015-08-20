@@ -22,10 +22,13 @@ task integrationTest (type: Test) {
 def getSuitesToRun() {
   // run standalone tests by default
   if (!project.hasProperty("tests")) {
-    return smokeTestsStandalone
-  }
-  if (project.property("tests") == "all") {
     return allTests
+  }
+  if (project.property("tests") == "func.all") {
+    return funcTestsAll
+  }
+  if (project.property("tests") == "smoke.standalone") {
+    return smokeTestsStandalone
   }
   if (project.property("tests") == "smomke.all") {
     return smokeTestsAll

@@ -59,7 +59,6 @@ nbactions.xml
 nb-configuration.xml
 
 ## Gradle
-
 .gradle
 build/
 
@@ -70,4 +69,8 @@ build/
 ## Clover
 .clover
 test-output/
+
+## Log files
+*.log
+
 

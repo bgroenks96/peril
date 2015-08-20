@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestSessionProvider
+public class TestSessions
 {
   private static final Map <String, TestSession> sessionMap = new ConcurrentHashMap <> ();
   private static final AtomicInteger counter = new AtomicInteger ();

@@ -58,7 +58,7 @@ public final class KryonetRegistration
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
   private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet
           .<Class <?>> of (
-                  // @formatter:off
+  // @formatter:off
           ArrayList.class,
           Classes.class,
           DefaultClientConfiguration.class,
@@ -153,7 +153,7 @@ public final class KryonetRegistration
 
     kryo.register (UUID.class, new UUIDSerializer ());
 
-    log.debug ("Registered custom serializers for [{}, {}, {}, {}]", ImmutableList.class.getSimpleName (),
+    log.trace ("Registered custom serializers for [{}, {}, {}, {}]", ImmutableList.class.getSimpleName (),
                ImmutableSet.class.getSimpleName (), ImmutableMap.class.getSimpleName (), UUID.class.getSimpleName ());
   }
 
