@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.shared.net;
 
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
-import com.forerunnergames.peril.core.model.rules.GameMode;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;

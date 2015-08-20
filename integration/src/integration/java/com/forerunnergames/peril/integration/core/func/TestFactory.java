@@ -2,7 +2,7 @@ package com.forerunnergames.peril.integration.core.func;
 
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.peril.integration.TestSessionProvider;
 
 import org.slf4j.Logger;

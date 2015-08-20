@@ -13,7 +13,6 @@ import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.factories.StatusMessageEventFactory;
@@ -118,15 +117,10 @@ public final class StateMachineActionHandler
 
   @StateMachineAction
   @StateTransitionAction
-  public void handleChangePlayerColorRequest (final ChangePlayerColorRequestEvent event)
-  {
-    gameModel.handleChangePlayerColorRequest (event);
-  }
-
-  @StateMachineAction
-  @StateTransitionAction
   public void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
     gameModel.handlePlayerJoinGameRequest (event);
   }
 
@@ -138,6 +132,8 @@ public final class StateMachineActionHandler
   @StateTransitionAction
   public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
     gameModel.handlePlayerLeaveGame (event);
   }
 
@@ -151,6 +147,8 @@ public final class StateMachineActionHandler
   @StateMachineCondition
   public boolean verifyPlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
     return gameModel.verifyPlayerCountrySelectionRequest (event);
   }
 

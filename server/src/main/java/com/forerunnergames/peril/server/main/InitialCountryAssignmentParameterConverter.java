@@ -2,7 +2,7 @@ package com.forerunnergames.peril.server.main;
 
 import com.beust.jcommander.IStringConverter;
 
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 
 public final class InitialCountryAssignmentParameterConverter implements IStringConverter <InitialCountryAssignment>
 {

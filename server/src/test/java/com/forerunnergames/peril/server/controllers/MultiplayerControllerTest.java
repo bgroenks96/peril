@@ -18,10 +18,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
-import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
-import com.forerunnergames.peril.core.model.rules.GameMode;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.DefaultGameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.EventBusHandler;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;

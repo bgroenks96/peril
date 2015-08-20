@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame;
 
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
 
 public interface CreateGameHandler
 {

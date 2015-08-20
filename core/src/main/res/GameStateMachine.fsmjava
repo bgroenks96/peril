@@ -70,10 +70,6 @@
         <parameter type="com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent"
                    name="event" />
       </event>
-      <event id="onChangePlayerColorRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent"
-                   name="event" />
-      </event>
     </eventSource>
   </events>
 
@@ -97,8 +93,6 @@
                         nextState="WaitForPlayerEvent" />
             <transition event="onPlayerLeaveGameEvent" action="stateMachineActionHandler.handlePlayerLeaveGame(event)"
                         nextState="WaitForPlayerEvent" />
-            <transition event="onChangePlayerColorRequestEvent"
-                        action="stateMachineActionHandler.handleChangePlayerColorRequest (event)" nextState="WaitForPlayerEvent" />
           </state>
         </state>
 

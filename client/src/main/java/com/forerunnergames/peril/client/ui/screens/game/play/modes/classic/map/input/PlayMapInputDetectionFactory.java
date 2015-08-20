@@ -32,7 +32,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.DefaultPlayMapInputDetectionImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.MapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.PlayMapInputDetectionImageLoader;
-import com.forerunnergames.peril.core.model.io.ExternalStreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.core.model.map.continent.ContinentName;
 import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.io.DataLoader;

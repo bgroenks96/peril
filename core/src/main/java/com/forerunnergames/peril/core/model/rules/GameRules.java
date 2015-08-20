@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model.rules;
 
 import com.forerunnergames.peril.core.model.TurnPhase;
 import com.forerunnergames.peril.core.model.card.CardType;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 
 import com.google.common.collect.ImmutableList;
 

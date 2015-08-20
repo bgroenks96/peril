@@ -8,10 +8,9 @@ import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 import static com.google.common.base.Predicates.equalTo;
 import static com.google.common.base.Predicates.not;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
@@ -358,26 +357,6 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
-  public Result <ChangePlayerColorDeniedEvent.Reason> requestToChangeColorOfPlayer (final Id playerId,
-                                                                                    final PlayerColor toColor)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (toColor, "toColor");
-
-    final Player player = playerWith (playerId);
-
-    // @formatter:off
-    if (player.has (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_EQUALS_EXISTING_COLOR);
-    if (existsPlayerWith (toColor)) return Result.failure (ChangePlayerColorDeniedEvent.Reason.COLOR_ALREADY_TAKEN);
-    if (toColor == PlayerColor.UNKNOWN) return Result.failure (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_INVALID);
-    // @formatter:on
-
-    player.setColor (toColor);
-
-    return Result.success ();
-  }
-
-  @Override
   public void remove (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
@@ -428,13 +407,6 @@ public final class DefaultPlayerModel implements PlayerModel
     if (!existsPlayerWith (turnOrder)) return;
 
     remove (playerWith (turnOrder));
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Rules [{}] | Players [{}]", getClass ().getSimpleName (), rules.getClass (),
-                           players.values ());
   }
 
   private void add (final Player player)
@@ -514,5 +486,12 @@ public final class DefaultPlayerModel implements PlayerModel
     assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
 
     players.put (idOf (player), player);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Rules [{}] | Players [{}]", getClass ().getSimpleName (), rules.getClass (),
+                           players.values ());
   }
 }

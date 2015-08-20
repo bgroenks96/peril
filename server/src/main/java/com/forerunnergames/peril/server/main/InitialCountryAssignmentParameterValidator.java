@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.main;
 
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;

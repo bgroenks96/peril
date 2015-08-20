@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.core.shared.net.packets.person;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.shared.net.packets.AbstractAssetPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;

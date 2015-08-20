@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;

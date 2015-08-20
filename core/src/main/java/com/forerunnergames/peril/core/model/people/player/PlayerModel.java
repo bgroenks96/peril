@@ -1,8 +1,7 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -76,9 +75,6 @@ public interface PlayerModel
   void removeArmiesFromHandOf (final Id playerId, final int armies);
 
   Result <PlayerJoinGameDeniedEvent.Reason> requestToAdd (final Player player);
-
-  Result <ChangePlayerColorDeniedEvent.Reason> requestToChangeColorOfPlayer (final Id playerId,
-                                                                             final PlayerColor toColor);
 
   void remove (final Player player);
 

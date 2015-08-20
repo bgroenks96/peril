@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.model.io.ExternalStreamParserFactory;
+import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.core.model.io.InternalStreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.shared.map.MapType;

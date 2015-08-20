@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.shared.map;
 
-import com.forerunnergames.peril.core.model.rules.GameMode;
+import com.forerunnergames.peril.core.shared.game.GameMode;
 import com.forerunnergames.peril.core.shared.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;

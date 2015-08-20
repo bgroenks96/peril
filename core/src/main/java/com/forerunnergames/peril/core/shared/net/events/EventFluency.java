@@ -1,13 +1,11 @@
 package com.forerunnergames.peril.core.shared.net.events;
 
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.MessageEvent;
-import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerColorEvent;
 import com.forerunnergames.peril.core.shared.net.events.interfaces.PlayerSelectCountryResponseEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -35,13 +33,6 @@ import javax.annotation.Nullable;
 
 public final class EventFluency
 {
-  public static PlayerColor colorFrom (final PlayerColorEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getRequestedColor ();
-  }
-
   public static boolean hasAuthorFrom (final ChatMessageEvent event)
   {
     Arguments.checkIsNotNull (event, "event");

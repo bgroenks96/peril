@@ -9,7 +9,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreen;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreenFactory;
-import com.forerunnergames.peril.core.model.rules.GameMode;
+import com.forerunnergames.peril.core.shared.game.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;

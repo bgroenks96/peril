@@ -4,7 +4,7 @@ import com.forerunnergames.peril.client.events.CreateGameDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameSuccessEvent;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
 import com.forerunnergames.peril.core.shared.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;

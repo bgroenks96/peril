@@ -2,16 +2,13 @@ package com.forerunnergames.peril.core.shared.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
-import com.forerunnergames.peril.core.model.people.player.PlayerColor;
-import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
-import com.forerunnergames.peril.core.model.rules.GameMode;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.core.shared.game.DefaultGameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;
 import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -30,6 +27,11 @@ import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
+import de.javakaffee.kryoserializers.UUIDSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -43,11 +45,6 @@ import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.javakaffee.kryoserializers.UUIDSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-
 public final class KryonetRegistration
 {
   /**
@@ -59,10 +56,10 @@ public final class KryonetRegistration
   // @formatter:on
   // Set of all classes external to net package that must be registered
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
-  private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet.<Class <?>> of (
-  // @formatter:off
+  private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet
+          .<Class <?>> of (
+                  // @formatter:off
           ArrayList.class,
-          ChangePlayerColorDeniedEvent.Reason.class,
           Classes.class,
           DefaultClientConfiguration.class,
           DefaultGameConfiguration.class,
@@ -77,10 +74,8 @@ public final class KryonetRegistration
           InitialCountryAssignment.class,
           MapType.class,
           PersonIdentity.class,
-          PlayerColor.class,
           PlayerJoinGameDeniedEvent.Reason.class,
           PlayerSelectCountryResponseDeniedEvent.Reason.class,
-          PlayerTurnOrder.class,
           UnknownClientConfiguration.class,
           UnknownServerConfiguration.class);
   // @formatter:on

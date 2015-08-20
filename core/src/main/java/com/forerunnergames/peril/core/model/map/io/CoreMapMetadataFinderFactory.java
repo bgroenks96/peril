@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.model.rules.GameMode;
+import com.forerunnergames.peril.core.shared.game.GameMode;
 import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.map.io.DefaultMapMetadataFinder;
 import com.forerunnergames.peril.core.shared.map.io.MapMetadataFinder;

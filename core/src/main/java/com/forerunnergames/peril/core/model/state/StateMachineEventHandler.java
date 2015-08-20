@@ -6,7 +6,6 @@ import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -98,16 +97,6 @@ public final class StateMachineEventHandler
     Arguments.checkIsNotNull (stateMachineListener, "stateMachineListener");
 
     this.stateMachineListener.remove (stateMachineListener);
-  }
-
-  @Handler
-  public void onChangePlayerColorRequestEvent (final ChangePlayerColorRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Received event {}", event);
-
-    context.onChangePlayerColorRequestEvent (event);
   }
 
   @Handler

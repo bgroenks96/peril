@@ -24,11 +24,11 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.C
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
-import com.forerunnergames.peril.core.model.rules.DefaultGameConfiguration;
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
-import com.forerunnergames.peril.core.model.rules.GameMode;
+import com.forerunnergames.peril.core.shared.game.DefaultGameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameMode;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.map.MapType;
 import com.forerunnergames.peril.core.shared.map.io.MapMetadataLoader;

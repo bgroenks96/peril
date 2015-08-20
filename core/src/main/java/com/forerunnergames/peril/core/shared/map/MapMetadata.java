@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.shared.map;
 
-import com.forerunnergames.peril.core.model.rules.GameMode;
+import com.forerunnergames.peril.core.shared.game.GameMode;
 
 public interface MapMetadata
 {

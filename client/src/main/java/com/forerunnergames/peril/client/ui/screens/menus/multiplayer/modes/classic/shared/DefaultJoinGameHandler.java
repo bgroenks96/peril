@@ -9,7 +9,7 @@ import static com.forerunnergames.peril.core.shared.net.events.EventFluency.play
 import com.forerunnergames.peril.client.events.JoinGameSuccessEvent;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;

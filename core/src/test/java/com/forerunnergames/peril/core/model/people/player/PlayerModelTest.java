@@ -3,7 +3,6 @@ package com.forerunnergames.peril.core.model.people.player;
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
 import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -15,10 +14,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.forerunnergames.peril.core.model.people.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
@@ -627,56 +625,6 @@ public class PlayerModelTest
     assertTrue (playerModel.existsPlayerWith (color));
     assertTrue (playerModel.existsPlayerWith (turnOrder));
     assertTrue (playerModel.playerWith (name).has (identity));
-  }
-
-  @Test
-  public void testRequestToChangeColorOfPlayerFailedWithAlreadyTaken ()
-  {
-    final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final PlayerColor player1Color = PlayerColor.PINK;
-    final PlayerColor player2Color = PlayerColor.SILVER;
-
-    final Player player1 = PlayerFactory.builder ("Test Player 1").color (player1Color).build ();
-    final Player player2 = PlayerFactory.builder ("Test Player 2").color (player2Color).build ();
-
-    playerModel.requestToAdd (player1);
-    playerModel.requestToAdd (player2);
-
-    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player2), player1Color)
-            .failedBecauseOf (ChangePlayerColorDeniedEvent.Reason.COLOR_ALREADY_TAKEN));
-    assertTrue (playerModel.playerWith (idOf (player1)).has (player1Color));
-    assertTrue (playerModel.playerWith (idOf (player2)).has (player2Color));
-    assertTrue (playerModel.existsPlayerWith (player1Color));
-    assertTrue (playerModel.existsPlayerWith (player2Color));
-  }
-
-  @Test
-  public void testRequestToChangeColorOfPlayerSucceeded ()
-  {
-    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final PlayerColor oldColor = PlayerColor.BLUE;
-    final Player player = PlayerFactory.builder ("Test Player").color (oldColor).build ();
-    final PlayerColor newColor = PlayerColor.BROWN;
-
-    playerModel.requestToAdd (player);
-
-    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player), newColor).succeeded ());
-    assertTrue (playerModel.existsPlayerWith (newColor));
-    assertFalse (playerModel.existsPlayerWith (oldColor));
-  }
-
-  @Test
-  public void testRequestToChangeColorOfPlayerToSameColorFailedWithRequestedColorEqualsExistingColor ()
-  {
-    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final PlayerColor color = PlayerColor.PINK;
-    final Player player = PlayerFactory.builder ("Test Player 1").color (color).build ();
-
-    playerModel.requestToAdd (player);
-
-    assertTrue (playerModel.requestToChangeColorOfPlayer (withIdOf (player), color)
-            .failedBecauseOf (ChangePlayerColorDeniedEvent.Reason.REQUESTED_COLOR_EQUALS_EXISTING_COLOR));
-    assertTrue (playerModel.existsPlayerWith (color));
   }
 
   @Test (expected = IllegalArgumentException.class)

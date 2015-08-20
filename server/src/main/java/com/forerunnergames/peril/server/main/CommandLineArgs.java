@@ -2,8 +2,8 @@ package com.forerunnergames.peril.server.main;
 
 import com.beust.jcommander.Parameter;
 
-import com.forerunnergames.peril.core.model.rules.GameMode;
-import com.forerunnergames.peril.core.model.rules.InitialCountryAssignment;
+import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.peril.core.shared.net.GameServerType;
 import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.peril.core.shared.settings.GameSettings;

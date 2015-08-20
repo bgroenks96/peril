@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.core.model.rules;
 
+import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 

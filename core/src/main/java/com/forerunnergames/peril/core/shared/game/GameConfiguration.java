@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.rules;
+package com.forerunnergames.peril.core.shared.game;
 
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 

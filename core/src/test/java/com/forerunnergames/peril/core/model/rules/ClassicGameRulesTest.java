@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import com.forerunnergames.peril.core.model.card.CardType;
 import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
 import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;

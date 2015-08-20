@@ -1,11 +1,9 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.core.shared.net.events.EventFluency.colorFrom;
 import static com.forerunnergames.peril.core.shared.net.events.EventFluency.withPlayerNameFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.withIdOf;
 
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
@@ -22,10 +20,8 @@ import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCou
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
-import com.forerunnergames.peril.core.shared.net.events.client.request.ChangePlayerColorRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.denied.ChangePlayerColorDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.factories.StatusMessageEventFactory;
@@ -35,7 +31,6 @@ import com.forerunnergames.peril.core.shared.net.events.server.notification.Play
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.ChangePlayerColorSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
@@ -262,26 +257,6 @@ public final class GameModel
     // TODO
   }
 
-  void handleChangePlayerColorRequest (final ChangePlayerColorRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}]", event);
-
-    final Player player = playerModel.playerWith (colorFrom (event));
-
-    final Result <ChangePlayerColorDeniedEvent.Reason> result;
-    result = playerModel.requestToChangeColorOfPlayer (withIdOf (player), colorFrom (event));
-
-    if (result.failed ())
-    {
-      eventBus.publish (new ChangePlayerColorDeniedEvent (event, failureReasonFrom (result)));
-      return;
-    }
-
-    eventBus.publish (new ChangePlayerColorSuccessEvent (event));
-  }
-
   void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -306,7 +281,10 @@ public final class GameModel
                                                         playerModel.getAllPlayersExcept (player)));
     eventBus.publish (StatusMessageEventFactory.create ("Welcome, " + player.getName () + ".", player));
 
-    if (isFull ()) return;
+    if (isFull ())
+    {
+      return;
+    }
 
     // We aren't full yet, let's do some talking...
 

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.core.model.people.person;
+package com.forerunnergames.peril.core.shared.net.packets.person;
 
 // @formatter:off
 /**

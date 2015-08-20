@@ -2,7 +2,7 @@ package com.forerunnergames.peril.server.controllers;
 
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
-import com.forerunnergames.peril.core.model.rules.GameConfiguration;
+import com.forerunnergames.peril.core.shared.game.GameConfiguration;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
