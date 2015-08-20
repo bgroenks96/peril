@@ -2,17 +2,14 @@ package com.forerunnergames.peril.integration.core.func;
 
 import static org.testng.Assert.fail;
 
-import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.integration.TestSessionProvider;
+import com.forerunnergames.peril.integration.TestSessions;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestClientPool;
 import com.forerunnergames.peril.integration.server.TestClientPool.ClientEventCallback;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 
 import com.google.common.base.Optional;
 
@@ -25,7 +22,7 @@ import org.testng.annotations.Test;
 public class InitialGamePhaseTest
 {
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseTest.class);
-
+  private static final int DEFAULT_TEST_TIMEOUT = 30000;
   private final String sessionName;
   private DedicatedGameSession session;
 
@@ -41,23 +38,22 @@ public class InitialGamePhaseTest
   {
     log.trace ("Initializing {} with session {}.", getClass ().getSimpleName (), sessionName);
 
-    session = (DedicatedGameSession) TestSessionProvider.get (sessionName);
+    session = (DedicatedGameSession) TestSessions.get (sessionName);
   }
 
-  @Test
-  public void testAllClientsJoinGameServer ()
+  @Test (timeOut = DEFAULT_TEST_TIMEOUT)
+  public void testAllClientsJoinServer ()
   {
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    controller.connectAllClientsToGameServer ();
     final TestClientPool clientPool = session.getTestClientPool ();
-    log.trace ("Waiting for clients to connect...");
-    // clientPool.waitForAllClients ();
-    session.getTestClientPool ().sendAll (new JoinGameServerRequestEvent (
-            new DefaultServerConfiguration ("localhost", session.getServerPort ())));
     clientPool.waitForAllClientsToReceive (JoinGameServerSuccessEvent.class);
   }
 
-  @Test (dependsOnMethods = { "testAllClientsJoinGameServer" })
-  public void testAllClientsJoinAsPlayers ()
+  @Test (dependsOnMethods = "testAllClientsJoinServer", timeOut = DEFAULT_TEST_TIMEOUT)
+  public void testAllClientsJoinGame ()
   {
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
     final TestClientPool clientPool = session.getTestClientPool ();
     final ClientEventCallback <PlayerJoinGameSuccessEvent> playerJoinGameCallback = new ClientEventCallback <PlayerJoinGameSuccessEvent> ()
     {
@@ -68,10 +64,8 @@ public class InitialGamePhaseTest
         client.setPlayer (event.get ().getPlayer ());
       }
     };
-    for (int i = 0; i < clientPool.count (); i++)
-    {
-      clientPool.send (i, new PlayerJoinGameRequestEvent (Strings.format ("TestPlayer-{}", i)));
-    }
+
+    controller.sendForAllClientsJoinGameRequest ();
     clientPool.waitForAllClientsToReceive (PlayerJoinGameSuccessEvent.class, playerJoinGameCallback);
   }
 }

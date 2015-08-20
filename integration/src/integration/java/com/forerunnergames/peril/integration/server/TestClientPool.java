@@ -9,24 +9,30 @@ import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestClientPool
 {
-  private final List <TestClient> clients = new CopyOnWriteArrayList <> ();
-  private final AtomicInteger clientCount = new AtomicInteger ();
-  private final ForkJoinPool clientThreadPool = new ForkJoinPool (Runtime.getRuntime ().availableProcessors (),
-          ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true);
+  private static final Logger log = LoggerFactory.getLogger (TestClientPool.class);
+  private static final int MAX_THREADS = 2;
+  private final List <TestClient> clients = Collections.synchronizedList (new ArrayList <TestClient> ());
+  private final ExecutorService clientThreadPool = Executors.newFixedThreadPool (MAX_THREADS);
+  private final AtomicInteger pendingOperationCount = new AtomicInteger ();
 
-  public int connectNew (final String serverAddress, final int serverPort)
+  public synchronized void connectNew (final String serverAddress, final int serverPort)
   {
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    final int newClientIndex = clientCount.getAndIncrement ();
+    pendingOperationCount.incrementAndGet ();
     clientThreadPool.execute (new Runnable ()
     {
       @Override
@@ -35,10 +41,10 @@ public class TestClientPool
         final TestClient newClient = new TestClient (new KryonetClient ());
         newClient.initialize ();
         newClient.connect (serverAddress, serverPort);
-        clients.add (newClientIndex, newClient);
+        clients.add (newClient);
+        pendingOperationCount.decrementAndGet ();
       }
     });
-    return newClientIndex;
   }
 
   public void connectNew (final String serverAddress, final int serverPort, final int count)
@@ -53,11 +59,20 @@ public class TestClientPool
     }
   }
 
-  public void waitForAllClients ()
+  public synchronized void waitForAllClients ()
   {
-    while (!clientThreadPool.isQuiescent ())
+    try
     {
-      Thread.yield ();
+      while (pendingOperationCount.get () > 0)
+      {
+        Thread.yield ();
+        Thread.sleep (5);
+      }
+    }
+    catch (final InterruptedException e)
+    {
+      log.warn ("Interrupted while waiting for pending client operations [pending count is {}]",
+                pendingOperationCount.get ());
     }
   }
 
@@ -70,6 +85,9 @@ public class TestClientPool
       @Override
       public void onEventReceived (final Optional <T> event, final TestClient client)
       {
+        Arguments.checkIsNotNull (event, "event");
+        Arguments.checkIsNotNull (client, "client");
+
         if (!event.isPresent ())
         {
           fail (Strings.format ("No event of type [{}] received by client [{}]", eventType, client));
@@ -85,17 +103,37 @@ public class TestClientPool
 
     for (final TestClient client : clients)
     {
+      pendingOperationCount.incrementAndGet ();
       clientThreadPool.execute (new Runnable ()
       {
         @Override
         public void run ()
         {
-          final Optional <T> event = client.waitForEventCommunication (eventType, false);
-          callback.onEventReceived (event, client);
+          try
+          {
+            final Optional <T> event = client.waitForEventCommunication (eventType, false);
+            callback.onEventReceived (event, client);
+          }
+          catch (final Throwable t)
+          {
+            log.warn ("Executor caught error: ", t);
+            throw t;
+          }
+          finally
+          {
+            pendingOperationCount.decrementAndGet ();
+          }
         }
       });
     }
     waitForAllClients ();
+  }
+
+  public int indexOf (final TestClient client)
+  {
+    Arguments.checkIsNotNull (client, "client");
+
+    return clients.indexOf (client);
   }
 
   public TestClient get (final int clientIndex)
@@ -110,7 +148,7 @@ public class TestClientPool
     return clients.size ();
   }
 
-  public void send (final int clientIndex, final Event event)
+  public synchronized void send (final int clientIndex, final Event event)
   {
     Arguments.checkIsNotNegative (clientIndex, "clientIndex");
     Arguments.checkIsNotNull (event, "event");
@@ -135,13 +173,12 @@ public class TestClientPool
     }
   }
 
-  public void dispose (final int clientIndex)
+  public synchronized void dispose (final int clientIndex)
   {
     Arguments.checkIsNotNegative (clientIndex, "clientIndex");
 
     clients.get (clientIndex).dispose ();
     clients.remove (clientIndex);
-    clientCount.getAndDecrement ();
   }
 
   public void disposeAll ()

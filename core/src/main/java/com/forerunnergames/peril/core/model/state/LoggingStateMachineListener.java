@@ -2,6 +2,8 @@ package com.forerunnergames.peril.core.model.state;
 
 import com.forerunnergames.tools.common.Arguments;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,10 +86,8 @@ public class LoggingStateMachineListener implements StateMachineListener
   }
 
   @Override
-  public void end (final Throwable throwable)
+  public void end (@Nullable final Throwable throwable)
   {
-    Arguments.checkIsNotNull (throwable, "throwable");
-
     if (throwable != null)
     {
       log.error ("The state machine ended with an error.", throwable);

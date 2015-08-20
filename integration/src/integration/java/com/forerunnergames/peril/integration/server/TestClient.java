@@ -21,16 +21,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestClient extends AbstractClientController
 {
-  private static final int DEFAULT_CONNECT_TIMEOUT_MS = 3000;
+  private static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;
   private static final int DEFAULT_WAIT_TIMEOUT_MS = 6000;
   private static final int DEFAULT_MAX_ATTEMPTS = 2;
   private static final AtomicInteger clientCount = new AtomicInteger ();
   private final int clientId = clientCount.getAndIncrement ();
-  private final ExecutorService exec = Executors.newSingleThreadExecutor ();
+  private final ExecutorService exec = Executors.newCachedThreadPool ();
   private final ConcurrentLinkedQueue <Event> inboundEventQueue = new ConcurrentLinkedQueue <> ();
   private PlayerPacket player;
 
@@ -65,6 +66,7 @@ public class TestClient extends AbstractClientController
     Arguments.checkIsNotNull (type, "type");
 
     final Exchanger <T> exchanger = new Exchanger <> ();
+    final AtomicBoolean keepAlive = new AtomicBoolean (true);
     exec.execute (new Runnable ()
     {
       @Override
@@ -72,11 +74,12 @@ public class TestClient extends AbstractClientController
       {
         try
         {
-          while (!exec.isShutdown ())
+          while (keepAlive.get ())
           {
             final Event next = inboundEventQueue.poll ();
             if (type.isInstance (next)) exchanger.exchange (type.cast (next));
             Thread.yield ();
+            Thread.sleep (5);
           }
         }
         catch (final InterruptedException e)
@@ -94,6 +97,10 @@ public class TestClient extends AbstractClientController
     {
       if (exceptionOnFail) throw new IllegalStateException (Strings.format ("No events received of type {}.", type));
       return Optional.absent ();
+    }
+    finally
+    {
+      keepAlive.set (false);
     }
   }
 

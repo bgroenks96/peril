@@ -4,10 +4,17 @@
       <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n</pattern>
     </encoder>
   </appender>
-  <logger name="com.forerunnergames.peril.integration" level="TRACE" additivity="false">
+  <appender name="LOGFILE" class="ch.qos.logback.core.FileAppender">
+      <file>test-latest.log</file>
+      <append>false</append>
+      <encoder>
+          <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n</pattern>
+      </encoder>
+  </appender>
+  <logger name="com.forerunnergames.peril.integration" level="DEBUG" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>
   <root level="TRACE">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="LOGFILE" />
   </root>
 </configuration>
