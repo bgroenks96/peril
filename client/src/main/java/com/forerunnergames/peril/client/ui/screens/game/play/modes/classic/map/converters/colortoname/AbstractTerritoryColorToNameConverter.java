@@ -1,18 +1,17 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.colortoname;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
-import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableMap;
 
-public abstract class AbstractTerritoryColorToNameConverter <T extends TerritoryColor <?>, U extends TerritoryName>
-        implements TerritoryColorToNameConverter <T, U>
+public abstract class AbstractTerritoryColorToNameConverter <T extends TerritoryColor <?>>
+        implements TerritoryColorToNameConverter <T>
 {
-  private static final String UNKNOWN_TERRITORY_NAME_VALUE = "";
-  private final ImmutableMap <T, U> territoryColorsToNames;
+  private static final String UNKNOWN_TERRITORY_NAME = "";
+  private final ImmutableMap <T, String> territoryColorsToNames;
 
-  protected AbstractTerritoryColorToNameConverter (final ImmutableMap <T, U> territoryColorsToNames)
+  protected AbstractTerritoryColorToNameConverter (final ImmutableMap <T, String> territoryColorsToNames)
   {
     Arguments.checkIsNotNull (territoryColorsToNames, "territoryColorsToNames");
 
@@ -20,14 +19,12 @@ public abstract class AbstractTerritoryColorToNameConverter <T extends Territory
   }
 
   @Override
-  public final U convert (final T territoryColor)
+  public final String convert (final T territoryColor)
   {
     Arguments.checkIsNotNull (territoryColor, "territoryColor");
 
-    if (!territoryColorsToNames.containsKey (territoryColor)) return createTerritoryName (UNKNOWN_TERRITORY_NAME_VALUE);
+    if (!territoryColorsToNames.containsKey (territoryColor)) return UNKNOWN_TERRITORY_NAME;
 
     return territoryColorsToNames.get (territoryColor);
   }
-
-  protected abstract U createTerritoryName (final String territoryNameValue);
 }

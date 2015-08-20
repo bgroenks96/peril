@@ -2,9 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.math.Vector2;
 
-import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
-
-public interface PlayMapCoordinateToTerritoryNameConverter <T extends TerritoryName>
+public interface PlayMapCoordinateToTerritoryNameConverter
 {
-  T convert (final Vector2 playMapCoordinate);
+  String convert (final Vector2 playMapCoordinate);
 }

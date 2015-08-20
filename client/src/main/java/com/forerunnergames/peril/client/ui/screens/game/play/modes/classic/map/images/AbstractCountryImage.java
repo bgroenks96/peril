@@ -4,17 +4,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 
 public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageState <E>> extends Image implements
         CountryImage <E>
 {
-  private final CountryName countryName;
+  private final String countryName;
   private final CountryImageState <E> state;
 
   protected AbstractCountryImage (final Drawable drawable,
-                                  final CountryName countryName,
+                                  final String countryName,
                                   final CountryImageState <E> state)
   {
     super (drawable);
@@ -25,11 +24,11 @@ public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageSta
     this.countryName = countryName;
     this.state = state;
 
-    setName (countryName.asString () + " " + state.toProperCase ());
+    setName (countryName + " " + state.toProperCase ());
   }
 
   @Override
-  public CountryName getCountryName ()
+  public String getCountryName ()
   {
     return countryName;
   }

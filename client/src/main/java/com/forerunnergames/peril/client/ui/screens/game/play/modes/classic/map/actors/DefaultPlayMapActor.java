@@ -11,7 +11,6 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -37,7 +36,7 @@ import net.engio.mbassy.bus.MBassador;
 public final class DefaultPlayMapActor implements PlayMapActor
 {
   private final Group group = new Group ();
-  private final ImmutableMap <CountryName, CountryActor> countryNamesToActors;
+  private final ImmutableMap <String, CountryActor> countryNamesToActors;
   private final PlayMapInputDetection inputDetection;
   private final HoveredTerritoryTextActor hoveredTerritoryTextActor;
   private final MapMetadata mapMetadata;
@@ -48,7 +47,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
   private CountryActor touchedCountryActor = null;
   private boolean isEnabled = true;
 
-  public DefaultPlayMapActor (final ImmutableMap <CountryName, CountryActor> countryNamesToActors,
+  public DefaultPlayMapActor (final ImmutableMap <String, CountryActor> countryNamesToActors,
                               final PlayMapInputDetection inputDetection,
                               final HoveredTerritoryTextActor hoveredTerritoryTextActor,
                               final Image backgroundImage,
@@ -297,7 +296,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
   }
 
   @Override
-  public void changeArmiesBy (final int deltaArmies, final CountryName countryName)
+  public void changeArmiesBy (final int deltaArmies, final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
@@ -310,13 +309,11 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
 
-    final CountryName name = new CountryName (countryName);
-
-    if (countryNamesToActors.containsKey (name)) countryNamesToActors.get (name).changePrimaryStateTo (state);
+    if (countryNamesToActors.containsKey (countryName)) countryNamesToActors.get (countryName).changePrimaryStateTo (state);
   }
 
   @Override
-  public CountryActor getCountryActorWithName (final CountryName countryName)
+  public CountryActor getCountryActorWithName (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
@@ -333,7 +330,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
   @Override
   public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state,
-                                                      final CountryName countryName)
+                                                      final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
@@ -343,7 +340,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
   @Override
   public boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
-                                                        final CountryName countryName)
+                                                        final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
@@ -353,7 +350,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
   @Override
   @Nullable
-  public CountryPrimaryImageState getCurrentPrimaryImageStateOf (final CountryName countryName)
+  public CountryPrimaryImageState getCurrentPrimaryImageStateOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
@@ -364,7 +361,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
   @Override
   @Nullable
-  public CountrySecondaryImageState getCurrentSecondaryImageStateOf (final CountryName countryName)
+  public CountrySecondaryImageState getCurrentSecondaryImageStateOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 

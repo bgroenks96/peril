@@ -17,9 +17,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.DefaultCountryAtlasesLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.DefaultPlayMapBackgroundImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.PlayMapBackgroundImageLoader;
-import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
+import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
@@ -62,7 +61,7 @@ public final class PlayMapActorFactory
 
     // @formatter:off
     final StreamParserFactory streamParserFactory = new ExternalStreamParserFactory ();
-    final DataLoader <CountryName, CountryImageData> countryImageDataLoader = new CountryImageDataLoader (streamParserFactory);
+    final DataLoader <String, CountryImageData> countryImageDataLoader = new CountryImageDataLoader (streamParserFactory);
     final CountryImageDataRepositoryFactory countryImageDataRepositoryFactory = new CountryImageDataRepositoryFactory (countryImageDataLoader);
     final CountryImagesLoader countryImagesLoader = new CountryImagesLoader (mapMetadata, countryAtlasesLoader.load (mapMetadata));
     final CountryImageDataRepository countryImageDataRepository = countryImageDataRepositoryFactory.create (mapMetadata);
@@ -71,10 +70,10 @@ public final class PlayMapActorFactory
     final BitmapFont font = new BitmapFont ();
     final HoveredTerritoryTextActor hoveredTerritoryTextActor = new HoveredTerritoryTextActor (playMapInputDetection, mouseInput, font);
     final Image backgroundImage = playMapBackgroundImageLoader.load (mapMetadata);
-    final ImmutableMap.Builder <CountryName, CountryActor> countryNamesToActorsBuilder = ImmutableMap.builder ();
+    final ImmutableMap.Builder <String, CountryActor> countryNamesToActorsBuilder = ImmutableMap.builder ();
     // @formatter:on
 
-    for (final CountryName countryName : countryImageDataRepository.getCountryNames ())
+    for (final String countryName : countryImageDataRepository.getCountryNames ())
     {
       countryNamesToActorsBuilder.put (countryName, countryActorFactory.create (countryName, font));
     }

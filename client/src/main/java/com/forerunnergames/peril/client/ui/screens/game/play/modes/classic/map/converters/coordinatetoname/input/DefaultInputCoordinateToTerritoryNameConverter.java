@@ -4,17 +4,15 @@ import com.badlogic.gdx.math.Vector2;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocoordinate.InputToScreenCoordinateConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToTerritoryNameConverter;
-import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class AbstractInputCoordinateToTerritoryNameConverter <T extends TerritoryName> implements
-        InputCoordinateToTerritoryNameConverter <T>
+public final class DefaultInputCoordinateToTerritoryNameConverter implements InputCoordinateToTerritoryNameConverter
 {
   private final InputToScreenCoordinateConverter inputToScreenCoordinateConverter;
-  private final ScreenCoordinateToTerritoryNameConverter <T> screenCoordinateToTerritoryNameConverter;
+  private final ScreenCoordinateToTerritoryNameConverter screenCoordinateToTerritoryNameConverter;
 
-  protected AbstractInputCoordinateToTerritoryNameConverter (final InputToScreenCoordinateConverter inputToScreenCoordinateConverter,
-                                                             final ScreenCoordinateToTerritoryNameConverter <T> screenCoordinateToTerritoryNameConverter)
+  public DefaultInputCoordinateToTerritoryNameConverter (final InputToScreenCoordinateConverter inputToScreenCoordinateConverter,
+                                                         final ScreenCoordinateToTerritoryNameConverter screenCoordinateToTerritoryNameConverter)
   {
     Arguments.checkIsNotNull (inputToScreenCoordinateConverter, "inputToScreenCoordinateConverter");
     Arguments.checkIsNotNull (screenCoordinateToTerritoryNameConverter, "screenCoordinateToTerritoryNameConverter");
@@ -24,7 +22,7 @@ public abstract class AbstractInputCoordinateToTerritoryNameConverter <T extends
   }
 
   @Override
-  public T convert (final Vector2 inputCoordinate)
+  public String convert (final Vector2 inputCoordinate)
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
 

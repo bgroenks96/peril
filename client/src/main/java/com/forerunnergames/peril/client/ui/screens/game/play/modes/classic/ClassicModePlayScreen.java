@@ -54,7 +54,6 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.StatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
@@ -449,7 +448,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMapActor.changeArmiesBy (deltaArmyCountFrom (event), new CountryName (withCountryNameFrom (event)));
+        playMapActor.changeArmiesBy (deltaArmyCountFrom (event), withCountryNameFrom (event));
       }
     });
   }
@@ -507,7 +506,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                   .valueOf (Strings.toCase (event.getOwnerColor (country), LetterCase.UPPER));
 
           // The country already has the correct state - don't do anything.
-          if (playMapActor.currentPrimaryImageStateOfCountryIs (state, new CountryName (country.getName ()))) continue;
+          if (playMapActor.currentPrimaryImageStateOfCountryIs (state, country.getName ())) continue;
 
           playMapActor.setCountryState (country.getName (), state);
         }

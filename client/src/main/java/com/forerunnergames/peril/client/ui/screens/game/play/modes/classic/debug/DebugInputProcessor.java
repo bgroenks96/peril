@@ -10,7 +10,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.messages.ChatMessage;
 import com.forerunnergames.peril.core.shared.net.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -340,16 +339,16 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'm':
       {
-        // final CountryName sourceCountryName = new CountryName ("Antarctica");
-        // final CountryName destinationCountryName = new CountryName ("Kamchatka");
+        // final String sourceCountryName = "Antarctica";
+        // final String destinationCountryName = "Kamchatka";
 
-        final CountryName sourceCountryName = eventGenerator.getRandomCountryName ();
+        final String sourceCountryName = DebugEventGenerator.getRandomCountryName ();
 
-        CountryName destinationCountryName;
+        String destinationCountryName;
 
         do
         {
-          destinationCountryName = eventGenerator.getRandomCountryName ();
+          destinationCountryName = DebugEventGenerator.getRandomCountryName ();
         }
         while (destinationCountryName.equals (sourceCountryName));
 

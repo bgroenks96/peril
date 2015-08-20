@@ -3,17 +3,16 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 import com.badlogic.gdx.math.Vector2;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
-import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParser;
 
 import com.google.common.collect.ImmutableBiMap;
 
-public final class CountryImageDataLoader extends AbstractDataLoader <CountryName, CountryImageData>
+public final class CountryImageDataLoader extends AbstractDataLoader <String, CountryImageData>
 {
-  private final ImmutableBiMap.Builder <CountryName, CountryImageData> countryImageDataBuilder = new ImmutableBiMap.Builder <> ();
+  private final ImmutableBiMap.Builder <String, CountryImageData> countryImageDataBuilder = new ImmutableBiMap.Builder <> ();
   private final StreamParserFactory streamParserFactory;
   private StreamParser streamParser;
   private String nameValue;
@@ -32,7 +31,7 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   }
 
   @Override
-  protected ImmutableBiMap <CountryName, CountryImageData> finalizeData ()
+  protected ImmutableBiMap <String, CountryImageData> finalizeData ()
   {
     streamParser.verifyEndOfFile ();
     streamParser.close ();
@@ -65,12 +64,12 @@ public final class CountryImageDataLoader extends AbstractDataLoader <CountryNam
   @Override
   protected void saveData ()
   {
-    final CountryName name = new CountryName (nameValue);
     final Vector2 referenceSize = new Vector2 (referenceWidth, referenceHeight);
     final Vector2 referenceDestination = new Vector2 (referenceDestinationX, referenceDestinationY);
     final Vector2 referenceTextUpperLeft = new Vector2 (referenceTextUpperLeftX, referenceTextUpperLeftY);
 
-    countryImageDataBuilder.put (name, new CountryImageData (name, referenceDestination, referenceTextUpperLeft,
-            referenceSize));
+    countryImageDataBuilder
+            .put (nameValue,
+                  new CountryImageData (nameValue, referenceDestination, referenceTextUpperLeft, referenceSize));
   }
 }

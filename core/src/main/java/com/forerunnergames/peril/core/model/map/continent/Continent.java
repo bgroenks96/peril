@@ -7,8 +7,6 @@ import com.google.common.collect.ImmutableSet;
 
 public interface Continent extends Territory
 {
-  ContinentName getContinentName ();
-
   ImmutableSet <Id> getCountryIds ();
 
   int getCountryCount ();

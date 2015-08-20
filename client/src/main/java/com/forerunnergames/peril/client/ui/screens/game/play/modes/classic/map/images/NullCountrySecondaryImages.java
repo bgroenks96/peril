@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images;
 
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableCollection;
@@ -11,7 +10,7 @@ public final class NullCountrySecondaryImages
 {
   private final ImmutableMap <CountrySecondaryImageState, CountrySecondaryImage> imageStatesToImages;
 
-  public NullCountrySecondaryImages (final CountryName countryName)
+  public NullCountrySecondaryImages (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 

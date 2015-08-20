@@ -13,7 +13,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImages;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.NullCountryPrimaryImages;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.NullCountrySecondaryImages;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.map.PlayMapLoadingException;
 import com.forerunnergames.tools.common.Arguments;
@@ -36,11 +35,9 @@ public final class CountryImagesLoader
 {
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (CountryImagesLoader.class);
-  private final Table <CountryName, CountryPrimaryImageState, CountryPrimaryImage> countryNamesAndPrimaryImageStatesToPrimaryImages = TreeBasedTable.create ();
-  private final Table <CountryName, CountrySecondaryImageState, CountrySecondaryImage> countryNamesAndSecondaryImageStatesToSecondaryImages = TreeBasedTable.create ();
-  private final Map <CountryName, CountryImages <CountryPrimaryImageState, CountryPrimaryImage>> countryNamesToPrimaryImages = new HashMap <> ();
-  private final Map <CountryName, CountryImages <CountrySecondaryImageState, CountrySecondaryImage>> countryNamesToSecondaryImages = new HashMap <> ();
-  private final Map <CountryName, Integer> countryNamesToAtlasIndices = new HashMap <> ();
+  private final Map <String, CountryImages <CountryPrimaryImageState, CountryPrimaryImage>> countryNamesToPrimaryImages = new HashMap <> ();
+  private final Map <String, CountryImages <CountrySecondaryImageState, CountrySecondaryImage>> countryNamesToSecondaryImages = new HashMap <> ();
+  private final Map <String, Integer> countryNamesToAtlasIndices = new HashMap <> ();
   // @formatter:on
 
   public CountryImagesLoader (final MapMetadata mapMetadata, final ImmutableList <TextureAtlas> countryAtlases)
@@ -53,12 +50,17 @@ public final class CountryImagesLoader
 
     int atlasIndex = 0;
 
+    final Table <String, CountryPrimaryImageState, CountryPrimaryImage> countryNamesAndPrimaryImageStatesToPrimaryImages = TreeBasedTable
+            .create ();
+    final Table <String, CountrySecondaryImageState, CountrySecondaryImage> countryNamesAndSecondaryImageStatesToSecondaryImages = TreeBasedTable
+            .create ();
+
     for (final TextureAtlas countryAtlas : countryAtlases)
     {
       for (final TextureAtlas.AtlasRegion countryAtlasRegion : countryAtlas.getRegions ())
       {
         final ImmutableList <String> regionNameSegments = createRegionNameSegments (countryAtlasRegion, mapMetadata);
-        final CountryName countryName = createCountryNameFrom (regionNameSegments);
+        final String countryName = createCountryNameFrom (regionNameSegments);
         final SpriteDrawable countryDrawable = new SpriteDrawable (countryAtlas.createSprite (countryAtlasRegion.name));
 
         if (containsImageState (CountryPrimaryImageState.class, regionNameSegments))
@@ -90,7 +92,7 @@ public final class CountryImagesLoader
       ++atlasIndex;
     }
 
-    for (final CountryName countryName : countryNamesAndPrimaryImageStatesToPrimaryImages.rowKeySet ())
+    for (final String countryName : countryNamesAndPrimaryImageStatesToPrimaryImages.rowKeySet ())
     {
       countryNamesToPrimaryImages.put (countryName,
                                        new CountryPrimaryImages (
@@ -99,14 +101,14 @@ public final class CountryImagesLoader
                                                countryNamesToAtlasIndices.get (countryName)));
     }
 
-    for (final CountryName countryName : countryNamesAndSecondaryImageStatesToSecondaryImages.rowKeySet ())
+    for (final String countryName : countryNamesAndSecondaryImageStatesToSecondaryImages.rowKeySet ())
     {
       countryNamesAndSecondaryImageStatesToSecondaryImages
               .put (countryName, CountrySecondaryImageState.NONE,
                     new CountrySecondaryImage (null, countryName, CountrySecondaryImageState.NONE));
     }
 
-    for (final CountryName countryName : countryNamesAndSecondaryImageStatesToSecondaryImages.rowKeySet ())
+    for (final String countryName : countryNamesAndSecondaryImageStatesToSecondaryImages.rowKeySet ())
     {
       countryNamesToSecondaryImages
               .put (countryName,
@@ -119,7 +121,7 @@ public final class CountryImagesLoader
     log.info ("Finished loading country images for map [{}].", mapMetadata);
   }
 
-  public CountryImages <CountryPrimaryImageState, CountryPrimaryImage> getAllPrimary (final CountryName countryName)
+  public CountryImages <CountryPrimaryImageState, CountryPrimaryImage> getAllPrimary (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
@@ -132,7 +134,7 @@ public final class CountryImagesLoader
     return countryNamesToPrimaryImages.get (countryName);
   }
 
-  public CountryImages <CountrySecondaryImageState, CountrySecondaryImage> getAllSecondary (final CountryName countryName)
+  public CountryImages <CountrySecondaryImageState, CountrySecondaryImage> getAllSecondary (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
@@ -145,7 +147,7 @@ public final class CountryImagesLoader
     return countryNamesToSecondaryImages.get (countryName);
   }
 
-  private static CountryName createCountryNameFrom (final ImmutableList <String> countryAtlasRegionNameSegments)
+  private static String createCountryNameFrom (final ImmutableList <String> countryAtlasRegionNameSegments)
   {
     assert countryAtlasRegionNameSegments != null;
     assert countryAtlasRegionNameSegments.size () >= 2;
@@ -162,7 +164,7 @@ public final class CountryImagesLoader
     log.trace ("Created country name [{}] from country atlas region name segments [{}]",
                countryNameStringBuilder.toString (), countryAtlasRegionNameSegments);
 
-    return new CountryName (countryNameStringBuilder.toString ());
+    return countryNameStringBuilder.toString ();
   }
 
   private static <E extends Enum <E> & CountryImageState <E>> E createCountryImageStateFrom (final Class <E> countryImageStateClass,
@@ -191,6 +193,28 @@ public final class CountryImagesLoader
     }
 
     return false;
+  }
+
+  private static ImmutableList <String> createRegionNameSegments (final TextureAtlas.AtlasRegion countryAtlasRegion,
+                                                                  final MapMetadata mapMetadata)
+  {
+    if (countryAtlasRegion.name == null)
+    {
+      throw new PlayMapLoadingException (
+              Strings.format ("Empty country atlas region name detected for map [{}].", mapMetadata));
+    }
+
+    final ImmutableList <String> regionNameSegments = ImmutableList
+            .copyOf (Strings.splitByUpperCase (countryAtlasRegion.name));
+
+    if (regionNameSegments.size () < 2)
+    {
+      throw new PlayMapLoadingException (
+              Strings.format ("Invalid country atlas region name [{}] detected for map [{}].", countryAtlasRegion,
+                              mapMetadata));
+    }
+
+    return regionNameSegments;
   }
 
   private void invalidCountryImageState (final ImmutableList <String> countryAtlasRegionNameSegments,
@@ -222,37 +246,15 @@ public final class CountryImagesLoader
     return countryImageStatesBuilder.build ();
   }
 
-  private ImmutableList <String> createRegionNameSegments (final TextureAtlas.AtlasRegion countryAtlasRegion,
-                                                           final MapMetadata mapMetadata)
-  {
-    if (countryAtlasRegion.name == null)
-    {
-      throw new PlayMapLoadingException (
-              Strings.format ("Empty country atlas region name detected for map [{}].", mapMetadata));
-    }
-
-    final ImmutableList <String> regionNameSegments = ImmutableList
-            .copyOf (Strings.splitByUpperCase (countryAtlasRegion.name));
-
-    if (regionNameSegments.size () < 2)
-    {
-      throw new PlayMapLoadingException (
-              Strings.format ("Invalid country atlas region name [{}] detected for map [{}].", countryAtlasRegion,
-                              mapMetadata));
-    }
-
-    return regionNameSegments;
-  }
-
-  private void registerCountryAtlasIndex (final CountryName countryName, final int atlasIndex)
+  private void registerCountryAtlasIndex (final String countryName, final int atlasIndex)
   {
     final Integer oldAtlasIndex = countryNamesToAtlasIndices.put (countryName, atlasIndex);
 
     if (oldAtlasIndex != null && atlasIndex != oldAtlasIndex)
     {
       throw new PlayMapLoadingException (
-              Strings.format ("Atlas mismatch detected for country images with {} [{}].\nExpected atlas index [{}], but found atlas index [{}].\nAll images of a country must be in the same texture atlas.",
-                              CountryName.class.getSimpleName (), countryName, oldAtlasIndex, atlasIndex));
+              Strings.format ("Atlas mismatch detected for country images with name [{}].\nExpected atlas index [{}], but found atlas index [{}].\nAll images of a country must be in the same texture atlas.",
+                              countryName, oldAtlasIndex, atlasIndex));
     }
   }
 }

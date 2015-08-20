@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 
 import javax.annotation.Nullable;
@@ -34,21 +33,21 @@ public interface PlayMapActor
 
   void resetArmies ();
 
-  void changeArmiesBy (int deltaArmies, CountryName countryName);
+  void changeArmiesBy (int deltaArmies, String countryName);
 
   void setCountryState (String countryName, CountryPrimaryImageState state);
 
-  CountryActor getCountryActorWithName (CountryName countryName);
+  CountryActor getCountryActorWithName (String countryName);
 
-  boolean currentPrimaryImageStateOfCountryIs (CountryPrimaryImageState state, CountryName countryName);
+  boolean currentPrimaryImageStateOfCountryIs (CountryPrimaryImageState state, String countryName);
 
-  boolean currentSecondaryImageStateOfCountryIs (CountrySecondaryImageState state, CountryName countryName);
-
-  @Nullable
-  CountryPrimaryImageState getCurrentPrimaryImageStateOf (CountryName countryName);
+  boolean currentSecondaryImageStateOfCountryIs (CountrySecondaryImageState state, String countryName);
 
   @Nullable
-  CountrySecondaryImageState getCurrentSecondaryImageStateOf (CountryName countryName);
+  CountryPrimaryImageState getCurrentPrimaryImageStateOf (String countryName);
+
+  @Nullable
+  CountrySecondaryImageState getCurrentSecondaryImageStateOf (String countryName);
 
   void disable ();
 

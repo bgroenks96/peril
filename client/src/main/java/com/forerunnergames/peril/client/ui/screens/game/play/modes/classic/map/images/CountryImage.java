@@ -3,11 +3,9 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-import com.forerunnergames.peril.core.model.map.country.CountryName;
-
 public interface CountryImage <E extends Enum <E> & CountryImageState <E>>
 {
-  CountryName getCountryName ();
+  String getCountryName ();
 
   CountryImageState <E> getState ();
 

@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.CountryImagesLoader;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryActorFactory
@@ -23,7 +22,7 @@ public final class CountryActorFactory
     this.countryImageDataRepository = countryImageDataRepository;
   }
 
-  public CountryActor create (final CountryName countryName, final BitmapFont countryArmyTextFont)
+  public CountryActor create (final String countryName, final BitmapFont countryArmyTextFont)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (countryArmyTextFont, "countryArmyTextFont");

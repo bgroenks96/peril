@@ -17,14 +17,12 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.c
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocoordinate.DefaultScreenToPlayMapCoordinateConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocoordinate.InputToScreenCoordinateConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetocoordinate.ScreenToPlayMapCoordinateConverter;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.input.InputCoordinateToContinentNameConverter;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.input.InputCoordinateToCountryNameConverter;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.input.DefaultInputCoordinateToTerritoryNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.input.InputCoordinateToTerritoryNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.playmap.PlayMapCoordinateToContinentNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.playmap.PlayMapCoordinateToCountryNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.playmap.PlayMapCoordinateToTerritoryNameConverter;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToContinentNameConverter;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToCountryNameConverter;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.DefaultScreenCoordinateToTerritoryNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.converters.coordinatetoname.screen.ScreenCoordinateToTerritoryNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.AbsoluteMapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.ContinentColorToNameLoader;
@@ -32,10 +30,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.DefaultPlayMapInputDetectionImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.MapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.PlayMapInputDetectionImageLoader;
-import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
-import com.forerunnergames.peril.core.model.map.continent.ContinentName;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
+import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
@@ -71,33 +67,33 @@ public final class PlayMapInputDetectionFactory
 
     final StreamParserFactory streamParserFactory = new ExternalStreamParserFactory ();
 
-    final DataLoader <CountryColor, CountryName> countryColorToNameLoader =
+    final DataLoader <CountryColor, String> countryColorToNameLoader =
             new CountryColorToNameLoader (streamParserFactory);
 
-    final DataLoader <ContinentColor, ContinentName> continentColorToNameLoader =
+    final DataLoader <ContinentColor, String> continentColorToNameLoader =
             new ContinentColorToNameLoader (streamParserFactory);
 
     final MapResourcesPathParser absoluteMapResourcesPathParser =
             new AbsoluteMapResourcesPathParser (mapMetadata.getMode ());
 
-    final TerritoryColorToNameConverter <CountryColor, CountryName> countryColorToNameConverter =
+    final TerritoryColorToNameConverter <CountryColor> countryColorToNameConverter =
             new CountryColorToNameConverter (
                     countryColorToNameLoader.load (
                             absoluteMapResourcesPathParser.parseCountryInputDetectionDataFileNamePath (
                                     mapMetadata)));
 
-    final TerritoryColorToNameConverter <ContinentColor, ContinentName> continentColorToNameConverter =
+    final TerritoryColorToNameConverter <ContinentColor> continentColorToNameConverter =
             new ContinentColorToNameConverter (
                     continentColorToNameLoader.load (
                             absoluteMapResourcesPathParser.parseContinentInputDetectionDataFileNamePath (
                                     mapMetadata)));
 
-    final PlayMapCoordinateToTerritoryNameConverter <CountryName> playMapCoordinateToCountryNameConverter =
+    final PlayMapCoordinateToTerritoryNameConverter playMapCoordinateToCountryNameConverter =
             new PlayMapCoordinateToCountryNameConverter (
                     playMapCoordinateToCountryColorConverter,
                     countryColorToNameConverter);
 
-    final PlayMapCoordinateToTerritoryNameConverter <ContinentName> playMapCoordinateToContinentNameConverter =
+    final PlayMapCoordinateToTerritoryNameConverter playMapCoordinateToContinentNameConverter =
             new PlayMapCoordinateToContinentNameConverter (
                     playMapCoordinateToContinentColorConverter,
                     continentColorToNameConverter);
@@ -105,26 +101,26 @@ public final class PlayMapInputDetectionFactory
     final ScreenToPlayMapCoordinateConverter screenToPlayMapCoordinateConverter =
             new DefaultScreenToPlayMapCoordinateConverter (screenSize);
 
-    final ScreenCoordinateToTerritoryNameConverter <CountryName> screenCoordinateToCountryNameConverter =
-            new ScreenCoordinateToCountryNameConverter (
+    final ScreenCoordinateToTerritoryNameConverter screenCoordinateToCountryNameConverter =
+            new DefaultScreenCoordinateToTerritoryNameConverter (
                     screenToPlayMapCoordinateConverter,
                     playMapCoordinateToCountryNameConverter);
 
-    final ScreenCoordinateToTerritoryNameConverter <ContinentName> screenCoordinateToContinentNameConverter =
-            new ScreenCoordinateToContinentNameConverter (
+    final ScreenCoordinateToTerritoryNameConverter screenCoordinateToContinentNameConverter =
+            new DefaultScreenCoordinateToTerritoryNameConverter (
                     screenToPlayMapCoordinateConverter,
                     playMapCoordinateToContinentNameConverter);
 
     final InputToScreenCoordinateConverter inputToScreenCoordinateConverter =
             new DefaultInputToScreenCoordinateConverter ();
 
-    final InputCoordinateToTerritoryNameConverter <CountryName> inputCoordinateToCountryNameConverter =
-            new InputCoordinateToCountryNameConverter (
+    final InputCoordinateToTerritoryNameConverter inputCoordinateToCountryNameConverter =
+            new DefaultInputCoordinateToTerritoryNameConverter (
                     inputToScreenCoordinateConverter,
                     screenCoordinateToCountryNameConverter);
 
-    final InputCoordinateToTerritoryNameConverter <ContinentName> inputCoordinateToContinentNameConverter =
-            new InputCoordinateToContinentNameConverter (
+    final InputCoordinateToTerritoryNameConverter inputCoordinateToContinentNameConverter =
+            new DefaultInputCoordinateToTerritoryNameConverter (
                     inputToScreenCoordinateConverter,
                     screenCoordinateToContinentNameConverter);
 

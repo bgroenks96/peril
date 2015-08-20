@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.net.events.server.defaults.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
@@ -73,6 +72,11 @@ public final class DebugEventGenerator
     this.eventBus = eventBus;
   }
 
+  public static String getRandomCountryName ()
+  {
+    return Randomness.getRandomElementFrom (COUNTRY_NAMES);
+  }
+
   public void generateStatusMessageEvent ()
   {
     // TODO Production: Remove
@@ -91,12 +95,12 @@ public final class DebugEventGenerator
 
   public void generateCountryArmiesChangedEvent ()
   {
-    eventBus.publish (new CountryArmiesChangedEvent (getRandomCountryNameString (), getRandomCountryDeltaArmyCount ()));
+    eventBus.publish (new CountryArmiesChangedEvent (getRandomCountryName (), getRandomCountryDeltaArmyCount ()));
   }
 
   public void generatePlayerSelectCountryResponseSuccessEvent ()
   {
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (getRandomCountryNameString (), createPlayer ()));
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (getRandomCountryName (), createPlayer ()));
   }
 
   public void resetPlayers ()
@@ -105,11 +109,6 @@ public final class DebugEventGenerator
     playerTurnOrderIterator = createPlayerTurnOrderIterator ();
     availablePlayerNames.clear ();
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
-  }
-
-  public CountryName getRandomCountryName ()
-  {
-    return new CountryName (getRandomCountryNameString ());
   }
 
   private static int getRandomCountryDeltaArmyCount ()
@@ -125,11 +124,6 @@ public final class DebugEventGenerator
   private static UnmodifiableIterator <Integer> createPlayerTurnOrderIterator ()
   {
     return VALID_SORTED_PLAYER_TURN_ORDERS.iterator ();
-  }
-
-  private String getRandomCountryNameString ()
-  {
-    return Randomness.getRandomElementFrom (COUNTRY_NAMES);
   }
 
   private StatusMessage createStatusMessage ()

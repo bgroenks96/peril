@@ -2,16 +2,15 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.AbsoluteMapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.MapResourcesPathParser;
-import com.forerunnergames.peril.core.model.map.country.CountryName;
 import com.forerunnergames.peril.core.shared.io.DataLoader;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryImageDataRepositoryFactory
 {
-  private final DataLoader <CountryName, CountryImageData> countryImageDataLoader;
+  private final DataLoader <String, CountryImageData> countryImageDataLoader;
 
-  public CountryImageDataRepositoryFactory (final DataLoader <CountryName, CountryImageData> countryImageDataLoader)
+  public CountryImageDataRepositoryFactory (final DataLoader <String, CountryImageData> countryImageDataLoader)
   {
     Arguments.checkIsNotNull (countryImageDataLoader, "countryImageDataLoader");
 

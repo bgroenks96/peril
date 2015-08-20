@@ -1,22 +1,21 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
-import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
-import com.forerunnergames.peril.core.model.map.territory.TerritoryName;
 import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
+import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParser;
 
 import com.google.common.collect.ImmutableBiMap;
 
-public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryColor <?>, U extends TerritoryName>
-        extends AbstractDataLoader <T, U>implements TerritoryColorToNameLoader <T, U>
+public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryColor <?>>
+        extends AbstractDataLoader <T, String> implements TerritoryColorToNameLoader <T>
 {
-  private final ImmutableBiMap.Builder <T, U> territoryColorsToNames = new ImmutableBiMap.Builder <> ();
+  private final ImmutableBiMap.Builder <T, String> territoryColorsToNames = new ImmutableBiMap.Builder <> ();
   private final StreamParserFactory streamParserFactory;
   private StreamParser streamParser;
   private int territoryColorComponentValue;
-  private String territoryNameValue;
+  private String territoryName;
 
   protected AbstractTerritoryColorToNameLoader (final StreamParserFactory streamParserFactory)
   {
@@ -26,7 +25,7 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
   }
 
   @Override
-  protected final ImmutableBiMap <T, U> finalizeData ()
+  protected final ImmutableBiMap <T, String> finalizeData ()
   {
     streamParser.verifyEndOfFile ();
     streamParser.close ();
@@ -45,7 +44,7 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
   @Override
   protected final boolean readData ()
   {
-    territoryNameValue = streamParser.getNextQuotedString ();
+    territoryName = streamParser.getNextQuotedString ();
     territoryColorComponentValue = streamParser.getNextInteger ();
 
     return !streamParser.isEndOfFile ();
@@ -54,11 +53,8 @@ public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryCol
   @Override
   protected final void saveData ()
   {
-    territoryColorsToNames.put (createTerritoryColor (territoryColorComponentValue),
-                                createTerritoryName (territoryNameValue));
+    territoryColorsToNames.put (createTerritoryColor (territoryColorComponentValue), territoryName);
   }
 
   protected abstract T createTerritoryColor (final int colorComponentValue);
-
-  protected abstract U createTerritoryName (final String nameValue);
 }

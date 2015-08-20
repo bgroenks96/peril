@@ -48,7 +48,7 @@ public final class DefaultCountryActor implements CountryActor
     tempPosition.y = PlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
     tempPosition.scl (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
 
-    group.setName (imageData.getName ());
+    group.setName (imageData.getCountryName ());
     group.setTransform (false);
 
     for (final CountryPrimaryImage primaryImage : primaryImages.getAll ())
