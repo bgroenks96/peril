@@ -5,6 +5,9 @@ import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 
+import com.forerunnergames.peril.core.model.card.CardModel;
+import com.forerunnergames.peril.core.model.card.CardSet;
+import com.forerunnergames.peril.core.model.card.DefaultCardModel;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
@@ -24,12 +27,16 @@ import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoi
 import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.notification.EndPlayerTurnEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
@@ -58,24 +65,28 @@ public final class GameModel
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private final PlayerModel playerModel;
   private final PlayMapModel playMapModel;
+  private final CardModel cardModel;
   private final PlayerTurnModel playerTurnModel;
   private final GameRules rules;
   private final MBassador <Event> eventBus;
 
   public GameModel (final PlayerModel playerModel,
                     final PlayMapModel playMapModel,
+                    final CardModel cardModel,
                     final PlayerTurnModel playerTurnModel,
                     final GameRules rules,
                     final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
+    Arguments.checkIsNotNull (cardModel, "cardModel");
     Arguments.checkIsNotNull (playerTurnModel, "playerTurnModel");
     Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
     this.playMapModel = playMapModel;
+    this.cardModel = cardModel;
     this.playerTurnModel = playerTurnModel;
     this.rules = rules;
     this.eventBus = eventBus;
@@ -83,7 +94,23 @@ public final class GameModel
 
   public static Builder builder (final GameRules rules)
   {
+    Arguments.checkIsNotNull (rules, "rules");
+
     return new Builder (rules);
+  }
+
+  void beginTurn ()
+  {
+    log.info ("Turn begins for player [{}].", getCurrentPlayer ().getName ());
+
+    eventBus.publish (new BeginPlayerTurnEvent (Packets.from (getCurrentPlayer ())));
+  }
+
+  void endTurn ()
+  {
+    log.info ("Turn ends for player [{}].", getCurrentPlayer ().getName ());
+
+    eventBus.publish (new EndPlayerTurnEvent (Packets.from (getCurrentPlayer ())));
   }
 
   void determinePlayerTurnOrder ()
@@ -119,7 +146,7 @@ public final class GameModel
     {
       playerModel.addArmiesToHandOf (player.getId (), armies);
 
-      eventBus.publish (new PlayerArmiesChangedEvent (player.getName (), armies));
+      eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (player), armies));
 
       // @formatter:off
       statusMessageBuilder
@@ -200,7 +227,7 @@ public final class GameModel
       }
 
       log.info ("Assigned {} countries to [{}].", assignSuccessCount, nextPlayer.getName ());
-      eventBus.publish (new PlayerArmiesChangedEvent (nextPlayer.getName (), -1 * assignSuccessCount));
+      eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (nextPlayer), -1 * assignSuccessCount));
     }
 
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
@@ -210,18 +237,11 @@ public final class GameModel
     eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
   }
 
-  void beginRound ()
-  {
-    log.info ("Let the round begin.");
-
-    // TODO
-  }
-
   void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     final Player player = PlayerFactory.create (withPlayerNameFrom (event));
     final Result <PlayerJoinGameDeniedEvent.Reason> result;
@@ -275,7 +295,7 @@ public final class GameModel
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     final Player currentPlayer = getCurrentPlayer ();
 
@@ -283,7 +303,7 @@ public final class GameModel
 
     if (!playMapModel.existsCountryWith (selectedCountryName))
     {
-      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName,
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (Packets.from (currentPlayer), selectedCountryName,
               PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
       // send a new request
       eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
@@ -295,18 +315,46 @@ public final class GameModel
                                                        idOf (currentPlayer));
     if (result.failed ())
     {
-      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (selectedCountryName, failureReasonFrom (result)));
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (Packets.from (currentPlayer), selectedCountryName,
+              failureReasonFrom (result)));
       // send a new request
       eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
       return false;
     }
 
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (selectedCountryName, Packets.from (currentPlayer)));
-    eventBus.publish (new PlayerArmiesChangedEvent (currentPlayer.getName (), -1));
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (Packets.from (currentPlayer), selectedCountryName));
+    eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (currentPlayer), -1));
 
     playerTurnModel.advance ();
 
     return true;
+  }
+
+  void beginReinforcementPhase ()
+  {
+    final Player player = getCurrentPlayer ();
+
+    log.info ("Begin reinforcement phase for player [{}].", player);
+
+    player.addArmiesToHand (rules
+            .calculateCountryReinforcements (playMapModel.countCountriesOwnedBy (player.getId ())));
+    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (player.getId ());
+    final int cardCount = cardModel.countCardsInHand (player.getId ());
+    // publish card trade in request
+    eventBus.publish (new PlayerTradeInCardsRequestEvent (Packets.from (player), Packets.fromCardMatchSet (matches),
+            cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
+    // proceeds immediately to -> waitForPlayerToPlaceReinforcements()
+  }
+
+  void waitForPlayerToPlaceReinforcements ()
+  {
+    final Player player = getCurrentPlayer ();
+
+    log.info ("Waiting for player [{}] to place reinforcements...", player);
+
+    // concurrently publish request for selecting countries to reinforce
+    eventBus.publish (new PlayerReinforceCountryRequestEvent (Packets.from (player),
+            Packets.fromCountries (playMapModel.getCountriesOwnedBy (player.getId ()))));
   }
 
   PlayerModel getPlayerModel ()
@@ -392,7 +440,7 @@ public final class GameModel
     return playerModel.playerLimitIsAtLeast (limit);
   }
 
-  private Player getCurrentPlayer ()
+  Player getCurrentPlayer ()
   {
     return playerModel.playerWith (playerTurnModel.getTurnOrder ());
   }
@@ -420,12 +468,13 @@ public final class GameModel
     private final GameRules gameRules;
     private PlayerModel playerModel;
     private PlayMapModel playMapModel;
+    private CardModel cardModel;
     private PlayerTurnModel playerTurnModel;
     private MBassador <Event> eventBus = EventBusFactory.create ();
 
     public GameModel build ()
     {
-      return new GameModel (playerModel, playMapModel, playerTurnModel, gameRules, eventBus);
+      return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, gameRules, eventBus);
     }
 
     public Builder playerModel (final PlayerModel playerModel)
@@ -441,6 +490,14 @@ public final class GameModel
       Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
       this.playMapModel = playMapModel;
+      return this;
+    }
+
+    public Builder cardModel (final CardModel cardModel)
+    {
+      Arguments.checkIsNotNull (cardModel, "cardModel");
+
+      this.cardModel = cardModel;
       return this;
     }
 
@@ -468,6 +525,7 @@ public final class GameModel
       playerModel = new DefaultPlayerModel (gameRules);
       playMapModel = new DefaultPlayMapModel (DefaultPlayMapModel.generateDefaultCountries (gameRules),
               ImmutableSet.<Continent> of (), gameRules);
+      cardModel = new DefaultCardModel (gameRules, DefaultCardModel.generateDefaultCardDeck ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
     }
   }

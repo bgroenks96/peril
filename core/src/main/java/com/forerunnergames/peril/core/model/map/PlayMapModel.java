@@ -68,6 +68,8 @@ public interface PlayMapModel
 
   void unassignAllCountriesOwnedBy (final Id ownerId);
 
+  int countCountriesOwnedBy (final Id ownerId);
+
   int getCountryCount ();
 
   boolean countryCountIs (final int n);

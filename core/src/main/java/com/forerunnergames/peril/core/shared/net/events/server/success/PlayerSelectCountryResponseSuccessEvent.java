@@ -1,17 +1,17 @@
 package com.forerunnergames.peril.core.shared.net.events.server.success;
 
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerSelectCountryResponseEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent;
 
-public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayerSelectCountryResponseEvent implements
-        ResponseSuccessEvent
+public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayerSelectCountryResponseEvent
+        implements PlayerResponseSuccessEvent
 {
   private final PlayerPacket player;
 
-  public PlayerSelectCountryResponseSuccessEvent (final String selectedCountryName, final PlayerPacket player)
+  public PlayerSelectCountryResponseSuccessEvent (final PlayerPacket player, final String selectedCountryName)
   {
     super (selectedCountryName);
 
@@ -20,6 +20,7 @@ public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayer
     this.player = player;
   }
 
+  @Override
   public PlayerPacket getPlayer ()
   {
     return player;
@@ -34,7 +35,6 @@ public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayer
   private PlayerSelectCountryResponseSuccessEvent ()
   {
     super (null);
-
     player = null;
   }
 }

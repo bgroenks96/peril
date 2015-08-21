@@ -4,9 +4,9 @@ import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
@@ -67,7 +67,7 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerSelectCountryResponseRequestEvent event)
+  public void onEvent (final ResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

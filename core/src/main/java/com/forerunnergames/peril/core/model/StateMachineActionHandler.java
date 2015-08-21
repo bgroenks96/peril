@@ -4,7 +4,6 @@ import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
@@ -35,7 +34,6 @@ public final class StateMachineActionHandler
   private final PlayMapModel playMapModel;
   private final PlayerTurnModel playerTurnModel;
   private final GameModel gameModel;
-  private final GameRules rules;
   private final MBassador <Event> eventBus;
 
   public StateMachineActionHandler (final GameModel gameModel)
@@ -46,7 +44,6 @@ public final class StateMachineActionHandler
     playerModel = gameModel.getPlayerModel ();
     playMapModel = gameModel.getPlayMapModel ();
     playerTurnModel = gameModel.getPlayerTurnModel ();
-    rules = gameModel.getRules ();
     eventBus = gameModel.getEventBus ();
     eventBus.subscribe (new InternalCommunicationHandler ());
   }
@@ -103,9 +100,16 @@ public final class StateMachineActionHandler
 
   @StateMachineAction
   @StateEntryAction
-  public void beginGameRound ()
+  public void beginTurnPhase ()
   {
-    gameModel.beginRound ();
+    gameModel.beginTurn ();
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void endTurnPhase ()
+  {
+    gameModel.endTurn ();
   }
 
   @StateMachineAction
@@ -143,6 +147,20 @@ public final class StateMachineActionHandler
     Arguments.checkIsNotNull (event, "event");
 
     return gameModel.verifyPlayerCountrySelectionRequest (event);
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void beginReinforcementPhase ()
+  {
+    gameModel.beginReinforcementPhase ();
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForPlayerToPlaceReinforcements ()
+  {
+    gameModel.waitForPlayerToPlaceReinforcements ();
   }
 
   @StateMachineCondition
@@ -196,6 +214,11 @@ public final class StateMachineActionHandler
   public PlayerTurnOrder getTurn ()
   {
     return gameModel.getTurn ();
+  }
+
+  public Player getCurrentPlayer ()
+  {
+    return gameModel.getCurrentPlayer ();
   }
 
   public boolean playerLimitIsAtLeast (final int limit)

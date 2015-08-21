@@ -33,6 +33,7 @@ public final class DefaultPlayMapModel implements PlayMapModel
                               final GameRules rules)
   {
     Arguments.checkIsNotNull (countries, "countries");
+    Arguments.checkIsNotNull (continents, "continents");
     Arguments.checkHasNoNullElements (countries, "countries");
     Arguments.checkIsNotNull (rules, "rules");
     Preconditions.checkIsTrue (countries.size () >= rules.getMinTotalCountryCount (), "Country count of "
@@ -182,6 +183,8 @@ public final class DefaultPlayMapModel implements PlayMapModel
   public Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
                                                                                              final Id ownerId)
   {
+    Arguments.checkIsNotNull (ownerId, "ownerId");
+
     Arguments.checkIsNotNull (countryId, "countryId");
 
     //@formatter:off
@@ -293,6 +296,14 @@ public final class DefaultPlayMapModel implements PlayMapModel
   }
 
   @Override
+  public int countCountriesOwnedBy (final Id id)
+  {
+    Arguments.checkIsNotNull (id, "id");
+
+    return getCountriesOwnedBy (id).size ();
+  }
+
+  @Override
   public int getCountryCount ()
   {
     return countryIdsToCountries.size ();
@@ -301,12 +312,16 @@ public final class DefaultPlayMapModel implements PlayMapModel
   @Override
   public boolean countryCountIs (final int n)
   {
+    Arguments.checkIsNotNegative (n, "n");
+
     return getCountryCount () == n;
   }
 
   @Override
   public boolean countryCountIsAtLeast (final int n)
   {
+    Arguments.checkIsNotNegative (n, "n");
+
     return getCountryCount () >= n;
   }
 
@@ -319,12 +334,16 @@ public final class DefaultPlayMapModel implements PlayMapModel
   @Override
   public boolean ownedCountryCountIs (final int n)
   {
+    Arguments.checkIsNotNegative (n, "n");
+
     return getOwnedCountryCount () == n;
   }
 
   @Override
   public boolean ownedCountryCountIsAtLeast (final int n)
   {
+    Arguments.checkIsNotNegative (n, "n");
+
     return getOwnedCountryCount () >= n;
   }
 
@@ -387,6 +406,8 @@ public final class DefaultPlayMapModel implements PlayMapModel
 
   public static ImmutableSet <Country> generateDefaultCountries (final GameRules gameRules)
   {
+    Arguments.checkIsNotNull (gameRules, "gameRules");
+
     final int count = gameRules.getMinTotalCountryCount ();
     final ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
     for (int i = 0; i < count; ++i)
