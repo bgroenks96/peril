@@ -5,9 +5,9 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 
-import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
-import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRemote;
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
+import com.forerunnergames.peril.common.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;

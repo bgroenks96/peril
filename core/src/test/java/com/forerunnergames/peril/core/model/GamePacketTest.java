@@ -8,8 +8,8 @@ import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.core.shared.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
 import com.google.common.collect.ImmutableMap;
 

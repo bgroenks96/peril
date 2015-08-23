@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.shared.game.GameMode;
-import com.forerunnergames.peril.core.shared.map.MapType;
-import com.forerunnergames.peril.core.shared.map.io.DefaultMapMetadataFinder;
-import com.forerunnergames.peril.core.shared.map.io.MapMetadataFinder;
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.map.io.DefaultMapMetadataFinder;
+import com.forerunnergames.peril.common.map.io.MapMetadataFinder;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 

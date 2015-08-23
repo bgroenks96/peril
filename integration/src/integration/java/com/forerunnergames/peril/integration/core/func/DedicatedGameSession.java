@@ -4,13 +4,13 @@ import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
-import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
-import com.forerunnergames.peril.core.shared.net.GameServerType;
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.net.GameServerType;
+import com.forerunnergames.peril.common.net.settings.NetworkSettings;
 import com.forerunnergames.peril.integration.NetworkPortPool;
-import com.forerunnergames.peril.integration.TestSessions.TestSession;
+import com.forerunnergames.peril.integration.TestSessionProvider.TestSession;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.integration.server.ServerFactory;

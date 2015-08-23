@@ -1,13 +1,13 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.shared.game.GameMode;
-import com.forerunnergames.peril.core.shared.map.MapType;
-import com.forerunnergames.peril.core.shared.map.PlayMapLoadingException;
-import com.forerunnergames.peril.core.shared.map.io.CompositeMapMetadataLoader;
-import com.forerunnergames.peril.core.shared.map.io.ExternalMapMetadataLoader;
-import com.forerunnergames.peril.core.shared.map.io.MapDataPathParser;
-import com.forerunnergames.peril.core.shared.map.io.MapMetadataLoader;
-import com.forerunnergames.peril.core.shared.map.io.MapMetadataLoaderFactory;
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.map.io.CompositeMapMetadataLoader;
+import com.forerunnergames.peril.common.map.io.ExternalMapMetadataLoader;
+import com.forerunnergames.peril.common.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
+import com.forerunnergames.peril.common.map.io.MapMetadataLoaderFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 

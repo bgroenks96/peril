@@ -16,24 +16,24 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.ClientMapMetadataLoaderFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.CountryCounter;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.ClientMapMetadataLoaderFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
-import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
-import com.forerunnergames.peril.core.shared.game.DefaultGameConfiguration;
-import com.forerunnergames.peril.core.shared.game.GameConfiguration;
-import com.forerunnergames.peril.core.shared.game.GameMode;
-import com.forerunnergames.peril.core.model.rules.GameRules;
-import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.MapType;
-import com.forerunnergames.peril.core.shared.map.io.MapMetadataLoader;
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
-import com.forerunnergames.peril.core.shared.settings.GameSettings;
+import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
+import com.forerunnergames.peril.common.game.GameConfiguration;
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
+import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Maths;
@@ -50,7 +50,6 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   // @formatter:off
   private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC).create (MapType.STOCK, MapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
-  private final CountryCounter countryCounter;
   private final TextField playerNameTextField;
   private final TextField playerClanTagTextField;
   private final TextField serverNameTextField;
@@ -63,7 +62,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final ImageButton customizePlayersButton;
   private final ImageButton customizeMapButton;
   private final ImmutableSet <MapMetadata> maps;
-  private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
+  private int totalCountryCount;
   @Nullable
   private Iterator <MapMetadata> mapIterator = null;
   private MapMetadata currentMap;
@@ -81,8 +80,6 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     Arguments.checkIsNotNull (createGameHandler, "createGameHandler");
     Arguments.checkIsNotNull (countryCounter, "countryCounter");
-
-    this.countryCounter = countryCounter;
 
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
@@ -116,7 +113,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     maps = MAPS_LOADER.load ();
     currentMap = nextMap ();
     mapNameLabel = widgetFactory.createBackgroundLabel (asMapNameLabelText (currentMap), Align.left);
-    updateTotalCountryCount ();
+    totalCountryCount = countryCounter.count (currentMap);
 
     customizePlayersButton = widgetFactory.createImageButton ("options", new ClickListener (Input.Buttons.LEFT)
     {
@@ -147,8 +144,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
         currentMap = nextMap ();
         mapNameLabel.setText (asMapNameLabelText (currentMap));
-
-        updateTotalCountryCount ();
+        totalCountryCount = countryCounter.count (currentMap);
         updateWinPercentSelectBox ();
       }
     });
@@ -327,11 +323,6 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
 
     winPercentSelectBox.setItems (winPercentCounts);
-  }
-
-  private void updateTotalCountryCount ()
-  {
-    totalCountryCount = countryCounter.count (currentMap);
   }
 
   private MapMetadata nextMap ()

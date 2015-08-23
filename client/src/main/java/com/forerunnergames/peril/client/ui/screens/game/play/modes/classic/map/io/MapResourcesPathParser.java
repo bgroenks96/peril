@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io;
 
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.io.MapDataPathParser;
 
 public interface MapResourcesPathParser extends MapDataPathParser
 {

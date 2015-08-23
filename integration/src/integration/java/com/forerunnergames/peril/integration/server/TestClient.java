@@ -2,8 +2,8 @@ package com.forerunnergames.peril.integration.server;
 
 import com.esotericsoftware.minlog.Log;
 
-import com.forerunnergames.peril.core.shared.net.kryonet.KryonetRegistration;
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;

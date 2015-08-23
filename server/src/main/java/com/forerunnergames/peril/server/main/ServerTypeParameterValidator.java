@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.main;
 
-import com.forerunnergames.peril.core.shared.net.GameServerType;
+import com.forerunnergames.peril.common.net.GameServerType;
 
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;

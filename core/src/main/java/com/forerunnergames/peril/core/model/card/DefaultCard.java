@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.card;
 
+import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.assets.AbstractAsset;
 import com.forerunnergames.tools.common.id.Id;

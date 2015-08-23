@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.CountryCounter;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.io.MapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class DefaultCountryCounter implements CountryCounter

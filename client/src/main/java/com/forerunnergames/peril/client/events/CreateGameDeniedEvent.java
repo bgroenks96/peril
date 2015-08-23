@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.local.LocalEvent;

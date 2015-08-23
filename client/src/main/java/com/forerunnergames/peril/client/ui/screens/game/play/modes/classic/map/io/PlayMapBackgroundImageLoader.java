@@ -2,7 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapMetadata;
 
 public interface PlayMapBackgroundImageLoader
 {

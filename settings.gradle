@@ -1,3 +1,3 @@
 rootProject.name = projectName
 
-include "desktop", "android", "ios", "client", "core", "server", "integration"
+include "desktop", "android", "ios", "client", "core", "common", "server", "integration"

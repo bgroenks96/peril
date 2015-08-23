@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.card;
 
-import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
@@ -18,7 +18,7 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
   DefaultPlayerCardHandler (final GameRules rules)
   {
     Arguments.checkIsNotNull (rules, "rules");
-    
+
     this.rules = rules;
   }
 

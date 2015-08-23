@@ -3,7 +3,7 @@ package com.forerunnergames.peril.server.main;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 
-import com.forerunnergames.peril.core.shared.settings.GameSettings;
+import com.forerunnergames.peril.common.settings.GameSettings;
 
 public final class MapNameParameterValidator implements IParameterValidator
 {

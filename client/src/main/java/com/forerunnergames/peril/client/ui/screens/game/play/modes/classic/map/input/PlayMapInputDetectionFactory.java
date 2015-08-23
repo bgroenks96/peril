@@ -30,10 +30,10 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.DefaultPlayMapInputDetectionImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.MapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.PlayMapInputDetectionImageLoader;
-import com.forerunnergames.peril.core.shared.io.DataLoader;
-import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
-import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.common.io.DataLoader;
+import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
+import com.forerunnergames.peril.common.io.StreamParserFactory;
+import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class PlayMapInputDetectionFactory

@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.server.communicators;
 
-import com.forerunnergames.peril.core.shared.events.InternalRequestEvent;
-import com.forerunnergames.peril.core.shared.events.InternalResponseEvent;
-import com.forerunnergames.peril.core.shared.events.player.InternalPlayerLeaveGameEvent;
-import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.core.shared.events.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.events.InternalRequestEvent;
+import com.forerunnergames.peril.common.events.InternalResponseEvent;
+import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
+import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 

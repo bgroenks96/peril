@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io;
 
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.core.shared.game.GameMode;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.io.AbstractMapDataPathParser;
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.io.AbstractMapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 
 public abstract class AbstractMapResourcesPathParser extends AbstractMapDataPathParser implements MapResourcesPathParser

@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.io.ContinentModelDataLoader;
 import com.forerunnergames.peril.core.model.map.io.CountryIdResolver;
-import com.forerunnergames.peril.core.shared.io.DataLoader;
+import com.forerunnergames.peril.common.io.DataLoader;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 

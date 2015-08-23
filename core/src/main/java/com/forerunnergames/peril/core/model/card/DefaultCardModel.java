@@ -1,8 +1,9 @@
 package com.forerunnergames.peril.core.model.card;
 
-import com.forerunnergames.peril.core.model.TurnPhase;
+import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.TurnPhase;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.card.CardSet.Match;
-import com.forerunnergames.peril.core.model.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
@@ -49,6 +50,49 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
+  public CardSet getCardsInHand (final Id playerId)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+
+    return playerCardHandler.getCardsInHand (playerId);
+  }
+
+  @Override
+  public int countCardsInHand (final Id playerId)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+
+    return playerCardHandler.countCardsInHand (playerId);
+  }
+
+  // --- delegation methods --- //
+
+  @Override
+  public boolean isCardInHand (final Id playerId, final Card card)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (card, "card");
+
+    return playerCardHandler.isCardInHand (playerId, card);
+  }
+
+  @Override
+  public Card cardWith (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    return cardDealer.cardWith (name);
+  }
+
+  @Override
+  public boolean existsCardWith (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    return cardDealer.existsCardWith (name);
+  }
+
+  @Override
   public ImmutableSet <Match> computeMatchesFor (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -92,53 +136,10 @@ public final class DefaultCardModel implements CardModel
     return Result.success ();
   }
 
-  // --- delegation methods --- //
-
-  @Override
-  public CardSet getCardsInHand (final Id playerId)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-
-    return playerCardHandler.getCardsInHand (playerId);
-  }
-
-  @Override
-  public int countCardsInHand (final Id playerId)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-
-    return playerCardHandler.countCardsInHand (playerId);
-  }
-
-  @Override
-  public Card cardWith (final String name)
-  {
-    Arguments.checkIsNotNull (name, "name");
-
-    return cardDealer.cardWith (name);
-  }
-
-  @Override
-  public boolean existsCardWith (final String name)
-  {
-    Arguments.checkIsNotNull (name, "name");
-
-    return cardDealer.existsCardWith (name);
-  }
-
   @Override
   public int getNextTradeInBonus ()
   {
     return rules.calculateTradeInBonusReinforcements (tradeInCount);
-  }
-
-  @Override
-  public boolean isCardInHand (final Id playerId, final Card card)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (card, "card");
-
-    return playerCardHandler.isCardInHand (playerId, card);
   }
 
   @Override

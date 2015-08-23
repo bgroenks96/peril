@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model.card;
 
-import com.forerunnergames.peril.core.model.rules.GameRules;
+import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 

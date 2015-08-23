@@ -2,8 +2,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.AbsoluteMapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.MapResourcesPathParser;
-import com.forerunnergames.peril.core.shared.io.DataLoader;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.common.io.DataLoader;
+import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryImageDataRepositoryFactory

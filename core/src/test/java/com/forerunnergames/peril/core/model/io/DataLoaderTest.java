@@ -3,7 +3,7 @@ package com.forerunnergames.peril.core.model.io;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import com.forerunnergames.peril.core.shared.io.DataLoader;
+import com.forerunnergames.peril.common.io.DataLoader;
 
 import com.google.common.collect.ImmutableBiMap;
 

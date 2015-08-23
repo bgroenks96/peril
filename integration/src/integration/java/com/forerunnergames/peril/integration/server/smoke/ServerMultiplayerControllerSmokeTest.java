@@ -2,8 +2,8 @@ package com.forerunnergames.peril.integration.server.smoke;
 
 import static org.testng.Assert.assertTrue;
 
-import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestServerApplication;

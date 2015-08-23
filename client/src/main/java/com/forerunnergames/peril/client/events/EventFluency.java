@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.core.shared.net.GameServerConfiguration;
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.net.client.ClientConfiguration;

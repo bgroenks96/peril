@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.MapType;
-import com.forerunnergames.peril.core.shared.map.io.MapDataPathParser;
-import com.forerunnergames.peril.core.shared.map.io.MapMetadataLoader;
-import com.forerunnergames.peril.core.shared.settings.GameSettings;
+import com.forerunnergames.peril.common.map.DefaultMapMetadata;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.Resources;
 

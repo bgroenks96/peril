@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.communicators;
 
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
 import com.google.common.collect.ImmutableSet;
 

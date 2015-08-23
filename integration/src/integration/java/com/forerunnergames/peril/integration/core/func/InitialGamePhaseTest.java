@@ -2,8 +2,8 @@ package com.forerunnergames.peril.integration.core.func;
 
 import static org.testng.Assert.fail;
 
-import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.integration.TestSessions;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestClientPool;

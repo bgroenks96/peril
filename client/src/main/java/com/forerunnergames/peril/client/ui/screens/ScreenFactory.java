@@ -17,7 +17,7 @@ import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.class
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.DefaultJoinGameHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.peril.MultiplayerPerilGameModeMenuScreen;
-import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 

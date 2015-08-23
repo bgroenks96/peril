@@ -2,7 +2,7 @@ package com.forerunnergames.peril.server.controllers;
 
 import com.esotericsoftware.minlog.Log;
 
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;

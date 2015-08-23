@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 import javax.annotation.Nullable;

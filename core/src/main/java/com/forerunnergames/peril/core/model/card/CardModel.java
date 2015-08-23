@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.card;
 
-import com.forerunnergames.peril.core.model.TurnPhase;
+import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 

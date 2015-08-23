@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.server.controllers;
 
-import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
-import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.NetworkEventHandler;
+import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;

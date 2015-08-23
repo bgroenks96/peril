@@ -15,12 +15,12 @@
       </event>
       <event id="onDeterminePlayerTurnOrderCompleteEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent"
+          type="com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent"
           name="event" />
       </event>
       <event id="onDistributeInitialArmiesCompleteEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.server.notification.DistributeInitialArmiesCompleteEvent"
+          type="com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent"
           name="event" />
       </event>
       <event id="onRandomlyAssignPlayerCountriesEvent">
@@ -33,17 +33,17 @@
       </event>
       <event id="onPlayerSelectCountryResponseRequestEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent"
           name="event" />
       </event>
       <event id="onPlayerSelectCountryResponseSuccessEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.server.success.PlayerSelectCountryResponseSuccessEvent"
+          type="com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent"
           name="event" />
       </event>
       <event id="onPlayerCountryAssignmentCompleteEvent">
         <parameter
-          type="com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
+          type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
           name="event" />
       </event>
       <event id="onEndGameEvent">
@@ -55,19 +55,19 @@
     </eventSource>
     <eventSource name="Players">
       <event id="onPlayerJoinGameRequestEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent"
                    name="event" />
       </event>
       <event id="onPlayerJoinGameSuccessEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent"
                    name="event" />
       </event>
       <event id="onPlayerJoinGameDeniedEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent"
                    name="event"/>
       </event>
       <event id="onPlayerLeaveGameEvent">
-        <parameter type="com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent"
                    name="event" />
       </event>
     </eventSource>

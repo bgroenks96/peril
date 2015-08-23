@@ -13,8 +13,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImages;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.NullCountryPrimaryImages;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.NullCountrySecondaryImages;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 

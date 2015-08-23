@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.events;
 
 import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 

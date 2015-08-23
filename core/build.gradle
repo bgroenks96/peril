@@ -24,17 +24,6 @@ task generateJava << {
   ant.stateBuilder (input: "${projectDir}/src/main/res", output: "${projectDir}/src-gen/main/java") {}
 }
 
-task testJar (type: Jar) {
-  classifier = "tests"
-  from sourceSets.test.output
-  exclude "**/*logback-test.xml"
-  exclude "**/*com/forerunnergames/peril/core/model"
-}
-
-artifacts {
-  testRuntime testJar
-}
-
 compileJava.dependsOn (generateJava)
 jar.exclude ("*.fsmjava")
 test.testLogging.showStandardStreams = true;

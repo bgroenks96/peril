@@ -3,7 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapMetadata;
 
 public interface CountryAtlasMetadata
 {

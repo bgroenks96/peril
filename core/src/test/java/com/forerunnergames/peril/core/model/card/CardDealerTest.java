@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.common.game.CardType;
+
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.Test;

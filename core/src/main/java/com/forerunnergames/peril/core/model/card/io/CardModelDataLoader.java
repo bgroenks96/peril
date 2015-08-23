@@ -2,9 +2,9 @@ package com.forerunnergames.peril.core.model.card.io;
 
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardFactory;
-import com.forerunnergames.peril.core.model.card.CardType;
-import com.forerunnergames.peril.core.shared.io.AbstractDataLoader;
-import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
+import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.io.AbstractDataLoader;
+import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.io.StreamParser;

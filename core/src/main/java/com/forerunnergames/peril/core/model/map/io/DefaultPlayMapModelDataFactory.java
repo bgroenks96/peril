@@ -2,8 +2,8 @@ package com.forerunnergames.peril.core.model.map.io;
 
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.shared.map.MapMetadata;
-import com.forerunnergames.peril.core.shared.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.io.MapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableSet;

@@ -2,7 +2,7 @@ package com.forerunnergames.peril.server.main;
 
 import com.beust.jcommander.IStringConverter;
 
-import com.forerunnergames.peril.core.shared.game.GameMode;
+import com.forerunnergames.peril.common.game.GameMode;
 
 public final class GameModeParameterConverter implements IStringConverter <GameMode>
 {

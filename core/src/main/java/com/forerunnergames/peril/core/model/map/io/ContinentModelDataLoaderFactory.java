@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.shared.io.ExternalStreamParserFactory;
+import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.core.model.io.InternalStreamParserFactory;
-import com.forerunnergames.peril.core.shared.io.StreamParserFactory;
-import com.forerunnergames.peril.core.shared.map.MapType;
-import com.forerunnergames.peril.core.shared.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.io.StreamParserFactory;
+import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Strings;
