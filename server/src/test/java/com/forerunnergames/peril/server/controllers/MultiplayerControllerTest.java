@@ -18,12 +18,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.core.model.rules.ClassicGameRules;
+import com.forerunnergames.peril.core.shared.EventBusHandler;
+import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.core.shared.game.GameConfiguration;
 import com.forerunnergames.peril.core.shared.game.GameMode;
 import com.forerunnergames.peril.core.shared.game.InitialCountryAssignment;
-import com.forerunnergames.peril.core.shared.EventBusHandler;
-import com.forerunnergames.peril.core.shared.eventbus.EventBusFactory;
 import com.forerunnergames.peril.core.shared.map.DefaultMapMetadata;
 import com.forerunnergames.peril.core.shared.map.MapMetadata;
 import com.forerunnergames.peril.core.shared.map.MapType;
@@ -850,7 +850,8 @@ public class MultiplayerControllerTest
     private final CoreCommunicator coreCommunicator;
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
-    private final MapMetadata mapMetadata = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME, MapType.STOCK, gameMode);
+    private final MapMetadata mapMetadata = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME,
+            MapType.STOCK, gameMode);
     private InitialCountryAssignment initialCountryAssignment = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
     // game server configuration fields
     private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;

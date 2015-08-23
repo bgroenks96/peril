@@ -135,9 +135,14 @@
                 </state>
               </state>
             </state>
-            <state name="BeginGameRound">
-              <onEntry action="stateMachineActionHandler.beginGameRound()" />
+            <state name="TurnPhase">
+              <onEntry action="stateMachineActionHandler.beginTurnPhase()" />
+              <onExit action="stateMachineActionHandler.endTurnPhase()" />
               <state name="ReinforcementPhase">
+                <onEntry action="stateMachineActionHandler.beginReinforcementPhase()" />
+                <state name="WaitForPlayerToPlaceReinforcements">
+                  <onEntry action="stateMachineActionHandler.waitForPlayerToPlaceReinforcements()" />
+                </state>
               </state>
             </state>
           </state>

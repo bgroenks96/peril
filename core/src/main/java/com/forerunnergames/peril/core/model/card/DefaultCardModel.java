@@ -20,9 +20,6 @@ public final class DefaultCardModel implements CardModel
   public DefaultCardModel (final GameRules rules, final ImmutableSet <Card> cardDeck)
   {
     this (rules, new DefaultPlayerCardHandler (rules), new DefaultCardDealer (cardDeck));
-
-    Arguments.checkIsNotNull (rules, "rules");
-    Arguments.checkIsNotNull (cardDeck, "cardDeck");
   }
 
   DefaultCardModel (final GameRules rules, final PlayerCardHandler playerCardHandler, final CardDealer cardDealer)
@@ -70,8 +67,8 @@ public final class DefaultCardModel implements CardModel
 
   @Override
   public Result <DenialReason> requestTradeInCards (final Id playerId,
-                                                     final Match tradeInCards,
-                                                     final TurnPhase turnPhase)
+                                                    final Match tradeInCards,
+                                                    final TurnPhase turnPhase)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (tradeInCards, "tradeInCards");
@@ -151,5 +148,15 @@ public final class DefaultCardModel implements CardModel
     Arguments.checkIsNotNull (cards, "cards");
 
     return playerCardHandler.areCardsInHand (playerId, cards);
+  }
+
+  public static ImmutableSet <Card> generateDefaultCardDeck ()
+  {
+    final ImmutableSet.Builder <Card> builder = ImmutableSet.builder ();
+    for (int i = 0; i < 47; i++)
+    {
+      builder.add (CardFactory.create ("Card-" + i, CardType.random ()));
+    }
+    return builder.build ();
   }
 }

@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectCountryRequestEvent implements PlayerInputRequestEvent
+public class PlayerSelectCountryRequestEvent implements PlayerInputRequestEvent
 {
   private final PlayerPacket player;
 

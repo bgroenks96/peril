@@ -11,12 +11,12 @@ import com.forerunnergames.peril.core.shared.net.NetworkEventHandler;
 import com.forerunnergames.peril.core.shared.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.notification.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.core.shared.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -38,9 +38,8 @@ import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
@@ -242,7 +241,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ResponseSuccessEvent event)
+  public void onEvent (final PlayerResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -252,16 +251,13 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ResponseDeniedEvent <?> event)
+  public void onEvent (final PlayerResponseDeniedEvent <?> event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
-    // TODO Only send to the requesting player.
-    // TODO We need a sub-interface of ResponseDeniedEvent that includes the PlayerPacket.
-
-    sendToAllPlayers (event);
+    sendToPlayer (event.getPlayer (), event);
   }
 
   // <<<<< remote inbound/outbound event communication >>>>> //
@@ -433,10 +429,11 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayers (new ChatMessageSuccessEvent (new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
+    sendToAllPlayers (new ChatMessageSuccessEvent (
+            new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
-  void handleEvent (final PlayerSelectCountryResponseRequestEvent event, final Remote client)
+  void handleEvent (final ResponseRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -462,14 +459,14 @@ public final class MultiplayerController extends ControllerAdapter
 
     final PlayerPacket player = playerQuery.get ();
 
-    if (!waitingForResponseToEventFromPlayer (PlayerSelectCountryRequestEvent.class, player))
+    if (!waitingForResponseToEventFromPlayer (event.getRequestType (), player))
     {
       log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding server request of type [{}] was sent to that player.",
-                event, player, PlayerSelectCountryRequestEvent.class);
+                event, player, event.getRequestType ());
       return;
     }
 
-    handlePlayerResponseTo (PlayerSelectCountryRequestEvent.class, event, player);
+    handlePlayerResponseTo (event.getRequestType (), event, player);
   }
 
   // <<<<< internal event utility methods and types >>>>>> //
@@ -502,11 +499,6 @@ public final class MultiplayerController extends ControllerAdapter
   private void sendToAllPlayers (final Object object)
   {
     playerCommunicator.sendToAllPlayers (object, clientsToPlayers);
-  }
-
-  private void sendToAllPlayersExcept (final PlayerPacket player, final Object object)
-  {
-    playerCommunicator.sendToAllPlayersExcept (player, object, clientsToPlayers);
   }
 
   private void remove (final Remote client)
@@ -548,7 +540,7 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerConfig.getGameServerType () == GameServerType.HOST_AND_PLAY;
   }
 
-  private boolean waitingForResponseToEventFromPlayer (final Class <? extends PlayerInputRequestEvent> requestClass,
+  private boolean waitingForResponseToEventFromPlayer (final Class <? extends ServerRequestEvent> requestClass,
                                                        final PlayerPacket player)
   {
     for (final PlayerInputRequestEvent request : playerInputRequestEventCache.get (player))
@@ -559,7 +551,7 @@ public final class MultiplayerController extends ControllerAdapter
     return false;
   }
 
-  private void handlePlayerResponseTo (final Class <? extends PlayerInputRequestEvent> requestClass,
+  private void handlePlayerResponseTo (final Class <? extends ServerRequestEvent> requestClass,
                                        final ResponseRequestEvent responseRequest,
                                        final PlayerPacket player)
   {

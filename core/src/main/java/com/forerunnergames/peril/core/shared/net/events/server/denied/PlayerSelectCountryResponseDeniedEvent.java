@@ -2,20 +2,27 @@ package com.forerunnergames.peril.core.shared.net.events.server.denied;
 
 import com.forerunnergames.peril.core.shared.net.events.defaults.DefaultPlayerSelectCountryResponseEvent;
 import com.forerunnergames.peril.core.shared.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.core.shared.net.events.server.interfaces.PlayerResponseDeniedEvent;
+import com.forerunnergames.peril.core.shared.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent;
 
-public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerSelectCountryResponseEvent implements
-        ResponseDeniedEvent <Reason>
+public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerSelectCountryResponseEvent
+        implements PlayerResponseDeniedEvent <Reason>
 {
+  private final PlayerPacket player;
   private final Reason reason;
 
-  public PlayerSelectCountryResponseDeniedEvent (final String selectedCountryName, final Reason reason)
+  public PlayerSelectCountryResponseDeniedEvent (final PlayerPacket player,
+                                                 final String selectedCountryName,
+                                                 final Reason reason)
   {
     super (selectedCountryName);
+
+    Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (reason, "reason");
 
+    this.player = player;
     this.reason = reason;
   }
 
@@ -24,6 +31,12 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
     COUNTRY_DOES_NOT_EXIST,
     COUNTRY_DISABLED,
     COUNTRY_ALREADY_OWNED;
+  }
+
+  @Override
+  public PlayerPacket getPlayer ()
+  {
+    return player;
   }
 
   @Override
@@ -36,6 +49,7 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
   private PlayerSelectCountryResponseDeniedEvent ()
   {
     super (null);
+    player = null;
     reason = null;
   }
 }
