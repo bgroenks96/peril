@@ -6,7 +6,7 @@ buildscript {
 
   dependencies {
     classpath "com.android.tools.build:gradle:1.2.3"
-    classpath "org.robovm:robovm-gradle-plugin:1.5.0"
+    classpath "org.robovm:robovm-gradle-plugin:1.6.0"
   }
 }
 
@@ -19,8 +19,8 @@ allprojects {
 
   ext {
     appName = projectName
-    gdxVersion = "1.6.5-SNAPSHOT"
-    roboVMVersion = "1.5.0"
+    gdxVersion = "1.6.6-SNAPSHOT"
+    roboVMVersion = "1.6.0"
   }
 
   repositories {
