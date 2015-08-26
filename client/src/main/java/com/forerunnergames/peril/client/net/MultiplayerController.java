@@ -1,29 +1,26 @@
 package com.forerunnergames.peril.client.net;
 
-import static com.forerunnergames.peril.client.events.EventFluency.selectedCountryNameFrom;
-import static com.forerunnergames.peril.client.events.EventFluency.withGameServerConfigurationFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withServerConfigurationFrom;
 import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.messageFrom;
 import static com.forerunnergames.tools.net.events.EventFluency.serverFrom;
 
-import com.forerunnergames.peril.client.events.CreateGameDeniedEvent;
-import com.forerunnergames.peril.client.events.CreateGameRequestEvent;
-import com.forerunnergames.peril.client.events.CreateGameSuccessEvent;
+import com.forerunnergames.peril.client.events.ConnectToServerDeniedEvent;
+import com.forerunnergames.peril.client.events.ConnectToServerRequestEvent;
+import com.forerunnergames.peril.client.events.ConnectToServerSuccessEvent;
+import com.forerunnergames.peril.client.events.CreateGameServerDeniedEvent;
+import com.forerunnergames.peril.client.events.CreateGameServerRequestEvent;
+import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerCreator;
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.common.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
-import com.forerunnergames.tools.net.client.UnknownClientConfiguration;
 import com.forerunnergames.tools.net.events.local.ServerCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ServerConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
@@ -60,8 +57,6 @@ import org.slf4j.LoggerFactory;
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
-  private static final int CALL_FIRST = 10;
-  private static final int CALL_LAST = 0;
   private final Collection <ServerRequestEvent> serverRequestEventCache = new ArrayList <> ();
   private final GameServerCreator gameServerCreator;
   private final ServerConnector serverConnector;
@@ -119,36 +114,42 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final CreateGameRequestEvent event)
+  public void onEvent (final CreateGameServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}].", event);
 
-    final Result <String> result = createGameServer (withGameServerConfigurationFrom (event));
+    final Result <String> result = createGameServer (event.getGameServerConfiguration ());
 
     if (result.isFailure ())
     {
-      createGameDenied (event, failureReasonFrom (result));
+      createGameServerDenied (event, failureReasonFrom (result));
       return;
     }
 
-    eventBus.publish (new CreateGameSuccessEvent (event));
+    eventBus.publish (new CreateGameServerSuccessEvent (event));
   }
 
-  @Handler (priority = CALL_FIRST)
-  public void onEvent (final JoinGameServerRequestEvent event)
+  @Handler
+  public void onEvent (final ConnectToServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}].", event);
 
-    final Result <String> result = connectToServer (withServerConfigurationFrom (event));
+    final Result <String> result = connectToServer (event.getServerConfiguration ());
 
-    if (result.isFailure ()) joinGameServerDenied (event, failureReasonFrom (result));
+    if (result.isFailure ())
+    {
+      connectToServerDenied (event, failureReasonFrom (result));
+      return;
+    }
+
+    eventBus.publish (new ConnectToServerSuccessEvent (event));
   }
 
-  @Handler (priority = CALL_LAST)
+  @Handler
   public void onEvent (final ClientRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -193,7 +194,7 @@ public final class MultiplayerController extends ControllerAdapter
     }
 
     respondToServerRequest (PlayerSelectCountryRequestEvent.class,
-                            new PlayerSelectCountryResponseRequestEvent (selectedCountryNameFrom (event)));
+                            new PlayerSelectCountryResponseRequestEvent (event.getSelectedCountryName ()));
   }
 
   @Handler
@@ -237,16 +238,18 @@ public final class MultiplayerController extends ControllerAdapter
     gameServerCreator.destroy ();
   }
 
-  private void joinGameServerDenied (final JoinGameServerRequestEvent event, final String reason)
+  private void connectToServerDenied (final ConnectToServerRequestEvent event, final String reason)
   {
-    eventBus.publish (new JoinGameServerDeniedEvent (event, new UnknownClientConfiguration (), reason));
+    disconnectFromServer ();
+
+    eventBus.publish (new ConnectToServerDeniedEvent (event, reason));
   }
 
-  private void createGameDenied (final CreateGameRequestEvent event, final String reason)
+  private void createGameServerDenied (final CreateGameServerRequestEvent event, final String reason)
   {
     destroyGameServer ();
 
-    eventBus.publish (new CreateGameDeniedEvent (event, reason));
+    eventBus.publish (new CreateGameServerDeniedEvent (event, reason));
   }
 
   private void sendToServer (final RequestEvent event)

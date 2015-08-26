@@ -9,21 +9,15 @@ public enum CountrySecondaryImageState implements CountryImageState <CountrySeco
   CLICKED;
 
   @Override
-  public String toLowerCase ()
+  public CountrySecondaryImageState asEnum ()
   {
-    return IterableEnumHelper.toLowerCase (this);
+    return this;
   }
 
   @Override
-  public String toUpperCase ()
+  public String getEnumName ()
   {
-    return IterableEnumHelper.toUpperCase (this);
-  }
-
-  @Override
-  public String toProperCase ()
-  {
-    return IterableEnumHelper.toProperCase (this);
+    return name ();
   }
 
   @Override
@@ -89,11 +83,5 @@ public enum CountrySecondaryImageState implements CountryImageState <CountrySeco
   public static int count ()
   {
     return IterableEnumHelper.count (values ());
-  }
-
-  @Override
-  public String toString ()
-  {
-    return name ();
   }
 }

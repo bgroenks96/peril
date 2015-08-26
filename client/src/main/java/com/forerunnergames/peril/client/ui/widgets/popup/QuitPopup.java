@@ -3,7 +3,7 @@ package com.forerunnergames.peril.client.ui.widgets.popup;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class QuitPopup extends OkCancelPopup
+public final class QuitPopup extends OkCancelPopup
 {
   public QuitPopup (final Skin skin, final String message, final Stage stage, final PopupListener listener)
   {

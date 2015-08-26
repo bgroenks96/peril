@@ -11,23 +11,47 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.popup.ErrorPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
+import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Message;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
+import net.engio.mbassy.bus.MBassador;
+
 public class WidgetFactory
 {
+  private static final int MESSAGE_BOX_ROW_HEIGHT = 24;
+  private static final int MESSAGE_BOX_ROW_PADDING_LEFT = 12;
+  private static final int MESSAGE_BOX_ROW_PADDING_RIGHT = 12;
+  private static final int MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
+  private static final int MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
+  private static final MessageBoxRowStyle MESSAGE_BOX_ROW_STYLE = new MessageBoxRowStyle (MESSAGE_BOX_ROW_HEIGHT,
+          MESSAGE_BOX_ROW_PADDING_LEFT, MESSAGE_BOX_ROW_PADDING_RIGHT);
   private final AssetManager assetManager;
+  @Nullable
+  private ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle = null;
 
   public WidgetFactory (final AssetManager assetManager)
   {
@@ -171,6 +195,63 @@ public class WidgetFactory
     return getAsset (AssetSettings.NORMAL_CURSOR_ASSET_DESCRIPTOR);
   }
 
+  public final AssetManager getAssetManager ()
+  {
+    return assetManager;
+  }
+
+  public Popup createErrorPopup (final Stage stage, final PopupListener listener)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new ErrorPopup (getSkin (), stage, listener);
+  }
+
+  public MessageBox <StatusMessage> createStatusBox ()
+  {
+    return new DefaultMessageBox <> (getMessageBoxScrollPaneStyle (), this, MESSAGE_BOX_ROW_STYLE,
+            MessageBox.Scrollbars.REQUIRED);
+  }
+
+  public MessageBox <ChatMessage> createChatBox (final MBassador <Event> eventBus)
+  {
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+
+    return new ChatBox (getMessageBoxScrollPaneStyle (), this, MESSAGE_BOX_ROW_STYLE,
+            getSkinStyle (TextField.TextFieldStyle.class), eventBus);
+  }
+
+  public PlayerBox createPlayerBox ()
+  {
+    return new PlayerBox (createMessageBox (MessageBox.Scrollbars.REQUIRED));
+  }
+
+  public <T extends Message> MessageBox <T> createMessageBox (final MessageBox.Scrollbars scrollbars)
+  {
+    return new DefaultMessageBox <> (getMessageBoxScrollPaneStyle (), this, MESSAGE_BOX_ROW_STYLE, scrollbars);
+  }
+
+  public ProgressBar createHorizontalProgressBar (final float min,
+                                                  final float max,
+                                                  final float stepSize,
+                                                  final String style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return new ProgressBar (min, max, stepSize, false, getSkin (), style);
+  }
+
+  public ProgressBar createVerticalProgressBar (final float min,
+                                                final float max,
+                                                final float stepSize,
+                                                final String style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return new ProgressBar (min, max, stepSize, true, getSkin (), style);
+  }
+
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)
   {
     Arguments.checkIsNotNull (assetDescriptor, "assetDescriptor");
@@ -198,8 +279,25 @@ public class WidgetFactory
     return getAsset (AssetSettings.SKIN_JSON_ASSET_DESCRIPTOR);
   }
 
-  public final AssetManager getAssetManager ()
+  private ScrollPane.ScrollPaneStyle getMessageBoxScrollPaneStyle ()
   {
-    return assetManager;
+    if (messageBoxScrollPaneStyle == null) initializeMessageBoxScrollPaneStyle ();
+
+    return messageBoxScrollPaneStyle;
+  }
+
+  private void initializeMessageBoxScrollPaneStyle ()
+  {
+    messageBoxScrollPaneStyle = getSkinStyle (ScrollPane.ScrollPaneStyle.class);
+
+    if (messageBoxScrollPaneStyle.vScrollKnob != null)
+    {
+      messageBoxScrollPaneStyle.vScrollKnob.setMinWidth (MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
+    }
+
+    if (messageBoxScrollPaneStyle.hScrollKnob != null)
+    {
+      messageBoxScrollPaneStyle.hScrollKnob.setMinHeight (MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT);
+    }
   }
 }

@@ -10,7 +10,6 @@ import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
-import com.forerunnergames.tools.net.server.UnknownServerConfiguration;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -44,8 +43,8 @@ public class ServerMultiplayerControllerSmokeTest
     this.eventBus = eventBus;
     this.server = server;
     this.client = client;
-    this.serverAddr = serverConfig.getServerAddress ();
-    this.serverPort = serverConfig.getServerTcpPort ();
+    serverAddr = serverConfig.getServerAddress ();
+    serverPort = serverConfig.getServerTcpPort ();
 
     client.initialize ();
     server.start ();
@@ -60,8 +59,7 @@ public class ServerMultiplayerControllerSmokeTest
   @Test (dependsOnMethods = "testConnectToServer")
   public void testJoinServer ()
   {
-    final ServerConfiguration config = new UnknownServerConfiguration ();
-    client.sendEvent (new JoinGameServerRequestEvent (config));
+    client.sendEvent (new JoinGameServerRequestEvent ());
     client.waitForEventCommunication (JoinGameServerSuccessEvent.class, true);
   }
 

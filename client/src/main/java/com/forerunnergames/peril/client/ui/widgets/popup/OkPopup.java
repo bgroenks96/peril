@@ -14,7 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Align;
 
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.PopupMessageBox;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.DefaultMessage;
+import com.forerunnergames.tools.common.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +35,8 @@ public class OkPopup implements Popup
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
     Arguments.checkIsNotNull (listener, "listener");
 
-    delegate = new DelegateDialog (popupStyle.getTitle (), skin.get (popupStyle.getWindowStyleName (), Window.WindowStyle.class), popupStyle, stage, skin, listener);
+    delegate = new DelegateDialog (popupStyle.getTitle (),
+            skin.get (popupStyle.getWindowStyleName (), Window.WindowStyle.class), popupStyle, stage, skin, listener);
 
     addKeys ();
     addButtons ();
@@ -72,6 +77,14 @@ public class OkPopup implements Popup
   }
 
   @Override
+  public void setMessage (final Message message)
+  {
+    Arguments.checkIsNotNull (message, "message");
+
+    delegate.setMessage (message);
+  }
+
+  @Override
   public final boolean isShown ()
   {
     return delegate.isShown ();
@@ -82,6 +95,7 @@ public class OkPopup implements Popup
   {
     return delegate.asActor ();
   }
+
 
   protected void addButtons ()
   {
@@ -116,6 +130,7 @@ public class OkPopup implements Popup
     private final PopupListener listener;
     private final Label.LabelStyle labelStyle;
     private final Map <String, TextButton> buttonTextToTextButtons = new HashMap <> ();
+    private final MessageBox <Message> messageBox;
     private boolean isShown = false;
 
     public DelegateDialog (final String title,
@@ -137,6 +152,15 @@ public class OkPopup implements Popup
       this.skin = skin;
       this.listener = listener;
 
+      messageBox = new PopupMessageBox <Message> (skin)
+      {
+        @Override
+        protected Label createMessageLabel (final String message)
+        {
+          return DelegateDialog.this.createMessageLabel (message);
+        }
+      };
+
       labelStyle = skin.get (Label.LabelStyle.class);
 
       if (popupStyle.isDebug ()) debug ();
@@ -144,7 +168,7 @@ public class OkPopup implements Popup
       configureWindow ();
       configureButtonTable ();
       configureContentTable ();
-      addText ();
+      configureMessageBox ();
     }
 
     @Override
@@ -210,6 +234,15 @@ public class OkPopup implements Popup
     }
 
     @Override
+    public void setMessage (final Message message)
+    {
+      Arguments.checkIsNotNull (message, "message");
+
+      messageBox.clear ();
+      messageBox.addMessage (message);
+    }
+
+    @Override
     public void show ()
     {
       show (stage);
@@ -259,15 +292,13 @@ public class OkPopup implements Popup
       }
     }
 
-    public void addText ()
+    public void configureMessageBox ()
     {
-      final Label label = new Label (popupStyle.getMessage (), labelStyle);
-      label.setWrap (true);
-      label.setAlignment (Align.topLeft);
+      getContentTable ().add (messageBox.asActor ()).expand ().fill ().top ().left ()
+              .padLeft (popupStyle.getTextPaddingLeft ()).padRight (popupStyle.getTextPaddingRight ())
+              .padTop (popupStyle.getTextPaddingTop ()).padBottom (popupStyle.getTextPaddingBottom ());
 
-      getContentTable ().add (label).expand ().fill ().top ().left ().padLeft (popupStyle.getTextPaddingLeft ())
-              .padRight (popupStyle.getTextPaddingRight ()).padTop (popupStyle.getTextPaddingTop ())
-              .padBottom (popupStyle.getTextPaddingBottom ());
+      setMessage (new DefaultMessage (popupStyle.getMessage ()));
     }
 
     public void addButtons ()
@@ -280,16 +311,17 @@ public class OkPopup implements Popup
       Arguments.checkIsNotNull (buttonText, "buttonText");
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
-      final TextButton textButton = new TextButton (buttonText, skin.get (popupStyle.getTextButtonStyleName (),
-                                                                          TextButton.TextButtonStyle.class));
+      final TextButton textButton = new TextButton (buttonText,
+              skin.get (popupStyle.getTextButtonStyleName (), TextButton.TextButtonStyle.class));
 
       textButton.padLeft (popupStyle.getButtonTextPaddingLeft ()).padRight (popupStyle.getButtonTextPaddingRight ())
               .padTop (popupStyle.getButtonTextPaddingTop ()).padBottom (popupStyle.getButtonTextPaddingBottom ());
 
-      final Cell <TextButton> textButtonCell = getButtonTable().add (textButton);
+      final Cell <TextButton> textButtonCell = getButtonTable ().add (textButton);
 
       if (popupStyle.getButtonWidth () != PopupStyle.AUTO_WIDTH) textButtonCell.width (popupStyle.getButtonWidth ());
-      if (popupStyle.getButtonHeight () != PopupStyle.AUTO_HEIGHT) textButtonCell.height (popupStyle.getButtonHeight ());
+      if (popupStyle.getButtonHeight () != PopupStyle.AUTO_HEIGHT) textButtonCell
+              .height (popupStyle.getButtonHeight ());
 
       setObject (textButton, popupAction);
 
@@ -300,7 +332,8 @@ public class OkPopup implements Popup
     {
       Arguments.checkIsNotNull (oldText, "oldText");
       Arguments.checkIsNotNull (newText, "newText");
-      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText), "Cannot find button with text [" + oldText + "].");
+      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText),
+                             "Cannot find button with text [" + oldText + "].");
 
       buttonTextToTextButtons.get (oldText).setText (newText);
     }
@@ -315,6 +348,15 @@ public class OkPopup implements Popup
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
       key (keyCode, popupAction);
+    }
+
+    private Label createMessageLabel (final String message)
+    {
+      final Label label = new Label (message, labelStyle);
+      label.setWrap (true);
+      label.setAlignment (Align.topLeft);
+
+      return label;
     }
 
     private void configureContentTable ()

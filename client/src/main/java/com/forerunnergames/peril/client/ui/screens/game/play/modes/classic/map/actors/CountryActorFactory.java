@@ -4,22 +4,22 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageDataRepository;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.CountryImagesLoader;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImagesRepository;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class CountryActorFactory
 {
-  private final CountryImagesLoader countryImagesLoader;
   private final CountryImageDataRepository countryImageDataRepository;
+  private final CountryImagesRepository countryImagesRepository;
 
-  public CountryActorFactory (final CountryImagesLoader countryImagesLoader,
-                              final CountryImageDataRepository countryImageDataRepository)
+  public CountryActorFactory (final CountryImageDataRepository countryImageDataRepository,
+                              final CountryImagesRepository countryImagesRepository)
   {
-    Arguments.checkIsNotNull (countryImagesLoader, "countryImagesLoader");
     Arguments.checkIsNotNull (countryImageDataRepository, "countryImageDataRepository");
+    Arguments.checkIsNotNull (countryImagesRepository, "countryImagesRepository");
 
-    this.countryImagesLoader = countryImagesLoader;
     this.countryImageDataRepository = countryImageDataRepository;
+    this.countryImagesRepository = countryImagesRepository;
   }
 
   public CountryActor create (final String countryName, final BitmapFont countryArmyTextFont)
@@ -29,8 +29,8 @@ public final class CountryActorFactory
 
     final CountryImageData countryImageData = countryImageDataRepository.get (countryName);
 
-    return new DefaultCountryActor (countryImagesLoader.getAllPrimary (countryName),
-            countryImagesLoader.getAllSecondary (countryName), countryImageData,
+    return new DefaultCountryActor (countryImagesRepository.getPrimary (countryName),
+            countryImagesRepository.getSecondary (countryName), countryImageData,
             CountryArmyTextActorFactory.create (countryImageData, countryArmyTextFont));
   }
 }

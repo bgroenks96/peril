@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
-import static com.forerunnergames.peril.client.events.EventFluency.playersFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.hasAuthorFrom;
@@ -18,7 +17,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -35,17 +33,20 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import com.forerunnergames.peril.client.events.JoinGameSuccessEvent;
+import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
+import com.forerunnergames.peril.client.events.StatusMessageEvent;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
@@ -54,8 +55,6 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.client.events.StatusMessageEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
@@ -65,7 +64,6 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
-import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -94,26 +92,27 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
   private final Cell <Actor> playMapActorCell;
+  private final DebugInputProcessor debugInputProcessor;
   private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
 
-  public ClassicModePlayScreen (final ScreenChanger screenChanger,
+  public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
+                                final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
                                 final MouseInput mouseInput,
                                 final Batch batch,
-                                final AssetManager assetManager,
                                 final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
-    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
     this.eventBus = eventBus;
-    widgetFactory = new ClassicModePlayScreenWidgetFactory (assetManager, screenSize, mouseInput, eventBus);
 
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
@@ -167,7 +166,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               @Override
               public void onSubmit ()
               {
-                screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
+                screenChanger.toPreviousScreenSkippingOr (ScreenId.LOADING, ScreenId.MAIN_MENU);
                 eventBus.publishAsync (new QuitGameEvent ());
               }
 
@@ -233,7 +232,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this);
+    debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox, chatBox, playerBox,
+            mandatoryOccupationPopup, eventBus);
+
+    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
 
   @Override
@@ -292,6 +294,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox.clear ();
     statusBox.clear ();
     playerBox.clear ();
+    debugInputProcessor.reset ();
     clearPlayMapActor ();
   }
 
@@ -345,7 +348,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final JoinGameSuccessEvent event)
+  void onEvent (final PlayGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -356,8 +359,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        updatePlayMapActor (event.getMapMetadata ());
-        playerBox.setPlayers (playersFrom (event));
+        updatePlayMapActor (event.getPlayMapActor ());
+        playerBox.setPlayers (event.getPlayersInGame ());
       }
     });
   }
@@ -526,7 +529,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
+        screenChanger.toPreviousScreenSkippingOr (ScreenId.LOADING, ScreenId.MAIN_MENU);
       }
     });
   }
@@ -543,10 +546,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                               Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
 
-  private void updatePlayMapActor (final MapMetadata mapMetadata)
+  private void updatePlayMapActor (final PlayMapActor playMapActor)
   {
-    playMapActor = widgetFactory.createPlayMapActor (mapMetadata);
-    playMapActorCell.setActor (playMapActor.asActor ());
+    this.playMapActor = playMapActor;
+    playMapActorCell.setActor (this.playMapActor.asActor ());
+    debugInputProcessor.setPlayMapActor (this.playMapActor);
   }
 
   private void clearPlayMapActor ()
@@ -556,5 +560,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     widgetFactory.destroyPlayMapActor (playMapActor.getMapMetadata ());
     playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
     playMapActorCell.setActor (playMapActor.asActor ());
+    debugInputProcessor.setPlayMapActor (playMapActor);
   }
 }

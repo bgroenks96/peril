@@ -18,21 +18,15 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
   DISABLED;
 
   @Override
-  public String toLowerCase ()
+  public CountryPrimaryImageState asEnum ()
   {
-    return IterableEnumHelper.toLowerCase (this);
+    return this;
   }
 
   @Override
-  public String toUpperCase ()
+  public String getEnumName ()
   {
-    return IterableEnumHelper.toUpperCase (this);
-  }
-
-  @Override
-  public String toProperCase ()
-  {
-    return IterableEnumHelper.toProperCase (this);
+    return name ();
   }
 
   @Override
@@ -98,11 +92,5 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
   public static int count ()
   {
     return IterableEnumHelper.count (values ());
-  }
-
-  @Override
-  public String toString ()
-  {
-    return name ();
   }
 }

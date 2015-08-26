@@ -1,40 +1,12 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data;
 
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Preconditions;
-
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-public final class CountryImageDataRepository
+public interface CountryImageDataRepository
 {
-  private final ImmutableMap <String, CountryImageData> countryNamesToImages;
+  boolean has (String countryName);
 
-  public CountryImageDataRepository (final ImmutableMap <String, CountryImageData> countryNamesToImages)
-  {
-    Arguments.checkIsNotNull (countryNamesToImages, "countryNamesToImages");
-    Arguments.checkHasNoNullKeysOrValues (countryNamesToImages, "countryNamesToImages");
+  CountryImageData get (String name);
 
-    this.countryNamesToImages = countryNamesToImages;
-  }
-
-  public boolean has (final String countryName)
-  {
-    Arguments.checkIsNotNull (countryName, "countryName");
-
-    return countryNamesToImages.containsKey (countryName);
-  }
-
-  public CountryImageData get (final String name)
-  {
-    Arguments.checkIsNotNull (name, "name");
-    Preconditions.checkIsTrue (has (name), "Cannot find: " + name + ".");
-
-    return countryNamesToImages.get (name);
-  }
-
-  public ImmutableSet <String> getCountryNames ()
-  {
-    return countryNamesToImages.keySet ();
-  }
+  ImmutableSet<String> getCountryNames ();
 }

@@ -4,12 +4,7 @@ import com.forerunnergames.tools.common.enums.IterableEnum;
 
 public interface CountryImageState <E extends Enum <E> & CountryImageState <E>> extends IterableEnum <E>
 {
-  String toLowerCase ();
+  E asEnum ();
 
-  String toUpperCase ();
-
-  String toProperCase ();
-
-  @Override
-  String toString ();
+  String getEnumName ();
 }

@@ -50,21 +50,58 @@ public final class AssetSettings
   public static final String CONTINENT_INPUT_DETECTION_DATA_FILENAME = "inputDetection.txt";
   public static final String COUNTRY_IMAGE_DATA_FILENAME = "imageData.txt";
   public static final String COUNTRY_INPUT_DETECTION_DATA_FILENAME = "inputDetection.txt";
+  public static final String VALID_COUNTRY_ATLAS_FILENAME_DESCRIPTION =
+          "1) Must begin with the word \'countries\' (all lowercase, without quotes)\n" +
+          "2) The word \'countries\' must be followed by a consecutive, increasing, whole number index, starting from \'1\' for the first country atlas.\n" +
+          "3) The index number must be followed by \'.atlas\' (all lowercase, without quotes)\n" +
+          "4) Each .atlas file must be accompanied by a corresponding .png file with the same name, in the same folder.\n\n" +
+          "Examples of valid .atlas filenames: countries1.atlas, countries2.atlas, countries3.atlas\n" +
+          "Examples of valid .png filenames: countries1.png, countries2.png, countries3.png\n";
 
-  public static boolean isValidCountryAtlasFileName (final String fileName, final int expectedAtlasNumber)
+  public static boolean isValidCountryAtlasPackFileName (final String fileName, final int expectedAtlasIndex)
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    if (expectedAtlasNumber < 0) return false;
+    if (expectedAtlasIndex < 1) return false;
 
-    return ("countries" + expectedAtlasNumber + ".atlas").equals (fileName);
+    return ("countries" + expectedAtlasIndex + ".atlas").equals (fileName);
   }
 
-  public static boolean isAtlasFileType (final String fileName)
+  public static boolean isValidCountryAtlasImageFileName (final String fileName, final int expectedAtlasIndex)
+  {
+    Arguments.checkIsNotNull (fileName, "fileName");
+
+    if (expectedAtlasIndex < 1) return false;
+
+    return ("countries" + expectedAtlasIndex + ".png").equals (fileName);
+  }
+
+  public static String getValidCountryAtlasPackFileName (final int expectedAtlasIndex)
+  {
+    Arguments.checkLowerInclusiveBound (expectedAtlasIndex, 1, "expectedAtlasIndex");
+
+    return "countries" + expectedAtlasIndex + ".atlas";
+  }
+
+  public static String getValidCountryAtlasImageFileName (final int expectedAtlasIndex)
+  {
+    Arguments.checkLowerInclusiveBound (expectedAtlasIndex, 1, "expectedAtlasIndex");
+
+    return "countries" + expectedAtlasIndex + ".png";
+  }
+
+  public static boolean isAtlasPackFileType (final String fileName)
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
     return fileName.endsWith (".atlas");
+  }
+
+  public static boolean isAtlasImageFileType (final String fileName)
+  {
+    Arguments.checkIsNotNull (fileName, "fileName");
+
+    return fileName.endsWith (".png");
   }
 
   public static String ABSOLUTE_UPDATED_ASSETS_DIRECTORY = "";
@@ -78,7 +115,11 @@ public final class AssetSettings
   public static final AssetDescriptor <Skin> SKIN_JSON_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/shared/skins/atlases/uiskin.json", Skin.class, SKIN_PARAMETER);
 
-  // Menus
+  // Loading Screen
+  public static final AssetDescriptor <Texture> LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/loading/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+
+  // Menu Screens
   public static final AssetDescriptor <TextureAtlas> MENU_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/atlases/menus.atlas", TextureAtlas.class);
   public static final AssetDescriptor <Music> MENU_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (

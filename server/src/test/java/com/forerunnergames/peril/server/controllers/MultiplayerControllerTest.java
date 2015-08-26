@@ -117,9 +117,7 @@ public class MultiplayerControllerTest
     connect (host);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
-            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
-    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+    communicateEventFromClient (new JoinGameServerRequestEvent (), host);
 
     final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
     {
@@ -153,7 +151,7 @@ public class MultiplayerControllerTest
     connect (client);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
     {
@@ -187,7 +185,7 @@ public class MultiplayerControllerTest
     connect (client);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
     {
@@ -196,11 +194,8 @@ public class MultiplayerControllerTest
       {
         assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
         final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
         final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
                 && matchClientConfig.getClientTcpPort () == client.getPort ();
       }
 
@@ -224,7 +219,7 @@ public class MultiplayerControllerTest
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
             GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
-    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+    communicateEventFromClient (new JoinGameServerRequestEvent (), host);
 
     final BaseMatcher <JoinGameServerDeniedEvent> deniedEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
     {
@@ -233,11 +228,8 @@ public class MultiplayerControllerTest
       {
         assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
         final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
         final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+        return matchClientConfig.getClientAddress ().equals (host.getAddress ())
                 && matchClientConfig.getClientTcpPort () == host.getPort ();
       }
 
@@ -258,9 +250,7 @@ public class MultiplayerControllerTest
     connect (host);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
-            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
-    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+    communicateEventFromClient (new JoinGameServerRequestEvent (), host);
 
     final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
     {
@@ -299,7 +289,7 @@ public class MultiplayerControllerTest
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
             GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
-    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), host);
+    communicateEventFromClient (new JoinGameServerRequestEvent (), host);
 
     final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
     {
@@ -325,7 +315,7 @@ public class MultiplayerControllerTest
 
     final Remote duplicateHost = createHost ();
     connect (duplicateHost);
-    communicateEventFromClient (new JoinGameServerRequestEvent (gameServerConfig), duplicateHost);
+    communicateEventFromClient (new JoinGameServerRequestEvent (), duplicateHost);
     verify (mockClientCommunicator).sendTo (eq (duplicateHost), isA (JoinGameServerDeniedEvent.class));
   }
 
@@ -338,7 +328,7 @@ public class MultiplayerControllerTest
     connect (client);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
     {
@@ -347,11 +337,8 @@ public class MultiplayerControllerTest
       {
         assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
         final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
         final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
                 && matchClientConfig.getClientTcpPort () == client.getPort ();
       }
 
@@ -373,7 +360,7 @@ public class MultiplayerControllerTest
     connect (client);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
     {
@@ -382,11 +369,8 @@ public class MultiplayerControllerTest
       {
         assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
         final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
         final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
                 && matchClientConfig.getClientTcpPort () == client.getPort ();
       }
 
@@ -408,7 +392,7 @@ public class MultiplayerControllerTest
     connect (client);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (serverConfig), client));
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
     {
@@ -417,11 +401,8 @@ public class MultiplayerControllerTest
       {
         assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
         final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getServerConfiguration ();
         final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
                 && matchClientConfig.getClientTcpPort () == client.getPort ();
       }
 
@@ -836,8 +817,7 @@ public class MultiplayerControllerTest
   private void addClient (final Remote client)
   {
     connect (client);
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (createDefaultServerConfig ()),
-            client));
+    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
   }
 
   /*

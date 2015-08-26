@@ -21,12 +21,12 @@ import net.engio.mbassy.bus.MBassador;
 public final class DebugInputProcessor extends InputAdapter
 {
   private final MouseInput mouseInput;
-  private final PlayMapActor playMapActor;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
   private final PlayerBox playerBox;
   private final MandatoryOccupationPopup mandatoryOccupationPopup;
   private final DebugEventGenerator eventGenerator;
+  private PlayMapActor playMapActor;
 
   public DebugInputProcessor (final MouseInput mouseInput,
                               final PlayMapActor playMapActor,
@@ -52,6 +52,13 @@ public final class DebugInputProcessor extends InputAdapter
     this.mandatoryOccupationPopup = mandatoryOccupationPopup;
 
     eventGenerator = new DebugEventGenerator (eventBus);
+  }
+
+  public void setPlayMapActor (final PlayMapActor playMapActor)
+  {
+    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+
+    this.playMapActor = playMapActor;
   }
 
   @Override
@@ -368,5 +375,14 @@ public final class DebugInputProcessor extends InputAdapter
         return false;
       }
     }
+  }
+
+  public void reset ()
+  {
+    playMapActor.reset ();
+    statusBox.clear ();
+    chatBox.clear ();
+    playerBox.clear ();
+    eventGenerator.resetPlayers ();
   }
 }

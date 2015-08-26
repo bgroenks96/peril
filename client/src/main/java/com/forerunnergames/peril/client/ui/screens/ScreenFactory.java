@@ -5,17 +5,22 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.screens.game.play.PlayScreenFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.CountryCounterFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreen;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.CountryCounterFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultPlayMapActorFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.MultiplayerGameModesMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.MultiplayerClassicGameModeMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.DefaultCreateGameHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.MultiplayerClassicGameModeCreateGameMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.MultiplayerClassicGameModeJoinGameMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.DefaultJoinGameHandler;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading.DefaultJoinGameServerHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading.JoinGameServerHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading.LoadingScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading.LoadingScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.peril.MultiplayerPerilGameModeMenuScreen;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.tools.common.Arguments;
@@ -31,8 +36,9 @@ public final class ScreenFactory
   private final MBassador <Event> eventBus;
   private final Batch batch;
   private final MenuScreenWidgetFactory menuScreenWidgetFactory;
-  private final JoinGameHandler joinGameHandler;
+  private final JoinGameServerHandler joinGameServerHandler;
   private final AssetManager assetManager;
+  private final PlayMapActorFactory playMapActorFactory;
 
   public ScreenFactory (final ScreenChanger screenChanger,
                         final ScreenSize screenSize,
@@ -55,7 +61,8 @@ public final class ScreenFactory
     this.assetManager = assetManager;
     this.eventBus = eventBus;
     menuScreenWidgetFactory = new MenuScreenWidgetFactory (assetManager);
-    joinGameHandler = new DefaultJoinGameHandler (screenChanger, eventBus);
+    joinGameServerHandler = new DefaultJoinGameServerHandler (eventBus);
+    playMapActorFactory = new DefaultPlayMapActorFactory (assetManager, screenSize, mouseInput, eventBus);
   }
 
   public Screen create (final ScreenId screenId)
@@ -64,6 +71,11 @@ public final class ScreenFactory
 
     switch (screenId)
     {
+      case LOADING:
+      {
+        return new LoadingScreen (new LoadingScreenWidgetFactory (assetManager), playMapActorFactory, screenChanger,
+                screenSize, mouseInput, batch, assetManager, eventBus);
+      }
       case MAIN_MENU:
       {
         return new MainMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, batch);
@@ -83,23 +95,21 @@ public final class ScreenFactory
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       {
         return new MultiplayerClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, new DefaultCreateGameHandler (joinGameHandler, eventBus),
-                CountryCounterFactory.create (GameMode.CLASSIC));
+                batch, CountryCounterFactory.create (GameMode.CLASSIC), eventBus);
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {
         return new MultiplayerClassicGameModeJoinGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, joinGameHandler);
+                batch, joinGameServerHandler, eventBus);
       }
       case PLAY_CLASSIC:
       {
-        return PlayScreenFactory.create (GameMode.CLASSIC, screenChanger, screenSize, mouseInput, batch, assetManager,
-                                         eventBus);
+        return new ClassicModePlayScreen (new ClassicModePlayScreenWidgetFactory (assetManager, playMapActorFactory),
+                screenChanger, screenSize, mouseInput, batch, eventBus);
       }
       case PLAY_PERIL:
       {
-        return PlayScreenFactory.create (GameMode.PERIL, screenChanger, screenSize, mouseInput, batch, assetManager,
-                                         eventBus);
+        return new PerilModePlayScreen (screenChanger, screenSize, mouseInput, batch, assetManager, eventBus);
       }
       default:
       {

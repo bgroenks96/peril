@@ -7,7 +7,7 @@ import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultMapMetadata extends AbstractMapMetadata
+public class DefaultMapMetadata implements MapMetadata
 {
   private final String name;
   private final MapType type;
@@ -26,21 +26,47 @@ public final class DefaultMapMetadata extends AbstractMapMetadata
   }
 
   @Override
-  public String getName ()
+  public final String getName ()
   {
     return name;
   }
 
   @Override
-  public MapType getType ()
+  public final MapType getType ()
   {
     return type;
   }
 
   @Override
-  public GameMode getMode ()
+  public final GameMode getMode ()
   {
     return mode;
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    int result = name.hashCode ();
+    result = 31 * result + type.hashCode ();
+    result = 31 * result + mode.hashCode ();
+    return result;
+  }
+
+  @Override
+  public boolean equals (final Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null || getClass () != obj.getClass ()) return false;
+
+    final MapMetadata mapMetadata = (MapMetadata) obj;
+
+    return name.equals (mapMetadata.getName ()) && type == mapMetadata.getType () && mode == mapMetadata.getMode ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Name: {} | Type: {} | Mode: {}", getClass ().getSimpleName (), name, type, mode);
   }
 
   @RequiredForNetworkSerialization

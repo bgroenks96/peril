@@ -1,0 +1,21 @@
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders;
+
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.ContinentColor;
+import com.forerunnergames.peril.common.io.StreamParserFactory;
+import com.forerunnergames.tools.common.Arguments;
+
+public final class ContinentColorToNameLoader extends AbstractTerritoryColorToNameLoader <ContinentColor>
+{
+  public ContinentColorToNameLoader (final StreamParserFactory streamParserFactory)
+  {
+    super (streamParserFactory);
+  }
+
+  @Override
+  protected ContinentColor createTerritoryColor (final int colorComponentValue)
+  {
+    Arguments.checkIsNotNull (colorComponentValue, "colorComponentValue");
+
+    return new ContinentColor (colorComponentValue);
+  }
+}

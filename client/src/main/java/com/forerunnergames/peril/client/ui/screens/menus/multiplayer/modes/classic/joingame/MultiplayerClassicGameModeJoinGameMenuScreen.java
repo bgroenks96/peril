@@ -12,15 +12,19 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
+import com.forerunnergames.peril.client.events.JoinGameEvent;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.shared.JoinGameHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading.JoinGameServerHandler;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.NetworkConstants;
+
+import net.engio.mbassy.bus.MBassador;
 
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
@@ -33,11 +37,13 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
                                                        final ScreenChanger screenChanger,
                                                        final ScreenSize screenSize,
                                                        final Batch batch,
-                                                       final JoinGameHandler joinGameHandler)
+                                                       final JoinGameServerHandler joinGameServerHandler,
+                                                       final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
-    Arguments.checkIsNotNull (joinGameHandler, "joinGameHandler");
+    Arguments.checkIsNotNull (joinGameServerHandler, "joinGameHandler");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
@@ -130,9 +136,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
                         + " " + rawPlayerName;
         final String finalServerAddress = serverAddressTextField.getText ();
 
-        // TODO Go to loading screen.
+        toScreen (ScreenId.LOADING);
 
-        joinGameHandler.joinGame (finalPlayerName, finalServerAddress);
+        eventBus.publish (new JoinGameEvent (finalPlayerName, finalServerAddress));
       }
     });
   }

@@ -35,7 +35,7 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
                   final TextFieldStyle textFieldStyle,
                   final MBassador <Event> eventBus)
   {
-    super (scrollPaneStyle, widgetFactory, messageBoxRowStyle);
+    super (scrollPaneStyle, widgetFactory, messageBoxRowStyle, Scrollbars.REQUIRED);
 
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");

@@ -6,6 +6,8 @@ import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
 
 import javax.annotation.Nullable;
 
@@ -18,6 +20,8 @@ public final class LocalGameServerCreator implements GameServerCreator
   @Nullable
   private Process serverProcess = null;
   private boolean isCreated = false;
+  @Nullable
+  private volatile String error = null;
 
   @Override
   public Result <String> create (final GameServerConfiguration config)
@@ -51,13 +55,29 @@ public final class LocalGameServerCreator implements GameServerCreator
                       "--assignment", config.getInitialCountryAssignment ().name(),
                       "--map-name", config.getMapName ())
                       .redirectErrorStream (true)
-                      .inheritIO ()
                       .start ();
       // @formatter:on
 
       addShutDownHook ();
+      read (serverProcess.getInputStream ());
+
+      try
+      {
+        // It takes a while for the server process to actually get up and running.
+        // If we don't wait, there will be connection failures if attempting to connect immediately after creation.
+        Thread.sleep (1000);
+      }
+      catch (final InterruptedException ignored)
+      {
+        Thread.currentThread ().interrupt ();
+      }
+
+      if (error != null) throw new IOException (error);
 
       isCreated = true;
+
+      log.info ("Successfully launched your local host & play server \"{}\" on port {} (TCP)...",
+                config.getGameServerName (), config.getServerTcpPort ());
 
       return Result.success ();
     }
@@ -88,6 +108,44 @@ public final class LocalGameServerCreator implements GameServerCreator
   public boolean isCreated ()
   {
     return isCreated;
+  }
+
+  private void read (final InputStream inputStream)
+  {
+    error = null;
+
+    new Thread (new Runnable ()
+    {
+      public void run ()
+      {
+        final Scanner scanner = new Scanner (inputStream);
+
+        while (scanner.hasNextLine ())
+        {
+          final String line = scanner.nextLine ();
+
+          System.out.println (Strings.format ("Server Process: {}", line));
+
+          final String lowerCaseLine = line.toLowerCase ();
+
+          if (lowerCaseLine.contains ("error") || lowerCaseLine.contains ("exception")
+                  || lowerCaseLine.contains ("crash"))
+          {
+            synchronized (this)
+            {
+              if (error == null)
+              {
+                error = line;
+              }
+              else
+              {
+                error += "\n\n" + line;
+              }
+            }
+          }
+        }
+      }
+    }).start ();
   }
 
   private void addShutDownHook ()

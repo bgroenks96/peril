@@ -3,27 +3,26 @@ package com.forerunnergames.peril.client.ui.widgets.messagebox;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.SnapshotArray;
 
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Maths;
 import com.forerunnergames.tools.common.Message;
 
-public abstract class AbstractMessageBox <T extends Message> extends ScrollPane implements MessageBox <T>
+public abstract class AbstractMessageBox <T extends Message> implements MessageBox <T>
 {
   private static final int MAX_ROWS = 40;
   private static final int V_SCROLLBAR_WIDTH = 14;
   private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
+  private final ScrollPane scrollPane;
   private final Table table;
   private final MessageBoxRowStyle messageBoxRowStyle;
 
-  protected AbstractMessageBox (final ScrollPaneStyle scrollPaneStyle, final MessageBoxRowStyle messageBoxRowStyle)
+  protected AbstractMessageBox (final ScrollPane.ScrollPaneStyle scrollPaneStyle,
+                                final MessageBoxRowStyle messageBoxRowStyle,
+                                final Scrollbars scrollbars)
   {
-    super (null, scrollPaneStyle);
-
     Arguments.checkIsNotNull (messageBoxRowStyle, "messageBoxRowStyle");
 
     this.messageBoxRowStyle = messageBoxRowStyle;
@@ -31,35 +30,37 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
     table = new Table ();
     configureTable ();
 
-    setWidget (table);
-    setOverscroll (false, false);
-    setFlickScroll (true);
-    setForceScroll (false, true);
-    setFadeScrollBars (false);
-    setScrollingDisabled (true, false);
-    setScrollBarPositions (true, true);
-    setScrollbarsOnTop (false);
-    setSmoothScrolling (true);
-    setVariableSizeKnobs (true);
+    scrollPane = new ScrollPane (table, scrollPaneStyle);
+    scrollPane.setOverscroll (false, false);
+    scrollPane.setFlickScroll (true);
+    scrollPane.setForceScroll (false, scrollbars != Scrollbars.OPTIONAL && scrollbars == Scrollbars.REQUIRED);
+    scrollPane.setFadeScrollBars (false);
+    scrollPane.setScrollingDisabled (true, false);
+    scrollPane.setScrollBarPositions (true, true);
+    scrollPane.setScrollbarsOnTop (false);
+    scrollPane.setSmoothScrolling (true);
+    scrollPane.setVariableSizeKnobs (true);
 
     scrollPaneStyle.vScrollKnob.setMinWidth (V_SCROLLBAR_WIDTH);
 
-    // @formatter:off
-    addListener (new InputListener ()
+    scrollPane.addListener (new InputListener ()
     {
       @Override
       public void enter (final InputEvent event, final float x, final float y, final int pointer, final Actor fromActor)
       {
-        getStage ().setScrollFocus (AbstractMessageBox.this);
+        if (scrollPane.getStage () == null) return;
+
+        scrollPane.getStage ().setScrollFocus (scrollPane);
       }
 
       @Override
       public void exit (final InputEvent event, final float x, final float y, final int pointer, final Actor toActor)
       {
-        getStage ().setScrollFocus (null);
+        if (scrollPane.getStage () == null) return;
+
+        scrollPane.getStage ().setScrollFocus (null);
       }
     });
-    // @formatter:on
   }
 
   @Override
@@ -69,43 +70,32 @@ public abstract class AbstractMessageBox <T extends Message> extends ScrollPane 
 
     limitOldRows ();
 
-    final Actor row = createRow (message);
     table.row ().expandX ().fillX ().prefHeight (messageBoxRowStyle.getHeight ());
-    final Cell <Actor> messageCell = table.add (row);
-
+    table.add (createRow (message));
     table.layout ();
-    layout ();
-    messageCell.height (Maths.nextHigherMultiple (Math.round (row.getHeight ()),
-                                                  Math.round (messageBoxRowStyle.getHeight ())));
-    table.invalidateHierarchy ();
-    layout ();
+    scrollPane.layout ();
   }
 
   @Override
   public void showLastMessage ()
   {
-    setScrollY (getMaxY ());
-  }
-
-  @Override
-  public Actor asActor ()
-  {
-    return this;
+    scrollPane.setScrollY (scrollPane.getMaxY ());
   }
 
   @Override
   public void clear ()
   {
-    clearTable ();
+    table.reset ();
     configureTable ();
   }
 
-  protected abstract Actor createRow (final T message);
-
-  private void clearTable ()
+  @Override
+  public Actor asActor ()
   {
-    table.reset ();
+    return scrollPane;
   }
+
+  protected abstract Actor createRow (final T message);
 
   private void configureTable ()
   {

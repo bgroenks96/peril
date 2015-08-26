@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
@@ -65,6 +66,12 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   public MapMetadata getMapMetadata ()
   {
     return gameConfig.getMapMetadata ();
+  }
+
+  @Override
+  public MapType getMapType ()
+  {
+    return gameConfig.getMapType ();
   }
 
   @Override

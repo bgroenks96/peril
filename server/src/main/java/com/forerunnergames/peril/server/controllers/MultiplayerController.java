@@ -67,7 +67,7 @@ public final class MultiplayerController extends ControllerAdapter
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
-  private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap<String, Remote> ());
+  private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet<Remote> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
@@ -194,8 +194,10 @@ public final class MultiplayerController extends ControllerAdapter
     // this is to prevent failure under cases such as client disconnecting while join request is being processed
     if (!playerJoinGameRequestCache.containsKey (playerName)) return;
 
-    playerCommunicator.sendTo (playerJoinGameRequestCache.get (playerName), event);
+    final Remote client = playerJoinGameRequestCache.get (playerName);
 
+    playerCommunicator.sendTo (client, event);
+    clientConnector.disconnect (client);
     playerJoinGameRequestCache.remove (playerName);
   }
 
@@ -329,7 +331,7 @@ public final class MultiplayerController extends ControllerAdapter
     // This reeks of hacking...
     if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
     {
-      sendJoinGameServerDenied (client, event, "Your IP address [" + client.getAddress () + "] is invalid.");
+      sendJoinGameServerDenied (client, "Your IP address [" + client.getAddress () + "] is invalid.");
       return;
     }
 
@@ -340,8 +342,7 @@ public final class MultiplayerController extends ControllerAdapter
     // is required for LAN clients to join using the server's internal network address, which circumvents this problem.
     if (serverHasAddress () && client.getAddress ().equals (getServerAddress ()))
     {
-      sendJoinGameServerDenied (client, event, "You cannot join this game having the same IP address ["
-              + client.getAddress ()
+      sendJoinGameServerDenied (client, "You cannot join this game having the same IP address [" + client.getAddress ()
               + "] as the game server.\nIf you are on the same network as the server, you can join using the game server's internal IP address to play a LAN game.");
       return;
     }
@@ -349,28 +350,28 @@ public final class MultiplayerController extends ControllerAdapter
     // check if client is already in server
     if (clientsInServer.contains (client))
     {
-      sendJoinGameServerDenied (client, event, "You have already joined this game server.");
+      sendJoinGameServerDenied (client, "You have already joined this game server.");
       return;
     }
 
     // local host cannot join a dedicated server
     if (!isHostAndPlay () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, event, "You cannot join a dedicated game server as localhost.");
+      sendJoinGameServerDenied (client, "You cannot join a dedicated game server as localhost.");
       return;
     }
 
     // local host must join first in a host-and-play server
     if (isHostAndPlay () && !isHostConnected () && !isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, event, "Waiting for the host to connect...");
+      sendJoinGameServerDenied (client, "Waiting for the host to connect...");
       return;
     }
 
     // only one local host can join a host-and-play server
     if (isHostAndPlay () && isHostConnected () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, event, "The host has already joined this game server.");
+      sendJoinGameServerDenied (client, "The host has already joined this game server.");
       return;
     }
 
@@ -392,6 +393,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       log.warn ("Ignoring join game request from player [{}] | REASON: unrecognized client [{}].",
                 event.getPlayerName (), client);
+      clientConnector.disconnect (client);
       return;
     }
 
@@ -518,16 +520,14 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Client [{}] successfully joined game server.", client);
   }
 
-  private void sendJoinGameServerDenied (final Remote client,
-                                         final JoinGameServerRequestEvent event,
-                                         final String reason)
+  private void sendJoinGameServerDenied (final Remote client, final String reason)
   {
-    playerCommunicator.sendTo (client, new JoinGameServerDeniedEvent (event,
+    playerCommunicator.sendTo (client, new JoinGameServerDeniedEvent (
             new DefaultClientConfiguration (client.getAddress (), client.getPort ()), reason));
 
     clientConnector.disconnect (client);
 
-    log.warn ("Denied [{}] from [{}]; REASON: {}", event, client, reason);
+    log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
   }
 
   private boolean isHostConnected ()

@@ -29,6 +29,8 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   private final MBassador <Event> eventBus;
   private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   @Nullable
+  private ScreenId previousPreviousScreenId = null;
+  @Nullable
   private ScreenId previousScreenId = null;
 
   public ScreenController (final Game game,
@@ -80,6 +82,27 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   }
 
   @Override
+  public void toPreviousScreenSkippingOr (final ScreenId skipScreenId, final ScreenId defaultScreenId)
+  {
+    Arguments.checkIsNotNull (skipScreenId, "skipScreenId");
+    Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
+
+    if (previousScreenId != null && previousScreenId != skipScreenId)
+    {
+      toScreen (previousScreenId);
+      return;
+    }
+
+    if (previousPreviousScreenId != null && previousPreviousScreenId != skipScreenId)
+    {
+      toScreen (previousPreviousScreenId);
+      return;
+    }
+
+    toScreen (defaultScreenId);
+  }
+
+  @Override
   public void toScreen (final ScreenId id)
   {
     Arguments.checkIsNotNull (id, "id");
@@ -88,6 +111,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
 
     if (id == getCurrentScreenId ()) return;
 
+    previousPreviousScreenId = previousScreenId;
     previousScreenId = getCurrentScreenId ();
 
     game.setScreen (screens.get (id));

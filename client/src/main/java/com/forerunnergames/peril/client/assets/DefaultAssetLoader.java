@@ -27,6 +27,9 @@ public final class DefaultAssetLoader implements AssetLoader
     assetManager.load (AssetSettings.QUIT_POPUP_BACKGROUND_ASSET_DESCRIPTOR);
     assetManager.load (AssetSettings.SKIN_JSON_ASSET_DESCRIPTOR);
 
+    // Loading Screen
+    assetManager.load (AssetSettings.LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR);
+
     // Menus
     // TODO Load during the initial loading screen.
     // TODO Unload during join/create game loading screen.

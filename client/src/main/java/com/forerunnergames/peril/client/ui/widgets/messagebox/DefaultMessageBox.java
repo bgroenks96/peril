@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
@@ -11,11 +12,12 @@ public class DefaultMessageBox <T extends Message> extends AbstractMessageBox <T
 {
   private final WidgetFactory widgetFactory;
 
-  public DefaultMessageBox (final ScrollPaneStyle scrollPaneStyle,
+  public DefaultMessageBox (final ScrollPane.ScrollPaneStyle scrollPaneStyle,
                             final WidgetFactory widgetFactory,
-                            final MessageBoxRowStyle messageBoxRowStyle)
+                            final MessageBoxRowStyle messageBoxRowStyle,
+                            final Scrollbars scrollbars)
   {
-    super (scrollPaneStyle, messageBoxRowStyle);
+    super (scrollPaneStyle, messageBoxRowStyle, scrollbars);
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
@@ -27,6 +29,6 @@ public class DefaultMessageBox <T extends Message> extends AbstractMessageBox <T
   {
     Arguments.checkIsNotNull (message, "message");
 
-    return widgetFactory.createWrappingLabel (message.getText (), Align.left, "label-chat-and-status-message-text");
+    return widgetFactory.createWrappingLabel (message.getText (), Align.left, "chat-and-status-message-text");
   }
 }

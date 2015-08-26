@@ -30,6 +30,7 @@
     "default": { "up": "button-up",       "over": "button-over",       "down": "button-down",       "checked": null,        "disabled": "button-disabled" },
       "popup": { "up": "popup-button-up", "over": "popup-button-over", "down": "popup-button-down", "checked": null,        "disabled": "popup-button-disabled" },
      "toggle": { "up": "toggle-off",      "over": null,                "down": "toggle-on",         "checked": "toggle-on", "disabled": "toggle-disabled" },
+      "radio": { "up": "radio-on",        "over": null,                "down": "radio-off",         "checked": "radio-on",  "disabled": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
@@ -74,17 +75,18 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
-          "default": { "titleFont": "default-font", "background": "default-window",           "titleFontColor": "white" },
-           "dialog": { "titleFont": "default-font", "background": "default-window",           "titleFontColor": "white", "stageBackground": "dialogDim" },
-            "popup": { "titleFont": "pirulen-28",   "background": "popup-background",         "titleFontColor": "white", "stageBackground": "dialogDim" },
-           "battle": { "titleFont": "pirulen-28",   "background": "battle-background",        "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "army-movement": { "titleFont": "pirulen-28",   "background": "army-movement-background", "titleFontColor": "white", "stageBackground": "dialogDim" }
-
+                "default": { "titleFont": "default-font", "background": "default-window",                "titleFontColor": "white", "stageBackground": null        },
+                 "dialog": { "titleFont": "default-font", "background": "default-window",                "titleFontColor": "white", "stageBackground": "dialogDim" },
+                  "popup": { "titleFont": "pirulen-28",   "background": "popup-background",              "titleFontColor": "white", "stageBackground": "dialogDim" },
+                 "battle": { "titleFont": "pirulen-28",   "background": "battlePopupBackground",         "titleFontColor": "white", "stageBackground": "dialogDim" },
+          "army-movement": { "titleFont": "pirulen-28",   "background": "armyMovementPopupBackground",   "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "map-selection-popup": { "titleFont": "pirulen-28",   "background": "mapSelectionPopupBackground",   "titleFontColor": "white", "stageBackground": "dialogDim" },
+         "reinforcements": { "titleFont": "pirulen-28",   "background": "reinforcementsPopupBackground", "titleFontColor": "white", "stageBackground": "dialogDim" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle": {
-    "default-horizontal": { "background": "horizontal-slider-background", "knob": "slider-knob" },
-      "default-vertical": { "background": "vertical-slider-background",   "knob": "slider-knob" }
+    "default-horizontal": { "background": "progressBarBackground",      "knob": "progressBarKnob", "knobBefore": "progressBarKnob", "knobAfter": null },
+      "default-vertical": { "background": "vertical-slider-background", "knob": "slider-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
@@ -93,19 +95,20 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
-                                "default": { "font": "default-font",   "fontColor": "white",      "background": null },
-                       "label-pirulen-30": { "font": "pirulen-30",     "fontColor": "white",      "background": null },
-                       "label-menu-title": { "font": "pirulen-28",     "fontColor": "white",      "background": null },
-                       "label-pirulen-22": { "font": "pirulen-22",     "fontColor": "light-gray", "background": null },
-                    "label-menu-subtitle": { "font": "pirulen-14",     "fontColor": "light-gray", "background": null },
-                       "label-pirulen-16": { "font": "pirulen-16",     "fontColor": "white",      "background": null },
-      "label-menu-settings-section-title": { "font": "dejaVu-22-bold", "fontColor": "light-gray", "background": null },
-                    "label-menu-settings": { "font": "dejaVu-18",      "fontColor": "light-gray", "background": null },
-                   "label-dejaVu-18-bold": { "font": "dejaVu-18-bold", "fontColor": "white",      "background": null },
-                        "label-dejaVu-16": { "font": "dejaVu-16",      "fontColor": "white",      "background": null },
-             "label-text-with-background": { "font": "dejaVu-16",      "fontColor": "white",      "background": "label-background" },
-    "label-text-with-background-disabled": { "font": "dejaVu-16",      "fontColor": "dark-gray",  "background": "label-background" },
-     "label-chat-and-status-message-text": { "font": "dejaVu-14",      "fontColor": "white",      "background": null }
+                                     "default": { "font": "default-font",   "fontColor": "white"},
+                            "lobby-room-title": { "font": "pirulen-30",     "fontColor": "white" },
+                                  "menu-title": { "font": "pirulen-28",     "fontColor": "white" },
+                                "menu-choices": { "font": "pirulen-22",     "fontColor": "light-gray" },
+                                      "button": { "font": "pirulen-18",     "fontColor": "light-gray" },
+                               "menu-subtitle": { "font": "pirulen-14",     "fontColor": "light-gray" },
+                                "popup-button": { "font": "pirulen-12",     "fontColor": "light-gray" },
+                 "menu-settings-section-title": { "font": "dejaVu-22-bold", "fontColor": "light-gray" },
+                         "menu-settings-label": { "font": "dejaVu-18",      "fontColor": "light-gray" },
+               "label-text-without-background": { "font": "dejaVu-16",      "fontColor": "white" },
+                  "label-text-with-background": { "font": "dejaVu-16",      "fontColor": "white",     "background": "label-background" },
+      "label-text-without-background-disabled": { "font": "dejaVu-16",      "fontColor": "dark-gray", "background": "label-background" },
+                "chat-and-status-message-text": { "font": "dejaVu-14",      "fontColor": "white" },
+                                "loading-text": { "font": "pirulen-22",     "fontColor": "light-gray" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {

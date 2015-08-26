@@ -18,8 +18,8 @@ import java.util.TreeSet;
 public final class PlayerBox
 {
   private final MessageBox <Message> messageBox;
-  private final Collection <PlayerPacket> turnOrderedPlayers = Collections.synchronizedSortedSet (new TreeSet <> (
-          PlayerPacket.TURN_ORDER_COMPARATOR));
+  private final Collection <PlayerPacket> turnOrderedPlayers = Collections
+          .synchronizedSortedSet (new TreeSet<> (PlayerPacket.TURN_ORDER_COMPARATOR));
 
   public PlayerBox (final MessageBox <Message> messageBox)
   {
@@ -33,31 +33,28 @@ public final class PlayerBox
     Arguments.checkIsNotNull (players, "players");
     Arguments.checkHasNoNullElements (players, "players");
 
-    if (turnOrderedPlayers.isEmpty () && players.isEmpty ()) return;
-
     turnOrderedPlayers.clear ();
-    turnOrderedPlayers.addAll (players);
-
-    resetMessageBox ();
+    if (turnOrderedPlayers.addAll (players)) updateMessageBox ();
   }
 
   public void addPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (turnOrderedPlayers.add (player)) resetMessageBox ();
+    if (turnOrderedPlayers.add (player)) updateMessageBox ();
   }
 
   public void removePlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (turnOrderedPlayers.remove (player)) resetMessageBox ();
+    if (turnOrderedPlayers.remove (player)) updateMessageBox ();
   }
 
   public void clear ()
   {
     messageBox.clear ();
+    turnOrderedPlayers.clear ();
   }
 
   public Actor asActor ()
@@ -65,7 +62,7 @@ public final class PlayerBox
     return messageBox.asActor ();
   }
 
-  private void resetMessageBox ()
+  private void updateMessageBox ()
   {
     messageBox.clear ();
 
@@ -73,8 +70,8 @@ public final class PlayerBox
     {
       for (final PlayerPacket player : turnOrderedPlayers)
       {
-        messageBox.addMessage (new DefaultMessage (Strings.toMixedOrdinal (player.getTurnOrder ()) + ". "
-                + player.getName ()));
+        messageBox.addMessage (new DefaultMessage (
+                Strings.toMixedOrdinal (player.getTurnOrder ()) + ". " + player.getName ()));
       }
     }
   }

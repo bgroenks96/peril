@@ -5,12 +5,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 
 import com.forerunnergames.peril.client.assets.AssetController;
+import com.forerunnergames.peril.client.assets.AssetManagerFactory;
 import com.forerunnergames.peril.client.assets.DefaultAssetLoader;
 import com.forerunnergames.peril.client.assets.DefaultAssetUpdater;
 import com.forerunnergames.peril.client.net.EventBasedClientController;
-import com.forerunnergames.peril.client.net.MultiplayerController;
-import com.forerunnergames.peril.client.io.CustomExternalFileHandleResolver;
 import com.forerunnergames.peril.client.net.KryonetClient;
+import com.forerunnergames.peril.client.net.MultiplayerController;
 import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
@@ -46,7 +46,7 @@ public final class LibGdxGameFactory
     final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
     final GameServerCreator gameServerCreator = new LocalGameServerCreator ();
     final Controller multiplayerController = new MultiplayerController (gameServerCreator, clientController, clientController, eventBus);
-    final AssetManager assetManager = new AssetManager (new CustomExternalFileHandleResolver ());
+    final AssetManager assetManager = AssetManagerFactory.create (eventBus);
     final Controller assetController = new AssetController (new DefaultAssetUpdater (), new DefaultAssetLoader (assetManager));
     final MusicController musicController = new MusicController (new MusicFactory (assetManager), new MusicSettings ());
     final Application application = new ClientApplication (mainThreadExecutor, assetController, clientController, multiplayerController, musicController);

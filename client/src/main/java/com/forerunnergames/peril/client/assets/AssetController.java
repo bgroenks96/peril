@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.client.assets;
 
-import com.forerunnergames.peril.client.assets.AssetLoader;
-import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 

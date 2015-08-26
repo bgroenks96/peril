@@ -5,7 +5,7 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
-public abstract class AbstractDeniedEvent <T> implements DeniedEvent<T>
+public abstract class AbstractDeniedEvent <T> implements DeniedEvent <T>
 {
   private final T reason;
 

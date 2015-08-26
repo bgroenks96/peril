@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapType;
 
 public interface GameConfiguration
 {
@@ -15,4 +16,6 @@ public interface GameConfiguration
   String getMapName ();
 
   MapMetadata getMapMetadata ();
+
+  MapType getMapType ();
 }

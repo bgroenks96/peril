@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 
+import javax.annotation.Nullable;
+
 public interface CountryActor
 {
   CountryActor NULL_COUNTRY_ACTOR = new NullCountryActor ();
@@ -31,6 +33,7 @@ public interface CountryActor
 
   void onTouchUp ();
 
+  @Nullable
   Drawable getCurrentPrimaryDrawable ();
 
   Vector2 getReferenceDestination ();

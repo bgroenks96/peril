@@ -24,6 +24,7 @@ public final class MusicFactory
 
     switch (screenId)
     {
+      case LOADING:
       case MAIN_MENU:
       case MULTIPLAYER_GAME_MODES_MENU:
       case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:

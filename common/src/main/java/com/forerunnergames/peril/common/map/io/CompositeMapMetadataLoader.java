@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.common.map.io;
 
 import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableSet;
@@ -27,6 +28,10 @@ public final class CompositeMapMetadataLoader implements MapMetadataLoader
       mapMetaDataBuilder.addAll (loader.load ());
     }
 
-    return mapMetaDataBuilder.build ();
+    final ImmutableSet <MapMetadata> mapMetadatas = mapMetaDataBuilder.build ();
+
+    if (mapMetadatas.isEmpty ()) throw new PlayMapLoadingException ("Could not find any maps.");
+
+    return mapMetadatas;
   }
 }

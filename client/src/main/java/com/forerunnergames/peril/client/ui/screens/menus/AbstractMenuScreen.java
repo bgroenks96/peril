@@ -334,27 +334,22 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (id, "id");
 
-    if (screenTransitionInProgress)
-    {
-      return;
-    }
+    if (screenTransitionInProgress) return;
 
     screenTransitionInProgress = true;
     screenChanger.toScreen (id);
     screenTransitionInProgress = false;
   }
 
-  protected final void toPreviousScreenOr (final ScreenId defaultScreenId)
+  protected final void toPreviousScreenSkippingOr (final ScreenId skipScreenId, final ScreenId defaultScreenId)
   {
+    Arguments.checkIsNotNull (skipScreenId, "skipScreenId");
     Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
 
-    if (screenTransitionInProgress)
-    {
-      return;
-    }
+    if (screenTransitionInProgress) return;
 
     screenTransitionInProgress = true;
-    screenChanger.toPreviousScreenOr (defaultScreenId);
+    screenChanger.toPreviousScreenSkippingOr (skipScreenId, defaultScreenId);
     screenTransitionInProgress = false;
   }
 
@@ -489,6 +484,13 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (listener, "listener");
 
     return widgetFactory.createQuitPopup (message, stage, listener);
+  }
+
+  protected final Popup createErrorPopup (final PopupListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return widgetFactory.createErrorPopup (stage, listener);
   }
 
   protected final void addBackButton (final EventListener listener)

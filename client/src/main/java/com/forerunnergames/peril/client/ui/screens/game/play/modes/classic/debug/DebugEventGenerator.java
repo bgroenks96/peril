@@ -47,7 +47,7 @@ public final class DebugEventGenerator
 
   private static final ImmutableList <String> RANDOM_PLAYER_NAMES = ImmutableList
           .of ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy", "Brittany", "Jonathan",
-               "Adam", "Brian", "[FG] 3xp0nn3t", "[FG] Escendrix", "[LOLZ] nutButter", "[WWWW] WWWWWWWWWWWWWWWW",
+               "Adam", "Brian", "[FG] 3xp0n3nt", "[FG] Escendrix", "[LOLZ] nutButter", "[WWWW] WWWWWWWWWWWWWWWW",
                "[X] generalKiller");
 
   private static final ImmutableList <String> COUNTRY_NAMES = ImmutableList

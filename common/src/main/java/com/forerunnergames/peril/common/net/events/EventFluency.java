@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.common.net.events;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
@@ -24,7 +23,6 @@ import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.net.client.ClientConfiguration;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -162,32 +160,6 @@ public final class EventFluency
     return event.getGameServerConfiguration ();
   }
 
-  public static ServerConfiguration withServerConfigurationFrom (final JoinGameServerRequestEvent event)
-  {
-    return serverConfigurationFrom (event);
-  }
-
-  public static ServerConfiguration withServerConfigurationFrom (final JoinGameServerDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerConfiguration ();
-  }
-
-  public static ServerConfiguration serverConfigurationFrom (final JoinGameServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerConfiguration ();
-  }
-
-  public static ServerConfiguration serverConfigurationFrom (final JoinGameServerDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerConfiguration ();
-  }
-
   public static ClientConfiguration clientConfigurationFrom (final JoinGameServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -200,13 +172,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getClientConfiguration ();
-  }
-
-  public static String serverAddressFrom (final JoinGameServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getServerAddress ();
   }
 
   public static String withCountryNameFrom (final CountryArmiesChangedEvent event)

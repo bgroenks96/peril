@@ -16,6 +16,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 
+import javax.annotation.Nullable;
+
 public final class DefaultCountryActor implements CountryActor
 {
   private final Group group = new Group ();
@@ -56,7 +58,7 @@ public final class DefaultCountryActor implements CountryActor
       primaryImage.setVisible (false);
       primaryImage.setPosition (tempPosition);
       primaryImage.setScale (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
-      group.addActor (primaryImage);
+      group.addActor (primaryImage.asActor ());
     }
 
     for (final CountrySecondaryImage countrySecondaryImage : secondaryImages.getAll ())
@@ -64,7 +66,7 @@ public final class DefaultCountryActor implements CountryActor
       countrySecondaryImage.setVisible (false);
       countrySecondaryImage.setPosition (tempPosition);
       countrySecondaryImage.setScale (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
-      group.addActor (countrySecondaryImage);
+      group.addActor (countrySecondaryImage.asActor ());
     }
 
     changePrimaryStateTo (currentPrimaryImageState);
@@ -123,7 +125,8 @@ public final class DefaultCountryActor implements CountryActor
   @Override
   public void nextPrimaryState ()
   {
-    changePrimaryStateTo (currentPrimaryImageState.hasNext () ? currentPrimaryImageState.next () : currentPrimaryImageState.first ());
+    changePrimaryStateTo (currentPrimaryImageState.hasNext () ? currentPrimaryImageState.next ()
+            : currentPrimaryImageState.first ());
   }
 
   @Override
@@ -160,6 +163,7 @@ public final class DefaultCountryActor implements CountryActor
     changeSecondaryStateTo (CountrySecondaryImageState.NONE);
   }
 
+  @Nullable
   @Override
   public Drawable getCurrentPrimaryDrawable ()
   {

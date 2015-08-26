@@ -1,22 +1,26 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 
-public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageState <E>> extends Image implements
-        CountryImage <E>
+import javax.annotation.Nullable;
+
+public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageState <E>> implements CountryImage <E>
 {
   private final String countryName;
   private final CountryImageState <E> state;
+  private final Image image;
 
-  protected AbstractCountryImage (final Drawable drawable,
+  protected AbstractCountryImage (@Nullable final Drawable drawable,
                                   final String countryName,
                                   final CountryImageState <E> state)
   {
-    super (drawable);
+    image = new Image (drawable);
 
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
@@ -24,7 +28,7 @@ public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageSta
     this.countryName = countryName;
     this.state = state;
 
-    setName (countryName + " " + state.toProperCase ());
+    image.setName (countryName + " " + Strings.toProperCase (state.getEnumName ()));
   }
 
   @Override
@@ -39,12 +43,25 @@ public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageSta
     return state;
   }
 
+  @Nullable
+  @Override
+  public Drawable getDrawable ()
+  {
+    return image.getDrawable ();
+  }
+
+  @Override
+  public void setVisible (final boolean isVisible)
+  {
+    image.setVisible (isVisible);
+  }
+
   @Override
   public void setPosition (final Vector2 position)
   {
     Arguments.checkIsNotNull (position, "position");
 
-    setPosition (position.x, position.y);
+    image.setPosition (position.x, position.y);
   }
 
   @Override
@@ -52,7 +69,13 @@ public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageSta
   {
     Arguments.checkIsNotNull (scaling, "scaling");
 
-    setScale (scaling.x, scaling.y);
+    image.setScale (scaling.x, scaling.y);
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return image;
   }
 
   @Override
@@ -64,18 +87,18 @@ public abstract class AbstractCountryImage <E extends Enum <E> & CountryImageSta
   }
 
   @Override
-  public final boolean equals (final Object o)
+  public final boolean equals (final Object obj)
   {
-    if (this == o) return true;
-    if (o == null || getClass () != o.getClass ()) return false;
-    final AbstractCountryImage that = (AbstractCountryImage) o;
-    return countryName.equals (that.countryName) && state == that.state;
+    if (this == obj) return true;
+    if (obj == null || getClass () != obj.getClass ()) return false;
+    final CountryImage <?> countryImage = (CountryImage <?>) obj;
+    return countryName.equals (countryImage.getCountryName ()) && state == countryImage.getState ();
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Name: %2$s | State: %3$s | Drawable: %4$s", getClass ().getSimpleName (), countryName,
-                          state, getDrawable ());
+    return Strings.format ("{}: Name: {} | State: {} | Image: {} | Drawable: {}", getClass ().getSimpleName (),
+                           countryName, state, image, getDrawable ());
   }
 }

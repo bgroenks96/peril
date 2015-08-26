@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -36,23 +37,23 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public PerilModePlayScreen (final PerilModePlayScreenWidgetFactory widgetFactory,
-                              final ScreenChanger screenChanger,
+  public PerilModePlayScreen (final ScreenChanger screenChanger,
                               final ScreenSize screenSize,
                               final MouseInput mouseInput,
                               final Batch batch,
+                              final AssetManager assetManager,
                               final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.eventBus = eventBus;
+    widgetFactory = new PerilModePlayScreenWidgetFactory (assetManager);
 
     final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
@@ -107,7 +108,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     {
       case Input.Keys.ESCAPE:
       {
-        screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
+        screenChanger.toPreviousScreenSkippingOr (ScreenId.LOADING, ScreenId.MAIN_MENU);
 
         return false;
       }

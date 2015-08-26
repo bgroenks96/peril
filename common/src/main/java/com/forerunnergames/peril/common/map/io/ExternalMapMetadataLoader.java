@@ -17,9 +17,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExternalMapMetadataLoader implements MapMetadataLoader
+public final class ExternalMapMetadataLoader implements MapMetadataLoader
 {
-  protected final Logger log = LoggerFactory.getLogger (getClass ());
+  private static final Logger log = LoggerFactory.getLogger (ExternalMapMetadataLoader.class);
   private final MapType mapType;
   private final MapDataPathParser mapDataPathParser;
 
@@ -35,13 +35,14 @@ public class ExternalMapMetadataLoader implements MapMetadataLoader
   @Override
   public ImmutableSet <MapMetadata> load ()
   {
-    final Set <MapMetadata> metadatas = new HashSet <> ();
+    final Set <MapMetadata> mapMetadatas = new HashSet <> ();
     final File externalMapsDirectory = new File (mapDataPathParser.parseMapTypePath (mapType));
     final File[] childPathFiles = externalMapsDirectory.listFiles ();
 
     if (childPathFiles == null)
     {
-      throw new PlayMapLoadingException (Strings.format ("Could not find any maps in [{}].", externalMapsDirectory));
+      log.warn ("Could not find any maps in [{}].", externalMapsDirectory);
+      return ImmutableSet.of ();
     }
 
     for (final File childPathFile : childPathFiles)
@@ -51,25 +52,22 @@ public class ExternalMapMetadataLoader implements MapMetadataLoader
       final String rawMapDirectoryName = childPathFile.getName ();
       final String finalMapName = rawMapDirectoryName.replaceAll ("_", " ");
 
-      if (!GameSettings.isValidMapName (finalMapName))
-      {
-        log.warn ("Invalid {} map name detected [{}], ignoring...", mapType.name (), finalMapName);
-        continue;
-      }
+      if (!GameSettings.isValidMapName (finalMapName)) mapNameError ("Invalid", finalMapName, externalMapsDirectory);
 
       final MapMetadata mapMetaData = new DefaultMapMetadata (finalMapName, mapType, mapDataPathParser.getGameMode ());
 
-      if (!metadatas.add (mapMetaData))
-      {
-        log.warn ("Duplicate {} map name detected [{}], ignoring...", mapType.name (), finalMapName);
-      }
+      if (!mapMetadatas.add (mapMetaData)) mapNameError ("Duplicate", finalMapName, externalMapsDirectory);
     }
 
-    if (metadatas.isEmpty ())
-    {
-      throw new PlayMapLoadingException (Strings.format ("Could not find any maps in [{}].", externalMapsDirectory));
-    }
+    if (mapMetadatas.isEmpty ()) log.warn ("Could not find any maps in [{}].", externalMapsDirectory);
 
-    return ImmutableSet.copyOf (metadatas);
+    return ImmutableSet.copyOf (mapMetadatas);
+  }
+
+  private void mapNameError (final String prependedMessage, final String mapName, final File externalMapsDirectory)
+  {
+    throw new PlayMapLoadingException (Strings.format ("{} {} map name \'{}\'\n\nLocation:\n\n{}", prependedMessage,
+                                                       mapType.name ().toLowerCase (), Strings.toProperCase (mapName),
+                                                       externalMapsDirectory.getAbsolutePath ()));
   }
 }

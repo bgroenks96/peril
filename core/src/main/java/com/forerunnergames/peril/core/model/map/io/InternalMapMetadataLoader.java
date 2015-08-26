@@ -3,10 +3,12 @@ package com.forerunnergames.peril.core.model.map.io;
 import com.forerunnergames.peril.common.map.DefaultMapMetadata;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.map.io.MapDataPathParser;
 import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.io.Resources;
 
 import com.google.common.collect.ImmutableList;
@@ -36,8 +38,24 @@ public final class InternalMapMetadataLoader implements MapMetadataLoader
   @Override
   public ImmutableSet <MapMetadata> load ()
   {
-    final ImmutableList <String> rawMapDirectoryNames = Resources
-            .getJarChildDirectoryNames (InternalMapMetadataLoader.class, mapDataPathParser.parseMapTypePath (mapType));
+    final String internalMapsDirectory = mapDataPathParser.parseMapTypePath (mapType);
+    final ImmutableList <String> rawMapDirectoryNames;
+
+    try
+    {
+      rawMapDirectoryNames = Resources.getJarChildDirectoryNames (InternalMapMetadataLoader.class,
+                                                                  internalMapsDirectory);
+    }
+    catch (final RuntimeException e)
+    {
+      throw new PlayMapLoadingException (e);
+    }
+
+    if (rawMapDirectoryNames.isEmpty ())
+    {
+      log.warn ("Could not find any maps in [{}].", internalMapsDirectory);
+      return ImmutableSet.of ();
+    }
 
     final Set <MapMetadata> mapMetadatas = new HashSet <> ();
 
@@ -45,22 +63,23 @@ public final class InternalMapMetadataLoader implements MapMetadataLoader
     {
       final String finalMapName = rawMapDirectoryName.replaceAll ("_", " ");
 
-      if (!GameSettings.isValidMapName (finalMapName))
-      {
-        log.warn ("Invalid stock map name detected [{}], ignoring...", finalMapName);
-        continue;
-      }
+      if (!GameSettings.isValidMapName (finalMapName)) mapNameError ("Invalid", finalMapName, internalMapsDirectory);
 
       final MapMetadata mapMetadata = new DefaultMapMetadata (finalMapName, MapType.STOCK,
               mapDataPathParser.getGameMode ());
 
-      if (!mapMetadatas.add (mapMetadata))
-      {
-        log.warn ("Duplicate stock map name detected [{}], ignoring...", finalMapName);
-        continue;
-      }
+      if (!mapMetadatas.add (mapMetadata)) mapNameError ("Duplicate", finalMapName, internalMapsDirectory);
     }
 
+    if (mapMetadatas.isEmpty ()) log.warn ("Could not find any maps in [{}].", internalMapsDirectory);
+
     return ImmutableSet.copyOf (mapMetadatas);
+  }
+
+  private void mapNameError (final String prependedMessage, final String mapName, final String internalMapsDirectory)
+  {
+    throw new PlayMapLoadingException (
+            Strings.format ("{} {} map name \'{}\'\n\nLocation:\n\n{}", prependedMessage,
+                            mapType.name ().toLowerCase (), Strings.toProperCase (mapName), internalMapsDirectory));
   }
 }

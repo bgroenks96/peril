@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -66,6 +67,12 @@ public final class DefaultGameConfiguration implements GameConfiguration
   public MapMetadata getMapMetadata ()
   {
     return mapMetadata;
+  }
+
+  @Override
+  public MapType getMapType ()
+  {
+    return mapMetadata.getType ();
   }
 
   @Override

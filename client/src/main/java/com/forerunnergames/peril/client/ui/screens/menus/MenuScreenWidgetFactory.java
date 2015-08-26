@@ -87,14 +87,14 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (titleText, "titleText");
 
-    return createLabel (titleText, alignment, "label-menu-title");
+    return createLabel (titleText, alignment, "menu-title");
   }
 
   public Actor createSubTitle (final String titleText, final int alignment)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (titleText, "titleText");
 
-    return createLabel (titleText, alignment, "label-menu-subtitle");
+    return createLabel (titleText, alignment, "menu-subtitle");
   }
 
   public Actor createMenuChoice (final String choiceText, final EventListener listener)
@@ -119,14 +119,14 @@ public final class MenuScreenWidgetFactory extends WidgetFactory
   {
     Arguments.checkIsNotNull (text, "text");
 
-    return createLabel (text, Align.left, "label-menu-settings-section-title");
+    return createLabel (text, Align.left, "menu-settings-section-title");
   }
 
   public Actor createMenuSettingText (final String text)
   {
     Arguments.checkIsNotNull (text, "text");
 
-    return createLabel (text, Align.left, "label-menu-settings");
+    return createLabel (text, Align.left, "menu-settings-label");
   }
 
   private Sprite getTopBackgroundShadowSprite ()
