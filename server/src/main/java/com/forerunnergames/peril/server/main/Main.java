@@ -8,8 +8,6 @@ import com.forerunnergames.peril.server.application.ServerApplicationFactory;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 
-import com.google.common.base.Throwables;
-
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -45,8 +43,7 @@ public final class Main
     catch (final ParameterException e)
     {
       jCommander.usage (usageStringBuilder);
-      log.info ("\n\n{}\n\nOptions with * are required\n\n{}", Throwables.getRootCause (e).getMessage (),
-                usageStringBuilder);
+      log.info ("\n\n{}\n\nOptions with * are required\n\n{}", e.getMessage (), usageStringBuilder);
       System.exit (1);
     }
 
