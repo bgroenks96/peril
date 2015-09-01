@@ -31,4 +31,10 @@ public enum InitialCountryAssignment
   {
     return Strings.toProperCase (name ());
   }
+
+  @Override
+  public String toString ()
+  {
+    return name ().toLowerCase ().replace ("_", "-");
+  }
 }

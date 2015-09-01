@@ -152,7 +152,7 @@ project (":server") {
 
   dependencies {
     compile project (":core")
-    compile "com.beust:jcommander:1.35"
+    compile "com.beust:jcommander:1.48"
     testCompile project (path: ":common", configuration: "testRuntime")
     testCompile "junit:junit:4.11"
     testCompile "org.hamcrest:hamcrest-all:1.3"

@@ -4,15 +4,8 @@ import com.forerunnergames.tools.common.Arguments;
 
 public enum GameServerType
 {
-  DEDICATED ("Dedicated"),
-  HOST_AND_PLAY ("Host & Play");
-
-  private final String description;
-
-  GameServerType (final String description)
-  {
-    this.description = description;
-  }
+  DEDICATED,
+  HOST_AND_PLAY;
 
   public boolean is (final GameServerType type)
   {
@@ -29,6 +22,6 @@ public enum GameServerType
   @Override
   public String toString ()
   {
-    return description;
+    return name ().toLowerCase ().replace ("_", "-");
   }
 }

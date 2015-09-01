@@ -1,7 +1,16 @@
 package com.forerunnergames.peril.server.application;
 
-import com.beust.jcommander.JCommander;
-
+import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
+import com.forerunnergames.peril.common.game.GameConfiguration;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
+import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.map.io.MapMetadataFinder;
+import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
+import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.common.net.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
@@ -13,20 +22,9 @@ import com.forerunnergames.peril.core.model.map.io.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
-import com.forerunnergames.peril.common.game.GameConfiguration;
-import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
-import com.forerunnergames.peril.common.eventbus.EventBusFactory;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.io.MapMetadataFinder;
-import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
-import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
@@ -34,6 +32,7 @@ import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.peril.server.main.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
@@ -52,12 +51,9 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class ServerApplicationFactory
 {
-  public static Application create (final String... args)
+  public static Application create (final CommandLineArgs args)
   {
-    final CommandLineArgs jArgs = new CommandLineArgs ();
-    final JCommander jCommander = new JCommander (jArgs);
-
-    jCommander.parse (args);
+    Arguments.checkIsNotNull (args, "args");
 
     final MBassador <Event> eventBus = EventBusFactory.create ();
 
@@ -65,20 +61,20 @@ public final class ServerApplicationFactory
 
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
 
-    final ServerController serverController = new EventBasedServerController (server, jArgs.serverTcpPort,
+    final ServerController serverController = new EventBasedServerController (server, args.serverTcpPort,
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
-    final MapMetadataFinder mapMetadataFinder = CoreMapMetadataFinderFactory.create (jArgs.gameMode);
-    final MapMetadata mapMetadata = mapMetadataFinder.find (jArgs.mapName);
+    final MapMetadataFinder mapMetadataFinder = CoreMapMetadataFinderFactory.create (args.gameMode);
+    final MapMetadata mapMetadata = mapMetadataFinder.find (args.mapName);
 
-    final ImmutableSet <Country> countries = PlayMapModelDataFactoryCreator.create (jArgs.gameMode)
+    final ImmutableSet <Country> countries = PlayMapModelDataFactoryCreator.create (args.gameMode)
             .createCountries (mapMetadata);
 
-    final ImmutableSet <Continent> continents = PlayMapModelDataFactoryCreator.create (jArgs.gameMode)
+    final ImmutableSet <Continent> continents = PlayMapModelDataFactoryCreator.create (args.gameMode)
             .createContinents (mapMetadata, new DefaultCountryIdResolver (countries));
 
-    final GameRules gameRules = GameRulesFactory.create (jArgs.gameMode, jArgs.playerLimit, jArgs.winPercentage,
-                                                         countries.size (), jArgs.initialCountryAssignment);
+    final GameRules gameRules = GameRulesFactory.create (args.gameMode, args.playerLimit, args.winPercentage,
+                                                         countries.size (), args.initialCountryAssignment);
 
     final PlayMapModel playMapModel = new DefaultPlayMapModel (countries, continents, gameRules);
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
@@ -91,17 +87,17 @@ public final class ServerApplicationFactory
     final StateMachineActionHandler gameModel = new StateMachineActionHandler (gameHandlerBuilder.build ());
     final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
-    final GameConfiguration gameConfig = new DefaultGameConfiguration (jArgs.gameMode, gameRules.getPlayerLimit (),
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, gameRules.getPlayerLimit (),
             gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (externalAddressResolver.resolveIp (),
-            jArgs.serverTcpPort);
+            args.serverTcpPort);
 
-    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (jArgs.gameServerName,
-            jArgs.gameServerType, gameConfig, serverConfig);
+    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (args.gameServerName,
+            args.gameServerType, gameConfig, serverConfig);
 
     final Controller multiplayerController = new MultiplayerController (gameServerConfig, serverController,
             new PlayerCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventBus);

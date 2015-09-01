@@ -1,8 +1,14 @@
 package com.forerunnergames.peril.server.main;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+
+import com.forerunnergames.peril.common.net.settings.NetworkSettings;
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
+
+import com.google.common.base.Throwables;
 
 import java.io.File;
 
@@ -27,7 +33,31 @@ public final class Main
       }
     });
 
-    final Application application = ServerApplicationFactory.create (args);
+    final CommandLineArgs jArgs = new CommandLineArgs ();
+    final JCommander jCommander = new JCommander (jArgs);
+    jCommander.setProgramName ("java -jar " + NetworkSettings.SERVER_JAR_NAME);
+    final StringBuilder usageStringBuilder = new StringBuilder ();
+
+    try
+    {
+      jCommander.parse (args);
+    }
+    catch (final ParameterException e)
+    {
+      jCommander.usage (usageStringBuilder);
+      log.info ("\n\n{}\n\nOptions with * are required\n\n{}", Throwables.getRootCause (e).getMessage (),
+                usageStringBuilder);
+      System.exit (1);
+    }
+
+    if (jArgs.help)
+    {
+      jCommander.usage (usageStringBuilder);
+      log.info ("\n\nOptions with * are required\n\n{}", usageStringBuilder);
+      System.exit (0);
+    }
+
+    final Application application = ServerApplicationFactory.create (jArgs);
 
     application.initialize ();
 

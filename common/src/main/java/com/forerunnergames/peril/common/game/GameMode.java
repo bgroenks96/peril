@@ -26,4 +26,10 @@ public enum GameMode
 
     return !is (gameMode);
   }
+
+  @Override
+  public String toString ()
+  {
+    return name ().toLowerCase ().replace ("_", "-");
+  }
 }

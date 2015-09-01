@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.server.main;
 
-import com.forerunnergames.peril.common.game.GameMode;
-
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
+
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.tools.common.Strings;
 
 public final class GameModeParameterValidator implements IParameterValidator
 {
@@ -16,8 +17,7 @@ public final class GameModeParameterValidator implements IParameterValidator
     }
     catch (final IllegalArgumentException e)
     {
-      throw new ParameterException (new RuntimeException ("Invalid value \"" + value + "\" for parameter \"" + name
-              + "\".", e));
+      throw new ParameterException (Strings.format ("Invalid value \"{}\" for parameter \"{}\".", value, name), e);
     }
   }
 }

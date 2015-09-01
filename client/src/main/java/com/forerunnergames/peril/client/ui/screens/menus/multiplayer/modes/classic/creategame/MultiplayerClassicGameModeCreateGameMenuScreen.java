@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import com.forerunnergames.peril.client.events.CreateGameEvent;
+import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -102,7 +103,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH, GameSettings.PLAYER_NAME_PATTERN);
     playerClanTagTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_CLAN_TAG_LENGTH, GameSettings.PLAYER_CLAN_TAG_PATTERN);
-    serverNameTextField = widgetFactory.createTextField (NetworkSettings.MAX_SERVER_NAME_LENGTH, NetworkSettings.SERVER_NAME_PATTERN);
+    serverNameTextField = widgetFactory.createTextField (NetworkSettings.MAX_SERVER_NAME_LENGTH, InputSettings.VALID_SERVER_NAME_TEXTFIELD_INPUT_PATTERN);
 
     playerClanTagCheckBox = widgetFactory.createCheckBox ();
     playerClanTagCheckBox.addListener (new ChangeListener ()
@@ -278,6 +279,15 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
                 InitialCountryAssignment.valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
         final GameConfiguration gameConfig =
                 new DefaultGameConfiguration (GameMode.CLASSIC, finalPlayerLimit, finalWinPercent, finalInitialCountryAssignment, currentMap);
+
+        if (!NetworkSettings.isValidServerName (finalServerName))
+        {
+          errorPopup.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}",
+                                  finalServerName, NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
+          errorPopup.show ();
+          return;
+        }
 
         toScreen (ScreenId.LOADING);
 

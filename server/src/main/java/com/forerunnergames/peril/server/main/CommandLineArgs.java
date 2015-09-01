@@ -6,37 +6,40 @@ import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.settings.NetworkSettings;
-import com.forerunnergames.peril.common.settings.GameSettings;
 
 public final class CommandLineArgs
 {
-  @Parameter (names = { "-md", "--game-mode" }, description = "Game mode", required = true,
+  @Parameter (names = { "--game-mode", "-g", }, description = "Game mode", required = true,
           converter = GameModeParameterConverter.class, validateWith = GameModeParameterValidator.class)
   public GameMode gameMode;
 
-  @Parameter (names = { "-s", "--server-type" }, description = "Type of server, host-and-play, or dedicated",
-          required = true, converter = ServerTypeParameterConverter.class,
-          validateWith = ServerTypeParameterValidator.class)
+  @Parameter (names = { "--server-type", "-s" }, description = "Type of server", required = true,
+          converter = ServerTypeParameterConverter.class, validateWith = ServerTypeParameterValidator.class)
   public GameServerType gameServerType;
 
-  @Parameter (names = { "-t", "--title" }, description = "Server title", required = true)
+  @Parameter (names = { "--title", "-t" }, description = "Server title", required = true,
+          validateWith = ServerTitleParameterValidator.class)
   public String gameServerName;
 
-  @Parameter (names = { "-mp", "--map-name" }, description = "Map name", validateWith = MapNameParameterValidator.class)
-  public String mapName = GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME;
+  @Parameter (names = { "--map-name", "-m" }, description = "Map name", validateWith = MapNameParameterValidator.class,
+          required = true)
+  public String mapName;
 
-  @Parameter (names = { "-p", "--port" }, description = "TCP port number")
+  @Parameter (names = { "--port", "-p", }, description = "TCP port number")
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;
 
-  @Parameter (names = { "-pl", "--players" }, description = "Maximum number of players allowed")
+  @Parameter (names = { "--players", "-pl" }, description = "Maximum number of players allowed")
   public Integer playerLimit;
 
-  @Parameter (names = { "-w", "--win-percent" },
-          description = "Minimum percentage of countries one must conquer to win")
+  @Parameter (names = { "--win-percent", "-w" },
+          description = "Minimum percentage of countries one must conquer to win the game")
   public Integer winPercentage;
 
-  @Parameter (names = { "-a", "--assignment" }, description = "Initial Country Assignment Mode",
+  @Parameter (names = { "--assignment", "-a" }, description = "Initial country assignment",
           converter = InitialCountryAssignmentParameterConverter.class,
           validateWith = InitialCountryAssignmentParameterValidator.class)
   public InitialCountryAssignment initialCountryAssignment;
+
+  @Parameter (names = { "--help" }, help = true, description = "Show usage")
+  public boolean help = false;
 }
