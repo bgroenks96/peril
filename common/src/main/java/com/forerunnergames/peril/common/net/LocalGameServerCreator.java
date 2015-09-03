@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.common.net;
 
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;

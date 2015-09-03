@@ -6,7 +6,7 @@ import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;

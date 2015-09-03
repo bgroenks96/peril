@@ -20,7 +20,7 @@ import com.forerunnergames.peril.common.net.events.server.success.JoinGameServer
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;

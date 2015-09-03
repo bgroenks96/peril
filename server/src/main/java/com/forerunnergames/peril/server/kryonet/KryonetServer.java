@@ -7,7 +7,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkListener;

@@ -3,7 +3,7 @@ package com.forerunnergames.peril.server.main;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;

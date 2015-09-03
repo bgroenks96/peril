@@ -5,7 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.GameServerType;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 
 public final class CommandLineArgs
 {

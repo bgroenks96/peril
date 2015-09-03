@@ -10,7 +10,7 @@ import com.forerunnergames.peril.common.map.io.MapMetadataFinder;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;

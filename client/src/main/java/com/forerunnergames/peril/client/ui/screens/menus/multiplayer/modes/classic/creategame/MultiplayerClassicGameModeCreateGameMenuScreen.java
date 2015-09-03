@@ -38,7 +38,7 @@ import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;

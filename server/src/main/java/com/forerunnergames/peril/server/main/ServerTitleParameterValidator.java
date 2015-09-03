@@ -3,7 +3,7 @@ package com.forerunnergames.peril.server.main;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 
-import com.forerunnergames.peril.common.net.settings.NetworkSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Strings;
 
 public final class ServerTitleParameterValidator implements IParameterValidator
