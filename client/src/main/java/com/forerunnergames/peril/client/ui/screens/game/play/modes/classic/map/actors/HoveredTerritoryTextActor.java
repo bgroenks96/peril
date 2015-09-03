@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input.PlayMapInputDetection;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
@@ -27,8 +26,6 @@ public final class HoveredTerritoryTextActor extends Actor
   private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
   @Nullable
   private CountryPrimaryImageState countryPrimaryImageState;
-  @Nullable
-  private CountrySecondaryImageState countrySecondaryImageState;
 
   public HoveredTerritoryTextActor (final PlayMapInputDetection playMapInputDetection,
                                     final MouseInput mouseInput,
@@ -60,11 +57,9 @@ public final class HoveredTerritoryTextActor extends Actor
     final String continentName = playMapInputDetection.getContinentNameAt (mousePosition);
 
     countryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (countryName);
-    countrySecondaryImageState = playMapActor.getCurrentSecondaryImageStateOf (countryName);
 
     text = Strings.toStringList (", ", LetterCase.PROPER, false, countryName, continentName,
-                                 countryPrimaryImageState != null ? countryPrimaryImageState.toString () : "",
-                                 countrySecondaryImageState != null ? countrySecondaryImageState.toString () : "");
+                                 countryPrimaryImageState != null ? countryPrimaryImageState.toString () : "");
 
     getStage ().screenToStageCoordinates (mousePosition);
 
