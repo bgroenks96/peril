@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -43,6 +44,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private final Collection <Cell <Actor>> menuChoiceActorCells = new ArrayList <> ();
   private final MenuScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
+  private final Cursor normalCursor;
   private final Actor menuBarActor;
   private final Actor rightBackgroundShadowActor;
   private final Actor titleBackgroundActor;
@@ -63,15 +65,18 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   protected AbstractMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
+                                final Cursor normalCursor,
                                 final Batch batch)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
+    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
+    this.normalCursor = normalCursor;
 
     menuBarActor = widgetFactory.createMenuBar ();
     rightBackgroundShadowActor = widgetFactory.createRightBackgroundShadow ();
@@ -511,13 +516,11 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
   private void showCursor ()
   {
-    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
-                              Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                              Math.round (InputSettings.MENU_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+    Gdx.graphics.setCursor (normalCursor);
   }
 
   private void hideCursor ()
   {
-    Gdx.input.setCursorImage (null, 0, 0);
+    Gdx.graphics.setCursor (null);
   }
 }

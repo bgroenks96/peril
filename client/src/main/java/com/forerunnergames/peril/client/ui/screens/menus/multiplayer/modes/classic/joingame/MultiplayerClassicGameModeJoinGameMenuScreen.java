@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -36,11 +37,12 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
   public MultiplayerClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                        final ScreenChanger screenChanger,
                                                        final ScreenSize screenSize,
+                                                       final Cursor normalCursor,
                                                        final Batch batch,
                                                        final JoinGameServerHandler joinGameServerHandler,
                                                        final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize, batch);
+    super (widgetFactory, screenChanger, screenSize, normalCursor, batch);
 
     Arguments.checkIsNotNull (joinGameServerHandler, "joinGameHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");

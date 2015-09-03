@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -19,7 +20,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
-import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -33,6 +33,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
 {
   private final PerilModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
+  private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final InputProcessor inputProcessor;
@@ -40,6 +41,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
   public PerilModePlayScreen (final ScreenChanger screenChanger,
                               final ScreenSize screenSize,
                               final MouseInput mouseInput,
+                              final Cursor normalCursor,
                               final Batch batch,
                               final AssetManager assetManager,
                               final MBassador <Event> eventBus)
@@ -47,11 +49,13 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.screenChanger = screenChanger;
+    this.normalCursor = normalCursor;
     this.eventBus = eventBus;
     widgetFactory = new PerilModePlayScreenWidgetFactory (assetManager);
 
@@ -193,13 +197,11 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
 
   private void showCursor ()
   {
-    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
-                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+    Gdx.graphics.setCursor (normalCursor);
   }
 
   private static void hideCursor ()
   {
-    Gdx.input.setCursorImage (null, 0, 0);
+    Gdx.graphics.setCursor (null);
   }
 }

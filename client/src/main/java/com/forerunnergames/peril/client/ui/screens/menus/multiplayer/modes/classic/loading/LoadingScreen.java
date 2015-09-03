@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -73,6 +74,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
   private final PlayMapActorFactory playMapActorFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
+  private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final InputProcessor inputProcessor;
@@ -98,6 +100,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
                         final ScreenChanger screenChanger,
                         final ScreenSize screenSize,
                         final MouseInput mouseInput,
+                        final Cursor normalCursor,
                         final Batch batch,
                         final AssetManager assetManager,
                         final MBassador <Event> eventBus)
@@ -107,6 +110,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -115,6 +119,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
     this.playMapActorFactory = playMapActorFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
+    this.normalCursor = normalCursor;
     this.eventBus = eventBus;
     joinGameServerHandler = new DefaultJoinGameServerHandler (eventBus);
     createGameServerHandler = new DefaultCreateGameServerHandler (joinGameServerHandler, eventBus);
@@ -500,7 +505,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
 
   private static void hideCursor ()
   {
-    Gdx.input.setCursorImage (null, 0, 0);
+    Gdx.graphics.setCursor (null);
   }
 
   private static String asText (final PlayerJoinGameDeniedEvent.Reason reason, final String playerName)
@@ -682,8 +687,6 @@ public final class LoadingScreen extends InputAdapter implements Screen
 
   private void showCursor ()
   {
-    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
-                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+    Gdx.graphics.setCursor (normalCursor);
   }
 }

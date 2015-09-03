@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -17,9 +18,10 @@ public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
   public MultiplayerGameModesMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                          final ScreenChanger screenChanger,
                                          final ScreenSize screenSize,
+                                         final Cursor normalCursor,
                                          final Batch batch)
   {
-    super (widgetFactory, screenChanger, screenSize, batch);
+    super (widgetFactory, screenChanger, screenSize, normalCursor, batch);
 
     addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
     addSubTitle ("GAME MODES", Align.topLeft, 40);

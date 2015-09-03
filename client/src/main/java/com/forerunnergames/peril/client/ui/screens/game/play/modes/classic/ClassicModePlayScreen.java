@@ -18,6 +18,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -82,6 +83,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
+  private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final MessageBox <StatusMessage> statusBox;
@@ -99,6 +101,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
                                 final MouseInput mouseInput,
+                                final Cursor normalCursor,
                                 final Batch batch,
                                 final MBassador <Event> eventBus)
   {
@@ -106,12 +109,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
+    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
+    this.normalCursor = normalCursor;
     this.eventBus = eventBus;
 
     statusBox = widgetFactory.createStatusBox ();
@@ -142,6 +147,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     stage = new Stage (viewport, batch);
 
+    // @formatter:off
     final MandatoryOccupationPopup mandatoryOccupationPopup = widgetFactory
             .createMandatoryOccupationPopup (stage, eventBus, new PopupListenerAdapter ()
             {
@@ -157,6 +163,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                 playMapActor.enable (mouseInput.position ());
               }
             });
+    // @formatter:on
 
     // @formatter:off
     quitPopup = widgetFactory.createQuitPopup (
@@ -536,14 +543,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
   private static void hideCursor ()
   {
-    Gdx.input.setCursorImage (null, 0, 0);
+    Gdx.graphics.setCursor (null);
   }
 
   private void showCursor ()
   {
-    Gdx.input.setCursorImage (widgetFactory.createNormalCursor (),
-                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                              Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+    Gdx.graphics.setCursor (normalCursor);
   }
 
   private void updatePlayMapActor (final PlayMapActor playMapActor)
