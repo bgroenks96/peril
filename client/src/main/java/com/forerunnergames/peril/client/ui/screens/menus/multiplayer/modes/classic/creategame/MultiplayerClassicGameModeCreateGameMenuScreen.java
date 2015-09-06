@@ -101,11 +101,17 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
 
-    // @formatter:off
+    playerNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_PLAYER_NAME,
+                                                         GameSettings.MAX_PLAYER_NAME_LENGTH,
+                                                         InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
 
-    playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH, InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
-    clanNameTextField = widgetFactory.createTextField (GameSettings.MAX_CLAN_NAME_LENGTH, InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
-    serverNameTextField = widgetFactory.createTextField (NetworkSettings.MAX_SERVER_NAME_LENGTH, InputSettings.VALID_SERVER_NAME_TEXTFIELD_INPUT_PATTERN);
+    clanNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_CLAN_NAME,
+                                                       GameSettings.MAX_CLAN_NAME_LENGTH,
+                                                       InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
+
+    serverNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_SERVER_NAME,
+                                                         NetworkSettings.MAX_SERVER_NAME_LENGTH,
+                                                         InputSettings.VALID_SERVER_NAME_TEXTFIELD_INPUT_PATTERN);
 
     clanNameCheckBox = widgetFactory.createCheckBox ();
     clanNameCheckBox.addListener (new ChangeListener ()
@@ -113,18 +119,18 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        clanNameTextField.setText ("");
+        clanNameTextField.setText (clanNameCheckBox.isChecked () ? clanNameTextField.getText () : "");
         clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
       }
     });
 
-    clanNameCheckBox.setChecked (false);
-    clanNameTextField.setDisabled (true);
+    clanNameCheckBox.setChecked (!InputSettings.INITIAL_CLAN_NAME.isEmpty ());
 
-    playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT), Align.left);
+    // @formatter:off
 
+    playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT), Align.left);
     maps = loadMaps ();
-    currentMap = nextMap ();
+    currentMap = findMapOrFirstMap (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME);
     mapNameLabel = widgetFactory.createBackgroundLabel (asMapNameLabelText (currentMap), Align.left);
     totalCountryCount = calculateCurrentMapTotalCountryCount ();
 
@@ -171,20 +177,20 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       spectatorCounts.add (i);
     }
     spectatorsSelectBox.setItems (spectatorCounts);
-    spectatorsSelectBox.setSelected (GameSettings.MIN_SPECTATORS);
+    spectatorsSelectBox.setSelected (InputSettings.INITIAL_SPECTATOR_LIMIT);
 
     initialCountryAssignmentSelectBox = widgetFactory.createSelectBox ();
     final Array <String> initialCountryAssignments = new Array <> (InitialCountryAssignment.count ());
     for (final InitialCountryAssignment initialCountryAssignment : InitialCountryAssignment.values ())
     {
-      initialCountryAssignments.add (initialCountryAssignment.toProperCase ());
+      initialCountryAssignments.add (Strings.toProperCase (initialCountryAssignment.name ()));
     }
     initialCountryAssignmentSelectBox.setItems (initialCountryAssignments);
-    initialCountryAssignmentSelectBox.setSelected (ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT.toProperCase ());
+    initialCountryAssignmentSelectBox.setSelected (Strings.toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
 
     winPercentSelectBox = widgetFactory.createSelectBox ();
     updateWinPercentSelectBoxItems ();
-    winPercentSelectBox.setSelected (ClassicGameRules.MAX_WIN_PERCENTAGE);
+    selectInitialWinPercentItem ();
 
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);
@@ -327,7 +333,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     mapIterator = null;
     maps = loadMaps ();
-    currentMap = nextMap ();
+    currentMap = findMapOrFirstMap (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME);
     mapNameLabel.setText (asMapNameLabelText (currentMap));
     totalCountryCount = calculateCurrentMapTotalCountryCount ();
     updateWinPercentSelectBoxItems ();
@@ -417,6 +423,20 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     winPercentSelectBox.setItems (winPercentCounts);
   }
 
+  private void selectInitialWinPercentItem ()
+  {
+    winPercentSelectBox.setSelected (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT);
+
+    if (winPercentSelectBox.getItems ().contains (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, true)) return;
+
+    errorPopup.setMessage (new DefaultMessage (Strings
+            .format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\nPlease check your settings file.",
+                     InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, playerLimitLabel.getText ().toString (),
+                     currentMap.getType ().name ().toLowerCase (), Strings.toProperCase (currentMap.getName ()))));
+
+    errorPopup.show ();
+  }
+
   private MapMetadata nextMap ()
   {
     if (mapIterator == null || !mapIterator.hasNext ()) mapIterator = maps.iterator ();
@@ -429,5 +449,27 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
 
     return mapIterator.next ();
+  }
+
+  private MapMetadata findMapOrFirstMap (final String mapName)
+  {
+    final MapMetadata firstMap = nextMap ();
+    MapMetadata map = firstMap;
+
+    while (!map.getName ().equalsIgnoreCase (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME))
+    {
+      map = nextMap ();
+
+      if (map.equals (firstMap))
+      {
+        errorPopup.setMessage (new DefaultMessage (
+                Strings.format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", mapName)));
+        errorPopup.show ();
+        mapIterator = null;
+        return nextMap ();
+      }
+    }
+
+    return map;
   }
 }

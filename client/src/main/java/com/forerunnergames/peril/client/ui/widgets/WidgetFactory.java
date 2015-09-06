@@ -140,12 +140,13 @@ public class WidgetFactory
     return label;
   }
 
-  public final TextField createTextField (final int maxLength, final Pattern filter)
+  public final TextField createTextField (final String initialText, final int maxLength, final Pattern filter)
   {
+    Arguments.checkIsNotNull (initialText, "initialText");
     Arguments.checkIsNotNegative (maxLength, "maxLength");
     Arguments.checkIsNotNull (filter, "filter");
 
-    final TextField textField = new TextField ("", getSkin ())
+    final TextField textField = new TextField (initialText, getSkin ())
     {
       @Override
       protected InputListener createInputListener ()
@@ -180,6 +181,14 @@ public class WidgetFactory
     textField.setMaxLength (maxLength);
 
     return textField;
+  }
+
+  public final TextField createTextField (final int maxLength, final Pattern filter)
+  {
+    Arguments.checkIsNotNegative (maxLength, "maxLength");
+    Arguments.checkIsNotNull (filter, "filter");
+
+    return createTextField ("", maxLength, filter);
   }
 
   public final CheckBox createCheckBox ()

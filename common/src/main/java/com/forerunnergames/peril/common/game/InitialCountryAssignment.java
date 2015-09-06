@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 
 public enum InitialCountryAssignment
 {
@@ -25,11 +24,6 @@ public enum InitialCountryAssignment
     Arguments.checkIsNotNull (assignment, "assignment");
 
     return !is (assignment);
-  }
-
-  public String toProperCase ()
-  {
-    return Strings.toProperCase (name ());
   }
 
   @Override

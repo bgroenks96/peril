@@ -10,6 +10,7 @@ public final class GameSettings
 {
   public static final int MIN_SPECTATORS = 0;
   public static final int MAX_SPECTATORS = 6;
+  public static final int DEFAULT_SPECTATOR_LIMIT = MIN_SPECTATORS;
   public static final int MIN_PLAYER_NAME_LENGTH = 1;
   public static final int MAX_PLAYER_NAME_LENGTH = 16;
   public static final int MIN_CLAN_NAME_LENGTH = 1;
@@ -19,7 +20,7 @@ public final class GameSettings
   public static final String PLAYER_NAME_CLAN_TAG_SEPARATOR_SYMBOL = " ";
   public static final Pattern COMMAND_PREFIX_PATTERN = Pattern.compile ("^[\\\\/]");
   public static final String DEFAULT_CLASSIC_MODE_MAP_NAME = "classic";
-  public static final int MIN_MAP_NAME_LENGTH = 1;
+  public static final int MIN_MAP_NAME_LENGTH = 2;
   public static final int MAX_MAP_NAME_LENGTH = 30;
 
   // @formatter:off
@@ -40,19 +41,29 @@ public final class GameSettings
           VALID_CLAN_NAME_PATTERN.pattern () + Pattern.quote (CLAN_TAG_END_SYMBOL));
 
   public static final Pattern VALID_MAP_NAME_PATTERN = Pattern.compile ("^(?=.{" + MIN_MAP_NAME_LENGTH + ","
-          + MAX_MAP_NAME_LENGTH + "}$)(?!.* {2,})[a-zA-Z][a-zA-Z ]*[a-zA-Z]$");
+          + MAX_MAP_NAME_LENGTH + "}$)(?!.* {2,})[a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z0-9]$");
 
   public static final String VALID_PLAYER_NAME_DESCRIPTION =
             "1) " + MIN_PLAYER_NAME_LENGTH + " to " + MAX_PLAYER_NAME_LENGTH + " alphanumeric characters are allowed.\n"
           + "2) Any combination of uppercase or lowercase is allowed.\n"
           + "3) No spaces.\n"
-          + "4) No other type of whitespace.\n" + "5) No special characters.\n";
+          + "4) No other type of whitespace.\n"
+          + "5) No special characters.\n";
 
   public static final String VALID_CLAN_NAME_DESCRIPTION =
             "1) " + MIN_CLAN_NAME_LENGTH + " to " + MAX_CLAN_NAME_LENGTH + " alphanumeric characters are allowed.\n"
           + "2) Any combination of uppercase or lowercase is allowed.\n"
           + "3) No spaces.\n"
-          + "4) No other type of whitespace.\n" + "5) No special characters.\n";
+          + "4) No other type of whitespace.\n"
+          + "5) No special characters.\n";
+
+  public static final String VALID_MAP_NAME_DESCRIPTION =
+            "1) " + MIN_MAP_NAME_LENGTH + " to " + MAX_MAP_NAME_LENGTH + " alphanumeric characters are allowed.\n"
+          + "2) Any combination of uppercase or lowercase is allowed.\n"
+          + "3) Single spaces are allowed, but cannot begin or end with a space.\n"
+          + "4) No consecutive spaces.\n"
+          + "5) No other type of whitespace.\n"
+          + "6) No special characters.\n";
 
   // @formatter:on
 

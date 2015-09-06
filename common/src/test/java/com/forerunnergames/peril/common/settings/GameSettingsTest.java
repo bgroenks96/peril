@@ -40,6 +40,62 @@ public class GameSettingsTest
   }
 
   @Test
+  public void testValidMapNamePatternPassesNumbers ()
+  {
+    final String testString = "A m4p n4me";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
+  public void testValidMapNamePatternPassesNumbersOnly ()
+  {
+    final String testString = "1234";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
+  public void testValidMapNamePatternPassesNumbersBeginning ()
+  {
+    final String testString = "1234 Test Map Name";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
+  public void testValidMapNamePatternPassesNumbersEnd ()
+  {
+    final String testString = "Test Map Name 23487";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
+  public void testValidMapNamePatternPassesMinLengthNumbersOnly ()
+  {
+    final String testString = "12";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
+  public void testValidMapNamePatternPassesMinLengthLowercaseLettersOnly ()
+  {
+    final String testString = "ab";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
+  public void testValidMapNamePatternPassesMinLengthUppercaseLettersOnly ()
+  {
+    final String testString = "ZQ";
+
+    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+  }
+
+  @Test
   public void testValidMapNamePatternFailsMoreThanOneSpaceBetweenWords ()
   {
     final String testString = "A Map  name";
@@ -115,14 +171,6 @@ public class GameSettingsTest
   public void testValidMapNamePatternFailsLessThanMinLength ()
   {
     final String testString = "";
-
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
-  }
-
-  @Test
-  public void testValidMapNamePatternFailsNumbers ()
-  {
-    final String testString = "A m4p name";
 
     assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
   }

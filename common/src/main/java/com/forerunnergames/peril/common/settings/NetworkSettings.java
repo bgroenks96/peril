@@ -2,6 +2,7 @@ package com.forerunnergames.peril.common.settings;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.net.NetworkConstants;
 
 import java.util.regex.Pattern;
 
@@ -50,7 +51,9 @@ public final class NetworkSettings
 
   public static boolean isValidServerAddress (final String serverAddress)
   {
-    return false;
+    Arguments.checkIsNotNull (serverAddress, "serverAddress");
+
+    return NetworkConstants.isValidAddress (serverAddress);
   }
 
   private NetworkSettings ()

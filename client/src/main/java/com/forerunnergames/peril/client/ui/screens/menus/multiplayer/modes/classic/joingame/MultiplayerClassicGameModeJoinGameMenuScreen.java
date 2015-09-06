@@ -59,13 +59,14 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
 
-    playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH,
+    playerNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_PLAYER_NAME, GameSettings.MAX_PLAYER_NAME_LENGTH,
                                                          InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
 
-    clanNameTextField = widgetFactory.createTextField (GameSettings.MAX_CLAN_NAME_LENGTH,
+    clanNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_CLAN_NAME, GameSettings.MAX_CLAN_NAME_LENGTH,
                                                        InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
 
-    serverAddressTextField = widgetFactory.createTextField (NetworkConstants.MAX_SERVER_ADDRESS_STRING_LENGTH,
+    serverAddressTextField = widgetFactory.createTextField (InputSettings.INITIAL_SERVER_ADDRESS,
+                                                            NetworkConstants.MAX_SERVER_ADDRESS_STRING_LENGTH,
                                                             NetworkConstants.SERVER_ADDRESS_PATTERN);
 
     clanNameCheckBox = widgetFactory.createCheckBox ();
@@ -74,13 +75,12 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        clanNameTextField.setText ("");
+        clanNameTextField.setText (clanNameCheckBox.isChecked () ? clanNameTextField.getText () : "");
         clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
       }
     });
 
-    clanNameCheckBox.setChecked (false);
-    clanNameTextField.setDisabled (true);
+    clanNameCheckBox.setChecked (!InputSettings.INITIAL_CLAN_NAME.isEmpty ());
 
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);
@@ -162,14 +162,15 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
           return;
         }
 
-        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName, clanName);
+        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName,
+                                                                                                    clanName);
         final String serverAddress = serverAddressTextField.getText ();
 
-        if (!NetworkConstants.isValidAddress (serverAddress))
+        if (!NetworkSettings.isValidServerAddress (serverAddress))
         {
           errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid server address: \'{}\'\n\nValid server address rules:\n\n{}",
-                          serverAddress, NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION)));
+                  Strings.format ("Invalid server address: \'{}\'\n\nValid server address rules:\n\n{}", serverAddress,
+                                  NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION)));
           errorPopup.show ();
           return;
         }
