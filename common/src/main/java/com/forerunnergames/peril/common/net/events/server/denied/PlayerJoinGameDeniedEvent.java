@@ -24,7 +24,8 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     DUPLICATE_ID,
     DUPLICATE_NAME,
     DUPLICATE_COLOR,
-    DUPLICATE_TURN_ORDER
+    DUPLICATE_TURN_ORDER,
+    INVALID_NAME
   }
 
   public String getPlayerName ()

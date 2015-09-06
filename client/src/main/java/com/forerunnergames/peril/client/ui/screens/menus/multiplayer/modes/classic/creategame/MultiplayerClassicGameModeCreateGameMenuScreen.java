@@ -38,8 +38,8 @@ import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
-import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
@@ -66,9 +66,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private static final int WIN_PERCENT_INCREMENT = 5;
   private final Popup errorPopup;
   private final TextField playerNameTextField;
-  private final TextField playerClanTagTextField;
+  private final TextField clanNameTextField;
   private final TextField serverNameTextField;
-  private final CheckBox playerClanTagCheckBox;
+  private final CheckBox clanNameCheckBox;
   private final SelectBox <Integer> winPercentSelectBox;
   private final SelectBox <String> initialCountryAssignmentSelectBox;
   private final Label playerLimitLabel;
@@ -103,23 +103,23 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     // @formatter:off
 
-    playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH, GameSettings.PLAYER_NAME_PATTERN);
-    playerClanTagTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_CLAN_TAG_LENGTH, GameSettings.PLAYER_CLAN_TAG_PATTERN);
+    playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH, InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
+    clanNameTextField = widgetFactory.createTextField (GameSettings.MAX_CLAN_NAME_LENGTH, InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
     serverNameTextField = widgetFactory.createTextField (NetworkSettings.MAX_SERVER_NAME_LENGTH, InputSettings.VALID_SERVER_NAME_TEXTFIELD_INPUT_PATTERN);
 
-    playerClanTagCheckBox = widgetFactory.createCheckBox ();
-    playerClanTagCheckBox.addListener (new ChangeListener ()
+    clanNameCheckBox = widgetFactory.createCheckBox ();
+    clanNameCheckBox.addListener (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        playerClanTagTextField.setText ("");
-        playerClanTagTextField.setDisabled (!playerClanTagCheckBox.isChecked ());
+        clanNameTextField.setText ("");
+        clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
       }
     });
 
-    playerClanTagCheckBox.setChecked (false);
-    playerClanTagTextField.setDisabled (true);
+    clanNameCheckBox.setChecked (false);
+    clanNameTextField.setDisabled (true);
 
     playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT), Align.left);
 
@@ -199,8 +199,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     playerSettingsTable.add ().expandX ().fill ();
     playerSettingsTable.row ();
     playerSettingsTable.add (widgetFactory.createMenuSettingText ("Clan Tag")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playerSettingsTable.add (playerClanTagCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
-    playerSettingsTable.add (playerClanTagTextField).size (74, 28).fill ().left ().spaceLeft (10);
+    playerSettingsTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
+    playerSettingsTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
     playerSettingsTable.add ().width (102).fill ();
     playerSettingsTable.add ().expandX ().fill ();
     verticalGroup.addActor (playerSettingsTable);
@@ -270,30 +270,49 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
           return;
         }
 
-        final String rawPlayerName = playerNameTextField.getText ();
-        final String rawPlayerClanTag = playerClanTagTextField.getText ();
-        final String finalPlayerName = rawPlayerClanTag.isEmpty () ? rawPlayerName :
-                        GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL + " " + rawPlayerName;
-        final String finalServerName = serverNameTextField.getText ();
-        final int finalPlayerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
-        final int finalWinPercent = winPercentSelectBox.getSelected ();
-        final InitialCountryAssignment finalInitialCountryAssignment =
+        final String playerName = playerNameTextField.getText ();
+
+        if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
+        {
+          errorPopup.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}",
+                                  playerName, GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
+          errorPopup.show ();
+          return;
+        }
+
+        final String clanName = clanNameTextField.getText ();
+
+        if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
+        {
+          errorPopup.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}",
+                                  clanName, GameSettings.VALID_CLAN_NAME_PATTERN)));
+          errorPopup.show ();
+          return;
+        }
+
+        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName, clanName);
+        final int playerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
+        final int winPercent = winPercentSelectBox.getSelected ();
+        final InitialCountryAssignment initialCountryAssignment =
                 InitialCountryAssignment.valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
         final GameConfiguration gameConfig =
-                new DefaultGameConfiguration (GameMode.CLASSIC, finalPlayerLimit, finalWinPercent, finalInitialCountryAssignment, currentMap);
+                new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit, winPercent, initialCountryAssignment, currentMap);
+        final String serverName = serverNameTextField.getText ();
 
-        if (!NetworkSettings.isValidServerName (finalServerName))
+        if (!NetworkSettings.isValidServerName (serverName))
         {
           errorPopup.setMessage (new DefaultMessage (
                   Strings.format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}",
-                                  finalServerName, NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
+                                  serverName, NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
           errorPopup.show ();
           return;
         }
 
         toScreen (ScreenId.LOADING);
 
-        eventBus.publish (new CreateGameEvent (finalServerName, gameConfig, finalPlayerName));
+        eventBus.publish (new CreateGameEvent (serverName, gameConfig, playerNameWithOptionalClanTag));
       }
     });
     // @formatter:on

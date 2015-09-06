@@ -14,25 +14,32 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.events.JoinGameEvent;
+import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading.JoinGameServerHandler;
+import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkConstants;
 
 import net.engio.mbassy.bus.MBassador;
 
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
+  private final Popup errorPopup;
   private final TextField playerNameTextField;
-  private final TextField playerClanTagTextField;
+  private final TextField clanNameTextField;
   private final TextField serverAddressTextField;
-  private final CheckBox playerClanTagCheckBox;
+  private final CheckBox clanNameCheckBox;
 
   public MultiplayerClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                        final ScreenChanger screenChanger,
@@ -47,31 +54,33 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     Arguments.checkIsNotNull (joinGameServerHandler, "joinGameHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    errorPopup = createErrorPopup (new PopupListenerAdapter ());
+
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
 
     playerNameTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_NAME_LENGTH,
-                                                         GameSettings.PLAYER_NAME_PATTERN);
+                                                         InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
 
-    playerClanTagTextField = widgetFactory.createTextField (GameSettings.MAX_PLAYER_CLAN_TAG_LENGTH,
-                                                            GameSettings.PLAYER_CLAN_TAG_PATTERN);
+    clanNameTextField = widgetFactory.createTextField (GameSettings.MAX_CLAN_NAME_LENGTH,
+                                                       InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
 
     serverAddressTextField = widgetFactory.createTextField (NetworkConstants.MAX_SERVER_ADDRESS_STRING_LENGTH,
                                                             NetworkConstants.SERVER_ADDRESS_PATTERN);
 
-    playerClanTagCheckBox = widgetFactory.createCheckBox ();
-    playerClanTagCheckBox.addListener (new ChangeListener ()
+    clanNameCheckBox = widgetFactory.createCheckBox ();
+    clanNameCheckBox.addListener (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        playerClanTagTextField.setText ("");
-        playerClanTagTextField.setDisabled (!playerClanTagCheckBox.isChecked ());
+        clanNameTextField.setText ("");
+        clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
       }
     });
 
-    playerClanTagCheckBox.setChecked (false);
-    playerClanTagTextField.setDisabled (true);
+    clanNameCheckBox.setChecked (false);
+    clanNameTextField.setDisabled (true);
 
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);
@@ -89,8 +98,8 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     playerSettingsTable.row ();
     playerSettingsTable.add (widgetFactory.createMenuSettingText ("Clan Tag")).size (150, 40).fill ().padLeft (90)
             .left ().spaceRight (10);
-    playerSettingsTable.add (playerClanTagCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
-    playerSettingsTable.add (playerClanTagTextField).size (74, 28).fill ().left ().spaceLeft (10);
+    playerSettingsTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
+    playerSettingsTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
     playerSettingsTable.add ().width (102).fill ();
     playerSettingsTable.add ().expandX ().fill ();
     verticalGroup.addActor (playerSettingsTable);
@@ -131,16 +140,43 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        final String rawPlayerName = playerNameTextField.getText ();
-        final String rawPlayerClanTag = playerClanTagTextField.getText ();
-        final String finalPlayerName = rawPlayerClanTag.isEmpty () ? rawPlayerName
-                : GameSettings.PLAYER_CLAN_TAG_START_SYMBOL + rawPlayerClanTag + GameSettings.PLAYER_CLAN_TAG_END_SYMBOL
-                        + " " + rawPlayerName;
-        final String finalServerAddress = serverAddressTextField.getText ();
+        final String playerName = playerNameTextField.getText ();
+
+        if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
+        {
+          errorPopup.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
+                                  GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
+          errorPopup.show ();
+          return;
+        }
+
+        final String clanName = clanNameTextField.getText ();
+
+        if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
+        {
+          errorPopup.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
+                                  GameSettings.VALID_CLAN_NAME_PATTERN)));
+          errorPopup.show ();
+          return;
+        }
+
+        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName, clanName);
+        final String serverAddress = serverAddressTextField.getText ();
+
+        if (!NetworkConstants.isValidAddress (serverAddress))
+        {
+          errorPopup.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid server address: \'{}\'\n\nValid server address rules:\n\n{}",
+                          serverAddress, NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION)));
+          errorPopup.show ();
+          return;
+        }
 
         toScreen (ScreenId.LOADING);
 
-        eventBus.publish (new JoinGameEvent (finalPlayerName, finalServerAddress));
+        eventBus.publish (new JoinGameEvent (playerNameWithOptionalClanTag, serverAddress));
       }
     });
   }

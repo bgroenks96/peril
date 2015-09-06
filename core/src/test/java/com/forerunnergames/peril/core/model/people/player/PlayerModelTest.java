@@ -118,7 +118,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerColor color = PlayerColor.TEAL;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").color (color).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").color (color).build ());
 
     assertTrue (playerModel.existsPlayerWith (color));
   }
@@ -127,7 +127,7 @@ public class PlayerModelTest
   public void testExistsPlayerWithId ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = PlayerFactory.create ("TestPlayer");
 
     playerModel.requestToAdd (player);
 
@@ -138,7 +138,7 @@ public class PlayerModelTest
   public void testExistsPlayerWithName ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final String name = "Test Player";
+    final String name = "TestPlayer";
 
     playerModel.requestToAdd (PlayerFactory.create (name));
 
@@ -149,7 +149,7 @@ public class PlayerModelTest
   public void testExistsPlayerWithName2 ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final String name = "Test Player";
+    final String name = "TestPlayer";
 
     playerModel.requestToAdd (PlayerFactory.create (name));
 
@@ -162,7 +162,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PersonIdentity identity = PersonIdentity.SELF;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").identity (identity).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").identity (identity).build ());
 
     assertTrue (playerModel.existsPlayerWith (identity));
   }
@@ -173,7 +173,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.THIRD;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").turnOrder (turnOrder).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").turnOrder (turnOrder).build ());
 
     assertTrue (playerModel.existsPlayerWith (turnOrder));
   }
@@ -184,7 +184,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerColor color = PlayerColor.UNKNOWN;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").color (color).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").color (color).build ());
 
     assertFalse (playerModel.existsPlayerWith (color));
   }
@@ -195,7 +195,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.UNKNOWN;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").turnOrder (turnOrder).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").turnOrder (turnOrder).build ());
 
     assertFalse (playerModel.existsPlayerWith (turnOrder));
   }
@@ -237,9 +237,9 @@ public class PlayerModelTest
   @Test
   public void testGetPlayers ()
   {
-    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("Test Player 1"),
-                                                                   PlayerFactory.create ("Test Player 2"),
-                                                                   PlayerFactory.create ("Test Player 3"));
+    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("TestPlayer1"),
+                                                                   PlayerFactory.create ("TestPlayer2"),
+                                                                   PlayerFactory.create ("TestPlayer3"));
 
     final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size ());
 
@@ -257,9 +257,9 @@ public class PlayerModelTest
   @Test
   public void testGetAllPlayersExcept ()
   {
-    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("Test Player 1"),
-                                                                   PlayerFactory.create ("Test Player 2"),
-                                                                   PlayerFactory.create ("Test Player 3"));
+    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("TestPlayer1"),
+                                                                   PlayerFactory.create ("TestPlayer2"),
+                                                                   PlayerFactory.create ("TestPlayer3"));
 
     final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size () + 1);
 
@@ -268,7 +268,7 @@ public class PlayerModelTest
       assertTrue (playerModel.requestToAdd (player).succeeded ());
     }
 
-    final Player unwantedPlayer = PlayerFactory.create ("Test Player 4");
+    final Player unwantedPlayer = PlayerFactory.create ("TestPlayer4");
 
     assertTrue (playerModel.requestToAdd (unwantedPlayer).succeeded ());
 
@@ -446,8 +446,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final PlayerColor player1Color = PlayerColor.CYAN;
-    final Player player1 = PlayerFactory.builder ("Test Player 1").color (player1Color).build ();
-    final Player player2 = PlayerFactory.builder ("Test Player 2").color (PlayerColor.GOLD).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1").color (player1Color).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2").color (PlayerColor.GOLD).build ();
 
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
@@ -460,10 +460,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final Id player1Id = IdGenerator.generateUniqueId ();
-    final Player player1 = new DefaultPlayer ("Test Player 1", player1Id, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-            PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("Test Player 2", IdGenerator.generateUniqueId (), PersonIdentity.UNKNOWN,
-            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+    final Player player1 = new DefaultPlayer ("TestPlayer1", player1Id, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+    final Player player2 = new DefaultPlayer ("TestPlayer2", IdGenerator.generateUniqueId (), PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
 
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
@@ -476,8 +474,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final PlayerTurnOrder player1TurnOrder = PlayerTurnOrder.NINTH;
-    final Player player1 = PlayerFactory.builder ("Test Player 1").turnOrder (player1TurnOrder).build ();
-    final Player player2 = PlayerFactory.builder ("Test Player 2").turnOrder (PlayerTurnOrder.SEVENTH).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1").turnOrder (player1TurnOrder).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2").turnOrder (PlayerTurnOrder.SEVENTH).build ();
 
     playerModel.requestToAdd (player1);
     playerModel.requestToAdd (player2);
@@ -534,8 +532,8 @@ public class PlayerModelTest
   public void testRequestAddPlayerFailedWithDuplicateColor ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Player player1 = PlayerFactory.builder ("Test Player 1").color (PlayerColor.BLUE).build ();
-    final Player player2 = PlayerFactory.builder ("Test Player 2").color (PlayerColor.BLUE).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1").color (PlayerColor.BLUE).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2").color (PlayerColor.BLUE).build ();
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_COLOR));
@@ -547,10 +545,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final Id duplicateId = IdGenerator.generateUniqueId ();
-    final Player player1 = new DefaultPlayer ("Test Player 1", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-            PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("Test Player 2", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-            PlayerTurnOrder.UNKNOWN);
+    final Player player1 = new DefaultPlayer ("TestPlayer1", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+    final Player player2 = new DefaultPlayer ("TestPlayer2", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID));
@@ -561,8 +557,8 @@ public class PlayerModelTest
   public void testRequestAddPlayerFailedWithDuplicateSelfIdentity ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Player player1 = PlayerFactory.builder ("Test Player 1").identity (PersonIdentity.SELF).build ();
-    final Player player2 = PlayerFactory.builder ("Test Player 2").identity (PersonIdentity.SELF).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1").identity (PersonIdentity.SELF).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2").identity (PersonIdentity.SELF).build ();
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2)
@@ -574,8 +570,8 @@ public class PlayerModelTest
   public void testRequestAddPlayerFailedWithDuplicateTurnOrder ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Player player1 = PlayerFactory.builder ("Test Player 1").turnOrder (PlayerTurnOrder.THIRD).build ();
-    final Player player2 = PlayerFactory.builder ("Test Player 2").turnOrder (PlayerTurnOrder.THIRD).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1").turnOrder (PlayerTurnOrder.THIRD).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2").turnOrder (PlayerTurnOrder.THIRD).build ();
 
     assertTrue (playerModel.requestToAdd (player1).succeeded ());
     assertTrue (playerModel.requestToAdd (player2)
@@ -590,15 +586,15 @@ public class PlayerModelTest
 
     addNPlayersTo (playerModel, MAX_PLAYERS);
 
-    assertTrue (playerModel.requestToAdd (PlayerFactory.create ("Test Player X"))
+    assertTrue (playerModel.requestToAdd (PlayerFactory.create ("TestPlayerX"))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL));
   }
 
   @Test
-  public void testRequestAddPlayerFailedWitheDuplicateName ()
+  public void testRequestAddPlayerFailedWithDuplicateName ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final String duplicateName = "Test Player";
+    final String duplicateName = "TestPlayer";
     final Player player1 = PlayerFactory.create (duplicateName, PersonIdentity.SELF, PlayerColor.PINK,
                                                  PlayerTurnOrder.EIGHTH);
     final Player player2 = PlayerFactory.create (duplicateName, PersonIdentity.NON_SELF, PlayerColor.BLUE,
@@ -610,10 +606,101 @@ public class PlayerModelTest
   }
 
   @Test
+  public void testRequestAddPlayerFailedWithInvalidNameEmpty ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameSpecialCharacter ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "!";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameWhitespaceOnly ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "   \r\r\t\t\n\n     \b\b";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameSpacesOnly ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "              ";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameMultipleConsecutiveSpaces ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "Test  Player";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameBeginsWithSingleSpace ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = " TestPlayer";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameEndsWithSingleSpace ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "TestPlayer ";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
+  public void testRequestAddPlayerFailedWithInvalidNameTooLong ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
+    final String invalidName = "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer" +
+            "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer" +
+            "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer" +
+            "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer";
+    final Player player = PlayerFactory.create (invalidName);
+
+    assertTrue (playerModel.requestToAdd (player).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (playerModel.isEmpty ());
+  }
+
+  @Test
   public void testRequestAddPlayerSucceeded ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final String name = "Test Player";
+    final String name = "TestPlayer";
     final PlayerColor color = PlayerColor.TEAL;
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIFTH;
     final PersonIdentity identity = PersonIdentity.SELF;
@@ -652,7 +739,7 @@ public class PlayerModelTest
 
     final PlayerColor color = PlayerColor.PINK;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").color (color).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").color (color).build ());
     playerModel.removeByColor (color);
 
     assertFalse (playerModel.existsPlayerWith (color));
@@ -670,7 +757,7 @@ public class PlayerModelTest
   public void testRemovePlayerByIdSuccessful ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = PlayerFactory.create ("TestPlayer");
     final Id id = idOf (player);
 
     playerModel.requestToAdd (player);
@@ -721,7 +808,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("Test Player").turnOrder (turnOrder).build ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").turnOrder (turnOrder).build ());
     playerModel.removeByTurnOrder (turnOrder);
 
     assertFalse (playerModel.existsPlayerWith (turnOrder));
@@ -823,7 +910,7 @@ public class PlayerModelTest
 
     for (int i = 1; i <= playerCount; ++i)
     {
-      final Player player = PlayerFactory.create ("Test Player " + i);
+      final Player player = PlayerFactory.create ("TestPlayer" + i);
 
       playerBuilder.add (player);
 
@@ -840,7 +927,7 @@ public class PlayerModelTest
     assertTrue (playerModel.isEmpty ());
     assertTrue (playerModel.getPlayerLimit () >= 1);
 
-    final Player player = PlayerFactory.create ("Test Player");
+    final Player player = PlayerFactory.create ("TestPlayer");
 
     assertTrue (playerModel.requestToAdd (player).succeeded ());
     assertTrue (playerModel.getPlayerCount () == 1);

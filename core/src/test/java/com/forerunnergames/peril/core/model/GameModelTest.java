@@ -158,7 +158,7 @@ public class GameModelTest
     stateMachineActionHandler = createGameModelWithTotalCountryCount (10);
     for (int i = 0; i < 10; ++i)
     {
-      stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player-" + i));
+      stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
     }
     assertTrue (stateMachineActionHandler.playerCountIs (10));
     assertTrue (playMapModel.countryCountIs (10));
@@ -308,7 +308,7 @@ public class GameModelTest
   {
     addMaxPlayers ();
 
-    final String name = "Test Player X";
+    final String name = "TestPlayerX";
 
     stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
 
@@ -321,7 +321,7 @@ public class GameModelTest
   @Test
   public void testHandlePlayerJoinGameRequestSucceeded ()
   {
-    final String name = "Test Player";
+    final String name = "TestPlayer";
 
     stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
 
@@ -366,7 +366,7 @@ public class GameModelTest
 
     for (int i = 1; i <= playerLimit; ++i)
     {
-      stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player " + i));
+      stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
     }
 
     assertTrue (stateMachineActionHandler.isFull ());
@@ -377,7 +377,7 @@ public class GameModelTest
     assertTrue (stateMachineActionHandler.isEmpty ());
     assertTrue (stateMachineActionHandler.isNotFull ());
 
-    stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("Test Player"));
+    stateMachineActionHandler.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer"));
 
     assertTrue (stateMachineActionHandler.playerCountIs (1));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameSuccessEvent.class));

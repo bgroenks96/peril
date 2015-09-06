@@ -29,7 +29,7 @@ public class GamePacketTest
   @Test
   public void testTwoCommonPlayerPacketsAreEqual ()
   {
-    final Player player = PlayerFactory.builder ("Test Player").build ();
+    final Player player = PlayerFactory.builder ("TestPlayer").build ();
 
     final PlayerPacket packet0 = Packets.from (player);
     final PlayerPacket packet1 = Packets.from (player);
@@ -51,8 +51,8 @@ public class GamePacketTest
   @Test
   public void testTwoDifferentPlayerPacketsAreNotEqual ()
   {
-    final Player player0 = PlayerFactory.builder ("Test Player-0").build ();
-    final Player player1 = PlayerFactory.builder ("Test Player-1").build ();
+    final Player player0 = PlayerFactory.builder ("TestPlayer-0").build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer-1").build ();
 
     final PlayerPacket packet0 = Packets.from (player0);
     final PlayerPacket packet1 = Packets.from (player1);
@@ -68,7 +68,7 @@ public class GamePacketTest
 
     for (int i = 0; i < n; ++i)
     {
-      final Player player = PlayerFactory.builder ("Player-" + i).build ();
+      final Player player = PlayerFactory.builder ("Player" + i).build ();
       final PlayerPacket packet = Packets.from (player);
 
       mapBuilder.put (packet, player);

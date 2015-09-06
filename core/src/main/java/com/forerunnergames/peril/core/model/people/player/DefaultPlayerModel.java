@@ -11,6 +11,7 @@ import static com.google.common.base.Predicates.not;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
@@ -343,6 +344,7 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (player, "player");
 
     // @formatter:off
+    if (!GameSettings.isValidPlayerNameWithOptionalClanTag (player.getName ())) return Result.failure (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME);
     if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL);
     if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID);
     if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME);

@@ -22,7 +22,9 @@ public final class NetworkSettings
   public static final int SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
   public static final String EXTERNAL_IP_RESOLVER_URL = "http://ci.forerunnergames.com:8888/get-wan-ip/getwanip";
   public static final String EXTERNAL_IP_RESOLVER_BACKUP_URL = "http://getwanip.appspot.com/getmyip";
+
   // @formatter:off
+
   public static final String VALID_SERVER_NAME_DESCRIPTION =
             "1) " + MIN_SERVER_NAME_LENGTH + " to " + MAX_SERVER_NAME_LENGTH + " alphanumeric characters are allowed.\n"
           + "2) Any combination of uppercase or lowercase is allowed.\n"
@@ -30,6 +32,13 @@ public final class NetworkSettings
           + "4) No consecutive spaces.\n"
           + "5) No other type of whitespace.\n"
           + "6) No special characters.\n";
+
+  public static final String VALID_SERVER_ADDRESS_DESCRIPTION =
+            "1) IPv4 address, for example: 203.0.113.254"
+          + "2) Ipv6 address, for example: FE80::0202:B3FF:FE1E:8329"
+          + "3) Domain name, for example: server.example.com"
+          + "4) Do not include the port number.";
+
   // @formatter:on
 
   public static boolean isValidServerName (final String serverName)
@@ -37,6 +46,11 @@ public final class NetworkSettings
     Arguments.checkIsNotNull (serverName, "serverName");
 
     return VALID_SERVER_NAME_PATTERN.matcher (serverName).matches ();
+  }
+
+  public static boolean isValidServerAddress (final String serverAddress)
+  {
+    return false;
   }
 
   private NetworkSettings ()

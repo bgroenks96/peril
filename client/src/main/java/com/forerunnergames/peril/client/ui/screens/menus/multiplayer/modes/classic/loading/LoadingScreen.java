@@ -536,6 +536,10 @@ public final class LoadingScreen extends InputAdapter implements Screen
       {
         return "Your turn order is already taken by another player.";
       }
+      case INVALID_NAME:
+      {
+        return "Your player name is invalid.";
+      }
       default:
       {
         return "Unknown";

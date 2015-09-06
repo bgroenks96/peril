@@ -123,7 +123,7 @@ public abstract class CardModelTest
     final int tradeInCount = 2;
     for (int i = 0; i < tradeInCount; i++)
     {
-      final Player testPlayer = PlayerFactory.create ("TestPlayer-" + i);
+      final Player testPlayer = PlayerFactory.create ("TestPlayer" + i);
       for (int k = 0; k < 3; k++)
       {
         cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
@@ -142,7 +142,7 @@ public abstract class CardModelTest
     final int tradeInCount = 7;
     for (int i = 0; i < tradeInCount; i++)
     {
-      final Player testPlayer = PlayerFactory.create ("TestPlayer-" + i);
+      final Player testPlayer = PlayerFactory.create ("TestPlayer" + i);
       for (int k = 0; k < 3; k++)
       {
         cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
