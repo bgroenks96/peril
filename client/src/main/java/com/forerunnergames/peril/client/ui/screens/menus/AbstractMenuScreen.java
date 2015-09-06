@@ -323,6 +323,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     menuChoicesTable.row ();
     menuChoicesTable.add ().height (height);
+    menuChoicesTable.row ();
     menuChoicesTable.layout ();
   }
 
