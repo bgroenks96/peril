@@ -157,7 +157,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
         {
           errorPopup.setMessage (new DefaultMessage (
                   Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
-                                  GameSettings.VALID_CLAN_NAME_PATTERN)));
+                                  GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
           errorPopup.show ();
           return;
         }

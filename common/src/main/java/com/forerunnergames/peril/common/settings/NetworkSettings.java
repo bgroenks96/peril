@@ -34,10 +34,10 @@ public final class NetworkSettings
           + "6) No special characters.\n";
 
   public static final String VALID_SERVER_ADDRESS_DESCRIPTION =
-            "1) IPv4 address, for example: 203.0.113.254"
-          + "2) Ipv6 address, for example: FE80::0202:B3FF:FE1E:8329"
-          + "3) Domain name, for example: server.example.com"
-          + "4) Do not include the port number.";
+            "1) IPv4 address, for example: 203.0.113.254\n"
+          + "2) Ipv6 address, for example: FE80::0202:B3FF:FE1E:8329\n"
+          + "3) Domain name, for example: server.example.com\n"
+          + "4) Do not include the port number.\n";
 
   // @formatter:on
 

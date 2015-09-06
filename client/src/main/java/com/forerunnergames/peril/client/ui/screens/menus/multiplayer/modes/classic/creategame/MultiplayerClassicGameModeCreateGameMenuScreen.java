@@ -287,7 +287,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         {
           errorPopup.setMessage (new DefaultMessage (
                   Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}",
-                                  clanName, GameSettings.VALID_CLAN_NAME_PATTERN)));
+                                  clanName, GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
           errorPopup.show ();
           return;
         }
