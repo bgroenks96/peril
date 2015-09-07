@@ -75,7 +75,7 @@ public abstract class AbstractMapDataPathParser implements MapDataPathParser
   @Override
   public String parseCardDataPath (final MapMetadata mapMetadata)
   {
-    return parseMapNamePath (mapMetadata) + AssetSettings.RELATIVE_CARDS_DIRECTORY;
+    return parseCardsPath (mapMetadata) + AssetSettings.RELATIVE_CARD_DATA_DIRECTORY;
   }
 
   @Override
@@ -100,6 +100,12 @@ public abstract class AbstractMapDataPathParser implements MapDataPathParser
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
     return parseMapNamePath (mapMetadata) + AssetSettings.RELATIVE_CONTINENTS_DIRECTORY;
+  }
+
+  @Override
+  public String parseCardsPath (final MapMetadata mapMetadata)
+  {
+    return parseMapNamePath (mapMetadata) + AssetSettings.RELATIVE_CARDS_DIRECTORY;
   }
 
   @Override

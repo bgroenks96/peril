@@ -28,6 +28,8 @@ public interface MapDataPathParser
 
   String parseContinentsPath (final MapMetadata mapMetadata);
 
+  String parseCardsPath (final MapMetadata mapMetadata);
+
   String parseMapTypePath (MapType mapType);
 
   GameMode getGameMode ();
