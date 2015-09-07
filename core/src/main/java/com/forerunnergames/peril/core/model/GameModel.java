@@ -526,7 +526,8 @@ public final class GameModel
       playerModel = new DefaultPlayerModel (gameRules);
       playMapModel = new DefaultPlayMapModel (DefaultPlayMapModel.generateDefaultCountries (gameRules),
               ImmutableSet.<Continent> of (), gameRules);
-      cardModel = new DefaultCardModel (gameRules, DefaultCardModel.generateDefaultCardDeck ());
+      cardModel = new DefaultCardModel (gameRules,
+              DefaultCardModel.generateDefaultCardDeck (playMapModel.getCountryCount ()));
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
     }
   }

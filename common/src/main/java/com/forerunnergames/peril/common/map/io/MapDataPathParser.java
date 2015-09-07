@@ -6,6 +6,8 @@ import com.forerunnergames.peril.common.map.MapType;
 
 public interface MapDataPathParser
 {
+  String parseCardsFileNamePath (final MapMetadata mapMetadata);
+
   String parseCountriesFileNamePath (final MapMetadata mapMetadata);
 
   String parseCountryGraphFileNamePath (final MapMetadata mapMetadata);
@@ -17,6 +19,8 @@ public interface MapDataPathParser
   String parseCountryDataPath (final MapMetadata mapMetadata);
 
   String parseContinentDataPath (final MapMetadata mapMetadata);
+
+  String parseCardDataPath (final MapMetadata mapMetadata);
 
   String parseMapNamePath (final MapMetadata mapMetadata);
 

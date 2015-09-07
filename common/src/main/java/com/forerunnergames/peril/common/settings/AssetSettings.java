@@ -68,6 +68,14 @@ public final class AssetSettings
   // Append: Continents data filename (compile-time)
   public static final String RELATIVE_CONTINENT_DATA_DIRECTORY = "data/";
 
+  // Prepend: Map name (runtime)
+  // Append: Relative card data directory (compile-time)
+  public static final String RELATIVE_CARDS_DIRECTORY = "cards/";
+
+  // Prepend: Relative cards directory (compile-time)
+  // Append: Card data filename (compile-time)
+  public static final String RELATIVE_CARD_DATA_DIRECTORY = "data/";
+
   // Prepend: Relative country data directory (compile-time)
   // Append: Nothing
   public static final String COUNTRY_DATA_FILENAME = "countries.txt";
@@ -83,6 +91,10 @@ public final class AssetSettings
   // Prepend: Relative continent data directory (compile-time)
   // Append: Nothing
   public static final String CONTINENT_GRAPH_FILENAME = "continentGraph.txt";
+
+  // Prepend: Relative card data directory (compile-time)
+  // Append: Nothing
+  public static final String CARD_DATA_FILENAME = "cards.txt";
 
   // @formatter:on
 

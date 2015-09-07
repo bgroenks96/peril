@@ -1,0 +1,13 @@
+// Country Name, Military Strength Value
+
+"Eastern United States", 3
+"Western United States", 3
+"Central America", 2
+"Northwest Territory", 2
+"Ontario", 2
+"Alberta", 2
+"Quebec", 2
+"Alaska", 1
+"Venezuela", 1
+"Greenland", 1
+"Wild Card", 0

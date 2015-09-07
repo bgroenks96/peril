@@ -1,7 +1,9 @@
-// Country Name, Military Strength Value (Similar to Soldier (1), Horse (2), Cannon (3))
+// Country Name, Military Strength Value
 
 "Eastern United States", 3
 "Western United States", 3
+"Hawaii", 3
+"Caribbean Islands", 3
 "China", 3
 "Ural", 3
 "Kamchatka", 3
@@ -12,6 +14,7 @@
 "Great Britain", 3
 "Western Europe", 3
 "Northern Europe", 3
+"Falkland Islands", 3
 "Brazil", 3
 "Japan", 3
 "Middle East", 2
@@ -30,11 +33,13 @@
 "Siam", 2
 "Alaska", 1
 "South Africa", 1
+"Philippines", 1
 "Argentina", 1
 "Venezuela", 1
 "Afghanistan", 1
 "North Africa", 1
 "Peru", 1
+"New Zealand", 1
 "Madagascar", 1
 "New Guinea", 1
 "Congo", 1
@@ -42,5 +47,7 @@
 "East Africa", 1
 "Iceland", 1
 "Greenland", 1
+"Svalbard", 1
+"Antarctica", 1
 "Wild Card 1", 0
 "Wild Card 2", 0

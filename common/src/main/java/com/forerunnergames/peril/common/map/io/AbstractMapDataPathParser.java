@@ -19,6 +19,12 @@ public abstract class AbstractMapDataPathParser implements MapDataPathParser
   }
 
   @Override
+  public String parseCardsFileNamePath (final MapMetadata mapMetadata)
+  {
+    return parseCardDataPath (mapMetadata) + AssetSettings.CARD_DATA_FILENAME;
+  }
+
+  @Override
   public final String parseCountriesFileNamePath (final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
@@ -67,6 +73,12 @@ public abstract class AbstractMapDataPathParser implements MapDataPathParser
   }
 
   @Override
+  public String parseCardDataPath (final MapMetadata mapMetadata)
+  {
+    return parseMapNamePath (mapMetadata) + AssetSettings.RELATIVE_CARDS_DIRECTORY;
+  }
+
+  @Override
   public final String parseMapNamePath (final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
@@ -105,6 +117,7 @@ public abstract class AbstractMapDataPathParser implements MapDataPathParser
   }
 
   protected abstract String parseMapsModePath (final MapType mapType, final GameMode gameMode);
+
   protected abstract String parseMapNameAsPath (final MapMetadata mapMetadata);
 
   private String parseMapTypeAsPath (final MapType mapType)

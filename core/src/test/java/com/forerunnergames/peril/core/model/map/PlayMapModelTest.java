@@ -1,19 +1,17 @@
 package com.forerunnergames.peril.core.model.map;
 
-import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
-import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
-import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 
@@ -25,11 +23,12 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+
 public class PlayMapModelTest
 {
-  private ImmutableSet <Country> defaultTestCountries;
-
   private static final int TEST_COUNTRY_COUNT = 20;
+  private ImmutableSet <Country> defaultTestCountries;
 
   public static ImmutableSet <Country> generateTestCountries (final int count)
   {

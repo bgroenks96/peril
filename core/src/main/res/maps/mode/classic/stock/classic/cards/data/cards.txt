@@ -1,0 +1,46 @@
+// Country Name, Military Strength Value
+
+"Eastern United States", 3
+"Western United States", 3
+"China", 3
+"Ural", 3
+"Kamchatka", 3
+"Yakutsk", 3
+"Irkutsk", 3
+"Siberia", 3
+"India", 3
+"Great Britain", 3
+"Western Europe", 3
+"Northern Europe", 3
+"Brazil", 3
+"Japan", 3
+"Middle East", 2
+"Southern Europe", 2
+"Indonesia", 2
+"Egypt", 2
+"Central America", 2
+"Scandinavia", 2
+"Northwest Territory", 2
+"Ontario", 2
+"Alberta", 2
+"Quebec", 2
+"Ukraine", 2
+"Eastern Australia", 2
+"Western Australia", 2
+"Siam", 2
+"Alaska", 1
+"South Africa", 1
+"Argentina", 1
+"Venezuela", 1
+"Afghanistan", 1
+"North Africa", 1
+"Peru", 1
+"Madagascar", 1
+"New Guinea", 1
+"Congo", 1
+"Mongolia", 1
+"East Africa", 1
+"Iceland", 1
+"Greenland", 1
+"Wild Card 1", 0
+"Wild Card 2", 0

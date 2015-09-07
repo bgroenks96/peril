@@ -75,17 +75,7 @@ public abstract class CardDealerTest
     deckHandler.cardWith ("");
   }
 
-  static ImmutableSet <Card> generateCards (final CardType type, final int count)
-  {
-    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
-    for (int i = 0; i < count; i++)
-    {
-      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, type));
-    }
-    return cardSetBuilder.build ();
-  }
-
-  static ImmutableSet <Card> generateTestCards ()
+  public static ImmutableSet <Card> generateTestCards ()
   {
     final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
     for (int i = 0; i < CardModelTest.DEFAULT_CARD_COUNT; i++)
@@ -100,4 +90,13 @@ public abstract class CardDealerTest
     return cardSetBuilder.build ();
   }
 
+  static ImmutableSet <Card> generateCards (final CardType type, final int count)
+  {
+    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
+    for (int i = 0; i < count; i++)
+    {
+      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, type));
+    }
+    return cardSetBuilder.build ();
+  }
 }

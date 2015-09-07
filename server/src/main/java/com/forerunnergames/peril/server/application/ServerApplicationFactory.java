@@ -13,6 +13,10 @@ import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.StateMachineActionHandler;
+import com.forerunnergames.peril.core.model.card.Card;
+import com.forerunnergames.peril.core.model.card.CardModel;
+import com.forerunnergames.peril.core.model.card.DefaultCardModel;
+import com.forerunnergames.peril.core.model.card.io.CardModelDataFactoryCreator;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
@@ -73,22 +77,22 @@ public final class ServerApplicationFactory
     final ImmutableSet <Continent> continents = PlayMapModelDataFactoryCreator.create (args.gameMode)
             .createContinents (mapMetadata, new DefaultCountryIdResolver (countries));
 
+    final ImmutableSet <Card> cards = CardModelDataFactoryCreator.create (args.gameMode).createCards (mapMetadata);
+
     final GameRules gameRules = GameRulesFactory.create (args.gameMode, args.playerLimit, args.winPercentage,
                                                          countries.size (), args.initialCountryAssignment);
 
-    final PlayMapModel playMapModel = new DefaultPlayMapModel (countries, continents, gameRules);
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
-    final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (playerModel.getPlayerLimit ());
-    final GameModel.Builder gameHandlerBuilder = GameModel.builder (gameRules);
-    gameHandlerBuilder.playMapModel (playMapModel);
-    gameHandlerBuilder.playerModel (playerModel);
-    gameHandlerBuilder.playerTurnModel (playerTurnModel);
-    gameHandlerBuilder.eventBus (eventBus);
-    final StateMachineActionHandler gameModel = new StateMachineActionHandler (gameHandlerBuilder.build ());
-    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
+    final PlayMapModel playMapModel = new DefaultPlayMapModel (countries, continents, gameRules);
+    final CardModel cardModel = new DefaultCardModel (gameRules, cards);
+    final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (args.playerLimit);
+    final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
+            .cardModel (cardModel).playerTurnModel (playerTurnModel).eventBus (eventBus).build ();
+    final StateMachineActionHandler stateMachineActionHandler = new StateMachineActionHandler (gameModel);
+    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (stateMachineActionHandler);
 
-    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, gameRules.getPlayerLimit (),
-            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, args.playerLimit,
+            args.winPercentage, args.initialCountryAssignment, mapMetadata);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);

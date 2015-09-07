@@ -2,11 +2,11 @@ package com.forerunnergames.peril.core.model.map;
 
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
-import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Preconditions;
@@ -347,12 +347,18 @@ public final class DefaultPlayMapModel implements PlayMapModel
     return getOwnedCountryCount () >= n;
   }
 
-  @Override
-  public String toString ()
+  public static ImmutableSet <Country> generateDefaultCountries (final GameRules gameRules)
   {
-    return Strings.format ("{}: Countries [{}] | Continents [{}] | CountryIdsToOwnerIds [{}]",
-                           getClass ().getSimpleName (), countryIdsToCountries.values (),
-                           continentIdsToContinents.values (), countryIdsToOwnerIds);
+    Arguments.checkIsNotNull (gameRules, "gameRules");
+
+    final int count = gameRules.getTotalCountryCount ();
+    final ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
+    for (int i = 0; i < count; ++i)
+    {
+      final Country country = CountryFactory.create ("Country-" + i);
+      countrySetBuilder.add (country);
+    }
+    return countrySetBuilder.build ();
   }
 
   private Optional <Country> getCountryByName (final String name)
@@ -360,7 +366,7 @@ public final class DefaultPlayMapModel implements PlayMapModel
     assert name != null;
     //@formatter:off
     assert !name.isEmpty ();
-    //@formmatter:on
+    //@formatter:on
 
     for (final Map.Entry <Id, Country> idCountryEntry : countryIdsToCountries.entrySet ())
     {
@@ -375,7 +381,7 @@ public final class DefaultPlayMapModel implements PlayMapModel
     assert name != null;
     //@formatter:off
     assert !name.isEmpty ();
-    //@formmatter:on
+    //@formatter:on
 
     for (final Map.Entry <Id, Continent> idCountryEntry : continentIdsToContinents.entrySet ())
     {
@@ -404,17 +410,11 @@ public final class DefaultPlayMapModel implements PlayMapModel
     Preconditions.checkIsTrue (countryIdsToCountries.containsKey (countryId), "Unrecognized country id.");
   }
 
-  public static ImmutableSet <Country> generateDefaultCountries (final GameRules gameRules)
+  @Override
+  public String toString ()
   {
-    Arguments.checkIsNotNull (gameRules, "gameRules");
-
-    final int count = gameRules.getMinTotalCountryCount ();
-    final ImmutableSet.Builder <Country> countrySetBuilder = ImmutableSet.builder ();
-    for (int i = 0; i < count; ++i)
-    {
-      final Country country = CountryFactory.create ("Country-" + i);
-      countrySetBuilder.add (country);
-    }
-    return countrySetBuilder.build ();
+    return Strings.format ("{}: Countries [{}] | Continents [{}] | CountryIdsToOwnerIds [{}]",
+                           getClass ().getSimpleName (), countryIdsToCountries.values (),
+                           continentIdsToContinents.values (), countryIdsToOwnerIds);
   }
 }

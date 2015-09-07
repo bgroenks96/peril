@@ -2,6 +2,7 @@ package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,24 +14,6 @@ public enum CardType
   TYPE3 (3),
   WILDCARD (0);
 
-  private final int typeValue;
-
-  private CardType (final int typeValue)
-  {
-    this.typeValue = typeValue;
-  }
-
-  public int getTypeValue ()
-  {
-    return typeValue;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return String.format ("%s=%d", name (), typeValue);
-  }
-
   private static final Map <Integer, CardType> valueMap = new HashMap <> ();
 
   static
@@ -39,6 +22,13 @@ public enum CardType
     {
       valueMap.put (cardType.typeValue, cardType);
     }
+  }
+
+  private final int typeValue;
+
+  CardType (final int typeValue)
+  {
+    this.typeValue = typeValue;
   }
 
   public static CardType fromValue (final int typeValue)
@@ -54,5 +44,16 @@ public enum CardType
   public static CardType random ()
   {
     return fromValue (Randomness.getRandomIntegerFrom (0, values ().length - 1));
+  }
+
+  public int getTypeValue ()
+  {
+    return typeValue;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Type: {} Value: {}", getClass ().getSimpleName (), name (), typeValue);
   }
 }

@@ -7,11 +7,11 @@ import static org.junit.Assert.fail;
 
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.card.CardModel.DenialReason;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
-import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
-import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Result;
 
 import com.google.common.collect.ImmutableSet;
@@ -28,15 +28,12 @@ public abstract class CardModelTest
   static final int DEFAULT_WILDCARD_COUNT = 2;
 
   private final GameRules rules = new ClassicGameRules.Builder ().build ();
-  private final ImmutableSet <Card> testDeck = CardDealerTest.generateTestCards ();
+  private final ImmutableSet <Card> testDeck = generateTestCards ();
 
-  protected abstract CardModel createCardModel (final GameRules rules, final ImmutableSet <Card> cards);
-
-  protected abstract CardModel createCardModel (final GameRules rules,
-                                                final CardDealer dealer,
-                                                final ImmutableSet <Card> cards);
-
-  protected abstract CardDealer createCardDealer (final ImmutableSet <Card> cardDeck);
+  public static ImmutableSet <Card> generateTestCards ()
+  {
+    return CardDealerTest.generateTestCards ();
+  }
 
   @Test (expected = IllegalStateException.class)
   public void testGiveCardFailsWhenHandFullReinforceTurnPhase ()
@@ -96,7 +93,7 @@ public abstract class CardModelTest
     }
 
     final Result <DenialReason> result = cardModel.requestTradeInCards (testPlayer.getId (), match,
-                                                                         TurnPhase.REINFORCE);
+                                                                        TurnPhase.REINFORCE);
     // use if/fail so failure reason can be printed;
     // assertTrue causes Result to throw IllegalStateException when successful
     if (result.failed ()) fail (result.getFailureReason ().toString ());
@@ -188,6 +185,14 @@ public abstract class CardModelTest
     // assert match equals expected
     assertEquals (expected, matches.asList ().get (0).getCards ());
   }
+
+  protected abstract CardModel createCardModel (final GameRules rules, final ImmutableSet <Card> cards);
+
+  protected abstract CardModel createCardModel (final GameRules rules,
+                                                final CardDealer dealer,
+                                                final ImmutableSet <Card> cards);
+
+  protected abstract CardDealer createCardDealer (final ImmutableSet <Card> cardDeck);
 
   // TODO add tests for computing more than one match (?)
 

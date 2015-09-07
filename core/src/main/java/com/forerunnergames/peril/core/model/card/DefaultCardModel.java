@@ -151,10 +151,12 @@ public final class DefaultCardModel implements CardModel
     return playerCardHandler.areCardsInHand (playerId, cards);
   }
 
-  public static ImmutableSet <Card> generateDefaultCardDeck ()
+  public static ImmutableSet <Card> generateDefaultCardDeck (final int countryCount)
   {
+    Arguments.checkIsNotNegative (countryCount, "countryCount");
+
     final ImmutableSet.Builder <Card> builder = ImmutableSet.builder ();
-    for (int i = 0; i < 47; i++)
+    for (int i = 0; i < countryCount; i++)
     {
       builder.add (CardFactory.create ("Card-" + i, CardType.random ()));
     }

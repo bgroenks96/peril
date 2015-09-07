@@ -11,19 +11,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
-import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.eventbus.EventBusHandler;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.eventbus.EventBusHandler;
-import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -37,6 +28,18 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.model.card.CardModel;
+import com.forerunnergames.peril.core.model.card.CardModelTest;
+import com.forerunnergames.peril.core.model.card.DefaultCardModel;
+import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
+import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.PlayMapModelTest;
+import com.forerunnergames.peril.core.model.map.continent.Continent;
+import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
+import com.forerunnergames.peril.core.model.people.player.Player;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -57,6 +60,7 @@ public class GameModelTest
   private StateMachineActionHandler stateMachineActionHandler;
   private PlayerModel playerModel;
   private PlayMapModel playMapModel;
+  private CardModel cardModel;
 
   @Before
   public void setup ()
@@ -395,6 +399,7 @@ public class GameModelTest
     playerModel = new DefaultPlayerModel (gameRules);
     playMapModel = new DefaultPlayMapModel (PlayMapModelTest.generateTestCountries (totalCountryCount),
             ImmutableSet.<Continent> of (), gameRules);
+    cardModel = new DefaultCardModel (gameRules, CardModelTest.generateTestCards ());
 
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();

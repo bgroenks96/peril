@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.core.model.card.io;
 
-import com.forerunnergames.peril.core.model.card.Card;
-import com.forerunnergames.peril.core.model.card.CardFactory;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.io.AbstractDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
+import com.forerunnergames.peril.core.model.card.Card;
+import com.forerunnergames.peril.core.model.card.CardFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.io.StreamParser;
@@ -21,8 +21,8 @@ public final class CardModelDataLoader extends AbstractDataLoader <Id, Card>
   private final StreamParserFactory streamParserFactory;
   private StreamParser parser;
   private String fileName;
-  private String nextCardName;
-  private int nextCardType;
+  private String name;
+  private int typeValue;
 
   public CardModelDataLoader (final StreamParserFactory streamParserFactory)
   {
@@ -54,10 +54,10 @@ public final class CardModelDataLoader extends AbstractDataLoader <Id, Card>
   @Override
   protected boolean readData ()
   {
-    nextCardName = parser.getNextQuotedString ();
-    nextCardType = parser.getNextInteger ();
+    name = parser.getNextQuotedString ();
+    typeValue = parser.getNextInteger ();
 
-    log.trace ("Parsed data: [name={}] [type={}].", nextCardName, nextCardType);
+    log.trace ("Parsed data: [name={}] [type={}].", name, typeValue);
 
     return !parser.isEndOfFile ();
   }
@@ -65,7 +65,7 @@ public final class CardModelDataLoader extends AbstractDataLoader <Id, Card>
   @Override
   protected void saveData ()
   {
-    final Card card = CardFactory.create (nextCardName, CardType.fromValue (nextCardType));
+    final Card card = CardFactory.create (name, CardType.fromValue (typeValue));
 
     log.debug ("Successfully loaded data [{}] from file [{}].", card, fileName);
 
