@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.pathparsers;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.pathparsers.AbstractMapResourcesPathParser;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;

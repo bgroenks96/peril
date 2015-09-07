@@ -2,7 +2,6 @@ package com.forerunnergames.peril.integration;
 
 import com.esotericsoftware.minlog.Log;
 
-import com.forerunnergames.peril.core.shared.net.settings.NetworkSettings;
 import com.forerunnergames.tools.common.pool.PoolFactory;
 import com.forerunnergames.tools.common.pool.Pools;
 import com.forerunnergames.tools.common.pool.RecyclableObjectPool;

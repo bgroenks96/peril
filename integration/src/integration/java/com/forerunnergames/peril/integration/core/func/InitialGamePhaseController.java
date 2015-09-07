@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.integration.core.func;
 
-import com.forerunnergames.peril.core.shared.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.core.shared.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.integration.server.TestClientPool;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;

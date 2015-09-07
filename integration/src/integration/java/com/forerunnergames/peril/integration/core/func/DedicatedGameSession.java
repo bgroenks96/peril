@@ -10,7 +10,6 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.integration.NetworkPortPool;
-import com.forerunnergames.peril.integration.TestSessionProvider.TestSession;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.integration.server.ServerFactory;

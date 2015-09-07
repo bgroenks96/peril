@@ -3,8 +3,6 @@ package com.forerunnergames.peril.core.model.turn;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
-import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 
 import org.junit.Test;
 
