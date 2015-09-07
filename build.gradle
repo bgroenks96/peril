@@ -139,6 +139,7 @@ project (":client") {
     compile project (":common")
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+    compile "com.amazonaws:aws-java-sdk:1.10.16"
     testCompile project (path: ":common", configuration: "testRuntime")
     testRuntime "ch.qos.logback:logback-classic:1.1.2"
   }
