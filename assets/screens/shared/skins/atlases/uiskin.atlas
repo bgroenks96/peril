@@ -389,7 +389,7 @@ label-background
   xy: 1134, 1464
   size: 28, 28
   split: 1, 1, 1, 1
-  pad: 6, 7, 1, 2
+  pad: 6, 6, 1, 1
   orig: 28, 28
   offset: 0, 0
   index: -1
@@ -770,9 +770,10 @@ progressBarKnob
   index: -1
 list-background
   rotate: false
-  xy: 1173, 1515
-  size: 6, 6
-  orig: 6, 6
+  xy: 1175, 1558
+  size: 4, 4
+  split: 1, 1, 1, 1
+  orig: 4, 4
   offset: 0, 0
   index: -1
 scroll-knob
@@ -863,7 +864,7 @@ default-select-selection
   orig: 3, 3
   offset: 0, 0
   index: -1
-select-box-selection
+list-selection
   rotate: false
   xy: 1176, 806
   size: 3, 3
