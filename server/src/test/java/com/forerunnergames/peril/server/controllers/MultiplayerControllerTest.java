@@ -352,38 +352,6 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testClientJoinRequestDeniedBecauseInvalidIpLetters ()
-  {
-    mpcBuilder.build (eventBus);
-
-    final Remote client = createClientWith ("invalidip1234");
-    connect (client);
-
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
-
-    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
-        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
-    verify (mockConnector, only ()).disconnect (eq (client));
-  }
-
-  @Test
   public void testClientJoinRequestDeniedBecauseMatchesServerIp ()
   {
     mpcBuilder.serverAddress ("1.2.3.4").build (eventBus);
