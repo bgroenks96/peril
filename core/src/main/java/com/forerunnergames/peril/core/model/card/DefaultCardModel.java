@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.model.card;
 
-import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.core.model.card.CardSet.Match;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
@@ -110,9 +110,7 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
-  public Result <DenialReason> requestTradeInCards (final Id playerId,
-                                                    final Match tradeInCards,
-                                                    final TurnPhase turnPhase)
+  public Result <Reason> requestTradeInCards (final Id playerId, final Match tradeInCards, final TurnPhase turnPhase)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (tradeInCards, "tradeInCards");
@@ -124,12 +122,16 @@ public final class DefaultCardModel implements CardModel
     final boolean isRequiredTradeInNotAllowed = numCards >= rules.getMinCardsInHandToRequireTradeIn (turnPhase);
     if (isOptionalTradeInNotAllowed && isRequiredTradeInNotAllowed)
     {
-      return Result.failure (DenialReason.TRADE_IN_NOT_ALLOWED);
+      return Result.failure (Reason.TRADE_IN_NOT_ALLOWED);
     }
 
     final CardSet playerHand = playerCardHandler.getCardsInHand (playerId);
     final CardSet matchSet = tradeInCards.getCardSet ();
-    if (!playerHand.containsAll (matchSet)) return Result.failure (DenialReason.CARD_NOT_IN_HAND);
+    if (turnPhase == TurnPhase.REINFORCE && numCards - matchSet.size () > rules.getMaxCardsInHand (TurnPhase.REINFORCE))
+    {
+      return Result.failure (Reason.TOO_MANY_CARDS_IN_HAND);
+    }
+    if (!playerHand.containsAll (matchSet)) return Result.failure (Reason.CARDS_NOT_IN_HAND);
     playerCardHandler.removeCardsFromHand (playerId, matchSet);
     cardDealer.discard (matchSet);
     tradeInCount++;
@@ -149,17 +151,5 @@ public final class DefaultCardModel implements CardModel
     Arguments.checkIsNotNull (cards, "cards");
 
     return playerCardHandler.areCardsInHand (playerId, cards);
-  }
-
-  public static ImmutableSet <Card> generateDefaultCardDeck (final int countryCount)
-  {
-    Arguments.checkIsNotNegative (countryCount, "countryCount");
-
-    final ImmutableSet.Builder <Card> builder = ImmutableSet.builder ();
-    for (int i = 0; i < countryCount; i++)
-    {
-      builder.add (CardFactory.create ("Card-" + i, CardType.random ()));
-    }
-    return builder.build ();
   }
 }

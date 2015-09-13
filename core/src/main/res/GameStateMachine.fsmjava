@@ -46,6 +46,11 @@
           type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
           name="event" />
       </event>
+      <event id="onPlayerReinforceCountriesResponseRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent" />
+      </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event" />
       </event>
@@ -141,8 +146,13 @@
               <state name="ReinforcementPhase">
                 <onEntry action="stateMachineActionHandler.beginReinforcementPhase()" />
                 <state name="WaitForPlayerToPlaceReinforcements">
-                  <onEntry action="stateMachineActionHandler.waitForPlayerToPlaceReinforcements()" />
+                  <transition event="onPlayerReinforceCountriesResponseRequestEvent"
+                              condition="stateMachineActionHandler.verifyPlayerCountryReinforcements(event)"
+                              nextState="AttackPhase" />
                 </state>
+              </state>
+              <state name="AttackPhase">
+                <onEntry action="stateMachineActionHandler.beginAttackPhase()" />
               </state>
             </state>
           </state>

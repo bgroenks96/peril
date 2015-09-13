@@ -268,7 +268,6 @@ public final class ClassicGameRules implements GameRules
   public int calculateCountryReinforcements (final int ownedCountryCount)
   {
     Arguments.checkIsNotNegative (ownedCountryCount, "ownedCountryCount");
-    Arguments.checkLowerExclusiveBound (ownedCountryCount, 0, "ownedCountryCount");
 
     return (int) Math.floor (ownedCountryCount / 3.0f); // floor function included for clarity
   }

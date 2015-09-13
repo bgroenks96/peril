@@ -9,7 +9,7 @@ import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.core.model.card.CardModel.DenialReason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.tools.common.Result;
@@ -33,6 +33,11 @@ public abstract class CardModelTest
   public static ImmutableSet <Card> generateTestCards ()
   {
     return CardDealerTest.generateTestCards ();
+  }
+  
+  public static ImmutableSet <Card> generateCards (final CardType type, final int count)
+  {
+    return CardDealerTest.generateCards (type, count);
   }
 
   @Test (expected = IllegalStateException.class)
@@ -92,8 +97,7 @@ public abstract class CardModelTest
       cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
     }
 
-    final Result <DenialReason> result = cardModel.requestTradeInCards (testPlayer.getId (), match,
-                                                                        TurnPhase.REINFORCE);
+    final Result <Reason> result = cardModel.requestTradeInCards (testPlayer.getId (), match, TurnPhase.REINFORCE);
     // use if/fail so failure reason can be printed;
     // assertTrue causes Result to throw IllegalStateException when successful
     if (result.failed ()) fail (result.getFailureReason ().toString ());

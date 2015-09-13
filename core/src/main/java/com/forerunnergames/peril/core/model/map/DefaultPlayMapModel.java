@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.core.model.map;
 
-import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
@@ -162,6 +160,8 @@ public final class DefaultPlayMapModel implements PlayMapModel
   public boolean isCountryOwned (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
+    Preconditions.checkIsTrue (existsCountryWith (countryId),
+                               Strings.format ("No country with Id [{}] exists.", countryId));
 
     return countryIdsToOwnerIds.containsKey (countryId);
   }
@@ -171,7 +171,16 @@ public final class DefaultPlayMapModel implements PlayMapModel
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return existsCountryWith (countryName) && isCountryOwned (idOf (countryWith (countryName)));
+    return existsCountryWith (countryName) && isCountryOwned (countryWith (countryName).getId ());
+  }
+
+  @Override
+  public boolean isCountryOwnedBy (final Id countryId, final Id playerId)
+  {
+    Arguments.checkIsNotNull (countryId, "countryId");
+    Arguments.checkIsNotNull (playerId, "playerId");
+    
+    return existsCountryWith (countryId) && isCountryOwned (countryId) && ownerOf (countryId).is (playerId);
   }
 
   /**
@@ -275,6 +284,28 @@ public final class DefaultPlayMapModel implements PlayMapModel
     return countryNameBuilder.build ();
   }
 
+  public ImmutableSet <Continent> getContinentsOwnedBy (final Id ownerId)
+  {
+    Arguments.checkIsNotNull (ownerId, "ownerId");
+    
+    final ImmutableSet.Builder <Continent> ownedContinents = ImmutableSet.builder ();
+    for (final Continent cont : continentIdsToContinents.values ())
+    {
+      final ImmutableSet <Id> contCountries = cont.getCountryIds ();
+      boolean continentOwned = true;
+      for (final Id countryId : contCountries)
+      {
+        if (!isCountryOwnedBy (countryId, ownerId))
+        {
+          continentOwned = false;
+          break;
+        }
+      }
+      if (continentOwned) ownedContinents.add (cont);
+    }
+    return ownedContinents.build ();
+  }
+  
   @Override
   public void unassignAllCountries ()
   {

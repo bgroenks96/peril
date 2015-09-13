@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -22,18 +23,9 @@ public interface CardModel
 
   ImmutableSet <CardSet.Match> computeMatchesFor (final Id playerId);
 
-  Result <DenialReason> requestTradeInCards (final Id playerId,
-                                              final CardSet.Match tradeInCards,
-                                              final TurnPhase turnPhase);
+  Result <Reason> requestTradeInCards (final Id playerId, final CardSet.Match tradeInCards, final TurnPhase turnPhase);
 
   int getNextTradeInBonus ();
 
   boolean areCardsInHand (final Id playerId, final CardSet cards);
-
-  public enum DenialReason
-  {
-    CARD_NOT_IN_HAND,
-    MAX_CARDS_IN_HAND_REACHED,
-    TRADE_IN_NOT_ALLOWED;
-  }
 }

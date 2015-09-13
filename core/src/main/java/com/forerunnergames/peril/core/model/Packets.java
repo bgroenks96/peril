@@ -3,10 +3,6 @@ package com.forerunnergames.peril.core.model;
 import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
 import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
 
-import com.forerunnergames.peril.core.model.card.Card;
-import com.forerunnergames.peril.core.model.card.CardSet;
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultCardPacket;
@@ -15,6 +11,11 @@ import com.forerunnergames.peril.common.net.packets.defaults.DefaultCountryPacke
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.model.card.Card;
+import com.forerunnergames.peril.core.model.card.CardModel;
+import com.forerunnergames.peril.core.model.card.CardSet;
+import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
@@ -79,8 +80,6 @@ public final class Packets
 
   public static ImmutableMap <CountryPacket, PlayerPacket> fromPlayMap (final Map <Country, Player> playMap)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
-
     Arguments.checkIsNotNull (playMap, "players");
     Arguments.checkHasNoNullKeysOrValues (playMap, "playMap");
 
@@ -94,6 +93,9 @@ public final class Packets
 
   public static CardSetPacket fromCards (final Collection <Card> cards)
   {
+    Arguments.checkIsNotNull(cards, "cards");
+    Arguments.checkHasNoNullElements (cards, "cards");
+    
     final ImmutableSet.Builder <CardPacket> cardSetBuilder = ImmutableSet.builder ();
     for (final Card card : cards)
     {
@@ -104,12 +106,29 @@ public final class Packets
 
   public static ImmutableSet <CardSetPacket> fromCardMatchSet (final Collection <CardSet.Match> matches)
   {
+    Arguments.checkIsNotNull (matches, "matches");
+    Arguments.checkHasNoNullElements (matches, "matches");
+    
     final ImmutableSet.Builder <CardSetPacket> cardSetBuilder = ImmutableSet.builder ();
     for (final CardSet.Match match : matches)
     {
       cardSetBuilder.add (fromCards (match.getCards ()));
     }
     return cardSetBuilder.build ();
+  }
+
+  public static ImmutableSet <Card> toCardSet (final Collection <CardPacket> cardPackets, final CardModel cardModel)
+  {
+    Arguments.checkIsNotNull (cardPackets, "cardPackets");
+    Arguments.checkIsNotNull (cardModel, "cardModel");
+    Arguments.checkHasNoNullElements (cardPackets, "cardPackets");
+    
+    final ImmutableSet.Builder <Card> cards = ImmutableSet.builder ();
+    for (final CardPacket cardPacket : cardPackets)
+    {
+      cards.add (cardModel.cardWith (cardPacket.getName ()));
+    }
+    return cards.build ();
   }
 
   public static boolean playerMatchesPacket (final Player player, final PlayerPacket playerPacket)
