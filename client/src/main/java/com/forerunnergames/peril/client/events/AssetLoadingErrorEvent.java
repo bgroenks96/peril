@@ -7,6 +7,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
 
+import com.google.common.base.Throwables;
+
 public class AssetLoadingErrorEvent implements LocalEvent
 {
   private final AssetDescriptor <?> assetDescriptor;
@@ -51,6 +53,6 @@ public class AssetLoadingErrorEvent implements LocalEvent
   {
     return Strings.format ("{}: {}: [{}] | {}: [{}]", getClass ().getSimpleName (),
                            AssetDescriptor.class.getSimpleName (), assetDescriptor, Throwable.class.getSimpleName (),
-                           throwable);
+                           Throwables.getStackTraceAsString (throwable));
   }
 }

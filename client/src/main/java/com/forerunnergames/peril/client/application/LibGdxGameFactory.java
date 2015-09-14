@@ -16,9 +16,9 @@ import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
+import com.forerunnergames.peril.common.eventbus.DeadEventHandler;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.ThrowingPublicationErrorHandler;
-import com.forerunnergames.peril.common.eventbus.LoggingDeadEventHandler;
 import com.forerunnergames.peril.common.net.GameServerCreator;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
@@ -37,19 +37,21 @@ import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 
 /**
- * Creates the {@link com.badlogic.gdx.ApplicationListener} instance to be passed to all of the executable sub-projects
- * (android, desktop, & ios).
+ * Creates the {@link ApplicationListener} instance to be passed to all of the executable sub-projects (android,
+ * desktop, & ios).
  */
 public final class LibGdxGameFactory
 {
   public static ApplicationListener create ()
   {
-    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    final MBassador <Event> eventBus = EventBusFactory
-            .create (ImmutableSet.<IPublicationErrorHandler> of (new ThrowingPublicationErrorHandler ()),
-                     new LoggingDeadEventHandler (), new AssetLoadingErrorDeadEventHandler ());
-
     // @formatter:off
+
+    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
+    final MBassador <Event> eventBus =
+            EventBusFactory.create (
+                    ImmutableSet.<IPublicationErrorHandler> of (new ThrowingPublicationErrorHandler ()),
+                    ImmutableSet.<DeadEventHandler> of (new AssetLoadingErrorDeadEventHandler ()));
+
     final Client client = new KryonetClient ();
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
     final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
@@ -61,6 +63,7 @@ public final class LibGdxGameFactory
     final Application application = new ClientApplication (mainThreadExecutor, assetController, clientController, multiplayerController, musicController);
     final Game libGdxGame = new LibGdxGameWrapper (application);
     final Controller screenController = new ScreenController (libGdxGame, musicController, assetManager, eventBus);
+
     // @formatter:on
 
     // We must use setter injection here because constructor injection won't work due to circular dependencies:

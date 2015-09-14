@@ -7,11 +7,15 @@ import com.forerunnergames.tools.common.Event;
 import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.common.DeadMessage;
 import net.engio.mbassy.bus.common.Properties;
 import net.engio.mbassy.bus.config.BusConfiguration;
 import net.engio.mbassy.bus.config.Feature;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
+import net.engio.mbassy.listener.Handler;
+import net.engio.mbassy.listener.Listener;
+import net.engio.mbassy.listener.References;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,22 +27,23 @@ public final class EventBusFactory
   public static MBassador <Event> create ()
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of (), new LoggingDeadEventHandler ());
+    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.<DeadEventHandler> of ());
   }
 
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> handlers)
   {
-    return create (handlers, new LoggingDeadEventHandler ());
+    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
+    return create (handlers, ImmutableSet.<DeadEventHandler> of ());
   }
 
   public static MBassador <Event> create (final DeadEventHandler... deadEventHandlers)
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of (), deadEventHandlers);
+    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.copyOf (deadEventHandlers));
   }
 
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> publicationErrorHandlers,
-                                          final DeadEventHandler... deadEventHandlers)
+                                          final Iterable <DeadEventHandler> deadEventHandlers)
   {
     Arguments.checkIsNotNull (publicationErrorHandlers, "publicationErrorHandlers");
     Arguments.checkHasNoNullElements (publicationErrorHandlers, "publicationErrorHandlers");
@@ -51,10 +56,7 @@ public final class EventBusFactory
             .setProperty (Properties.Handler.PublicationError,
                           new PublicationErrorDispatcher (ImmutableSet.copyOf (publicationErrorHandlers))));
 
-    for (final DeadEventHandler handler : deadEventHandlers)
-    {
-      eventBus.subscribe (handler);
-    }
+    eventBus.subscribe (new DeadMessageDispatcher (ImmutableSet.copyOf (deadEventHandlers)));
 
     return eventBus;
   }
@@ -88,6 +90,35 @@ public final class EventBusFactory
       for (final IPublicationErrorHandler handler : registeredHandlers)
       {
         handler.handleError (error);
+      }
+    }
+  }
+
+  @Listener (references = References.Strong)
+  private static final class DeadMessageDispatcher
+  {
+    private final ImmutableSet <DeadEventHandler> handlers;
+
+    DeadMessageDispatcher (final ImmutableSet <DeadEventHandler> handlers)
+    {
+      Arguments.checkIsNotNull (handlers, "handlers");
+      Arguments.checkHasNoNullElements (handlers, "handlers");
+
+      this.handlers = handlers;
+    }
+
+    @Handler
+    void onEvent (final DeadMessage deadMessage)
+    {
+      Arguments.checkIsNotNull (deadMessage, "deadMessage");
+
+      // standard behavior; log the dead message
+      log.warn ("Dead event detected, no handlers are registered to receive it. Event [{}]", deadMessage.getMessage ());
+
+      // dispatch dead message to all registered handlers
+      for (final DeadEventHandler handler : handlers)
+      {
+        handler.onDeadMessage (deadMessage);
       }
     }
   }
