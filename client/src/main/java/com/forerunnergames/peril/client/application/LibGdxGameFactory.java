@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 
 import com.forerunnergames.peril.client.assets.AssetController;
+import com.forerunnergames.peril.client.assets.AssetLoadingErrorDeadEventHandler;
 import com.forerunnergames.peril.client.assets.AssetManagerFactory;
 import com.forerunnergames.peril.client.assets.DefaultAssetLoader;
 import com.forerunnergames.peril.client.assets.DefaultAssetUpdater;
@@ -16,6 +17,8 @@ import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.eventbus.ThrowingPublicationErrorHandler;
+import com.forerunnergames.peril.common.eventbus.LoggingDeadEventHandler;
 import com.forerunnergames.peril.common.net.GameServerCreator;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
@@ -26,9 +29,12 @@ import com.forerunnergames.tools.common.controllers.Controller;
 import com.forerunnergames.tools.net.client.Client;
 import com.forerunnergames.tools.net.client.ClientController;
 
+import com.google.common.collect.ImmutableSet;
+
 import de.matthiasmann.AsyncExecution;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 
 /**
  * Creates the {@link com.badlogic.gdx.ApplicationListener} instance to be passed to all of the executable sub-projects
@@ -38,7 +44,10 @@ public final class LibGdxGameFactory
 {
   public static ApplicationListener create ()
   {
-    final MBassador <Event> eventBus = EventBusFactory.create ();
+    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
+    final MBassador <Event> eventBus = EventBusFactory
+            .create (ImmutableSet.<IPublicationErrorHandler> of (new ThrowingPublicationErrorHandler ()),
+                     new LoggingDeadEventHandler (), new AssetLoadingErrorDeadEventHandler ());
 
     // @formatter:off
     final Client client = new KryonetClient ();

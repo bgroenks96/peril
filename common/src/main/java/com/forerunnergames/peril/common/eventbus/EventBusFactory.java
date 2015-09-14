@@ -20,26 +20,48 @@ public final class EventBusFactory
 {
   private static final Logger log = LoggerFactory.getLogger (EventBusFactory.class);
 
+  public static MBassador <Event> create ()
+  {
+    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
+    return create (ImmutableSet.<IPublicationErrorHandler> of (), new LoggingDeadEventHandler ());
+  }
+
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> handlers)
   {
-    Arguments.checkIsNotNull (handlers, "handlers");
-    Arguments.checkHasNoNullElements (handlers, "handlers");
+    return create (handlers, new LoggingDeadEventHandler ());
+  }
+
+  public static MBassador <Event> create (final DeadEventHandler... deadEventHandlers)
+  {
+    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
+    return create (ImmutableSet.<IPublicationErrorHandler> of (), deadEventHandlers);
+  }
+
+  public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> publicationErrorHandlers,
+                                          final DeadEventHandler... deadEventHandlers)
+  {
+    Arguments.checkIsNotNull (publicationErrorHandlers, "publicationErrorHandlers");
+    Arguments.checkHasNoNullElements (publicationErrorHandlers, "publicationErrorHandlers");
+    Arguments.checkIsNotNull (deadEventHandlers, "deadEventHandlers");
+    Arguments.checkHasNoNullElements (deadEventHandlers, "deadEventHandlers");
 
     final MBassador <Event> eventBus = new MBassador <> (new BusConfiguration ()
             .addFeature (Feature.SyncPubSub.Default ()).addFeature (Feature.AsynchronousHandlerInvocation.Default ())
             .addFeature (Feature.AsynchronousMessageDispatch.Default ())
             .setProperty (Properties.Handler.PublicationError,
-                          new PublicationErrorDispatcher (ImmutableSet.copyOf (handlers))));
+                          new PublicationErrorDispatcher (ImmutableSet.copyOf (publicationErrorHandlers))));
 
-    eventBus.subscribe (new DeadEventHandler ());
+    for (final DeadEventHandler handler : deadEventHandlers)
+    {
+      eventBus.subscribe (handler);
+    }
 
     return eventBus;
   }
 
-  public static MBassador <Event> create ()
+  private EventBusFactory ()
   {
-    // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of ());
+    Classes.instantiationNotAllowed ();
   }
 
   private static class PublicationErrorDispatcher implements IPublicationErrorHandler
@@ -68,10 +90,5 @@ public final class EventBusFactory
         handler.handleError (error);
       }
     }
-  }
-
-  private EventBusFactory ()
-  {
-    Classes.instantiationNotAllowed ();
   }
 }
