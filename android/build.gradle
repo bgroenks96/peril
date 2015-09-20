@@ -7,6 +7,7 @@ android {
     targetSdkVersion 22
     versionCode 1
     versionName "0.1-SNAPSHOT"
+    multiDexEnabled true
   }
 
   sourceSets {
@@ -32,7 +33,9 @@ android {
   }
 
   dexOptions {
-    preDexLibraries = false
+    javaMaxHeapSize "4g"
+    incremental true
+    preDexLibraries false
   }
 }
 
