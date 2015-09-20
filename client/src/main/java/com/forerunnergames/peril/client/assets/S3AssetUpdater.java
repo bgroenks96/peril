@@ -69,7 +69,7 @@ public final class S3AssetUpdater implements AssetUpdater
       destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
 
       log.info ("Attempting to update assets in [{}] from [{}]...", destAssetsDir.file (),
-                AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY);
+                AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
 
       log.info ("Removing old assets...");
 

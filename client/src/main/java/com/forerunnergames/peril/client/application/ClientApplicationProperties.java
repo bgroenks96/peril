@@ -50,7 +50,7 @@ public final class ClientApplicationProperties
   public static final String MUSIC_VOLUME_PROPERTY_KEY = "music-volume";
   public static final String START_SCREEN_PROPERTY_KEY = "start-screen";
   public static final String UPDATE_ASSETS_KEY = "update-assets";
-  public static final String UPDATED_ASSETS_DIRECTORY_KEY = "updated-assets-directory";
+  public static final String UPDATED_ASSETS_LOCATION_KEY = "updated-assets-location";
   public static final String PLAYER_NAME_KEY = "player-name";
   public static final String CLAN_NAME_KEY = "clan-tag";
   public static final String SERVER_NAME_KEY = "server-title";
@@ -92,7 +92,7 @@ public final class ClientApplicationProperties
           + ": true, false ('true' will overwrite any asset customizations when running the game, "
           + "'false' will preserve any asset customizations, but your assets won't be updated - "
           + "which could crash the game - until you run the game with this set to 'true')\n\n "
-          + UPDATED_ASSETS_DIRECTORY_KEY
+          + UPDATED_ASSETS_LOCATION_KEY
           + ": Absolute location where updated assets can be found, either a local directory "
           + "(NOT surrounded by quotes, NO trailing slash) or an Amazon S3 bucket path ("
           + AssetSettings.VALID_S3_BUCKET_PATH_DESCRIPTION.replace ("\n", " ") + ")\n\n "
@@ -147,7 +147,7 @@ public final class ClientApplicationProperties
     defaults.setProperty (MUSIC_VOLUME_PROPERTY_KEY, String.valueOf (MusicSettings.INITIAL_VOLUME));
     defaults.setProperty (START_SCREEN_PROPERTY_KEY, String.valueOf (ScreenSettings.START_SCREEN));
     defaults.setProperty (UPDATE_ASSETS_KEY, String.valueOf (AssetSettings.UPDATE_ASSETS));
-    defaults.setProperty (UPDATED_ASSETS_DIRECTORY_KEY, AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY);
+    defaults.setProperty (UPDATED_ASSETS_LOCATION_KEY, AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
     defaults.setProperty (PLAYER_NAME_KEY, InputSettings.INITIAL_PLAYER_NAME);
     defaults.setProperty (CLAN_NAME_KEY, InputSettings.INITIAL_CLAN_NAME);
     defaults.setProperty (SERVER_NAME_KEY, InputSettings.INITIAL_SERVER_NAME);
@@ -194,7 +194,7 @@ public final class ClientApplicationProperties
     MusicSettings.INITIAL_VOLUME = parseFloat (MUSIC_VOLUME_PROPERTY_KEY, MusicSettings.MIN_VOLUME, MusicSettings.MAX_VOLUME);
     ScreenSettings.START_SCREEN = parseStartScreen (START_SCREEN_PROPERTY_KEY);
     AssetSettings.UPDATE_ASSETS = parseBoolean (UPDATE_ASSETS_KEY);
-    AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY = properties.getProperty (UPDATED_ASSETS_DIRECTORY_KEY);
+    AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION = properties.getProperty (UPDATED_ASSETS_LOCATION_KEY);
     InputSettings.INITIAL_PLAYER_NAME = parsePlayerName (PLAYER_NAME_KEY);
     InputSettings.INITIAL_CLAN_NAME = parseClanName (CLAN_NAME_KEY);
     InputSettings.INITIAL_SERVER_NAME = parseServerName (SERVER_NAME_KEY);

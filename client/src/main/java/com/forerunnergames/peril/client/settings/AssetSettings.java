@@ -147,7 +147,7 @@ public final class AssetSettings
     return S3_BUCKET_PATH_PREFIX_PATTERN.matcher (bucketPath).replaceAll ("");
   }
 
-  public static String ABSOLUTE_UPDATED_ASSETS_DIRECTORY = DEFAULT_S3_BUCKET_NAME;
+  public static String ABSOLUTE_UPDATED_ASSETS_LOCATION = DEFAULT_S3_BUCKET_NAME;
   public static boolean UPDATE_ASSETS = true;
 
   // Shared

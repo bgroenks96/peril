@@ -22,7 +22,7 @@ public final class LocalAssetUpdater implements AssetUpdater
   public void updateAssets ()
   {
     final FileHandle destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
-    final FileHandle sourceAssetsDir = Gdx.files.absolute (AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY);
+    final FileHandle sourceAssetsDir = Gdx.files.absolute (AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
 
     if (AssetSettings.UPDATE_ASSETS)
     {
@@ -43,8 +43,8 @@ public final class LocalAssetUpdater implements AssetUpdater
       catch (final GdxRuntimeException e)
       {
         throw new GdxRuntimeException ("Failed to update assets from: ["
-                + AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY + "].\n" + "Make sure that "
-                + ClientApplicationProperties.UPDATED_ASSETS_DIRECTORY_KEY + " is properly set in ["
+                + AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION + "].\n" + "Make sure that "
+                + ClientApplicationProperties.UPDATED_ASSETS_LOCATION_KEY + " is properly set in ["
                 + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "].\n" + "Also, "
                 + ClientApplicationProperties.UPDATE_ASSETS_KEY
                 + " must be set to true (in the same file) the first time you run the game.\n"
