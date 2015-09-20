@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
@@ -38,26 +37,26 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
   private final Stage stage;
   private final InputProcessor inputProcessor;
 
-  public PerilModePlayScreen (final ScreenChanger screenChanger,
+  public PerilModePlayScreen (final PerilModePlayScreenWidgetFactory widgetFactory,
+                              final ScreenChanger screenChanger,
                               final ScreenSize screenSize,
                               final MouseInput mouseInput,
                               final Cursor normalCursor,
                               final Batch batch,
-                              final AssetManager assetManager,
                               final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
-    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.normalCursor = normalCursor;
     this.eventBus = eventBus;
-    widgetFactory = new PerilModePlayScreenWidgetFactory (assetManager);
 
     final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
@@ -177,13 +176,19 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     stage.dispose ();
   }
 
-  @Override
+  private static void hideCursor ()
+  {
+    Gdx.graphics.setCursor (null);
+  }  @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
     return false;
   }
 
-  @Override
+  private void showCursor ()
+  {
+    Gdx.graphics.setCursor (normalCursor);
+  }  @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
     return false;
@@ -195,13 +200,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     return false;
   }
 
-  private void showCursor ()
-  {
-    Gdx.graphics.setCursor (normalCursor);
-  }
 
-  private static void hideCursor ()
-  {
-    Gdx.graphics.setCursor (null);
-  }
+
+
 }

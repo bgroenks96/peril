@@ -35,12 +35,6 @@ public final class DefaultCountryAtlasMetadata implements CountryAtlasMetadata
   }
 
   @Override
-  public String getFileName ()
-  {
-    return assetDescriptor.fileName;
-  }
-
-  @Override
   public int hashCode ()
   {
     int result = assetDescriptor.hashCode ();

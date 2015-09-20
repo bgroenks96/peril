@@ -11,6 +11,8 @@ public final class CustomExternalFileHandleResolver implements FileHandleResolve
   @Override
   public FileHandle resolve (final String fileName)
   {
+    if (fileName.startsWith (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY)) return Gdx.files.external (fileName);
+
     return Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY + fileName);
   }
 }

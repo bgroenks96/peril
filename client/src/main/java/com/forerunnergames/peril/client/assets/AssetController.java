@@ -1,38 +1,41 @@
 package com.forerunnergames.peril.client.assets;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
+
+import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
 public final class AssetController extends ControllerAdapter
 {
-  private final AssetUpdater assetUpdater;
-  private final AssetLoader assetLoader;
+  private final AssetManager assetManager;
 
-  public AssetController (final AssetUpdater assetUpdater, final AssetLoader assetLoader)
+  public AssetController (final AssetManager assetManager)
   {
-    Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
-    Arguments.checkIsNotNull (assetLoader, "assetLoader");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
 
-    this.assetUpdater = assetUpdater;
-    this.assetLoader = assetLoader;
+    this.assetManager = assetManager;
   }
 
   @Override
   public void initialize ()
   {
-    assetUpdater.updateAssets ();
-    assetLoader.queueAssets ();
+    for (final AssetDescriptor <?> descriptor : AssetSettings.INITIAL_LOADING_SCREEN_ASSET_DESCRIPTORS)
+    {
+      assetManager.load (descriptor);
+      assetManager.finishLoading (descriptor);
+    }
   }
 
   @Override
   public void update ()
   {
-    assetLoader.loadQueuedAssets ();
+    assetManager.update ();
   }
 
   @Override
   public void shutDown ()
   {
-    assetLoader.disposeAssets ();
+    assetManager.dispose ();
   }
 }

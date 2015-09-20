@@ -10,9 +10,13 @@ import com.forerunnergames.peril.client.settings.AssetSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DefaultAssetUpdater implements AssetUpdater
+public final class LocalAssetUpdater implements AssetUpdater
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultAssetUpdater.class);
+  private static final Logger log = LoggerFactory.getLogger (LocalAssetUpdater.class);
+
+  LocalAssetUpdater ()
+  {
+  }
 
   @Override
   public void updateAssets ()
@@ -22,7 +26,7 @@ public final class DefaultAssetUpdater implements AssetUpdater
 
     if (AssetSettings.UPDATE_ASSETS)
     {
-      log.info ("Attempting to update assets in \"{}\" from \"{}\"...", destAssetsDir.file (), sourceAssetsDir);
+      log.info ("Attempting to update assets in [{}] from [{}]...", destAssetsDir.file (), sourceAssetsDir);
 
       try
       {
@@ -38,10 +42,11 @@ public final class DefaultAssetUpdater implements AssetUpdater
       }
       catch (final GdxRuntimeException e)
       {
-        throw new GdxRuntimeException ("Failed to update assets from: \"" + AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY
-                + "\".\n" + "Make sure that " + ClientApplicationProperties.UPDATED_ASSETS_DIRECTORY_KEY
-                + " is properly set in \"" + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "\".\n"
-                + "Also, " + ClientApplicationProperties.UPDATE_ASSETS_KEY
+        throw new GdxRuntimeException ("Failed to update assets from: ["
+                + AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY + "].\n" + "Make sure that "
+                + ClientApplicationProperties.UPDATED_ASSETS_DIRECTORY_KEY + " is properly set in ["
+                + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "].\n" + "Also, "
+                + ClientApplicationProperties.UPDATE_ASSETS_KEY
                 + " must be set to true (in the same file) the first time you run the game.\n"
                 + "If you already tried all of that, you can set " + ClientApplicationProperties.UPDATE_ASSETS_KEY
                 + " to false.\nIn that case, you still need to make sure that you have a copy of all assets in "
@@ -54,5 +59,22 @@ public final class DefaultAssetUpdater implements AssetUpdater
                 ClientApplicationProperties.UPDATE_ASSETS_KEY,
                 ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME);
     }
+  }
+
+  @Override
+  public boolean isFinished ()
+  {
+    return true;
+  }
+
+  @Override
+  public float getProgressPercent ()
+  {
+    return 1.0f;
+  }
+
+  @Override
+  public void shutDown ()
+  {
   }
 }

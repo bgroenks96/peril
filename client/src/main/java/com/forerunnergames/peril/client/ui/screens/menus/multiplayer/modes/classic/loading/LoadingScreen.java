@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
@@ -34,7 +33,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.loading.LoadingScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.common.game.GameMode;
@@ -70,7 +69,6 @@ public final class LoadingScreen extends InputAdapter implements Screen
   private static final float ONE_NINTH = 1.0f / 9.0f;
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
   private static final float PROGRESS_BAR_STEP_SIZE = 0.1f;
-  private final WidgetFactory widgetFactory;
   private final PlayMapActorFactory playMapActorFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
@@ -102,7 +100,6 @@ public final class LoadingScreen extends InputAdapter implements Screen
                         final MouseInput mouseInput,
                         final Cursor normalCursor,
                         final Batch batch,
-                        final AssetManager assetManager,
                         final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
@@ -112,10 +109,8 @@ public final class LoadingScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
-    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.widgetFactory = widgetFactory;
     this.playMapActorFactory = playMapActorFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
@@ -598,6 +593,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
     try
     {
       isLoadingMap = true;
+      currentMapLoadingProgressPercent = 0.0f;
       playMapActorFactory.loadAssets (mapMetadata);
     }
     catch (final PlayMapLoadingException e)

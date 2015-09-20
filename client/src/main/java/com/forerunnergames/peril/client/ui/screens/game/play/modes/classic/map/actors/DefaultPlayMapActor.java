@@ -309,7 +309,16 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
 
-    if (countryNamesToActors.containsKey (countryName)) countryNamesToActors.get (countryName).changePrimaryStateTo (state);
+    if (countryNamesToActors
+            .containsKey (countryName)) countryNamesToActors.get (countryName).changePrimaryStateTo (state);
+  }
+
+  @Override
+  public boolean existsCountryActorWithName (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return countryNamesToActors.containsKey (countryName);
   }
 
   @Override
@@ -329,8 +338,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
   }
 
   @Override
-  public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state,
-                                                      final String countryName)
+  public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");

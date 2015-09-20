@@ -3,7 +3,6 @@ package com.forerunnergames.peril.client.ui.widgets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,9 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
@@ -62,15 +63,13 @@ public class WidgetFactory
     this.assetManager = assetManager;
   }
 
-  public final TextButton createTextButton (final String text,
-                                            final TextButton.TextButtonStyle style,
-                                            final EventListener listener)
+  public final TextButton createTextButton (final String text, final String style, final EventListener listener)
   {
     Arguments.checkIsNotNull (text, "text");
     Arguments.checkIsNotNull (style, "style");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final TextButton textButton = new TextButton (text, style);
+    final TextButton textButton = new TextButton (text, getSkin (), style);
     textButton.addListener (listener);
 
     return textButton;
@@ -78,13 +77,7 @@ public class WidgetFactory
 
   public final TextButton createTextButton (final String text, final EventListener listener)
   {
-    Arguments.checkIsNotNull (text, "text");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    final TextButton textButton = new TextButton (text, getSkin ());
-    textButton.addListener (listener);
-
-    return textButton;
+    return createTextButton (text, "default", listener);
   }
 
   public final ImageButton createImageButton (final String styleName, final EventListener listener)
@@ -204,13 +197,8 @@ public class WidgetFactory
   public Cursor createNormalCursor ()
   {
     return Gdx.graphics.newCursor (getAsset (AssetSettings.NORMAL_CURSOR_ASSET_DESCRIPTOR),
-                                             Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                                             Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
-  }
-
-  public final AssetManager getAssetManager ()
-  {
-    return assetManager;
+                                   Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+                                   Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
   }
 
   public Popup createErrorPopup (final Stage stage, final PopupListener listener)
@@ -263,6 +251,20 @@ public class WidgetFactory
     Arguments.checkIsNotNull (style, "style");
 
     return new ProgressBar (min, max, stepSize, true, getSkin (), style);
+  }
+
+  public Slider createHorizontalSlider (final int min, final int max, final int sliderStepSize, final String style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return new Slider (min, max, sliderStepSize, false, getSkin (), style);
+  }
+
+  public Slider createVerticalSlider (final int min, final int max, final int sliderStepSize, final String style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return new Slider (min, max, sliderStepSize, true, getSkin (), style);
   }
 
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)

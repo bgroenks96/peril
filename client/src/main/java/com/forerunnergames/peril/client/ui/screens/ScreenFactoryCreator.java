@@ -1,9 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
+import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.input.LibGdxMouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -13,15 +14,28 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class ScreenFactoryCreator
 {
-  public static ScreenFactory create (final ScreenChanger screenChanger,
-                                      final AssetManager assetManager,
-                                      final MBassador <Event> eventBus)
+  private final AssetManager assetManager;
+  private final AssetUpdater assetUpdater;
+  private final MBassador <Event> eventBus;
+
+  public ScreenFactoryCreator (final AssetManager assetManager,
+                               final AssetUpdater assetUpdater,
+                               final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (assetManager, "assetManager");
+    Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.assetManager = assetManager;
+    this.assetUpdater = assetUpdater;
+    this.eventBus = eventBus;
+  }
+
+  public ScreenFactory create (final ScreenChanger screenChanger)
+  {
+    Arguments.checkIsNotNull (screenChanger, "screenChanger");
+
     return new ScreenFactory (screenChanger, new LibGdxScreenSize (Gdx.graphics), new LibGdxMouseInput (Gdx.input),
-            new SpriteBatch (GraphicsSettings.SPRITES_IN_BATCH), assetManager, eventBus);
+            new SpriteBatch (GraphicsSettings.SPRITES_IN_BATCH), assetManager, assetUpdater, eventBus);
   }
 }

@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.TankActor2;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.TankBodyActor;

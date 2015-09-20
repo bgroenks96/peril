@@ -15,25 +15,13 @@ import javax.annotation.Nullable;
 public final class MusicController extends ControllerAdapter implements MusicChanger
 {
   private final MusicFactory musicFactory;
-  private final MusicSettings musicSettings;
   private final Map <ScreenId, Music> music = new EnumMap <> (ScreenId.class);
 
-  public MusicController (final MusicFactory musicFactory, final MusicSettings musicSettings)
+  public MusicController (final MusicFactory musicFactory)
   {
     Arguments.checkIsNotNull (musicFactory, "musicFactory");
-    Arguments.checkIsNotNull (musicSettings, "musicSettings");
 
     this.musicFactory = musicFactory;
-    this.musicSettings = musicSettings;
-  }
-
-  @Override
-  public void initialize ()
-  {
-    for (final ScreenId screenId : ScreenId.values ())
-    {
-      music.put (screenId, musicFactory.create (screenId));
-    }
   }
 
   @Override
@@ -46,11 +34,9 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   public void changeMusic (@Nullable final ScreenId fromScreen, final ScreenId toScreen)
   {
     Arguments.checkIsNotNull (toScreen, "toScreen");
-    Arguments.checkIsTrue (fromScreen == null || music.containsKey (fromScreen), "Cannot find music for screen ["
-            + fromScreen + "].");
-    Arguments.checkIsTrue (music.containsKey (toScreen), "Cannot find music for screen [" + toScreen + "].");
 
     if (!MusicSettings.isEnabled ()) return;
+    if (!music.containsKey (toScreen)) music.put (toScreen, musicFactory.create (toScreen));
 
     final Music oldMusic = music.get (fromScreen);
     final Music newMusic = music.get (toScreen);

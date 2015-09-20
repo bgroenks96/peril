@@ -11,8 +11,6 @@ public interface CountryAtlasMetadata
 
   MapMetadata getMapMetadata ();
 
-  String getFileName ();
-
   @Override
   int hashCode ();
 

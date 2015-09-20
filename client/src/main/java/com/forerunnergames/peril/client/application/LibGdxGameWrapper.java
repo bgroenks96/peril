@@ -6,13 +6,12 @@ import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
 
 /**
- * Wraps the actual {@link com.forerunnergames.tools.common.Application} instance inside of a
- * {@link com.badlogic.gdx.Game}, which implements {@link com.badlogic.gdx.ApplicationListener} because all of the
- * executable sub-projects (android, desktop, & ios) must be passed an {@link com.badlogic.gdx.ApplicationListener}
- * instance.
+ * Wraps the actual {@link Application} instance inside of a {@link Game}, which implements
+ * {@link com.badlogic.gdx.ApplicationListener} because all of the executable sub-projects (android, desktop, & ios)
+ * must be passed an {@link com.badlogic.gdx.ApplicationListener} instance.
  * <p/>
  * In other words, LibGDX demands ultimate control over the client application, so the best way to deal with that is to
- * wrap & delegate to the actual {@link com.forerunnergames.tools.common.Application}.
+ * wrap & delegate to the actual {@link Application}.
  */
 public final class LibGdxGameWrapper extends Game
 {

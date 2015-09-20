@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
@@ -144,6 +144,6 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    return isFinishedLoadingAssets (mapMetadata) ? 1.0f : assetManager.getProgress ();
+    return isFinishedLoadingAssets (mapMetadata) ? 1.0f : assetManager.getProgressLoading ();
   }
 }

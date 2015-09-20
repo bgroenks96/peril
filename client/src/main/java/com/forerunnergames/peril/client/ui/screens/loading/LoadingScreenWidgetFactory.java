@@ -1,9 +1,9 @@
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading;
+package com.forerunnergames.peril.client.ui.screens.loading;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 

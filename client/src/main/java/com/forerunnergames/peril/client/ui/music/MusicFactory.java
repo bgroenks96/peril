@@ -1,14 +1,15 @@
 package com.forerunnergames.peril.client.ui.music;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class MusicFactory
 {
+  private static final Music NULL_MUSIC = new NullMusic ();
   private final AssetManager assetManager;
 
   public MusicFactory (final AssetManager assetManager)
@@ -24,6 +25,10 @@ public final class MusicFactory
 
     switch (screenId)
     {
+      case LOADING_INITIAL:
+      {
+        return NULL_MUSIC;
+      }
       case LOADING:
       case MAIN_MENU:
       case MULTIPLAYER_GAME_MODES_MENU:

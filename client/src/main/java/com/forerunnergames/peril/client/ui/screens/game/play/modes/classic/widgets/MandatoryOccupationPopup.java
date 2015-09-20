@@ -1,11 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -23,23 +21,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
-import com.forerunnergames.peril.client.settings.AssetSettings;
+import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
+import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
-import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -80,9 +78,9 @@ public class MandatoryOccupationPopup extends Dialog
   private final CountryArmyTextActor destinationCountryArmyTextActor = new DefaultCountryArmyTextActor (
           countryArmyTextFont);
   private final Stage stage;
-  private final AssetManager assetManager;
   private final MBassador <Event> eventBus;
   private final PopupListener listener;
+  private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private Image title;
   private Drawable foregroundArrow;
   private Drawable foregroundArrowText;
@@ -106,25 +104,25 @@ public class MandatoryOccupationPopup extends Dialog
   private Stack destinationCountryStack;
 
   public MandatoryOccupationPopup (final Skin skin,
+                                   final ClassicModePlayScreenWidgetFactory widgetFactory,
                                    final Stage stage,
-                                   final AssetManager assetManager,
-                                   final MBassador <Event> eventBus,
-                                   final PopupListener listener)
+                                   final PopupListener listener,
+                                   final MBassador <Event> eventBus)
+
   {
     super ("", skin, WINDOW_STYLE_NAME_JSON);
 
-    Arguments.checkIsNotNull (skin, "skin");
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
     this.stage = stage;
-    this.assetManager = assetManager;
     this.eventBus = eventBus;
     this.listener = listener;
+    this.widgetFactory = widgetFactory;
 
-    createWidgets (skin);
+    createWidgets ();
     configureWindow ();
     configureInput ();
     addBackgroundImage ();
@@ -287,25 +285,53 @@ public class MandatoryOccupationPopup extends Dialog
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
   }
 
-  private void createWidgets (final Skin skin)
+  private void createWidgets ()
   {
-    title = new Image (
-            assetManager.get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR));
-
-    foregroundArrow = new TextureRegionDrawable (new TextureRegion (
-            assetManager.get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR)));
-
-    foregroundArrowText = new TextureRegionDrawable (new TextureRegion (assetManager
-            .get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR)));
-
-    slider = new Slider (0, 0, SLIDER_STEP_SIZE, IS_SLIDER_VERTICAL, skin);
-    sourceCountryNameLabel = new Label (null, skin);
-    destinationCountryNameLabel = new Label (null, skin);
-    okButton = new TextButton ("OK", skin.get ("popup", TextButton.TextButtonStyle.class));
-    minButton = new ImageButton (skin.get ("min", ImageButton.ImageButtonStyle.class));
-    minusButton = new ImageButton (skin.get ("minus", ImageButton.ImageButtonStyle.class));
-    plusButton = new ImageButton (skin.get ("plus", ImageButton.ImageButtonStyle.class));
-    maxButton = new ImageButton (skin.get ("max", ImageButton.ImageButtonStyle.class));
+    title = widgetFactory.createMandatoryOccupationPopupTitle ();
+    foregroundArrow = widgetFactory.createMandatoryOccupationPopupForegroundArrow ();
+    foregroundArrowText = widgetFactory.createMandatoryOccupationPopupForegroundArrowText ();
+    slider = widgetFactory.createHorizontalSlider (0, 0, SLIDER_STEP_SIZE, "default-horizontal");
+    sourceCountryNameLabel = widgetFactory.createLabel ("", Align.center, "default");
+    destinationCountryNameLabel = widgetFactory.createLabel ("", Align.center, "default");
+    okButton = widgetFactory.createTextButton ("OK", "popup", new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+      }
+    });
+    minButton = widgetFactory.createImageButton ("min", new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        setSliderToMinValue ();
+      }
+    });
+    minusButton = widgetFactory.createImageButton ("minus", new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        decrementSlider ();
+      }
+    });
+    plusButton = widgetFactory.createImageButton ("plus", new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        incrementSlider ();
+      }
+    });
+    maxButton = widgetFactory.createImageButton ("max", new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        setSliderToMaxValue ();
+      }
+    });
     sourceCountryStack = new Stack ();
     destinationCountryStack = new Stack ();
   }
@@ -320,8 +346,7 @@ public class MandatoryOccupationPopup extends Dialog
 
   private void addBackgroundImage ()
   {
-    setBackground (new TextureRegionDrawable (new TextureRegion (assetManager
-            .get (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR))));
+    setBackground (widgetFactory.createMandatoryOccupationPopupBackground ());
   }
 
   private void addTitleImage ()
@@ -335,8 +360,6 @@ public class MandatoryOccupationPopup extends Dialog
 
   private void addCountryNameContainers ()
   {
-    sourceCountryNameLabel.setAlignment (Align.center);
-    destinationCountryNameLabel.setAlignment (Align.center);
     getContentTable ().row ().spaceTop (12).spaceBottom (4).spaceLeft (12).spaceRight (12).height (34);
     getContentTable ().add (sourceCountryNameLabel).width (400);
     getContentTable ().add (destinationCountryNameLabel).width (400);
@@ -408,62 +431,6 @@ public class MandatoryOccupationPopup extends Dialog
       public void changed (final ChangeEvent event, final Actor actor)
       {
         updateCountryArmies ();
-      }
-    });
-
-    minButton.addListener (new InputListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        setSliderToMinValue ();
-        return true;
-      }
-    });
-
-    minusButton.addListener (new InputListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        decrementSlider ();
-        return true;
-      }
-    });
-
-    plusButton.addListener (new InputListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        incrementSlider ();
-        return true;
-      }
-    });
-
-    maxButton.addListener (new InputListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        setSliderToMaxValue ();
-        return true;
       }
     });
   }

@@ -94,6 +94,12 @@ final class NullPlayMapActor implements PlayMapActor
   }
 
   @Override
+  public boolean existsCountryActorWithName (final String countryName)
+  {
+    return true;
+  }
+
+  @Override
   public CountryActor getCountryActorWithName (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");

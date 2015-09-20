@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryAtlasMetadata;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
@@ -56,7 +56,7 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
 
     for (final CountryAtlasMetadata countryAtlasMetadata : mapMetadataToCountryAtlasesMetadata.get (mapMetadata))
     {
-      if (!assetManager.isLoaded (countryAtlasMetadata.getFileName ())) return false;
+      if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ())) return false;
     }
 
     return true;
@@ -73,7 +73,7 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
 
     for (final CountryAtlasMetadata countryAtlasMetadata : mapMetadataToCountryAtlasesMetadata.get (mapMetadata))
     {
-      if (!assetManager.isLoaded (countryAtlasMetadata.getFileName ()))
+      if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ()))
       {
         throw new PlayMapLoadingException (
                 Strings.format ("Country atlas [{}] for map [{}] is not loaded.", countryAtlasMetadata, mapMetadata));
@@ -98,14 +98,14 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
 
     for (final CountryAtlasMetadata countryAtlasMetadata : mapMetadataToCountryAtlasesMetadata.get (mapMetadata))
     {
-      if (!assetManager.isLoaded (countryAtlasMetadata.getFileName ()))
+      if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ()))
       {
         log.warn ("Cannot unload country atlas [{}] for map [{}] because it is not loaded.", countryAtlasMetadata,
                   mapMetadata);
         continue;
       }
 
-      assetManager.unload (countryAtlasMetadata.getFileName ());
+      assetManager.unload (countryAtlasMetadata.getAssetDescriptor ());
     }
 
     mapMetadataToCountryAtlasesMetadata.removeAll (mapMetadata);

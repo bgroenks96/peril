@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.client.application;
 
+import com.amazonaws.util.IOUtils;
+
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
@@ -14,7 +16,10 @@ import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.io.FileUtils;
 
+import com.google.common.base.Charsets;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -64,60 +69,62 @@ public final class ClientApplicationProperties
           + " To delete a setting, just delete the entire line containing the setting.\n\n" + " Valid values:\n\n "
           + WINDOW_WIDTH_PROPERTY_KEY
           + ": any whole number >= " + GraphicsSettings.MIN_INITIAL_WINDOW_WIDTH + " and <= the max resolution width "
-          + "of your monitor(s)\n "
+          + "of your monitor(s)\n\n "
           + WINDOW_HEIGHT_PROPERTY_KEY
           + ": any whole number >= "
           + GraphicsSettings.MIN_INITIAL_WINDOW_HEIGHT
-          + " and <= the max resolution height of your monitor(s)\n "
+          + " and <= the max resolution height of your monitor(s)\n\n "
           + WINDOW_RESIZABLE_PROPERTY_KEY
-          + ": true, false\n "
+          + ": true, false\n\n "
           + WINDOW_TITLE_PROPERTY_KEY
-          + ": anything\n "
+          + ": anything\n\n "
           + FULLSCREEN_PROPERTY_KEY
-          + ": true, false\n "
+          + ": true, false\n\n "
           + VSYNC_PROPERTY_KEY
-          + ": true, false\n "
+          + ": true, false\n\n "
           + MUSIC_ENABLED_PROPERTY_KEY
-          + ": true, false\n "
+          + ": true, false\n\n "
           + MUSIC_VOLUME_PROPERTY_KEY
-          + ": any decimal number >= " + MusicSettings.MIN_VOLUME + " and <= " + MusicSettings.MAX_VOLUME + "\n "
+          + ": any decimal number >= " + MusicSettings.MIN_VOLUME + " and <= " + MusicSettings.MAX_VOLUME + "\n\n "
           + START_SCREEN_PROPERTY_KEY
-          + ": " + Strings.toStringList (", ", LetterCase.NONE, false, ScreenId.values ()) + "\n "
+          + ": " + Strings.toStringList (ScreenSettings.VALID_START_SCREENS, ", ", LetterCase.NONE, false) + "\n\n "
           + UPDATE_ASSETS_KEY
           + ": true, false ('true' will overwrite any asset customizations when running the game, "
           + "'false' will preserve any asset customizations, but your assets won't be updated - "
-          + "which could crash the game - until you run the game with this set to 'true')\n "
+          + "which could crash the game - until you run the game with this set to 'true')\n\n "
           + UPDATED_ASSETS_DIRECTORY_KEY
-          + ": absolute directory (NOT surrounded by quotes, NO trailing slash) where updated assets can be found\n "
+          + ": Absolute location where updated assets can be found, either a local directory "
+          + "(NOT surrounded by quotes, NO trailing slash) or an Amazon S3 bucket path ("
+          + AssetSettings.VALID_S3_BUCKET_PATH_DESCRIPTION.replace ("\n", " ") + ")\n\n "
           + PLAYER_NAME_KEY
           + ": The name of your player, optional, can be left blank. "
-          + GameSettings.VALID_PLAYER_NAME_DESCRIPTION.replace ("\n", " ") + "\n "
+          + GameSettings.VALID_PLAYER_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + CLAN_NAME_KEY
           + ": Your clan tag, optional, can be left blank. "
-          + GameSettings.VALID_CLAN_NAME_DESCRIPTION.replace ("\n", " ") + "\n "
+          + GameSettings.VALID_CLAN_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + SERVER_NAME_KEY
           + ": Your server title, optional, can be left blank. "
-          + NetworkSettings.VALID_SERVER_NAME_DESCRIPTION.replace ("\n", " ") + "\n "
+          + NetworkSettings.VALID_SERVER_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + SERVER_ADDRESS_KEY
           + ": Your server address, optional, can be left blank. "
-          + NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION.replace ("\n", " ") + "\n "
+          + NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + CLASSIC_MODE_PLAYER_LIMIT_KEY
           + ": Number of players allowed in your classic game mode server, any whole number, "
-          + ClassicGameRules.MIN_PLAYER_LIMIT + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n "
+          + ClassicGameRules.MIN_PLAYER_LIMIT + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n\n "
           + SPECTATOR_LIMIT_KEY
           + ": Number of spectators allowed in your server in any game mode, any whole number, "
-          + GameSettings.MIN_SPECTATORS + " to " + GameSettings.MAX_SPECTATORS + "\n "
+          + GameSettings.MIN_SPECTATORS + " to " + GameSettings.MAX_SPECTATORS + "\n\n "
           + CLASSIC_MODE_MAP_NAME_KEY
           + ": Name of the map for your classic game mode server. "
-          + GameSettings.VALID_MAP_NAME_DESCRIPTION.replace ("\n", " ") + "\n "
+          + GameSettings.VALID_MAP_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + CLASSIC_MODE_WIN_PERCENT_KEY
           + ": % of the map that must be conquered to win the game in your classic game mode server, any whole "
           + "number, must be a multiple of 5, " + "5 (?) to " + ClassicGameRules.MAX_WIN_PERCENTAGE + ", the real "
-          + "minimum valid win % cannot be determined until the map is loaded.\n "
+          + "minimum valid win % cannot be determined until the map is loaded.\n\n "
           + CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY
           + ": Method of assigning initial countries to players in your classic game mode server: "
-          + Strings.toStringList (", ", LetterCase.NONE, false, InitialCountryAssignment.values ()) + "\n "
-          + "\n\n"
+          + Strings.toStringList (", ", LetterCase.NONE, false, InitialCountryAssignment.values ()) + "\n\n "
+          + "\n"
           + " If you've done your best to read & follow these instructions, and you're still having problems:\n\n"
           + " 1) Ask for help on our forums at http://community.forerunnergames.com\n"
           + " 2) Email us at support@forerunnergames.com. Please attach this file in the email, as well as any crash files.\n";
@@ -156,31 +163,23 @@ public final class ClientApplicationProperties
 
     try
     {
-      final String propertiesFileContents = FileUtils.loadFile (PROPERTIES_FILE_PATH_AND_NAME, StandardCharsets.UTF_8);
-
-      // Deal with Windows path single backslashes being erased because it's a reserved character for continuing lines
-      // by the Properties class.
-      properties.load (new StringReader (propertiesFileContents.replace ("\\", "\\\\")));
+      loadProperties ();
     }
-    catch (final IOException e)
+    catch (final IOException ignored)
     {
       try
       {
         log.info ("Failed to load \"{}\". Attempting to create it...", PROPERTIES_FILE_PATH_AND_NAME);
 
-        new File (PROPERTIES_FILE_PATH).mkdirs ();
-
-        final FileOutputStream fileOutputStream = new FileOutputStream (PROPERTIES_FILE_PATH_AND_NAME);
-
-        defaults.store (fileOutputStream, PROPERTIES_FILE_COMMENTS);
-
-        fileOutputStream.close ();
+        createPropertiesFile (defaults);
+        loadProperties ();
 
         log.info ("Successfully created \"{}\".", PROPERTIES_FILE_PATH_AND_NAME);
       }
-      catch (final IOException e1)
+      catch (final IOException ignored2)
       {
-        log.warn ("Failed to load or create \"{}\". Falling back to defaults.", PROPERTIES_FILE_PATH_AND_NAME);
+        log.warn ("Failed to load or create \"{}\". Falling back to internal default values.",
+                  PROPERTIES_FILE_PATH_AND_NAME);
       }
     }
 
@@ -193,7 +192,7 @@ public final class ClientApplicationProperties
     GraphicsSettings.IS_VSYNC_ENABLED = parseBoolean (VSYNC_PROPERTY_KEY);
     MusicSettings.IS_ENABLED = parseBoolean (MUSIC_ENABLED_PROPERTY_KEY);
     MusicSettings.INITIAL_VOLUME = parseFloat (MUSIC_VOLUME_PROPERTY_KEY, MusicSettings.MIN_VOLUME, MusicSettings.MAX_VOLUME);
-    ScreenSettings.START_SCREEN = parseEnum (START_SCREEN_PROPERTY_KEY, ScreenId.class);
+    ScreenSettings.START_SCREEN = parseStartScreen (START_SCREEN_PROPERTY_KEY);
     AssetSettings.UPDATE_ASSETS = parseBoolean (UPDATE_ASSETS_KEY);
     AssetSettings.ABSOLUTE_UPDATED_ASSETS_DIRECTORY = properties.getProperty (UPDATED_ASSETS_DIRECTORY_KEY);
     InputSettings.INITIAL_PLAYER_NAME = parsePlayerName (PLAYER_NAME_KEY);
@@ -216,6 +215,33 @@ public final class ClientApplicationProperties
             + " <-- HINT: The part after the = sign (" + propertyValue + ") ain't right!\n\n"
             + "Time to go back and actually read the instructions in your " + PROPERTIES_FILE_NAME
             + " and then try again... ;-)\n\nNerdy developer details:\n";
+  }
+
+  private static void createPropertiesFile (final Properties defaults) throws IOException
+  {
+    new File (PROPERTIES_FILE_PATH).mkdirs ();
+
+    final FileOutputStream fileOutputStream = new FileOutputStream (PROPERTIES_FILE_PATH_AND_NAME);
+
+    defaults.store (fileOutputStream, PROPERTIES_FILE_COMMENTS);
+
+    fileOutputStream.close ();
+
+    // Replace escaped colon characters in property value URI's, e.g., http\://example.com => http://example.com
+    String propertiesFile = IOUtils.toString (new FileInputStream (PROPERTIES_FILE_PATH_AND_NAME));
+    propertiesFile = propertiesFile.replace ("\\://", "://");
+    final FileOutputStream fileOutputStream2 = new FileOutputStream (PROPERTIES_FILE_PATH_AND_NAME);
+    fileOutputStream2.write (propertiesFile.getBytes (Charsets.UTF_8));
+    fileOutputStream2.close ();
+  }
+
+  private void loadProperties () throws IOException
+  {
+    final String propertiesFileContents = FileUtils.loadFile (PROPERTIES_FILE_PATH_AND_NAME, StandardCharsets.UTF_8);
+
+    // Deal with Windows path single backslashes being erased because it's a reserved character for continuing lines
+    // by the Properties class.
+    properties.load (new StringReader (propertiesFileContents.replace ("\\", "\\\\")));
   }
 
   private Integer parseInteger (final String propertyKey, final int min)
@@ -297,6 +323,18 @@ public final class ClientApplicationProperties
     {
       throw new RuntimeException (getParseErrorMessageFor (propertyKey, propertyValue), e);
     }
+  }
+
+  private ScreenId parseStartScreen (final String startScreenKey)
+  {
+    final ScreenId startScreenId = parseEnum (startScreenKey, ScreenId.class);
+
+    if (! ScreenSettings.isValidStartScreen (startScreenId))
+    {
+      throw new RuntimeException (getParseErrorMessageFor (startScreenKey, getPropertyValueFrom (startScreenKey)));
+    }
+
+    return startScreenId;
   }
 
   private String parsePlayerName (final String playerNameKey)

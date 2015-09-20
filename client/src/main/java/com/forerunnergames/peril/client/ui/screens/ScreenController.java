@@ -2,12 +2,9 @@ package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 
-import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.music.MusicChanger;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
 import com.google.common.collect.BiMap;
@@ -15,19 +12,17 @@ import com.google.common.collect.HashBiMap;
 
 import javax.annotation.Nullable;
 
-import net.engio.mbassy.bus.MBassador;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class ScreenController extends ControllerAdapter implements ScreenChanger
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
+  private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   private final Game game;
   private final MusicChanger musicChanger;
-  private final AssetManager assetManager;
-  private final MBassador <Event> eventBus;
-  private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
+  private final ScreenFactoryCreator screenFactoryCreator;
+  private ScreenFactory screenFactory;
   @Nullable
   private ScreenId previousPreviousScreenId = null;
   @Nullable
@@ -35,31 +30,22 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
 
   public ScreenController (final Game game,
                            final MusicChanger musicChanger,
-                           final AssetManager assetManager,
-                           final MBassador <Event> eventBus)
+                           final ScreenFactoryCreator screenFactoryCreator)
   {
     Arguments.checkIsNotNull (game, "game");
     Arguments.checkIsNotNull (musicChanger, "musicChanger");
-    Arguments.checkIsNotNull (assetManager, "assetManager");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (screenFactoryCreator, "screenFactoryCreator");
 
     this.game = game;
     this.musicChanger = musicChanger;
-    this.assetManager = assetManager;
-    this.eventBus = eventBus;
+    this.screenFactoryCreator = screenFactoryCreator;
   }
 
   @Override
   public void initialize ()
   {
-    final ScreenFactory screenFactory = ScreenFactoryCreator.create (this, assetManager, eventBus);
-
-    for (final ScreenId screenId : ScreenId.values ())
-    {
-      screens.put (screenId, screenFactory.create (screenId));
-    }
-
-    toScreen (ScreenSettings.START_SCREEN);
+    screenFactory = screenFactoryCreator.create (this);
+    toScreen (ScreenId.LOADING_INITIAL);
   }
 
   @Override
@@ -106,13 +92,13 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   public void toScreen (final ScreenId id)
   {
     Arguments.checkIsNotNull (id, "id");
-    Arguments.checkIsTrue (screens.containsKey (id), "Cannot find " + Screen.class.getSimpleName () + " with "
-            + id.getClass ().getSimpleName () + " [" + id + "].");
 
     if (id == getCurrentScreenId ()) return;
 
     previousPreviousScreenId = previousScreenId;
     previousScreenId = getCurrentScreenId ();
+
+    if (!screens.containsKey (id)) screens.put (id, screenFactory.create (id));
 
     game.setScreen (screens.get (id));
     musicChanger.changeMusic (previousScreenId, getCurrentScreenId ());

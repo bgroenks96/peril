@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
-import com.badlogic.gdx.assets.AssetManager;
-
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.ContinentColor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.CountryColor;

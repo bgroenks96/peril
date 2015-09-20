@@ -1,11 +1,15 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
@@ -62,11 +66,35 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new MandatoryOccupationPopup (getSkin (), stage, getAssetManager (), eventBus, listener);
+    return new MandatoryOccupationPopup (getSkin (), this, stage, listener, eventBus);
   }
 
   public Texture createBackground ()
   {
     return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR);
+  }
+
+  public Image createMandatoryOccupationPopupTitle ()
+  {
+    return new Image (
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR));
+  }
+
+  public Drawable createMandatoryOccupationPopupForegroundArrow ()
+  {
+    return new TextureRegionDrawable (new TextureRegion (
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR)));
+  }
+
+  public Drawable createMandatoryOccupationPopupForegroundArrowText ()
+  {
+    return new TextureRegionDrawable (new TextureRegion (
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR)));
+  }
+
+  public Drawable createMandatoryOccupationPopupBackground ()
+  {
+    return new TextureRegionDrawable (new TextureRegion (
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR)));
   }
 }

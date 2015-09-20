@@ -2,6 +2,7 @@ package com.forerunnergames.peril.client.ui.screens;
 
 public enum ScreenId
 {
+  LOADING_INITIAL,
   LOADING,
   MAIN_MENU,
   MULTIPLAYER_GAME_MODES_MENU,

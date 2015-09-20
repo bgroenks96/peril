@@ -11,6 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.net.NetworkConstants;
+
+import com.google.common.collect.ImmutableList;
+
+import java.util.regex.Pattern;
 
 public final class AssetSettings
 {
@@ -19,6 +24,8 @@ public final class AssetSettings
   private static final TextureLoader.TextureParameter GENERAL_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final TextureLoader.TextureParameter FONT_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final SkinLoader.SkinParameter SKIN_PARAMETER = new SkinLoader.SkinParameter ("screens/shared/skins/atlases/uiskin.atlas");
+  private static final String S3_BUCKET_PATH_PREFIX = "s3://";
+  private static final Pattern S3_BUCKET_PATH_PREFIX_PATTERN = Pattern.compile (S3_BUCKET_PATH_PREFIX);
 
   static
   {
@@ -31,11 +38,32 @@ public final class AssetSettings
     FONT_TEXTURE_PARAMETER.magFilter = GraphicsSettings.FONT_TEXTURE_MAGNIFICATION_FILTER;
   }
 
+  // Amazon S3
+  public static final String DEFAULT_S3_BUCKET_NAME = S3_BUCKET_PATH_PREFIX + "assets.peril.forerunnergames.com";
+  public static final String INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY = "";
+  public static final String VALID_S3_BUCKET_PATH_DESCRIPTION =
+          "1) Must begin with " + S3_BUCKET_PATH_PREFIX + "\n" +
+          "2) Must be 3 to 63 characters in length.\n" +
+          "3) Must be all lowercase.\n" +
+          "4) Can contain letters, numbers, and hypens.\n" +
+          "5) Must be a series of one or more labels. (Adjacent labels are separated by periods.)\n" +
+          "6) Each label must begin and end with a lowercase letter or number.\n" +
+          "7) Must not be formatted as an ip address (e.g., 192.168.5.4).\n\n" +
+          "Examples of valid S3 bucket paths: s3://mybucketname, s3://my.bucket.name, s3://mybucketname.1\n\n" +
+          "See https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html for more information.\n";
+
   // External assets directory is relative to:
   // - the home directory of the current user on desktop (Windows / OS X / Linux)
   // - the SD card root on mobile (Android / iOS)
-  // and is accessed via Gdx.files.external
+  // and is accessed via Gdx.files.external.
+  // It is used for assets that do not ship with the game executable,
+  // and must be downloaded separately to this directory.
   public static final String RELATIVE_EXTERNAL_ASSETS_DIRECTORY = "peril/assets/";
+
+  // Internal assets directory is relative to the root of the jar,
+  // and is accessed via Gdx.files.internal.
+  // It is used for assets that ship with the game executable.
+  public static final String RELATIVE_INTERNAL_ASSETS_DIRECTORY = "/";
 
   // Prepend: Relative countries directory (compile-time)
   // Append: Country atlases (runtime)
@@ -104,7 +132,22 @@ public final class AssetSettings
     return fileName.endsWith (".png");
   }
 
-  public static String ABSOLUTE_UPDATED_ASSETS_DIRECTORY = "";
+  public static boolean isValidS3BucketPath (final String bucketPath)
+  {
+    Arguments.checkIsNotNull (bucketPath, "bucketPath");
+
+    return bucketPath.startsWith (S3_BUCKET_PATH_PREFIX) &&
+            NetworkConstants.isValidDomainName (getS3BucketName (bucketPath));
+  }
+
+  public static String getS3BucketName (final String bucketPath)
+  {
+    Arguments.checkIsNotNull (bucketPath, "bucketPath");
+
+    return S3_BUCKET_PATH_PREFIX_PATTERN.matcher (bucketPath).replaceAll ("");
+  }
+
+  public static String ABSOLUTE_UPDATED_ASSETS_DIRECTORY = DEFAULT_S3_BUCKET_NAME;
   public static boolean UPDATE_ASSETS = true;
 
   // Shared
@@ -153,6 +196,26 @@ public final class AssetSettings
           "screens/shared/skins/fonts/distancefield/shaders/font.frag";
 
   // @formatter:on
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <AssetDescriptor <?>> type.
+  public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, QUIT_POPUP_BACKGROUND_ASSET_DESCRIPTOR,
+                                     SKIN_JSON_ASSET_DESCRIPTOR, LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
+                                     MENU_ATLAS_ASSET_DESCRIPTOR, MENU_MUSIC_ASSET_DESCRIPTOR,
+                                     PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR,
+                                     PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <AssetDescriptor <?>> type.
+  public static final ImmutableList <AssetDescriptor <?>> INITIAL_LOADING_SCREEN_ASSET_DESCRIPTORS =
+          ImmutableList.<AssetDescriptor <?>> of (
+                  LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
+                  NORMAL_CURSOR_ASSET_DESCRIPTOR,
+                  SKIN_JSON_ASSET_DESCRIPTOR);
 
   private AssetSettings ()
   {

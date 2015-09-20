@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Pixmap;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.pathparsers.MapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.pathparsers.RelativeMapResourcesPathParser;
@@ -86,7 +86,7 @@ public final class DefaultPlayMapInputDetectionImageLoader implements PlayMapInp
 
     final String imageFileName = loadedImageFileNames.remove (mapMetadata);
 
-    assetManager.finishLoadingAsset (imageFileName);
+    assetManager.finishLoading (imageFileName);
 
     if (!assetManager.isLoaded (imageFileName))
     {

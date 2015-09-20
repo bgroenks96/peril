@@ -2,7 +2,7 @@ package com.forerunnergames.peril.client.assets;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 
 import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
 import com.forerunnergames.peril.client.io.CustomExternalFileHandleResolver;
@@ -17,17 +17,32 @@ public final class AssetManagerFactory
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    final AssetManager assetManager = new AssetManager (new CustomExternalFileHandleResolver ());
+    final com.badlogic.gdx.assets.AssetManager externalLibGdxAssetManager = new com.badlogic.gdx.assets.AssetManager (
+            new CustomExternalFileHandleResolver ());
 
-    assetManager.setErrorListener (new AssetErrorListener ()
+    externalLibGdxAssetManager.setErrorListener (new AssetErrorListener ()
     {
       @Override
+      @SuppressWarnings ("rawtypes")
       public void error (final AssetDescriptor asset, final Throwable throwable)
       {
         eventBus.publish (new AssetLoadingErrorEvent (asset, throwable));
       }
     });
 
-    return assetManager;
+    final com.badlogic.gdx.assets.AssetManager internalLibGdxAssetManager = new com.badlogic.gdx.assets.AssetManager (
+            new InternalFileHandleResolver ());
+
+    internalLibGdxAssetManager.setErrorListener (new AssetErrorListener ()
+    {
+      @Override
+      @SuppressWarnings ("rawtypes")
+      public void error (final AssetDescriptor asset, final Throwable throwable)
+      {
+        eventBus.publish (new AssetLoadingErrorEvent (asset, throwable));
+      }
+    });
+
+    return new MultiSourceAssetManager (externalLibGdxAssetManager, internalLibGdxAssetManager);
   }
 }

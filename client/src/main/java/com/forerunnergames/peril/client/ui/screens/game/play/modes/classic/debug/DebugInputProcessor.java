@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
@@ -11,7 +12,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
-import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -52,13 +52,6 @@ public final class DebugInputProcessor extends InputAdapter
     this.mandatoryOccupationPopup = mandatoryOccupationPopup;
 
     eventGenerator = new DebugEventGenerator (eventBus);
-  }
-
-  public void setPlayMapActor (final PlayMapActor playMapActor)
-  {
-    Arguments.checkIsNotNull (playMapActor, "playMapActor");
-
-    this.playMapActor = playMapActor;
   }
 
   @Override
@@ -349,7 +342,13 @@ public final class DebugInputProcessor extends InputAdapter
         // final String sourceCountryName = "Antarctica";
         // final String destinationCountryName = "Kamchatka";
 
-        final String sourceCountryName = DebugEventGenerator.getRandomCountryName ();
+        String sourceCountryName;
+
+        do
+        {
+          sourceCountryName = DebugEventGenerator.getRandomCountryName ();
+        }
+        while (!playMapActor.existsCountryActorWithName (sourceCountryName));
 
         String destinationCountryName;
 
@@ -357,7 +356,8 @@ public final class DebugInputProcessor extends InputAdapter
         {
           destinationCountryName = DebugEventGenerator.getRandomCountryName ();
         }
-        while (destinationCountryName.equals (sourceCountryName));
+        while (destinationCountryName.equals (sourceCountryName)
+                || !playMapActor.existsCountryActorWithName (destinationCountryName));
 
         final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
         final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
@@ -375,6 +375,13 @@ public final class DebugInputProcessor extends InputAdapter
         return false;
       }
     }
+  }
+
+  public void setPlayMapActor (final PlayMapActor playMapActor)
+  {
+    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+
+    this.playMapActor = playMapActor;
   }
 
   public void reset ()

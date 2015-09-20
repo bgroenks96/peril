@@ -13,19 +13,19 @@ public interface PlayMapActor
 {
   PlayMapActor NULL_PLAY_MAP_ACTOR = new NullPlayMapActor ();
 
-  boolean mouseMoved (Vector2 mouseCoordinate);
+  boolean mouseMoved (final Vector2 mouseCoordinate);
 
-  boolean touchDown (Vector2 touchDownCoordinate, int button);
+  boolean touchDown (final Vector2 touchDownCoordinate, final int button);
 
-  boolean touchUp (Vector2 touchUpCoordinate);
+  boolean touchUp (final Vector2 touchUpCoordinate);
 
-  void setCountriesTo (CountryPrimaryImageState state);
+  void setCountriesTo (final CountryPrimaryImageState state);
 
   void randomizeCountryStates ();
 
-  void randomizeCountryStatesUsingNRandomStates (int n);
+  void randomizeCountryStatesUsingNRandomStates (final int n);
 
-  void randomizeCountryStatesUsingOnly (CountryPrimaryImageState... states);
+  void randomizeCountryStatesUsingOnly (final CountryPrimaryImageState... states);
 
   void reset ();
 
@@ -33,25 +33,27 @@ public interface PlayMapActor
 
   void resetArmies ();
 
-  void changeArmiesBy (int deltaArmies, String countryName);
+  void changeArmiesBy (final int deltaArmies, final String countryName);
 
-  void setCountryState (String countryName, CountryPrimaryImageState state);
+  void setCountryState (final String countryName, final CountryPrimaryImageState state);
 
-  CountryActor getCountryActorWithName (String countryName);
+  boolean existsCountryActorWithName (final String countryName);
 
-  boolean currentPrimaryImageStateOfCountryIs (CountryPrimaryImageState state, String countryName);
+  CountryActor getCountryActorWithName (final String countryName);
 
-  boolean currentSecondaryImageStateOfCountryIs (CountrySecondaryImageState state, String countryName);
+  boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName);
+
+  boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName);
 
   @Nullable
-  CountryPrimaryImageState getCurrentPrimaryImageStateOf (String countryName);
+  CountryPrimaryImageState getCurrentPrimaryImageStateOf (final String countryName);
 
   @Nullable
-  CountrySecondaryImageState getCurrentSecondaryImageStateOf (String countryName);
+  CountrySecondaryImageState getCurrentSecondaryImageStateOf (final String countryName);
 
   void disable ();
 
-  void enable (Vector2 currentMouseLocation);
+  void enable (final Vector2 currentMouseLocation);
 
   MapMetadata getMapMetadata ();
 
