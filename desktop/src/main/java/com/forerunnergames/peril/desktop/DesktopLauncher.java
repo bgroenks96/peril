@@ -32,7 +32,7 @@ public final class DesktopLauncher
         {
           Gdx.app.exit ();
         }
-        catch (final Throwable throwable2)
+        catch (final Throwable ignored)
         {
           System.exit (1);
         }
