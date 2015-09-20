@@ -65,7 +65,6 @@ public class MandatoryOccupationPopup extends Dialog
   private static final int BORDER_THICKNESS_PIXELS = 12;
   private static final boolean IS_RESIZABLE = false;
   private static final boolean IS_MOVABLE = true;
-  private static final boolean IS_SLIDER_VERTICAL = false;
   private static final int SLIDER_STEP_SIZE = 1;
   private static final float INITIAL_BUTTON_REPEAT_DELAY_SECONDS = 0.5f;
   private static final float BUTTON_REPEAT_RATE_SECONDS = 0.05f;
