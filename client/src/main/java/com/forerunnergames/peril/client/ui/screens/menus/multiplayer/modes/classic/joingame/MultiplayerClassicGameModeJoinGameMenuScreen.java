@@ -81,6 +81,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     });
 
     clanNameCheckBox.setChecked (!clanNameTextField.getText ().isEmpty ());
+    clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
 
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);

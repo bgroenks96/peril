@@ -125,6 +125,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     });
 
     clanNameCheckBox.setChecked (!clanNameTextField.getText ().isEmpty ());
+    clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
 
     // @formatter:off
 

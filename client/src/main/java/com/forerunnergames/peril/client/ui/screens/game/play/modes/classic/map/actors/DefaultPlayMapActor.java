@@ -300,6 +300,8 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
+    if (!existsCountryActorWithName (countryName)) return;
+
     getCountryActorWithName (countryName).changeArmiesBy (deltaArmies);
   }
 
@@ -309,8 +311,9 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
 
-    if (countryNamesToActors
-            .containsKey (countryName)) countryNamesToActors.get (countryName).changePrimaryStateTo (state);
+    if (!existsCountryActorWithName (countryName)) return;
+
+    getCountryActorWithName (countryName).changePrimaryStateTo (state);
   }
 
   @Override
@@ -343,7 +346,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return getCurrentPrimaryImageStateOf (countryName) == state;
+    return existsCountryActorWithName (countryName) && getCurrentPrimaryImageStateOf (countryName) == state;
   }
 
   @Override
@@ -353,7 +356,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return getCurrentSecondaryImageStateOf (countryName) == state;
+    return existsCountryActorWithName (countryName) && getCurrentSecondaryImageStateOf (countryName) == state;
   }
 
   @Override
@@ -362,9 +365,9 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!countryNamesToActors.containsKey (countryName)) return null;
+    if (!existsCountryActorWithName (countryName)) return null;
 
-    return countryNamesToActors.get (countryName).getCurrentPrimaryImageState ();
+    return getCountryActorWithName (countryName).getCurrentPrimaryImageState ();
   }
 
   @Override
@@ -373,9 +376,9 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!countryNamesToActors.containsKey (countryName)) return null;
+    if (!existsCountryActorWithName (countryName)) return null;
 
-    return countryNamesToActors.get (countryName).getCurrentSecondaryImageState ();
+    return getCountryActorWithName (countryName).getCurrentSecondaryImageState ();
   }
 
   @Override
