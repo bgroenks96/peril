@@ -170,7 +170,7 @@ public final class AssetSettings
 
   // Play Screen
   public static final AssetDescriptor <Music> PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/shared/music/emerald-gates.mp3", Music.class);
+          "screens/game/play/modes/shared/music/battle.mp3", Music.class);
 
   // Classic Mode Play Screen
   public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
