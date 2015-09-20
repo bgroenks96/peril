@@ -62,6 +62,7 @@ public final class MultiSourceAssetManager implements AssetManager
   }
 
   @Override
+  @SuppressWarnings ("unchecked")
   public synchronized void load (final AssetDescriptor <?> descriptor)
   {
     Arguments.checkIsNotNull (descriptor, "descriptor");
@@ -76,6 +77,7 @@ public final class MultiSourceAssetManager implements AssetManager
   }
 
   @Override
+  @SuppressWarnings ("rawtypes")
   public synchronized <T> void load (final String fileName,
                                      final Class <T> type,
                                      @Nullable final AssetLoaderParameters <T> parameters)
