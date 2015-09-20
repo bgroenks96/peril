@@ -39,7 +39,7 @@ public final class AssetSettings
   }
 
   // Amazon S3
-  public static final String DEFAULT_S3_BUCKET_NAME = S3_BUCKET_PATH_PREFIX + "assets.peril.forerunnergames.com";
+  public static final String DEFAULT_S3_BUCKET_PATH = S3_BUCKET_PATH_PREFIX + "assets.peril.forerunnergames.com";
   public static final String INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY = "";
   public static final String VALID_S3_BUCKET_PATH_DESCRIPTION =
           "1) Must begin with " + S3_BUCKET_PATH_PREFIX + "\n" +
@@ -147,7 +147,7 @@ public final class AssetSettings
     return S3_BUCKET_PATH_PREFIX_PATTERN.matcher (bucketPath).replaceAll ("");
   }
 
-  public static String ABSOLUTE_UPDATED_ASSETS_LOCATION = DEFAULT_S3_BUCKET_NAME;
+  public static String ABSOLUTE_UPDATED_ASSETS_LOCATION = DEFAULT_S3_BUCKET_PATH;
   public static boolean UPDATE_ASSETS = true;
 
   // Shared
