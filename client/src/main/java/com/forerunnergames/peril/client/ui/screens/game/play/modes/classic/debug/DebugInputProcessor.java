@@ -8,8 +8,9 @@ import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
@@ -24,7 +25,8 @@ public final class DebugInputProcessor extends InputAdapter
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
   private final PlayerBox playerBox;
-  private final MandatoryOccupationPopup mandatoryOccupationPopup;
+  private final OccupationPopup occupationPopup;
+  private final ReinforcementPopup reinforcementPopup;
   private final DebugEventGenerator eventGenerator;
   private PlayMapActor playMapActor;
 
@@ -33,7 +35,8 @@ public final class DebugInputProcessor extends InputAdapter
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
                               final PlayerBox playerBox,
-                              final MandatoryOccupationPopup mandatoryOccupationPopup,
+                              final OccupationPopup occupationPopup,
+                              final ReinforcementPopup reinforcementPopup,
                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
@@ -41,7 +44,8 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
     Arguments.checkIsNotNull (playerBox, "playerBox");
-    Arguments.checkIsNotNull (mandatoryOccupationPopup, "mandatoryOccupationPopup");
+    Arguments.checkIsNotNull (occupationPopup, "occupationPopup");
+    Arguments.checkIsNotNull (reinforcementPopup, "reinforcementPopup");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.mouseInput = mouseInput;
@@ -49,7 +53,8 @@ public final class DebugInputProcessor extends InputAdapter
     this.statusBox = statusBox;
     this.chatBox = chatBox;
     this.playerBox = playerBox;
-    this.mandatoryOccupationPopup = mandatoryOccupationPopup;
+    this.occupationPopup = occupationPopup;
+    this.reinforcementPopup = reinforcementPopup;
 
     eventGenerator = new DebugEventGenerator (eventBus);
   }
@@ -339,8 +344,8 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'm':
       {
-        // final String sourceCountryName = "Antarctica";
-        // final String destinationCountryName = "Kamchatka";
+        // final String sourceCountryName = "Brazil";
+        // final String destinationCountryName = "Brazil";
 
         String sourceCountryName;
 
@@ -365,7 +370,40 @@ public final class DebugInputProcessor extends InputAdapter
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        mandatoryOccupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
+        occupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
+        playMapActor.disable ();
+
+        return true;
+      }
+      case 'n':
+      {
+        // final String sourceCountryName = "Brazil";
+        // final String destinationCountryName = "Brazil";
+
+        String sourceCountryName;
+
+        do
+        {
+          sourceCountryName = DebugEventGenerator.getRandomCountryName ();
+        }
+        while (!playMapActor.existsCountryActorWithName (sourceCountryName));
+
+        String destinationCountryName;
+
+        do
+        {
+          destinationCountryName = DebugEventGenerator.getRandomCountryName ();
+        }
+        while (destinationCountryName.equals (sourceCountryName)
+                || !playMapActor.existsCountryActorWithName (destinationCountryName));
+
+        final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
+        final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
+        final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
+        final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
+        final int maxArmies = totalArmies - 1;
+
+        reinforcementPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
         playMapActor.disable ();
 
         return true;

@@ -3,13 +3,14 @@ package com.forerunnergames.peril.client.ui.widgets.popup;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Align;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public class OkPopup implements Popup
 {
@@ -91,11 +93,19 @@ public class OkPopup implements Popup
   }
 
   @Override
-  public final Actor asActor ()
+  public final void addListener (final EventListener listener)
   {
-    return delegate.asActor ();
+    Arguments.checkIsNotNull (listener, "listener");
+
+    delegate.addListener (listener);
   }
 
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void update (final float delta)
+  {
+    delegate.update (delta);
+  }
 
   protected void addButtons ()
   {
@@ -122,7 +132,12 @@ public class OkPopup implements Popup
     delegate.addKey (keyCode, popupAction);
   }
 
-  private static class DelegateDialog extends Dialog implements Popup
+  protected final Table getContentTable ()
+  {
+    return delegate.getContentTable ();
+  }
+
+  private static final class DelegateDialog extends Dialog
   {
     private final PopupStyle popupStyle;
     private final Stage stage;
@@ -133,12 +148,12 @@ public class OkPopup implements Popup
     private final MessageBox <Message> messageBox;
     private boolean isShown = false;
 
-    public DelegateDialog (final String title,
-                           final WindowStyle windowStyle,
-                           final PopupStyle popupStyle,
-                           final Stage stage,
-                           final Skin skin,
-                           final PopupListener listener)
+    DelegateDialog (final String title,
+                    final WindowStyle windowStyle,
+                    final PopupStyle popupStyle,
+                    final Stage stage,
+                    final Skin skin,
+                    final PopupListener listener)
     {
       super (title, windowStyle);
 
@@ -163,7 +178,7 @@ public class OkPopup implements Popup
 
       labelStyle = skin.get (Label.LabelStyle.class);
 
-      if (popupStyle.isDebug ()) debug ();
+      if (popupStyle.isDebug ()) setDebug (true, true);
 
       configureWindow ();
       configureButtonTable ();
@@ -234,33 +249,6 @@ public class OkPopup implements Popup
     }
 
     @Override
-    public void setMessage (final Message message)
-    {
-      Arguments.checkIsNotNull (message, "message");
-
-      messageBox.clear ();
-      messageBox.addMessage (message);
-    }
-
-    @Override
-    public void show ()
-    {
-      show (stage);
-    }
-
-    @Override
-    public boolean isShown ()
-    {
-      return isShown;
-    }
-
-    @Override
-    public Actor asActor ()
-    {
-      return this;
-    }
-
-    @Override
     protected void result (@Nullable final Object object)
     {
       if (!(object instanceof PopupAction) || object != PopupAction.SUBMIT_AND_HIDE) return;
@@ -294,6 +282,8 @@ public class OkPopup implements Popup
 
     public void configureMessageBox ()
     {
+      if (!popupStyle.isMessageBox ()) return;
+
       getContentTable ().add (messageBox.asActor ()).expand ().fill ().top ().left ()
               .padLeft (popupStyle.getTextPaddingLeft ()).padRight (popupStyle.getTextPaddingRight ())
               .padTop (popupStyle.getTextPaddingTop ()).padBottom (popupStyle.getTextPaddingBottom ());
@@ -323,7 +313,7 @@ public class OkPopup implements Popup
       if (popupStyle.getButtonHeight () != PopupStyle.AUTO_HEIGHT) textButtonCell
               .height (popupStyle.getButtonHeight ());
 
-      setObject (textButton, popupAction);
+      if (popupAction != PopupAction.NONE) setObject (textButton, popupAction);
 
       buttonTextToTextButtons.put (textButton.getText ().toString (), textButton);
     }
@@ -348,6 +338,29 @@ public class OkPopup implements Popup
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
       key (keyCode, popupAction);
+    }
+
+    public void setMessage (final Message message)
+    {
+      Arguments.checkIsNotNull (message, "message");
+
+      messageBox.clear ();
+      messageBox.addMessage (message);
+    }
+
+    public void show ()
+    {
+      show (stage);
+    }
+
+    public boolean isShown ()
+    {
+      return isShown;
+    }
+
+    public void update (final float delta)
+    {
+      act (delta);
     }
 
     private Label createMessageLabel (final String message)

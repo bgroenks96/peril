@@ -85,6 +85,14 @@ public final class MainMenuScreen extends AbstractMenuScreen
   }
 
   @Override
+  protected void update (final float delta)
+  {
+    super.update (delta);
+
+    quitPopup.update (delta);
+  }
+
+  @Override
   protected void onEscape ()
   {
     quitPopup.show ();

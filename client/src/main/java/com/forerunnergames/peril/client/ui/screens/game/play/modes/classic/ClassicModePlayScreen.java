@@ -34,12 +34,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEvent;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
@@ -50,12 +52,12 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
@@ -65,11 +67,14 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
+
+import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -91,6 +96,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final PlayerBox playerBox;
   private final InputProcessor inputProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
+  private final OccupationPopup occupationPopup;
+  private final ReinforcementPopup reinforcementPopup;
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
   private final Cell <Actor> playMapActorCell;
@@ -148,9 +155,71 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     stage = new Stage (viewport, batch);
 
     // @formatter:off
-    final MandatoryOccupationPopup mandatoryOccupationPopup = widgetFactory
-            .createMandatoryOccupationPopup (stage, eventBus, new PopupListenerAdapter ()
+    occupationPopup = widgetFactory
+            .createOccupationPopup (stage, eventBus, new PopupListener ()
             {
+              @Override
+              public void onSubmit ()
+              {
+                final int deltaArmies = occupationPopup.getDeltaArmies ();
+                final String sourceCountryName = occupationPopup.getSourceCountryName ();
+                final String destinationCountryName = occupationPopup.getDestinationCountryName ();
+
+                // TODO Production: Remove
+                eventBus.publish (new DefaultStatusMessageEvent (
+                        new DefaultStatusMessage ("You occupied " + destinationCountryName + " with "
+                                + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
+                        ImmutableSet.<PlayerPacket> of ()));
+
+                // TODO Production: Remove
+                eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));
+
+                // TODO Production: Remove
+                eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
+
+                // TODO: Production: Publish event (OccupyCountryRequestEvent?)
+              }
+
+              @Override
+              public void onShow ()
+              {
+                playMapActor.disable ();
+              }
+
+              @Override
+              public void onHide ()
+              {
+                playMapActor.enable (mouseInput.position ());
+              }
+            });
+    // @formatter:on
+
+    // @formatter:off
+    reinforcementPopup = widgetFactory
+            .createReinforcementPopup (stage, eventBus, new PopupListener ()
+            {
+              @Override
+              public void onSubmit ()
+              {
+                final int deltaArmies = reinforcementPopup.getDeltaArmies ();
+                final String sourceCountryName = reinforcementPopup.getSourceCountryName ();
+                final String destinationCountryName = reinforcementPopup.getDestinationCountryName ();
+
+                // TODO Production: Remove
+                eventBus.publish (new DefaultStatusMessageEvent (
+                        new DefaultStatusMessage ("You reinforced " + destinationCountryName + " with "
+                                + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
+                        ImmutableSet.<PlayerPacket> of ()));
+
+                // TODO Production: Remove
+                eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));
+
+                // TODO Production: Remove
+                eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
+
+                // TODO: Production: Publish event (OccupyCountryRequestEvent?)
+              }
+
               @Override
               public void onShow ()
               {
@@ -224,7 +293,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void keyDownRepeating (final int keyCode)
       {
-        mandatoryOccupationPopup.keyDownRepeating (keyCode);
+        occupationPopup.keyDownRepeating (keyCode);
+        reinforcementPopup.keyDownRepeating (keyCode);
       }
     });
 
@@ -240,7 +310,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
     debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox, chatBox, playerBox,
-            mandatoryOccupationPopup, eventBus);
+            occupationPopup, reinforcementPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -266,6 +336,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     keyRepeat.update ();
     stage.act (delta);
+    occupationPopup.update (delta);
+    reinforcementPopup.update (delta);
+    quitPopup.update (delta);
     stage.draw ();
   }
 

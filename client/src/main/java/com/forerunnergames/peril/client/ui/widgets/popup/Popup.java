@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.ui.widgets.popup;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 
 import com.forerunnergames.tools.common.Message;
 
@@ -14,5 +14,7 @@ public interface Popup
 
   boolean isShown ();
 
-  Actor asActor ();
+  void addListener (final EventListener listener);
+
+  void update (final float delta);
 }

@@ -5,14 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.MandatoryOccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
@@ -58,43 +58,36 @@ public final class ClassicModePlayScreenWidgetFactory extends WidgetFactory
     return createImageButton (iconType.getStyleName (), listener);
   }
 
-  public MandatoryOccupationPopup createMandatoryOccupationPopup (final Stage stage,
-                                                                  final MBassador <Event> eventBus,
-                                                                  final PopupListener listener)
-  {
-    Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return new MandatoryOccupationPopup (getSkin (), this, stage, listener, eventBus);
-  }
-
   public Texture createBackground ()
   {
     return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR);
   }
 
-  public Image createMandatoryOccupationPopupTitle ()
+  public ReinforcementPopup createReinforcementPopup (final Stage stage,
+                                                      final MBassador <Event> eventBus,
+                                                      final PopupListener listener)
   {
-    return new Image (
-            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR));
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new ReinforcementPopup (getSkin (), this, stage, listener, eventBus);
   }
 
-  public Drawable createMandatoryOccupationPopupForegroundArrow ()
+  public OccupationPopup createOccupationPopup (final Stage stage,
+                                                final MBassador <Event> eventBus,
+                                                final PopupListener listener)
   {
-    return new TextureRegionDrawable (new TextureRegion (
-            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR)));
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new OccupationPopup (getSkin (), this, stage, listener, eventBus);
   }
 
-  public Drawable createMandatoryOccupationPopupForegroundArrowText ()
+  public Drawable createArmyMovementPopupArrow ()
   {
     return new TextureRegionDrawable (new TextureRegion (
-            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR)));
-  }
-
-  public Drawable createMandatoryOccupationPopupBackground ()
-  {
-    return new TextureRegionDrawable (new TextureRegion (
-            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR)));
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_ARROW_ASSET_DESCRIPTOR)));
   }
 }

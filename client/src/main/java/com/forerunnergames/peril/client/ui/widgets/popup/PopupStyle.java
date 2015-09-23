@@ -22,6 +22,7 @@ public final class PopupStyle
   public static final int DEFAULT_TEXT_BOX_PADDING_RIGHT = 0;
   public static final int DEFAULT_TEXT_BOX_PADDING_TOP = 0;
   public static final int DEFAULT_TEXT_BOX_PADDING_BOTTOM = 0;
+  public static final boolean DEFAULT_IS_MESSAGE_BOX = true;
   public static final boolean DEFAULT_IS_RESIZABLE = false;
   public static final boolean DEFAULT_IS_MOVABLE = false;
   public static final boolean DEFAULT_IS_DEBUG = false;
@@ -61,6 +62,7 @@ public final class PopupStyle
   private final int textBoxPaddingRight;
   private final int textBoxPaddingTop;
   private final int textBoxPaddingBottom;
+  private final boolean isMessageBox;
   private final boolean isResizable;
   private final boolean isMovable;
   private final boolean isDebug;
@@ -195,6 +197,11 @@ public final class PopupStyle
     return textBoxPaddingBottom;
   }
 
+  public boolean isMessageBox ()
+  {
+    return isMessageBox;
+  }
+
   public boolean isResizable ()
   {
     return isResizable;
@@ -235,6 +242,7 @@ public final class PopupStyle
                       final int textBoxPaddingRight,
                       final int textBoxPaddingTop,
                       final int textBoxPaddingBottom,
+                      final boolean isMessageBox,
                       final boolean isResizable,
                       final boolean isMovable,
                       final boolean isDebug)
@@ -283,6 +291,7 @@ public final class PopupStyle
     this.textBoxPaddingRight = textBoxPaddingRight;
     this.textBoxPaddingTop = textBoxPaddingTop;
     this.textBoxPaddingBottom = textBoxPaddingBottom;
+    this.isMessageBox = isMessageBox;
     this.isResizable = isResizable;
     this.isMovable = isMovable;
     this.isDebug = isDebug;
@@ -315,6 +324,7 @@ public final class PopupStyle
     private int textBoxPaddingRight = DEFAULT_TEXT_BOX_PADDING_RIGHT;
     private int textBoxPaddingTop = DEFAULT_TEXT_BOX_PADDING_TOP;
     private int textBoxPaddingBottom = DEFAULT_TEXT_BOX_PADDING_BOTTOM;
+    private boolean isMessageBox = DEFAULT_IS_MESSAGE_BOX;
     private boolean isResizable = DEFAULT_IS_RESIZABLE;
     private boolean isMovable = DEFAULT_IS_MOVABLE;
     private boolean isDebug = DEFAULT_IS_DEBUG;
@@ -326,7 +336,8 @@ public final class PopupStyle
               widthReferenceScreenSpace, heightReferenceScreenSpace, borderThickness, buttonSpacing,
               buttonTextPaddingLeft, buttonTextPaddingRight, buttonTextPaddingTop, buttonTextPaddingBottom,
               textPaddingLeft, textPaddingRight, textPaddingTop, textPaddingBottom, textBoxPaddingLeft,
-              textBoxPaddingRight, textBoxPaddingTop, textBoxPaddingBottom, isResizable, isMovable, isDebug);
+              textBoxPaddingRight, textBoxPaddingTop, textBoxPaddingBottom, isMessageBox, isResizable, isMovable,
+              isDebug);
     }
 
     public PopupStyleBuilder windowStyle (final String windowStyleName)
@@ -363,9 +374,23 @@ public final class PopupStyle
       return this;
     }
 
+    public PopupStyleBuilder titleHeight (final float titleHeight)
+    {
+      this.titleHeight = Math.round (titleHeight);
+
+      return this;
+    }
+
     public PopupStyleBuilder buttonWidth (final int buttonWidth)
     {
       this.buttonWidth = buttonWidth;
+
+      return this;
+    }
+
+    public PopupStyleBuilder buttonWidth (final float buttonWidth)
+    {
+      this.buttonWidth = Math.round (buttonWidth);
 
       return this;
     }
@@ -377,10 +402,25 @@ public final class PopupStyle
       return this;
     }
 
+    public PopupStyleBuilder buttonHeight (final float buttonHeight)
+    {
+      this.buttonHeight = Math.round (buttonHeight);
+
+      return this;
+    }
+
     public PopupStyleBuilder buttonSize (final int buttonWidth, final int buttonHeight)
     {
       this.buttonWidth = buttonWidth;
       this.buttonHeight = buttonHeight;
+
+      return this;
+    }
+
+    public PopupStyleBuilder buttonSize (final float buttonWidth, final float buttonHeight)
+    {
+      this.buttonWidth = Math.round (buttonWidth);
+      this.buttonHeight = Math.round (buttonHeight);
 
       return this;
     }
@@ -403,9 +443,25 @@ public final class PopupStyle
       return this;
     }
 
+    public PopupStyleBuilder position (final float positionUpperLeftReferenceScreenSpaceX,
+                                       final float positionUpperLeftReferenceScreenSpaceY)
+    {
+      this.positionUpperLeftReferenceScreenSpaceX = Math.round (positionUpperLeftReferenceScreenSpaceX);
+      this.positionUpperLeftReferenceScreenSpaceY = Math.round (positionUpperLeftReferenceScreenSpaceY);
+
+      return this;
+    }
+
     public PopupStyleBuilder width (final int widthReferenceScreenSpace)
     {
       this.widthReferenceScreenSpace = widthReferenceScreenSpace;
+
+      return this;
+    }
+
+    public PopupStyleBuilder width (final float widthReferenceScreenSpace)
+    {
+      this.widthReferenceScreenSpace = Math.round (widthReferenceScreenSpace);
 
       return this;
     }
@@ -417,9 +473,21 @@ public final class PopupStyle
       return this;
     }
 
+    public PopupStyleBuilder height (final float heightReferenceScreenSpace)
+    {
+      this.heightReferenceScreenSpace = Math.round (heightReferenceScreenSpace);
+
+      return this;
+    }
+
     public PopupStyleBuilder size (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace)
     {
       return width (widthReferenceScreenSpace).height (heightReferenceScreenSpace);
+    }
+
+    public PopupStyleBuilder size (final float widthReferenceScreenSpace, final float heightReferenceScreenSpace)
+    {
+      return width (Math.round (widthReferenceScreenSpace)).height (Math.round (heightReferenceScreenSpace));
     }
 
     public PopupStyleBuilder border (final int borderThickness)
@@ -635,6 +703,13 @@ public final class PopupStyle
       return this;
     }
 
+    public PopupStyleBuilder messageBox (final boolean isMessageBox)
+    {
+      this.isMessageBox = isMessageBox;
+
+      return this;
+    }
+
     public PopupStyleBuilder resizable (final boolean isResizable)
     {
       this.isResizable = isResizable;
@@ -652,6 +727,13 @@ public final class PopupStyle
     public PopupStyleBuilder debug ()
     {
       isDebug = true;
+
+      return this;
+    }
+
+    public PopupStyleBuilder debug (final boolean isDebug)
+    {
+      this.isDebug = isDebug;
 
       return this;
     }

@@ -173,16 +173,12 @@ public final class AssetSettings
           "screens/game/play/modes/shared/music/battle.mp3", Music.class);
 
   // Classic Mode Play Screen
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/popups/armymovement/shared/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/popups/armymovement/shared/foreground.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/popups/armymovement/occupy/occupying.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/popups/armymovement/occupy/title.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR =
+          new AssetDescriptor <> ("screens/game/play/modes/classic/background.png", Texture.class,
+                  GENERAL_TEXTURE_PARAMETER);
+  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_ARROW_ASSET_DESCRIPTOR =
+          new AssetDescriptor <> ("screens/game/play/modes/classic/popups/armymovement/shared/foreground.png",
+                  Texture.class, GENERAL_TEXTURE_PARAMETER);
 
   // Peril Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -204,10 +200,6 @@ public final class AssetSettings
                                      MENU_ATLAS_ASSET_DESCRIPTOR, MENU_MUSIC_ASSET_DESCRIPTOR,
                                      PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_BACKGROUND_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_FOREGROUND_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_FOREGROUND_ARROW_TEXT_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_OCCUPATION_TITLE_ASSET_DESCRIPTOR,
                                      PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <AssetDescriptor <?>> type.

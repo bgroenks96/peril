@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -36,6 +37,8 @@ import com.forerunnergames.tools.common.Arguments;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 {
@@ -239,7 +242,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
-    stage.act (delta);
+    update (delta);
     stage.draw ();
   }
 
@@ -275,6 +278,12 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   public void dispose ()
   {
     stage.dispose ();
+  }
+
+  @OverridingMethodsMustInvokeSuper
+  protected void update (final float delta)
+  {
+    stage.act (delta);
   }
 
   protected final void addTitle (final String text, final int alignment, final int height)
@@ -499,20 +508,26 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     return widgetFactory.createErrorPopup (stage, listener);
   }
 
-  protected final void addBackButton (final EventListener listener)
+  protected final Button addBackButton (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    buttonTable.add (widgetFactory.createTextButton ("BACK", listener)).width (110);
+    final Button button = widgetFactory.createTextButton ("BACK", listener);
+    buttonTable.add (button).width (110);
     buttonTable.add ().expandX ();
+
+    return button;
   }
 
-  protected final void addForwardButton (final String text, final EventListener listener)
+  protected Button addForwardButton (final String text, final EventListener listener)
   {
     Arguments.checkIsNotNullOrEmptyOrBlank (text, "text");
     Arguments.checkIsNotNull (listener, "listener");
 
-    buttonTable.add (widgetFactory.createTextButton (text, listener)).width (220);
+    final Button button = widgetFactory.createTextButton (text, listener);
+    buttonTable.add (button).width (220);
+
+    return button;
   }
 
   private void showCursor ()

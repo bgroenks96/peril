@@ -253,18 +253,34 @@ public class WidgetFactory
     return new ProgressBar (min, max, stepSize, true, getSkin (), style);
   }
 
-  public Slider createHorizontalSlider (final int min, final int max, final int sliderStepSize, final String style)
+  public Slider createHorizontalSlider (final int min,
+                                        final int max,
+                                        final int sliderStepSize,
+                                        final String style,
+                                        final EventListener listener)
   {
     Arguments.checkIsNotNull (style, "style");
+    Arguments.checkIsNotNull (listener, "listener");
 
-    return new Slider (min, max, sliderStepSize, false, getSkin (), style);
+    final Slider slider = new Slider (min, max, sliderStepSize, false, getSkin (), style);
+    slider.addListener (listener);
+
+    return slider;
   }
 
-  public Slider createVerticalSlider (final int min, final int max, final int sliderStepSize, final String style)
+  public Slider createVerticalSlider (final int min,
+                                      final int max,
+                                      final int sliderStepSize,
+                                      final String style,
+                                      final EventListener listener)
   {
     Arguments.checkIsNotNull (style, "style");
+    Arguments.checkIsNotNull (listener, "listener");
 
-    return new Slider (min, max, sliderStepSize, true, getSkin (), style);
+    final Slider slider = new Slider (min, max, sliderStepSize, true, getSkin (), style);
+    slider.addListener (listener);
+
+    return slider;
   }
 
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)
