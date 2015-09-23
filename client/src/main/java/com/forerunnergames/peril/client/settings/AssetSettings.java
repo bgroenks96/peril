@@ -151,8 +151,6 @@ public final class AssetSettings
   public static boolean UPDATE_ASSETS = true;
 
   // General
-  public static final AssetDescriptor <Texture> QUIT_POPUP_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "popups/quit/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
   public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "cursors/normalCursor.png", Pixmap.class);
   public static final AssetDescriptor <Skin> SKIN_JSON_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -195,19 +193,16 @@ public final class AssetSettings
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, QUIT_POPUP_BACKGROUND_ASSET_DESCRIPTOR,
-                                     SKIN_JSON_ASSET_DESCRIPTOR, LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
-                                     MENU_ATLAS_ASSET_DESCRIPTOR, MENU_MUSIC_ASSET_DESCRIPTOR,
-                                     PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR,
+          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, SKIN_JSON_ASSET_DESCRIPTOR,
+                                     LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR, MENU_ATLAS_ASSET_DESCRIPTOR,
+                                     MENU_MUSIC_ASSET_DESCRIPTOR, PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
                                      PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-  public static final ImmutableList <AssetDescriptor <?>> INITIAL_LOADING_SCREEN_ASSET_DESCRIPTORS =
-          ImmutableList.<AssetDescriptor <?>> of (
-                  LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
-                  NORMAL_CURSOR_ASSET_DESCRIPTOR,
-                  SKIN_JSON_ASSET_DESCRIPTOR);
+  public static final ImmutableList <AssetDescriptor <?>> INITIAL_LOADING_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR, NORMAL_CURSOR_ASSET_DESCRIPTOR,
+                                     SKIN_JSON_ASSET_DESCRIPTOR);
 
   private AssetSettings ()
   {
