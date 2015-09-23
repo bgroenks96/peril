@@ -23,7 +23,7 @@ public final class AssetSettings
 
   private static final TextureLoader.TextureParameter GENERAL_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final TextureLoader.TextureParameter FONT_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
-  private static final SkinLoader.SkinParameter SKIN_PARAMETER = new SkinLoader.SkinParameter ("screens/shared/skins/atlases/uiskin.atlas");
+  private static final SkinLoader.SkinParameter SKIN_PARAMETER = new SkinLoader.SkinParameter ("skins/atlases/uiskin.atlas");
   private static final String S3_BUCKET_PATH_PREFIX = "s3://";
   private static final Pattern S3_BUCKET_PATH_PREFIX_PATTERN = Pattern.compile (S3_BUCKET_PATH_PREFIX);
 
@@ -150,13 +150,13 @@ public final class AssetSettings
   public static String ABSOLUTE_UPDATED_ASSETS_LOCATION = DEFAULT_S3_BUCKET_PATH;
   public static boolean UPDATE_ASSETS = true;
 
-  // Shared
+  // General
   public static final AssetDescriptor <Texture> QUIT_POPUP_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/shared/popups/quit/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+          "popups/quit/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
   public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/shared/cursors/normalCursor.png", Pixmap.class);
+          "cursors/normalCursor.png", Pixmap.class);
   public static final AssetDescriptor <Skin> SKIN_JSON_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/shared/skins/atlases/uiskin.json", Skin.class, SKIN_PARAMETER);
+          "skins/atlases/uiskin.json", Skin.class, SKIN_PARAMETER);
 
   // Loading Screen
   public static final AssetDescriptor <Texture> LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -187,13 +187,13 @@ public final class AssetSettings
 
   // Distance Field Font Shaders
   public static final String DISTANCE_FIELD_FONT_VERTEX_SHADER_FILENAME =
-          "screens/shared/skins/fonts/distancefield/shaders/font.vert";
+          "skins/fonts/distancefield/shaders/font.vert";
   public static final String DISTANCE_FIELD_FONT_FRAGMENT_SHADER_FILENAME =
-          "screens/shared/skins/fonts/distancefield/shaders/font.frag";
+          "skins/fonts/distancefield/shaders/font.frag";
 
   // @formatter:on
 
-  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <AssetDescriptor <?>> type.
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = ImmutableList
           .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, QUIT_POPUP_BACKGROUND_ASSET_DESCRIPTOR,
                                      SKIN_JSON_ASSET_DESCRIPTOR, LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
@@ -202,7 +202,7 @@ public final class AssetSettings
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
                                      PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
 
-  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <AssetDescriptor <?>> type.
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> INITIAL_LOADING_SCREEN_ASSET_DESCRIPTORS =
           ImmutableList.<AssetDescriptor <?>> of (
                   LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
