@@ -32,7 +32,7 @@
     </sift>
   </appender>
 
-  <logger name="com.forerunnergames.peril" level="TRACE">
+  <logger name="com.forerunnergames.peril" level="DEBUG">
     <appender-ref ref="STDOUT" />
   </logger>
 
