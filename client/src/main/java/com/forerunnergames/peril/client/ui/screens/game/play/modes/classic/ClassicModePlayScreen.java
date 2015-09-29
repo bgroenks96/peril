@@ -108,7 +108,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
                                 final MouseInput mouseInput,
-                                final Cursor normalCursor,
                                 final Batch batch,
                                 final MBassador <Event> eventBus)
   {
@@ -116,16 +115,15 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
-    this.normalCursor = normalCursor;
     this.eventBus = eventBus;
 
+    normalCursor = widgetFactory.createNormalCursor ();
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();

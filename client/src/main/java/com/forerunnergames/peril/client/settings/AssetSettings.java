@@ -23,7 +23,6 @@ public final class AssetSettings
 
   private static final TextureLoader.TextureParameter GENERAL_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final TextureLoader.TextureParameter FONT_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
-  private static final SkinLoader.SkinParameter SKIN_PARAMETER = new SkinLoader.SkinParameter ("skins/atlases/uiskin.atlas");
   private static final String S3_BUCKET_PATH_PREFIX = "s3://";
   private static final Pattern S3_BUCKET_PATH_PREFIX_PATTERN = Pattern.compile (S3_BUCKET_PATH_PREFIX);
 
@@ -150,21 +149,26 @@ public final class AssetSettings
   public static String ABSOLUTE_UPDATED_ASSETS_LOCATION = DEFAULT_S3_BUCKET_PATH;
   public static boolean UPDATE_ASSETS = true;
 
+  // Splash Screen
+  public static final AssetDescriptor <Skin> SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/splash/splashScreenSkin.json", Skin.class,
+          new SkinLoader.SkinParameter ("screens/splash/splashScreenSkin.atlas"));
+
   // General
   public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "cursors/normalCursor.png", Pixmap.class);
-  public static final AssetDescriptor <Skin> SKIN_JSON_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "skins/atlases/uiskin.json", Skin.class, SKIN_PARAMETER);
-
-  // Loading Screen
-  public static final AssetDescriptor <Texture> LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/loading/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+  public static final AssetDescriptor <Skin> UI_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "skins/atlases/uiskin.json", Skin.class, new SkinLoader.SkinParameter ("skins/atlases/uiskin.atlas"));
 
   // Menu Screens
   public static final AssetDescriptor <TextureAtlas> MENU_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/atlases/menus.atlas", TextureAtlas.class);
   public static final AssetDescriptor <Music> MENU_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/music/peril.ogg", Music.class);
+
+  // Loading Screen
+  public static final AssetDescriptor <Texture> LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/loading/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
 
   // Play Screen
   public static final AssetDescriptor <Music> PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -192,17 +196,16 @@ public final class AssetSettings
   // @formatter:on
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
+  public static final ImmutableList <AssetDescriptor <?>> PRELOADED_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR, NORMAL_CURSOR_ASSET_DESCRIPTOR);
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, SKIN_JSON_ASSET_DESCRIPTOR,
+          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, UI_SKIN_ASSET_DESCRIPTOR,
                                      LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR, MENU_ATLAS_ASSET_DESCRIPTOR,
                                      MENU_MUSIC_ASSET_DESCRIPTOR, PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
                                      PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
-
-  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-  public static final ImmutableList <AssetDescriptor <?>> INITIAL_LOADING_SCREEN_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR, NORMAL_CURSOR_ASSET_DESCRIPTOR,
-                                     SKIN_JSON_ASSET_DESCRIPTOR);
 
   private AssetSettings ()
   {

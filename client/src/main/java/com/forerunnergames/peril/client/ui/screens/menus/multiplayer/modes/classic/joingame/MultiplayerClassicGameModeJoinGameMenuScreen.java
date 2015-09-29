@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -44,12 +43,11 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
   public MultiplayerClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                        final ScreenChanger screenChanger,
                                                        final ScreenSize screenSize,
-                                                       final Cursor normalCursor,
                                                        final Batch batch,
                                                        final JoinGameServerHandler joinGameServerHandler,
                                                        final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize, normalCursor, batch);
+    super (widgetFactory, screenChanger, screenSize, batch);
 
     Arguments.checkIsNotNull (joinGameServerHandler, "joinGameHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -59,10 +57,12 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
 
-    playerNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_PLAYER_NAME, GameSettings.MAX_PLAYER_NAME_LENGTH,
+    playerNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_PLAYER_NAME,
+                                                         GameSettings.MAX_PLAYER_NAME_LENGTH,
                                                          InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
 
-    clanNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_CLAN_NAME, GameSettings.MAX_CLAN_NAME_LENGTH,
+    clanNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_CLAN_NAME,
+                                                       GameSettings.MAX_CLAN_NAME_LENGTH,
                                                        InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
 
     serverAddressTextField = widgetFactory.createTextField (InputSettings.INITIAL_SERVER_ADDRESS,

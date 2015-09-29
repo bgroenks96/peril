@@ -2,7 +2,6 @@ package com.forerunnergames.peril.client.ui.screens.menus.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -23,10 +22,9 @@ public final class MainMenuScreen extends AbstractMenuScreen
   public MainMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                          final ScreenChanger screenChanger,
                          final ScreenSize screenSize,
-                         final Cursor normalCursor,
                          final Batch batch)
   {
-    super (widgetFactory, screenChanger, screenSize, normalCursor, batch);
+    super (widgetFactory, screenChanger, screenSize, batch);
 
     quitPopup = createQuitPopup ("Are you sure you want to quit?", new PopupListenerAdapter ()
     {

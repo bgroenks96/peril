@@ -68,19 +68,17 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   protected AbstractMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
-                                final Cursor normalCursor,
                                 final Batch batch)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
-    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
-    this.normalCursor = normalCursor;
 
+    normalCursor = widgetFactory.createNormalCursor ();
     menuBarActor = widgetFactory.createMenuBar ();
     rightBackgroundShadowActor = widgetFactory.createRightBackgroundShadow ();
     titleBackgroundActor = widgetFactory.createTitleBackground ();

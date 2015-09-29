@@ -30,7 +30,6 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class PerilModePlayScreen extends InputAdapter implements Screen
 {
-  private final PerilModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
@@ -41,7 +40,6 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
                               final ScreenChanger screenChanger,
                               final ScreenSize screenSize,
                               final MouseInput mouseInput,
-                              final Cursor normalCursor,
                               final Batch batch,
                               final MBassador <Event> eventBus)
   {
@@ -49,14 +47,13 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
-    this.normalCursor = normalCursor;
     this.eventBus = eventBus;
+
+    normalCursor = widgetFactory.createNormalCursor ();
 
     final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
@@ -179,16 +176,20 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
   private static void hideCursor ()
   {
     Gdx.graphics.setCursor (null);
-  }  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
   }
 
   private void showCursor ()
   {
     Gdx.graphics.setCursor (normalCursor);
   }  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+
+
+  @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
     return false;
@@ -199,8 +200,5 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
   {
     return false;
   }
-
-
-
 
 }

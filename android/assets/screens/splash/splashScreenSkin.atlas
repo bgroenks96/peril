@@ -1,0 +1,35 @@
+splashScreenSkin.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+background
+  rotate: false
+  xy: 1, 271
+  size: 900, 600
+  orig: 900, 600
+  offset: 0, 0
+  index: -1
+pirulen-22
+  rotate: false
+  xy: 1, 14
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+progressBarBackground
+  rotate: false
+  xy: 902, 851
+  size: 21, 20
+  split: 10, 10, 9, 9
+  orig: 21, 20
+  offset: 0, 0
+  index: -1
+progressBarKnob
+  rotate: false
+  xy: 1, 1
+  size: 12, 12
+  split: 5, 5, 5, 5
+  orig: 12, 12
+  offset: 0, 0
+  index: -1

@@ -55,6 +55,8 @@ public class WidgetFactory
   private final AssetManager assetManager;
   @Nullable
   private ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle = null;
+  @Nullable
+  private Cursor normalCursor = null;
 
   public WidgetFactory (final AssetManager assetManager)
   {
@@ -196,9 +198,13 @@ public class WidgetFactory
 
   public Cursor createNormalCursor ()
   {
-    return Gdx.graphics.newCursor (getAsset (AssetSettings.NORMAL_CURSOR_ASSET_DESCRIPTOR),
-                                   Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                                   Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+    if (normalCursor != null) return normalCursor;
+
+    normalCursor = Gdx.graphics.newCursor (getAsset (AssetSettings.NORMAL_CURSOR_ASSET_DESCRIPTOR),
+                                           Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+                                           Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+
+    return normalCursor;
   }
 
   public Popup createErrorPopup (final Stage stage, final PopupListener listener)
@@ -305,9 +311,9 @@ public class WidgetFactory
     return getSkin ().get (styleName, type);
   }
 
-  protected final Skin getSkin ()
+  protected Skin getSkin ()
   {
-    return getAsset (AssetSettings.SKIN_JSON_ASSET_DESCRIPTOR);
+    return getAsset (AssetSettings.UI_SKIN_ASSET_DESCRIPTOR);
   }
 
   private ScrollPane.ScrollPaneStyle getMessageBoxScrollPaneStyle ()

@@ -7,6 +7,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.settings.ScreenSettings;
 
 import java.io.File;
 
@@ -25,8 +26,7 @@ public final class DesktopLauncher
       public void uncaughtException (final Thread t, final Throwable e)
       {
         log.error ("The client application has crashed!\n\nA crash file has been created in \""
-                           + System.getProperty ("user.home") + File.separator + "peril" + File.separator
-                           + "crashes\".\n", e);
+                + System.getProperty ("user.home") + File.separator + "peril" + File.separator + "crashes\".\n", e);
 
         try
         {
@@ -43,9 +43,12 @@ public final class DesktopLauncher
 
     new ClientApplicationProperties ();
 
-    config.width = GraphicsSettings.INITIAL_WINDOW_WIDTH;
-    config.height = GraphicsSettings.INITIAL_WINDOW_HEIGHT;
-    config.fullscreen = GraphicsSettings.IS_FULLSCREEN;
+    System.setProperty ("org.lwjgl.opengl.Window.undecorated",
+                        String.valueOf (!ScreenSettings.SPLASH_SCREEN_WINDOW_IS_DECORATED));
+
+    config.width = ScreenSettings.SPLASH_SCREEN_WINDOW_WIDTH;
+    config.height = ScreenSettings.SPLASH_SCREEN_WINDOW_HEIGHT;
+    config.fullscreen = ScreenSettings.SPLASH_SCREEN_WINDOW_IS_FULLSCREEN;
     config.vSyncEnabled = GraphicsSettings.IS_VSYNC_ENABLED;
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;

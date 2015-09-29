@@ -45,7 +45,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   public void initialize ()
   {
     screenFactory = screenFactoryCreator.create (this);
-    toScreen (ScreenId.LOADING_INITIAL);
+    toScreen (ScreenId.SPLASH);
   }
 
   @Override

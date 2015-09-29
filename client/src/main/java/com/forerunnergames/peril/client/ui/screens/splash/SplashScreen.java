@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.loading;
+package com.forerunnergames.peril.client.ui.screens.splash;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,10 +33,7 @@ import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 
@@ -47,9 +45,10 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class InitialLoadingScreen extends InputAdapter implements Screen
+public final class SplashScreen extends InputAdapter implements Screen
 {
-  private static final Logger log = LoggerFactory.getLogger (InitialLoadingScreen.class);
+  private static final Logger log = LoggerFactory.getLogger (SplashScreen.class);
+  private static final boolean IS_WINDOW_FULLSCREEN = false;
   private static final float ONE_THIRD = 1.0f / 3.0f;
   private static final float TWO_THIRDS = 2.0f / 3.0f;
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
@@ -65,7 +64,9 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final ProgressBar progressBar;
-  private final Popup errorPopup;
+  // private final Popup errorPopup;
+  private final int windowWidth;
+  private final int windowHeight;
   private boolean isLoading = false;
   private boolean isUpdatingAssets = false;
   private boolean isLoadingUpdatedAssets = false;
@@ -73,22 +74,20 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
   private float previousLoadingProgressPercent = 0.0f;
   private float overallLoadingProgressPercent = 0.0f;
 
-  public InitialLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
-                               final ScreenChanger screenChanger,
-                               final ScreenSize screenSize,
-                               final MouseInput mouseInput,
-                               final Cursor normalCursor,
-                               final Batch batch,
-                               final AssetUpdater assetUpdater,
-                               final AssetManager assetManager,
-                               final MBassador <Event> eventBus)
+  public SplashScreen (final SplashScreenWidgetFactory widgetFactory,
+                       final ScreenChanger screenChanger,
+                       final ScreenSize screenSize,
+                       final MouseInput mouseInput,
+                       final Batch batch,
+                       final AssetUpdater assetUpdater,
+                       final AssetManager assetManager,
+                       final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
     Arguments.checkIsNotNull (assetManager, "assetManager");
@@ -96,16 +95,21 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
 
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
-    this.normalCursor = normalCursor;
     this.assetUpdater = assetUpdater;
     this.assetManager = assetManager;
     this.eventBus = eventBus;
+
+    normalCursor = widgetFactory.createNormalCursor ();
     progressBar = widgetFactory.createProgressBar (PROGRESS_BAR_STEP_SIZE);
     progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
 
+    final Image background = widgetFactory.createBackground ();
+    windowWidth = Math.round (background.getWidth ());
+    windowHeight = Math.round (background.getHeight ());
+
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (widgetFactory.createBackground ());
+    rootStack.add (background);
 
     final Table foregroundTable = new Table ().top ();
     foregroundTable.add ().height (870);
@@ -122,14 +126,14 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
 
     stage = new Stage (viewport, batch);
 
-    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
-    {
-      @Override
-      public void onSubmit ()
-      {
-        Gdx.app.exit ();
-      }
-    });
+    // errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    // {
+    // @Override
+    // public void onSubmit ()
+    // {
+    // Gdx.app.exit ();
+    // }
+    // });
 
     stage.addActor (rootStack);
 
@@ -165,6 +169,8 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
   @Override
   public void show ()
   {
+    Gdx.graphics.setDisplayMode (windowWidth, windowHeight, IS_WINDOW_FULLSCREEN);
+
     showCursor ();
 
     eventBus.subscribe (this);
@@ -190,7 +196,8 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
       Gdx.app.exit ();
     }
 
-    if (!isLoading || errorPopup.isShown ()) return;
+    // if (!isLoading || errorPopup.isShown ()) return;
+    if (!isLoading) return;
 
     updateLoadingProgress ();
 
@@ -220,6 +227,8 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
   @Override
   public void hide ()
   {
+    resetLoadingProgress ();
+
     eventBus.unsubscribe (this);
 
     stage.unfocusAll ();
@@ -231,6 +240,15 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
     isLoading = false;
     isUpdatingAssets = false;
     isLoadingUpdatedAssets = false;
+
+    System.setProperty ("org.lwjgl.opengl.Window.undecorated", "false");
+
+    Gdx.graphics.setDisplayMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT, GraphicsSettings.IS_FULLSCREEN);
+
+    for (final AssetDescriptor<?> descriptor : AssetSettings.PRELOADED_ASSET_DESCRIPTORS)
+    {
+      assetManager.unload (descriptor);
+    }
   }
 
   @Override
@@ -278,7 +296,6 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
 
   private void goToStartScreen ()
   {
-    resetLoadingProgress ();
     screenChanger.toScreen (ScreenSettings.START_SCREEN);
   }
 
@@ -292,8 +309,8 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
   {
     log.error (message);
 
-    errorPopup.setMessage (new DefaultMessage (message));
-    errorPopup.show ();
+    // errorPopup.setMessage (new DefaultMessage (message));
+    // errorPopup.show ();
 
     shutDownAllLoading ();
   }
@@ -359,7 +376,7 @@ public final class InitialLoadingScreen extends InputAdapter implements Screen
 
   private boolean isFinishedLoading ()
   {
-    if (errorPopup.isShown ()) return false;
+    // if (errorPopup.isShown ()) return false;
 
     if (!isLoading)
     {

@@ -98,7 +98,6 @@ public final class LoadingScreen extends InputAdapter implements Screen
                         final ScreenChanger screenChanger,
                         final ScreenSize screenSize,
                         final MouseInput mouseInput,
-                        final Cursor normalCursor,
                         final Batch batch,
                         final MBassador <Event> eventBus)
   {
@@ -107,17 +106,18 @@ public final class LoadingScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (normalCursor, "normalCursor");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playMapActorFactory = playMapActorFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
-    this.normalCursor = normalCursor;
     this.eventBus = eventBus;
+
     joinGameServerHandler = new DefaultJoinGameServerHandler (eventBus);
     createGameServerHandler = new DefaultCreateGameServerHandler (joinGameServerHandler, eventBus);
+
+    normalCursor = widgetFactory.createNormalCursor ();
     progressBar = widgetFactory.createProgressBar (PROGRESS_BAR_STEP_SIZE);
     progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
 

@@ -25,7 +25,7 @@ public final class MusicFactory
 
     switch (screenId)
     {
-      case LOADING_INITIAL:
+      case SPLASH:
       {
         return NULL_MUSIC;
       }
