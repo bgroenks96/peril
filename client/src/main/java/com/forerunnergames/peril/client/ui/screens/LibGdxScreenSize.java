@@ -3,7 +3,7 @@ package com.forerunnergames.peril.client.ui.screens;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.math.Vector2;
 
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class LibGdxScreenSize implements ScreenSize
@@ -27,19 +27,19 @@ public final class LibGdxScreenSize implements ScreenSize
   @Override
   public int referenceWidth ()
   {
-    return GraphicsSettings.REFERENCE_SCREEN_WIDTH;
+    return ScreenSettings.REFERENCE_SCREEN_WIDTH;
   }
 
   @Override
   public int referenceHeight ()
   {
-    return GraphicsSettings.REFERENCE_SCREEN_HEIGHT;
+    return ScreenSettings.REFERENCE_SCREEN_HEIGHT;
   }
 
   @Override
   public Vector2 reference ()
   {
-    return temp.set (GraphicsSettings.REFERENCE_SCREEN_SIZE);
+    return temp.set (ScreenSettings.REFERENCE_SCREEN_SIZE);
   }
 
   @Override
@@ -133,15 +133,15 @@ public final class LibGdxScreenSize implements ScreenSize
 
     if (currentWidth != previousWidth)
     {
-      actualToReferenceScaling.x = GraphicsSettings.REFERENCE_SCREEN_WIDTH / (float) currentWidth;
-      referenceToActualScaling.x = currentWidth / (float) GraphicsSettings.REFERENCE_SCREEN_WIDTH;
+      actualToReferenceScaling.x = ScreenSettings.REFERENCE_SCREEN_WIDTH / (float) currentWidth;
+      referenceToActualScaling.x = currentWidth / (float) ScreenSettings.REFERENCE_SCREEN_WIDTH;
       previousWidth = currentWidth;
     }
 
     if (currentHeight != previousHeight)
     {
-      actualToReferenceScaling.y = GraphicsSettings.REFERENCE_SCREEN_HEIGHT / (float) currentHeight;
-      referenceToActualScaling.y = currentHeight / (float) GraphicsSettings.REFERENCE_SCREEN_HEIGHT;
+      actualToReferenceScaling.y = ScreenSettings.REFERENCE_SCREEN_HEIGHT / (float) currentHeight;
+      referenceToActualScaling.y = currentHeight / (float) ScreenSettings.REFERENCE_SCREEN_HEIGHT;
       previousHeight = currentHeight;
     }
   }

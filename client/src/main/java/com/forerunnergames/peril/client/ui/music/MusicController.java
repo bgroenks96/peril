@@ -35,7 +35,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   {
     Arguments.checkIsNotNull (toScreen, "toScreen");
 
-    if (!MusicSettings.isEnabled ()) return;
+    if (!MusicSettings.IS_ENABLED) return;
     if (!music.containsKey (toScreen)) music.put (toScreen, musicFactory.create (toScreen));
 
     final Music oldMusic = music.get (fromScreen);
@@ -45,7 +45,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
     if (oldMusic != null && oldMusic.isPlaying ()) oldMusic.stop ();
     if (newMusic.isPlaying ()) return;
 
-    newMusic.setVolume (MusicSettings.getInitialVolume ());
+    newMusic.setVolume (MusicSettings.INITIAL_VOLUME);
     newMusic.setLooping (true);
     newMusic.play ();
   }

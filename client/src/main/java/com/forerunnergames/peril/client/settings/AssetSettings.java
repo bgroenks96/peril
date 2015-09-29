@@ -59,11 +59,6 @@ public final class AssetSettings
   // and must be downloaded separately to this directory.
   public static final String RELATIVE_EXTERNAL_ASSETS_DIRECTORY = "peril/assets/";
 
-  // Internal assets directory is relative to the root of the jar,
-  // and is accessed via Gdx.files.internal.
-  // It is used for assets that ship with the game executable.
-  public static final String RELATIVE_INTERNAL_ASSETS_DIRECTORY = "/";
-
   // Prepend: Relative countries directory (compile-time)
   // Append: Country atlases (runtime)
   public static final String RELATIVE_COUNTRY_ATLASES_DIRECTORY = "atlases/";
@@ -110,25 +105,11 @@ public final class AssetSettings
     return "countries" + expectedAtlasIndex + ".atlas";
   }
 
-  public static String getValidCountryAtlasImageFileName (final int expectedAtlasIndex)
-  {
-    Arguments.checkLowerInclusiveBound (expectedAtlasIndex, 1, "expectedAtlasIndex");
-
-    return "countries" + expectedAtlasIndex + ".png";
-  }
-
   public static boolean isAtlasPackFileType (final String fileName)
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
     return fileName.endsWith (".atlas");
-  }
-
-  public static boolean isAtlasImageFileType (final String fileName)
-  {
-    Arguments.checkIsNotNull (fileName, "fileName");
-
-    return fileName.endsWith (".png");
   }
 
   public static boolean isValidS3BucketPath (final String bucketPath)

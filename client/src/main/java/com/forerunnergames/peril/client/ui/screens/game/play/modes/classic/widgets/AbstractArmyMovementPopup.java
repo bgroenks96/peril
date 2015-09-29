@@ -20,8 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
+import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
@@ -91,7 +91,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
                    .resizable (true)
                    .movable (true)
                    .size (862, 484)
-                   .position (481, GraphicsSettings.REFERENCE_SCREEN_HEIGHT - 164)
+                   .position (481, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 164)
                    .title (title)
                    .titleHeight (58)
                    .messageBox (false)

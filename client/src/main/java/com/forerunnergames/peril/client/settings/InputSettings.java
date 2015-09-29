@@ -16,8 +16,7 @@ public final class InputSettings
   public static final Vector2 ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION = new Vector2 (
           ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
           ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
-  public static final Vector2 MENU_NORMAL_MOUSE_CURSOR_HOTSPOT = new Vector2 (0, 0);
-  public static final Vector2 PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT = new Vector2 (0, 0);
+  public static final Vector2 NORMAL_MOUSE_CURSOR_HOTSPOT = new Vector2 (0, 0);
   public static final Pattern VALID_SERVER_NAME_TEXTFIELD_INPUT_PATTERN = Pattern.compile ("[A-Za-z0-9 ]");
   public static final Pattern VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN = Pattern.compile ("[A-Za-z0-9]");
   public static final Pattern VALID_CLAN_NAME_TEXTFIELD_PATTERN = Pattern.compile ("[A-Za-z0-9]");

@@ -201,8 +201,8 @@ public class WidgetFactory
     if (normalCursor != null) return normalCursor;
 
     normalCursor = Gdx.graphics.newCursor (getAsset (AssetSettings.NORMAL_CURSOR_ASSET_DESCRIPTOR),
-                                           Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                                           Math.round (InputSettings.PLAY_SCREEN_NORMAL_MOUSE_CURSOR_HOTSPOT.y));
+                                           Math.round (InputSettings.NORMAL_MOUSE_CURSOR_HOTSPOT.x),
+                                           Math.round (InputSettings.NORMAL_MOUSE_CURSOR_HOTSPOT.y));
 
     return normalCursor;
   }
