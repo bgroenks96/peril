@@ -8,7 +8,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 public final class DefaultCountry extends AbstractAsset implements Country
 {
-  private final int armyCount;
+  private int armyCount;
 
   public DefaultCountry (final String name, final Id id, final int armyCount)
   {
@@ -37,6 +37,21 @@ public final class DefaultCountry extends AbstractAsset implements Country
     Arguments.checkIsNotNegative (n, "n");
 
     return armyCount >= n;
+  }
+
+  @Override
+  public void addArmies (final int armyCount)
+  {
+    this.armyCount += armyCount;
+  }
+
+  @Override
+  public void removeArmies (final int armyCount)
+  {
+    Arguments.checkIsNotNegative (armyCount, "armyCount");
+    Arguments.checkUpperInclusiveBound (armyCount, this.armyCount, "armyCount");
+
+    this.armyCount -= armyCount;
   }
 
   @Override

@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.model.map;
 
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.core.model.map.continent.Continent;
 import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -38,6 +38,8 @@ public interface PlayMapModel
 
   boolean isCountryOwned (final String countryName);
 
+  boolean isCountryOwnedBy (final Id countryId, final Id ownerId);
+
   /**
    * Assigns the Country specified by countryId to the owner specified by ownerId.
    *
@@ -63,6 +65,8 @@ public interface PlayMapModel
   ImmutableSet <Country> getCountriesOwnedBy (final Id ownerId);
 
   ImmutableSet <String> getCountryNamesOwnedBy (final Id ownerId);
+  
+  ImmutableSet <Continent> getContinentsOwnedBy (final Id ownerId);
 
   void unassignAllCountries ();
 

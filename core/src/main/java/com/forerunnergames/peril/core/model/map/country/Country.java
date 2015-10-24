@@ -8,5 +8,9 @@ public interface Country extends Territory
 
   boolean hasAnyArmies ();
 
-  boolean hasAtLeastNArmies (int n);
+  boolean hasAtLeastNArmies (final int n);
+
+  void addArmies (final int armyCount);
+
+  void removeArmies (final int armyCount);
 }

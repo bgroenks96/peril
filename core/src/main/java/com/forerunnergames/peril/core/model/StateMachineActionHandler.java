@@ -1,5 +1,13 @@
 package com.forerunnergames.peril.core.model;
 
+import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
+import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -9,13 +17,6 @@ import com.forerunnergames.peril.core.model.state.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
-import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -156,11 +157,19 @@ public final class StateMachineActionHandler
     gameModel.beginReinforcementPhase ();
   }
 
+  @StateMachineCondition
+  public boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    
+    return gameModel.verifyPlayerCountryReinforcements (event);
+  }
+
   @StateMachineAction
   @StateEntryAction
-  public void waitForPlayerToPlaceReinforcements ()
+  public void beginAttackPhase ()
   {
-    gameModel.waitForPlayerToPlaceReinforcements ();
+    gameModel.beginAttackPhase ();
   }
 
   @StateMachineCondition

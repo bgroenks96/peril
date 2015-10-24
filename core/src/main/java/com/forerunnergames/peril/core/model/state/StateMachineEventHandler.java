@@ -1,12 +1,7 @@
 package com.forerunnergames.peril.core.model.state;
 
-import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
-import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
-import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
-import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
-import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
@@ -15,6 +10,12 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.core.model.StateMachineActionHandler;
+import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
+import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
+import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.base.Optional;
@@ -104,7 +105,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onCreateGameEvent (event);
   }
@@ -114,7 +115,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onDestroyGameEvent (event);
   }
@@ -124,7 +125,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onEndGameEvent (event);
   }
@@ -134,7 +135,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onDeterminePlayerTurnOrderCompleteEvent (event);
   }
@@ -144,7 +145,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onDistributeInitialArmiesCompleteEvent (event);
   }
@@ -154,7 +155,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onBeginManualCountrySelectionEvent (event);
   }
@@ -164,7 +165,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onRandomlyAssignPlayerCountriesEvent (event);
   }
@@ -174,7 +175,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerSelectCountryResponseRequestEvent (event);
   }
@@ -184,7 +185,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerSelectCountryResponseSuccessEvent (event);
   }
@@ -194,9 +195,19 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerCountryAssignmentCompleteEvent (event);
+  }
+
+  @Handler
+  public void onPlayerReinforceCountriesResponseRequestEvent (final PlayerReinforceCountriesResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerReinforceCountriesResponseRequestEvent (event);
   }
 
   @Handler
@@ -204,7 +215,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerJoinGameDeniedEvent (event);
   }
@@ -214,7 +225,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerJoinGameRequestEvent (event);
   }
@@ -224,7 +235,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerJoinGameSuccessEvent (event);
   }
@@ -234,7 +245,7 @@ public final class StateMachineEventHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Received event {}", event);
+    log.trace ("Received event {}", event);
 
     context.onPlayerLeaveGameEvent (event);
   }
