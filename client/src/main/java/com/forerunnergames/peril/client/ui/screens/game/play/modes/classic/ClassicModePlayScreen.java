@@ -52,6 +52,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
@@ -102,6 +103,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final GdxKeyRepeatSystem keyRepeat;
   private final OccupationPopup occupationPopup;
   private final ReinforcementPopup reinforcementPopup;
+  private final BattlePopup battlePopup;
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
   private final Cell <Actor> playMapActorCell;
@@ -239,6 +241,30 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     // @formatter:on
 
     // @formatter:off
+    battlePopup = widgetFactory
+            .createBattlePopup (stage, eventBus, new PopupListener ()
+            {
+              @Override
+              public void onSubmit ()
+              {
+                // TODO: Production: Publish event (AttackCountryRequestEvent?)
+              }
+
+              @Override
+              public void onShow ()
+              {
+                playMapActor.disable ();
+              }
+
+              @Override
+              public void onHide ()
+              {
+                playMapActor.enable (mouseInput.position ());
+              }
+            });
+    // @formatter:on
+
+    // @formatter:off
     quitPopup = widgetFactory.createQuitPopup (
             "Are you sure you want to quit?\nQuitting will end the game for everyone.",
             stage, new PopupListener ()
@@ -299,6 +325,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         occupationPopup.keyDownRepeating (keyCode);
         reinforcementPopup.keyDownRepeating (keyCode);
+        battlePopup.keyDownRepeating (keyCode);
       }
     });
 
@@ -314,7 +341,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
     debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox, chatBox, playerBox,
-            occupationPopup, reinforcementPopup, eventBus);
+            occupationPopup, reinforcementPopup, battlePopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
@@ -348,6 +375,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     stage.act (delta);
     occupationPopup.update (delta);
     reinforcementPopup.update (delta);
+    battlePopup.update (delta);
     quitPopup.update (delta);
     stage.draw ();
   }

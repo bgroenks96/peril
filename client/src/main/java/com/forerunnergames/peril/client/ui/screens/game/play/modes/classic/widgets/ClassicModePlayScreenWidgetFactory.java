@@ -57,7 +57,8 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public Drawable createBackgroundImageDrawable ()
   {
-    return new TextureRegionDrawable (new TextureRegion (getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR)));
+    return new TextureRegionDrawable (
+            new TextureRegion (getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR)));
   }
 
   public MessageBox <StatusMessage> createStatusBox ()
@@ -187,6 +188,17 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public ImageButton.ImageButtonStyle createArmyMovementPopupMaxButtonStyle ()
   {
     return getSkinStyle ("max", ImageButton.ImageButtonStyle.class);
+  }
+
+  public BattlePopup createBattlePopup (final Stage stage,
+                                        final MBassador <Event> eventBus,
+                                        final PopupListener listener)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new BattlePopup (this, "Attack", stage, listener, eventBus);
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)
