@@ -38,6 +38,7 @@ import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEvent;
+import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -52,6 +53,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
@@ -241,27 +243,46 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     // @formatter:on
 
     // @formatter:off
-    battlePopup = widgetFactory
-            .createBattlePopup (stage, eventBus, new PopupListener ()
-            {
-              @Override
-              public void onSubmit ()
-              {
-                // TODO: Production: Publish event (AttackCountryRequestEvent?)
-              }
+    battlePopup = widgetFactory.createBattlePopup (stage, eventBus, new AbstractBattlePopupListener ()
+    {
+      @Override
+      public void onAttack (final String attackingCountryName, final String defendingCountryName)
+      {
+        Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
+        Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
 
-              @Override
-              public void onShow ()
-              {
-                playMapActor.disable ();
-              }
+        // TODO Production: Remove
+        eventBus.publish (
+                StatusMessageEventFactory.create (
+                        Strings.format ("You attacked {} from {}.", defendingCountryName, attackingCountryName),
+                        ImmutableSet.<PlayerPacket> of ()));
+      }
 
-              @Override
-              public void onHide ()
-              {
-                playMapActor.enable (mouseInput.position ());
-              }
-            });
+      @Override
+      public void onRetreat (final String attackingCountryName, final String defendingCountryName)
+      {
+        Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
+        Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
+
+        // TODO Production: Remove
+        eventBus.publish (
+                StatusMessageEventFactory.create (
+                        Strings.format ("You stopped attacking {} from {}.", defendingCountryName, attackingCountryName),
+                        ImmutableSet.<PlayerPacket> of ()));
+      }
+
+      @Override
+      public void onShow ()
+      {
+        playMapActor.disable ();
+      }
+
+      @Override
+      public void onHide ()
+      {
+        playMapActor.enable (mouseInput.position ());
+      }
+    });
     // @formatter:on
 
     // @formatter:off

@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
@@ -96,6 +97,10 @@ public class OkPopup implements Popup
     delegate.refreshAssets ();
   }
 
+  protected void onSubmit ()
+  {
+  }
+
   protected void addButtons ()
   {
     delegate.addButtons ();
@@ -104,6 +109,11 @@ public class OkPopup implements Popup
   protected final void addButton (final String buttonText, final PopupAction popupAction)
   {
     delegate.addButton (buttonText, popupAction);
+  }
+
+  protected final void addButton (final String buttonText, final PopupAction popupAction, final EventListener listener)
+  {
+    delegate.addButton (buttonText, popupAction, listener);
   }
 
   protected final void changeButtonText (final String oldText, final String newText)
@@ -244,6 +254,7 @@ public class OkPopup implements Popup
         public void run ()
         {
           remove ();
+          onSubmit ();
           listener.onSubmit ();
         }
       })));
@@ -286,7 +297,17 @@ public class OkPopup implements Popup
       Arguments.checkIsNotNull (buttonText, "buttonText");
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
-      final TextButton textButton = widgetFactory.createTextButton (buttonText, popupStyle.getTextButtonStyleName ());
+      addButton (buttonText, popupAction, new ClickListener ());
+    }
+
+    public void addButton (final String buttonText, final PopupAction popupAction, final EventListener listener)
+    {
+      Arguments.checkIsNotNull (buttonText, "buttonText");
+      Arguments.checkIsNotNull (popupAction, "popupAction");
+      Arguments.checkIsNotNull (listener, "listener");
+
+      final TextButton textButton = widgetFactory.createTextButton (buttonText, popupStyle.getTextButtonStyleName (),
+                                                                    listener);
 
       textButton.padLeft (popupStyle.getButtonTextPaddingLeft ()).padRight (popupStyle.getButtonTextPaddingRight ())
               .padTop (popupStyle.getButtonTextPaddingTop ()).padBottom (popupStyle.getButtonTextPaddingBottom ());

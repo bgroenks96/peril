@@ -1,12 +1,15 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
@@ -15,7 +18,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -32,6 +34,7 @@ public final class BattlePopup extends OkPopup
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float INTER_COUNTRY_BOX_SPACING = 130;
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
+  private final BattlePopupListener listener;
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
@@ -48,7 +51,7 @@ public final class BattlePopup extends OkPopup
   public BattlePopup (final ClassicModePlayScreenWidgetFactory widgetFactory,
                       final String title,
                       final Stage stage,
-                      final PopupListener listener,
+                      final BattlePopupListener listener,
                       final MBassador <Event> eventBus)
 
   {
@@ -77,6 +80,7 @@ public final class BattlePopup extends OkPopup
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
+    this.listener = listener;
 
     attackingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
@@ -112,6 +116,34 @@ public final class BattlePopup extends OkPopup
     getContentTable ().add (countryTable).padLeft (2).padRight (2).padTop (COUNTRY_BOX_INNER_PADDING - 2)
             .padBottom (COUNTRY_BOX_INNER_PADDING);
     getContentTable ().row ().colspan (2).top ().padTop (29);
+  }
+
+  @Override
+  protected void onSubmit ()
+  {
+    listener.onRetreat (getAttackingCountryName (), getDefendingCountryName ());
+  }
+
+  @Override
+  protected void addButtons ()
+  {
+    addButton ("RETREAT", PopupAction.SUBMIT_AND_HIDE, new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        listener.onRetreat (getAttackingCountryName (), getDefendingCountryName ());
+      }
+    });
+
+    addButton ("ATTACK", PopupAction.NONE, new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        listener.onAttack (getAttackingCountryName (), getDefendingCountryName ());
+      }
+    });
   }
 
   @Override

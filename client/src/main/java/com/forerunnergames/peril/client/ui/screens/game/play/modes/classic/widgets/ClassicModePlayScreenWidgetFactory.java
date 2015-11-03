@@ -192,7 +192,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public BattlePopup createBattlePopup (final Stage stage,
                                         final MBassador <Event> eventBus,
-                                        final PopupListener listener)
+                                        final BattlePopupListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (eventBus, "eventBus");
