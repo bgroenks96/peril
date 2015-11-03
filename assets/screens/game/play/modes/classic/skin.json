@@ -119,6 +119,8 @@
     "player-box-message":               { "font": "dejaVu-14",    "fontColor": "white",      "background": null },
     "army-movement-popup-country-name": { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
     "army-movement-popup-arrow":        { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
+    "battle-popup-player-name":         { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
+    "battle-popup-country-name":        { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
     "battle-popup-arrow":               { "font": "dejaVu-14",    "fontColor": "white",      "background": null },
     "battle-toggle-switch":             { "font": "pirulen-12",   "fontColor": "white",      "background": null }
   },
