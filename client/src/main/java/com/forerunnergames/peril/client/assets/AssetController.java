@@ -20,7 +20,7 @@ public final class AssetController extends ControllerAdapter
   @Override
   public void initialize ()
   {
-    for (final AssetDescriptor<?> descriptor : AssetSettings.SPLASH_SCREEN_ASSET_DESCRIPTORS)
+    for (final AssetDescriptor <?> descriptor : AssetSettings.LOAD_BEFORE_SPLASH_SCREEN_ASSET_DESCRIPTORS)
     {
       assetManager.load (descriptor);
       assetManager.finishLoading (descriptor);

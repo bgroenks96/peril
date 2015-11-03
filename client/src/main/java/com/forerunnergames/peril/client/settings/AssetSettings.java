@@ -180,9 +180,13 @@ public final class AssetSettings
   public static final String DISTANCE_FIELD_FONT_FRAGMENT_SHADER_FILENAME = "skins/fonts/distancefield/shaders/font.frag";
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-  public static final ImmutableList <AssetDescriptor <?>> SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR, SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR,
-                                     NORMAL_CURSOR_ASSET_DESCRIPTOR);
+  public static final ImmutableList <AssetDescriptor <?>> LOAD_BEFORE_SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
+                                     SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR);
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
+  public static final ImmutableList <AssetDescriptor <?>> UNLOAD_AFTER_SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR, SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> LOADING_SCREEN_ASSET_DESCRIPTORS = ImmutableList

@@ -257,7 +257,7 @@ public final class SplashScreen extends InputAdapter implements Screen
     Gdx.graphics.setDisplayMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT,
                                  GraphicsSettings.IS_FULLSCREEN);
 
-    for (final AssetDescriptor <?> descriptor : AssetSettings.SPLASH_SCREEN_ASSET_DESCRIPTORS)
+    for (final AssetDescriptor <?> descriptor : AssetSettings.UNLOAD_AFTER_SPLASH_SCREEN_ASSET_DESCRIPTORS)
     {
       assetManager.unload (descriptor);
     }
