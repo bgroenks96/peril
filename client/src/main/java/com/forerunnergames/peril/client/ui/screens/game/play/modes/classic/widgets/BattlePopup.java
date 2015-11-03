@@ -3,7 +3,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -32,13 +31,10 @@ public final class BattlePopup extends OkPopup
   private static final float COUNTRY_BOX_WIDTH = 400 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float INTER_COUNTRY_BOX_SPACING = 130;
-  // private static final Vector2 FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE = new Vector2 (368, 255);
-  // private static final Vector2 FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE = new Vector2 (94, 14);
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
-  // private final Color tempColor = new Color ();
   private final BitmapFont countryArmyTextFont = new BitmapFont ();
   private final CountryArmyTextActor attackingCountryArmyTextActor = new DefaultCountryArmyTextActor (
           countryArmyTextFont);
@@ -46,8 +42,6 @@ public final class BattlePopup extends OkPopup
           countryArmyTextFont);
   private final Label attackingCountryNameLabel;
   private final Label defendingCountryNameLabel;
-  private final Cell <Stack> attackingCountryStackCell;
-  private final Cell <Stack> defendingCountryStackCell;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
 
@@ -90,21 +84,13 @@ public final class BattlePopup extends OkPopup
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
 
-    final Table attackingCountryStackTable = new Table ();
-    attackingCountryStackCell = attackingCountryStackTable.add (attackingCountryStack);
-    attackingCountryStackTable.setDebug (DEBUG, true);
-
-    final Table defendingCountryStackTable = new Table ();
-    defendingCountryStackCell = defendingCountryStackTable.add (defendingCountryStack);
-    defendingCountryStackTable.setDebug (DEBUG, true);
-
     final Table attackingCountryTable = new Table ();
-    attackingCountryTable.add (attackingCountryStackTable);
+    attackingCountryTable.add (attackingCountryStack);
     attackingCountryTable.setClip (true);
     attackingCountryTable.setDebug (DEBUG, true);
 
     final Table defendingCountryTable = new Table ();
-    defendingCountryTable.add (defendingCountryStackTable);
+    defendingCountryTable.add (defendingCountryStack);
     defendingCountryTable.setClip (true);
     defendingCountryTable.setDebug (DEBUG, true);
 
@@ -127,22 +113,6 @@ public final class BattlePopup extends OkPopup
             .padBottom (COUNTRY_BOX_INNER_PADDING);
     getContentTable ().row ().colspan (2).top ().padTop (29);
   }
-
-  //
-  // @Override
-  // public void draw (final Batch batch, final float parentAlpha)
-  // {
-  // super.draw (batch, parentAlpha);
-  //
-  // stageToLocalCoordinates (tempSize.set (getWidth (), getHeight ()));
-  // tempColor.set (getColor ());
-  // batch.setColor (tempColor.r, tempColor.g, tempColor.b, tempColor.a * parentAlpha);
-  // foregroundArrow.draw (batch, getX (), getY (), getX () + tempSize.x, getY () + tempSize.y);
-  // foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.x,
-  // getY () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE.y,
-  // FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.x,
-  // FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.y);
-  // }
 
   @Override
   public void refreshAssets ()
@@ -181,12 +151,6 @@ public final class BattlePopup extends OkPopup
     return defendingCountryNameLabel.getText ().toString ();
   }
 
-  private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
-  {
-    return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
-            - (COUNTRY_BOX_WIDTH - (COUNTRY_BOX_INNER_PADDING * 2.0f) - countryImagePostLayout.getImageWidth ())));
-  }
-
   private static Image asImage (final CountryActor countryActor)
   {
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
@@ -221,17 +185,14 @@ public final class BattlePopup extends OkPopup
 
   private void setCountryImages (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
   {
-    setCountryImage (attackingCountryActor, attackingCountryArmyTextActor, attackingCountryStack,
-                     attackingCountryStackCell);
+    setCountryImage (attackingCountryActor, attackingCountryArmyTextActor, attackingCountryStack);
 
-    setCountryImage (defendingCountryActor, defendingCountryArmyTextActor, defendingCountryStack,
-                     defendingCountryStackCell);
+    setCountryImage (defendingCountryActor, defendingCountryArmyTextActor, defendingCountryStack);
   }
 
   private void setCountryImage (final CountryActor countryActor,
                                 final CountryArmyTextActor countryArmyTextActor,
-                                final Stack countryStack,
-                                final Cell <Stack> countryStackCell)
+                                final Stack countryStack)
   {
     final Image countryImage = asImage (countryActor);
 
@@ -240,12 +201,6 @@ public final class BattlePopup extends OkPopup
     countryStack.add (countryArmyTextActor.asActor ());
 
     getContentTable ().layout ();
-
-//    Widgets.padCell (countryStackCell, calculateCountryImagePadding (countryImage, countryArrowWidth), paddingType);
-
-//    countryStackCell.getTable ().invalidateHierarchy ();
-
-//    getContentTable ().layout ();
 
     updateCountryArmyCircle (countryArmyTextActor, countryActor, countryImage);
   }
