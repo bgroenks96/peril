@@ -2,10 +2,13 @@ package com.forerunnergames.peril.client.assets;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
 import com.forerunnergames.peril.client.io.CustomExternalFileHandleResolver;
+import com.forerunnergames.peril.client.io.MultiAtlasSkinLoader;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -17,8 +20,10 @@ public final class AssetManagerFactory
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    final FileHandleResolver externalResolver = new CustomExternalFileHandleResolver ();
+
     final com.badlogic.gdx.assets.AssetManager externalLibGdxAssetManager = new com.badlogic.gdx.assets.AssetManager (
-            new CustomExternalFileHandleResolver ());
+            externalResolver);
 
     externalLibGdxAssetManager.setErrorListener (new AssetErrorListener ()
     {
@@ -30,8 +35,14 @@ public final class AssetManagerFactory
       }
     });
 
+    externalLibGdxAssetManager.setLoader (Skin.class, new MultiAtlasSkinLoader (externalResolver));
+
+    final FileHandleResolver internalResolver = new InternalFileHandleResolver ();
+
     final com.badlogic.gdx.assets.AssetManager internalLibGdxAssetManager = new com.badlogic.gdx.assets.AssetManager (
-            new InternalFileHandleResolver ());
+            internalResolver);
+
+    internalLibGdxAssetManager.setLoader (Skin.class, new MultiAtlasSkinLoader (internalResolver));
 
     internalLibGdxAssetManager.setErrorListener (new AssetErrorListener ()
     {

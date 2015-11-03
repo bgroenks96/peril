@@ -1,14 +1,15 @@
 package com.forerunnergames.peril.client.ui.screens.splash;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 
-public final class SplashScreenWidgetFactory extends WidgetFactory
+public final class SplashScreenWidgetFactory extends AbstractWidgetFactory
 {
   public SplashScreenWidgetFactory (final AssetManager assetManager)
   {
@@ -16,9 +17,9 @@ public final class SplashScreenWidgetFactory extends WidgetFactory
   }
 
   @Override
-  protected Skin getSkin ()
+  protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
   {
-    return getAsset (AssetSettings.SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR);
+    return AssetSettings.SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR;
   }
 
   public Image createBackground ()

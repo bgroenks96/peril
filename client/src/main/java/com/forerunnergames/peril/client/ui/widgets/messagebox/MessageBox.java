@@ -6,12 +6,6 @@ import com.forerunnergames.tools.common.Message;
 
 public interface MessageBox <T extends Message>
 {
-  enum Scrollbars
-  {
-    OPTIONAL,
-    REQUIRED
-  }
-
   void addMessage (final T message);
 
   void showLastMessage ();
@@ -19,4 +13,6 @@ public interface MessageBox <T extends Message>
   void clear ();
 
   Actor asActor ();
+
+  void refreshAssets ();
 }

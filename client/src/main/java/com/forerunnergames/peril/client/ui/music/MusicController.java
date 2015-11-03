@@ -7,15 +7,9 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
-import java.util.EnumMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 public final class MusicController extends ControllerAdapter implements MusicChanger
 {
   private final MusicFactory musicFactory;
-  private final Map <ScreenId, Music> music = new EnumMap <> (ScreenId.class);
 
   public MusicController (final MusicFactory musicFactory)
   {
@@ -25,24 +19,18 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   }
 
   @Override
-  public void shutDown ()
+  public void changeMusic (final ScreenId fromScreen, final ScreenId toScreen)
   {
-    music.clear ();
-  }
-
-  @Override
-  public void changeMusic (@Nullable final ScreenId fromScreen, final ScreenId toScreen)
-  {
+    Arguments.checkIsNotNull (fromScreen, "fromScreen");
     Arguments.checkIsNotNull (toScreen, "toScreen");
 
     if (!MusicSettings.IS_ENABLED) return;
-    if (!music.containsKey (toScreen)) music.put (toScreen, musicFactory.create (toScreen));
 
-    final Music oldMusic = music.get (fromScreen);
-    final Music newMusic = music.get (toScreen);
+    final Music oldMusic = musicFactory.create (fromScreen);
+    final Music newMusic = musicFactory.create (toScreen);
 
     if (newMusic.equals (oldMusic)) return;
-    if (oldMusic != null && oldMusic.isPlaying ()) oldMusic.stop ();
+    if (oldMusic.isPlaying ()) oldMusic.stop ();
     if (newMusic.isPlaying ()) return;
 
     newMusic.setVolume (MusicSettings.INITIAL_VOLUME);

@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading;
+package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;

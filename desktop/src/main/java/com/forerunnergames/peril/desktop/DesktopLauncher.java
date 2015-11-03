@@ -9,6 +9,8 @@ import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 
+import com.google.common.base.Throwables;
+
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -43,8 +45,15 @@ public final class DesktopLauncher
 
     new ClientApplicationProperties ();
 
-    System.setProperty ("org.lwjgl.opengl.Window.undecorated",
-                        String.valueOf (!ScreenSettings.SPLASH_SCREEN_WINDOW_IS_DECORATED));
+    try
+    {
+      System.setProperty ("org.lwjgl.opengl.Window.undecorated",
+                          String.valueOf (!ScreenSettings.SPLASH_SCREEN_WINDOW_IS_DECORATED));
+    }
+    catch (final SecurityException e)
+    {
+      log.warn ("Couldn't make splash screen window undecorated.\nCause:\n{}", Throwables.getStackTraceAsString (e));
+    }
 
     config.width = ScreenSettings.SPLASH_SCREEN_WINDOW_WIDTH;
     config.height = ScreenSettings.SPLASH_SCREEN_WINDOW_HEIGHT;

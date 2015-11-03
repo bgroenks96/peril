@@ -8,15 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.utils.Align;
 
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.PopupMessageBox;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
@@ -31,29 +27,15 @@ public class OkPopup implements Popup
 {
   private final DelegateDialog delegate;
 
-  public OkPopup (final Skin skin, final PopupStyle popupStyle, final Stage stage, final PopupListener listener)
-  {
-    Arguments.checkIsNotNull (skin, "skin");
-    Arguments.checkIsNotNull (popupStyle, "popupStyle");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    delegate = new DelegateDialog (popupStyle.getTitle (),
-            skin.get (popupStyle.getWindowStyleName (), Window.WindowStyle.class), popupStyle, stage, skin, listener);
-
-    addKeys ();
-    addButtons ();
-  }
-
-  public OkPopup (final Skin skin,
-                  final Window.WindowStyle windowStyle,
+  public OkPopup (final WidgetFactory widgetFactory,
                   final PopupStyle popupStyle,
                   final Stage stage,
                   final PopupListener listener)
   {
     Arguments.checkIsNotNull (popupStyle, "popupStyle");
-    Arguments.checkIsNotNull (popupStyle, "listener");
+    Arguments.checkIsNotNull (listener, "listener");
 
-    delegate = new DelegateDialog (popupStyle.getTitle (), windowStyle, popupStyle, stage, skin, listener);
+    delegate = new DelegateDialog (popupStyle.getTitle (), widgetFactory, popupStyle, stage, listener);
 
     addKeys ();
     addButtons ();
@@ -107,6 +89,13 @@ public class OkPopup implements Popup
     delegate.update (delta);
   }
 
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void refreshAssets ()
+  {
+    delegate.refreshAssets ();
+  }
+
   protected void addButtons ()
   {
     delegate.addButtons ();
@@ -137,46 +126,38 @@ public class OkPopup implements Popup
     return delegate.getContentTable ();
   }
 
-  private static final class DelegateDialog extends Dialog
+  private final class DelegateDialog extends Dialog
   {
+    private final WidgetFactory widgetFactory;
     private final PopupStyle popupStyle;
     private final Stage stage;
-    private final Skin skin;
     private final PopupListener listener;
-    private final Label.LabelStyle labelStyle;
     private final Map <String, TextButton> buttonTextToTextButtons = new HashMap <> ();
     private final MessageBox <Message> messageBox;
     private boolean isShown = false;
 
     DelegateDialog (final String title,
-                    final WindowStyle windowStyle,
+                    final WidgetFactory widgetFactory,
                     final PopupStyle popupStyle,
                     final Stage stage,
-                    final Skin skin,
                     final PopupListener listener)
     {
-      super (title, windowStyle);
+      super (title, widgetFactory.createWindowStyle (popupStyle.getWindowStyleName ()));
 
+      Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
       Arguments.checkIsNotNull (popupStyle, "popupStyle");
       Arguments.checkIsNotNull (stage, "stage");
-      Arguments.checkIsNotNull (skin, "skin");
       Arguments.checkIsNotNull (listener, "listener");
 
+      this.widgetFactory = widgetFactory;
       this.popupStyle = popupStyle;
       this.stage = stage;
-      this.skin = skin;
       this.listener = listener;
 
-      messageBox = new PopupMessageBox <Message> (skin)
-      {
-        @Override
-        protected Label createMessageLabel (final String message)
-        {
-          return DelegateDialog.this.createMessageLabel (message);
-        }
-      };
-
-      labelStyle = skin.get (Label.LabelStyle.class);
+      messageBox = widgetFactory.createPopupMessageBox (popupStyle.getMessageBoxScrollPaneStyleName (),
+                                                        popupStyle.getMessageBoxRowLabelStyleName (),
+                                                        popupStyle.getMessageBoxRowLabelAlignment (),
+                                                        popupStyle.getMessageBoxScrollbarStyle ());
 
       if (popupStyle.isDebug ()) setDebug (true, true);
 
@@ -192,6 +173,8 @@ public class OkPopup implements Popup
       if (isShown) return this;
 
       stage.cancelTouchFocus ();
+
+      OkPopup.this.refreshAssets ();
 
       super.show (stage, action);
 
@@ -211,6 +194,8 @@ public class OkPopup implements Popup
       if (isShown) return this;
 
       stage.cancelTouchFocus ();
+
+      OkPopup.this.refreshAssets ();
 
       super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade)));
 
@@ -301,8 +286,7 @@ public class OkPopup implements Popup
       Arguments.checkIsNotNull (buttonText, "buttonText");
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
-      final TextButton textButton = new TextButton (buttonText,
-              skin.get (popupStyle.getTextButtonStyleName (), TextButton.TextButtonStyle.class));
+      final TextButton textButton = widgetFactory.createTextButton (buttonText, popupStyle.getTextButtonStyleName ());
 
       textButton.padLeft (popupStyle.getButtonTextPaddingLeft ()).padRight (popupStyle.getButtonTextPaddingRight ())
               .padTop (popupStyle.getButtonTextPaddingTop ()).padBottom (popupStyle.getButtonTextPaddingBottom ());
@@ -363,13 +347,16 @@ public class OkPopup implements Popup
       act (delta);
     }
 
-    private Label createMessageLabel (final String message)
+    public void refreshAssets ()
     {
-      final Label label = new Label (message, labelStyle);
-      label.setWrap (true);
-      label.setAlignment (Align.topLeft);
+      setStyle (widgetFactory.createWindowStyle (popupStyle.getWindowStyleName ()));
 
-      return label;
+      messageBox.refreshAssets ();
+
+      for (final TextButton button : buttonTextToTextButtons.values ())
+      {
+        button.setStyle (widgetFactory.createTextButtonStyle (popupStyle.getTextButtonStyleName ()));
+      }
     }
 
     private void configureContentTable ()

@@ -25,23 +25,29 @@ public final class MusicFactory
 
     switch (screenId)
     {
+      case NONE:
       case SPLASH:
       {
         return NULL_MUSIC;
       }
-      case LOADING:
       case MAIN_MENU:
       case MULTIPLAYER_GAME_MODES_MENU:
       case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
       case MULTIPLAYER_PERIL_GAME_MODE_MENU:
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
+      case MENU_TO_PLAY_LOADING:
       {
-        return assetManager.get (AssetSettings.MENU_MUSIC_ASSET_DESCRIPTOR);
+        if (!assetManager.isLoaded (AssetSettings.MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR)) return NULL_MUSIC;
+
+        return assetManager.get (AssetSettings.MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR);
       }
       case PLAY_CLASSIC:
       case PLAY_PERIL:
+      case PLAY_TO_MENU_LOADING:
       {
+        if (!assetManager.isLoaded (AssetSettings.PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR)) return NULL_MUSIC;
+
         return assetManager.get (AssetSettings.PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
       }
       default:

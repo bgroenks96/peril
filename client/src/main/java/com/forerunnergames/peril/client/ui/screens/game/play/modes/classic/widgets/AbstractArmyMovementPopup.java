@@ -11,18 +11,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
@@ -51,6 +48,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
   private static final int SLIDER_STEP_SIZE = 1;
   private static final float INITIAL_BUTTON_REPEAT_DELAY_SECONDS = 0.5f;
   private static final float BUTTON_REPEAT_RATE_SECONDS = 0.05f;
+  private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
@@ -76,16 +74,15 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
   private float plusButtonRepeatDeltaSeconds = 0.0f;
   private int totalArmies = 0;
 
-  protected AbstractArmyMovementPopup (final Skin skin,
+  protected AbstractArmyMovementPopup (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                        final String title,
-                                       final ClassicModePlayScreenWidgetFactory widgetFactory,
                                        final Stage stage,
                                        final PopupListener listener,
                                        final MBassador <Event> eventBus)
 
   {
     // @formatter:off
-    super (skin,
+    super (widgetFactory,
            PopupStyle.builder ()
                    .windowStyle ("army-movement")
                    .resizable (true)
@@ -107,10 +104,12 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
     Arguments.checkIsNotNull (listener, "listener");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    sourceCountryNameLabel = widgetFactory.createLabel ("", Align.center, "default");
-    destinationCountryNameLabel = widgetFactory.createLabel ("", Align.center, "default");
+    this.widgetFactory = widgetFactory;
 
-    slider = widgetFactory.createHorizontalSlider (0, 0, SLIDER_STEP_SIZE, "default-horizontal", new ChangeListener ()
+    sourceCountryNameLabel = widgetFactory.createArmyMovementPopupCountryNameLabel ();
+    destinationCountryNameLabel = widgetFactory.createArmyMovementPopupCountryNameLabel ();
+
+    slider = widgetFactory.createArmyMovementPopupSlider (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
@@ -119,7 +118,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
       }
     });
 
-    minButton = widgetFactory.createImageButton ("min", new ClickListener (Input.Buttons.LEFT)
+    minButton = widgetFactory.createArmyMovementPopupMinButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
@@ -128,7 +127,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
       }
     });
 
-    minusButton = widgetFactory.createImageButton ("minus", new ClickListener (Input.Buttons.LEFT)
+    minusButton = widgetFactory.createArmyMovementPopupMinusButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
@@ -137,7 +136,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
       }
     });
 
-    plusButton = widgetFactory.createImageButton ("plus", new ClickListener (Input.Buttons.LEFT)
+    plusButton = widgetFactory.createArmyMovementPopupPlusButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
@@ -146,7 +145,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
       }
     });
 
-    maxButton = widgetFactory.createImageButton ("max", new ClickListener (Input.Buttons.LEFT)
+    maxButton = widgetFactory.createArmyMovementPopupMaxButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
@@ -269,6 +268,20 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
   // FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.x,
   // FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE.y);
   // }
+
+  @Override
+  public void refreshAssets ()
+  {
+    super.refreshAssets ();
+
+    sourceCountryNameLabel.setStyle (widgetFactory.createArmyMovementPopupCountryNameLabelStyle ());
+    destinationCountryNameLabel.setStyle (widgetFactory.createArmyMovementPopupCountryNameLabelStyle ());
+    slider.setStyle (widgetFactory.createArmyMovementPopupSliderStyle ());
+    minButton.setStyle (widgetFactory.createArmyMovementPopupMinButtonStyle ());
+    minusButton.setStyle (widgetFactory.createArmyMovementPopupMinusButtonStyle ());
+    plusButton.setStyle (widgetFactory.createArmyMovementPopupPlusButtonStyle ());
+    maxButton.setStyle (widgetFactory.createArmyMovementPopupMaxButtonStyle ());
+  }
 
   public void show (final int minDestinationArmies,
                     final int maxDestinationArmies,

@@ -20,9 +20,14 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -44,21 +49,30 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 {
   private static final Interpolation menuBarTransitionInterpolation = Interpolation.pow2;
   private static final float menuBarTransitionTimeSeconds = 0.5f;
-  private final Collection <Cell <Actor>> menuChoiceActorCells = new ArrayList <> ();
+  private final Collection <Cell <ImageTextButton>> menuChoiceCells = new ArrayList <> ();
+  private final Collection <ImageTextButton> menuChoices = new ArrayList<> ();
   private final MenuScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
+  private final ScreenSize screenSize;
   private final Cursor normalCursor;
-  private final Actor menuBarActor;
-  private final Actor rightBackgroundShadowActor;
-  private final Actor titleBackgroundActor;
-  private final Actor rightMenuBarShadowActor;
+  private final Image screenBackgroundLeft;
+  private final Image screenBackgroundRight;
+  private final Image menuBar;
+  private final Image rightBackgroundShadow;
+  private final Image topBackgroundShadow;
+  private final Image bottomBackgroundShadow;
+  private final Image titleBackground;
+  private final Image leftMenuBarShadow;
+  private final Image rightMenuBarShadow;
+  private final Label titleLabel;
+  private final Label subTitleLabel;
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final Table interactionTable;
   private final Table titleTable;
   private final Table menuChoicesTable;
   private final Table buttonTable;
-  private final Cell <Actor> titleBackgroundCell;
+  private final Cell <Image> titleBackgroundCell;
   private final Cell <Actor> contentActorCell;
   private final Cell <Table> titlesTableCell;
   private boolean screenTransitionInProgress = false;
@@ -77,12 +91,20 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
+    this.screenSize = screenSize;
 
     normalCursor = widgetFactory.createNormalCursor ();
-    menuBarActor = widgetFactory.createMenuBar ();
-    rightBackgroundShadowActor = widgetFactory.createRightBackgroundShadow ();
-    titleBackgroundActor = widgetFactory.createTitleBackground ();
-    rightMenuBarShadowActor = widgetFactory.createRightMenuBarShadow ();
+    screenBackgroundLeft = widgetFactory.createScreenBackgroundLeft ();
+    screenBackgroundRight = widgetFactory.createScreenBackgroundRight ();
+    menuBar = widgetFactory.createMenuBar ();
+    rightBackgroundShadow = widgetFactory.createRightBackgroundShadow ();
+    topBackgroundShadow = widgetFactory.createTopBackgroundShadow ();
+    bottomBackgroundShadow = widgetFactory.createBottomBackgroundShadow ();
+    titleBackground = widgetFactory.createTitleBackground ();
+    leftMenuBarShadow = widgetFactory.createLeftMenuBarShadow ();
+    rightMenuBarShadow = widgetFactory.createRightMenuBarShadow ();
+    titleLabel = widgetFactory.createTitle ("", Align.left);
+    subTitleLabel = widgetFactory.createSubTitle ("", Align.left);
 
     final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
@@ -94,27 +116,27 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
     final Table tableL0 = new Table ().top ().left ();
-    tableL0.add (widgetFactory.createScreenBackgroundLeft ());
+    tableL0.add (screenBackgroundLeft);
     tableL0.add ().expandX ();
-    tableL0.add (widgetFactory.createScreenBackgroundRight ());
+    tableL0.add (screenBackgroundRight);
     rootStack.add (tableL0);
 
     // Layer 1 - menu bar & right background shadow
     final Table tableL1 = new Table ().top ().left ();
     tableL1.add ().width (302);
-    tableL1.add (menuBarActor).width (MenuBarState.CONTRACTED.getWidth ()).expandY ().fillY ();
-    tableL1.add (rightBackgroundShadowActor).expandY ().fill ();
+    tableL1.add (menuBar).width (MenuBarState.CONTRACTED.getWidth ()).expandY ().fillY ();
+    tableL1.add (rightBackgroundShadow).expandY ().fill ();
     rootStack.add (tableL1);
 
     // Layer 2 - top & bottom background shadows
     final Table tableL2 = new Table ().top ().left ();
     tableL2.add ().width (300);
-    tableL2.add (widgetFactory.createTopBackgroundShadow ()).size (692, 302).fill ();
+    tableL2.add (topBackgroundShadow).size (692, 302).fill ();
     tableL2.row ();
     tableL2.add ().expandY ();
     tableL2.row ();
     tableL2.add ();
-    tableL2.add (widgetFactory.createBottomBackgroundShadow ()).size (692, 302).fill ();
+    tableL2.add (bottomBackgroundShadow).size (692, 302).fill ();
     rootStack.add (tableL2);
 
     // Layer 3 - title background
@@ -122,7 +144,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     tableL3.add ().width (301).height (400);
     tableL3.row ();
     tableL3.add ();
-    titleBackgroundCell = tableL3.add (titleBackgroundActor).width (currentMenuBarState.getWidth ()).height (0).fill ();
+    titleBackgroundCell = tableL3.add (titleBackground).width (currentMenuBarState.getWidth ()).height (0).fill ();
     rootStack.add (tableL3);
 
     // Layer 4 - title text, menu choices, & buttons
@@ -149,9 +171,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     // Layer 5 - left & right menu bar shadows
     final Table tableL5 = new Table ().top ().left ();
     tableL5.add ().width (300);
-    tableL5.add (widgetFactory.createLeftMenuBarShadow ()).expandY ().fill ();
+    tableL5.add (leftMenuBarShadow).expandY ().fill ();
     tableL5.add ().width (MenuBarState.CONTRACTED.getWidth () - 42);
-    tableL5.add (rightMenuBarShadowActor).expandY ().fill ();
+    tableL5.add (rightMenuBarShadow).expandY ().fill ();
     tableL5.setTouchable (Touchable.disabled);
     rootStack.add (tableL5);
 
@@ -232,6 +254,27 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Gdx.input.setInputProcessor (inputProcessor);
 
     stage.mouseMoved (Gdx.input.getX (), Gdx.input.getY ());
+
+    screenBackgroundLeft.setDrawable (widgetFactory.createScreenBackgroundLeftDrawable ());
+    screenBackgroundRight.setDrawable (widgetFactory.createScreenBackgroundRightDrawable ());
+    menuBar.setDrawable (widgetFactory.createMenuBarDrawable ());
+    rightBackgroundShadow.setDrawable (widgetFactory.createRightBackgroundShadowDrawable ());
+    topBackgroundShadow.setDrawable (widgetFactory.createTopBackgroundShadowDrawable ());
+    bottomBackgroundShadow.setDrawable (widgetFactory.createBottomBackgroundShadowDrawable ());
+    titleBackground.setDrawable (widgetFactory.createTitleBackgroundDrawable ());
+    leftMenuBarShadow.setDrawable (widgetFactory.createLeftMenuBarShadowDrawable ());
+    rightMenuBarShadow.setDrawable (widgetFactory.createRightMenuBarShadowDrawable ());
+    titleLabel.setStyle (widgetFactory.createTitleStyle ());
+    subTitleLabel.setStyle (widgetFactory.createSubTitleStyle ());
+    for (final ImageTextButton menuChoice : menuChoices)
+    {
+      menuChoice.setStyle (widgetFactory.createMenuChoiceStyle ());
+    }
+    for (final Actor actor : buttonTable.getChildren ())
+    {
+      if (! (actor instanceof TextButton)) continue;
+      ((TextButton) actor).setStyle (widgetFactory.createTextButtonStyle ("default"));
+    }
   }
 
   @Override
@@ -289,8 +332,11 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (text, "text");
     Arguments.checkIsNotNegative (height, "height");
 
+    titleLabel.setText (text);
+    titleLabel.setAlignment (alignment);
+
     titleTable.row ();
-    titleTable.add (widgetFactory.createTitle (text, alignment)).expandX ().height (height).fill ().align (alignment);
+    titleTable.add (titleLabel).expandX ().height (height).fill ().align (alignment);
     titlesTableCell.height (titlesTableCell.getPrefHeight () + height);
     titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
   }
@@ -300,17 +346,11 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (text, "text");
     Arguments.checkIsNotNegative (height, "height");
 
-    titleTable.row ();
-    titleTable.add (widgetFactory.createSubTitle (text, alignment)).expandX ().height (height).fill ()
-            .align (alignment);
-    titlesTableCell.height (titlesTableCell.getPrefHeight () + height);
-    titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
-  }
+    subTitleLabel.setText (text);
+    subTitleLabel.setAlignment (alignment);
 
-  protected final void addTitleSpacer (final int height)
-  {
     titleTable.row ();
-    titleTable.add ().height (height);
+    titleTable.add (subTitleLabel).expandX ().height (height).fill ().align (alignment);
     titlesTableCell.height (titlesTableCell.getPrefHeight () + height);
     titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
   }
@@ -339,8 +379,10 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (choiceText, "choiceText");
     Arguments.checkIsNotNull (listener, "listener");
 
-    menuChoiceActorCells.add (menuChoicesTable.add (widgetFactory.createMenuChoice (choiceText, listener))
-            .size (currentMenuBarState.getWidth (), 40).left ().fill ());
+    final ImageTextButton menuChoice = widgetFactory.createMenuChoice (choiceText, listener);
+    menuChoices.add (menuChoice);
+
+    menuChoiceCells.add (menuChoicesTable.add (menuChoice).size (currentMenuBarState.getWidth (), 40).left ().fill ());
   }
 
   protected final void toScreen (final ScreenId id)
@@ -351,18 +393,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     screenTransitionInProgress = true;
     screenChanger.toScreen (id);
-    screenTransitionInProgress = false;
-  }
-
-  protected final void toPreviousScreenSkippingOr (final ScreenId skipScreenId, final ScreenId defaultScreenId)
-  {
-    Arguments.checkIsNotNull (skipScreenId, "skipScreenId");
-    Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
-
-    if (screenTransitionInProgress) return;
-
-    screenTransitionInProgress = true;
-    screenChanger.toPreviousScreenSkippingOr (skipScreenId, defaultScreenId);
     screenTransitionInProgress = false;
   }
 
@@ -392,29 +422,29 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     titlesTableCell.width (MenuBarState.EXPANDED.getWidth () - 30);
 
-    for (final Cell <Actor> menuChoiceActorCell : menuChoiceActorCells)
+    for (final Cell <ImageTextButton> menuChoiceCell : menuChoiceCells)
     {
-      menuChoiceActorCell.width (MenuBarState.EXPANDED.getWidth ());
+      menuChoiceCell.width (MenuBarState.EXPANDED.getWidth ());
     }
 
     interactionTable.invalidate ();
 
-    menuBarActor.addAction (
+    menuBar.addAction (
             Actions.sizeBy (
                     MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
                     menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
 
-    titleBackgroundActor.addAction (
+    titleBackground.addAction (
             Actions.sizeBy (
                     MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
                     menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
 
-    rightMenuBarShadowActor.addAction (
+    rightMenuBarShadow.addAction (
             Actions.moveBy (
                     MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
                     menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
 
-    rightBackgroundShadowActor.addAction (
+    rightBackgroundShadow.addAction (
             Actions.sequence (
                     Actions.moveBy (
                             MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
@@ -459,22 +489,22 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     interactionTable.setTouchable (Touchable.disabled);
     interactionTable.setVisible (false);
 
-    menuBarActor.addAction (
+    menuBar.addAction (
             Actions.sizeBy (
                     MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
                     menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
 
-    titleBackgroundActor.addAction (
+    titleBackground.addAction (
             Actions.sizeBy (
                     MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
                     menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
 
-    rightMenuBarShadowActor.addAction (
+    rightMenuBarShadow.addAction (
             Actions.moveBy (
                     MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
                     menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
 
-    rightBackgroundShadowActor.addAction (
+    rightBackgroundShadow.addAction (
             Actions.sequence (
                     Actions.moveBy (
                             MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
@@ -510,7 +540,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Button button = widgetFactory.createTextButton ("BACK", listener);
+    final Button button = widgetFactory.createTextButton ("BACK", "default", listener);
     buttonTable.add (button).width (110);
     buttonTable.add ().expandX ();
 
@@ -522,7 +552,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNullOrEmptyOrBlank (text, "text");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Button button = widgetFactory.createTextButton (text, listener);
+    final Button button = widgetFactory.createTextButton (text, "default", listener);
     buttonTable.add (button).width (220);
 
     return button;

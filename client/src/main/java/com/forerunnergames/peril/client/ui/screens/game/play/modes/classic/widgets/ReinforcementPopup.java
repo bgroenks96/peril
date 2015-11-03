@@ -2,9 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.tools.common.Event;
 
@@ -14,14 +12,13 @@ public class ReinforcementPopup extends AbstractArmyMovementPopup
 {
   private static final String TITLE = "Reinforcement";
 
-  public ReinforcementPopup (final Skin skin,
-                             final ClassicModePlayScreenWidgetFactory widgetFactory,
+  public ReinforcementPopup (final ClassicModePlayScreenWidgetFactory widgetFactory,
                              final Stage stage,
                              final PopupListener listener,
                              final MBassador <Event> eventBus)
 
   {
-    super (skin, TITLE, widgetFactory, stage, listener, eventBus);
+    super (widgetFactory, TITLE, stage, listener, eventBus);
   }
 
   @Override

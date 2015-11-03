@@ -1,0 +1,36 @@
+{
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-28": { "file": "fonts/pirulen/pirulen-28.fnt" } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-22": { "file": "fonts/pirulen/pirulen-22.fnt" } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-12": { "file": "fonts/pirulen/pirulen-12.fnt" } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-16":  { "file": "fonts/dejavu/dejaVu-16.fnt"   } },
+
+  "com.badlogic.gdx.graphics.Color": {
+    "white":      { "a": 1, "b": 1,   "g": 1,   "r": 1   },
+    "light-gray": { "a": 1, "b": 0.8, "g": 0.8, "r": 0.8 }
+  },
+
+  "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
+    "dialogDim": { "name": "white", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 } }
+  },
+
+  "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+    "popup": { "up": "popup-button-up", "down": "popup-button-down", "over": "popup-button-over", "disabled": null, "checked": null, "font": "pirulen-12", "fontColor": "light-gray" }
+  },
+
+  "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
+    "default": { "vScroll": null, "hScrollKnob": "scroll-knob", "background": null, "hScroll": null, "vScrollKnob": "scroll-knob" }
+  },
+
+ "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
+    "popup": { "titleFont": "pirulen-28", "background": "popup-background", "titleFontColor": "white", "stageBackground": "dialogDim" }
+  },
+
+  "com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle": {
+    "default-horizontal": { "background": "progress-bar-background", "knob": "progress-bar-knob", "knobBefore": "progress-bar-knob", "knobAfter": null }
+  },
+
+  "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+    "popup-message": { "font": "dejaVu-16", "fontColor": "white",      "background": null },
+    "loading-text":  { "font": "pirulen-22", "fontColor": "light-gray", "background": null }
+  }
+}

@@ -52,9 +52,11 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
@@ -91,9 +93,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
   private final Stage stage;
+  private final Image backgroundImage;
   private final MessageBox <StatusMessage> statusBox;
   private final MessageBox <ChatMessage> chatBox;
   private final PlayerBox playerBox;
+  private final SideBar sideBar;
   private final InputProcessor inputProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
   private final OccupationPopup occupationPopup;
@@ -124,18 +128,20 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     this.eventBus = eventBus;
 
     normalCursor = widgetFactory.createNormalCursor ();
+    backgroundImage = widgetFactory.createBackgroundImage ();
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
+    sideBar = widgetFactory.createSideBar (eventBus);
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (new Image (widgetFactory.createBackground ()));
+    rootStack.add (backgroundImage);
 
     final Table playMapAndSideBarTable = new Table ();
     playMapActorCell = playMapAndSideBarTable.add (playMapActor.asActor ())
             .size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT).padRight (16);
-    playMapAndSideBarTable.add (widgetFactory.createSideBar (eventBus)).top ();
+    playMapAndSideBarTable.add (sideBar).top ();
 
     final Table foregroundTable = new Table ().pad (12);
     foregroundTable.add (playMapAndSideBarTable).colspan (3);
@@ -240,7 +246,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               @Override
               public void onSubmit ()
               {
-                screenChanger.toPreviousScreenSkippingOr (ScreenId.LOADING, ScreenId.MAIN_MENU);
+                screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
                 eventBus.publishAsync (new QuitGameEvent ());
               }
 
@@ -324,6 +330,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
     playMapActor.mouseMoved (mouseInput.position ());
+
+    backgroundImage.setDrawable (widgetFactory.createBackgroundImageDrawable ());
+    statusBox.refreshAssets ();
+    chatBox.refreshAssets ();
+    playerBox.refreshAssets ();
+    sideBar.refreshAssets ();
   }
 
   @Override
@@ -607,7 +619,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        screenChanger.toPreviousScreenSkippingOr (ScreenId.LOADING, ScreenId.MAIN_MENU);
+        screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
       }
     });
   }

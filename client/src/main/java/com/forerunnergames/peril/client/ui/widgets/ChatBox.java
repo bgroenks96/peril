@@ -1,17 +1,15 @@
 package com.forerunnergames.peril.client.ui.widgets;
 
-import static com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
@@ -19,48 +17,41 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 
+import java.util.regex.Pattern;
+
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 import net.engio.mbassy.bus.MBassador;
 
 public final class ChatBox extends DefaultMessageBox <ChatMessage>
 {
   private static final int SCROLLPANE_HEIGHT = 226 - 2 - 2;
   private static final int SCROLLPANE_TEXTFIELD_VERTICAL_PADDING = 2 + 2;
+  private static final int TEXTFIELD_MAX_CHARACTERS = 80;
   private static final int TEXTFIELD_HEIGHT = 24;
+  private static final Pattern TEXTFIELD_FILTER = Pattern.compile (".*");
+  private final WidgetFactory widgetFactory;
   private final Table table;
   private final TextField textField;
+  private final String textFieldStyleName;
 
-  public ChatBox (final ScrollPane.ScrollPaneStyle scrollPaneStyle,
-                  final WidgetFactory widgetFactory,
+  public ChatBox (final WidgetFactory widgetFactory,
+                  final String scrollPaneStyle,
+                  final ScrollbarStyle scrollbarStyle,
                   final MessageBoxRowStyle messageBoxRowStyle,
-                  final TextFieldStyle textFieldStyle,
+                  final String textFieldStyleName,
                   final MBassador <Event> eventBus)
   {
-    super (scrollPaneStyle, widgetFactory, messageBoxRowStyle, Scrollbars.REQUIRED);
+    super (widgetFactory, scrollPaneStyle, scrollbarStyle, messageBoxRowStyle);
 
-    Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
+    Arguments.checkIsNotNull (textFieldStyleName, "textFieldStyleName");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    textField = new TextField ("", textFieldStyle)
-    {
-      @Override
-      protected InputListener createInputListener ()
-      {
-        return new TextFieldClickListener ()
-        {
-          @Override
-          public boolean keyDown (final InputEvent event, final int keycode)
-          {
-            return doNotHandleEscapeKeyInTextField (event, keycode);
-          }
+    this.widgetFactory = widgetFactory;
+    this.textFieldStyleName = textFieldStyleName;
 
-          private boolean doNotHandleEscapeKeyInTextField (final InputEvent event, final int keycode)
-          {
-            return keycode != Input.Keys.ESCAPE && super.keyDown (event, keycode);
-          }
-        };
-      }
-    };
-
+    textField = widgetFactory.createTextField (TEXTFIELD_MAX_CHARACTERS, TEXTFIELD_FILTER, textFieldStyleName);
     textField.addListener (new TextFieldInputListener (eventBus));
 
     table = new Table ().top ();
@@ -71,17 +62,26 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   }
 
   @Override
+  public void clear ()
+  {
+    super.clear ();
+
+    textField.setText ("");
+  }
+
+  @Override
   public Actor asActor ()
   {
     return table;
   }
 
   @Override
-  public void clear ()
+  @OverridingMethodsMustInvokeSuper
+  public void refreshAssets ()
   {
-    super.clear ();
+    super.refreshAssets ();
 
-    textField.setText ("");
+    textField.setStyle (widgetFactory.createTextFieldStyle (textFieldStyleName));
   }
 
   private final class TextFieldInputListener extends InputListener

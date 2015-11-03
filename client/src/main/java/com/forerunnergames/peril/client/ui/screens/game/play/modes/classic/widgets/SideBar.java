@@ -5,9 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+
+import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -19,71 +20,85 @@ public final class SideBar extends Table
   private static final int BUTTON_WIDTH = 40;
   private static final int BUTTON_HEIGHT = 40;
   private static final int VERTICAL_PADDING_BETWEEN_BUTTONS = 20;
+  private final ImmutableSet <SideBarButton> buttons;
+  private final ClassicModePlayScreenWidgetFactory widgetFactory;
 
   public SideBar (final ClassicModePlayScreenWidgetFactory widgetFactory, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.widgetFactory = widgetFactory;
+
     top ().padTop (SIDEBAR_INNER_PADDING_TOP).padLeft (SIDEBAR_INNER_PADDING_LEFT)
             .padRight (SIDEBAR_INNER_PADDING_RIGHT);
 
-    add (widgetFactory.createSideBarIcon (IconType.TRADE_IN, new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-      }
-    })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
+    // @formatter:off
+
+    final SideBarButton tradeInButton =
+            widgetFactory.createSideBarButton (SideBarButton.ButtonType.TRADE_IN,
+                    new ClickListener (Input.Buttons.LEFT)
+                    {
+                      @Override
+                      public void clicked (final InputEvent event, final float x, final float y)
+                      {
+                      }
+                    });
+
+    add (tradeInButton.asActor ()).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 
     row ().padTop (VERTICAL_PADDING_BETWEEN_BUTTONS);
 
-    add (widgetFactory.createSideBarIcon (IconType.REINFORCE, new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-      }
-    })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
+    final SideBarButton reinforceButton =
+            widgetFactory.createSideBarButton (SideBarButton.ButtonType.REINFORCE,
+                    new ClickListener (Input.Buttons.LEFT)
+                    {
+                      @Override
+                      public void clicked (final InputEvent event, final float x, final float y)
+                      {
+                      }
+                    });
+
+    add (reinforceButton.asActor ()).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 
     row ().padTop (VERTICAL_PADDING_BETWEEN_BUTTONS);
 
-    add (widgetFactory.createSideBarIcon (IconType.END_TURN, new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-      }
-    })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
+    final SideBarButton endTurnButton =
+            widgetFactory.createSideBarButton (SideBarButton.ButtonType.END_TURN,
+                    new ClickListener (Input.Buttons.LEFT)
+                    {
+                      @Override
+                      public void clicked (final InputEvent event, final float x, final float y)
+                      {
+                      }
+                    });
+
+    add (endTurnButton.asActor ()).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
 
     row ().padTop (VERTICAL_PADDING_BETWEEN_BUTTONS);
 
-    add (widgetFactory.createSideBarIcon (IconType.MY_SETTINGS, new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-      }
-    })).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
+    final SideBarButton mySettingsButton =
+            widgetFactory.createSideBarButton (SideBarButton.ButtonType.MY_SETTINGS,
+                    new ClickListener (Input.Buttons.LEFT)
+                    {
+                      @Override
+                      public void clicked (final InputEvent event, final float x, final float y)
+                      {
+                      }
+                    });
+
+    add (mySettingsButton.asActor ()).top ().width (BUTTON_WIDTH).height (BUTTON_HEIGHT);
+
+    // @formatter:on
+
+    buttons = ImmutableSet.of (tradeInButton, reinforceButton, endTurnButton, mySettingsButton);
   }
 
-  public enum IconType
+  public void refreshAssets ()
   {
-    TRADE_IN ("trade-in"),
-    REINFORCE ("reinforce"),
-    END_TURN ("end-turn"),
-    MY_SETTINGS ("my-settings");
-
-    private final String styleName;
-
-    IconType (final String styleName)
+    for (final SideBarButton button : buttons)
     {
-      this.styleName = styleName;
-    }
-
-    public String getStyleName ()
-    {
-      return styleName;
+      button.setStyle (widgetFactory.createSideBarButtonStyle (button.getType ()));
     }
   }
 }

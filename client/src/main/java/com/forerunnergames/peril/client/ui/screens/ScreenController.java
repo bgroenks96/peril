@@ -5,12 +5,17 @@ import com.badlogic.gdx.Screen;
 
 import com.forerunnergames.peril.client.ui.music.MusicChanger;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 
-import javax.annotation.Nullable;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +23,13 @@ import org.slf4j.LoggerFactory;
 public final class ScreenController extends ControllerAdapter implements ScreenChanger
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
+  private static final int SCREEN_HISTORY_DEPTH = 10;
+  private final Deque <ScreenId> screenIdHistory = new ArrayDeque <> (SCREEN_HISTORY_DEPTH);
   private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   private final Game game;
   private final MusicChanger musicChanger;
   private final ScreenFactoryCreator screenFactoryCreator;
   private ScreenFactory screenFactory;
-  @Nullable
-  private ScreenId previousPreviousScreenId = null;
-  @Nullable
-  private ScreenId previousScreenId = null;
 
   public ScreenController (final Game game,
                            final MusicChanger musicChanger,
@@ -60,30 +63,38 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   }
 
   @Override
-  public void toPreviousScreenOr (final ScreenId defaultScreenId)
+  public void toPreviousScreenOrSkipping (final ScreenId defaultScreenId, final ScreenId... skipScreenIds)
   {
     Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
+    Arguments.checkIsNotNull (skipScreenIds, "skipScreenIds");
+    Arguments.checkHasNoNullElements (skipScreenIds, "skipScreenIds");
 
-    toScreen (previousScreenId != null ? previousScreenId : defaultScreenId);
-  }
+    final ImmutableCollection <ScreenId> skipScreenIdsCopy = ImmutableList.copyOf (skipScreenIds);
 
-  @Override
-  public void toPreviousScreenSkippingOr (final ScreenId skipScreenId, final ScreenId defaultScreenId)
-  {
-    Arguments.checkIsNotNull (skipScreenId, "skipScreenId");
-    Arguments.checkIsNotNull (defaultScreenId, "defaultScreenId");
+    log.debug ("Attempting to go to previous screen from [{}], while avoiding the following screens: {}...",
+               getCurrentScreenId (), skipScreenIdsCopy);
 
-    if (previousScreenId != null && previousScreenId != skipScreenId)
+    final Iterator <ScreenId> screenIdHistoryIterator = screenIdHistory.descendingIterator ();
+
+    int historyDepth = 1;
+
+    while (screenIdHistoryIterator.hasNext ())
     {
-      toScreen (previousScreenId);
-      return;
+      final ScreenId previousScreenId = screenIdHistoryIterator.next ();
+
+      if (!skipScreenIdsCopy.contains (previousScreenId))
+      {
+        log.debug ("Success, {} back is [{}].", Strings.pluralizeS (historyDepth, "screen"), previousScreenId);
+        toScreen (previousScreenId);
+        return;
+      }
+
+      log.debug ("Failed, {} back is [{}].", Strings.pluralizeS (historyDepth, "screen"), previousScreenId);
+
+      ++historyDepth;
     }
 
-    if (previousPreviousScreenId != null && previousPreviousScreenId != skipScreenId)
-    {
-      toScreen (previousPreviousScreenId);
-      return;
-    }
+    log.debug ("Going to default screen [{}] from [{}]", defaultScreenId, getCurrentScreenId ());
 
     toScreen (defaultScreenId);
   }
@@ -94,12 +105,11 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
     Arguments.checkIsNotNull (id, "id");
 
     if (id == getCurrentScreenId ()) return;
-
-    previousPreviousScreenId = previousScreenId;
-    previousScreenId = getCurrentScreenId ();
-
     if (!screens.containsKey (id)) screens.put (id, screenFactory.create (id));
+    if (screenIdHistory.size () == SCREEN_HISTORY_DEPTH) screenIdHistory.remove ();
 
+    final ScreenId previousScreenId = getCurrentScreenId ();
+    screenIdHistory.add (previousScreenId);
     game.setScreen (screens.get (id));
     musicChanger.changeMusic (previousScreenId, getCurrentScreenId ());
 
@@ -109,6 +119,8 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
 
   private ScreenId getCurrentScreenId ()
   {
-    return screens.inverse ().get (game.getScreen ());
+    final Screen currentScreen = game.getScreen ();
+
+    return currentScreen != null ? screens.inverse ().get (currentScreen) : ScreenId.NONE;
   }
 }

@@ -7,6 +7,7 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.input.LibGdxMouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -35,7 +36,10 @@ public final class ScreenFactoryCreator
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
 
-    return new ScreenFactory (screenChanger, new LibGdxScreenSize (Gdx.graphics), new LibGdxMouseInput (Gdx.input),
-            new SpriteBatch (GraphicsSettings.SPRITES_IN_BATCH), assetManager, assetUpdater, eventBus);
+    return new ScreenFactory (screenChanger,
+            new LibGdxScreenSize (Gdx.graphics, ScreenSettings.REFERENCE_SCREEN_WIDTH,
+                    ScreenSettings.REFERENCE_SCREEN_HEIGHT),
+            new LibGdxMouseInput (Gdx.input), new SpriteBatch (GraphicsSettings.SPRITES_IN_BATCH), assetManager,
+            assetUpdater, eventBus);
   }
 }

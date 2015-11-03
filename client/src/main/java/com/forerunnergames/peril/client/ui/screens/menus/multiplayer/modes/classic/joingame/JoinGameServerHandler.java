@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading;
+package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
 
 public interface JoinGameServerHandler
 {

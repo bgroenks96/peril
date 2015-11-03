@@ -62,6 +62,11 @@ public final class PlayerBox
     return messageBox.asActor ();
   }
 
+  public void refreshAssets ()
+  {
+    messageBox.refreshAssets ();
+  }
+
   private void updateMessageBox ()
   {
     messageBox.clear ();

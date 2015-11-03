@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.client.settings;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+import com.forerunnergames.peril.client.io.MultiAtlasSkinLoader;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.net.NetworkConstants;
@@ -19,8 +19,6 @@ import java.util.regex.Pattern;
 
 public final class AssetSettings
 {
-  // @formatter:off
-
   private static final TextureLoader.TextureParameter GENERAL_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final TextureLoader.TextureParameter FONT_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final String S3_BUCKET_PATH_PREFIX = "s3://";
@@ -131,37 +129,46 @@ public final class AssetSettings
   public static boolean UPDATE_ASSETS = true;
 
   // Splash Screen
+  public static final AssetDescriptor <TextureAtlas> SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/splash/skin.atlas", TextureAtlas.class);
   public static final AssetDescriptor <Skin> SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/splash/splashScreenSkin.json", Skin.class,
-          new SkinLoader.SkinParameter ("screens/splash/splashScreenSkin.atlas"));
+          "screens/splash/skin.json", Skin.class,
+          new MultiAtlasSkinLoader.SkinParameter (SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
 
   // General
   public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "cursors/normalCursor.png", Pixmap.class);
-  public static final AssetDescriptor <Skin> UI_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "skins/atlases/uiskin.json", Skin.class, new SkinLoader.SkinParameter ("skins/atlases/uiskin.atlas"));
 
   // Menu Screens
-  public static final AssetDescriptor <TextureAtlas> MENU_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/menus/shared/atlases/menus.atlas", TextureAtlas.class);
-  public static final AssetDescriptor <Music> MENU_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+  public static final AssetDescriptor <TextureAtlas> MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/menus/shared/skin1.atlas", TextureAtlas.class);
+  public static final AssetDescriptor <TextureAtlas> MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/menus/shared/skin2.atlas", TextureAtlas.class);
+  public static final AssetDescriptor <Skin> MENU_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/menus/shared/skin.json", Skin.class, new MultiAtlasSkinLoader.SkinParameter (
+                  MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR, MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR));
+  public static final AssetDescriptor <Music> MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/music/peril.ogg", Music.class);
 
   // Loading Screen
-  public static final AssetDescriptor <Texture> LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/loading/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+  public static final AssetDescriptor <TextureAtlas> LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/loading/skin.atlas", TextureAtlas.class);
+  public static final AssetDescriptor <Skin> LOADING_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/loading/skin.json", Skin.class,
+          new MultiAtlasSkinLoader.SkinParameter (LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
 
   // Play Screen
   public static final AssetDescriptor <Music> PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/shared/music/battle.mp3", Music.class);
 
   // Classic Mode Play Screen
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR =
-          new AssetDescriptor <> ("screens/game/play/modes/classic/background.png", Texture.class,
-                  GENERAL_TEXTURE_PARAMETER);
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_ARMY_MOVEMENT_POPUP_ARROW_ASSET_DESCRIPTOR =
-          new AssetDescriptor <> ("screens/game/play/modes/classic/popups/armymovement/shared/foreground.png",
-                  Texture.class, GENERAL_TEXTURE_PARAMETER);
+  public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/skin.atlas", TextureAtlas.class);
+  public static final AssetDescriptor <Skin> CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/skin.json", Skin.class,
+          new MultiAtlasSkinLoader.SkinParameter (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
+  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
 
   // Peril Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -169,24 +176,43 @@ public final class AssetSettings
   public static final String PERIL_MODE_GRIDLINES_ATLAS_NINEPATCH_NAME = "gridMiddle";
 
   // Distance Field Font Shaders
-  public static final String DISTANCE_FIELD_FONT_VERTEX_SHADER_FILENAME =
-          "skins/fonts/distancefield/shaders/font.vert";
-  public static final String DISTANCE_FIELD_FONT_FRAGMENT_SHADER_FILENAME =
-          "skins/fonts/distancefield/shaders/font.frag";
-
-  // @formatter:on
+  public static final String DISTANCE_FIELD_FONT_VERTEX_SHADER_FILENAME = "skins/fonts/distancefield/shaders/font.vert";
+  public static final String DISTANCE_FIELD_FONT_FRAGMENT_SHADER_FILENAME = "skins/fonts/distancefield/shaders/font.frag";
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-  public static final ImmutableList <AssetDescriptor <?>> PRELOADED_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR, NORMAL_CURSOR_ASSET_DESCRIPTOR);
+  public static final ImmutableList <AssetDescriptor <?>> SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR, SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR,
+                                     NORMAL_CURSOR_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-  public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, UI_SKIN_ASSET_DESCRIPTOR,
-                                     LOADING_SCREEN_BACKGROUND_ASSET_DESCRIPTOR, MENU_ATLAS_ASSET_DESCRIPTOR,
-                                     MENU_MUSIC_ASSET_DESCRIPTOR, PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR,
+  public static final ImmutableList <AssetDescriptor <?>> LOADING_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR, LOADING_SCREEN_SKIN_ASSET_DESCRIPTOR);
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
+  public static final ImmutableList <AssetDescriptor <?>> ALWAYS_LOADED_ASSET_DESCRIPTORS =
+          new ImmutableList.Builder <AssetDescriptor <?>> ()
+                  .add (NORMAL_CURSOR_ASSET_DESCRIPTOR).addAll (LOADING_SCREEN_ASSET_DESCRIPTORS).build ();
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
+  public static final ImmutableList <AssetDescriptor <?>> MENU_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR,
+                                     MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR, MENU_SCREEN_SKIN_ASSET_DESCRIPTOR,
+                                     MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR);
+
+  public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS =
+          new ImmutableList.Builder <AssetDescriptor <?>> ()
+                  .addAll (ALWAYS_LOADED_ASSET_DESCRIPTORS).addAll (MENU_SCREEN_ASSET_DESCRIPTORS).build ();
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
+  public static final ImmutableList <AssetDescriptor <?>> CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
-                                     PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
+                                     PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
+
+  // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
+  public static final ImmutableList <AssetDescriptor <?>> PERIL_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList
+          .<AssetDescriptor <?>> of (PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
 
   private AssetSettings ()
   {

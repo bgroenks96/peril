@@ -1,10 +1,11 @@
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.loading;
+package com.forerunnergames.peril.client.ui.screens.loading;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,12 +21,14 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
 import com.forerunnergames.peril.client.events.CreateGameEvent;
 import com.forerunnergames.peril.client.events.JoinGameEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
@@ -33,7 +36,11 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.screens.loading.LoadingScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.CreateGameServerHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.CreateGameServerListener;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.DefaultCreateGameServerHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.DefaultJoinGameServerHandler;
+import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.JoinGameServerHandler;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.common.game.GameMode;
@@ -60,9 +67,9 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class LoadingScreen extends InputAdapter implements Screen
+public final class MenuToPlayLoadingScreen extends InputAdapter implements Screen
 {
-  private static final Logger log = LoggerFactory.getLogger (LoadingScreen.class);
+  private static final Logger log = LoggerFactory.getLogger (MenuToPlayLoadingScreen.class);
   private static final float ONE_HALF = 1.0f / 2.0f;
   private static final float ONE_THIRD = 1.0f / 3.0f;
   private static final float ONE_SIXTH = 1.0f / 6.0f;
@@ -72,8 +79,9 @@ public final class LoadingScreen extends InputAdapter implements Screen
   private final PlayMapActorFactory playMapActorFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
-  private final Cursor normalCursor;
+  private final AssetManager assetManager;
   private final MBassador <Event> eventBus;
+  private final Cursor normalCursor;
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final JoinGameServerHandler joinGameServerHandler;
@@ -81,7 +89,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
   private final CreateGameServerListener createGameServerListener;
   private final ProgressBar progressBar;
   private final Popup errorPopup;
-  private boolean isLoadingMap = false;
+  private boolean isLoading = false;
   @Nullable
   private GameServerConfiguration gameServerConfiguration = null;
   @Nullable
@@ -89,17 +97,18 @@ public final class LoadingScreen extends InputAdapter implements Screen
   @Nullable
   private ImmutableSet <PlayerPacket> playersInGame = null;
   private float overallLoadingProgressPercent = 0.0f;
-  private float currentMapLoadingProgressPercent = 0.0f;
-  private float previousMapLoadingProgressPercent = 0.0f;
+  private float currentLoadingProgressPercent = 0.0f;
+  private float previousLoadingProgressPercent = 0.0f;
   private boolean createdGameFirst = false;
 
-  public LoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
-                        final PlayMapActorFactory playMapActorFactory,
-                        final ScreenChanger screenChanger,
-                        final ScreenSize screenSize,
-                        final MouseInput mouseInput,
-                        final Batch batch,
-                        final MBassador <Event> eventBus)
+  public MenuToPlayLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
+                                  final PlayMapActorFactory playMapActorFactory,
+                                  final ScreenChanger screenChanger,
+                                  final ScreenSize screenSize,
+                                  final MouseInput mouseInput,
+                                  final Batch batch,
+                                  final AssetManager assetManager,
+                                  final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (playMapActorFactory, "playMapActorFactory");
@@ -107,11 +116,13 @@ public final class LoadingScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
+    Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playMapActorFactory = playMapActorFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
+    this.assetManager = assetManager;
     this.eventBus = eventBus;
 
     joinGameServerHandler = new DefaultJoinGameServerHandler (eventBus);
@@ -145,7 +156,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
       @Override
       public void onSubmit ()
       {
-        screenChanger.toPreviousScreenOr (ScreenId.MAIN_MENU);
+        screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
       }
     });
 
@@ -319,16 +330,16 @@ public final class LoadingScreen extends InputAdapter implements Screen
                    GameServerConfiguration.class.getSimpleName (), gameServerConfiguration,
                    ClientConfiguration.class.getSimpleName (), clientConfiguration, playersInGame);
 
-        LoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
-        LoadingScreen.this.clientConfiguration = clientConfiguration;
-        LoadingScreen.this.playersInGame = playersInGame;
+        MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
+        MenuToPlayLoadingScreen.this.clientConfiguration = clientConfiguration;
+        MenuToPlayLoadingScreen.this.playersInGame = playersInGame;
 
         Gdx.app.postRunnable (new Runnable ()
         {
           @Override
           public void run ()
           {
-            startLoadingMap (gameServerConfiguration.getMapMetadata ());
+            startLoading (gameServerConfiguration.getMapMetadata ());
           }
         });
       }
@@ -386,12 +397,12 @@ public final class LoadingScreen extends InputAdapter implements Screen
     stage.act (delta);
     stage.draw ();
 
-    if (!loadingMap ()) return;
+    if (!loading ()) return;
 
-    updateMapLoadingProgress ();
+    updateLoadingProgress ();
 
-    if (mapLoadingProgressIncreased ()) increaseLoadingProgressBy (convert (getMapLoadingProgressIncrease ()));
-    if (isFinishedLoadingMap ()) goToPlayScreen ();
+    if (loadingProgressIncreased ()) increaseLoadingProgressBy (convert (getLoadingProgressIncrease ()));
+    if (isFinishedLoading ()) goToPlayScreen ();
   }
 
   @Override
@@ -423,7 +434,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
 
     hideCursor ();
 
-    isLoadingMap = false;
+    isLoading = false;
     gameServerConfiguration = null;
     clientConfiguration = null;
     playersInGame = null;
@@ -486,10 +497,8 @@ public final class LoadingScreen extends InputAdapter implements Screen
       public void run ()
       {
         // @formatter:off
-        handleErrorDuringMapLoading (Strings
-                .format ("There was a problem loading a resource for {} map \'{}\'.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                         gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
-                         gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
+        handleErrorDuringLoading (Strings
+                .format ("There was a problem loading a game resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                          event.getFileName (), event.getFileType ().getSimpleName (),
                          Throwables.getRootCause (event.getThrowable ()).getMessage (),
                          Strings.toString (event.getThrowable ())));
@@ -542,9 +551,9 @@ public final class LoadingScreen extends InputAdapter implements Screen
     }
   }
 
-  private boolean loadingMap ()
+  private boolean loading ()
   {
-    return isLoadingMap;
+    return isLoading;
   }
 
   private void goToPlayScreen ()
@@ -564,6 +573,7 @@ public final class LoadingScreen extends InputAdapter implements Screen
             playMapActor);
 
     resetLoadingProgress ();
+    unloadMenuAssets ();
 
     switch (gameServerConfiguration.getGameMode ())
     {
@@ -588,18 +598,59 @@ public final class LoadingScreen extends InputAdapter implements Screen
     eventBus.publish (playGameEvent);
   }
 
-  private void startLoadingMap (final MapMetadata mapMetadata)
+  private void startLoading (final MapMetadata mapMetadata)
+  {
+    isLoading = true;
+    currentLoadingProgressPercent = 0.0f;
+
+    loadPlayMapAssetsAsync (mapMetadata);
+    loadPlayScreenAssetsAsync ();
+  }
+
+  private void handleErrorDuringLoading (final String message)
+  {
+    errorPopup.setMessage (new DefaultMessage (message));
+    errorPopup.show ();
+
+    isLoading = false;
+
+    if (gameServerConfiguration != null) unloadPlayMapAssets (gameServerConfiguration.getMapMetadata ());
+
+    eventBus.publish (new QuitGameEvent ());
+  }
+
+  private void unloadMenuAssets ()
+  {
+    for (final AssetDescriptor <?> descriptor : AssetSettings.MENU_SCREEN_ASSET_DESCRIPTORS)
+    {
+      if (!assetManager.isLoaded (descriptor)) continue;
+      assetManager.unload (descriptor);
+    }
+  }
+
+  private void unloadPlayMapAssets (final MapMetadata mapMetadata)
+  {
+    playMapActorFactory.destroy (mapMetadata);
+  }
+
+  private void loadPlayScreenAssetsAsync ()
+  {
+    for (final AssetDescriptor <?> descriptor : AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS)
+    {
+      assetManager.load (descriptor);
+    }
+  }
+
+  private void loadPlayMapAssetsAsync (final MapMetadata mapMetadata)
   {
     try
     {
-      isLoadingMap = true;
-      currentMapLoadingProgressPercent = 0.0f;
       playMapActorFactory.loadAssets (mapMetadata);
     }
     catch (final PlayMapLoadingException e)
     {
       // @formatter:off
-      handleErrorDuringMapLoading (Strings
+      handleErrorDuringLoading (Strings
               .format ("There was a problem loading resources for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                        gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
                        gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
@@ -608,64 +659,48 @@ public final class LoadingScreen extends InputAdapter implements Screen
     }
   }
 
-  private void handleErrorDuringMapLoading (final String message)
+  private boolean isFinishedLoading ()
   {
-    errorPopup.setMessage (new DefaultMessage (message));
-    errorPopup.show ();
-
-    if (gameServerConfiguration != null) unloadMap (gameServerConfiguration.getMapMetadata ());
-
-    eventBus.publish (new QuitGameEvent ());
-  }
-
-  private void unloadMap (final MapMetadata mapMetadata)
-  {
-    playMapActorFactory.destroy (mapMetadata);
-
-    isLoadingMap = false;
-  }
-
-  private boolean isFinishedLoadingMap ()
-  {
-    if (!isLoadingMap) throw new IllegalStateException (
-            "Cannot check whether map is finished loading because map assets are not being loaded.");
+    if (!isLoading) throw new IllegalStateException (
+            "Cannot check whether finished loading because assets are not being loaded.");
 
     if (gameServerConfiguration == null) throw new IllegalStateException (
-            Strings.format ("Cannot check whether map is finished loading because {} is null.",
+            Strings.format ("Cannot check whether finished loading because {} is null.",
                             GameServerConfiguration.class.getSimpleName ()));
 
-    return progressBar.getVisualPercent () >= 1.0f
+    return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f
             && playMapActorFactory.isFinishedLoadingAssets (gameServerConfiguration.getMapMetadata ());
   }
 
-  private void updateMapLoadingProgress ()
+  private void updateLoadingProgress ()
   {
-    if (!isLoadingMap) throw new IllegalStateException (
-            "Cannot get map loading progress percent because map assets are not being loaded.");
+    if (!isLoading) throw new IllegalStateException (
+            "Cannot get loading progress percent because assets are not being loaded.");
 
     if (gameServerConfiguration == null) throw new IllegalStateException (
-            Strings.format ("Cannot get map loading progress percent because {} is null.",
+            Strings.format ("Cannot get loading progress percent because {} is null.",
                             GameServerConfiguration.class.getSimpleName ()));
 
-    previousMapLoadingProgressPercent = currentMapLoadingProgressPercent;
+    previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentMapLoadingProgressPercent = playMapActorFactory
-            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ());
+    currentLoadingProgressPercent = (playMapActorFactory
+            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
+            + assetManager.getProgressLoading ()) / 2.0f;
   }
 
-  private boolean mapLoadingProgressIncreased ()
+  private boolean loadingProgressIncreased ()
   {
-    return currentMapLoadingProgressPercent > previousMapLoadingProgressPercent;
+    return currentLoadingProgressPercent > previousLoadingProgressPercent;
   }
 
-  private float getMapLoadingProgressIncrease ()
+  private float getLoadingProgressIncrease ()
   {
-    return currentMapLoadingProgressPercent - previousMapLoadingProgressPercent;
+    return currentLoadingProgressPercent - previousLoadingProgressPercent;
   }
 
-  private float convert (final float mapLoadingProgressIncrease)
+  private float convert (final float loadingProgressIncrease)
   {
-    return createdGameFirst ? mapLoadingProgressIncrease * ONE_THIRD : mapLoadingProgressIncrease * ONE_HALF;
+    return createdGameFirst ? loadingProgressIncrease * ONE_THIRD : loadingProgressIncrease * ONE_HALF;
   }
 
   private void increaseLoadingProgressBy (final float percent)

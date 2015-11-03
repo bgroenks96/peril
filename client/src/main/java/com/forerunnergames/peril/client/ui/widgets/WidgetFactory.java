@@ -1,340 +1,118 @@
 package com.forerunnergames.peril.client.ui.widgets;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 
-import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.popup.ErrorPopup;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
-import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
-public class WidgetFactory
+public interface WidgetFactory
 {
-  private static final int MESSAGE_BOX_ROW_HEIGHT = 24;
-  private static final int MESSAGE_BOX_ROW_PADDING_LEFT = 12;
-  private static final int MESSAGE_BOX_ROW_PADDING_RIGHT = 12;
-  private static final int MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
-  private static final int MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
-  private static final MessageBoxRowStyle MESSAGE_BOX_ROW_STYLE = new MessageBoxRowStyle (MESSAGE_BOX_ROW_HEIGHT,
-          MESSAGE_BOX_ROW_PADDING_LEFT, MESSAGE_BOX_ROW_PADDING_RIGHT);
-  private final AssetManager assetManager;
-  @Nullable
-  private ScrollPane.ScrollPaneStyle messageBoxScrollPaneStyle = null;
-  @Nullable
-  private Cursor normalCursor = null;
+  TextButton createTextButton (final String text, final String style, final EventListener listener);
 
-  public WidgetFactory (final AssetManager assetManager)
-  {
-    Arguments.checkIsNotNull (assetManager, "assetManager");
+  TextButton createTextButton (final String text, final String style);
 
-    this.assetManager = assetManager;
-  }
+  TextButton.TextButtonStyle createTextButtonStyle (final String styleName);
 
-  public final TextButton createTextButton (final String text, final String style, final EventListener listener)
-  {
-    Arguments.checkIsNotNull (text, "text");
-    Arguments.checkIsNotNull (style, "style");
-    Arguments.checkIsNotNull (listener, "listener");
+  ImageButton createImageButton (final String styleName, final EventListener listener);
 
-    final TextButton textButton = new TextButton (text, getSkin (), style);
-    textButton.addListener (listener);
+  ImageButton createImageButton (final ImageButton.ImageButtonStyle style, final EventListener listener);
 
-    return textButton;
-  }
+  ImageButton.ImageButtonStyle createImageButtonStyle (final String styleName);
 
-  public final TextButton createTextButton (final String text, final EventListener listener)
-  {
-    return createTextButton (text, "default", listener);
-  }
+  Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener);
 
-  public final ImageButton createImageButton (final String styleName, final EventListener listener)
-  {
-    Arguments.checkIsNotNull (styleName, "styleName");
-    Arguments.checkIsNotNull (listener, "listener");
+  Label createLabel (final String text, final int alignment, final String labelStyle);
 
-    final ImageButton imageButton = new ImageButton (getSkin ().get (styleName, ImageButton.ImageButtonStyle.class));
-    imageButton.addListener (listener);
+  Label createLabel (final String text, final int alignment, final Label.LabelStyle labelStyle);
 
-    return imageButton;
-  }
+  Label createWrappingLabel (final String text, final int alignment, final String labelStyle);
 
-  public final Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
-  {
-    Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (listener, "listener");
+  Label createWrappingLabel (final String text, final int alignment, final Label.LabelStyle labelStyle);
 
-    return new QuitPopup (getSkin (), message, stage, listener);
-  }
+  Label.LabelStyle createLabelStyle (final String styleName);
 
-  public final Label createLabel (final String text, final int alignment, final String labelStyle)
-  {
-    Arguments.checkIsNotNull (text, "text");
-    Arguments.checkIsNotNull (labelStyle, "labelStyle");
+  TextField createTextField (final String initialText,
+                             final int maxLength,
+                             final Pattern filter,
+                             final TextField.TextFieldStyle style);
 
-    final Label label = new Label (text, getSkin (), labelStyle);
-    label.setAlignment (alignment);
+  TextField createTextField (final String initialText, final int maxLength, final Pattern filter, final String style);
 
-    return label;
-  }
+  TextField createTextField (final int maxLength, final Pattern filter, final String style);
 
-  public final Label createWrappingLabel (final String text, final int alignment, final String labelStyle)
-  {
-    Arguments.checkIsNotNull (text, "text");
-    Arguments.checkIsNotNull (labelStyle, "labelStyle");
+  TextField.TextFieldStyle createTextFieldStyle (final String styleName);
 
-    final Label label = new Label (text, getSkin (), labelStyle);
-    label.setAlignment (alignment);
-    label.setWrap (true);
+  ScrollPane.ScrollPaneStyle createScrollPaneStyle (final String scrollPaneStyleName,
+                                                    final ScrollbarStyle scrollbarStyle);
 
-    return label;
-  }
+  CheckBox createCheckBox (final CheckBox.CheckBoxStyle style, final EventListener listener);
 
-  public final Label createBackgroundLabel (final String text, final int alignment)
-  {
-    Arguments.checkIsNotNull (text, "text");
+  <T> SelectBox <T> createSelectBox (final SelectBox.SelectBoxStyle style);
 
-    final Label label = new Label (text, getSkin (), "label-text-with-background");
-    label.setAlignment (alignment);
+  SelectBox.SelectBoxStyle createSelectBoxStyle (final String styleName);
 
-    return label;
-  }
+  List.ListStyle createListStyle (String styleName);
 
-  public final TextField createTextField (final String initialText, final int maxLength, final Pattern filter)
-  {
-    Arguments.checkIsNotNull (initialText, "initialText");
-    Arguments.checkIsNotNegative (maxLength, "maxLength");
-    Arguments.checkIsNotNull (filter, "filter");
+  Cursor createNormalCursor ();
 
-    final TextField textField = new TextField (initialText, getSkin ())
-    {
-      @Override
-      protected InputListener createInputListener ()
-      {
-        return new TextFieldClickListener ()
-        {
-          @Override
-          public boolean keyDown (final InputEvent event, final int keycode)
-          {
-            return doNotHandleEscapeKeyInTextField (event, keycode);
-          }
+  Popup createErrorPopup (final Stage stage, final PopupListener listener);
 
-          private boolean doNotHandleEscapeKeyInTextField (final InputEvent event, final int keycode)
-          {
-            return keycode != Input.Keys.ESCAPE && super.keyDown (event, keycode);
-          }
-        };
-      }
-    };
+  Popup createErrorPopup (final Stage stage, final String submitButtonText, final PopupListener listener);
 
-    final Matcher matcher = filter.matcher ("").reset ();
+  MessageBox <Message> createPopupMessageBox (final String scrollPaneStyleName,
+                                              final String rowLabelStyleName,
+                                              final int rowLabelAlignment,
+                                              final ScrollbarStyle scrollbarStyle);
 
-    textField.setTextFieldFilter (new TextField.TextFieldFilter ()
-    {
-      @Override
-      public boolean acceptChar (final TextField textField, final char c)
-      {
-        return matcher.reset (String.valueOf (c)).matches ();
-      }
-    });
+  MessageBox <StatusMessage> createStatusBox (final String scrollPaneStyle);
 
-    textField.setMaxLength (maxLength);
+  MessageBox <ChatMessage> createChatBox (final String scrollPaneStyle,
+                                          final String textFieldStyle,
+                                          final MBassador <Event> eventBus);
 
-    return textField;
-  }
+  PlayerBox createPlayerBox (final String scrollPaneStyle);
 
-  public final TextField createTextField (final int maxLength, final Pattern filter)
-  {
-    Arguments.checkIsNotNegative (maxLength, "maxLength");
-    Arguments.checkIsNotNull (filter, "filter");
+  ProgressBar createHorizontalProgressBar (final float min, final float max, final float stepSize, final String style);
 
-    return createTextField ("", maxLength, filter);
-  }
+  ProgressBar createVerticalProgressBar (final float min, final float max, final float stepSize, final String style);
 
-  public final CheckBox createCheckBox ()
-  {
-    return new CheckBox ("", getSkin ());
-  }
+  Slider createHorizontalSlider (final int min,
+                                 final int max,
+                                 final int sliderStepSize,
+                                 final String style,
+                                 final EventListener listener);
 
-  public final <T> SelectBox <T> createSelectBox ()
-  {
-    return new SelectBox <> (getSkin ());
-  }
+  Slider createVerticalSlider (final int min,
+                               final int max,
+                               final int sliderStepSize,
+                               final String style,
+                               final EventListener listener);
 
-  public Cursor createNormalCursor ()
-  {
-    if (normalCursor != null) return normalCursor;
+  Slider.SliderStyle createSliderStyle (final String styleName);
 
-    normalCursor = Gdx.graphics.newCursor (getAsset (AssetSettings.NORMAL_CURSOR_ASSET_DESCRIPTOR),
-                                           Math.round (InputSettings.NORMAL_MOUSE_CURSOR_HOTSPOT.x),
-                                           Math.round (InputSettings.NORMAL_MOUSE_CURSOR_HOTSPOT.y));
-
-    return normalCursor;
-  }
-
-  public Popup createErrorPopup (final Stage stage, final PopupListener listener)
-  {
-    Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return new ErrorPopup (getSkin (), stage, listener);
-  }
-
-  public MessageBox <StatusMessage> createStatusBox ()
-  {
-    return new DefaultMessageBox <> (getMessageBoxScrollPaneStyle (), this, MESSAGE_BOX_ROW_STYLE,
-            MessageBox.Scrollbars.REQUIRED);
-  }
-
-  public MessageBox <ChatMessage> createChatBox (final MBassador <Event> eventBus)
-  {
-    Arguments.checkIsNotNull (eventBus, "eventBus");
-
-    return new ChatBox (getMessageBoxScrollPaneStyle (), this, MESSAGE_BOX_ROW_STYLE,
-            getSkinStyle (TextField.TextFieldStyle.class), eventBus);
-  }
-
-  public PlayerBox createPlayerBox ()
-  {
-    return new PlayerBox (createMessageBox (MessageBox.Scrollbars.REQUIRED));
-  }
-
-  public <T extends Message> MessageBox <T> createMessageBox (final MessageBox.Scrollbars scrollbars)
-  {
-    return new DefaultMessageBox <> (getMessageBoxScrollPaneStyle (), this, MESSAGE_BOX_ROW_STYLE, scrollbars);
-  }
-
-  public ProgressBar createHorizontalProgressBar (final float min,
-                                                  final float max,
-                                                  final float stepSize,
-                                                  final String style)
-  {
-    Arguments.checkIsNotNull (style, "style");
-
-    return new ProgressBar (min, max, stepSize, false, getSkin (), style);
-  }
-
-  public ProgressBar createVerticalProgressBar (final float min,
-                                                final float max,
-                                                final float stepSize,
-                                                final String style)
-  {
-    Arguments.checkIsNotNull (style, "style");
-
-    return new ProgressBar (min, max, stepSize, true, getSkin (), style);
-  }
-
-  public Slider createHorizontalSlider (final int min,
-                                        final int max,
-                                        final int sliderStepSize,
-                                        final String style,
-                                        final EventListener listener)
-  {
-    Arguments.checkIsNotNull (style, "style");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    final Slider slider = new Slider (min, max, sliderStepSize, false, getSkin (), style);
-    slider.addListener (listener);
-
-    return slider;
-  }
-
-  public Slider createVerticalSlider (final int min,
-                                      final int max,
-                                      final int sliderStepSize,
-                                      final String style,
-                                      final EventListener listener)
-  {
-    Arguments.checkIsNotNull (style, "style");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    final Slider slider = new Slider (min, max, sliderStepSize, true, getSkin (), style);
-    slider.addListener (listener);
-
-    return slider;
-  }
-
-  protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)
-  {
-    Arguments.checkIsNotNull (assetDescriptor, "assetDescriptor");
-
-    return assetManager.get (assetDescriptor);
-  }
-
-  protected final <T> T getSkinStyle (final Class <T> type)
-  {
-    Arguments.checkIsNotNull (type, "type");
-
-    return getSkin ().get (type);
-  }
-
-  protected final <T> T getSkinStyle (final String styleName, final Class <T> type)
-  {
-    Arguments.checkIsNotNull (styleName, "styleName");
-    Arguments.checkIsNotNull (type, "type");
-
-    return getSkin ().get (styleName, type);
-  }
-
-  protected Skin getSkin ()
-  {
-    return getAsset (AssetSettings.UI_SKIN_ASSET_DESCRIPTOR);
-  }
-
-  private ScrollPane.ScrollPaneStyle getMessageBoxScrollPaneStyle ()
-  {
-    if (messageBoxScrollPaneStyle == null) initializeMessageBoxScrollPaneStyle ();
-
-    return messageBoxScrollPaneStyle;
-  }
-
-  private void initializeMessageBoxScrollPaneStyle ()
-  {
-    messageBoxScrollPaneStyle = getSkinStyle (ScrollPane.ScrollPaneStyle.class);
-
-    if (messageBoxScrollPaneStyle.vScrollKnob != null)
-    {
-      messageBoxScrollPaneStyle.vScrollKnob.setMinWidth (MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
-    }
-
-    if (messageBoxScrollPaneStyle.hScrollKnob != null)
-    {
-      messageBoxScrollPaneStyle.hScrollKnob.setMinHeight (MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT);
-    }
-  }
+  Window.WindowStyle createWindowStyle (final String styleName);
 }

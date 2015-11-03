@@ -58,11 +58,10 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
-  // @formatter:off
-  private static final MapMetadataLoader MAPS_LOADER =
-          new ClientMapMetadataLoaderFactory (GameMode.CLASSIC).create (MapType.STOCK, MapType.CUSTOM);
-  // @formatter:on
+  private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC)
+          .create (MapType.STOCK, MapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
+  private final MenuScreenWidgetFactory widgetFactory;
   private final Popup errorPopup;
   private final TextField playerNameTextField;
   private final TextField clanNameTextField;
@@ -70,9 +69,22 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final CheckBox clanNameCheckBox;
   private final SelectBox <Integer> winPercentSelectBox;
   private final SelectBox <String> initialCountryAssignmentSelectBox;
+  private final SelectBox <Integer> spectatorsSelectBox;
   private final Label playerLimitLabel;
   private final Label mapNameLabel;
+  private final ImageButton customizePlayersButton;
+  private final ImageButton customizeMapButton;
   private final CountryCounter countryCounter;
+  private final Label playerSettingsSectionTitleLabel;
+  private final Label playerNameSettingLabel;
+  private final Label clanTagSettingLabel;
+  private final Label gameSettingsSectionTitleLabel;
+  private final Label serverNameSettingLabel;
+  private final Label playerLimitSettingLabel;
+  private final Label spectatorsSettingLabel;
+  private final Label mapSettingLabel;
+  private final Label winPercentSettingLabel;
+  private final Label initialCountryAssignmentSettingLabel;
   private Set <MapMetadata> maps;
   private int totalCountryCount;
   @Nullable
@@ -89,9 +101,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (countryCounter, "countryCounter");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.widgetFactory = widgetFactory;
     this.countryCounter = countryCounter;
 
     errorPopup = createErrorPopup (new PopupListenerAdapter ());
@@ -99,20 +113,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
 
-    playerNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_PLAYER_NAME,
-                                                         GameSettings.MAX_PLAYER_NAME_LENGTH,
-                                                         InputSettings.VALID_PLAYER_NAME_TEXTFIELD_INPUT_PATTERN);
+    playerNameTextField = widgetFactory.createPlayerNameTextField ();
+    clanNameTextField = widgetFactory.createClanNameTextField ();
+    serverNameTextField = widgetFactory.createServerNameTextField ();
 
-    clanNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_CLAN_NAME,
-                                                       GameSettings.MAX_CLAN_NAME_LENGTH,
-                                                       InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN);
-
-    serverNameTextField = widgetFactory.createTextField (InputSettings.INITIAL_SERVER_NAME,
-                                                         NetworkSettings.MAX_SERVER_NAME_LENGTH,
-                                                         InputSettings.VALID_SERVER_NAME_TEXTFIELD_INPUT_PATTERN);
-
-    clanNameCheckBox = widgetFactory.createCheckBox ();
-    clanNameCheckBox.addListener (new ChangeListener ()
+    clanNameCheckBox = widgetFactory.createClanNameCheckBox (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
@@ -126,50 +131,49 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
 
     // @formatter:off
-
-    playerLimitLabel = widgetFactory.createBackgroundLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT), Align.left);
+    playerLimitLabel = widgetFactory.createPlayerLimitLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT));
     maps = loadMaps ();
     currentMap = findMapOrFirstMap (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME);
-    mapNameLabel = widgetFactory.createBackgroundLabel (asMapNameLabelText (currentMap), Align.left);
+    mapNameLabel = widgetFactory.createMapNameLabel (asMapNameLabelText (currentMap));
     totalCountryCount = calculateCurrentMapTotalCountryCount ();
+    // @formatter:on
 
-    final ImageButton customizePlayersButton = widgetFactory.createImageButton ("options",
-            new ClickListener (Input.Buttons.LEFT)
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement CustomizePlayersPopup.
+    customizePlayersButton = widgetFactory.createCustomizePlayersButton (new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Implement CustomizePlayersPopup.
 
-                if (Integer.valueOf (playerLimitLabel.getText ().toString ()) < ClassicGameRules.MAX_PLAYERS)
-                {
-                  playerLimitLabel.setText (String.valueOf (Integer.valueOf (playerLimitLabel.getText ().toString ()) + 1));
-                }
-                else
-                {
-                  playerLimitLabel.setText (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT));
-                }
+        if (Integer.valueOf (playerLimitLabel.getText ().toString ()) < ClassicGameRules.MAX_PLAYERS)
+        {
+          playerLimitLabel.setText (String.valueOf (Integer.valueOf (playerLimitLabel.getText ().toString ()) + 1));
+        }
+        else
+        {
+          playerLimitLabel.setText (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT));
+        }
 
-                updateWinPercentSelectBoxItems ();
-              }
-            });
+        updateWinPercentSelectBoxItems ();
+      }
+    });
 
-    final ImageButton customizeMapButton = widgetFactory.createImageButton ("options",
-            new ClickListener (Input.Buttons.LEFT)
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement CustomizeMapPopup.
+    customizeMapButton = widgetFactory.createCustomizeMapButton (new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Implement CustomizeMapPopup.
 
-                currentMap = nextMap ();
-                mapNameLabel.setText (asMapNameLabelText (currentMap));
-                totalCountryCount = calculateCurrentMapTotalCountryCount ();
-                updateWinPercentSelectBoxItems ();
-              }
-            });
+        currentMap = nextMap ();
+        mapNameLabel.setText (asMapNameLabelText (currentMap));
+        totalCountryCount = calculateCurrentMapTotalCountryCount ();
+        updateWinPercentSelectBoxItems ();
+      }
+    });
 
-    final SelectBox <Integer> spectatorsSelectBox = widgetFactory.createSelectBox ();
+    // @formatter:off
+    spectatorsSelectBox = widgetFactory.createSpectatorsSelectBox ();
     final Array <Integer> spectatorCounts = new Array <> (GameSettings.MAX_SPECTATORS - GameSettings.MIN_SPECTATORS + 1);
     for (int i = GameSettings.MIN_SPECTATORS; i <= GameSettings.MAX_SPECTATORS; ++i)
     {
@@ -177,8 +181,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
     spectatorsSelectBox.setItems (spectatorCounts);
     spectatorsSelectBox.setSelected (InputSettings.INITIAL_SPECTATOR_LIMIT);
+    // @formatter:off
 
-    initialCountryAssignmentSelectBox = widgetFactory.createSelectBox ();
+    // @formatter:on
+    initialCountryAssignmentSelectBox = widgetFactory.createInitialCountryAssignmentSelectBox ();
     final Array <String> initialCountryAssignments = new Array <> (InitialCountryAssignment.count ());
     for (final InitialCountryAssignment initialCountryAssignment : InitialCountryAssignment.values ())
     {
@@ -186,64 +192,80 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
     initialCountryAssignmentSelectBox.setItems (initialCountryAssignments);
     initialCountryAssignmentSelectBox.setSelected (Strings.toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
+    // @formatter:on
 
-    winPercentSelectBox = widgetFactory.createSelectBox ();
+    winPercentSelectBox = widgetFactory.createWinPercentSelectBox ();
     updateWinPercentSelectBoxItems ();
     selectInitialWinPercentItem ();
+
+    playerSettingsSectionTitleLabel = widgetFactory.createPlayerSettingsSectionTitleLabel ();
+    playerNameSettingLabel = widgetFactory.createPlayerNameSettingLabel ();
+    clanTagSettingLabel = widgetFactory.createClanTagSettingLabel ();
+    gameSettingsSectionTitleLabel = widgetFactory.createGameSettingsSectionTitleLabel ();
+    serverNameSettingLabel = widgetFactory.createMenuSettingLabel ("Title");
+    playerLimitSettingLabel = widgetFactory.createMenuSettingLabel ("Players");
+    spectatorsSettingLabel = widgetFactory.createMenuSettingLabel ("Spectators");
+    mapSettingLabel = widgetFactory.createMenuSettingLabel ("Map");
+    winPercentSettingLabel = widgetFactory.createMenuSettingLabel ("Win Percent");
+    initialCountryAssignmentSettingLabel = widgetFactory.createMenuSettingLabel ("Initial Countries");
 
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);
 
+    // @formatter:off
     final Table playerSettingsTable = new Table ().top ().left ();
     playerSettingsTable.add ().height (23).colspan (5);
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Your Player")).size (538, 42).fill ().padLeft (60).padRight (60).left ().colspan (5);
+    playerSettingsTable.add (playerSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).padRight (60).left ().colspan (5);
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createMenuSettingText ("Name")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    playerSettingsTable.add (playerNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     playerSettingsTable.add (playerNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
     playerSettingsTable.add ().expandX ().fill ();
     playerSettingsTable.row ();
-    playerSettingsTable.add (widgetFactory.createMenuSettingText ("Clan Tag")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    playerSettingsTable.add (clanTagSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     playerSettingsTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
     playerSettingsTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
     playerSettingsTable.add ().width (102).fill ();
     playerSettingsTable.add ().expandX ().fill ();
     verticalGroup.addActor (playerSettingsTable);
+    // @formatter:on
 
+    // @formatter:off
     final Table gameSettingsTable = new Table ().top ().left ();
     gameSettingsTable.row ();
     gameSettingsTable.add ().height (18).colspan (5);
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingSectionTitleText ("Game Settings")).size (538, 42).fill ().padLeft (60).padRight (60).left ().colspan (5);
+    gameSettingsTable.add (gameSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).padRight (60).left ().colspan (5);
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Title")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    gameSettingsTable.add (serverNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (serverNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
     gameSettingsTable.add ().expandX ().fill ();
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Players")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    gameSettingsTable.add (playerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (playerLimitLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
     gameSettingsTable.add (customizePlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
     gameSettingsTable.add ().width (102).fill ();
     gameSettingsTable.add ().expandX ().fill ();
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Spectators")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    gameSettingsTable.add (spectatorsSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (spectatorsSelectBox).size (102, 28).fill ().left ().spaceLeft (10).colspan (2);
     gameSettingsTable.add ().expandX ().fill ();
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Map")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    gameSettingsTable.add (mapSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (mapNameLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
     gameSettingsTable.add (customizeMapButton).size (28, 28).fill ().left ().spaceLeft (4);
     gameSettingsTable.add ().width (102).fill ();
     gameSettingsTable.add ().expandX ().fill ();
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Win Percent")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    gameSettingsTable.add (winPercentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (winPercentSelectBox).size (102, 28).fill ().left ().spaceLeft (10).colspan (2);
     gameSettingsTable.add ().expandX ().fill ();
     gameSettingsTable.row ();
-    gameSettingsTable.add (widgetFactory.createMenuSettingText ("Initial Countries")).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    gameSettingsTable.add (initialCountryAssignmentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
     gameSettingsTable.add (initialCountryAssignmentSelectBox).size (102, 28).fill ().left ().spaceLeft (10).colspan (2);
     gameSettingsTable.add ().expandX ().fill ();
     verticalGroup.addActor (gameSettingsTable);
+    // @formatter:on
 
     addContent (verticalGroup);
 
@@ -280,8 +302,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
         {
           errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}",
-                                  playerName, GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
+                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
+                                  GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
           errorPopup.show ();
           return;
         }
@@ -291,36 +313,36 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
         {
           errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}",
-                                  clanName, GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
+                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
+                                  GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
           errorPopup.show ();
           return;
         }
 
-        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName, clanName);
+        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName,
+                                                                                                    clanName);
         final int playerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
         final int winPercent = winPercentSelectBox.getSelected ();
-        final InitialCountryAssignment initialCountryAssignment =
-                InitialCountryAssignment.valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
-        final GameConfiguration gameConfig =
-                new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit, winPercent, initialCountryAssignment, currentMap);
+        final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment
+                .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
+        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit, winPercent,
+                initialCountryAssignment, currentMap);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))
         {
           errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}",
-                                  serverName, NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
+                  Strings.format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}", serverName,
+                                  NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
           errorPopup.show ();
           return;
         }
 
-        toScreen (ScreenId.LOADING);
+        toScreen (ScreenId.MENU_TO_PLAY_LOADING);
 
         eventBus.publish (new CreateGameEvent (serverName, gameConfig, playerNameWithOptionalClanTag));
       }
     });
-    // @formatter:on
   }
 
   @Override
@@ -336,6 +358,39 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     mapNameLabel.setText (asMapNameLabelText (currentMap));
     totalCountryCount = calculateCurrentMapTotalCountryCount ();
     updateWinPercentSelectBoxItems ();
+
+    // @formatter:off
+    playerNameTextField.setStyle (widgetFactory.createPlayerNameTextFieldStyle ());
+    clanNameTextField.setStyle (widgetFactory.createClanNameTextFieldStyle ());
+    serverNameTextField.setStyle (widgetFactory.createServerNameTextFieldStyle ());
+    clanNameCheckBox.setStyle (widgetFactory.createClanNameCheckBoxStyle ());
+    final SelectBox.SelectBoxStyle winPercentSelectBoxStyle = widgetFactory.createWinPercentSelectBoxStyle ();
+    winPercentSelectBox.setStyle (winPercentSelectBoxStyle);
+    winPercentSelectBox.getScrollPane ().setStyle (winPercentSelectBoxStyle.scrollStyle);
+    winPercentSelectBox.getList ().setStyle (winPercentSelectBoxStyle.listStyle);
+    final SelectBox.SelectBoxStyle spectatorsSelectBoxStyle = widgetFactory.createSpectatorsSelectBoxStyle ();
+    spectatorsSelectBox.setStyle (spectatorsSelectBoxStyle);
+    spectatorsSelectBox.getScrollPane ().setStyle (spectatorsSelectBoxStyle.scrollStyle);
+    spectatorsSelectBox.getList ().setStyle (spectatorsSelectBoxStyle.listStyle);
+    final SelectBox.SelectBoxStyle initialCountryAssignmentSelectBoxStyle = widgetFactory.createInitialCountryAssignmentSelectBoxStyle ();
+    initialCountryAssignmentSelectBox.setStyle (initialCountryAssignmentSelectBoxStyle);
+    initialCountryAssignmentSelectBox.getScrollPane ().setStyle (initialCountryAssignmentSelectBoxStyle.scrollStyle);
+    initialCountryAssignmentSelectBox.getList ().setStyle (initialCountryAssignmentSelectBoxStyle.listStyle);
+    playerLimitLabel.setStyle (widgetFactory.createPlayerLimitLabelStyle ());
+    mapNameLabel.setStyle (widgetFactory.createMapNameLabelStyle ());
+    customizePlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
+    customizeMapButton.setStyle (widgetFactory.createCustomizeMapButtonStyle ());
+    playerSettingsSectionTitleLabel.setStyle (widgetFactory.createPlayerSettingsSectionTitleLabelStyle ());
+    playerNameSettingLabel.setStyle (widgetFactory.createPlayerNameSettingLabelStyle ());
+    clanTagSettingLabel.setStyle (widgetFactory.createClanTagSettingLabelStyle ());
+    gameSettingsSectionTitleLabel.setStyle (widgetFactory.createGameSettingsSectionTitleLabelStyle ());
+    serverNameSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    playerLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    spectatorsSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    mapSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    winPercentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    initialCountryAssignmentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    // @formatter:on
   }
 
   @Override

@@ -22,7 +22,6 @@ import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.PerilModePlayScreenWidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -108,7 +107,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     {
       case Input.Keys.ESCAPE:
       {
-        screenChanger.toPreviousScreenSkippingOr (ScreenId.LOADING, ScreenId.MAIN_MENU);
+        screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
 
         return false;
       }

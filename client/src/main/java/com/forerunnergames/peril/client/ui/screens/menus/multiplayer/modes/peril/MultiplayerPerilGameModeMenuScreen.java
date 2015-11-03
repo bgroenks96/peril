@@ -61,5 +61,4 @@ public final class MultiplayerPerilGameModeMenuScreen extends AbstractMenuScreen
   {
     toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
   }
-
 }

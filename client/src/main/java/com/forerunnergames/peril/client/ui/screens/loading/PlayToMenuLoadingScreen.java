@@ -1,7 +1,6 @@
-package com.forerunnergames.peril.client.ui.screens.splash;
+package com.forerunnergames.peril.client.ui.screens.loading;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -14,25 +13,23 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
-import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
+import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
+import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
@@ -49,57 +46,43 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class SplashScreen extends InputAdapter implements Screen
+public final class PlayToMenuLoadingScreen extends InputAdapter implements Screen
 {
-  private static final Logger log = LoggerFactory.getLogger (SplashScreen.class);
-  private static final boolean IS_WINDOW_FULLSCREEN = false;
-  private static final float ONE_THIRD = 1.0f / 3.0f;
-  private static final float TWO_THIRDS = 2.0f / 3.0f;
+  private static final Logger log = LoggerFactory.getLogger (PlayToMenuLoadingScreen.class);
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
   private static final float PROGRESS_BAR_STEP_SIZE = 0.1f;
-  private static final float ASSET_UPDATING_PROGRESS_WEIGHT = TWO_THIRDS;
-  private static final float UPDATED_ASSET_LOADING_PROGRESS_WEIGHT = ONE_THIRD;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
-  private final Cursor normalCursor;
-  private final AssetUpdater assetUpdater;
   private final AssetManager assetManager;
   private final MBassador <Event> eventBus;
+  private final Cursor normalCursor;
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final ProgressBar progressBar;
   private final Popup errorPopup;
-  private final int windowWidth;
-  private final int windowHeight;
   private boolean isLoading = false;
-  private boolean isUpdatingAssets = false;
-  private boolean isLoadingUpdatedAssets = false;
+  private float overallLoadingProgressPercent = 0.0f;
   private float currentLoadingProgressPercent = 0.0f;
   private float previousLoadingProgressPercent = 0.0f;
-  private float overallLoadingProgressPercent = 0.0f;
 
-  public SplashScreen (final SplashScreenWidgetFactory widgetFactory,
-                       final ScreenChanger screenChanger,
-                       final ScreenSize screenSize,
-                       final MouseInput mouseInput,
-                       final Batch batch,
-                       final AssetUpdater assetUpdater,
-                       final AssetManager assetManager,
-                       final MBassador <Event> eventBus)
+  public PlayToMenuLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
+                                  final ScreenChanger screenChanger,
+                                  final ScreenSize screenSize,
+                                  final MouseInput mouseInput,
+                                  final Batch batch,
+                                  final AssetManager assetManager,
+                                  final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
-    Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
     Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
-    this.assetUpdater = assetUpdater;
     this.assetManager = assetManager;
     this.eventBus = eventBus;
 
@@ -107,20 +90,16 @@ public final class SplashScreen extends InputAdapter implements Screen
     progressBar = widgetFactory.createProgressBar (PROGRESS_BAR_STEP_SIZE);
     progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
 
-    final Image background = widgetFactory.createBackground ();
-    windowWidth = Math.round (background.getWidth ());
-    windowHeight = Math.round (background.getHeight ());
-
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (background);
+    rootStack.add (widgetFactory.createBackground ());
 
     final Table foregroundTable = new Table ().top ();
-    foregroundTable.add ().height (394);
+    foregroundTable.add ().height (870);
     foregroundTable.row ();
-    foregroundTable.add (widgetFactory.createLabel ("LOADING", Align.center, "loading-text")).size (560, 62);
+    foregroundTable.add (widgetFactory.createLabel ("LOADING", Align.center, "loading-text")).size (700, 62);
     foregroundTable.row ().bottom ();
-    foregroundTable.add (progressBar).size (560, 20).padBottom (124);
+    foregroundTable.add (progressBar).size (700, 20).padBottom (128);
 
     rootStack.add (foregroundTable);
 
@@ -135,7 +114,11 @@ public final class SplashScreen extends InputAdapter implements Screen
       @Override
       public void onSubmit ()
       {
-        Gdx.app.exit ();
+        resetLoadingProgress ();
+
+        screenChanger.toPreviousScreenOrSkipping (ScreenId.MAIN_MENU, ScreenId.PLAY_CLASSIC, ScreenId.PLAY_PERIL,
+                                                  ScreenId.MENU_TO_PLAY_LOADING, ScreenId.PLAY_TO_MENU_LOADING,
+                                                  ScreenId.SPLASH);
       }
     });
 
@@ -173,8 +156,6 @@ public final class SplashScreen extends InputAdapter implements Screen
   @Override
   public void show ()
   {
-    Gdx.graphics.setDisplayMode (windowWidth, windowHeight, IS_WINDOW_FULLSCREEN);
-
     showCursor ();
 
     eventBus.subscribe (this);
@@ -183,7 +164,7 @@ public final class SplashScreen extends InputAdapter implements Screen
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
 
-    startLoading ();
+    if (!loading ()) startLoading ();
   }
 
   @Override
@@ -195,18 +176,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     stage.act (delta);
     stage.draw ();
 
-    if (Gdx.input.isKeyPressed (Input.Keys.ESCAPE))
-    {
-      Gdx.app.exit ();
-    }
-
-    if (!isLoading || errorPopup.isShown ()) return;
+    if (!loading ()) return;
 
     updateLoadingProgress ();
 
     if (loadingProgressIncreased ()) increaseLoadingProgressBy (getLoadingProgressIncrease ());
-    if (isFinishedUpdatingAssets () && !loadingUpdatedAssets ()) startLoadingUpdatedAssets ();
-    if (isFinishedLoading ()) goToStartScreen ();
+    if (isFinishedLoading ()) goToMenuScreen ();
   }
 
   @Override
@@ -230,8 +205,6 @@ public final class SplashScreen extends InputAdapter implements Screen
   @Override
   public void hide ()
   {
-    resetLoadingProgress ();
-
     eventBus.unsubscribe (this);
 
     stage.unfocusAll ();
@@ -241,26 +214,6 @@ public final class SplashScreen extends InputAdapter implements Screen
     hideCursor ();
 
     isLoading = false;
-    isUpdatingAssets = false;
-    isLoadingUpdatedAssets = false;
-
-    try
-    {
-      System.setProperty ("org.lwjgl.opengl.Window.undecorated", "false");
-    }
-    catch (final SecurityException e)
-    {
-      log.warn ("Couldn't make window decorated upon leaving splash screen.\nCause:\n{}",
-                Throwables.getStackTraceAsString (e));
-    }
-
-    Gdx.graphics.setDisplayMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT,
-                                 GraphicsSettings.IS_FULLSCREEN);
-
-    for (final AssetDescriptor <?> descriptor : AssetSettings.SPLASH_SCREEN_ASSET_DESCRIPTORS)
-    {
-      assetManager.unload (descriptor);
-    }
   }
 
   @Override
@@ -268,7 +221,6 @@ public final class SplashScreen extends InputAdapter implements Screen
   {
     eventBus.unsubscribe (this);
     stage.dispose ();
-    shutDownAllLoading ();
   }
 
   @Handler
@@ -284,13 +236,11 @@ public final class SplashScreen extends InputAdapter implements Screen
       public void run ()
       {
         // @formatter:off
-        handleErrorDuringLoading (
-                Strings.format (
-                        "There was a problem loading a game resource.\n\nResource Name: {}\n" +
-                        "Resource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                        event.getFileName (), event.getFileType ().getSimpleName (),
-                        Throwables.getRootCause (event.getThrowable ()).getMessage (),
-                        Throwables.getStackTraceAsString (event.getThrowable ())));
+        handleErrorDuringLoading (Strings
+                .format ("There was a problem loading a game resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                         event.getFileName (), event.getFileType ().getSimpleName (),
+                         Throwables.getRootCause (event.getThrowable ()).getMessage (),
+                         Strings.toString (event.getThrowable ())));
         // @formatter:on
       }
     });
@@ -301,123 +251,71 @@ public final class SplashScreen extends InputAdapter implements Screen
     Gdx.graphics.setCursor (null);
   }
 
-  private boolean loadingUpdatedAssets ()
+  private boolean loading ()
   {
-    return isLoadingUpdatedAssets;
-  }
-
-  private void goToStartScreen ()
-  {
-    try
-    {
-      screenChanger.toScreen (ScreenSettings.START_SCREEN);
-    }
-    catch (final GdxRuntimeException e)
-    {
-      handleErrorDuringLoading (Strings
-              .format ("The application encountered a problem.\n\n" + "Problem:\n\n{}\n\nDetails:\n\n{}",
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
-    }
+    return isLoading;
   }
 
   private void startLoading ()
   {
     isLoading = true;
-    startUpdatingAssets ();
+    currentLoadingProgressPercent = 0.0f;
+
+    loadMenuAssetsAsync ();
+  }
+
+  private void goToMenuScreen ()
+  {
+    resetLoadingProgress ();
+    unloadPlayScreenAssets ();
+
+    screenChanger.toPreviousScreenOrSkipping (ScreenId.MAIN_MENU, ScreenId.PLAY_CLASSIC, ScreenId.PLAY_PERIL,
+                                              ScreenId.MENU_TO_PLAY_LOADING, ScreenId.PLAY_TO_MENU_LOADING,
+                                              ScreenId.SPLASH);
   }
 
   private void handleErrorDuringLoading (final String message)
   {
-    log.error (message);
-
     errorPopup.setMessage (new DefaultMessage (message));
     errorPopup.show ();
 
-    shutDownAllLoading ();
-  }
-
-  private void shutDownAllLoading ()
-  {
-    assetUpdater.shutDown ();
     isLoading = false;
-    isUpdatingAssets = false;
-    isLoadingUpdatedAssets = false;
+
+    eventBus.publish (new QuitGameEvent ());
   }
 
-  private void startUpdatingAssets ()
+  private void unloadPlayScreenAssets ()
   {
-    try
+    for (final AssetDescriptor <?> descriptor : AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS)
     {
-      isUpdatingAssets = true;
-      isLoadingUpdatedAssets = false;
-      assetUpdater.updateAssets ();
-    }
-    catch (final RuntimeException e)
-    {
-      handleErrorDuringLoading (Strings
-              .format ("There was a problem updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
+      if (!assetManager.isLoaded (descriptor)) continue;
+      assetManager.unload (descriptor);
     }
   }
 
-  private void startLoadingUpdatedAssets ()
+  private void loadMenuAssetsAsync ()
   {
-    try
+    for (final AssetDescriptor <?> descriptor : AssetSettings.MENU_SCREEN_ASSET_DESCRIPTORS)
     {
-      isUpdatingAssets = false;
-      isLoadingUpdatedAssets = true;
-
-      for (final AssetDescriptor <?> descriptor : AssetSettings.INITIAL_ASSET_DESCRIPTORS)
-      {
-        assetManager.load (descriptor);
-      }
+      assetManager.load (descriptor);
     }
-    catch (final RuntimeException e)
-    {
-      handleErrorDuringLoading (Strings
-              .format ("There was a problem loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
-    }
-  }
-
-  private boolean isFinishedUpdatingAssets ()
-  {
-    return assetUpdater.isFinished ();
-  }
-
-  private boolean isFinishedLoadingUpdatedAssets ()
-  {
-    for (final AssetDescriptor <?> descriptor : AssetSettings.INITIAL_ASSET_DESCRIPTORS)
-    {
-      if (!assetManager.isLoaded (descriptor.fileName)) return false;
-    }
-
-    return true;
   }
 
   private boolean isFinishedLoading ()
   {
-    if (errorPopup.isShown ()) return false;
+    if (!isLoading) throw new IllegalStateException (
+            "Cannot check whether finished loading because assets are not being loaded.");
 
-    if (!isLoading)
-    {
-      throw new IllegalStateException ("Cannot check whether loading is finished because it never began.");
-    }
-
-    return !isUpdatingAssets && progressBar.getVisualPercent () >= 1.0f && isFinishedLoadingUpdatedAssets ();
+    return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f;
   }
 
   private void updateLoadingProgress ()
   {
-    if (!isLoading)
-    {
-      throw new IllegalStateException ("Cannot update loading progress because loading never began.");
-    }
+    if (!isLoading) throw new IllegalStateException (
+            "Cannot get loading progress percent because assets are not being loaded.");
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
-    currentLoadingProgressPercent = assetUpdater.getProgressPercent () * ASSET_UPDATING_PROGRESS_WEIGHT
-            + (isLoadingUpdatedAssets ? assetManager.getProgressLoading () * UPDATED_ASSET_LOADING_PROGRESS_WEIGHT
-                    : 0.0f);
+    currentLoadingProgressPercent = assetManager.getProgressLoading ();
   }
 
   private boolean loadingProgressIncreased ()
@@ -436,7 +334,7 @@ public final class SplashScreen extends InputAdapter implements Screen
 
     progressBar.setValue (overallLoadingProgressPercent);
 
-    log.trace ("Overall loading progress: {} (increased by {}).", overallLoadingProgressPercent, percent);
+    log.debug ("Overall loading progress: {} (increased by {}).", overallLoadingProgressPercent, percent);
   }
 
   private void resetLoadingProgress ()

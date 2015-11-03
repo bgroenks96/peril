@@ -17,4 +17,6 @@ public interface Popup
   void addListener (final EventListener listener);
 
   void update (final float delta);
+
+  void refreshAssets ();
 }

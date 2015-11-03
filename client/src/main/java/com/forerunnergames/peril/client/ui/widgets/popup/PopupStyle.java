@@ -1,11 +1,19 @@
 package com.forerunnergames.peril.client.ui.widgets.popup;
 
+import com.badlogic.gdx.utils.Align;
+
+import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class PopupStyle
 {
   public static final String DEFAULT_WINDOW_STYLE_NAME = "dialog";
   public static final String DEFAULT_TEXT_BUTTON_STYLE_NAME = "default";
+  public static final String DEFAULT_MESSAGE_BOX_ROW_LABEL_STYLE_NAME = "default";
+  public static final int DEFAULT_MESSAGE_BOX_ROW_LABEL_ALIGNMENT = Align.topLeft;
+  public static final String DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE_NAME = "default";
+  public static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
+          ScrollbarStyle.Scrollbars.OPTIONAL, 14, 14);
   public static final String DEFAULT_TITLE = "";
   public static final String DEFAULT_WINDOW_MESSAGE = "";
   public static final int DEFAULT_BORDER_THICKNESS = 0;
@@ -39,6 +47,10 @@ public final class PopupStyle
   public static final int DEFAULT_BUTTON_HEIGHT = AUTO_HEIGHT;
   private final String windowStyleName;
   private final String textButtonStyleName;
+  private final String messageBoxRowLabelStyleName;
+  private final int messageBoxRowLabelAlignment;
+  private final String messageBoxScrollPaneStyleName;
+  private final ScrollbarStyle messageBoxScrollbarStyle;
   private final String title;
   private final int titleHeight;
   private final int buttonWidth;
@@ -80,6 +92,26 @@ public final class PopupStyle
   public String getTextButtonStyleName ()
   {
     return textButtonStyleName;
+  }
+
+  public String getMessageBoxRowLabelStyleName ()
+  {
+    return messageBoxRowLabelStyleName;
+  }
+
+  public int getMessageBoxRowLabelAlignment ()
+  {
+    return messageBoxRowLabelAlignment;
+  }
+
+  public String getMessageBoxScrollPaneStyleName ()
+  {
+    return messageBoxScrollPaneStyleName;
+  }
+
+  public ScrollbarStyle getMessageBoxScrollbarStyle ()
+  {
+    return messageBoxScrollbarStyle;
   }
 
   public String getTitle ()
@@ -219,6 +251,10 @@ public final class PopupStyle
 
   private PopupStyle (final String windowStyleName,
                       final String textButtonStyleName,
+                      final String messageBoxRowLabelStyleName,
+                      final int messageBoxRowLabelAlignment,
+                      final String messageBoxScrollPaneStyleName,
+                      final ScrollbarStyle messageBoxScrollbarStyle,
                       final String title,
                       final int titleHeight,
                       final int buttonWidth,
@@ -249,6 +285,10 @@ public final class PopupStyle
   {
     Arguments.checkIsNotNull (windowStyleName, "windowStyleName");
     Arguments.checkIsNotNull (textButtonStyleName, "textButtonStyleName");
+    Arguments.checkIsNotNull (messageBoxRowLabelStyleName, "messageBoxRowLabelStyleName");
+    Arguments.checkIsNotNegative (messageBoxRowLabelAlignment, "messageBoxRowLabelAlignment");
+    Arguments.checkIsNotNull (messageBoxScrollPaneStyleName, "messageBoxScrollPaneStyleName");
+    Arguments.checkIsNotNull (messageBoxScrollbarStyle, "messageBoxScrollbarStyle");
     Arguments.checkIsNotNull (title, "title");
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNegative (borderThickness, "borderThickness");
@@ -268,6 +308,10 @@ public final class PopupStyle
 
     this.windowStyleName = windowStyleName;
     this.textButtonStyleName = textButtonStyleName;
+    this.messageBoxRowLabelStyleName = messageBoxRowLabelStyleName;
+    this.messageBoxRowLabelAlignment = messageBoxRowLabelAlignment;
+    this.messageBoxScrollPaneStyleName = messageBoxScrollPaneStyleName;
+    this.messageBoxScrollbarStyle = messageBoxScrollbarStyle;
     this.title = title;
     this.titleHeight = titleHeight;
     this.buttonWidth = buttonWidth;
@@ -301,6 +345,10 @@ public final class PopupStyle
   {
     private String windowStyleName = DEFAULT_WINDOW_STYLE_NAME;
     private String textButtonStyleName = DEFAULT_TEXT_BUTTON_STYLE_NAME;
+    private String messageBoxRowLabelStyleName = DEFAULT_MESSAGE_BOX_ROW_LABEL_STYLE_NAME;
+    private int messageBoxRowLabelAlignment = DEFAULT_MESSAGE_BOX_ROW_LABEL_ALIGNMENT;
+    private String messageBoxScrollPaneStyleName = DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE_NAME;
+    private ScrollbarStyle messageBoxScrollbarStyle = DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE;
     private String title = DEFAULT_TITLE;
     private int titleHeight = DEFAULT_TITLE_HEIGHT;
     private int buttonWidth = DEFAULT_BUTTON_WIDTH;
@@ -331,13 +379,14 @@ public final class PopupStyle
 
     public PopupStyle build ()
     {
-      return new PopupStyle (windowStyleName, textButtonStyleName, title, titleHeight, buttonWidth, buttonHeight,
-              message, positionUpperLeftReferenceScreenSpaceX, positionUpperLeftReferenceScreenSpaceY,
-              widthReferenceScreenSpace, heightReferenceScreenSpace, borderThickness, buttonSpacing,
-              buttonTextPaddingLeft, buttonTextPaddingRight, buttonTextPaddingTop, buttonTextPaddingBottom,
-              textPaddingLeft, textPaddingRight, textPaddingTop, textPaddingBottom, textBoxPaddingLeft,
-              textBoxPaddingRight, textBoxPaddingTop, textBoxPaddingBottom, isMessageBox, isResizable, isMovable,
-              isDebug);
+      return new PopupStyle (windowStyleName, textButtonStyleName, messageBoxRowLabelStyleName,
+              messageBoxRowLabelAlignment, messageBoxScrollPaneStyleName, messageBoxScrollbarStyle, title, titleHeight,
+              buttonWidth, buttonHeight, message, positionUpperLeftReferenceScreenSpaceX,
+              positionUpperLeftReferenceScreenSpaceY, widthReferenceScreenSpace, heightReferenceScreenSpace,
+              borderThickness, buttonSpacing, buttonTextPaddingLeft, buttonTextPaddingRight, buttonTextPaddingTop,
+              buttonTextPaddingBottom, textPaddingLeft, textPaddingRight, textPaddingTop, textPaddingBottom,
+              textBoxPaddingLeft, textBoxPaddingRight, textBoxPaddingTop, textBoxPaddingBottom, isMessageBox,
+              isResizable, isMovable, isDebug);
     }
 
     public PopupStyleBuilder windowStyle (final String windowStyleName)
@@ -354,6 +403,42 @@ public final class PopupStyle
       Arguments.checkIsNotNull (textButtonStyleName, "textButtonStyleName");
 
       this.textButtonStyleName = textButtonStyleName;
+
+      return this;
+    }
+
+    public PopupStyleBuilder messageBoxRowLabelStyle (final String messageBoxRowLabelStyleName)
+    {
+      Arguments.checkIsNotNull (messageBoxRowLabelStyleName, "messageBoxRowLabelStyleName");
+
+      this.messageBoxRowLabelStyleName = messageBoxRowLabelStyleName;
+
+      return this;
+    }
+
+    public PopupStyleBuilder messageBoxRowLabelAlignment (final int messageBoxRowLabelAlignment)
+    {
+      Arguments.checkIsNotNull (messageBoxRowLabelAlignment, "messageBoxRowLabelAlignment");
+
+      this.messageBoxRowLabelAlignment = messageBoxRowLabelAlignment;
+
+      return this;
+    }
+
+    public PopupStyleBuilder messageBoxScrollPaneStyle (final String messageBoxScrollPaneStyleName)
+    {
+      Arguments.checkIsNotNull (messageBoxScrollPaneStyleName, "messageBoxScrollPaneStyleName");
+
+      this.messageBoxScrollPaneStyleName = messageBoxScrollPaneStyleName;
+
+      return this;
+    }
+
+    public PopupStyleBuilder messageBoxScrollbarStyle (final ScrollbarStyle messageBoxScrollbarStyle)
+    {
+      Arguments.checkIsNotNull (messageBoxScrollbarStyle, "messageBoxScrollbarStyle");
+
+      this.messageBoxScrollbarStyle = messageBoxScrollbarStyle;
 
       return this;
     }
