@@ -201,6 +201,16 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return new BattlePopup (this, "Attack", stage, listener, eventBus);
   }
 
+  public Label createBattlePopupCountryNameLabel ()
+  {
+    return createLabel ("", Align.center, createBattlePopupCountryNameLabelStyle ());
+  }
+
+  public Label.LabelStyle createBattlePopupCountryNameLabelStyle ()
+  {
+    return createLabelStyle ("battle-popup-country-name");
+  }
+
   public void destroyPlayMapActor (final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");

@@ -1,21 +1,13 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
@@ -23,8 +15,6 @@ import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
-import com.forerunnergames.peril.client.ui.widgets.CellPadding;
-import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
@@ -35,44 +25,31 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class BattlePopup extends OkPopup
 {
+  private static final boolean DEBUG = false;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
   private static final float COUNTRY_NAME_BOX_HEIGHT = 28;
   private static final float COUNTRY_BOX_INNER_PADDING = 3;
   private static final float COUNTRY_BOX_WIDTH = 400 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING * 2;
-  private static final float SOURCE_COUNTRY_ARROW_WIDTH = 74;
-  private static final float DESTINATION_COUNTRY_ARROW_WIDTH = 74;
-  private static final float SOURCE_DESTINATION_COUNTRY_BOX_SPACING = 2;
+  private static final float INTER_COUNTRY_BOX_SPACING = 130;
   // private static final Vector2 FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_POPUP_REFERENCE_SPACE = new Vector2 (368, 255);
   // private static final Vector2 FOREGROUND_ARROW_TEXT_SIZE_POPUP_REFERENCE_SPACE = new Vector2 (94, 14);
-  private static final int SLIDER_STEP_SIZE = 1;
-  private static final float INITIAL_BUTTON_REPEAT_DELAY_SECONDS = 0.5f;
-  private static final float BUTTON_REPEAT_RATE_SECONDS = 0.05f;
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
   // private final Color tempColor = new Color ();
   private final BitmapFont countryArmyTextFont = new BitmapFont ();
-  private final CountryArmyTextActor sourceCountryArmyTextActor = new DefaultCountryArmyTextActor (countryArmyTextFont);
-  private final CountryArmyTextActor destinationCountryArmyTextActor = new DefaultCountryArmyTextActor (
+  private final CountryArmyTextActor attackingCountryArmyTextActor = new DefaultCountryArmyTextActor (
           countryArmyTextFont);
-  private final Label sourceCountryNameLabel;
-  private final Label destinationCountryNameLabel;
-  private final ImageButton minusButton;
-  private final ImageButton plusButton;
-  private final ImageButton minButton;
-  private final ImageButton maxButton;
-  private final Cell <Stack> sourceCountryStackCell;
-  private final Cell <Stack> destinationCountryStackCell;
-  private final Slider slider;
-  private final Stack sourceCountryStack;
-  private final Stack destinationCountryStack;
-  private float minusButtonPressTimeSeconds = 0.0f;
-  private float plusButtonPressTimeSeconds = 0.0f;
-  private float minusButtonRepeatDeltaSeconds = 0.0f;
-  private float plusButtonRepeatDeltaSeconds = 0.0f;
-  private int totalArmies = 0;
+  private final CountryArmyTextActor defendingCountryArmyTextActor = new DefaultCountryArmyTextActor (
+          countryArmyTextFont);
+  private final Label attackingCountryNameLabel;
+  private final Label defendingCountryNameLabel;
+  private final Cell <Stack> attackingCountryStackCell;
+  private final Cell <Stack> defendingCountryStackCell;
+  private final Stack attackingCountryStack;
+  private final Stack defendingCountryStack;
 
   public BattlePopup (final ClassicModePlayScreenWidgetFactory widgetFactory,
                       final String title,
@@ -95,6 +72,7 @@ public final class BattlePopup extends OkPopup
                    .border (28)
                    .buttonSize (90, 32)
                    .textButtonStyle ("popup")
+                   .debug (DEBUG)
                    .build (),
            stage, listener);
     // @formatter:on
@@ -106,153 +84,50 @@ public final class BattlePopup extends OkPopup
 
     this.widgetFactory = widgetFactory;
 
-    sourceCountryNameLabel = widgetFactory.createArmyMovementPopupCountryNameLabel ();
-    destinationCountryNameLabel = widgetFactory.createArmyMovementPopupCountryNameLabel ();
+    attackingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
+    defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
 
-    slider = widgetFactory.createArmyMovementPopupSlider (new ChangeListener ()
-    {
-      @Override
-      public void changed (final ChangeEvent event, final Actor actor)
-      {
-        updateCountryArmies ();
-      }
-    });
+    attackingCountryStack = new Stack ();
+    defendingCountryStack = new Stack ();
 
-    minButton = widgetFactory.createArmyMovementPopupMinButton (new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-        setSliderToMinValue ();
-      }
-    });
+    final Table attackingCountryStackTable = new Table ();
+    attackingCountryStackCell = attackingCountryStackTable.add (attackingCountryStack);
+    attackingCountryStackTable.setDebug (DEBUG, true);
 
-    minusButton = widgetFactory.createArmyMovementPopupMinusButton (new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-        decrementSlider ();
-      }
-    });
+    final Table defendingCountryStackTable = new Table ();
+    defendingCountryStackCell = defendingCountryStackTable.add (defendingCountryStack);
+    defendingCountryStackTable.setDebug (DEBUG, true);
 
-    plusButton = widgetFactory.createArmyMovementPopupPlusButton (new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-        incrementSlider ();
-      }
-    });
+    final Table attackingCountryTable = new Table ();
+    attackingCountryTable.add (attackingCountryStackTable);
+    attackingCountryTable.setClip (true);
+    attackingCountryTable.setDebug (DEBUG, true);
 
-    maxButton = widgetFactory.createArmyMovementPopupMaxButton (new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-        setSliderToMaxValue ();
-      }
-    });
-
-    sourceCountryStack = new Stack ();
-    destinationCountryStack = new Stack ();
-
-    final Table sourceCountryStackTable = new Table ();
-    sourceCountryStackCell = sourceCountryStackTable.add (sourceCountryStack).padRight (SOURCE_COUNTRY_ARROW_WIDTH);
-
-    final Table destinationCountryStackTable = new Table ();
-    destinationCountryStackCell = destinationCountryStackTable.add (destinationCountryStack)
-            .padLeft (DESTINATION_COUNTRY_ARROW_WIDTH);
-
-    final Table sourceCountryTable = new Table ();
-    sourceCountryTable.add (sourceCountryStackTable);
-    sourceCountryTable.setClip (true);
-
-    final Table destinationCountryTable = new Table ();
-    destinationCountryTable.add (destinationCountryStackTable);
-    destinationCountryTable.setClip (true);
+    final Table defendingCountryTable = new Table ();
+    defendingCountryTable.add (defendingCountryStackTable);
+    defendingCountryTable.setClip (true);
+    defendingCountryTable.setDebug (DEBUG, true);
 
     final Table countryTable = new Table ().center ();
-    countryTable.add (sourceCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
-            .spaceRight (SOURCE_DESTINATION_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
+    countryTable.add (attackingCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
+            .spaceRight (INTER_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
             .padRight (COUNTRY_BOX_INNER_PADDING);
-    countryTable.add (destinationCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
-            .spaceLeft (SOURCE_DESTINATION_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
+    countryTable.add (defendingCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
+            .spaceLeft (INTER_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
             .padRight (COUNTRY_BOX_INNER_PADDING);
-
-    final Table sliderTable = new Table ();
-    sliderTable.add (minButton).width (20).spaceRight (7);
-    sliderTable.add (minusButton).width (30).spaceLeft (7).spaceRight (10);
-    sliderTable.add (slider).width (382).height (12).spaceLeft (10).spaceRight (10);
-    sliderTable.add (plusButton).width (30).spaceLeft (10).spaceRight (7);
-    sliderTable.add (maxButton).width (20).spaceLeft (7);
+    countryTable.setDebug (DEBUG, true);
 
     getContentTable ().defaults ().space (0).pad (0);
     getContentTable ().top ();
     getContentTable ().row ().size (COUNTRY_NAME_BOX_WIDTH, COUNTRY_NAME_BOX_HEIGHT).spaceBottom (1);
-    getContentTable ().add (sourceCountryNameLabel);
-    getContentTable ().add (destinationCountryNameLabel);
+    getContentTable ().add (attackingCountryNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
+    getContentTable ().add (defendingCountryNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
     getContentTable ().row ().colspan (2).height (COUNTRY_BOX_HEIGHT).spaceTop (1);
     getContentTable ().add (countryTable).padLeft (2).padRight (2).padTop (COUNTRY_BOX_INNER_PADDING - 2)
             .padBottom (COUNTRY_BOX_INNER_PADDING);
     getContentTable ().row ().colspan (2).top ().padTop (29);
-    getContentTable ().add (sliderTable);
-
-    addListener (new InputListener ()
-    {
-      @Override
-      public boolean keyDown (final InputEvent event, final int keycode)
-      {
-        if (!isShown ()) return false;
-
-        switch (keycode)
-        {
-          case Input.Keys.LEFT:
-          {
-            decrementSlider ();
-
-            return true;
-          }
-          case Input.Keys.RIGHT:
-          {
-            incrementSlider ();
-
-            return true;
-          }
-          default:
-          {
-            return false;
-          }
-        }
-      }
-    });
   }
 
-  @Override
-  public void update (final float delta)
-  {
-    super.update (delta);
-
-    minusButtonPressTimeSeconds = minusButton.isPressed () ? minusButtonPressTimeSeconds + delta : 0.0f;
-    plusButtonPressTimeSeconds = plusButton.isPressed () ? plusButtonPressTimeSeconds + delta : 0.0f;
-
-    // @formatter:off
-    minusButtonRepeatDeltaSeconds = minusButtonPressTimeSeconds >= INITIAL_BUTTON_REPEAT_DELAY_SECONDS ? minusButtonRepeatDeltaSeconds + delta : 0.0f;
-    plusButtonRepeatDeltaSeconds = plusButtonPressTimeSeconds >= INITIAL_BUTTON_REPEAT_DELAY_SECONDS ? plusButtonRepeatDeltaSeconds + delta : 0.0f;
-    // @formatter:on
-
-    if (minusButtonRepeatDeltaSeconds >= BUTTON_REPEAT_RATE_SECONDS)
-    {
-      decrementSlider ();
-      minusButtonRepeatDeltaSeconds = 0.0f;
-    }
-
-    if (plusButtonRepeatDeltaSeconds >= BUTTON_REPEAT_RATE_SECONDS)
-    {
-      incrementSlider ();
-      plusButtonRepeatDeltaSeconds = 0.0f;
-    }
-  }
   //
   // @Override
   // public void draw (final Batch batch, final float parentAlpha)
@@ -274,75 +149,36 @@ public final class BattlePopup extends OkPopup
   {
     super.refreshAssets ();
 
-    sourceCountryNameLabel.setStyle (widgetFactory.createArmyMovementPopupCountryNameLabelStyle ());
-    destinationCountryNameLabel.setStyle (widgetFactory.createArmyMovementPopupCountryNameLabelStyle ());
-    slider.setStyle (widgetFactory.createArmyMovementPopupSliderStyle ());
-    minButton.setStyle (widgetFactory.createArmyMovementPopupMinButtonStyle ());
-    minusButton.setStyle (widgetFactory.createArmyMovementPopupMinusButtonStyle ());
-    plusButton.setStyle (widgetFactory.createArmyMovementPopupPlusButtonStyle ());
-    maxButton.setStyle (widgetFactory.createArmyMovementPopupMaxButtonStyle ());
+    attackingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
+    defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
   }
 
-  public void show (final int minDestinationArmies,
-                    final int maxDestinationArmies,
-                    final CountryActor sourceCountryActor,
-                    final CountryActor destinationCountryActor,
-                    final int totalArmies)
+  public void show (final CountryActor attackingCountryActor,
+                    final CountryActor defendingCountryActor,
+                    final int attackingCountryArmies,
+                    final int defendingCountryArmies)
   {
-    Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
-    Arguments.checkIsNotNegative (maxDestinationArmies, "maxDestinationArmies");
-    Arguments.checkIsNotNull (sourceCountryActor, "sourceCountryActor");
-    Arguments.checkIsNotNull (destinationCountryActor, "destinationCountryActor");
-    Arguments.checkIsNotNegative (totalArmies, "totalArmies");
-    Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies",
-                                        "maxDestinationArmies");
-    Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
-    Arguments.checkUpperInclusiveBound (maxDestinationArmies, totalArmies, "maxDestinationArmies", "totalArmies");
+    Arguments.checkIsNotNegative (attackingCountryArmies, "attackingCountryArmies");
+    Arguments.checkIsNotNegative (defendingCountryArmies, "defendingCountryArmies");
+    Arguments.checkIsNotNull (attackingCountryActor, "attackingCountryActor");
+    Arguments.checkIsNotNull (defendingCountryActor, "defendingCountryActor");
 
     if (isShown ()) return;
 
-    this.totalArmies = totalArmies;
+    setCountryActors (attackingCountryActor, defendingCountryActor);
+    setCountryArmies (attackingCountryArmies, defendingCountryArmies);
 
-    setSliderRange (minDestinationArmies, maxDestinationArmies);
-    setSliderToMinValue ();
-    setCountries (sourceCountryActor, destinationCountryActor);
     show ();
   }
 
-  public void keyDownRepeating (final int keyCode)
+  public String getAttackingCountryName ()
   {
-    if (!isShown ()) return;
-
-    switch (keyCode)
-    {
-      case Input.Keys.LEFT:
-      {
-        decrementSlider ();
-
-        break;
-      }
-      case Input.Keys.RIGHT:
-      {
-        incrementSlider ();
-
-        break;
-      }
-    }
+    return attackingCountryNameLabel.getText ().toString ();
   }
 
-  public String getSourceCountryName ()
+  public String getDefendingCountryName ()
   {
-    return sourceCountryNameLabel.getText ().toString ();
-  }
-
-  public String getDestinationCountryName ()
-  {
-    return destinationCountryNameLabel.getText ().toString ();
-  }
-
-  public int getDeltaArmies ()
-  {
-    return getSliderValue ();
+    return defendingCountryNameLabel.getText ().toString ();
   }
 
   private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
@@ -356,84 +192,46 @@ public final class BattlePopup extends OkPopup
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
   }
 
-  private void updateCountryArmies ()
+  private void setCountryArmies (final int attackingCountryArmies, final int defendingCountryArmies)
   {
-    updateSourceCountryArmies ();
-    updateDestinationCountryArmies ();
+    setAttackingCountryArmies (attackingCountryArmies);
+    setDefendingCountryArmies (defendingCountryArmies);
   }
 
-  private void updateSourceCountryArmies ()
+  private void setAttackingCountryArmies (final int armies)
   {
-    setSourceCountryArmies (totalArmies - getSliderValue ());
+    attackingCountryArmyTextActor.setArmies (armies);
   }
 
-  private int getSliderValue ()
+  private void setDefendingCountryArmies (final int armies)
   {
-    return Math.round (slider.getValue ());
+    defendingCountryArmyTextActor.setArmies (armies);
   }
 
-  private void setSourceCountryArmies (final int armies)
+  private void setCountryActors (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
   {
-    sourceCountryArmyTextActor.setArmies (armies);
+    setCountryNames (attackingCountryActor, defendingCountryActor);
+    setCountryImages (attackingCountryActor, defendingCountryActor);
   }
 
-  private void updateDestinationCountryArmies ()
+  private void setCountryNames (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
   {
-    setDestinationCountryArmies (getSliderValue ());
+    setCountryNames (attackingCountryActor.asActor ().getName (), defendingCountryActor.asActor ().getName ());
   }
 
-  private void setDestinationCountryArmies (final int armies)
+  private void setCountryImages (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
   {
-    destinationCountryArmyTextActor.setArmies (armies);
-  }
+    setCountryImage (attackingCountryActor, attackingCountryArmyTextActor, attackingCountryStack,
+                     attackingCountryStackCell);
 
-  private void setSliderToMinValue ()
-  {
-    slider.setValue (slider.getMinValue ());
-  }
-
-  private void setSliderToMaxValue ()
-  {
-    slider.setValue (slider.getMaxValue ());
-  }
-
-  private void decrementSlider ()
-  {
-    slider.setValue (slider.getValue () - slider.getStepSize ());
-  }
-
-  private void incrementSlider ()
-  {
-    slider.setValue (slider.getValue () + slider.getStepSize ());
-  }
-
-  private void setCountries (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
-  {
-    setCountryNames (sourceCountryActor, destinationCountryActor);
-    setCountryImages (sourceCountryActor, destinationCountryActor);
-    updateCountryArmies ();
-  }
-
-  private void setCountryNames (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
-  {
-    setCountryNames (sourceCountryActor.asActor ().getName (), destinationCountryActor.asActor ().getName ());
-  }
-
-  private void setCountryImages (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
-  {
-    setCountryImage (sourceCountryActor, sourceCountryArmyTextActor, sourceCountryStack, sourceCountryStackCell,
-                     SOURCE_COUNTRY_ARROW_WIDTH, CellPadding.LEFT);
-
-    setCountryImage (destinationCountryActor, destinationCountryArmyTextActor, destinationCountryStack,
-                     destinationCountryStackCell, DESTINATION_COUNTRY_ARROW_WIDTH, CellPadding.RIGHT);
+    setCountryImage (defendingCountryActor, defendingCountryArmyTextActor, defendingCountryStack,
+                     defendingCountryStackCell);
   }
 
   private void setCountryImage (final CountryActor countryActor,
                                 final CountryArmyTextActor countryArmyTextActor,
                                 final Stack countryStack,
-                                final Cell <Stack> countryStackCell,
-                                final float countryArrowWidth,
-                                final CellPadding paddingType)
+                                final Cell <Stack> countryStackCell)
   {
     final Image countryImage = asImage (countryActor);
 
@@ -443,11 +241,11 @@ public final class BattlePopup extends OkPopup
 
     getContentTable ().layout ();
 
-    Widgets.padCell (countryStackCell, calculateCountryImagePadding (countryImage, countryArrowWidth), paddingType);
+//    Widgets.padCell (countryStackCell, calculateCountryImagePadding (countryImage, countryArrowWidth), paddingType);
 
-    countryStackCell.getTable ().invalidateHierarchy ();
+//    countryStackCell.getTable ().invalidateHierarchy ();
 
-    getContentTable ().layout ();
+//    getContentTable ().layout ();
 
     updateCountryArmyCircle (countryArmyTextActor, countryActor, countryImage);
   }
@@ -498,14 +296,9 @@ public final class BattlePopup extends OkPopup
                             countryImagePostLayout.getImageHeight () / countryActor.getReferenceHeight ());
   }
 
-  private void setSliderRange (final int minValue, final int maxValue)
+  private void setCountryNames (final String attackingCountryName, final String defendingCountryName)
   {
-    slider.setRange (minValue, maxValue);
-  }
-
-  private void setCountryNames (final String sourceCountryName, final String destinationCountryName)
-  {
-    sourceCountryNameLabel.setText (sourceCountryName);
-    destinationCountryNameLabel.setText (destinationCountryName);
+    attackingCountryNameLabel.setText (attackingCountryName);
+    defendingCountryNameLabel.setText (defendingCountryName);
   }
 }

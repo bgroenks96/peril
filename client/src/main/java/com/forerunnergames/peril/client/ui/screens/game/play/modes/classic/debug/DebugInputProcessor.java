@@ -415,33 +415,32 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'b':
       {
-        // final String sourceCountryName = "Brazil";
-        // final String destinationCountryName = "Brazil";
+        // final String attackingCountryName = "Brazil";
+        // final String defendingCountryName = "Brazil";
 
-        String sourceCountryName;
-
-        do
-        {
-          sourceCountryName = DebugEventGenerator.getRandomCountryName ();
-        }
-        while (!playMapActor.existsCountryActorWithName (sourceCountryName));
-
-        String destinationCountryName;
+        String attackingCountryName;
 
         do
         {
-          destinationCountryName = DebugEventGenerator.getRandomCountryName ();
+          attackingCountryName = DebugEventGenerator.getRandomCountryName ();
         }
-        while (destinationCountryName.equals (sourceCountryName)
-                || !playMapActor.existsCountryActorWithName (destinationCountryName));
+        while (!playMapActor.existsCountryActorWithName (attackingCountryName));
 
-        final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
-        final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
-        final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
-        final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
-        final int maxArmies = totalArmies - 1;
+        String defendingCountryName;
 
-        battlePopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
+        do
+        {
+          defendingCountryName = DebugEventGenerator.getRandomCountryName ();
+        }
+        while (defendingCountryName.equals (attackingCountryName)
+                || !playMapActor.existsCountryActorWithName (defendingCountryName));
+
+        final CountryActor attackingCountryActor = playMapActor.getCountryActorWithName (attackingCountryName);
+        final CountryActor defendingCountryActor = playMapActor.getCountryActorWithName (defendingCountryName);
+        final int attackingCountryArmies = Randomness.getRandomIntegerFrom (1, 3);
+        final int defendingCountryArmies = Randomness.getRandomIntegerFrom (1, 99);
+
+        battlePopup.show (attackingCountryActor, defendingCountryActor, attackingCountryArmies, defendingCountryArmies);
         playMapActor.disable ();
 
         return true;

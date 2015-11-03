@@ -325,7 +325,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         occupationPopup.keyDownRepeating (keyCode);
         reinforcementPopup.keyDownRepeating (keyCode);
-        battlePopup.keyDownRepeating (keyCode);
       }
     });
 
