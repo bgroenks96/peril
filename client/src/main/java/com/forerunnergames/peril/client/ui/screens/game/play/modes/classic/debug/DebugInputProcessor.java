@@ -435,12 +435,23 @@ public final class DebugInputProcessor extends InputAdapter
         while (defendingCountryName.equals (attackingCountryName)
                 || !playMapActor.existsCountryActorWithName (defendingCountryName));
 
+        final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+        String defendingPlayerName;
+
+        do
+        {
+          defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+        }
+        while (defendingPlayerName.equals (attackingPlayerName));
+
         final CountryActor attackingCountryActor = playMapActor.getCountryActorWithName (attackingCountryName);
         final CountryActor defendingCountryActor = playMapActor.getCountryActorWithName (defendingCountryName);
         final int attackingCountryArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int defendingCountryArmies = Randomness.getRandomIntegerFrom (1, 99);
 
-        battlePopup.show (attackingCountryActor, defendingCountryActor, attackingCountryArmies, defendingCountryArmies);
+        battlePopup.show (attackingCountryActor, defendingCountryActor, attackingPlayerName, defendingPlayerName,
+                          attackingCountryArmies, defendingCountryArmies);
+
         playMapActor.disable ();
 
         return true;

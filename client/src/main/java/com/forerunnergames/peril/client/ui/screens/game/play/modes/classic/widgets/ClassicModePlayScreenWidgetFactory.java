@@ -201,6 +201,16 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return new BattlePopup (this, "Attack", stage, listener, eventBus);
   }
 
+  public Label createBattlePopupPlayerNameLabel ()
+  {
+    return createLabel ("", Align.center, createBattlePopupPlayerNameLabelStyle ());
+  }
+
+  public Label.LabelStyle createBattlePopupPlayerNameLabelStyle ()
+  {
+    return createLabelStyle ("battle-popup-player-name");
+  }
+
   public Label createBattlePopupCountryNameLabel ()
   {
     return createLabel ("", Align.center, createBattlePopupCountryNameLabelStyle ());

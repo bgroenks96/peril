@@ -77,6 +77,11 @@ public final class DebugEventGenerator
     return Randomness.getRandomElementFrom (COUNTRY_NAMES);
   }
 
+  public static String getRandomPlayerName ()
+  {
+    return Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES);
+  }
+
   public void generateStatusMessageEvent ()
   {
     // TODO Production: Remove

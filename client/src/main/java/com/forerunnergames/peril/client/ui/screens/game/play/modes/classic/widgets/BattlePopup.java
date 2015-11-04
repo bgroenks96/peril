@@ -30,6 +30,8 @@ public final class BattlePopup extends OkPopup
   private static final boolean DEBUG = false;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
   private static final float COUNTRY_NAME_BOX_HEIGHT = 28;
+  private static final float PLAYER_NAME_BOX_WIDTH = 400;
+  private static final float PLAYER_NAME_BOX_HEIGHT = 28;
   private static final float COUNTRY_BOX_INNER_PADDING = 3;
   private static final float COUNTRY_BOX_WIDTH = 400 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING * 2;
@@ -44,6 +46,8 @@ public final class BattlePopup extends OkPopup
           countryArmyTextFont);
   private final CountryArmyTextActor defendingCountryArmyTextActor = new DefaultCountryArmyTextActor (
           countryArmyTextFont);
+  private final Label attackingPlayerNameLabel;
+  private final Label defendingPlayerNameLabel;
   private final Label attackingCountryNameLabel;
   private final Label defendingCountryNameLabel;
   private final Stack attackingCountryStack;
@@ -60,7 +64,7 @@ public final class BattlePopup extends OkPopup
     super (widgetFactory,
            PopupStyle.builder ()
                    .windowStyle ("battle")
-                   .resizable (true)
+                   .resizable (false)
                    .movable (true)
                    .size (990, 432)
                    .position (405, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 178)
@@ -83,6 +87,8 @@ public final class BattlePopup extends OkPopup
     this.widgetFactory = widgetFactory;
     this.listener = listener;
 
+    attackingPlayerNameLabel = widgetFactory.createBattlePopupPlayerNameLabel ();
+    defendingPlayerNameLabel = widgetFactory.createBattlePopupPlayerNameLabel ();
     attackingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
 
@@ -111,12 +117,15 @@ public final class BattlePopup extends OkPopup
     getContentTable ().defaults ().space (0).pad (0);
     getContentTable ().top ();
     getContentTable ().row ().size (COUNTRY_NAME_BOX_WIDTH, COUNTRY_NAME_BOX_HEIGHT).spaceBottom (1);
-    getContentTable ().add (attackingCountryNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
-    getContentTable ().add (defendingCountryNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
+    getContentTable ().add (attackingPlayerNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
+    getContentTable ().add (defendingPlayerNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
     getContentTable ().row ().colspan (2).height (COUNTRY_BOX_HEIGHT).spaceTop (1);
     getContentTable ().add (countryTable).padLeft (2).padRight (2).padTop (COUNTRY_BOX_INNER_PADDING - 2)
             .padBottom (COUNTRY_BOX_INNER_PADDING);
-    getContentTable ().row ().colspan (2).top ().padTop (29);
+    getContentTable ().row ().size (PLAYER_NAME_BOX_WIDTH, PLAYER_NAME_BOX_HEIGHT).spaceTop (5);
+    getContentTable ().add (attackingCountryNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
+    getContentTable ().add (defendingCountryNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
+    getContentTable ().row ().colspan (2).top ();
   }
 
   @Override
@@ -124,6 +133,8 @@ public final class BattlePopup extends OkPopup
   {
     super.refreshAssets ();
 
+    attackingPlayerNameLabel.setStyle (widgetFactory.createBattlePopupPlayerNameLabelStyle ());
+    defendingPlayerNameLabel.setStyle (widgetFactory.createBattlePopupPlayerNameLabelStyle ());
     attackingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
     defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
   }
@@ -174,18 +185,23 @@ public final class BattlePopup extends OkPopup
 
   public void show (final CountryActor attackingCountryActor,
                     final CountryActor defendingCountryActor,
+                    final String attackingPlayerName,
+                    final String defendingPlayerName,
                     final int attackingCountryArmies,
                     final int defendingCountryArmies)
   {
-    Arguments.checkIsNotNegative (attackingCountryArmies, "attackingCountryArmies");
-    Arguments.checkIsNotNegative (defendingCountryArmies, "defendingCountryArmies");
     Arguments.checkIsNotNull (attackingCountryActor, "attackingCountryActor");
     Arguments.checkIsNotNull (defendingCountryActor, "defendingCountryActor");
+    Arguments.checkIsNotNull (attackingPlayerName, "attackingPlayerName");
+    Arguments.checkIsNotNull (defendingPlayerName, "defendingPlayerName");
+    Arguments.checkIsNotNegative (attackingCountryArmies, "attackingCountryArmies");
+    Arguments.checkIsNotNegative (defendingCountryArmies, "defendingCountryArmies");
 
     if (isShown ()) return;
 
     setCountryActors (attackingCountryActor, defendingCountryActor);
     setCountryArmies (attackingCountryArmies, defendingCountryArmies);
+    setPlayerNames (attackingPlayerName, defendingPlayerName);
 
     show ();
   }
@@ -198,6 +214,16 @@ public final class BattlePopup extends OkPopup
   public String getDefendingCountryName ()
   {
     return defendingCountryNameLabel.getText ().toString ();
+  }
+
+  public String getAttackingPlayerName ()
+  {
+    return attackingPlayerNameLabel.getText ().toString ();
+  }
+
+  public String getDefendingPlayerName ()
+  {
+    return defendingPlayerNameLabel.getText ().toString ();
   }
 
   private static Image asImage (final CountryActor countryActor)
@@ -304,5 +330,11 @@ public final class BattlePopup extends OkPopup
   {
     attackingCountryNameLabel.setText (attackingCountryName);
     defendingCountryNameLabel.setText (defendingCountryName);
+  }
+
+  private void setPlayerNames (final String attackingPlayerName, final String defendingPlayerName)
+  {
+    attackingPlayerNameLabel.setText (attackingPlayerName);
+    defendingPlayerNameLabel.setText (defendingPlayerName);
   }
 }
