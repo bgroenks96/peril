@@ -3,13 +3,13 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
@@ -17,6 +17,7 @@ import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
+import com.forerunnergames.peril.client.ui.widgets.popup.KeyListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
 import com.forerunnergames.tools.common.Arguments;
@@ -119,27 +120,30 @@ public final class BattlePopup extends OkPopup
   }
 
   @Override
-  protected void onSubmit ()
+  public void refreshAssets ()
   {
-    listener.onRetreat (getAttackingCountryName (), getDefendingCountryName ());
+    super.refreshAssets ();
+
+    attackingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
+    defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
   }
 
   @Override
   protected void addButtons ()
   {
-    addButton ("RETREAT", PopupAction.SUBMIT_AND_HIDE, new ClickListener (Input.Buttons.LEFT)
+    addButton ("RETREAT", PopupAction.HIDE, new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void changed (final ChangeEvent event, final Actor actor)
       {
         listener.onRetreat (getAttackingCountryName (), getDefendingCountryName ());
       }
     });
 
-    addButton ("ATTACK", PopupAction.NONE, new ClickListener (Input.Buttons.LEFT)
+    addButton ("ATTACK", PopupAction.NONE, new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void changed (final ChangeEvent event, final Actor actor)
       {
         listener.onAttack (getAttackingCountryName (), getDefendingCountryName ());
       }
@@ -147,12 +151,25 @@ public final class BattlePopup extends OkPopup
   }
 
   @Override
-  public void refreshAssets ()
+  protected void addKeys ()
   {
-    super.refreshAssets ();
+    addKey (Input.Keys.ESCAPE, PopupAction.NONE, new KeyListener ()
+    {
+      @Override
+      public void keyDown ()
+      {
+        getButton ("RETREAT").toggle ();
+      }
+    });
 
-    attackingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
-    defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
+    addKey (Input.Keys.ENTER, PopupAction.NONE, new KeyListener ()
+    {
+      @Override
+      public void keyDown ()
+      {
+        getButton ("ATTACK").toggle ();
+      }
+    });
   }
 
   public void show (final CountryActor attackingCountryActor,

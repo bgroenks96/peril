@@ -252,10 +252,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
 
         // TODO Production: Remove
-        eventBus.publish (
-                StatusMessageEventFactory.create (
-                        Strings.format ("You attacked {} from {}.", defendingCountryName, attackingCountryName),
-                        ImmutableSet.<PlayerPacket> of ()));
+        eventBus.publish (StatusMessageEventFactory.create (
+                                                            Strings.format ("You attacked {} from {}.",
+                                                                            defendingCountryName, attackingCountryName),
+                                                            ImmutableSet.<PlayerPacket> of ()));
       }
 
       @Override
@@ -265,10 +265,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
 
         // TODO Production: Remove
-        eventBus.publish (
-                StatusMessageEventFactory.create (
-                        Strings.format ("You stopped attacking {} from {}.", defendingCountryName, attackingCountryName),
-                        ImmutableSet.<PlayerPacket> of ()));
+        eventBus.publish (StatusMessageEventFactory.create (
+                                                            Strings.format ("You stopped attacking {} from {}.",
+                                                                            defendingCountryName, attackingCountryName),
+                                                            ImmutableSet.<PlayerPacket> of ()));
       }
 
       @Override

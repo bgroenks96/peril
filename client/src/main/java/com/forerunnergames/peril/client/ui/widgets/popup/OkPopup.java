@@ -4,8 +4,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -45,6 +48,7 @@ public class OkPopup implements Popup
   protected enum PopupAction
   {
     SUBMIT_AND_HIDE,
+    SUBMIT,
     HIDE,
     NONE
   }
@@ -97,10 +101,6 @@ public class OkPopup implements Popup
     delegate.refreshAssets ();
   }
 
-  protected void onSubmit ()
-  {
-  }
-
   protected void addButtons ()
   {
     delegate.addButtons ();
@@ -116,6 +116,11 @@ public class OkPopup implements Popup
     delegate.addButton (buttonText, popupAction, listener);
   }
 
+  protected final Button getButton (final String buttonText)
+  {
+    return delegate.getButton (buttonText);
+  }
+
   protected final void changeButtonText (final String oldText, final String newText)
   {
     delegate.changeButtonText (oldText, newText);
@@ -129,6 +134,11 @@ public class OkPopup implements Popup
   protected final void addKey (final int keyCode, final PopupAction popupAction)
   {
     delegate.addKey (keyCode, popupAction);
+  }
+
+  protected final void addKey (final int keyCode, final PopupAction popupAction, final KeyListener listener)
+  {
+    delegate.addKey (keyCode, popupAction, listener);
   }
 
   protected final Table getContentTable ()
@@ -246,7 +256,18 @@ public class OkPopup implements Popup
     @Override
     protected void result (@Nullable final Object object)
     {
-      if (!(object instanceof PopupAction) || object != PopupAction.SUBMIT_AND_HIDE) return;
+      if (!(object instanceof PopupAction) || object == PopupAction.NONE)
+      {
+        cancel ();
+        return;
+      }
+
+      if (object == PopupAction.SUBMIT)
+      {
+        cancel ();
+        listener.onSubmit ();
+        return;
+      }
 
       hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
       {
@@ -254,8 +275,7 @@ public class OkPopup implements Popup
         public void run ()
         {
           remove ();
-          onSubmit ();
-          listener.onSubmit ();
+          if (object == PopupAction.SUBMIT_AND_HIDE) listener.onSubmit ();
         }
       })));
     }
@@ -345,6 +365,23 @@ public class OkPopup implements Popup
       key (keyCode, popupAction);
     }
 
+    public void addKey (final int keyCode, final PopupAction popupAction, final KeyListener listener)
+    {
+      Arguments.checkIsNotNull (popupAction, "popupAction");
+      Arguments.checkIsNotNull (listener, "listener");
+
+      addListener (new InputListener ()
+      {
+        public boolean keyDown (final InputEvent event, final int keycode2)
+        {
+          if (keyCode == keycode2) listener.keyDown ();
+          return false;
+        }
+      });
+
+      key (keyCode, popupAction);
+    }
+
     public void setMessage (final Message message)
     {
       Arguments.checkIsNotNull (message, "message");
@@ -378,6 +415,15 @@ public class OkPopup implements Popup
       {
         button.setStyle (widgetFactory.createTextButtonStyle (popupStyle.getTextButtonStyleName ()));
       }
+    }
+
+    public Button getButton (final String buttonText)
+    {
+      Arguments.checkIsNotNull (buttonText, "buttonText");
+      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (buttonText),
+                             "Cannot find button with text [" + buttonText + "].");
+
+      return buttonTextToTextButtons.get (buttonText);
     }
 
     private void configureContentTable ()
