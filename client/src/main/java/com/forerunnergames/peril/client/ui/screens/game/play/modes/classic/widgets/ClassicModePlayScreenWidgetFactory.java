@@ -95,7 +95,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   {
     Arguments.checkIsNotNull (buttonType, "buttonType");
 
-    return getSkinStyle (buttonType.getStyleName (), ImageButton.ImageButtonStyle.class);
+    return getSkinResource (buttonType.getStyleName (), ImageButton.ImageButtonStyle.class);
   }
 
   public ReinforcementPopup createReinforcementPopup (final Stage stage,
@@ -151,7 +151,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public ImageButton.ImageButtonStyle createArmyMovementPopupMinButtonStyle ()
   {
-    return getSkinStyle ("min", ImageButton.ImageButtonStyle.class);
+    return getSkinResource ("min", ImageButton.ImageButtonStyle.class);
   }
 
   public ImageButton createArmyMovementPopupMinusButton (final ClickListener listener)
@@ -163,7 +163,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public ImageButton.ImageButtonStyle createArmyMovementPopupMinusButtonStyle ()
   {
-    return getSkinStyle ("minus", ImageButton.ImageButtonStyle.class);
+    return getSkinResource ("minus", ImageButton.ImageButtonStyle.class);
   }
 
   public ImageButton createArmyMovementPopupPlusButton (final ClickListener listener)
@@ -175,7 +175,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public ImageButton.ImageButtonStyle createArmyMovementPopupPlusButtonStyle ()
   {
-    return getSkinStyle ("plus", ImageButton.ImageButtonStyle.class);
+    return getSkinResource ("plus", ImageButton.ImageButtonStyle.class);
   }
 
   public ImageButton createArmyMovementPopupMaxButton (final ClickListener listener)
@@ -187,7 +187,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public ImageButton.ImageButtonStyle createArmyMovementPopupMaxButtonStyle ()
   {
-    return getSkinStyle ("max", ImageButton.ImageButtonStyle.class);
+    return getSkinResource ("max", ImageButton.ImageButtonStyle.class);
   }
 
   public BattlePopup createBattlePopup (final Stage stage,
@@ -219,6 +219,16 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public Label.LabelStyle createBattlePopupCountryNameLabelStyle ()
   {
     return createLabelStyle ("battle-popup-country-name");
+  }
+
+  public Label createBattlePopupAutoAttackLabel ()
+  {
+    return createLabel ("Auto Attack", Align.center, createBattlePopupAutoAttackLabelStyle ());
+  }
+
+  public Label.LabelStyle createBattlePopupAutoAttackLabelStyle ()
+  {
+    return createLabelStyle ("battle-popup-auto-battle");
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)

@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.widgets;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -31,6 +32,12 @@ import net.engio.mbassy.bus.MBassador;
 
 public interface WidgetFactory
 {
+  Button createButton (final String styleName, final EventListener listener);
+
+  Button.ButtonStyle createButtonStyle (final String styleName);
+
+  Button.ButtonStyle createButtonStyle (final String styleName, final Class <? extends Button.ButtonStyle> styleType);
+
   TextButton createTextButton (final String text, final String style, final EventListener listener);
 
   TextButton createTextButton (final String text, final String style);

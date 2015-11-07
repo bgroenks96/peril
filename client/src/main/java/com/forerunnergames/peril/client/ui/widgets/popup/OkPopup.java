@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.widgets.popup;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -20,6 +21,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,19 +108,21 @@ public class OkPopup implements Popup
     delegate.addButtons ();
   }
 
-  protected final void addButton (final String buttonText, final PopupAction popupAction)
+  protected final void addTextButton (final String buttonText, final PopupAction popupAction)
   {
-    delegate.addButton (buttonText, popupAction);
+    delegate.addTextButton (buttonText, popupAction);
   }
 
-  protected final void addButton (final String buttonText, final PopupAction popupAction, final EventListener listener)
+  protected final TextButton addTextButton (final String buttonText,
+                                            final PopupAction popupAction,
+                                            final EventListener listener)
   {
-    delegate.addButton (buttonText, popupAction, listener);
+    return delegate.addTextButton (buttonText, popupAction, listener);
   }
 
-  protected final Button getButton (final String buttonText)
+  protected final Button addButton (final String style, final PopupAction popupAction, final EventListener listener)
   {
-    return delegate.getButton (buttonText);
+    return delegate.addButton (style, popupAction, listener);
   }
 
   protected final void changeButtonText (final String oldText, final String newText)
@@ -146,13 +150,18 @@ public class OkPopup implements Popup
     return delegate.getContentTable ();
   }
 
+  protected final Table getButtonTable ()
+  {
+    return delegate.getButtonTable ();
+  }
+
   private final class DelegateDialog extends Dialog
   {
+    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap <> ();
     private final WidgetFactory widgetFactory;
     private final PopupStyle popupStyle;
     private final Stage stage;
     private final PopupListener listener;
-    private final Map <String, TextButton> buttonTextToTextButtons = new HashMap <> ();
     private final MessageBox <Message> messageBox;
     private boolean isShown = false;
 
@@ -309,48 +318,62 @@ public class OkPopup implements Popup
 
     public void addButtons ()
     {
-      addButton ("OK", PopupAction.SUBMIT_AND_HIDE);
+      addTextButton ("OK", PopupAction.SUBMIT_AND_HIDE);
     }
 
-    public void addButton (final String buttonText, final PopupAction popupAction)
+    public void addTextButton (final String buttonText, final PopupAction popupAction)
     {
       Arguments.checkIsNotNull (buttonText, "buttonText");
       Arguments.checkIsNotNull (popupAction, "popupAction");
 
-      addButton (buttonText, popupAction, new ClickListener ());
+      addTextButton (popupStyle.getTextButtonStyleName (), buttonText, popupAction, new ClickListener ());
     }
 
-    public void addButton (final String buttonText, final PopupAction popupAction, final EventListener listener)
+    public TextButton addTextButton (final String buttonText,
+                                     final PopupAction popupAction,
+                                     final EventListener listener)
     {
+      return addTextButton (popupStyle.getTextButtonStyleName (), buttonText, popupAction, listener);
+    }
+
+    public TextButton addTextButton (final String style,
+                                     final String buttonText,
+                                     final PopupAction popupAction,
+                                     final EventListener listener)
+    {
+      Arguments.checkIsNotNull (style, "style");
       Arguments.checkIsNotNull (buttonText, "buttonText");
       Arguments.checkIsNotNull (popupAction, "popupAction");
       Arguments.checkIsNotNull (listener, "listener");
 
-      final TextButton textButton = widgetFactory.createTextButton (buttonText, popupStyle.getTextButtonStyleName (),
-                                                                    listener);
+      final TextButton textButton = widgetFactory.createTextButton (buttonText, style, listener);
 
       textButton.padLeft (popupStyle.getButtonTextPaddingLeft ()).padRight (popupStyle.getButtonTextPaddingRight ())
               .padTop (popupStyle.getButtonTextPaddingTop ()).padBottom (popupStyle.getButtonTextPaddingBottom ());
 
-      final Cell <TextButton> textButtonCell = getButtonTable ().add (textButton);
+      addButton (style, textButton, popupAction);
 
-      if (popupStyle.getButtonWidth () != PopupStyle.AUTO_WIDTH) textButtonCell.width (popupStyle.getButtonWidth ());
-      if (popupStyle.getButtonHeight () != PopupStyle.AUTO_HEIGHT) textButtonCell
-              .height (popupStyle.getButtonHeight ());
+      return textButton;
+    }
 
-      if (popupAction != PopupAction.NONE) setObject (textButton, popupAction);
+    public Button addButton (final String style, final PopupAction popupAction, final EventListener listener)
+    {
+      Arguments.checkIsNotNull (style, "style");
+      Arguments.checkIsNotNull (popupAction, "popupAction");
+      Arguments.checkIsNotNull (listener, "listener");
 
-      buttonTextToTextButtons.put (textButton.getText ().toString (), textButton);
+      final Button button = widgetFactory.createButton (style, listener);
+      addButton (style, button, popupAction);
+
+      return button;
     }
 
     public void changeButtonText (final String oldText, final String newText)
     {
       Arguments.checkIsNotNull (oldText, "oldText");
       Arguments.checkIsNotNull (newText, "newText");
-      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (oldText),
-                             "Cannot find button with text [" + oldText + "].");
 
-      buttonTextToTextButtons.get (oldText).setText (newText);
+      getTextButton (oldText).setText (newText);
     }
 
     public void addKeys ()
@@ -411,19 +434,41 @@ public class OkPopup implements Popup
 
       messageBox.refreshAssets ();
 
-      for (final TextButton button : buttonTextToTextButtons.values ())
+      for (final Map.Entry <Button, String> entry : buttonsToButtonStyleNames.entrySet ())
       {
-        button.setStyle (widgetFactory.createTextButtonStyle (popupStyle.getTextButtonStyleName ()));
+        final Button button = entry.getKey ();
+        final String styleName = entry.getValue ();
+        button.setStyle (widgetFactory.createButtonStyle (styleName, button.getStyle ().getClass ()));
       }
     }
 
-    public Button getButton (final String buttonText)
+    private <T extends Button> void addButton (final String style, final T button, final PopupAction popupAction)
+    {
+      Arguments.checkIsNotNull (style, "style");
+      Arguments.checkIsNotNull (button, "button");
+      Arguments.checkIsNotNull (popupAction, "popupAction");
+
+      final Cell <T> buttonCell = getButtonTable ().add (button);
+
+      if (popupStyle.getButtonWidth () != PopupStyle.AUTO_WIDTH) buttonCell.width (popupStyle.getButtonWidth ());
+      if (popupStyle.getButtonHeight () != PopupStyle.AUTO_HEIGHT) buttonCell.height (popupStyle.getButtonHeight ());
+
+      if (popupAction != PopupAction.NONE) setObject (button, popupAction);
+
+      buttonsToButtonStyleNames.put (button, style);
+    }
+
+    private TextButton getTextButton (final String buttonText)
     {
       Arguments.checkIsNotNull (buttonText, "buttonText");
-      Arguments.checkIsTrue (buttonTextToTextButtons.containsKey (buttonText),
-                             "Cannot find button with text [" + buttonText + "].");
 
-      return buttonTextToTextButtons.get (buttonText);
+      for (final Actor actor : getButtonTable ().getChildren ())
+      {
+        if (actor instanceof TextButton
+                && buttonText.equals (((TextButton) actor).getText ().toString ())) return (TextButton) actor;
+      }
+
+      throw new IllegalStateException (Strings.format ("Cannot find button with text {}.", buttonText));
     }
 
     private void configureContentTable ()

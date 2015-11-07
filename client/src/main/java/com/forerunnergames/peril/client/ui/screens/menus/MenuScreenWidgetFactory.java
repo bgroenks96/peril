@@ -146,7 +146,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
   public Label.LabelStyle createTitleStyle ()
 
   {
-    return getSkinStyle ("menu-title", Label.LabelStyle.class);
+    return getSkinResource ("menu-title", Label.LabelStyle.class);
   }
 
   public Label createSubTitle (final String titleText, final int alignment)
@@ -158,7 +158,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label.LabelStyle createSubTitleStyle ()
   {
-    return getSkinStyle ("menu-subtitle", Label.LabelStyle.class);
+    return getSkinResource ("menu-subtitle", Label.LabelStyle.class);
   }
 
   public ImageTextButton createMenuChoice (final String choiceText, final EventListener listener)
@@ -180,7 +180,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public ImageTextButton.ImageTextButtonStyle createMenuChoiceStyle ()
   {
-    return new ImageTextButton.ImageTextButtonStyle (getSkinStyle ("menu-choice", TextButton.TextButtonStyle.class));
+    return new ImageTextButton.ImageTextButtonStyle (getSkinResource ("menu-choice", TextButton.TextButtonStyle.class));
   }
 
   public Label createMenuSettingSectionTitleLabel (final String text)
@@ -254,7 +254,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public CheckBox.CheckBoxStyle createClanNameCheckBoxStyle ()
   {
-    return getSkinStyle ("default", CheckBox.CheckBoxStyle.class);
+    return getSkinResource ("default", CheckBox.CheckBoxStyle.class);
   }
 
   public Label createPlayerLimitLabel (final String text)

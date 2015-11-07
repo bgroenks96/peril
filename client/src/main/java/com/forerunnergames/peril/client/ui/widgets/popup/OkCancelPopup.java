@@ -18,7 +18,7 @@ public class OkCancelPopup extends OkPopup
   @Override
   protected void addButtons ()
   {
-    addButton ("CANCEL", PopupAction.HIDE);
+    addTextButton ("CANCEL", PopupAction.HIDE);
 
     super.addButtons ();
   }

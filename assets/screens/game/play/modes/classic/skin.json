@@ -122,7 +122,7 @@
     "battle-popup-player-name":         { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
     "battle-popup-country-name":        { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
     "battle-popup-arrow":               { "font": "dejaVu-14",    "fontColor": "white",      "background": null },
-    "battle-toggle-switch":             { "font": "pirulen-12",   "fontColor": "white",      "background": null }
+    "battle-popup-auto-battle":         { "font": "pirulen-12",   "fontColor": "white",      "background": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {

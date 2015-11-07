@@ -7,4 +7,6 @@ public interface BattlePopupListener extends PopupListener
   void onAttack (final String attackingCountryName, final String defendingCountryName);
 
   void onRetreat (final String attackingCountryName, final String defendingCountryName);
+
+  void onToggleAutoAttack (final boolean isEnabled);
 }

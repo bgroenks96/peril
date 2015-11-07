@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -84,6 +85,32 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
+  public Button createButton (final String styleName, final EventListener listener)
+  {
+    Arguments.checkIsNotNull (styleName, "styleName");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    final Button button = new Button (createButtonStyle (styleName));
+    button.addListener (listener);
+
+    return button;
+  }
+
+  @Override
+  public Button.ButtonStyle createButtonStyle (final String styleName)
+  {
+    return getSkinResource (styleName, Button.ButtonStyle.class);
+  }
+
+  @Override
+  public Button.ButtonStyle createButtonStyle (final String styleName,
+                                               final Class <? extends Button.ButtonStyle> styleType)
+
+  {
+    return getSkinResource (styleName, styleType);
+  }
+
+  @Override
   public final TextButton createTextButton (final String text, final String style, final EventListener listener)
   {
     Arguments.checkIsNotNull (text, "text");
@@ -110,7 +137,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, TextButton.TextButtonStyle.class);
+    return getSkinResource (styleName, TextButton.TextButtonStyle.class);
   }
 
   @Override
@@ -139,7 +166,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, ImageButton.ImageButtonStyle.class);
+    return getSkinResource (styleName, ImageButton.ImageButtonStyle.class);
   }
 
   @Override
@@ -155,7 +182,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   @Override
   public final Label createLabel (final String text, final int alignment, final String labelStyle)
   {
-    return createLabel (text, alignment, getSkinStyle (labelStyle, Label.LabelStyle.class));
+    return createLabel (text, alignment, getSkinResource (labelStyle, Label.LabelStyle.class));
   }
 
   @Override
@@ -176,7 +203,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (text, "text");
     Arguments.checkIsNotNull (labelStyle, "labelStyle");
 
-    return createWrappingLabel (text, alignment, getSkinStyle (labelStyle, Label.LabelStyle.class));
+    return createWrappingLabel (text, alignment, getSkinResource (labelStyle, Label.LabelStyle.class));
   }
 
   @Override
@@ -196,7 +223,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "labelStyle");
 
-    return getSkinStyle (styleName, Label.LabelStyle.class);
+    return getSkinResource (styleName, Label.LabelStyle.class);
   }
 
   @Override
@@ -267,7 +294,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, TextField.TextFieldStyle.class);
+    return getSkinResource (styleName, TextField.TextFieldStyle.class);
   }
 
   @Override
@@ -277,7 +304,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (scrollPaneStyleName, "scrollPaneStyleName");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollbarStyle");
 
-    final ScrollPane.ScrollPaneStyle style = getSkinStyle (scrollPaneStyleName, ScrollPane.ScrollPaneStyle.class);
+    final ScrollPane.ScrollPaneStyle style = getSkinResource (scrollPaneStyleName, ScrollPane.ScrollPaneStyle.class);
 
     if (style.hScrollKnob != null) style.hScrollKnob.setMinHeight (scrollbarStyle.getHorizontalHeight ());
     if (style.vScrollKnob != null) style.vScrollKnob.setMinWidth (scrollbarStyle.getVerticalWidth ());
@@ -310,7 +337,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, SelectBox.SelectBoxStyle.class);
+    return getSkinResource (styleName, SelectBox.SelectBoxStyle.class);
   }
 
   @Override
@@ -318,7 +345,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, List.ListStyle.class);
+    return getSkinResource (styleName, List.ListStyle.class);
   }
 
   @Override
@@ -457,7 +484,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, Slider.SliderStyle.class);
+    return getSkinResource (styleName, Slider.SliderStyle.class);
   }
 
   @Override
@@ -465,7 +492,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (styleName, "styleName");
 
-    return getSkinStyle (styleName, Window.WindowStyle.class);
+    return getSkinResource (styleName, Window.WindowStyle.class);
   }
 
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)
@@ -475,7 +502,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     return assetManager.get (assetDescriptor);
   }
 
-  protected final <T> T getSkinStyle (final String styleName, final Class <T> type)
+  protected final <T> T getSkinResource (final String styleName, final Class <T> type)
   {
     Arguments.checkIsNotNull (styleName, "styleName");
     Arguments.checkIsNotNull (type, "type");

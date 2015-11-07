@@ -50,7 +50,9 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
@@ -77,6 +79,7 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.LetterCase;
+import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableSet;
@@ -111,6 +114,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Cell <Actor> playMapActorCell;
   private final DebugInputProcessor debugInputProcessor;
   private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
+
+  // @TESTING
+  private boolean isFirstTime = true;
 
   public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
@@ -242,7 +248,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
             });
     // @formatter:on
 
-    // @formatter:off
     battlePopup = widgetFactory.createBattlePopup (stage, eventBus, new AbstractBattlePopupListener ()
     {
       @Override
@@ -272,6 +277,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       }
 
       @Override
+      public void onToggleAutoAttack (final boolean isEnabled)
+      {
+        // TODO Production: Remove
+        eventBus.publish (StatusMessageEventFactory.create (
+                                                            Strings.format ("Auto attack "
+                                                                    + (isEnabled ? "enabled" : "disabled") + "."),
+                                                            ImmutableSet.<PlayerPacket> of ()));
+      }
+
+      @Override
       public void onShow ()
       {
         playMapActor.disable ();
@@ -283,7 +298,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         playMapActor.enable (mouseInput.position ());
       }
     });
-    // @formatter:on
 
     // @formatter:off
     quitPopup = widgetFactory.createQuitPopup (
@@ -398,6 +412,51 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     battlePopup.update (delta);
     quitPopup.update (delta);
     stage.draw ();
+
+    // @TESTING
+    if (!battlePopup.isShown () && isFirstTime)
+    {
+      // final String attackingCountryName = "Brazil";
+      // final String defendingCountryName = "Northwest Territory";
+
+      String attackingCountryName;
+
+      do
+      {
+        attackingCountryName = DebugEventGenerator.getRandomCountryName ();
+      }
+      while (!playMapActor.existsCountryActorWithName (attackingCountryName));
+
+      String defendingCountryName;
+
+      do
+      {
+        defendingCountryName = DebugEventGenerator.getRandomCountryName ();
+      }
+      while (defendingCountryName.equals (attackingCountryName)
+              || !playMapActor.existsCountryActorWithName (defendingCountryName));
+
+      final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+      String defendingPlayerName;
+
+      do
+      {
+        defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+      }
+      while (defendingPlayerName.equals (attackingPlayerName));
+
+      final CountryActor attackingCountryActor = playMapActor.getCountryActorWithName (attackingCountryName);
+      final CountryActor defendingCountryActor = playMapActor.getCountryActorWithName (defendingCountryName);
+      final int attackingCountryArmies = Randomness.getRandomIntegerFrom (2, 99);
+      final int defendingCountryArmies = Randomness.getRandomIntegerFrom (1, 99);
+
+      battlePopup.show (attackingCountryActor, defendingCountryActor, attackingPlayerName, defendingPlayerName,
+                        attackingCountryArmies, defendingCountryArmies);
+
+      playMapActor.disable ();
+
+      isFirstTime = false;
+    }
   }
 
   @Override

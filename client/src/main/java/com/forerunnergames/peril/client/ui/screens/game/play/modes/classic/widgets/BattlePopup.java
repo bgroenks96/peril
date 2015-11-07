@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.Timer;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
@@ -23,11 +26,14 @@ import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
+import javax.annotation.Nullable;
+
 import net.engio.mbassy.bus.MBassador;
 
 public final class BattlePopup extends OkPopup
 {
   private static final boolean DEBUG = false;
+  private static final float AUTO_ATTACK_SPEED_SECONDS = 0.5f;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
   private static final float COUNTRY_NAME_BOX_HEIGHT = 28;
   private static final float PLAYER_NAME_BOX_WIDTH = 400;
@@ -52,6 +58,13 @@ public final class BattlePopup extends OkPopup
   private final Label defendingCountryNameLabel;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
+  private Label autoAttackLabel;
+  private Button autoAttackButton;
+  private Button attackButton;
+  private Button retreatButton;
+  @Nullable
+  private Timer.Task autoAttackTask;
+  private Cell <Label> autoAttackLabelCell;
 
   public BattlePopup (final ClassicModePlayScreenWidgetFactory widgetFactory,
                       final String title,
@@ -73,6 +86,7 @@ public final class BattlePopup extends OkPopup
                    .messageBox (false)
                    .border (28)
                    .buttonSize (90, 32)
+                   .buttonSpacing (16)
                    .textButtonStyle ("popup")
                    .debug (DEBUG)
                    .build (),
@@ -91,6 +105,7 @@ public final class BattlePopup extends OkPopup
     defendingPlayerNameLabel = widgetFactory.createBattlePopupPlayerNameLabel ();
     attackingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
+    autoAttackLabel = widgetFactory.createBattlePopupAutoAttackLabel ();
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -126,6 +141,14 @@ public final class BattlePopup extends OkPopup
     getContentTable ().add (attackingCountryNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
     getContentTable ().add (defendingCountryNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
     getContentTable ().row ().colspan (2).top ();
+
+    autoAttackLabelCell.setActor (autoAttackLabel);
+  }
+
+  @Override
+  public void update (final float delta)
+  {
+    super.update (delta);
   }
 
   @Override
@@ -137,21 +160,46 @@ public final class BattlePopup extends OkPopup
     defendingPlayerNameLabel.setStyle (widgetFactory.createBattlePopupPlayerNameLabelStyle ());
     attackingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
     defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
+    autoAttackLabel.setStyle (widgetFactory.createBattlePopupAutoAttackLabelStyle ());
   }
 
   @Override
   protected void addButtons ()
   {
-    addButton ("RETREAT", PopupAction.HIDE, new ChangeListener ()
+    autoAttackLabelCell = getButtonTable ().add ((Label) null).size (126, 32);
+
+    autoAttackButton = addButton ("toggle", PopupAction.NONE, new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
+        final boolean isAutoAttack = autoAttackButton.isChecked ();
+        attackButton.setDisabled (isAutoAttack);
+
+        if (isAutoAttack)
+        {
+          startAutoAttack ();
+        }
+        else
+        {
+          stopAutoAttack ();
+        }
+
+        listener.onToggleAutoAttack (isAutoAttack);
+      }
+    });
+
+    retreatButton = addTextButton ("Retreat", PopupAction.HIDE, new ChangeListener ()
+    {
+      @Override
+      public void changed (final ChangeEvent event, final Actor actor)
+      {
+        stopAutoAttack ();
         listener.onRetreat (getAttackingCountryName (), getDefendingCountryName ());
       }
     });
 
-    addButton ("ATTACK", PopupAction.NONE, new ChangeListener ()
+    attackButton = addTextButton ("Attack", PopupAction.NONE, new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
@@ -169,7 +217,7 @@ public final class BattlePopup extends OkPopup
       @Override
       public void keyDown ()
       {
-        getButton ("RETREAT").toggle ();
+        retreatButton.toggle ();
       }
     });
 
@@ -178,7 +226,9 @@ public final class BattlePopup extends OkPopup
       @Override
       public void keyDown ()
       {
-        getButton ("ATTACK").toggle ();
+        if (autoAttackButton.isChecked ()) return;
+
+        attackButton.toggle ();
       }
     });
   }
@@ -199,6 +249,7 @@ public final class BattlePopup extends OkPopup
 
     if (isShown ()) return;
 
+    disableAutoAttack ();
     setCountryActors (attackingCountryActor, defendingCountryActor);
     setCountryArmies (attackingCountryArmies, defendingCountryArmies);
     setPlayerNames (attackingPlayerName, defendingPlayerName);
@@ -229,6 +280,31 @@ public final class BattlePopup extends OkPopup
   private static Image asImage (final CountryActor countryActor)
   {
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
+  }
+
+  private void startAutoAttack ()
+  {
+    if (!autoAttackButton.isChecked ()) return;
+    if (autoAttackTask != null && autoAttackTask.isScheduled ()) return;
+
+    autoAttackTask = Timer.schedule (new Timer.Task ()
+    {
+      @Override
+      public void run ()
+      {
+        attackButton.toggle ();
+      }
+    }, 0.0f, AUTO_ATTACK_SPEED_SECONDS);
+  }
+
+  private void stopAutoAttack ()
+  {
+    if (autoAttackTask != null) autoAttackTask.cancel ();
+  }
+
+  private void disableAutoAttack ()
+  {
+    autoAttackButton.setChecked (false);
   }
 
   private void setCountryArmies (final int attackingCountryArmies, final int defendingCountryArmies)
