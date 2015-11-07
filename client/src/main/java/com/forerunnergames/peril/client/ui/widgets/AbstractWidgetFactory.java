@@ -85,15 +85,21 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public Button createButton (final String styleName, final EventListener listener)
+  public Button createButton (final Button.ButtonStyle style, final EventListener listener)
   {
-    Arguments.checkIsNotNull (styleName, "styleName");
+    Arguments.checkIsNotNull (style, "style");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Button button = new Button (createButtonStyle (styleName));
+    final Button button = new Button (style);
     button.addListener (listener);
 
     return button;
+  }
+
+  @Override
+  public Button createButton (final String styleName, final EventListener listener)
+  {
+    return createButton (createButtonStyle (styleName), listener);
   }
 
   @Override

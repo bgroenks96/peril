@@ -416,25 +416,25 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     // @TESTING
     if (!battlePopup.isShown () && isFirstTime)
     {
-      // final String attackingCountryName = "Brazil";
-      // final String defendingCountryName = "Northwest Territory";
+      final String attackingCountryName = "Brazil";
+      final String defendingCountryName = "Antarctica";
 
-      String attackingCountryName;
-
-      do
-      {
-        attackingCountryName = DebugEventGenerator.getRandomCountryName ();
-      }
-      while (!playMapActor.existsCountryActorWithName (attackingCountryName));
-
-      String defendingCountryName;
-
-      do
-      {
-        defendingCountryName = DebugEventGenerator.getRandomCountryName ();
-      }
-      while (defendingCountryName.equals (attackingCountryName)
-              || !playMapActor.existsCountryActorWithName (defendingCountryName));
+//      String attackingCountryName;
+//
+//      do
+//      {
+//        attackingCountryName = DebugEventGenerator.getRandomCountryName ();
+//      }
+//      while (!playMapActor.existsCountryActorWithName (attackingCountryName));
+//
+//      String defendingCountryName;
+//
+//      do
+//      {
+//        defendingCountryName = DebugEventGenerator.getRandomCountryName ();
+//      }
+//      while (defendingCountryName.equals (attackingCountryName)
+//              || !playMapActor.existsCountryActorWithName (defendingCountryName));
 
       final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
       String defendingPlayerName;

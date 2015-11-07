@@ -32,6 +32,8 @@ import net.engio.mbassy.bus.MBassador;
 
 public interface WidgetFactory
 {
+  Button createButton (final Button.ButtonStyle style, final EventListener listener);
+
   Button createButton (final String styleName, final EventListener listener);
 
   Button.ButtonStyle createButtonStyle (final String styleName);

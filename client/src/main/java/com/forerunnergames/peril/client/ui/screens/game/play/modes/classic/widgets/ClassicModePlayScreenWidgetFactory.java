@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -229,6 +230,40 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public Label.LabelStyle createBattlePopupAutoAttackLabelStyle ()
   {
     return createLabelStyle ("battle-popup-auto-battle");
+  }
+
+  public Label createBattlePopupArrowLabel ()
+  {
+    return createLabel ("ATTACKING", Align.left, createBattlePopupArrowLabelStyle ());
+  }
+
+  public Label.LabelStyle createBattlePopupArrowLabelStyle ()
+  {
+    return createLabelStyle ("battle-popup-arrow");
+  }
+
+  public Button createAttackerDieFaceSix (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createButton (createAttackerDieFaceSixStyle (), listener);
+  }
+
+  public Button.ButtonStyle createAttackerDieFaceSixStyle ()
+  {
+    return createButtonStyle ("die-red-six");
+  }
+
+  public Button createDefenderDieFaceSix (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createButton (createDefenderDieFaceSixStyle (), listener);
+  }
+
+  public Button.ButtonStyle createDefenderDieFaceSixStyle ()
+  {
+    return createButtonStyle ("die-white-six");
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)

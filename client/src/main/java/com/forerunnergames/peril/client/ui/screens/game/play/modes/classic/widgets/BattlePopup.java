@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 
@@ -40,8 +41,7 @@ public final class BattlePopup extends OkPopup
   private static final float PLAYER_NAME_BOX_HEIGHT = 28;
   private static final float COUNTRY_BOX_INNER_PADDING = 3;
   private static final float COUNTRY_BOX_WIDTH = 400 - COUNTRY_BOX_INNER_PADDING * 2;
-  private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING * 2;
-  private static final float INTER_COUNTRY_BOX_SPACING = 130;
+  private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING - 3;
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final BattlePopupListener listener;
   private final Vector2 tempPosition = new Vector2 ();
@@ -56,8 +56,14 @@ public final class BattlePopup extends OkPopup
   private final Label defendingPlayerNameLabel;
   private final Label attackingCountryNameLabel;
   private final Label defendingCountryNameLabel;
+  private final Label attackingArrowLabel;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
+  private final Button attackerDieOne;
+  private final Button attackerDieTwo;
+  private final Button attackerDieThree;
+  private final Button defenderDieOne;
+  private final Button defenderDieTwo;
   private Label autoAttackLabel;
   private Button autoAttackButton;
   private Button attackButton;
@@ -82,7 +88,7 @@ public final class BattlePopup extends OkPopup
                    .size (990, 432)
                    .position (405, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 178)
                    .title (title)
-                   .titleHeight (58)
+                   .titleHeight (56)
                    .messageBox (false)
                    .border (28)
                    .buttonSize (90, 32)
@@ -106,6 +112,12 @@ public final class BattlePopup extends OkPopup
     attackingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     autoAttackLabel = widgetFactory.createBattlePopupAutoAttackLabel ();
+    attackingArrowLabel = widgetFactory.createBattlePopupArrowLabel ();
+    attackerDieOne = widgetFactory.createAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    attackerDieTwo = widgetFactory.createAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    attackerDieThree = widgetFactory.createAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    defenderDieOne = widgetFactory.createDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    defenderDieTwo = widgetFactory.createDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -120,27 +132,46 @@ public final class BattlePopup extends OkPopup
     defendingCountryTable.setClip (true);
     defendingCountryTable.setDebug (DEBUG, true);
 
-    final Table countryTable = new Table ().center ();
-    countryTable.add (attackingCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
-            .spaceRight (INTER_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
-            .padRight (COUNTRY_BOX_INNER_PADDING);
-    countryTable.add (defendingCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
-            .spaceLeft (INTER_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
-            .padRight (COUNTRY_BOX_INNER_PADDING);
-    countryTable.setDebug (DEBUG, true);
+    final Table diceTable = new Table ().top ().left ().pad (2);
+    diceTable.add (attackerDieOne).spaceRight (34).spaceBottom (14);
+    diceTable.add (defenderDieOne).spaceLeft (34).spaceBottom (14);
+    diceTable.row ();
+    diceTable.add (attackerDieTwo).spaceRight (34).spaceBottom (14);
+    diceTable.add (defenderDieTwo).spaceLeft (34).spaceBottom (14);
+    diceTable.row ();
+    diceTable.add (attackerDieThree).spaceRight (34);
+    diceTable.setDebug (DEBUG, true);
+
+    final Table leftTable = new Table ().top ().pad (2);
+    leftTable.add (attackingPlayerNameLabel).size (PLAYER_NAME_BOX_WIDTH, PLAYER_NAME_BOX_HEIGHT).space (2);
+    leftTable.row ();
+    leftTable.add (attackingCountryTable).size (COUNTRY_BOX_WIDTH, COUNTRY_BOX_HEIGHT)
+            .padBottom (COUNTRY_BOX_INNER_PADDING + 3).space (2);
+    leftTable.row ();
+    leftTable.add (attackingCountryNameLabel).size (COUNTRY_NAME_BOX_WIDTH, COUNTRY_NAME_BOX_HEIGHT).space (2);
+    leftTable.setDebug (DEBUG, true);
+
+    final Table centerTable = new Table ().top ().padTop (2).padBottom (2);
+    centerTable.add (attackingArrowLabel).padRight (8).padTop (15 - 4).padBottom (50 + 4);
+    centerTable.row ();
+    centerTable.add (diceTable).size (94, 116);
+    centerTable.setDebug (DEBUG, true);
+
+    final Table rightTable = new Table ().top ().pad (2);
+    rightTable.add (defendingPlayerNameLabel).size (PLAYER_NAME_BOX_WIDTH, PLAYER_NAME_BOX_HEIGHT).space (2);
+    rightTable.row ();
+    rightTable.add (defendingCountryTable).size (COUNTRY_BOX_WIDTH, COUNTRY_BOX_HEIGHT)
+            .padBottom (COUNTRY_BOX_INNER_PADDING + 3).space (2);
+    rightTable.row ();
+    rightTable.add (defendingCountryNameLabel).size (COUNTRY_NAME_BOX_WIDTH, COUNTRY_NAME_BOX_HEIGHT).space (2);
+    rightTable.setDebug (DEBUG, true);
 
     getContentTable ().defaults ().space (0).pad (0);
     getContentTable ().top ();
-    getContentTable ().row ().size (COUNTRY_NAME_BOX_WIDTH, COUNTRY_NAME_BOX_HEIGHT).spaceBottom (1);
-    getContentTable ().add (attackingPlayerNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
-    getContentTable ().add (defendingPlayerNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
-    getContentTable ().row ().colspan (2).height (COUNTRY_BOX_HEIGHT).spaceTop (1);
-    getContentTable ().add (countryTable).padLeft (2).padRight (2).padTop (COUNTRY_BOX_INNER_PADDING - 2)
-            .padBottom (COUNTRY_BOX_INNER_PADDING);
-    getContentTable ().row ().size (PLAYER_NAME_BOX_WIDTH, PLAYER_NAME_BOX_HEIGHT).spaceTop (5);
-    getContentTable ().add (attackingCountryNameLabel).spaceRight (INTER_COUNTRY_BOX_SPACING);
-    getContentTable ().add (defendingCountryNameLabel).spaceLeft (INTER_COUNTRY_BOX_SPACING);
-    getContentTable ().row ().colspan (2).top ();
+    getContentTable ().add (leftTable).size (404, 264);
+    getContentTable ().add (centerTable).size (126, 264);
+    getContentTable ().add (rightTable).size (404, 264);
+    getContentTable ().row ();
 
     autoAttackLabelCell.setActor (autoAttackLabel);
   }
@@ -161,6 +192,12 @@ public final class BattlePopup extends OkPopup
     attackingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
     defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
     autoAttackLabel.setStyle (widgetFactory.createBattlePopupAutoAttackLabelStyle ());
+    attackingArrowLabel.setStyle (widgetFactory.createBattlePopupArrowLabelStyle ());
+    attackerDieOne.setStyle (widgetFactory.createAttackerDieFaceSixStyle ());
+    attackerDieTwo.setStyle (widgetFactory.createAttackerDieFaceSixStyle ());
+    attackerDieThree.setStyle (widgetFactory.createAttackerDieFaceSixStyle ());
+    defenderDieOne.setStyle (widgetFactory.createDefenderDieFaceSixStyle ());
+    defenderDieTwo.setStyle (widgetFactory.createDefenderDieFaceSixStyle ());
   }
 
   @Override
