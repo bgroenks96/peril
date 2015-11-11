@@ -242,28 +242,28 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createLabelStyle ("battle-popup-arrow");
   }
 
-  public Button createAttackerDieFaceSix (final EventListener listener)
+  public Button createAttackPopupAttackerDieFaceSix (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createButton (createAttackerDieFaceSixStyle (), listener);
+    return createButton (createAttackPopupAttackerDieFaceSixStyle (), listener);
   }
 
-  public Button.ButtonStyle createAttackerDieFaceSixStyle ()
+  public Button.ButtonStyle createAttackPopupAttackerDieFaceSixStyle ()
   {
     return createButtonStyle ("die-red-six");
   }
 
-  public Button createDefenderDieFaceSix (final EventListener listener)
+  public Button createAttackPopupDefenderDieFaceSix (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createButton (createDefenderDieFaceSixStyle (), listener);
+    return createButton (createAttackPopupDefenderDieFaceSixStyle (), listener);
   }
 
-  public Button.ButtonStyle createDefenderDieFaceSixStyle ()
+  public Button.ButtonStyle createAttackPopupDefenderDieFaceSixStyle ()
   {
-    return createButtonStyle ("die-white-six");
+    return createButtonStyle ("die-white-six-read-only");
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)

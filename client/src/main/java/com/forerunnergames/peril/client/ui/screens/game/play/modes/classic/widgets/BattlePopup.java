@@ -113,11 +113,11 @@ public final class BattlePopup extends OkPopup
     defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     autoAttackLabel = widgetFactory.createBattlePopupAutoAttackLabel ();
     attackingArrowLabel = widgetFactory.createBattlePopupArrowLabel ();
-    attackerDieOne = widgetFactory.createAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    attackerDieTwo = widgetFactory.createAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    attackerDieThree = widgetFactory.createAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    defenderDieOne = widgetFactory.createDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    defenderDieTwo = widgetFactory.createDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    attackerDieOne = widgetFactory.createAttackPopupAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    attackerDieTwo = widgetFactory.createAttackPopupAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    attackerDieThree = widgetFactory.createAttackPopupAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    defenderDieOne = widgetFactory.createAttackPopupDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    defenderDieTwo = widgetFactory.createAttackPopupDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -193,11 +193,11 @@ public final class BattlePopup extends OkPopup
     defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
     autoAttackLabel.setStyle (widgetFactory.createBattlePopupAutoAttackLabelStyle ());
     attackingArrowLabel.setStyle (widgetFactory.createBattlePopupArrowLabelStyle ());
-    attackerDieOne.setStyle (widgetFactory.createAttackerDieFaceSixStyle ());
-    attackerDieTwo.setStyle (widgetFactory.createAttackerDieFaceSixStyle ());
-    attackerDieThree.setStyle (widgetFactory.createAttackerDieFaceSixStyle ());
-    defenderDieOne.setStyle (widgetFactory.createDefenderDieFaceSixStyle ());
-    defenderDieTwo.setStyle (widgetFactory.createDefenderDieFaceSixStyle ());
+    attackerDieOne.setStyle (widgetFactory.createAttackPopupAttackerDieFaceSixStyle ());
+    attackerDieTwo.setStyle (widgetFactory.createAttackPopupAttackerDieFaceSixStyle ());
+    attackerDieThree.setStyle (widgetFactory.createAttackPopupAttackerDieFaceSixStyle ());
+    defenderDieOne.setStyle (widgetFactory.createAttackPopupDefenderDieFaceSixStyle ());
+    defenderDieTwo.setStyle (widgetFactory.createAttackPopupDefenderDieFaceSixStyle ());
   }
 
   @Override
