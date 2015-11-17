@@ -242,28 +242,47 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createLabelStyle ("battle-popup-arrow");
   }
 
-  public Button createAttackPopupAttackerDieFaceSix (final EventListener listener)
+  public Button createAttackPopupAttackerDieFaceButton (final DieFaceValue dieFaceValue)
   {
-    Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
 
-    return createButton (createAttackPopupAttackerDieFaceSixStyle (), listener);
+    return createButton (createAttackPopupAttackerDieFaceButtonStyle (dieFaceValue));
   }
 
-  public Button.ButtonStyle createAttackPopupAttackerDieFaceSixStyle ()
+  public Button.ButtonStyle createAttackPopupAttackerDieFaceButtonStyle (final DieFaceValue dieFaceValue)
   {
-    return createButtonStyle ("die-red-six");
+    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
+
+    return createButtonStyle ("die-red-" + dieFaceValue.name ().toLowerCase ());
   }
 
-  public Button createAttackPopupDefenderDieFaceSix (final EventListener listener)
+  public Button.ButtonStyle createAttackPopupAttackerDieActivateDieButtonStyle ()
   {
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return createButton (createAttackPopupDefenderDieFaceSixStyle (), listener);
+    return createButtonStyle ("die-red-add");
   }
 
-  public Button.ButtonStyle createAttackPopupDefenderDieFaceSixStyle ()
+  public Button.ButtonStyle createAttackPopupAttackerDieDeactivateDieButtonStyle ()
   {
-    return createButtonStyle ("die-white-six-read-only");
+    return createButtonStyle ("die-red-remove");
+  }
+
+  public AttackerDice createAttackPopupAttackerDice ()
+  {
+    return new AttackerDice (new AttackerDie (0, this), new AttackerDie (1, this), new AttackerDie (2, this));
+  }
+
+  public Button createAttackPopupDefenderDieFaceButton (final DieFaceValue dieFaceValue)
+  {
+    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
+
+    return createButton (createAttackPopupDefenderDieFaceButtonStyle (dieFaceValue));
+  }
+
+  public Button.ButtonStyle createAttackPopupDefenderDieFaceButtonStyle (final DieFaceValue dieFaceValue)
+  {
+    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
+
+    return createButtonStyle ("die-white-" + dieFaceValue.name ().toLowerCase () + "-read-only");
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)

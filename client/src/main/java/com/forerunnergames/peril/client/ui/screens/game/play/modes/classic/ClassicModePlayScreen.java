@@ -50,14 +50,13 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.DieFaceValue;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
@@ -82,6 +81,7 @@ import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
@@ -256,6 +256,15 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
         Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
 
+        final ImmutableList.Builder <DieFaceValue> attackerDieFaceValues = ImmutableList.builder ();
+
+        for (int i = 0; i < battlePopup.getActiveAttackerDieCount (); ++i)
+        {
+          attackerDieFaceValues.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
+        }
+
+        battlePopup.rollAttackerDice (attackerDieFaceValues.build ());
+
         // TODO Production: Remove
         eventBus.publish (StatusMessageEventFactory.create (
                                                             Strings.format ("You attacked {} from {}.",
@@ -290,6 +299,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void onShow ()
       {
         playMapActor.disable ();
+
+        eventBus.publish (StatusMessageEventFactory.create (
+                                                            Strings.format ("You are preparing to attack {} from {}.",
+                                                                            battlePopup.getDefendingCountryName (),
+                                                                            battlePopup.getAttackingCountryName ()),
+                                                            ImmutableSet.<PlayerPacket> of ()));
       }
 
       @Override
@@ -416,44 +431,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     // @TESTING
     if (!battlePopup.isShown () && isFirstTime)
     {
-      final String attackingCountryName = "Brazil";
-      final String defendingCountryName = "Antarctica";
-
-//      String attackingCountryName;
-//
-//      do
-//      {
-//        attackingCountryName = DebugEventGenerator.getRandomCountryName ();
-//      }
-//      while (!playMapActor.existsCountryActorWithName (attackingCountryName));
-//
-//      String defendingCountryName;
-//
-//      do
-//      {
-//        defendingCountryName = DebugEventGenerator.getRandomCountryName ();
-//      }
-//      while (defendingCountryName.equals (attackingCountryName)
-//              || !playMapActor.existsCountryActorWithName (defendingCountryName));
-
-      final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
-      String defendingPlayerName;
-
-      do
-      {
-        defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
-      }
-      while (defendingPlayerName.equals (attackingPlayerName));
-
-      final CountryActor attackingCountryActor = playMapActor.getCountryActorWithName (attackingCountryName);
-      final CountryActor defendingCountryActor = playMapActor.getCountryActorWithName (defendingCountryName);
-      final int attackingCountryArmies = Randomness.getRandomIntegerFrom (2, 99);
-      final int defendingCountryArmies = Randomness.getRandomIntegerFrom (1, 99);
-
-      battlePopup.show (attackingCountryActor, defendingCountryActor, attackingPlayerName, defendingPlayerName,
-                        attackingCountryArmies, defendingCountryArmies);
-
-      playMapActor.disable ();
+      debugInputProcessor.keyTyped ('b');
 
       isFirstTime = false;
     }

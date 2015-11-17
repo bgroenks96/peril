@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 
@@ -27,12 +27,15 @@ import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
 public final class BattlePopup extends OkPopup
 {
+  // @formatter:off
   private static final boolean DEBUG = false;
   private static final float AUTO_ATTACK_SPEED_SECONDS = 0.5f;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
@@ -48,22 +51,16 @@ public final class BattlePopup extends OkPopup
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
   private final BitmapFont countryArmyTextFont = new BitmapFont ();
-  private final CountryArmyTextActor attackingCountryArmyTextActor = new DefaultCountryArmyTextActor (
-          countryArmyTextFont);
-  private final CountryArmyTextActor defendingCountryArmyTextActor = new DefaultCountryArmyTextActor (
-          countryArmyTextFont);
+  private final CountryArmyTextActor attackingCountryArmyTextActor = new DefaultCountryArmyTextActor (countryArmyTextFont);
+  private final CountryArmyTextActor defendingCountryArmyTextActor = new DefaultCountryArmyTextActor (countryArmyTextFont);
   private final Label attackingPlayerNameLabel;
   private final Label defendingPlayerNameLabel;
   private final Label attackingCountryNameLabel;
   private final Label defendingCountryNameLabel;
   private final Label attackingArrowLabel;
+  private final AttackerDice attackerDice;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
-  private final Button attackerDieOne;
-  private final Button attackerDieTwo;
-  private final Button attackerDieThree;
-  private final Button defenderDieOne;
-  private final Button defenderDieTwo;
   private Label autoAttackLabel;
   private Button autoAttackButton;
   private Button attackButton;
@@ -71,6 +68,7 @@ public final class BattlePopup extends OkPopup
   @Nullable
   private Timer.Task autoAttackTask;
   private Cell <Label> autoAttackLabelCell;
+  // @formatter:on
 
   public BattlePopup (final ClassicModePlayScreenWidgetFactory widgetFactory,
                       final String title,
@@ -113,11 +111,7 @@ public final class BattlePopup extends OkPopup
     defendingCountryNameLabel = widgetFactory.createBattlePopupCountryNameLabel ();
     autoAttackLabel = widgetFactory.createBattlePopupAutoAttackLabel ();
     attackingArrowLabel = widgetFactory.createBattlePopupArrowLabel ();
-    attackerDieOne = widgetFactory.createAttackPopupAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    attackerDieTwo = widgetFactory.createAttackPopupAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    attackerDieThree = widgetFactory.createAttackPopupAttackerDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    defenderDieOne = widgetFactory.createAttackPopupDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
-    defenderDieTwo = widgetFactory.createAttackPopupDefenderDieFaceSix (new ClickListener (Input.Buttons.LEFT));
+    attackerDice = widgetFactory.createAttackPopupAttackerDice ();
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -133,13 +127,7 @@ public final class BattlePopup extends OkPopup
     defendingCountryTable.setDebug (DEBUG, true);
 
     final Table diceTable = new Table ().top ().left ().pad (2);
-    diceTable.add (attackerDieOne).spaceRight (34).spaceBottom (14);
-    diceTable.add (defenderDieOne).spaceLeft (34).spaceBottom (14);
-    diceTable.row ();
-    diceTable.add (attackerDieTwo).spaceRight (34).spaceBottom (14);
-    diceTable.add (defenderDieTwo).spaceLeft (34).spaceBottom (14);
-    diceTable.row ();
-    diceTable.add (attackerDieThree).spaceRight (34);
+    diceTable.add (attackerDice.asActor ()).spaceRight (34);
     diceTable.setDebug (DEBUG, true);
 
     final Table leftTable = new Table ().top ().pad (2);
@@ -193,11 +181,7 @@ public final class BattlePopup extends OkPopup
     defendingCountryNameLabel.setStyle (widgetFactory.createBattlePopupCountryNameLabelStyle ());
     autoAttackLabel.setStyle (widgetFactory.createBattlePopupAutoAttackLabelStyle ());
     attackingArrowLabel.setStyle (widgetFactory.createBattlePopupArrowLabelStyle ());
-    attackerDieOne.setStyle (widgetFactory.createAttackPopupAttackerDieFaceSixStyle ());
-    attackerDieTwo.setStyle (widgetFactory.createAttackPopupAttackerDieFaceSixStyle ());
-    attackerDieThree.setStyle (widgetFactory.createAttackPopupAttackerDieFaceSixStyle ());
-    defenderDieOne.setStyle (widgetFactory.createAttackPopupDefenderDieFaceSixStyle ());
-    defenderDieTwo.setStyle (widgetFactory.createAttackPopupDefenderDieFaceSixStyle ());
+    attackerDice.refreshAssets ();
   }
 
   @Override
@@ -286,12 +270,29 @@ public final class BattlePopup extends OkPopup
 
     if (isShown ()) return;
 
-    disableAutoAttack ();
+    turnOffAutoAttack ();
+    setAutoAttack (attackingCountryArmies);
+    setAttackButton (attackingCountryArmies);
     setCountryActors (attackingCountryActor, defendingCountryActor);
     setCountryArmies (attackingCountryArmies, defendingCountryArmies);
     setPlayerNames (attackingPlayerName, defendingPlayerName);
-
+    setDice (attackingCountryArmies, defendingCountryArmies);
     show ();
+  }
+
+  public void setAutoAttack (final int attackingCountryArmies)
+  {
+    autoAttackButton.setTouchable (attackingCountryArmies < 2 ? Touchable.disabled : Touchable.enabled);
+  }
+
+  public void setAttackButton (final int attackingCountryArmies)
+  {
+    attackButton.setDisabled (attackingCountryArmies < 2);
+  }
+
+  public void rollAttackerDice (final ImmutableList <DieFaceValue> dieFaceValues)
+  {
+    attackerDice.roll (dieFaceValues);
   }
 
   public String getAttackingCountryName ()
@@ -314,9 +315,20 @@ public final class BattlePopup extends OkPopup
     return defendingPlayerNameLabel.getText ().toString ();
   }
 
+  public int getActiveAttackerDieCount ()
+  {
+    return attackerDice.getActiveCount ();
+  }
+
   private static Image asImage (final CountryActor countryActor)
   {
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
+  }
+
+  private void setDice (final int attackingCountryArmies, final int defendingCountryArmies)
+  {
+    attackerDice.clampAndSetToMax (attackingCountryArmies >= 2 ? 1 : 0,
+                                   attackingCountryArmies >= 4 ? 3 : attackingCountryArmies - 1);
   }
 
   private void startAutoAttack ()
@@ -336,10 +348,12 @@ public final class BattlePopup extends OkPopup
 
   private void stopAutoAttack ()
   {
-    if (autoAttackTask != null) autoAttackTask.cancel ();
+    if (autoAttackTask == null) return;
+
+    autoAttackTask.cancel ();
   }
 
-  private void disableAutoAttack ()
+  private void turnOffAutoAttack ()
   {
     autoAttackButton.setChecked (false);
   }
@@ -374,7 +388,6 @@ public final class BattlePopup extends OkPopup
   private void setCountryImages (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
   {
     setCountryImage (attackingCountryActor, attackingCountryArmyTextActor, attackingCountryStack);
-
     setCountryImage (defendingCountryActor, defendingCountryArmyTextActor, defendingCountryStack);
   }
 
