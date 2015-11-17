@@ -48,6 +48,22 @@ public interface GameRules
 
   int getMinCardsInHandToRequireTradeIn (final TurnPhase turnPhase);
 
+  int getMinTotalAttackerDieCount ();
+
+  int getMaxTotalAttackerDieCount ();
+
+  int getMinTotalDefenderDieCount ();
+
+  int getMaxTotalDefenderDieCount ();
+
+  int getMinAttackerDieCount (final int attackingCountryArmyCount);
+
+  int getMaxAttackerDieCount (final int attackingCountryArmyCount);
+
+  int getMinDefenderDieCount (final int defendingCountryArmyCount);
+
+  int getMaxDefenderDieCount (final int defendingCountryArmyCount);
+
   ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount);
 
   int calculateCountryReinforcements (final int ownedCountryCount);

@@ -59,7 +59,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMaxArmiesInHand (), ClassicGameRules.MAX_ARMIES_IN_HAND);
+    assertEquals (ClassicGameRules.MAX_ARMIES_IN_HAND, rules.getMaxArmiesInHand ());
   }
 
   @Test
@@ -67,7 +67,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMaxPlayers (), ClassicGameRules.MAX_PLAYERS);
+    assertEquals (ClassicGameRules.MAX_PLAYERS, rules.getMaxPlayers ());
   }
 
   @Test
@@ -75,7 +75,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMinArmiesInHand (), ClassicGameRules.MIN_ARMIES_IN_HAND);
+    assertEquals (ClassicGameRules.MIN_ARMIES_IN_HAND, rules.getMinArmiesInHand ());
   }
 
   @Test
@@ -83,7 +83,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMinPlayers (), ClassicGameRules.MIN_PLAYERS);
+    assertEquals (ClassicGameRules.MIN_PLAYERS, rules.getMinPlayers ());
   }
 
   @Test
@@ -143,7 +143,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMinPlayerLimit (), ClassicGameRules.MIN_PLAYER_LIMIT);
+    assertEquals (ClassicGameRules.MIN_PLAYER_LIMIT, rules.getMinPlayerLimit ());
   }
 
   @Test
@@ -151,7 +151,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMaxTotalCountryCount (), ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT);
+    assertEquals (ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT, rules.getMaxTotalCountryCount ());
   }
 
   @Test
@@ -159,7 +159,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMinTotalCountryCount (), ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT);
+    assertEquals (ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT, rules.getMinTotalCountryCount ());
   }
 
   @Test
@@ -167,7 +167,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMaxPlayerLimit (), ClassicGameRules.MAX_PLAYER_LIMIT);
+    assertEquals (ClassicGameRules.MAX_PLAYER_LIMIT, rules.getMaxPlayerLimit ());
   }
 
   @Test
@@ -175,7 +175,7 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (rules.getMaxWinPercentage (), ClassicGameRules.MAX_WIN_PERCENTAGE);
+    assertEquals (ClassicGameRules.MAX_WIN_PERCENTAGE, rules.getMaxWinPercentage ());
   }
 
   @Test
@@ -184,7 +184,7 @@ public class ClassicGameRulesTest
     final int playerLimit = ClassicGameRules.MAX_PLAYER_LIMIT;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit).build ();
 
-    assertEquals (rules.getPlayerLimit (), playerLimit);
+    assertEquals (playerLimit, rules.getPlayerLimit ());
   }
 
   @Test
@@ -193,7 +193,7 @@ public class ClassicGameRulesTest
     final int playerLimit = ClassicGameRules.MIN_PLAYER_LIMIT;
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (playerLimit).build ();
 
-    assertEquals (rules.getPlayerLimit (), playerLimit);
+    assertEquals (playerLimit, rules.getPlayerLimit ());
   }
 
   @Test
@@ -202,7 +202,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT;
     final GameRules rules = new ClassicGameRules.Builder ().totalCountryCount (totalCountryCount).build ();
 
-    assertEquals (rules.getTotalCountryCount (), totalCountryCount);
+    assertEquals (totalCountryCount, rules.getTotalCountryCount ());
   }
 
   @Test
@@ -211,7 +211,7 @@ public class ClassicGameRulesTest
     final int totalCountryCount = ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT;
     final GameRules rules = new ClassicGameRules.Builder ().totalCountryCount (totalCountryCount).build ();
 
-    assertEquals (rules.getTotalCountryCount (), totalCountryCount);
+    assertEquals (totalCountryCount, rules.getTotalCountryCount ());
   }
 
   @Test
@@ -220,7 +220,7 @@ public class ClassicGameRulesTest
     final int winPercentage = ClassicGameRules.MAX_WIN_PERCENTAGE;
     final GameRules rules = new ClassicGameRules.Builder ().winPercentage (winPercentage).build ();
 
-    assertEquals (rules.getWinPercentage (), winPercentage);
+    assertEquals (winPercentage, rules.getWinPercentage ());
   }
 
   @Test
@@ -379,5 +379,149 @@ public class ClassicGameRulesTest
     {
       assertEquals (expected, rules.calculateTradeInBonusReinforcements (i));
     }
+  }
+
+  @Test
+  public void testGetMinTotalAttackerDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinTotalAttackerDieCount ());
+  }
+
+  @Test
+  public void testGetMaxTotalAttackerDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT, rules.getMaxTotalAttackerDieCount ());
+  }
+
+  @Test
+  public void testGetMinTotalDefenderDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinTotalDefenderDieCount ());
+  }
+
+  @Test
+  public void testGetMaxTotalDefenderDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT, rules.getMaxTotalDefenderDieCount ());
+  }
+
+  @Test
+  public void testGetMinAttackerDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (4));
+    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (3));
+    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (2));
+    assertEquals (0, rules.getMinAttackerDieCount (1));
+    assertEquals (0, rules.getMinAttackerDieCount (0));
+  }
+
+  @Test
+  public void testGetMinDefenderDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (2));
+    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (1));
+    assertEquals (0, rules.getMinDefenderDieCount (0));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMinAttackerDieCountThrowsExceptionNegativeAttackingCountryArmyCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMinAttackerDieCount (-1);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMinAttackerDieCountThrowsExceptionNegativeAttackingCountryArmyCountIntegerMinValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMinAttackerDieCount (Integer.MIN_VALUE);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMinDefenderDieCountThrowsExceptionNegativeDefendingCountryArmyCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMinDefenderDieCount (-1);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMinDefenderDieCountThrowsExceptionNegativeDefendingCountryArmyCountIntegerMinValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMinDefenderDieCount (Integer.MIN_VALUE);
+  }
+
+  @Test
+  public void testGetMaxAttackerDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT, rules.getMaxAttackerDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT, rules.getMaxAttackerDieCount (4));
+    assertEquals (2, rules.getMaxAttackerDieCount (3));
+    assertEquals (1, rules.getMaxAttackerDieCount (2));
+    assertEquals (0, rules.getMaxAttackerDieCount (1));
+    assertEquals (0, rules.getMaxAttackerDieCount (0));
+  }
+
+  @Test
+  public void testGetMaxDefenderDieCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT, rules.getMaxDefenderDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT, rules.getMaxDefenderDieCount (2));
+    assertEquals (1, rules.getMaxDefenderDieCount (1));
+    assertEquals (0, rules.getMaxDefenderDieCount (0));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMaxAttackerDieCountThrowsExceptionNegativeAttackingCountryArmyCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMaxAttackerDieCount (-1);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMaxAttackerDieCountThrowsExceptionNegativeAttackingCountryArmyCountIntegerMinValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMaxAttackerDieCount (Integer.MIN_VALUE);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMaxDefenderDieCountThrowsExceptionNegativeDefendingCountryArmyCount ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMaxDefenderDieCount (-1);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testGetMaxDefenderDieCountThrowsExceptionNegativeDefendingCountryArmyCountIntegerMinValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.getMaxDefenderDieCount (Integer.MIN_VALUE);
   }
 }

@@ -24,6 +24,10 @@ public final class ClassicGameRules implements GameRules
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
   public static final InitialCountryAssignment DEFAULT_INITIAL_COUNTRY_ASSIGNMENT = InitialCountryAssignment.RANDOM;
+  public static final int MIN_TOTAL_ATTACKER_DIE_COUNT = 1;
+  public static final int MAX_TOTAL_ATTACKER_DIE_COUNT = 3;
+  public static final int MIN_TOTAL_DEFENDER_DIE_COUNT = 1;
+  public static final int MAX_TOTAL_DEFENDER_DIE_COUNT = 2;
   private static final int CARD_TRADE_IN_COUNT = 3;
   private static final int MAX_CARDS_IN_HAND_REINFORCE_PHASE = 6;
   private static final int MAX_CARDS_IN_HAND_ATTACK_PHASE = 9;
@@ -197,34 +201,63 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public boolean isValidCardSet (final ImmutableList <CardType> cardTypes)
+  public int getMinTotalAttackerDieCount ()
   {
-    Arguments.checkIsNotNull (cardTypes, "cardTypes");
-    Arguments.checkHasNoNullElements (cardTypes, "cardTypes");
-
-    final int matchLen = cardTypes.size ();
-    if (matchLen != getCardTradeInCount ()) return false;
-
-    // build the match string (string of type values) from cardTypes
-    final StringBuilder matchStrBuilder = new StringBuilder ();
-    for (final CardType type : cardTypes)
-    {
-      matchStrBuilder.append (type.getTypeValue ());
-    }
-    final String matchStr = matchStrBuilder.toString ();
-    // pattern 1: "(\\d)\\1{2}" matches repeating integers, excluding zero; i.e. 3 matching non-wild cards
-    // pattern 2: ^(?:(\\d)(?!.*\\2)){3,} matches strings of integers with no repeats; i.e. 3 unique types
-    // wildcard logic is implied by pattern 2; for example, wildcard (0) + 2 unique types is a unique int string
-    final String matchExp = String.format ("([1-9])\\1{%d}|^(?:(\\d)(?!.*\\2)){%d,}", matchLen - 1, matchLen);
-    return matchStr.matches (matchExp);
+    return MIN_TOTAL_ATTACKER_DIE_COUNT;
   }
 
   @Override
-  public boolean isValidWinPercentage (final int winPercentage)
+  public int getMaxTotalAttackerDieCount ()
   {
-    Arguments.checkIsNotNegative (winPercentage, "winPercentage");
+    return MAX_TOTAL_ATTACKER_DIE_COUNT;
+  }
 
-    return winPercentage >= minWinPercentage && winPercentage <= MAX_WIN_PERCENTAGE;
+  @Override
+  public int getMinTotalDefenderDieCount ()
+  {
+    return MIN_TOTAL_DEFENDER_DIE_COUNT;
+  }
+
+  @Override
+  public int getMaxTotalDefenderDieCount ()
+  {
+    return MAX_TOTAL_DEFENDER_DIE_COUNT;
+  }
+
+  @Override
+  public int getMinAttackerDieCount (final int attackingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
+
+    return attackingCountryArmyCount > 1 ? MIN_TOTAL_ATTACKER_DIE_COUNT : 0;
+  }
+
+  @Override
+  public int getMaxAttackerDieCount (final int attackingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
+
+    if (attackingCountryArmyCount > 3) return MAX_TOTAL_ATTACKER_DIE_COUNT;
+
+    return attackingCountryArmyCount == 3 || attackingCountryArmyCount == 2 ? attackingCountryArmyCount - 1 : 0;
+  }
+
+  @Override
+  public int getMinDefenderDieCount (final int defendingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (defendingCountryArmyCount, "defendingCountryArmyCount");
+
+    return defendingCountryArmyCount > 0 ? MIN_TOTAL_DEFENDER_DIE_COUNT : 0;
+  }
+
+  @Override
+  public int getMaxDefenderDieCount (final int defendingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (defendingCountryArmyCount, "defendingCountryArmyCount");
+
+    if (defendingCountryArmyCount > 1) return MAX_TOTAL_DEFENDER_DIE_COUNT;
+
+    return defendingCountryArmyCount == 1 ? 1 : 0;
   }
 
   /**
@@ -299,6 +332,37 @@ public final class ClassicGameRules implements GameRules
     }
   }
 
+  @Override
+  public boolean isValidWinPercentage (final int winPercentage)
+  {
+    Arguments.checkIsNotNegative (winPercentage, "winPercentage");
+
+    return winPercentage >= minWinPercentage && winPercentage <= MAX_WIN_PERCENTAGE;
+  }
+
+  @Override
+  public boolean isValidCardSet (final ImmutableList <CardType> cardTypes)
+  {
+    Arguments.checkIsNotNull (cardTypes, "cardTypes");
+    Arguments.checkHasNoNullElements (cardTypes, "cardTypes");
+
+    final int matchLen = cardTypes.size ();
+    if (matchLen != getCardTradeInCount ()) return false;
+
+    // build the match string (string of type values) from cardTypes
+    final StringBuilder matchStrBuilder = new StringBuilder ();
+    for (final CardType type : cardTypes)
+    {
+      matchStrBuilder.append (type.getTypeValue ());
+    }
+    final String matchStr = matchStrBuilder.toString ();
+    // pattern 1: "(\\d)\\1{2}" matches repeating integers, excluding zero; i.e. 3 matching non-wild cards
+    // pattern 2: ^(?:(\\d)(?!.*\\2)){3,} matches strings of integers with no repeats; i.e. 3 unique types
+    // wildcard logic is implied by pattern 2; for example, wildcard (0) + 2 unique types is a unique int string
+    final String matchExp = String.format ("([1-9])\\1{%d}|^(?:(\\d)(?!.*\\2)){%d,}", matchLen - 1, matchLen);
+    return matchStr.matches (matchExp);
+  }
+
   // @formatter:off
   /**
    * Defined in ClassicGameRules by the following piecewise function:
@@ -335,6 +399,32 @@ public final class ClassicGameRules implements GameRules
     // The ceiling function ensures that if the win percentage includes a fraction of a country, that it will always
     // round up to the nearest country count.
     return (int) Math.ceil (winPercentage / 100.0 * totalCountryCount);
+  }
+
+  private ClassicGameRules (final int playerLimit,
+                            final int winPercentage,
+                            final int totalCountryCount,
+                            final InitialCountryAssignment initialCountryAssignment)
+  {
+    // @formatter:off
+    Arguments.checkLowerInclusiveBound (playerLimit, MIN_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MIN_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (playerLimit, MAX_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MAX_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (winPercentage, MAX_WIN_PERCENTAGE, "winPercentage", "ClassicGameRules.MAX_WIN_PERCENTAGE");
+    Arguments.checkLowerInclusiveBound (totalCountryCount, MIN_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT");
+    Arguments.checkUpperInclusiveBound (totalCountryCount, MAX_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT");
+    Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
+    // @formatter:on
+
+    minWinPercentage = calculateMinWinPercentage (playerLimit, totalCountryCount);
+
+    Arguments.checkLowerInclusiveBound (winPercentage, minWinPercentage, "winPercentage");
+
+    this.playerLimit = playerLimit;
+    this.winPercentage = winPercentage;
+    this.totalCountryCount = totalCountryCount;
+    this.initialCountryAssignment = initialCountryAssignment;
+    initialArmies = calculateInitialArmies (playerLimit);
+    winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
   }
 
   public static final class Builder
@@ -384,31 +474,5 @@ public final class ClassicGameRules implements GameRules
 
       return this;
     }
-  }
-
-  private ClassicGameRules (final int playerLimit,
-                            final int winPercentage,
-                            final int totalCountryCount,
-                            final InitialCountryAssignment initialCountryAssignment)
-  {
-    // @formatter:off
-    Arguments.checkLowerInclusiveBound (playerLimit, MIN_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MIN_PLAYER_LIMIT");
-    Arguments.checkUpperInclusiveBound (playerLimit, MAX_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MAX_PLAYER_LIMIT");
-    Arguments.checkUpperInclusiveBound (winPercentage, MAX_WIN_PERCENTAGE, "winPercentage", "ClassicGameRules.MAX_WIN_PERCENTAGE");
-    Arguments.checkLowerInclusiveBound (totalCountryCount, MIN_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT");
-    Arguments.checkUpperInclusiveBound (totalCountryCount, MAX_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT");
-    Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
-
-    minWinPercentage = calculateMinWinPercentage (playerLimit, totalCountryCount);
-
-    Arguments.checkLowerInclusiveBound (winPercentage, minWinPercentage, "winPercentage");
-
-    this.playerLimit = playerLimit;
-    this.winPercentage = winPercentage;
-    this.totalCountryCount = totalCountryCount;
-    this.initialCountryAssignment = initialCountryAssignment;
-    initialArmies = calculateInitialArmies (playerLimit);
-    winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
-    // @formatter:on
   }
 }
