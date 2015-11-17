@@ -23,10 +23,13 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+
+import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -268,7 +271,15 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public AttackerDice createAttackPopupAttackerDice ()
   {
-    return new AttackerDice (new AttackerDie (0, this), new AttackerDie (1, this), new AttackerDie (2, this));
+    final ImmutableSet.Builder <AttackerDie> dieBuilder = ImmutableSet.builder ();
+
+    for (int i = 0; i < ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT; ++i)
+    {
+      dieBuilder.add (new AttackerDie (i, this));
+    }
+
+    return new AttackerDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT,
+            ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT);
   }
 
   public Button createAttackPopupDefenderDieFaceButton (final DieFaceValue dieFaceValue)

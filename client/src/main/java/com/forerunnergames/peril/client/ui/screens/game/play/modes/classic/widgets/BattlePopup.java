@@ -24,6 +24,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.widgets.popup.KeyListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -47,6 +49,7 @@ public final class BattlePopup extends OkPopup
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING - 3;
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final BattlePopupListener listener;
+  private final GameRules gameRules;
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
@@ -75,7 +78,6 @@ public final class BattlePopup extends OkPopup
                       final Stage stage,
                       final BattlePopupListener listener,
                       final MBassador <Event> eventBus)
-
   {
     // @formatter:off
     super (widgetFactory,
@@ -104,6 +106,8 @@ public final class BattlePopup extends OkPopup
 
     this.widgetFactory = widgetFactory;
     this.listener = listener;
+
+    gameRules = new ClassicGameRules.Builder ().build ();
 
     attackingPlayerNameLabel = widgetFactory.createBattlePopupPlayerNameLabel ();
     defendingPlayerNameLabel = widgetFactory.createBattlePopupPlayerNameLabel ();
@@ -327,8 +331,8 @@ public final class BattlePopup extends OkPopup
 
   private void setDice (final int attackingCountryArmies, final int defendingCountryArmies)
   {
-    attackerDice.clampAndSetToMax (attackingCountryArmies >= 2 ? 1 : 0,
-                                   attackingCountryArmies >= 4 ? 3 : attackingCountryArmies - 1);
+    attackerDice.clampAndSetToMax (gameRules.getMinAttackerDieCount (attackingCountryArmies),
+                                   gameRules.getMaxAttackerDieCount (attackingCountryArmies));
   }
 
   private void startAutoAttack ()
