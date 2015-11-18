@@ -171,7 +171,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
         log.trace ("onCreateStart: {} [{}], Player Name [{}]", GameServerConfiguration.class.getSimpleName (),
                    configuration, playerName);
 
-        resetLoadingProgress ();
+        Gdx.app.postRunnable (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            resetLoadingProgress ();
+          }
+        });
       }
 
       @Override
@@ -181,7 +188,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
         log.trace ("onCreateFinish: {} [{}]", GameServerConfiguration.class.getSimpleName (), configuration);
 
-        increaseLoadingProgressBy (ONE_THIRD);
+        Gdx.app.postRunnable (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            increaseLoadingProgressBy (ONE_THIRD);
+          }
+        });
       }
 
       @Override
@@ -215,7 +229,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
         if (createdGameFirst) return;
 
-        resetLoadingProgress ();
+        Gdx.app.postRunnable (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            resetLoadingProgress ();
+          }
+        });
       }
 
       @Override
@@ -225,7 +246,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
         log.trace ("onConnectToServerSuccess: {} [{}]", ServerConfiguration.class.getSimpleName (), configuration);
 
-        increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+        Gdx.app.postRunnable (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+          }
+        });
       }
 
       @Override
@@ -242,7 +270,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
                    GameServerConfiguration.class.getSimpleName (), gameServerConfiguration,
                    ClientConfiguration.class.getSimpleName (), clientConfiguration, playersInGame);
 
-        increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+        Gdx.app.postRunnable (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+          }
+        });
       }
 
       @Override
@@ -252,7 +287,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
         log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
 
-        increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+        Gdx.app.postRunnable (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+          }
+        });
       }
 
       @Override
