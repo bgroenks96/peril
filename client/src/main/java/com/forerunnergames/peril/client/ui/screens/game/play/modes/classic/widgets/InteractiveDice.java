@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -18,30 +19,30 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class AttackerDice
+public final class InteractiveDice implements Dice
 {
-  private static final Logger log = LoggerFactory.getLogger (AttackerDice.class);
-  private final ImmutableSortedSet <AttackerDie> dice;
+  private static final Logger log = LoggerFactory.getLogger (InteractiveDice.class);
+  private final ImmutableSortedSet <Die> dice;
   private final Table table;
   private final DieListener listener;
-  private final int minTotalDieCount;
-  private final int maxTotalDieCount;
+  private final int absoluteMinDieCount;
+  private final int absoluteMaxDieCount;
   private int currentMinDieCount;
   private int currentMaxDieCount;
   private int activeDieCount = currentMaxDieCount;
 
-  public AttackerDice (final ImmutableSet <AttackerDie> dice, final int minTotalDieCount, final int maxTotalDieCount)
+  public InteractiveDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
   {
     Arguments.checkIsNotNull (dice, "dice");
     Arguments.checkHasNoNullElements (dice, "dice");
-    Arguments.checkIsNotNegative (minTotalDieCount, "minTotalDieCount");
-    Arguments.checkIsNotNegative (maxTotalDieCount, "maxTotalDieCount");
+    Arguments.checkIsNotNegative (absoluteMinDieCount, "absoluteMinDieCount");
+    Arguments.checkIsNotNegative (absoluteMaxDieCount, "absoluteMaxDieCount");
 
     this.dice = ImmutableSortedSet.copyOf (dice);
-    this.minTotalDieCount = minTotalDieCount;
-    this.maxTotalDieCount = maxTotalDieCount;
-    currentMinDieCount = minTotalDieCount;
-    currentMaxDieCount = maxTotalDieCount;
+    this.absoluteMinDieCount = absoluteMinDieCount;
+    this.absoluteMaxDieCount = absoluteMaxDieCount;
+    currentMinDieCount = absoluteMinDieCount;
+    currentMaxDieCount = absoluteMaxDieCount;
 
     table = new Table ().top ().left ();
 
@@ -50,45 +51,45 @@ public final class AttackerDice
     listener = new DieListener ()
     {
       @Override
-      public void onActivate (final AttackerDie die)
+      public void onActivate (final Die die)
       {
-        log.trace ("Handling newly activated attacker die [{}]... {}", die, AttackerDice.this);
+        log.trace ("Handling newly activated die [{}]... {}", die, InteractiveDice.this);
 
         ++activeDieCount;
 
         die.setTouchable (activeDieCount > currentMinDieCount);
 
-        final AttackerDie previousDie = AttackerDice.this.dice.lower (die);
+        final Die previousDie = InteractiveDice.this.dice.lower (die);
         if (previousDie != null) previousDie.setTouchable (false);
 
-        final AttackerDie nextDie = AttackerDice.this.dice.higher (die);
+        final Die nextDie = InteractiveDice.this.dice.higher (die);
         if (nextDie != null && activeDieCount < currentMaxDieCount) nextDie.setTouchable (true);
 
-        log.trace ("Finished handling newly activated attacker die [{}]. Previous [{}]. Next [{}]. {}", die,
-                   previousDie, nextDie, AttackerDice.this);
+        log.trace ("Finished handling newly activated die [{}]. Previous [{}]. Next [{}]. {}", die, previousDie,
+                   nextDie, InteractiveDice.this);
       }
 
       @Override
-      public void onDeactivate (final AttackerDie die)
+      public void onDeactivate (final Die die)
       {
-        log.trace ("Handling newly deactivated attacker die [{}]... {}", die, AttackerDice.this);
+        log.trace ("Handling newly deactivated die [{}]... {}", die, InteractiveDice.this);
 
         --activeDieCount;
 
         die.setTouchable (activeDieCount < currentMaxDieCount);
 
-        final AttackerDie nextDie = AttackerDice.this.dice.higher (die);
+        final Die nextDie = InteractiveDice.this.dice.higher (die);
         if (nextDie != null) nextDie.setTouchable (false);
 
-        final AttackerDie previousDie = AttackerDice.this.dice.lower (die);
+        final Die previousDie = InteractiveDice.this.dice.lower (die);
         if (previousDie != null && activeDieCount > currentMinDieCount) previousDie.setTouchable (true);
 
-        log.trace ("Finished handling newly deactivated attacker die [{}]. Previous [{}]. Next [{}]. {}", die,
-                   previousDie, nextDie, AttackerDice.this);
+        log.trace ("Finished handling newly deactivated die [{}]. Previous [{}]. Next [{}]. {}", die, previousDie,
+                   nextDie, InteractiveDice.this);
       }
     };
 
-    for (final AttackerDie die : dice)
+    for (final Die die : dice)
     {
       table.add (die.asActor ()).spaceTop (14).spaceBottom (14);
       table.row ();
@@ -97,31 +98,13 @@ public final class AttackerDice
     reset ();
   }
 
-  public void clampAndSetToMax (final int minDieCount, final int maxDieCount)
-  {
-    Arguments.checkIsNotNegative (minDieCount, "minDieCount");
-    Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
-
-    log.trace ("Clamping attacker dice within range: [{} - {}].", minDieCount, maxDieCount);
-
-    reset ();
-
-    currentMinDieCount = minDieCount;
-    currentMaxDieCount = maxDieCount;
-
-    final Iterator <AttackerDie> descendingIter = dice.descendingIterator ();
-
-    while (activeDieCount > maxDieCount && descendingIter.hasNext ())
-    {
-      descendingIter.next ().deactivate ();
-    }
-  }
-
+  @Override
   public int getActiveCount ()
   {
     return activeDieCount;
   }
 
+  @Override
   public void roll (final ImmutableList <DieFaceValue> dieFaceValues)
   {
     // @formatter:off
@@ -138,7 +121,7 @@ public final class AttackerDice
     Collections.sort (sortedDieFaceValues, DieFaceValue.DESCENDING_ORDER);
     final Iterator <DieFaceValue> dieFaceValueIterator = sortedDieFaceValues.iterator ();
 
-    for (final AttackerDie die : dice)
+    for (final Die die : dice)
     {
       if (!dieFaceValueIterator.hasNext ()) break;
 
@@ -146,26 +129,35 @@ public final class AttackerDice
     }
   }
 
-  public void refreshAssets ()
+  @Override
+  public void clampToMax (final int minDieCount, final int maxDieCount)
   {
-    for (final AttackerDie die : dice)
+    Arguments.checkIsNotNegative (minDieCount, "minDieCount");
+    Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
+
+    log.trace ("Clamping dice within range: [{} - {}].", minDieCount, maxDieCount);
+
+    reset ();
+
+    currentMinDieCount = minDieCount;
+    currentMaxDieCount = maxDieCount;
+
+    final Iterator <Die> descendingIter = dice.descendingIterator ();
+
+    while (activeDieCount > maxDieCount && descendingIter.hasNext ())
     {
-      die.refreshAssets ();
+      descendingIter.next ().deactivate ();
     }
   }
 
-  public Actor asActor ()
-  {
-    return table;
-  }
-
+  @Override
   public void reset ()
   {
-    currentMinDieCount = minTotalDieCount;
-    currentMaxDieCount = maxTotalDieCount;
+    currentMinDieCount = absoluteMinDieCount;
+    currentMaxDieCount = absoluteMaxDieCount;
     activeDieCount = currentMaxDieCount;
 
-    for (final AttackerDie die : dice)
+    for (final Die die : dice)
     {
       die.reset ();
       die.setTouchable (false);
@@ -176,9 +168,26 @@ public final class AttackerDice
   }
 
   @Override
+  public void refreshAssets ()
+  {
+    for (final Die die : dice)
+    {
+      die.refreshAssets ();
+    }
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return table;
+  }
+
+  @Override
   public String toString ()
   {
-    return Strings.format ("{}: Active: {} | Min: {} | Max: {} | Dice: {}", getClass ().getSimpleName (),
-                           activeDieCount, currentMinDieCount, currentMaxDieCount, dice);
+    return Strings.format (
+                           "{}: Active Count: {} | Current Min: {} | Current Max: {} | Dice: {} | Absolute Min: {} | Absolute Max: {}",
+                           getClass ().getSimpleName (), activeDieCount, currentMinDieCount, currentMaxDieCount, dice,
+                           absoluteMinDieCount, absoluteMaxDieCount);
   }
 }

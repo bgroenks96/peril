@@ -23,9 +23,11 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -269,17 +271,70 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createButtonStyle ("die-red-remove");
   }
 
-  public AttackerDice createAttackPopupAttackerDice ()
+  public Dice createAttackPopupAttackerDice ()
   {
-    final ImmutableSet.Builder <AttackerDie> dieBuilder = ImmutableSet.builder ();
+    final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
 
     for (int i = 0; i < ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT; ++i)
     {
-      dieBuilder.add (new AttackerDie (i, this));
+      dieBuilder.add (new AbstractInteractiveDie (i, GameSettings.DEFAULT_DIE_FACE_VALUE,
+              createAttackPopupAttackerDieFaceButton (GameSettings.DEFAULT_DIE_FACE_VALUE))
+      {
+        @Override
+        protected Button.ButtonStyle createDieFaceButtonStyle (final DieFaceValue currentFaceValue)
+        {
+          return createAttackPopupAttackerDieFaceButtonStyle (currentFaceValue);
+        }
+
+        @Override
+        protected Button.ButtonStyle createActivateDieButtonStyle ()
+        {
+          return createAttackPopupAttackerDieActivateDieButtonStyle ();
+        }
+
+        @Override
+        protected Button.ButtonStyle createDeactivateDieButtonStyle ()
+        {
+          return createAttackPopupAttackerDieDeactivateDieButtonStyle ();
+        }
+      });
     }
 
-    return new AttackerDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT,
+    return new InteractiveDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT,
             ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT);
+  }
+
+  public Dice createAttackPopupDefenderDice ()
+  {
+    final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
+
+    for (int i = 0; i < ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT; ++i)
+    {
+      dieBuilder.add (new AbstractInteractiveDie (i, GameSettings.DEFAULT_DIE_FACE_VALUE,
+              createAttackPopupDefenderDieFaceButton (GameSettings.DEFAULT_DIE_FACE_VALUE))
+      {
+        @Override
+        protected Button.ButtonStyle createDieFaceButtonStyle (final DieFaceValue currentFaceValue)
+        {
+          return createAttackPopupDefenderDieFaceButtonStyle (currentFaceValue);
+        }
+
+        @Override
+        protected Button.ButtonStyle createActivateDieButtonStyle ()
+        {
+          return createAttackPopupDefenderDieActivateDieButtonStyle ();
+        }
+
+        @Override
+        protected Button.ButtonStyle createDeactivateDieButtonStyle ()
+        {
+          return createAttackPopupDefenderDieDeactivateDieButtonStyle ();
+        }
+      });
+    }
+
+    return new InteractiveDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT,
+            ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT);
   }
 
   public Button createAttackPopupDefenderDieFaceButton (final DieFaceValue dieFaceValue)
@@ -293,7 +348,17 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   {
     Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
 
-    return createButtonStyle ("die-white-" + dieFaceValue.name ().toLowerCase () + "-read-only");
+    return createButtonStyle ("die-white-" + dieFaceValue.name ().toLowerCase ());
+  }
+
+  public Button.ButtonStyle createAttackPopupDefenderDieActivateDieButtonStyle ()
+  {
+    return createButtonStyle ("die-white-add");
+  }
+
+  public Button.ButtonStyle createAttackPopupDefenderDieDeactivateDieButtonStyle ()
+  {
+    return createButtonStyle ("die-white-remove");
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)

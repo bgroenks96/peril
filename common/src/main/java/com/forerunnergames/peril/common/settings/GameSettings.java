@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.common.settings;
 
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Strings;
@@ -22,6 +23,8 @@ public final class GameSettings
   public static final String DEFAULT_CLASSIC_MODE_MAP_NAME = "classic";
   public static final int MIN_MAP_NAME_LENGTH = 2;
   public static final int MAX_MAP_NAME_LENGTH = 30;
+  public static final DieFaceValue DEFAULT_DIE_FACE_VALUE = DieFaceValue.SIX;
+  public static final float AUTO_ATTACK_SPEED_SECONDS = 0.5f;
 
   // @formatter:off
 

@@ -56,7 +56,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
@@ -264,6 +264,15 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         }
 
         battlePopup.rollAttackerDice (attackerDieFaceValues.build ());
+
+        final ImmutableList.Builder <DieFaceValue> defenderDieFaceValues = ImmutableList.builder ();
+
+        for (int i = 0; i < battlePopup.getActiveDefenderDieCount (); ++i)
+        {
+          defenderDieFaceValues.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
+        }
+
+        battlePopup.rollDefenderDice (defenderDieFaceValues.build ());
 
         // TODO Production: Remove
         eventBus.publish (StatusMessageEventFactory.create (

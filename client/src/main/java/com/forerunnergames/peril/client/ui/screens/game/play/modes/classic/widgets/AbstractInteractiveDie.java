@@ -7,35 +7,37 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class AttackerDie implements Comparable <AttackerDie>
+public abstract class AbstractInteractiveDie implements Die
 {
-  private static final Logger log = LoggerFactory.getLogger (AttackerDie.class);
-  private static final DieFaceValue INITIAL_FACE_VALUE = DieFaceValue.SIX;
+  private static final Logger log = LoggerFactory.getLogger (AbstractInteractiveDie.class);
   private final int index;
-  private final ClassicModePlayScreenWidgetFactory widgetFactory;
+  private final DieFaceValue defaultFaceValue;
   private final Button button;
-  private DieFaceValue currentFaceValue = INITIAL_FACE_VALUE;
+  private DieFaceValue currentFaceValue;
   private boolean isBeingActivated = false;
   private boolean isBeingDeactivated = false;
   private List <DieListener> listeners = new ArrayList <> ();
 
-  public AttackerDie (final int index, final ClassicModePlayScreenWidgetFactory widgetFactory)
+  public AbstractInteractiveDie (final int index, final DieFaceValue defaultFaceValue, final Button button)
   {
-    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
+    Arguments.checkIsNotNull (button, "button");
+    Arguments.checkIsNotNull (defaultFaceValue, "defaultFaceValue");
 
     this.index = index;
-    this.widgetFactory = widgetFactory;
-
-    button = widgetFactory.createAttackPopupAttackerDieFaceButton (currentFaceValue);
+    this.defaultFaceValue = defaultFaceValue;
+    this.button = button;
 
     button.addListener (new ClickListener (Input.Buttons.LEFT)
     {
@@ -86,32 +88,25 @@ public final class AttackerDie implements Comparable <AttackerDie>
         refreshAssets ();
       }
     });
+
+    reset ();
   }
 
   @Override
-  public int compareTo (final AttackerDie o)
+  public int getIndex ()
   {
-    if (index == o.index) return 0;
-
-    return index < o.index ? -1 : 1;
+    return index;
   }
 
-  public void refreshAssets ()
+  @Override
+  public boolean isActive ()
   {
-    if (isBeingActivated)
-    {
-      button.setStyle (widgetFactory.createAttackPopupAttackerDieActivateDieButtonStyle ());
-    }
-    else if (isBeingDeactivated)
-    {
-      button.setStyle (widgetFactory.createAttackPopupAttackerDieDeactivateDieButtonStyle ());
-    }
-    else
-    {
-      button.setStyle (widgetFactory.createAttackPopupAttackerDieFaceButtonStyle (currentFaceValue));
-    }
+    // We could just be temporarily enabled while being activated.
+    // In that case, no, we aren't really active yet.
+    return !button.isDisabled () && !isBeingActivated;
   }
 
+  @Override
   public void roll (final DieFaceValue faceValue)
   {
     Arguments.checkIsNotNull (faceValue, "faceValue");
@@ -121,30 +116,30 @@ public final class AttackerDie implements Comparable <AttackerDie>
     setFaceValue (faceValue);
   }
 
-  public void setTouchable (final boolean isTouchable)
+  @Override
+  public void activate ()
   {
-    button.setTouchable (isTouchable ? Touchable.enabled : Touchable.disabled);
+    if (isActive ())
+    {
+      log.trace ("Ignoring activation of die because it is already active [{}]...", this);
+      return;
+    }
+
+    log.trace ("Activating die [{}]...", this);
+
+    setFaceValue (defaultFaceValue);
+
+    button.setDisabled (false);
+
+    for (final DieListener listener : listeners)
+    {
+      listener.onActivate (this);
+    }
+
+    log.trace ("Activated die [{}].", this);
   }
 
-  public Actor asActor ()
-  {
-    return button;
-  }
-
-  public boolean isActive ()
-  {
-    // We could just be temporarily enabled while being activated.
-    // In that case, no, we aren't really active yet.
-    return !button.isDisabled () && !isBeingActivated;
-  }
-
-  public void addListener (final DieListener listener)
-  {
-    Arguments.checkIsNotNull (listener, "listener");
-
-    listeners.add (listener);
-  }
-
+  @Override
   public void deactivate ()
   {
     if (isInactive ())
@@ -165,28 +160,21 @@ public final class AttackerDie implements Comparable <AttackerDie>
     log.trace ("Deactivated die [{}].", this);
   }
 
-  public void activate ()
+  @Override
+  public void setTouchable (final boolean isTouchable)
   {
-    if (isActive ())
-    {
-      log.trace ("Ignoring activation of die because it is already active [{}]...", this);
-      return;
-    }
-
-    log.trace ("Activating die [{}]...", this);
-
-    setFaceValue (INITIAL_FACE_VALUE);
-
-    button.setDisabled (false);
-
-    for (final DieListener listener : listeners)
-    {
-      listener.onActivate (this);
-    }
-
-    log.trace ("Activated die [{}].", this);
+    button.setTouchable (isTouchable ? Touchable.enabled : Touchable.disabled);
   }
 
+  @Override
+  public void addListener (final DieListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    listeners.add (listener);
+  }
+
+  @Override
   public void reset ()
   {
     listeners.clear ();
@@ -194,9 +182,39 @@ public final class AttackerDie implements Comparable <AttackerDie>
     button.setTouchable (Touchable.enabled);
     isBeingActivated = false;
     isBeingDeactivated = false;
-    currentFaceValue = INITIAL_FACE_VALUE;
+    currentFaceValue = defaultFaceValue;
     refreshAssets ();
   }
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void refreshAssets ()
+  {
+    if (isBeingActivated)
+    {
+      button.setStyle (createActivateDieButtonStyle ());
+    }
+    else if (isBeingDeactivated)
+    {
+      button.setStyle (createDeactivateDieButtonStyle ());
+    }
+    else
+    {
+      button.setStyle (createDieFaceButtonStyle (currentFaceValue));
+    }
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return button;
+  }
+
+  protected abstract Button.ButtonStyle createDieFaceButtonStyle (final DieFaceValue currentFaceValue);
+
+  protected abstract Button.ButtonStyle createActivateDieButtonStyle ();
+
+  protected abstract Button.ButtonStyle createDeactivateDieButtonStyle ();
 
   private boolean isInactive ()
   {
@@ -213,6 +231,14 @@ public final class AttackerDie implements Comparable <AttackerDie>
   }
 
   @Override
+  public int compareTo (final Die o)
+  {
+    if (index == o.getIndex ()) return 0;
+
+    return index < o.getIndex () ? -1 : 1;
+  }
+
+  @Override
   public int hashCode ()
   {
     return index;
@@ -224,13 +250,15 @@ public final class AttackerDie implements Comparable <AttackerDie>
     if (this == obj) return true;
     if (obj == null || getClass () != obj.getClass ()) return false;
 
-    return index == ((AttackerDie) obj).index;
+    return index == ((AbstractInteractiveDie) obj).index;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Index: {} | Current Face Value: {} | Active: {} | Touchable: {}",
-                           getClass ().getSimpleName (), index, currentFaceValue, isActive (), button.isTouchable ());
+    return Strings.format (
+                           "{}: Index: {} | Current Face Value: {} | Active: {} | Touchable: {} | Default Face Value: {}",
+                           getClass ().getSimpleName (), index, currentFaceValue, isActive (), button.isTouchable (),
+                           defaultFaceValue);
   }
 }

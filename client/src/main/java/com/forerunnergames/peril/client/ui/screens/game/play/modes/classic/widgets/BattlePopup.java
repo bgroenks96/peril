@@ -24,8 +24,10 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.widgets.popup.KeyListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -39,7 +41,6 @@ public final class BattlePopup extends OkPopup
 {
   // @formatter:off
   private static final boolean DEBUG = false;
-  private static final float AUTO_ATTACK_SPEED_SECONDS = 0.5f;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
   private static final float COUNTRY_NAME_BOX_HEIGHT = 28;
   private static final float PLAYER_NAME_BOX_WIDTH = 400;
@@ -61,7 +62,8 @@ public final class BattlePopup extends OkPopup
   private final Label attackingCountryNameLabel;
   private final Label defendingCountryNameLabel;
   private final Label attackingArrowLabel;
-  private final AttackerDice attackerDice;
+  private final Dice attackerDice;
+  private final Dice defenderDice;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
   private Label autoAttackLabel;
@@ -116,6 +118,7 @@ public final class BattlePopup extends OkPopup
     autoAttackLabel = widgetFactory.createBattlePopupAutoAttackLabel ();
     attackingArrowLabel = widgetFactory.createBattlePopupArrowLabel ();
     attackerDice = widgetFactory.createAttackPopupAttackerDice ();
+    defenderDice = widgetFactory.createAttackPopupDefenderDice ();
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -130,8 +133,9 @@ public final class BattlePopup extends OkPopup
     defendingCountryTable.setClip (true);
     defendingCountryTable.setDebug (DEBUG, true);
 
-    final Table diceTable = new Table ().top ().left ().pad (2);
-    diceTable.add (attackerDice.asActor ()).spaceRight (34);
+    final Table diceTable = new Table ().pad (2);
+    diceTable.add (attackerDice.asActor ()).spaceRight (34).top ();
+    diceTable.add (defenderDice.asActor ()).top ();
     diceTable.setDebug (DEBUG, true);
 
     final Table leftTable = new Table ().top ().pad (2);
@@ -186,6 +190,7 @@ public final class BattlePopup extends OkPopup
     autoAttackLabel.setStyle (widgetFactory.createBattlePopupAutoAttackLabelStyle ());
     attackingArrowLabel.setStyle (widgetFactory.createBattlePopupArrowLabelStyle ());
     attackerDice.refreshAssets ();
+    defenderDice.refreshAssets ();
   }
 
   @Override
@@ -299,6 +304,11 @@ public final class BattlePopup extends OkPopup
     attackerDice.roll (dieFaceValues);
   }
 
+  public void rollDefenderDice (final ImmutableList <DieFaceValue> dieFaceValues)
+  {
+    defenderDice.roll (dieFaceValues);
+  }
+
   public String getAttackingCountryName ()
   {
     return attackingCountryNameLabel.getText ().toString ();
@@ -324,6 +334,11 @@ public final class BattlePopup extends OkPopup
     return attackerDice.getActiveCount ();
   }
 
+  public int getActiveDefenderDieCount ()
+  {
+    return defenderDice.getActiveCount ();
+  }
+
   private static Image asImage (final CountryActor countryActor)
   {
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
@@ -331,8 +346,11 @@ public final class BattlePopup extends OkPopup
 
   private void setDice (final int attackingCountryArmies, final int defendingCountryArmies)
   {
-    attackerDice.clampAndSetToMax (gameRules.getMinAttackerDieCount (attackingCountryArmies),
-                                   gameRules.getMaxAttackerDieCount (attackingCountryArmies));
+    attackerDice.clampToMax (gameRules.getMinAttackerDieCount (attackingCountryArmies),
+                             gameRules.getMaxAttackerDieCount (attackingCountryArmies));
+
+    defenderDice.clampToMax (gameRules.getMinDefenderDieCount (defendingCountryArmies),
+                             gameRules.getMaxDefenderDieCount (defendingCountryArmies));
   }
 
   private void startAutoAttack ()
@@ -347,7 +365,7 @@ public final class BattlePopup extends OkPopup
       {
         attackButton.toggle ();
       }
-    }, 0.0f, AUTO_ATTACK_SPEED_SECONDS);
+    }, 0.0f, GameSettings.AUTO_ATTACK_SPEED_SECONDS);
   }
 
   private void stopAutoAttack ()
