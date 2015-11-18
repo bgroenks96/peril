@@ -247,55 +247,21 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createLabelStyle ("battle-popup-arrow");
   }
 
-  public Button createAttackPopupAttackerDieFaceButton (final DieFaceValue dieFaceValue)
-  {
-    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
-
-    return createButton (createAttackPopupAttackerDieFaceButtonStyle (dieFaceValue));
-  }
-
-  public Button.ButtonStyle createAttackPopupAttackerDieFaceButtonStyle (final DieFaceValue dieFaceValue)
-  {
-    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
-
-    return createButtonStyle ("die-red-" + dieFaceValue.name ().toLowerCase ());
-  }
-
-  public Button.ButtonStyle createAttackPopupAttackerDieActivateDieButtonStyle ()
-  {
-    return createButtonStyle ("die-red-add");
-  }
-
-  public Button.ButtonStyle createAttackPopupAttackerDieDeactivateDieButtonStyle ()
-  {
-    return createButtonStyle ("die-red-remove");
-  }
-
   public Dice createAttackPopupAttackerDice ()
   {
     final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
 
     for (int i = 0; i < ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT; ++i)
     {
-      dieBuilder.add (new AbstractInteractiveDie (i, GameSettings.DEFAULT_DIE_FACE_VALUE,
-              createAttackPopupAttackerDieFaceButton (GameSettings.DEFAULT_DIE_FACE_VALUE))
+      dieBuilder.add (new AbstractDie (i, GameSettings.DEFAULT_DIE_FACE_VALUE,
+              createBattlePopupAttackerDieFaceButton (GameSettings.DEFAULT_DIE_FACE_VALUE))
       {
         @Override
-        protected Button.ButtonStyle createDieFaceButtonStyle (final DieFaceValue currentFaceValue)
+        protected Button.ButtonStyle createDieButtonStyle (final DieState state, final DieFaceValue faceValue)
         {
-          return createAttackPopupAttackerDieFaceButtonStyle (currentFaceValue);
-        }
-
-        @Override
-        protected Button.ButtonStyle createActivateDieButtonStyle ()
-        {
-          return createAttackPopupAttackerDieActivateDieButtonStyle ();
-        }
-
-        @Override
-        protected Button.ButtonStyle createDeactivateDieButtonStyle ()
-        {
-          return createAttackPopupAttackerDieDeactivateDieButtonStyle ();
+          // @formatter:off
+          return createButtonStyle ("die-red-" + (state == DieState.ENABLED ? faceValue.name ().toLowerCase () : state.name ().toLowerCase ()));
+          // @formatter:on
         }
       });
     }
@@ -310,55 +276,21 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
     for (int i = 0; i < ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT; ++i)
     {
-      dieBuilder.add (new AbstractInteractiveDie (i, GameSettings.DEFAULT_DIE_FACE_VALUE,
-              createAttackPopupDefenderDieFaceButton (GameSettings.DEFAULT_DIE_FACE_VALUE))
+      dieBuilder.add (new AbstractDie (i, GameSettings.DEFAULT_DIE_FACE_VALUE,
+              createBattlePopupDefenderDieFaceButton (GameSettings.DEFAULT_DIE_FACE_VALUE))
       {
         @Override
-        protected Button.ButtonStyle createDieFaceButtonStyle (final DieFaceValue currentFaceValue)
+        protected Button.ButtonStyle createDieButtonStyle (final DieState state, final DieFaceValue faceValue)
         {
-          return createAttackPopupDefenderDieFaceButtonStyle (currentFaceValue);
-        }
-
-        @Override
-        protected Button.ButtonStyle createActivateDieButtonStyle ()
-        {
-          return createAttackPopupDefenderDieActivateDieButtonStyle ();
-        }
-
-        @Override
-        protected Button.ButtonStyle createDeactivateDieButtonStyle ()
-        {
-          return createAttackPopupDefenderDieDeactivateDieButtonStyle ();
+          // @formatter:off
+          return createButtonStyle ("die-white-" + (state == DieState.ENABLED ? faceValue.name ().toLowerCase () : state.name ().toLowerCase ()));
+          // @formatter:on
         }
       });
     }
 
-    return new InteractiveDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT,
+    return new NonInteractiveDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT,
             ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT);
-  }
-
-  public Button createAttackPopupDefenderDieFaceButton (final DieFaceValue dieFaceValue)
-  {
-    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
-
-    return createButton (createAttackPopupDefenderDieFaceButtonStyle (dieFaceValue));
-  }
-
-  public Button.ButtonStyle createAttackPopupDefenderDieFaceButtonStyle (final DieFaceValue dieFaceValue)
-  {
-    Arguments.checkIsNotNull (dieFaceValue, "dieFaceValue");
-
-    return createButtonStyle ("die-white-" + dieFaceValue.name ().toLowerCase ());
-  }
-
-  public Button.ButtonStyle createAttackPopupDefenderDieActivateDieButtonStyle ()
-  {
-    return createButtonStyle ("die-white-add");
-  }
-
-  public Button.ButtonStyle createAttackPopupDefenderDieDeactivateDieButtonStyle ()
-  {
-    return createButtonStyle ("die-white-remove");
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)
@@ -366,5 +298,25 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
     playMapActorFactory.destroy (mapMetadata);
+  }
+
+  private Button createBattlePopupAttackerDieFaceButton (final DieFaceValue dieFaceValue)
+  {
+    return createButton (createBattlePopupAttackerDieFaceButtonStyle (dieFaceValue));
+  }
+
+  private Button.ButtonStyle createBattlePopupAttackerDieFaceButtonStyle (final DieFaceValue dieFaceValue)
+  {
+    return createButtonStyle ("die-red-" + dieFaceValue.name ().toLowerCase ());
+  }
+
+  private Button createBattlePopupDefenderDieFaceButton (final DieFaceValue dieFaceValue)
+  {
+    return createButton (createBattlePopupDefenderDieFaceButtonStyle (dieFaceValue));
+  }
+
+  private Button.ButtonStyle createBattlePopupDefenderDieFaceButtonStyle (final DieFaceValue dieFaceValue)
+  {
+    return createButtonStyle ("die-white-" + dieFaceValue.name ().toLowerCase ());
   }
 }

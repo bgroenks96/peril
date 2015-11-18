@@ -2,7 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 public interface DieListener
 {
-  void onActivate (final Die die);
+  void onEnable (final Die die);
 
-  void onDeactivate (final Die die);
+  void onDisable (final Die die);
 }
