@@ -346,6 +346,9 @@ public final class BattlePopup extends OkPopup
 
   private void setDice (final int attackingCountryArmies, final int defendingCountryArmies)
   {
+    attackerDice.reset ();
+    defenderDice.reset ();
+
     attackerDice.clampToMax (gameRules.getMinAttackerDieCount (attackingCountryArmies),
                              gameRules.getMaxAttackerDieCount (attackingCountryArmies));
 
@@ -357,6 +360,8 @@ public final class BattlePopup extends OkPopup
   {
     if (!autoAttackButton.isChecked ()) return;
     if (autoAttackTask != null && autoAttackTask.isScheduled ()) return;
+
+    attackerDice.setTouchable (false);
 
     autoAttackTask = Timer.schedule (new Timer.Task ()
     {
@@ -373,6 +378,7 @@ public final class BattlePopup extends OkPopup
     if (autoAttackTask == null) return;
 
     autoAttackTask.cancel ();
+    attackerDice.setTouchable (true);
   }
 
   private void turnOffAutoAttack ()

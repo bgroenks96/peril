@@ -7,7 +7,6 @@ import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
@@ -17,24 +16,23 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractDice implements Dice
+public final class DefaultDice implements Dice
 {
-  protected final Logger log = LoggerFactory.getLogger (getClass ());
+  private static final Logger log = LoggerFactory.getLogger (DefaultDice.class);
   private final ImmutableSortedSet <Die> dice;
   private final Table table;
   private final DieListener listener;
   private final int absoluteMinDieCount;
   private final int absoluteMaxDieCount;
+  private boolean isTouchable = true;
   private int currentMinDieCount;
   private int currentMaxDieCount;
   private int activeDieCount;
 
-  protected AbstractDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
+  public DefaultDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
   {
     Arguments.checkIsNotNull (dice, "dice");
     Arguments.checkHasNoNullElements (dice, "dice");
@@ -55,23 +53,39 @@ public abstract class AbstractDice implements Dice
       @Override
       public void onEnable (final Die die)
       {
-        log.trace ("Handling newly activated die [{}]... {}", die, AbstractDice.this);
+        Arguments.checkIsNotNull (die, "die");
+
+        log.trace ("Handling newly activated die [{}]... {}", die, DefaultDice.this);
 
         ++activeDieCount;
 
+        if (!isTouchable) return;
+
+        die.setTouchable (canDisableMoreDice ());
+        previousDieFrom (die).setTouchable (false);
+        nextDieFrom (die).setTouchable (canEnableMoreDice ());
+
         log.trace ("Finished handling newly activated die [{}]. Previous [{}]. Next [{}]. {}", die,
-                   AbstractDice.this.dice.lower (die), AbstractDice.this.dice.higher (die), AbstractDice.this);
+                   DefaultDice.this.dice.lower (die), DefaultDice.this.dice.higher (die), DefaultDice.this);
       }
 
       @Override
       public void onDisable (final Die die)
       {
-        log.trace ("Handling newly deactivated die [{}]... {}", die, AbstractDice.this);
+        Arguments.checkIsNotNull (die, "die");
+
+        log.trace ("Handling newly deactivated die [{}]... {}", die, DefaultDice.this);
 
         --activeDieCount;
 
+        if (!isTouchable) return;
+
+        die.setTouchable (canEnableMoreDice ());
+        nextDieFrom (die).setTouchable (false);
+        previousDieFrom (die).setTouchable (canDisableMoreDice ());
+
         log.trace ("Finished handling newly deactivated die [{}]. Previous [{}]. Next [{}]. {}", die,
-                   AbstractDice.this.dice.lower (die), AbstractDice.this.dice.higher (die), AbstractDice.this);
+                   DefaultDice.this.dice.lower (die), DefaultDice.this.dice.higher (die), DefaultDice.this);
       }
     };
 
@@ -82,16 +96,18 @@ public abstract class AbstractDice implements Dice
 
       die.addListener (listener);
     }
+
+    reset ();
   }
 
   @Override
-  public final int getActiveCount ()
+  public int getActiveCount ()
   {
     return activeDieCount;
   }
 
   @Override
-  public final void roll (final ImmutableList <DieFaceValue> dieFaceValues)
+  public void roll (final ImmutableList <DieFaceValue> dieFaceValues)
   {
     // @formatter:off
     Arguments.checkIsNotNull (dieFaceValues, "dieFaceValues");
@@ -116,28 +132,23 @@ public abstract class AbstractDice implements Dice
   }
 
   @Override
-  public final void clampToMax (final int minDieCount, final int maxDieCount)
+  public void clampToMax (final int minDieCount, final int maxDieCount)
   {
     Arguments.checkIsNotNegative (minDieCount, "minDieCount");
     Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
 
-    log.trace ("Clamping dice within range: [{} - {}].", minDieCount, maxDieCount);
-
-    reset ();
-
-    currentMinDieCount = minDieCount;
-    currentMaxDieCount = maxDieCount;
-
-    final Iterator <Die> descendingIter = dice.descendingIterator ();
-
-    while (activeDieCount > maxDieCount && descendingIter.hasNext ())
-    {
-      descendingIter.next ().disable ();
-    }
+    clampToCount (maxDieCount, minDieCount, maxDieCount);
   }
 
   @Override
-  @OverridingMethodsMustInvokeSuper
+  public void setTouchable (final boolean isTouchable)
+  {
+    this.isTouchable = isTouchable;
+
+    clampToCount (activeDieCount, currentMinDieCount, currentMaxDieCount);
+  }
+
+  @Override
   public void reset ()
   {
     currentMinDieCount = absoluteMinDieCount;
@@ -148,10 +159,27 @@ public abstract class AbstractDice implements Dice
     {
       die.reset ();
     }
+
+    lastDie ().setTouchable (isTouchable);
   }
 
   @Override
-  public final void refreshAssets ()
+  public void resetPreservingFaceValue ()
+  {
+    currentMinDieCount = absoluteMinDieCount;
+    currentMaxDieCount = absoluteMaxDieCount;
+    activeDieCount = currentMaxDieCount;
+
+    for (final Die die : dice)
+    {
+      die.resetPreservingFaceValue ();
+    }
+
+    lastDie ().setTouchable (isTouchable);
+  }
+
+  @Override
+  public void refreshAssets ()
   {
     for (final Die die : dice)
     {
@@ -160,52 +188,69 @@ public abstract class AbstractDice implements Dice
   }
 
   @Override
-  public final Actor asActor ()
+  public Actor asActor ()
   {
     return table;
   }
 
-  protected final void addListener (final DieListener listener)
+  private void clampToCount (final int desiredActiveDieCount, final int minDieCount, final int maxDieCount)
   {
-    Arguments.checkIsNotNull (listener, "listener");
+    assert minDieCount >= absoluteMinDieCount;
+    assert maxDieCount <= absoluteMaxDieCount;
+    assert minDieCount <= maxDieCount;
+    assert desiredActiveDieCount >= minDieCount;
+    assert desiredActiveDieCount <= maxDieCount;
 
-    for (final Die die : dice)
+    log.trace ("Clamping dice within range: [{} - {}] to [{}].", minDieCount, maxDieCount, desiredActiveDieCount);
+
+    resetPreservingFaceValue ();
+
+    currentMinDieCount = minDieCount;
+    currentMaxDieCount = maxDieCount;
+
+    final Iterator <Die> descendingIter = dice.descendingIterator ();
+
+    while (activeDieCount > desiredActiveDieCount && descendingIter.hasNext ())
     {
-      die.addListener (listener);
+      descendingIter.next ().disable ();
     }
   }
 
-  protected final Die lastDie ()
+  private Die lastDie ()
   {
-    return dice.last ();
+    return dice.isEmpty () ? Die.NULL_DIE : dice.last ();
   }
 
-  protected final boolean canEnableMoreDice ()
+  private boolean canEnableMoreDice ()
   {
     return activeDieCount < currentMaxDieCount;
   }
 
-  protected final boolean canDisableMoreDice ()
+  private boolean canDisableMoreDice ()
   {
     return activeDieCount > currentMinDieCount;
   }
 
-  protected final Optional <Die> previousDieFrom (final Die die)
+  private Die previousDieFrom (final Die die)
   {
     Arguments.checkIsNotNull (die, "die");
 
-    return Optional.fromNullable (dice.lower (die));
+    final Die previousDie = dice.lower (die);
+
+    return previousDie != null ? previousDie : Die.NULL_DIE;
   }
 
-  protected final Optional <Die> nextDieFrom (final Die die)
+  private Die nextDieFrom (final Die die)
   {
     Arguments.checkIsNotNull (die, "die");
 
-    return Optional.fromNullable (dice.higher (die));
+    final Die nextDie = dice.higher (die);
+
+    return nextDie != null ? nextDie : Die.NULL_DIE;
   }
 
   @Override
-  public final String toString ()
+  public String toString ()
   {
     return Strings.format (
                            "{}: Active Count: {} | Current Min: {} | Current Max: {} | Dice: {} | Absolute Min: {} | Absolute Max: {}",

@@ -198,10 +198,16 @@ public abstract class AbstractDie implements Die
   }
 
   @Override
-  public final void reset ()
+  public void reset ()
+  {
+    currentFaceValue = defaultFaceValue;
+    resetPreservingFaceValue ();
+  }
+
+  @Override
+  public final void resetPreservingFaceValue ()
   {
     currentState = DEFAULT_STATE;
-    currentFaceValue = defaultFaceValue;
     button.setTouchable (Touchable.disabled);
     refreshAssets ();
   }

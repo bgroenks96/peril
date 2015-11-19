@@ -14,7 +14,11 @@ public interface Dice
 
   void clampToMax (int minDieCount, int maxDieCount);
 
+  void setTouchable (final boolean isTouchable);
+
   void reset ();
+
+  void resetPreservingFaceValue ();
 
   void refreshAssets ();
 

@@ -266,7 +266,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
       });
     }
 
-    return new InteractiveDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT,
+    return new DefaultDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT,
             ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT);
   }
 
@@ -289,8 +289,12 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
       });
     }
 
-    return new NonInteractiveDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT,
+    final Dice dice = new DefaultDice (dieBuilder.build (), ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT,
             ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT);
+
+    dice.setTouchable (false);
+
+    return dice;
   }
 
   public void destroyPlayMapActor (final MapMetadata mapMetadata)

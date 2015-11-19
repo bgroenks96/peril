@@ -10,6 +10,8 @@ import com.google.common.collect.Table;
 
 public interface Die extends Comparable <Die>
 {
+  Die NULL_DIE = new NullDie ();
+
   enum DieState
   {
     ENABLED (DieRollable.TRUE),
@@ -79,11 +81,13 @@ public interface Die extends Comparable <Die>
 
   void disable ();
 
-  void setTouchable (boolean isTouchable);
+  void setTouchable (final boolean isTouchable);
 
   void addListener (final DieListener listener);
 
   void reset ();
+
+  void resetPreservingFaceValue ();
 
   void refreshAssets ();
 
