@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.common.game.rules;
 
 import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.tools.common.Arguments;
@@ -258,6 +260,32 @@ public final class ClassicGameRules implements GameRules
     if (defendingCountryArmyCount > 1) return MAX_TOTAL_DEFENDER_DIE_COUNT;
 
     return defendingCountryArmyCount == 1 ? 1 : 0;
+  }
+
+  @Override
+  public DieOutcome determineAttackerOutcome (final DieFaceValue attackerDie, final DieFaceValue defenderDie)
+  {
+    Arguments.checkIsNotNull (attackerDie, "attackerDie");
+    Arguments.checkIsNotNull (defenderDie, "defenderDie");
+
+    // This is the outcome from the perspective of the attacker.
+    // An attacker's die value must be strictly greater than the defender's die value to win.
+    // Thus, the attacker loses in the case of a tie.
+
+    return attackerDie.value () > defenderDie.value () ? DieOutcome.WIN : DieOutcome.LOSE;
+  }
+
+  @Override
+  public DieOutcome determineDefenderOutcome (final DieFaceValue defenderDie, final DieFaceValue attackerDie)
+  {
+    Arguments.checkIsNotNull (defenderDie, "defenderDie");
+    Arguments.checkIsNotNull (attackerDie, "attackerDie");
+
+    // This is the outcome from the perspective of the defender.
+    // A defender's die value may be greater than or equal to the attacker's die value to win.
+    // Thus, the defender wins in the case of a tie.
+
+    return defenderDie.value () >= attackerDie.value () ? DieOutcome.WIN : DieOutcome.LOSE;
   }
 
   /**

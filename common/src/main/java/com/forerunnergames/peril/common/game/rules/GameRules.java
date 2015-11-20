@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.common.game.rules;
 
 import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 
@@ -63,6 +65,10 @@ public interface GameRules
   int getMinDefenderDieCount (final int defendingCountryArmyCount);
 
   int getMaxDefenderDieCount (final int defendingCountryArmyCount);
+
+  DieOutcome determineAttackerOutcome (final DieFaceValue attackerDie, final DieFaceValue defenderDie);
+
+  DieOutcome determineDefenderOutcome (final DieFaceValue defenderDie, final DieFaceValue attackerDie);
 
   ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount);
 

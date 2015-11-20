@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 
 import com.google.common.collect.ImmutableList;
@@ -523,5 +525,171 @@ public class ClassicGameRulesTest
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
     rules.getMaxDefenderDieCount (Integer.MIN_VALUE);
+  }
+
+  @Test
+  public void testDetermineAttackerOutcomeWin ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.SIX, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FIVE, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FOUR, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.THREE, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.TWO, DieFaceValue.ONE));
+
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.SIX, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FIVE, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FOUR, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.THREE, DieFaceValue.TWO));
+
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.SIX, DieFaceValue.THREE));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FIVE, DieFaceValue.THREE));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FOUR, DieFaceValue.THREE));
+
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.SIX, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.FIVE, DieFaceValue.FOUR));
+
+    assertEquals (DieOutcome.WIN, rules.determineAttackerOutcome (DieFaceValue.SIX, DieFaceValue.FIVE));
+  }
+
+  @Test
+  public void testDetermineAttackerOutcomeLose ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.SIX, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.FIVE, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.FOUR, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.THREE, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.TWO, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.ONE, DieFaceValue.SIX));
+
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.FIVE, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.FOUR, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.THREE, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.TWO, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.ONE, DieFaceValue.FIVE));
+
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.FOUR, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.THREE, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.TWO, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.ONE, DieFaceValue.FOUR));
+
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.THREE, DieFaceValue.THREE));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.TWO, DieFaceValue.THREE));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.ONE, DieFaceValue.THREE));
+
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.TWO, DieFaceValue.TWO));
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.ONE, DieFaceValue.TWO));
+
+    assertEquals (DieOutcome.LOSE, rules.determineAttackerOutcome (DieFaceValue.ONE, DieFaceValue.ONE));
+  }
+
+  @Test
+  public void testDetermineDefenderOutcomeWin ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.SIX, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FIVE, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FOUR, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.THREE, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.TWO, DieFaceValue.ONE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.ONE, DieFaceValue.ONE));
+
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.SIX, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FIVE, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FOUR, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.THREE, DieFaceValue.TWO));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.TWO, DieFaceValue.TWO));
+
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.SIX, DieFaceValue.THREE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FIVE, DieFaceValue.THREE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FOUR, DieFaceValue.THREE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.THREE, DieFaceValue.THREE));
+
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.SIX, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FIVE, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FOUR, DieFaceValue.FOUR));
+
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.SIX, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.FIVE, DieFaceValue.FIVE));
+
+    assertEquals (DieOutcome.WIN, rules.determineDefenderOutcome (DieFaceValue.SIX, DieFaceValue.SIX));
+  }
+
+  @Test
+  public void testDetermineDefenderOutcomeLose ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.FIVE, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.FOUR, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.THREE, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.TWO, DieFaceValue.SIX));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.ONE, DieFaceValue.SIX));
+
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.FOUR, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.THREE, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.TWO, DieFaceValue.FIVE));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.ONE, DieFaceValue.FIVE));
+
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.THREE, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.TWO, DieFaceValue.FOUR));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.ONE, DieFaceValue.FOUR));
+
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.TWO, DieFaceValue.THREE));
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.ONE, DieFaceValue.THREE));
+
+    assertEquals (DieOutcome.LOSE, rules.determineDefenderOutcome (DieFaceValue.ONE, DieFaceValue.TWO));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testDetermineAttackerOutcomeNullAttackerDieFaceValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.determineAttackerOutcome (null, DieFaceValue.ONE);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testDetermineAttackerOutcomeNullDefenderDieFaceValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.determineAttackerOutcome (DieFaceValue.FOUR, null);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testDetermineAttackerOutcomeNullAttackerAndDefenderDieFaceValues ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.determineAttackerOutcome (null, null);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testDetermineDefenderOutcomeNullDefenderDieFaceValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.determineDefenderOutcome (null, DieFaceValue.TWO);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testDetermineDefenderOutcomeNullAttackerDieFaceValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.determineDefenderOutcome (DieFaceValue.THREE, null);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testDetermineDefenderOutcomeNullDefenderAndAttackerDieFaceValues ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    rules.determineDefenderOutcome (null, null);
   }
 }
