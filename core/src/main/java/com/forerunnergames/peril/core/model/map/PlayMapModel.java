@@ -65,7 +65,7 @@ public interface PlayMapModel
   ImmutableSet <Country> getCountriesOwnedBy (final Id ownerId);
 
   ImmutableSet <String> getCountryNamesOwnedBy (final Id ownerId);
-  
+
   ImmutableSet <Continent> getContinentsOwnedBy (final Id ownerId);
 
   void unassignAllCountries ();

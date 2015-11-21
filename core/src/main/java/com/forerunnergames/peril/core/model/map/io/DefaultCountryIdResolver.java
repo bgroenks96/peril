@@ -39,8 +39,8 @@ public final class DefaultCountryIdResolver implements CountryIdResolver
   public Id getIdOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
-    Preconditions.checkIsTrue (countryNamesToIds.containsKey (countryName), "Country name " + "[" + countryName
-            + "] does not exist.");
+    Preconditions.checkIsTrue (countryNamesToIds.containsKey (countryName),
+                               "Country name " + "[" + countryName + "] does not exist.");
 
     return countryNamesToIds.get (countryName);
   }

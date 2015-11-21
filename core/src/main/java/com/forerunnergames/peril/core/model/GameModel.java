@@ -14,6 +14,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
@@ -358,7 +359,8 @@ public final class GameModel
 
     final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (player.getId ());
     final int cardCount = cardModel.countCardsInHand (player.getId ());
-    final ImmutableSet <CountryPacket> playerOwnedCountries = Packets.fromCountries (playMapModel.getCountriesOwnedBy (player.getId ()));
+    final ImmutableSet <CountryPacket> playerOwnedCountries = Packets
+            .fromCountries (playMapModel.getCountriesOwnedBy (player.getId ()));
     final ImmutableSet <CardSetPacket> matchPackets = Packets.fromCardMatchSet (matches);
     // publish card trade in request
     eventBus.publish (new PlayerReinforceCountriesRequestEvent (Packets.from (player), countryReinforcementBonus,
@@ -454,7 +456,11 @@ public final class GameModel
 
   void beginAttackPhase ()
   {
-    // TODO
+    final Player player = getCurrentPlayer ();
+
+    log.info ("Begin attack phase for player [{}].", player);
+
+    eventBus.publish (new BeginAttackPhaseEvent (Packets.from (player)));
   }
 
   PlayerModel getPlayerModel ()

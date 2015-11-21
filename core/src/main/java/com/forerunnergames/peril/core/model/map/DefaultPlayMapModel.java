@@ -179,7 +179,7 @@ public final class DefaultPlayMapModel implements PlayMapModel
   {
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNull (playerId, "playerId");
-    
+
     return existsCountryWith (countryId) && isCountryOwned (countryId) && ownerOf (countryId).is (playerId);
   }
 
@@ -287,7 +287,7 @@ public final class DefaultPlayMapModel implements PlayMapModel
   public ImmutableSet <Continent> getContinentsOwnedBy (final Id ownerId)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
-    
+
     final ImmutableSet.Builder <Continent> ownedContinents = ImmutableSet.builder ();
     for (final Continent cont : continentIdsToContinents.values ())
     {
@@ -305,7 +305,7 @@ public final class DefaultPlayMapModel implements PlayMapModel
     }
     return ownedContinents.build ();
   }
-  
+
   @Override
   public void unassignAllCountries ()
   {
