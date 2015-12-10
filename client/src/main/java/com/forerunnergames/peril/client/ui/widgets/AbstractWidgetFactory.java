@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -164,12 +166,20 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
+  public ImageButton createImageButton (final ImageButton.ImageButtonStyle style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return new ImageButton (style);
+  }
+
+  @Override
   public final ImageButton createImageButton (final ImageButton.ImageButtonStyle style, final EventListener listener)
   {
     Arguments.checkIsNotNull (style, "style");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final ImageButton imageButton = new ImageButton (style);
+    final ImageButton imageButton = createImageButton (style);
     imageButton.addListener (listener);
 
     return imageButton;
@@ -184,12 +194,8 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public final Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
+  public Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
   {
-    Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (listener, "listener");
-
     return new QuitPopup (this, message, stage, listener);
   }
 
@@ -509,6 +515,22 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     return getSkinResource (styleName, Window.WindowStyle.class);
   }
 
+  @Override
+  public BitmapFont createBitmapFont (final String fontName)
+  {
+    Arguments.checkIsNotNull (fontName, "fontName");
+
+    return getSkinResource (fontName, BitmapFont.class);
+  }
+
+  @Override
+  public TextureRegion createTextureRegion (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    return getSkin ().getRegion (name);
+  }
+
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)
   {
     Arguments.checkIsNotNull (assetDescriptor, "assetDescriptor");
@@ -516,12 +538,12 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     return assetManager.get (assetDescriptor);
   }
 
-  protected final <T> T getSkinResource (final String styleName, final Class <T> type)
+  protected final <T> T getSkinResource (final String name, final Class <T> type)
   {
-    Arguments.checkIsNotNull (styleName, "styleName");
+    Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (type, "type");
 
-    return getSkin ().get (styleName, type);
+    return getSkin ().get (name, type);
   }
 
   protected abstract AssetDescriptor <Skin> getSkinAssetDescriptor ();

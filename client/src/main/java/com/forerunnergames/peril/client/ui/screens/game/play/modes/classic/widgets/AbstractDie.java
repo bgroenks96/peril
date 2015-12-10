@@ -4,10 +4,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -20,24 +22,29 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractDie implements Die
+abstract class AbstractDie implements Die
 {
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (AbstractDie.class);
-  private static final DieState DEFAULT_STATE = DieState.ENABLED;
   private final DieFaceValue defaultFaceValue;
-  private final Button button;
+  private final ImageButton button;
   private final int index;
   private final Table <DieState, DieStateTransition, DieStateTransitionAction> transitionActionsTable = HashBasedTable.create ();
   private final Collection <DieListener> listeners = new ArrayList <> ();
-  private DieFaceValue currentFaceValue;
-  private DieState currentState;
+  private DieFaceValue currentFaceValue = GameSettings.DEFAULT_DIE_FACE_VALUE;
+  private DieFaceValue spinningFaceValue = GameSettings.DEFAULT_DIE_FACE_VALUE;
+  private DieState currentState = Die.DEFAULT_STATE;
+  private DieOutcome currentOutcome = Die.DEFAULT_OUTCOME;
+  private boolean isSpinning = true;
+  private float spinThresholdTimeSeconds = GameSettings.DICE_SPINNING_INTERVAL_SECONDS;
+  private float currentSpinTimeSeconds = 0.0f;
   // @formatter:on
 
-  protected AbstractDie (final int index, final DieFaceValue defaultFaceValue, final Button button)
+  protected AbstractDie (final int index, final DieFaceValue defaultFaceValue, final ImageButton button)
   {
     Arguments.checkIsNotNull (button, "button");
     Arguments.checkIsNotNull (defaultFaceValue, "defaultFaceValue");
+    Arguments.checkIsNotNull (button, "button");
 
     this.index = index;
     this.defaultFaceValue = defaultFaceValue;
@@ -50,6 +57,7 @@ public abstract class AbstractDie implements Die
       @Override
       public void onTransition (final DieState toState)
       {
+        stopSpinning ();
         refreshAssets (toState);
       }
     });
@@ -59,6 +67,7 @@ public abstract class AbstractDie implements Die
       @Override
       public void onTransition (final DieState toState)
       {
+        stopSpinning ();
         refreshAssets (toState);
       }
     });
@@ -68,6 +77,7 @@ public abstract class AbstractDie implements Die
       @Override
       public void onTransition (final DieState toState)
       {
+        startSpinning ();
         refreshAssets (toState);
       }
     });
@@ -77,6 +87,7 @@ public abstract class AbstractDie implements Die
       @Override
       public void onTransition (final DieState toState)
       {
+        startSpinning ();
         refreshAssets (toState);
       }
     });
@@ -126,7 +137,7 @@ public abstract class AbstractDie implements Die
       }
     });
 
-    reset ();
+    resetAll ();
   }
 
   @Override
@@ -144,17 +155,69 @@ public abstract class AbstractDie implements Die
 
     currentFaceValue = faceValue;
 
+    stopSpinning ();
     refreshAssets ();
+
+    log.trace ("Rolled die [{}].", this);
+  }
+
+  @Override
+  public final void setOutcomeAgainst (final DieFaceValue competingFaceValue)
+  {
+    Arguments.checkIsNotNull (competingFaceValue, "competingFaceValue");
+
+    if (!currentState.isOutcomeable ()) return;
+
+    currentOutcome = determineOutcome (currentFaceValue, competingFaceValue);
+
+    stopSpinning ();
+    refreshAssets ();
+
+    log.trace ("Set outcome of die with face value [{}] to [{}] against die with face value [{}].", currentFaceValue,
+               currentOutcome, competingFaceValue);
+  }
+
+  @Override
+  public void setOutcome (final DieOutcome outcome)
+  {
+    Arguments.checkIsNotNull (outcome, "outcome");
+
+    if (!currentState.isOutcomeable ()) return;
+
+    currentOutcome = outcome;
+
+    stopSpinning ();
+    refreshAssets ();
+
+    log.trace ("Set outcome of die with face value [{}] to [{}].", currentFaceValue, currentOutcome);
+  }
+
+  @Override
+  public final DieOutcome getOutcome ()
+  {
+    return currentOutcome;
+  }
+
+  @Override
+  public final boolean hasWinOutcome ()
+  {
+    return currentOutcome == DieOutcome.WIN;
+  }
+
+  @Override
+  public final boolean hasLoseOutcome ()
+  {
+    return currentOutcome == DieOutcome.LOSE;
   }
 
   @Override
   public final void enable ()
   {
-    log.trace ("Enabling die [{}]...", this);
-
     currentState = DieState.ENABLED;
     currentFaceValue = defaultFaceValue;
+    currentOutcome = DieOutcome.NONE;
 
+    startSpinning ();
     refreshAssets ();
 
     for (final DieListener listener : listeners)
@@ -168,11 +231,11 @@ public abstract class AbstractDie implements Die
   @Override
   public final void disable ()
   {
-    log.trace ("Disabling die [{}]...", this);
-
     currentState = DieState.DISABLED;
     currentFaceValue = defaultFaceValue;
+    currentOutcome = DieOutcome.NONE;
 
+    stopSpinning ();
     refreshAssets ();
 
     for (final DieListener listener : listeners)
@@ -190,6 +253,15 @@ public abstract class AbstractDie implements Die
   }
 
   @Override
+  public void resetSpinning ()
+  {
+    currentSpinTimeSeconds = 0.0f;
+    spinningFaceValue = GameSettings.DEFAULT_DIE_FACE_VALUE;
+    isSpinning = true;
+    refreshAssets ();
+  }
+
+  @Override
   public final void addListener (final DieListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
@@ -198,17 +270,37 @@ public abstract class AbstractDie implements Die
   }
 
   @Override
-  public void reset ()
+  public final void resetState ()
   {
-    currentFaceValue = defaultFaceValue;
-    resetPreservingFaceValue ();
+    currentState = Die.DEFAULT_STATE;
+
+    refreshAssets ();
   }
 
   @Override
-  public final void resetPreservingFaceValue ()
+  public final void resetFaceValue ()
   {
-    currentState = DEFAULT_STATE;
-    button.setTouchable (Touchable.disabled);
+    currentFaceValue = defaultFaceValue;
+    refreshAssets ();
+  }
+
+  @Override
+  public final void resetOutcome ()
+  {
+    currentOutcome = Die.DEFAULT_OUTCOME;
+    refreshAssets ();
+  }
+
+  @Override
+  public final void resetAll ()
+  {
+    currentState = Die.DEFAULT_STATE;
+    currentFaceValue = defaultFaceValue;
+    currentOutcome = Die.DEFAULT_OUTCOME;
+    button.setTouchable (Die.DEFAULT_TOUCHABLE);
+    currentSpinTimeSeconds = 0.0f;
+    spinningFaceValue = GameSettings.DEFAULT_DIE_FACE_VALUE;
+    isSpinning = true;
     refreshAssets ();
   }
 
@@ -219,16 +311,59 @@ public abstract class AbstractDie implements Die
   }
 
   @Override
+  public void update (final float delta)
+  {
+    currentSpinTimeSeconds += delta;
+
+    if (currentSpinTimeSeconds < spinThresholdTimeSeconds) return;
+
+    spinningFaceValue = spinningFaceValue.hasNext () ? spinningFaceValue.next () : spinningFaceValue.first ();
+    currentSpinTimeSeconds = 0.0f;
+
+    if (isSpinning) refreshAssets ();
+  }
+
+  @Override
+  public final float getWidth ()
+  {
+    return button.getWidth ();
+  }
+
+  @Override
+  public final float getHeight ()
+  {
+    return button.getHeight ();
+  }
+
+  @Override
   public final Actor asActor ()
   {
     return button;
   }
 
-  protected abstract Button.ButtonStyle createDieButtonStyle (final DieState state, final DieFaceValue faceValue);
+  protected abstract DieOutcome determineOutcome (final DieFaceValue thisFaceValue, final DieFaceValue thatFaceValue);
+
+  protected abstract ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
+                                                                             final DieFaceValue faceValue,
+                                                                             final DieOutcome outcome);
+
+  private void startSpinning ()
+  {
+    isSpinning = true;
+  }
+
+  private void stopSpinning ()
+  {
+    isSpinning = false;
+  }
 
   private void refreshAssets (final DieState state)
   {
-    button.setStyle (createDieButtonStyle (state, currentFaceValue));
+    // @formatter:off
+    button.setStyle (createDieImageButtonStyle (state, isSpinning ? spinningFaceValue : currentFaceValue, currentOutcome));
+    button.getImageCell ().expand ().fill ();
+    button.invalidate ();
+    // @formatter:on
   }
 
   private void registerActionOnTransitionFrom (final DieState fromState,
@@ -255,7 +390,7 @@ public abstract class AbstractDie implements Die
   }
 
   @Override
-  public final int hashCode ()
+  public int hashCode ()
   {
     return index;
   }
@@ -270,12 +405,12 @@ public abstract class AbstractDie implements Die
   }
 
   @Override
-  public final String toString ()
+  public String toString ()
   {
     return Strings.format (
-                           "{}: Index: {} | Current Face Value: {} | Current State: {} | Touchable: {}"
-                                   + " | Default Face Value: {} | Default State: {}",
-                           getClass ().getSimpleName (), index, currentFaceValue, currentState, button.isTouchable (),
-                           defaultFaceValue, DEFAULT_STATE);
+                           "{}: Index: {} | Current Face Value: {} | Current State: {}"
+                                   + " | Current Outcome: {} | Touchable: {} | Spinning: {} | Default Face Value: {} | Default State: {}",
+                           getClass ().getSimpleName (), index, currentFaceValue, currentState, currentOutcome,
+                           button.isTouchable (), isSpinning, defaultFaceValue, Die.DEFAULT_STATE);
   }
 }

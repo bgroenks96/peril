@@ -53,7 +53,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private final Collection <ImageTextButton> menuChoices = new ArrayList<> ();
   private final MenuScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
-  private final ScreenSize screenSize;
   private final Cursor normalCursor;
   private final Image screenBackgroundLeft;
   private final Image screenBackgroundRight;
@@ -91,7 +90,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
-    this.screenSize = screenSize;
 
     normalCursor = widgetFactory.createNormalCursor ();
     screenBackgroundLeft = widgetFactory.createScreenBackgroundLeft ();
@@ -477,8 +475,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   // @formatter:off
   protected final void contractMenuBar (final Runnable completionRunnable)
   {
-    Arguments.checkIsNotNull (completionRunnable, "completionRunnable");
-
     Arguments.checkIsNotNull (completionRunnable, "completionRunnable");
 
     if (currentMenuBarState.is (MenuBarState.CONTRACTED) || menuBarTransitionInProgress) return;

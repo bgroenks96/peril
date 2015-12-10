@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.client.ui.widgets;
 
 import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -49,6 +51,8 @@ public interface WidgetFactory
   TextButton.TextButtonStyle createTextButtonStyle (final String styleName);
 
   ImageButton createImageButton (final String styleName, final EventListener listener);
+
+  ImageButton createImageButton (final ImageButton.ImageButtonStyle style);
 
   ImageButton createImageButton (final ImageButton.ImageButtonStyle style, final EventListener listener);
 
@@ -126,4 +130,8 @@ public interface WidgetFactory
   Slider.SliderStyle createSliderStyle (final String styleName);
 
   Window.WindowStyle createWindowStyle (final String styleName);
+
+  BitmapFont createBitmapFont (final String fontName);
+
+  TextureRegion createTextureRegion (final String name);
 }

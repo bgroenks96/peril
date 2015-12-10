@@ -3,16 +3,13 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class NullDie implements Die
+final class NullDie implements Die
 {
   private static final Actor NULL_ACTOR = new Actor ();
   private static final int NULL_INDEX = -1;
-
-  NullDie ()
-  {
-  }
 
   @Override
   public int getIndex ()
@@ -24,6 +21,36 @@ public final class NullDie implements Die
   public void roll (final DieFaceValue faceValue)
   {
     Arguments.checkIsNotNull (faceValue, "faceValue");
+  }
+
+  @Override
+  public void setOutcomeAgainst (final DieFaceValue competingFaceValue)
+  {
+    Arguments.checkIsNotNull (competingFaceValue, "competingFaceValue");
+  }
+
+  @Override
+  public void setOutcome (final DieOutcome outcome)
+  {
+    Arguments.checkIsNotNull (outcome, "outcome");
+  }
+
+  @Override
+  public DieOutcome getOutcome ()
+  {
+    return DieOutcome.NONE;
+  }
+
+  @Override
+  public boolean hasWinOutcome ()
+  {
+    return false;
+  }
+
+  @Override
+  public boolean hasLoseOutcome ()
+  {
+    return false;
   }
 
   @Override
@@ -42,24 +69,56 @@ public final class NullDie implements Die
   }
 
   @Override
+  public void resetSpinning ()
+  {
+  }
+
+  @Override
   public void addListener (final DieListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
   }
 
   @Override
-  public void reset ()
+  public void resetState ()
   {
   }
 
   @Override
-  public void resetPreservingFaceValue ()
+  public void resetFaceValue ()
+  {
+  }
+
+  @Override
+  public void resetOutcome ()
+  {
+  }
+
+  @Override
+  public void resetAll ()
   {
   }
 
   @Override
   public void refreshAssets ()
   {
+  }
+
+  @Override
+  public void update (final float delta)
+  {
+  }
+
+  @Override
+  public float getWidth ()
+  {
+    return NULL_ACTOR.getWidth ();
+  }
+
+  @Override
+  public float getHeight ()
+  {
+    return NULL_ACTOR.getHeight ();
   }
 
   @Override

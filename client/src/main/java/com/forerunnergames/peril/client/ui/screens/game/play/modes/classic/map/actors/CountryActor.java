@@ -44,6 +44,8 @@ public interface CountryActor
 
   float getReferenceHeight ();
 
+  int getArmies ();
+
   void setArmies (int armies);
 
   void incrementArmies ();

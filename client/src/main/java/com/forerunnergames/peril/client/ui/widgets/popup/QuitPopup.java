@@ -11,10 +11,8 @@ public final class QuitPopup extends OkCancelPopup
                     final Stage stage,
                     final PopupListener listener)
   {
-    super (widgetFactory,
-           PopupStyle.builder ().windowStyle ("popup").title ("QUIT?").textButtonStyle ("popup")
-                   .messageBoxRowLabelStyle ("popup-message").border (28).buttonSpacing (16).buttonWidth (90)
-                   .textPadding (16).textBoxPaddingBottom (20).message (message).build (),
+    super (widgetFactory, PopupStyle.builder ().title ("QUIT?").border (28).buttonSpacing (16).buttonWidth (90)
+            .textPadding (16).textBoxPaddingBottom (20).message (message).build (),
            stage, listener);
 
     changeButtonText ("OK", "QUIT");

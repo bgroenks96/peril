@@ -3,7 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 public abstract class AbstractBattlePopupListener implements BattlePopupListener
 {
   @Override
-  public void onSubmit ()
+  public final void onSubmit ()
   {
   }
 }

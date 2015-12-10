@@ -74,7 +74,7 @@
    },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
-    "popup"              : { "titleFont": "pirulen-28", "background": "popup-background",               "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "popup-modal"        : { "titleFont": "pirulen-28", "background": "popup-background",               "titleFontColor": "white", "stageBackground": "dialogDim" },
     "players-popup"      : { "titleFont": "pirulen-28", "background": "players-popup-background",       "titleFontColor": "white", "stageBackground": "dialogDim" },
     "map-selection-popup": { "titleFont": "pirulen-28", "background": "map-selection-popup-background", "titleFontColor": "white", "stageBackground": "dialogDim" },
     "my-settings-popup"  : { "titleFont": "pirulen-28", "background": "my-settings-popup-background",   "titleFontColor": "white", "stageBackground": "dialogDim" }

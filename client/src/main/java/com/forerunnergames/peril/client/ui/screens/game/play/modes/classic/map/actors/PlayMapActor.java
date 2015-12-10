@@ -33,6 +33,8 @@ public interface PlayMapActor
 
   void resetArmies ();
 
+  void setArmies (final int armies, final String countryName);
+
   void changeArmiesBy (final int deltaArmies, final String countryName);
 
   void setCountryState (final String countryName, final CountryPrimaryImageState state);

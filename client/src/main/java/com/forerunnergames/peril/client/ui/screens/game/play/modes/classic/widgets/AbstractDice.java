@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -19,25 +20,28 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DefaultDice implements Dice
+abstract class AbstractDice implements Dice
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultDice.class);
+  protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final ImmutableSortedSet <Die> dice;
   private final Table table;
   private final DieListener listener;
   private final int absoluteMinDieCount;
   private final int absoluteMaxDieCount;
-  private boolean isTouchable = true;
+  private boolean isTouchable = Dice.DEFAULT_IS_TOUCHABLE;
   private int currentMinDieCount;
   private int currentMaxDieCount;
   private int activeDieCount;
 
-  public DefaultDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
+  protected AbstractDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
   {
+    // @formatter:off
     Arguments.checkIsNotNull (dice, "dice");
     Arguments.checkHasNoNullElements (dice, "dice");
     Arguments.checkIsNotNegative (absoluteMinDieCount, "absoluteMinDieCount");
     Arguments.checkIsNotNegative (absoluteMaxDieCount, "absoluteMaxDieCount");
+    Arguments.checkUpperInclusiveBound (absoluteMinDieCount, absoluteMaxDieCount, "absoluteMinDieCount", "absoluteMaxDieCount");
+    // @formatter:on
 
     this.dice = ImmutableSortedSet.copyOf (dice);
     this.absoluteMinDieCount = absoluteMinDieCount;
@@ -46,7 +50,7 @@ public final class DefaultDice implements Dice
     currentMinDieCount = absoluteMinDieCount;
     activeDieCount = this.dice.size ();
 
-    table = new Table ().top ().left ();
+    table = new Table ();
 
     listener = new DieListener ()
     {
@@ -55,7 +59,7 @@ public final class DefaultDice implements Dice
       {
         Arguments.checkIsNotNull (die, "die");
 
-        log.trace ("Handling newly activated die [{}]... {}", die, DefaultDice.this);
+        log.trace ("Handling newly activated die [{}]... {}", die, AbstractDice.this);
 
         ++activeDieCount;
 
@@ -66,7 +70,7 @@ public final class DefaultDice implements Dice
         nextDieFrom (die).setTouchable (canEnableMoreDice ());
 
         log.trace ("Finished handling newly activated die [{}]. Previous [{}]. Next [{}]. {}", die,
-                   DefaultDice.this.dice.lower (die), DefaultDice.this.dice.higher (die), DefaultDice.this);
+                   AbstractDice.this.dice.lower (die), AbstractDice.this.dice.higher (die), AbstractDice.this);
       }
 
       @Override
@@ -74,7 +78,7 @@ public final class DefaultDice implements Dice
       {
         Arguments.checkIsNotNull (die, "die");
 
-        log.trace ("Handling newly deactivated die [{}]... {}", die, DefaultDice.this);
+        log.trace ("Handling newly deactivated die [{}]... {}", die, AbstractDice.this);
 
         --activeDieCount;
 
@@ -85,29 +89,68 @@ public final class DefaultDice implements Dice
         previousDieFrom (die).setTouchable (canDisableMoreDice ());
 
         log.trace ("Finished handling newly deactivated die [{}]. Previous [{}]. Next [{}]. {}", die,
-                   DefaultDice.this.dice.lower (die), DefaultDice.this.dice.higher (die), DefaultDice.this);
+                   AbstractDice.this.dice.lower (die), AbstractDice.this.dice.higher (die), AbstractDice.this);
       }
     };
 
     for (final Die die : dice)
     {
-      table.add (die.asActor ()).spaceTop (14).spaceBottom (14);
+      table.add (die.asActor ()).spaceTop (2).spaceBottom (2).size (die.getWidth (), die.getHeight ());
       table.row ();
 
       die.addListener (listener);
     }
 
-    reset ();
+    resetAll ();
   }
 
   @Override
-  public int getActiveCount ()
+  public final int getActiveCount ()
   {
     return activeDieCount;
   }
 
   @Override
-  public void roll (final ImmutableList <DieFaceValue> dieFaceValues)
+  public final int getWinningCount ()
+  {
+    int count = 0;
+
+    for (final Die die : dice)
+    {
+      if (die.hasWinOutcome ()) ++count;
+    }
+
+    return count;
+  }
+
+  @Override
+  public final int getLosingCount ()
+  {
+    int count = 0;
+
+    for (final Die die : dice)
+    {
+      if (die.hasLoseOutcome ()) ++count;
+    }
+
+    return count;
+  }
+
+  @Override
+  public final ImmutableList <DieOutcome> getOutcomes ()
+  {
+    final ImmutableList.Builder <DieOutcome> outcomesBuilder = ImmutableList.builder ();
+
+    for (final Die die : dice)
+    {
+      outcomesBuilder.add (die.getOutcome ());
+    }
+
+    return outcomesBuilder.build ();
+  }
+
+  @Override
+  public final void roll (final ImmutableList <DieFaceValue> dieFaceValues)
   {
     // @formatter:off
     Arguments.checkIsNotNull (dieFaceValues, "dieFaceValues");
@@ -132,16 +175,52 @@ public final class DefaultDice implements Dice
   }
 
   @Override
-  public void clampToMax (final int minDieCount, final int maxDieCount)
+  public final void setOutcomeAgainst (final ImmutableList <DieFaceValue> competingDieFaceValues)
   {
-    Arguments.checkIsNotNegative (minDieCount, "minDieCount");
-    Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
+    Arguments.checkIsNotNull (competingDieFaceValues, "competingDieFaceValues");
+    Arguments.checkHasNoNullElements (competingDieFaceValues, "competingDieFaceValues");
 
-    clampToCount (maxDieCount, minDieCount, maxDieCount);
+    final List <DieFaceValue> sortedCompetingDieFaceValues = new ArrayList <> (competingDieFaceValues);
+    Collections.sort (sortedCompetingDieFaceValues, DieFaceValue.DESCENDING_ORDER);
+    final Iterator <DieFaceValue> competingDieFaceValueIterator = sortedCompetingDieFaceValues.iterator ();
+
+    for (final Die die : dice)
+    {
+      if (competingDieFaceValueIterator.hasNext ())
+      {
+        die.setOutcomeAgainst (competingDieFaceValueIterator.next ());
+      }
+      else
+      {
+        die.setOutcome (DieOutcome.LOSE);
+      }
+    }
   }
 
   @Override
-  public void setTouchable (final boolean isTouchable)
+  public final void clamp (final int minDieCount, final int maxDieCount)
+  {
+    Arguments.checkIsNotNegative (minDieCount, "minDieCount");
+    Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
+    Arguments.checkLowerInclusiveBound (minDieCount, absoluteMinDieCount, "minDieCount", "absoluteMinDieCount");
+    Arguments.checkUpperInclusiveBound (maxDieCount, absoluteMaxDieCount, "maxDieCount", "absoluteMaxDieCount");
+
+    if (activeDieCount >= minDieCount && activeDieCount <= maxDieCount)
+    {
+      clampToCount (activeDieCount, minDieCount, maxDieCount);
+    }
+    else if (activeDieCount < minDieCount)
+    {
+      clampToCount (minDieCount, minDieCount, maxDieCount);
+    }
+    else
+    {
+      clampToCount (maxDieCount, minDieCount, maxDieCount);
+    }
+  }
+
+  @Override
+  public final void setTouchable (final boolean isTouchable)
   {
     this.isTouchable = isTouchable;
 
@@ -149,7 +228,34 @@ public final class DefaultDice implements Dice
   }
 
   @Override
-  public void reset ()
+  public final void resetFaceValues ()
+  {
+    for (final Die die : dice)
+    {
+      die.resetFaceValue ();
+    }
+  }
+
+  @Override
+  public final void resetOutcomes ()
+  {
+    for (final Die die : dice)
+    {
+      die.resetOutcome ();
+    }
+  }
+
+  @Override
+  public final void resetSpinning ()
+  {
+    for (final Die die : dice)
+    {
+      die.resetSpinning ();
+    }
+  }
+
+  @Override
+  public final void resetAll ()
   {
     currentMinDieCount = absoluteMinDieCount;
     currentMaxDieCount = absoluteMaxDieCount;
@@ -157,29 +263,14 @@ public final class DefaultDice implements Dice
 
     for (final Die die : dice)
     {
-      die.reset ();
+      die.resetAll ();
     }
 
     lastDie ().setTouchable (isTouchable);
   }
 
   @Override
-  public void resetPreservingFaceValue ()
-  {
-    currentMinDieCount = absoluteMinDieCount;
-    currentMaxDieCount = absoluteMaxDieCount;
-    activeDieCount = currentMaxDieCount;
-
-    for (final Die die : dice)
-    {
-      die.resetPreservingFaceValue ();
-    }
-
-    lastDie ().setTouchable (isTouchable);
-  }
-
-  @Override
-  public void refreshAssets ()
+  public final void refreshAssets ()
   {
     for (final Die die : dice)
     {
@@ -188,22 +279,25 @@ public final class DefaultDice implements Dice
   }
 
   @Override
-  public Actor asActor ()
+  public final void update (final float delta)
+  {
+    for (final Die die : dice)
+    {
+      die.update (delta);
+    }
+  }
+
+  @Override
+  public final Actor asActor ()
   {
     return table;
   }
 
   private void clampToCount (final int desiredActiveDieCount, final int minDieCount, final int maxDieCount)
   {
-    assert minDieCount >= absoluteMinDieCount;
-    assert maxDieCount <= absoluteMaxDieCount;
-    assert minDieCount <= maxDieCount;
-    assert desiredActiveDieCount >= minDieCount;
-    assert desiredActiveDieCount <= maxDieCount;
-
     log.trace ("Clamping dice within range: [{} - {}] to [{}].", minDieCount, maxDieCount, desiredActiveDieCount);
 
-    resetPreservingFaceValue ();
+    resetPreserveFaceValueAndOutcome ();
 
     currentMinDieCount = minDieCount;
     currentMaxDieCount = maxDieCount;
@@ -214,6 +308,21 @@ public final class DefaultDice implements Dice
     {
       descendingIter.next ().disable ();
     }
+  }
+
+  private void resetPreserveFaceValueAndOutcome ()
+  {
+    currentMinDieCount = absoluteMinDieCount;
+    currentMaxDieCount = absoluteMaxDieCount;
+    activeDieCount = currentMaxDieCount;
+
+    for (final Die die : dice)
+    {
+      die.setTouchable (false);
+      die.resetState ();
+    }
+
+    lastDie ().setTouchable (isTouchable);
   }
 
   private Die lastDie ()

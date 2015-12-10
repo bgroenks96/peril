@@ -1,81 +1,31 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
-import com.forerunnergames.tools.common.Arguments;
-
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
+import com.forerunnergames.peril.common.game.DieOutcome;
 
 public interface Die extends Comparable <Die>
 {
+  DieState DEFAULT_STATE = DieState.ENABLED;
+  DieOutcome DEFAULT_OUTCOME = DieOutcome.NONE;
+  Touchable DEFAULT_TOUCHABLE = Touchable.disabled;
   Die NULL_DIE = new NullDie ();
-
-  enum DieState
-  {
-    ENABLED (DieRollable.TRUE),
-    ENABLING (DieRollable.FALSE),
-    DISABLING (DieRollable.FALSE),
-    DISABLED (DieRollable.FALSE);
-
-    private static final Table <DieState, DieStateTransition, DieState> TRANSITION_TABLE = HashBasedTable.create ();
-
-    static
-    {
-      TRANSITION_TABLE.put (ENABLED, DieStateTransition.ON_HOVER_START, DISABLING);
-      TRANSITION_TABLE.put (ENABLING, DieStateTransition.ON_HOVER_END, DISABLED);
-      TRANSITION_TABLE.put (ENABLING, DieStateTransition.ON_CLICK, ENABLED);
-      TRANSITION_TABLE.put (DISABLING, DieStateTransition.ON_CLICK, DISABLED);
-      TRANSITION_TABLE.put (DISABLING, DieStateTransition.ON_HOVER_END, ENABLED);
-      TRANSITION_TABLE.put (DISABLED, DieStateTransition.ON_HOVER_START, ENABLING);
-    }
-
-    private final DieRollable rollable;
-
-    public boolean isRollable ()
-    {
-      return rollable == DieRollable.TRUE;
-    }
-
-    public DieState transition (final DieStateTransition transition,
-                                final Table <DieState, DieStateTransition, DieStateTransitionAction> transitionActionsTable)
-    {
-      Arguments.checkIsNotNull (transition, "transition");
-      Arguments.checkIsNotNull (transitionActionsTable, "transitionActionsTable");
-
-      final DieState toState = TRANSITION_TABLE.get (this, transition);
-
-      if (toState == null) return this;
-
-      final DieStateTransitionAction transitionAction = transitionActionsTable.get (this, transition);
-      if (transitionAction != null) transitionAction.onTransition (toState);
-
-      return toState;
-    }
-
-    DieState (final DieRollable rollable)
-    {
-      this.rollable = rollable;
-    }
-  }
-
-  enum DieStateTransition
-  {
-    ON_HOVER_START,
-    ON_HOVER_END,
-    ON_CLICK
-  }
-
-  enum DieRollable
-  {
-    TRUE,
-    FALSE
-  }
 
   int getIndex ();
 
   void roll (final DieFaceValue faceValue);
+
+  void setOutcomeAgainst (final DieFaceValue competingFaceValue);
+
+  void setOutcome (final DieOutcome outcome);
+
+  DieOutcome getOutcome ();
+
+  boolean hasWinOutcome ();
+
+  boolean hasLoseOutcome ();
 
   void enable ();
 
@@ -83,13 +33,25 @@ public interface Die extends Comparable <Die>
 
   void setTouchable (final boolean isTouchable);
 
+  void resetSpinning ();
+
   void addListener (final DieListener listener);
 
-  void reset ();
+  void resetState ();
 
-  void resetPreservingFaceValue ();
+  void resetFaceValue ();
+
+  void resetOutcome ();
+
+  void resetAll ();
 
   void refreshAssets ();
+
+  void update (final float delta);
+
+  float getWidth ();
+
+  float getHeight ();
 
   Actor asActor ();
 
@@ -101,9 +63,4 @@ public interface Die extends Comparable <Die>
 
   @Override
   String toString ();
-
-  interface DieStateTransitionAction
-  {
-    void onTransition (final DieState toState);
-  }
 }

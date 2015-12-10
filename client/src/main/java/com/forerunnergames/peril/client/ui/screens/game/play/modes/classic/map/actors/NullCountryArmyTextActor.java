@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -11,21 +12,21 @@ final class NullCountryArmyTextActor implements CountryArmyTextActor
   private final Actor actor = new Actor ();
 
   @Override
-  public void setCircleTopLeft (final Vector2 circleTopLeft)
+  public void setCircleTopLeft (final Vector2 topLeft)
   {
-    Arguments.checkIsNotNull (circleTopLeft, "circleTopLeft");
+    Arguments.checkIsNotNull (topLeft, "circleTopLeft");
   }
 
   @Override
-  public void setCircleSize (final Vector2 circleSize)
+  public void setCircleSize (final Vector2 size)
   {
-    Arguments.checkIsNotNull (circleSize, "circleSize");
-    Arguments.checkIsNotNegative (circleSize.x, "circleSize.x");
-    Arguments.checkIsNotNegative (circleSize.y, "circleSize.y");
+    Arguments.checkIsNotNull (size, "circleSize");
+    Arguments.checkIsNotNegative (size.x, "circleSize.x");
+    Arguments.checkIsNotNegative (size.y, "circleSize.y");
   }
 
   @Override
-  public void setArmies (final int armies)
+  public void changeArmiesTo (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
   }
@@ -49,6 +50,18 @@ final class NullCountryArmyTextActor implements CountryArmyTextActor
   public void onPrimaryStateChange (final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
+  }
+
+  @Override
+  public int getArmies ()
+  {
+    return 0;
+  }
+
+  @Override
+  public void setFont (final BitmapFont font)
+  {
+    Arguments.checkIsNotNull (font, "font");
   }
 
   @Override

@@ -7,9 +7,9 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class PopupStyle
 {
-  public static final String DEFAULT_WINDOW_STYLE_NAME = "dialog";
-  public static final String DEFAULT_TEXT_BUTTON_STYLE_NAME = "default";
-  public static final String DEFAULT_MESSAGE_BOX_ROW_LABEL_STYLE_NAME = "default";
+  public static final String DEFAULT_WINDOW_STYLE_NAME = "popup-modal";
+  public static final String DEFAULT_TEXT_BUTTON_STYLE_NAME = "popup";
+  public static final String DEFAULT_MESSAGE_BOX_ROW_LABEL_STYLE_NAME = "popup-message";
   public static final int DEFAULT_MESSAGE_BOX_ROW_LABEL_ALIGNMENT = Align.topLeft;
   public static final String DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE_NAME = "default";
   public static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
@@ -33,6 +33,7 @@ public final class PopupStyle
   public static final boolean DEFAULT_IS_MESSAGE_BOX = true;
   public static final boolean DEFAULT_IS_RESIZABLE = false;
   public static final boolean DEFAULT_IS_MOVABLE = false;
+  public static final boolean DEFAULT_IS_MODAL = true;
   public static final boolean DEFAULT_IS_DEBUG = false;
   public static final int AUTO_H_CENTER = -1;
   public static final int AUTO_V_CENTER = -1;
@@ -77,6 +78,7 @@ public final class PopupStyle
   private final boolean isMessageBox;
   private final boolean isResizable;
   private final boolean isMovable;
+  private final boolean isModal;
   private final boolean isDebug;
 
   public static PopupStyleBuilder builder ()
@@ -244,6 +246,11 @@ public final class PopupStyle
     return isMovable;
   }
 
+  public boolean isModal ()
+  {
+    return isModal;
+  }
+
   public boolean isDebug ()
   {
     return isDebug;
@@ -281,6 +288,7 @@ public final class PopupStyle
                       final boolean isMessageBox,
                       final boolean isResizable,
                       final boolean isMovable,
+                      final boolean isModal,
                       final boolean isDebug)
   {
     Arguments.checkIsNotNull (windowStyleName, "windowStyleName");
@@ -338,6 +346,7 @@ public final class PopupStyle
     this.isMessageBox = isMessageBox;
     this.isResizable = isResizable;
     this.isMovable = isMovable;
+    this.isModal = isModal;
     this.isDebug = isDebug;
   }
 
@@ -375,6 +384,7 @@ public final class PopupStyle
     private boolean isMessageBox = DEFAULT_IS_MESSAGE_BOX;
     private boolean isResizable = DEFAULT_IS_RESIZABLE;
     private boolean isMovable = DEFAULT_IS_MOVABLE;
+    private boolean isModal = DEFAULT_IS_MODAL;
     private boolean isDebug = DEFAULT_IS_DEBUG;
 
     public PopupStyle build ()
@@ -386,7 +396,7 @@ public final class PopupStyle
               borderThickness, buttonSpacing, buttonTextPaddingLeft, buttonTextPaddingRight, buttonTextPaddingTop,
               buttonTextPaddingBottom, textPaddingLeft, textPaddingRight, textPaddingTop, textPaddingBottom,
               textBoxPaddingLeft, textBoxPaddingRight, textBoxPaddingTop, textBoxPaddingBottom, isMessageBox,
-              isResizable, isMovable, isDebug);
+              isResizable, isMovable, isModal, isDebug);
     }
 
     public PopupStyleBuilder windowStyle (final String windowStyleName)
@@ -805,6 +815,13 @@ public final class PopupStyle
     public PopupStyleBuilder movable (final boolean isMovable)
     {
       this.isMovable = isMovable;
+
+      return this;
+    }
+
+    public PopupStyleBuilder modal (final boolean isModal)
+    {
+      this.isModal = isModal;
 
       return this;
     }

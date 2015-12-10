@@ -8,10 +8,8 @@ public final class ErrorPopup extends OkPopup
 {
   public ErrorPopup (final WidgetFactory widgetFactory, final Stage stage, final PopupListener listener)
   {
-    super (widgetFactory,
-           PopupStyle.builder ().windowStyle ("popup").title ("ERROR").textButtonStyle ("popup")
-                   .messageBoxRowLabelStyle ("popup-message").border (28).buttonSpacing (16).buttonWidth (90)
-                   .textPadding (16).textBoxPaddingBottom (20).size (650, 388).build (),
+    super (widgetFactory, PopupStyle.builder ().title ("ERROR").border (28).buttonSpacing (16).buttonWidth (90)
+            .textPadding (16).textBoxPaddingBottom (20).size (650, 388).build (),
            stage, listener);
   }
 

@@ -17,6 +17,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
@@ -25,12 +26,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -49,21 +52,28 @@ import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
+import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AttackPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattleOutcome;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.DefendPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
@@ -76,6 +86,7 @@ import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Randomness;
@@ -108,15 +119,17 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final GdxKeyRepeatSystem keyRepeat;
   private final OccupationPopup occupationPopup;
   private final ReinforcementPopup reinforcementPopup;
-  private final BattlePopup battlePopup;
+  private final AttackPopup attackPopup;
+  private final DefendPopup defendPopup;
+  private final OkPopup battleResultPopup;
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
+  private final BattleOutcome tempOutcome = new BattleOutcome ();
   private final Cell <Actor> playMapActorCell;
+  private final ScreenShaker screenShaker;
   private final DebugInputProcessor debugInputProcessor;
+  private Sound battleSingleExplosionSound;
   private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
-
-  // @TESTING
-  private boolean isFirstTime = true;
 
   public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
@@ -166,190 +179,39 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
             screenSize.referenceHeight (), camera);
 
+    screenShaker = new ScreenShaker (viewport, screenSize);
+
     stage = new Stage (viewport, batch);
 
-    // @formatter:off
-    occupationPopup = widgetFactory
-            .createOccupationPopup (stage, eventBus, new PopupListener ()
-            {
-              @Override
-              public void onSubmit ()
-              {
-                final int deltaArmies = occupationPopup.getDeltaArmies ();
-                final String sourceCountryName = occupationPopup.getSourceCountryName ();
-                final String destinationCountryName = occupationPopup.getDestinationCountryName ();
-
-                // TODO Production: Remove
-                eventBus.publish (new DefaultStatusMessageEvent (
-                        new DefaultStatusMessage ("You occupied " + destinationCountryName + " with "
-                                + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
-                        ImmutableSet.<PlayerPacket> of ()));
-
-                // TODO Production: Remove
-                eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));
-
-                // TODO Production: Remove
-                eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
-
-                // TODO: Production: Publish event (OccupyCountryRequestEvent?)
-              }
-
-              @Override
-              public void onShow ()
-              {
-                playMapActor.disable ();
-              }
-
-              @Override
-              public void onHide ()
-              {
-                playMapActor.enable (mouseInput.position ());
-              }
-            });
-    // @formatter:on
-
-    // @formatter:off
-    reinforcementPopup = widgetFactory
-            .createReinforcementPopup (stage, eventBus, new PopupListener ()
-            {
-              @Override
-              public void onSubmit ()
-              {
-                final int deltaArmies = reinforcementPopup.getDeltaArmies ();
-                final String sourceCountryName = reinforcementPopup.getSourceCountryName ();
-                final String destinationCountryName = reinforcementPopup.getDestinationCountryName ();
-
-                // TODO Production: Remove
-                eventBus.publish (new DefaultStatusMessageEvent (
-                        new DefaultStatusMessage ("You reinforced " + destinationCountryName + " with "
-                                + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
-                        ImmutableSet.<PlayerPacket> of ()));
-
-                // TODO Production: Remove
-                eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));
-
-                // TODO Production: Remove
-                eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
-
-                // TODO: Production: Publish event (OccupyCountryRequestEvent?)
-              }
-
-              @Override
-              public void onShow ()
-              {
-                playMapActor.disable ();
-              }
-
-              @Override
-              public void onHide ()
-              {
-                playMapActor.enable (mouseInput.position ());
-              }
-            });
-    // @formatter:on
-
-    battlePopup = widgetFactory.createBattlePopup (stage, eventBus, new AbstractBattlePopupListener ()
-    {
-      @Override
-      public void onAttack (final String attackingCountryName, final String defendingCountryName)
-      {
-        Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
-        Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
-
-        final ImmutableList.Builder <DieFaceValue> attackerDieFaceValues = ImmutableList.builder ();
-
-        for (int i = 0; i < battlePopup.getActiveAttackerDieCount (); ++i)
-        {
-          attackerDieFaceValues.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
-        }
-
-        battlePopup.rollAttackerDice (attackerDieFaceValues.build ());
-
-        final ImmutableList.Builder <DieFaceValue> defenderDieFaceValues = ImmutableList.builder ();
-
-        for (int i = 0; i < battlePopup.getActiveDefenderDieCount (); ++i)
-        {
-          defenderDieFaceValues.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
-        }
-
-        battlePopup.rollDefenderDice (defenderDieFaceValues.build ());
-
-        // TODO Production: Remove
-        eventBus.publish (StatusMessageEventFactory.create (
-                                                            Strings.format ("You attacked {} from {}.",
-                                                                            defendingCountryName, attackingCountryName),
-                                                            ImmutableSet.<PlayerPacket> of ()));
-      }
-
-      @Override
-      public void onRetreat (final String attackingCountryName, final String defendingCountryName)
-      {
-        Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
-        Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
-
-        // TODO Production: Remove
-        eventBus.publish (StatusMessageEventFactory.create (
-                                                            Strings.format ("You stopped attacking {} from {}.",
-                                                                            defendingCountryName, attackingCountryName),
-                                                            ImmutableSet.<PlayerPacket> of ()));
-      }
-
-      @Override
-      public void onToggleAutoAttack (final boolean isEnabled)
-      {
-        // TODO Production: Remove
-        eventBus.publish (StatusMessageEventFactory.create (
-                                                            Strings.format ("Auto attack "
-                                                                    + (isEnabled ? "enabled" : "disabled") + "."),
-                                                            ImmutableSet.<PlayerPacket> of ()));
-      }
-
-      @Override
-      public void onShow ()
-      {
-        playMapActor.disable ();
-
-        eventBus.publish (StatusMessageEventFactory.create (
-                                                            Strings.format ("You are preparing to attack {} from {}.",
-                                                                            battlePopup.getDefendingCountryName (),
-                                                                            battlePopup.getAttackingCountryName ()),
-                                                            ImmutableSet.<PlayerPacket> of ()));
-      }
-
-      @Override
-      public void onHide ()
-      {
-        playMapActor.enable (mouseInput.position ());
-      }
-    });
-
-    // @formatter:off
-    quitPopup = widgetFactory.createQuitPopup (
-            "Are you sure you want to quit?\nQuitting will end the game for everyone.",
-            stage, new PopupListener ()
-            {
-              @Override
-              public void onSubmit ()
-              {
-                screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
-                eventBus.publishAsync (new QuitGameEvent ());
-              }
-
-              @Override
-              public void onShow ()
-              {
-                playMapActor.disable ();
-              }
-
-              @Override
-              public void onHide ()
-              {
-                playMapActor.enable (mouseInput.position ());
-              }
-            });
-    // @formatter:on
+    occupationPopup = widgetFactory.createOccupationPopup (stage, eventBus, new OccupationPopupListener ());
+    reinforcementPopup = widgetFactory.createReinforcementPopup (stage, eventBus, new ReinforcementPopupListener ());
+    attackPopup = widgetFactory.createAttackPopup (stage, eventBus, new DefaultAttackPopupListener ());
+    defendPopup = widgetFactory.createDefendPopup (stage, eventBus, new DefendPopupListener ());
+    battleResultPopup = widgetFactory.createBattleResultPopup (stage, new BattleResultPopupListener ());
+    quitPopup = widgetFactory.createQuitPopup (stage, new QuitPopupListener ());
 
     stage.addActor (rootStack);
+
+    stage.addCaptureListener (new InputListener ()
+    {
+      @Override
+      public boolean keyDown (final InputEvent event, final int keycode)
+      {
+        switch (keycode)
+        {
+          case Input.Keys.ESCAPE:
+          {
+            if (!attackPopup.isShown () && !reinforcementPopup.isShown ()) quitPopup.show ();
+
+            return false;
+          }
+          default:
+          {
+            return false;
+          }
+        }
+      }
+    });
 
     stage.addListener (new ClickListener ()
     {
@@ -399,9 +261,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
     debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox, chatBox, playerBox,
-            occupationPopup, reinforcementPopup, battlePopup, eventBus);
+            occupationPopup, reinforcementPopup, attackPopup, defendPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
+
+    battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
   }
 
   @Override
@@ -421,6 +285,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
     sideBar.refreshAssets ();
+    occupationPopup.refreshAssets ();
+    reinforcementPopup.refreshAssets ();
+    attackPopup.refreshAssets ();
+    defendPopup.refreshAssets ();
+    battleResultPopup.refreshAssets ();
+    quitPopup.refreshAssets ();
+    battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
   }
 
   @Override
@@ -433,17 +304,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     stage.act (delta);
     occupationPopup.update (delta);
     reinforcementPopup.update (delta);
-    battlePopup.update (delta);
+    attackPopup.update (delta);
+    defendPopup.update (delta);
+    battleResultPopup.update (delta);
     quitPopup.update (delta);
+    screenShaker.update (delta);
     stage.draw ();
-
-    // @TESTING
-    if (!battlePopup.isShown () && isFirstTime)
-    {
-      debugInputProcessor.keyTyped ('b');
-
-      isFirstTime = false;
-    }
   }
 
   @Override
@@ -480,6 +346,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     playerBox.clear ();
     debugInputProcessor.reset ();
     clearPlayMapActor ();
+    occupationPopup.hide ();
+    reinforcementPopup.hide ();
+    attackPopup.hide ();
+    defendPopup.hide ();
+    battleResultPopup.hide ();
+    quitPopup.hide ();
+
+    battleSingleExplosionSound.stop ();
   }
 
   @Override
@@ -487,24 +361,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     eventBus.unsubscribe (this);
     stage.dispose ();
-  }
-
-  @Override
-  public boolean keyDown (final int keycode)
-  {
-    switch (keycode)
-    {
-      case Input.Keys.ESCAPE:
-      {
-        quitPopup.show ();
-
-        return true;
-      }
-      default:
-      {
-        return false;
-      }
-    }
   }
 
   @Override
@@ -692,7 +548,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
           final CountryPrimaryImageState state = CountryPrimaryImageState
                   .valueOf (Strings.toCase (event.getOwnerColor (country), LetterCase.UPPER));
 
-          // The country already has the correct state - don't do anything.
           if (playMapActor.currentPrimaryImageStateOfCountryIs (state, country.getName ())) continue;
 
           playMapActor.setCountryState (country.getName (), state);
@@ -743,5 +598,407 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
     playMapActorCell.setActor (playMapActor.asActor ());
     debugInputProcessor.setPlayMapActor (playMapActor);
+  }
+
+  private void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies)
+  {
+    if (attackingCountryDeltaArmies == 0 && defendingCountryDeltaArmies == 0) return;
+
+    battleSingleExplosionSound.play ();
+    screenShaker.shake ();
+
+    if (attackingCountryDeltaArmies == -2 || defendingCountryDeltaArmies == -2)
+    {
+      Timer.schedule (new Timer.Task ()
+      {
+        @Override
+        public void run ()
+        {
+          battleSingleExplosionSound.play ();
+          screenShaker.shake ();
+        }
+      }, 0.25f);
+    }
+  }
+
+  private final class OccupationPopupListener implements PopupListener
+  {
+    @Override
+    public void onSubmit ()
+    {
+      final int deltaArmies = occupationPopup.getDeltaArmies ();
+      final String sourceCountryName = occupationPopup.getSourceCountryName ();
+      final String destinationCountryName = occupationPopup.getDestinationCountryName ();
+
+      // TODO Production: Remove
+      eventBus.publish (new DefaultStatusMessageEvent (
+              new DefaultStatusMessage ("You occupied " + destinationCountryName + " with "
+                      + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
+              ImmutableSet.<PlayerPacket> of ()));
+
+      // TODO Production: Remove
+      eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));
+
+      // TODO Production: Remove
+      eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
+
+      // TODO: Production: Publish event (OccupyCountryRequestEvent?)
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMapActor.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (quitPopup.isShown ()) return;
+
+      playMapActor.enable (mouseInput.position ());
+    }
+  }
+
+  private final class ReinforcementPopupListener implements PopupListener
+  {
+    @Override
+    public void onSubmit ()
+    {
+      final int deltaArmies = reinforcementPopup.getDeltaArmies ();
+      final String sourceCountryName = reinforcementPopup.getSourceCountryName ();
+      final String destinationCountryName = reinforcementPopup.getDestinationCountryName ();
+
+      // TODO Production: Remove
+      eventBus.publish (new DefaultStatusMessageEvent (
+              new DefaultStatusMessage ("You reinforced " + destinationCountryName + " with "
+                      + Strings.pluralize (deltaArmies, "army", "armies") + " from " + sourceCountryName + "."),
+              ImmutableSet.<PlayerPacket> of ()));
+
+      // TODO Production: Remove
+      eventBus.publish (new CountryArmiesChangedEvent (sourceCountryName, -deltaArmies));
+
+      // TODO Production: Remove
+      eventBus.publish (new CountryArmiesChangedEvent (destinationCountryName, deltaArmies));
+
+      // TODO: Production: Publish event (OccupyCountryRequestEvent?)
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMapActor.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (quitPopup.isShown ()) return;
+
+      playMapActor.enable (mouseInput.position ());
+    }
+  }
+
+  private final class DefaultAttackPopupListener extends AbstractBattlePopupListener implements AttackPopupListener
+  {
+    @Override
+    public void onBattle ()
+    {
+      final ImmutableList.Builder <DieFaceValue> attackerDieFaceValuesBuilder = ImmutableList.builder ();
+
+      for (int i = 0; i < attackPopup.getActiveAttackerDieCount (); ++i)
+      {
+        attackerDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
+      }
+
+      final ImmutableList <DieFaceValue> attackerDieFaceValues = attackerDieFaceValuesBuilder.build ();
+
+      attackPopup.rollAttackerDice (attackerDieFaceValues);
+
+      final ImmutableList.Builder <DieFaceValue> defenderDieFaceValuesBuilder = ImmutableList.builder ();
+
+      for (int i = 0; i < attackPopup.getActiveDefenderDieCount (); ++i)
+      {
+        defenderDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
+      }
+
+      final ImmutableList <DieFaceValue> defenderDieFaceValues = defenderDieFaceValuesBuilder.build ();
+
+      attackPopup.rollDefenderDice (defenderDieFaceValues);
+
+      tempOutcome.set (attackPopup.determineOutcome (attackerDieFaceValues, defenderDieFaceValues));
+
+      final String attackingCountryName = tempOutcome.getAttackingCountryName ();
+      final String defendingCountryName = tempOutcome.getDefendingCountryName ();
+      final String attackingPlayerName = tempOutcome.getAttackingPlayerName ();
+      final String defendingPlayerName = tempOutcome.getDefendingPlayerName ();
+      final int attackingCountryDeltaArmies = tempOutcome.getAttackingCountryDeltaArmies ();
+      final int defendingCountryDeltaArmies = tempOutcome.getDefendingCountryDeltaArmies ();
+
+      playBattleEffects (attackingCountryDeltaArmies, defendingCountryDeltaArmies);
+
+      // TODO Production: Remove
+      if (attackingCountryDeltaArmies != 0)
+      {
+        eventBus.publish (new CountryArmiesChangedEvent (attackingCountryName, attackingCountryDeltaArmies));
+      }
+
+      // TODO Production: Remove
+      if (defendingCountryDeltaArmies != 0)
+      {
+        eventBus.publish (new CountryArmiesChangedEvent (defendingCountryName, defendingCountryDeltaArmies));
+      }
+
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You attacked {} in {} from {}, destroying {} & losing {}!", defendingPlayerName,
+                                       defendingCountryName, attackingCountryName,
+                                       Strings.pluralize (Math.abs (defendingCountryDeltaArmies), "army", "armies"),
+                                       Strings.pluralize (Math.abs (attackingCountryDeltaArmies), "army", "armies")),
+                       ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onAttackerWinFinal ()
+    {
+      // @formatter:off
+      final String attackingCountryName = attackPopup.getAttackingCountryName ();
+      final String defendingCountryName = attackPopup.getDefendingCountryName ();
+      final CountryPrimaryImageState attackingCountryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (attackingCountryName);
+      final int totalArmies = attackPopup.getAttackingCountryArmies ();
+      final int minDestinationArmies = attackPopup.getActiveAttackerDieCount ();
+      final int maxDestinationArmies = totalArmies - 1;
+      final CountryActor sourceCountryActor = attackPopup.getAttackingCountryActor ();
+      final CountryActor destinationCountryActor = attackPopup.getDefendingCountryActor ();
+      // @formatter:on
+
+      // TODO Production: Remove
+      if (attackingCountryPrimaryImageState != null)
+      {
+        attackPopup.getDefendingCountryActor ().changePrimaryStateTo (attackingCountryPrimaryImageState);
+        playMapActor.setCountryState (defendingCountryName, attackingCountryPrimaryImageState);
+      }
+
+      attackPopup.hide ();
+
+      occupationPopup.show (minDestinationArmies, maxDestinationArmies, sourceCountryActor, destinationCountryActor,
+                            totalArmies);
+
+      battleResultPopup.setTitle ("Victory");
+      battleResultPopup.setMessage (new DefaultMessage (
+              "General, you conquered " + defendingCountryName + "!\nWe must now occupy it quickly."));
+      battleResultPopup.show ();
+
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory.create (
+                                                          Strings.format ("You conquered {}!",
+                                                                          attackPopup.getDefendingCountryName ()),
+                                                          ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onAttackerLoseFinal ()
+    {
+      attackPopup.hide ();
+
+      battleResultPopup.setTitle ("Defeat");
+      battleResultPopup.setMessage (new DefaultMessage (
+              "General, we have failed to conquer " + attackPopup.getDefendingCountryName () + "."));
+      battleResultPopup.show ();
+
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory.create (
+                                                          Strings.format ("You failed to conquer {}.",
+                                                                          attackPopup.getDefendingCountryName ()),
+                                                          ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onRetreat ()
+    {
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You stopped attacking {} in {} from {}.", attackPopup.getDefendingPlayerName (),
+                                       attackPopup.getDefendingCountryName (), attackPopup.getAttackingCountryName ()),
+                       ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMapActor.disable ();
+
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You are preparing to attack {} in {} from {}.",
+                                       attackPopup.getDefendingPlayerName (), attackPopup.getDefendingCountryName (),
+                                       attackPopup.getAttackingCountryName ()),
+                       ImmutableSet.<PlayerPacket> of ()));
+
+      attackPopup.startBattle ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+    }
+  }
+
+  private final class DefendPopupListener extends AbstractBattlePopupListener implements BattlePopupListener
+  {
+    @Override
+    public void onBattle ()
+    {
+      final ImmutableList.Builder <DieFaceValue> defenderDieFaceValuesBuilder = ImmutableList.builder ();
+
+      for (int i = 0; i < defendPopup.getActiveDefenderDieCount (); ++i)
+      {
+        defenderDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
+      }
+
+      final ImmutableList <DieFaceValue> defenderDieFaceValues = defenderDieFaceValuesBuilder.build ();
+
+      defendPopup.rollDefenderDice (defenderDieFaceValues);
+
+      final ImmutableList.Builder <DieFaceValue> attackerDieFaceValuesBuilder = ImmutableList.builder ();
+
+      for (int i = 0; i < defendPopup.getActiveAttackerDieCount (); ++i)
+      {
+        attackerDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
+      }
+
+      final ImmutableList <DieFaceValue> attackerDieFaceValues = attackerDieFaceValuesBuilder.build ();
+
+      defendPopup.rollAttackerDice (attackerDieFaceValues);
+
+      tempOutcome.set (defendPopup.determineOutcome (attackerDieFaceValues, defenderDieFaceValues));
+
+      final String attackingCountryName = tempOutcome.getAttackingCountryName ();
+      final String defendingCountryName = tempOutcome.getDefendingCountryName ();
+      final String attackingPlayerName = tempOutcome.getAttackingPlayerName ();
+      final String defendingPlayerName = tempOutcome.getDefendingPlayerName ();
+      final int attackingCountryDeltaArmies = tempOutcome.getAttackingCountryDeltaArmies ();
+      final int defendingCountryDeltaArmies = tempOutcome.getDefendingCountryDeltaArmies ();
+
+      playBattleEffects (attackingCountryDeltaArmies, defendingCountryDeltaArmies);
+
+      // TODO Production: Remove
+      eventBus.publish (new CountryArmiesChangedEvent (attackingCountryName, attackingCountryDeltaArmies));
+
+      // TODO Production: Remove
+      eventBus.publish (new CountryArmiesChangedEvent (defendingCountryName, defendingCountryDeltaArmies));
+
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You defended {} against {} in {}, destroying {} & losing {}!",
+                                       defendingCountryName, attackingPlayerName, attackingCountryName,
+                                       Strings.pluralize (Math.abs (attackingCountryDeltaArmies), "army", "armies"),
+                                       Strings.pluralize (Math.abs (defendingCountryDeltaArmies), "army", "armies")),
+                       ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onAttackerWinFinal ()
+    {
+      defendPopup.hide ();
+
+      battleResultPopup.setTitle ("Defeat");
+      battleResultPopup.setMessage (new DefaultMessage ("General, we have failed to defend "
+              + defendPopup.getDefendingCountryName () + ".\nThe enemy has taken it."));
+      battleResultPopup.show ();
+
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory.create (
+                                                          Strings.format ("You were defeated in {} & it has been conquered by {}!",
+                                                                          defendPopup.getDefendingCountryName (),
+                                                                          defendPopup.getAttackingPlayerName ()),
+                                                          ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onAttackerLoseFinal ()
+    {
+      defendPopup.hide ();
+
+      battleResultPopup.setTitle ("Victory");
+      battleResultPopup.setMessage (new DefaultMessage ("General, we have successfully protected "
+              + defendPopup.getDefendingCountryName () + " from the enemy!"));
+      battleResultPopup.show ();
+
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You defeated {} in {}!", defendPopup.getAttackingPlayerName (),
+                                       defendPopup.getAttackingCountryName ()),
+                       ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMapActor.disable ();
+
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You are preparing to defend {} against {} in {}.",
+                                       defendPopup.getDefendingCountryName (), defendPopup.getAttackingPlayerName (),
+                                       defendPopup.getAttackingCountryName ()),
+                       ImmutableSet.<PlayerPacket> of ()));
+
+      defendPopup.startBattle ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+    }
+  }
+
+  private final class QuitPopupListener implements PopupListener
+  {
+    @Override
+    public void onSubmit ()
+    {
+      screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+      eventBus.publishAsync (new QuitGameEvent ());
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMapActor.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (defendPopup.isShown () || occupationPopup.isShown () || battleResultPopup.isShown ()) return;
+
+      playMapActor.enable (mouseInput.position ());
+    }
+  }
+
+  private final class BattleResultPopupListener extends PopupListenerAdapter
+  {
+    @Override
+    public void onShow ()
+    {
+      if (quitPopup.isShown ())
+      {
+        quitPopup.hide (null);
+        quitPopup.show (null);
+      }
+
+      if (occupationPopup.isShown ()) occupationPopup.disableInput ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (occupationPopup.isShown ())
+      {
+        occupationPopup.enableInput ();
+        return;
+      }
+
+      playMapActor.enable (mouseInput.position ());
+    }
   }
 }

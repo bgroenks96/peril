@@ -84,8 +84,8 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
     // @formatter:off
     super (widgetFactory,
            PopupStyle.builder ()
-                   .windowStyle ("army-movement")
-                   .resizable (true)
+                   .windowStyle ("army-movement-popup")
+                   .modal (false)
                    .movable (true)
                    .size (862, 484)
                    .position (481, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 164)
@@ -94,7 +94,6 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
                    .messageBox (false)
                    .border (28)
                    .buttonSize (90, 32)
-                   .textButtonStyle ("popup")
                    .build (),
            stage, listener);
     // @formatter:on
@@ -289,15 +288,16 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
                     final CountryActor destinationCountryActor,
                     final int totalArmies)
   {
+    // @formatter:on
     Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
     Arguments.checkIsNotNegative (maxDestinationArmies, "maxDestinationArmies");
     Arguments.checkIsNotNull (sourceCountryActor, "sourceCountryActor");
     Arguments.checkIsNotNull (destinationCountryActor, "destinationCountryActor");
     Arguments.checkIsNotNegative (totalArmies, "totalArmies");
-    Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies",
-                                        "maxDestinationArmies");
+    Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies", "maxDestinationArmies");
     Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
     Arguments.checkUpperInclusiveBound (maxDestinationArmies, totalArmies, "maxDestinationArmies", "totalArmies");
+    // @formatter:on
 
     if (isShown ()) return;
 
@@ -374,7 +374,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
   private void setSourceCountryArmies (final int armies)
   {
-    sourceCountryArmyTextActor.setArmies (armies);
+    sourceCountryArmyTextActor.changeArmiesTo (armies);
   }
 
   private void updateDestinationCountryArmies ()
@@ -384,7 +384,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
   private void setDestinationCountryArmies (final int armies)
   {
-    destinationCountryArmyTextActor.setArmies (armies);
+    destinationCountryArmyTextActor.changeArmiesTo (armies);
   }
 
   private void setSliderToMinValue ()

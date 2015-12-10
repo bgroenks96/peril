@@ -8,10 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -62,9 +64,30 @@ public class OkPopup implements Popup
   }
 
   @Override
-  public final void hide ()
+  public void show (@Nullable final Action action)
+  {
+    delegate.show (action);
+  }
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void hide ()
   {
     delegate.hide ();
+  }
+
+  @Override
+  public void hide (@Nullable final Action action)
+  {
+    delegate.hide (action);
+  }
+
+  @Override
+  public void setTitle (final String title)
+  {
+    Arguments.checkIsNotNull (title, "title");
+
+    delegate.setTitle (title);
   }
 
   @Override
@@ -87,6 +110,18 @@ public class OkPopup implements Popup
     Arguments.checkIsNotNull (listener, "listener");
 
     delegate.addListener (listener);
+  }
+
+  @Override
+  public void enableInput ()
+  {
+    delegate.enableInput ();
+  }
+
+  @Override
+  public void disableInput ()
+  {
+    delegate.disableInput ();
   }
 
   @Override
@@ -123,6 +158,13 @@ public class OkPopup implements Popup
   protected final Button addButton (final String style, final PopupAction popupAction, final EventListener listener)
   {
     return delegate.addButton (style, popupAction, listener);
+  }
+
+  protected final ImageButton addImageButton (final String style,
+                                              final PopupAction popupAction,
+                                              final EventListener listener)
+  {
+    return delegate.addImageButton (style, popupAction, listener);
   }
 
   protected final void changeButtonText (final String oldText, final String newText)
@@ -173,6 +215,8 @@ public class OkPopup implements Popup
     {
       super (title, widgetFactory.createWindowStyle (popupStyle.getWindowStyleName ()));
 
+      getTitleLabel ().setEllipsis (false);
+
       Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
       Arguments.checkIsNotNull (popupStyle, "popupStyle");
       Arguments.checkIsNotNull (stage, "stage");
@@ -188,8 +232,8 @@ public class OkPopup implements Popup
                                                         popupStyle.getMessageBoxRowLabelAlignment (),
                                                         popupStyle.getMessageBoxScrollbarStyle ());
 
-      if (popupStyle.isDebug ()) setDebug (true, true);
-
+      setDebug (popupStyle.isDebug (), true);
+      setModal (popupStyle.isModal ());
       configureWindow ();
       configureButtonTable ();
       configureContentTable ();
@@ -239,7 +283,7 @@ public class OkPopup implements Popup
     }
 
     @Override
-    public void hide (final Action action)
+    public void hide (@Nullable final Action action)
     {
       if (!isShown) return;
 
@@ -368,6 +412,18 @@ public class OkPopup implements Popup
       return button;
     }
 
+    public ImageButton addImageButton (final String style, final PopupAction popupAction, final EventListener listener)
+    {
+      Arguments.checkIsNotNull (style, "style");
+      Arguments.checkIsNotNull (popupAction, "popupAction");
+      Arguments.checkIsNotNull (popupAction, "popupAction");
+
+      final ImageButton button = widgetFactory.createImageButton (style, listener);
+      addButton (style, button, popupAction);
+
+      return button;
+    }
+
     public void changeButtonText (final String oldText, final String newText)
     {
       Arguments.checkIsNotNull (oldText, "oldText");
@@ -395,10 +451,13 @@ public class OkPopup implements Popup
 
       addListener (new InputListener ()
       {
-        public boolean keyDown (final InputEvent event, final int keycode2)
+        @Override
+        public boolean keyDown (final InputEvent event, final int keycode)
         {
-          if (keyCode == keycode2) listener.keyDown ();
-          return false;
+          if (keyCode != keycode) return false;
+
+          listener.keyDown ();
+          return true;
         }
       });
 
@@ -416,6 +475,11 @@ public class OkPopup implements Popup
     public void show ()
     {
       show (stage);
+    }
+
+    public void show (@Nullable final Action action)
+    {
+      show (stage, action);
     }
 
     public boolean isShown ()
@@ -440,6 +504,23 @@ public class OkPopup implements Popup
         final String styleName = entry.getValue ();
         button.setStyle (widgetFactory.createButtonStyle (styleName, button.getStyle ().getClass ()));
       }
+    }
+
+    public void setTitle (final String title)
+    {
+      Arguments.checkIsNotNull (title, "title");
+
+      getTitleLabel ().setText (title);
+    }
+
+    public void enableInput ()
+    {
+      setTouchable (Touchable.enabled);
+    }
+
+    public void disableInput ()
+    {
+      setTouchable (Touchable.disabled);
     }
 
     private <T extends Button> void addButton (final String style, final T button, final PopupAction popupAction)

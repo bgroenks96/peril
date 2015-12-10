@@ -296,6 +296,17 @@ public final class DefaultPlayMapActor implements PlayMapActor
   }
 
   @Override
+  public void setArmies (final int armies, final String countryName)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    if (!existsCountryActorWithName (countryName)) return;
+
+    getCountryActorWithName (countryName).setArmies (armies);
+  }
+
+  @Override
   public void changeArmiesBy (final int deltaArmies, final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");

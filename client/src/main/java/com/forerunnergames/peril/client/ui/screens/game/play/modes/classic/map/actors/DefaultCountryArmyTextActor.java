@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
@@ -11,50 +12,48 @@ import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.math.IntMath;
 
-public final class DefaultCountryArmyTextActor implements CountryArmyTextActor
+public class DefaultCountryArmyTextActor implements CountryArmyTextActor
 {
   private static final int MIN_ARMIES = 0;
   private static final int MAX_ARMIES = 99;
   private static final Vector2 FONT_METRICS_ADJUSTMENT = new Vector2 (0, 1);
-  private final BitmapFont font;
-  private final GlyphLayout glyphLayout = new GlyphLayout ();
   private final Vector2 circleTopLeft = new Vector2 ();
   private final Vector2 circleSize = new Vector2 ();
   private final Vector2 initialPosition = new Vector2 ();
   private final Vector2 finalPosition = new Vector2 ();
-  private final Actor actor = new ActorDelegate ();
-  private String armiesText;
+  private final BitmapFontActor textActor;
   private int armies = 0;
 
   public DefaultCountryArmyTextActor (final BitmapFont font)
   {
     Arguments.checkIsNotNull (font, "font");
 
-    this.font = font;
+    textActor = new BitmapFontActor (font);
 
-    setArmies (0);
+    setArmies (MIN_ARMIES);
+    setText (String.valueOf (MIN_ARMIES));
   }
 
   @Override
-  public void setCircleTopLeft (final Vector2 circleTopLeft)
+  public final void setCircleTopLeft (final Vector2 topLeft)
   {
-    Arguments.checkIsNotNull (circleTopLeft, "circleTopLeft");
+    Arguments.checkIsNotNull (topLeft, "topLeft");
 
-    this.circleTopLeft.set (circleTopLeft);
+    circleTopLeft.set (topLeft);
   }
 
   @Override
-  public void setCircleSize (final Vector2 circleSize)
+  public final void setCircleSize (final Vector2 size)
   {
-    Arguments.checkIsNotNull (circleSize, "circleSize");
-    Arguments.checkIsNotNegative (circleSize.x, "circleSize.x");
-    Arguments.checkIsNotNegative (circleSize.y, "circleSize.y");
+    Arguments.checkIsNotNull (size, "size");
+    Arguments.checkIsNotNegative (size.x, "size.x");
+    Arguments.checkIsNotNegative (size.y, "size.y");
 
-    this.circleSize.set (circleSize);
+    circleSize.set (size);
   }
 
   @Override
-  public void setArmies (final int armies)
+  public final void changeArmiesTo (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
 
@@ -62,13 +61,13 @@ public final class DefaultCountryArmyTextActor implements CountryArmyTextActor
   }
 
   @Override
-  public void incrementArmies ()
+  public final void incrementArmies ()
   {
     changeArmiesBy (1);
   }
 
   @Override
-  public void decrementArmies ()
+  public final void decrementArmies ()
   {
     changeArmiesBy (-1);
   }
@@ -78,15 +77,13 @@ public final class DefaultCountryArmyTextActor implements CountryArmyTextActor
   {
     final int newArmies = IntMath.checkedAdd (armies, deltaArmies);
 
-    if (newArmies < MIN_ARMIES || newArmies > MAX_ARMIES) return;
+    setArmies (newArmies);
 
-    armies = newArmies;
-
-    changeText (String.valueOf (newArmies));
+    textActor.setText (String.valueOf (armies));
   }
 
   @Override
-  public void onPrimaryStateChange (final CountryPrimaryImageState state)
+  public final void onPrimaryStateChange (final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
 
@@ -94,21 +91,56 @@ public final class DefaultCountryArmyTextActor implements CountryArmyTextActor
     {
       case DISABLED:
       {
-        actor.setVisible (false);
+        textActor.setVisible (false);
         break;
       }
       default:
       {
-        actor.setVisible (true);
+        textActor.setVisible (true);
         break;
       }
     }
   }
 
   @Override
-  public Actor asActor ()
+  public final int getArmies ()
   {
-    return actor;
+    return armies;
+  }
+
+  @Override
+  public void setFont (final BitmapFont font)
+  {
+    Arguments.checkIsNotNull (font, "font");
+
+    textActor.setFont (font);
+  }
+
+  @Override
+  public final Actor asActor ()
+  {
+    return textActor;
+  }
+
+  protected final void setArmies (final int armies)
+  {
+    if (armies < MIN_ARMIES || armies > MAX_ARMIES) return;
+
+    this.armies = armies;
+  }
+
+  protected final void setText (final String text)
+  {
+    Arguments.checkIsNotNull (text, "text");
+
+    textActor.setText (text);
+  }
+
+  protected final void addAction (final Action action)
+  {
+    Arguments.checkIsNotNull (action, "action");
+
+    textActor.addAction (action);
   }
 
   private int calculateDeltaArmies (final int desiredArmies)
@@ -116,24 +148,37 @@ public final class DefaultCountryArmyTextActor implements CountryArmyTextActor
     return IntMath.checkedSubtract (desiredArmies, armies);
   }
 
-  private void changeText (final String text)
+  private final class BitmapFontActor extends Actor
   {
-    armiesText = text;
-    glyphLayout.setText (font, text);
-    actor.setSize (glyphLayout.width, glyphLayout.height);
-  }
+    private BitmapFont font;
+    private GlyphLayout layout;
 
-  private final class ActorDelegate extends Actor
-  {
+    BitmapFontActor (final BitmapFont font)
+    {
+      this.font = font;
+      layout = new GlyphLayout ();
+    }
+
     @Override
     public void draw (final Batch batch, final float parentAlpha)
     {
       localToParentCoordinates (initialPosition.set (circleTopLeft));
 
-      finalPosition.x = initialPosition.x + (circleSize.x - glyphLayout.width) / 2.0f + FONT_METRICS_ADJUSTMENT.x;
-      finalPosition.y = initialPosition.y - (circleSize.y - glyphLayout.height) / 2.0f + FONT_METRICS_ADJUSTMENT.y;
+      finalPosition.x = initialPosition.x + (circleSize.x - layout.width) / 2.0f + FONT_METRICS_ADJUSTMENT.x;
+      finalPosition.y = initialPosition.y - (circleSize.y - layout.height) / 2.0f + FONT_METRICS_ADJUSTMENT.y;
 
-      font.draw (batch, armiesText, finalPosition.x, finalPosition.y);
+      font.draw (batch, layout, finalPosition.x, finalPosition.y);
+    }
+
+    private void setText (final String text)
+    {
+      layout.setText (font, text);
+      setSize (layout.width, layout.height);
+    }
+
+    private void setFont (final BitmapFont font)
+    {
+      this.font = font;
     }
   }
 }

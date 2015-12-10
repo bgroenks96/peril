@@ -195,11 +195,17 @@ public final class DefaultCountryActor implements CountryActor
   }
 
   @Override
+  public int getArmies ()
+  {
+    return armyTextActor.getArmies ();
+  }
+
+  @Override
   public void setArmies (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
 
-    armyTextActor.setArmies (armies);
+    armyTextActor.changeArmiesTo (armies);
   }
 
   @Override

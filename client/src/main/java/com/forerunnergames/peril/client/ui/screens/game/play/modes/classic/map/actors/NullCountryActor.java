@@ -102,6 +102,12 @@ final class NullCountryActor implements CountryActor
   }
 
   @Override
+  public int getArmies ()
+  {
+    return 0;
+  }
+
+  @Override
   public void setArmies (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");

@@ -207,11 +207,6 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     return createLabelStyle ("menu-settings");
   }
 
-  public TextureRegion createTextureRegion (final String regionName)
-  {
-    return getSkin ().getRegion (regionName);
-  }
-
   public TextField createPlayerNameTextField ()
   {
     return createTextField (InputSettings.INITIAL_PLAYER_NAME, GameSettings.MAX_PLAYER_NAME_LENGTH,

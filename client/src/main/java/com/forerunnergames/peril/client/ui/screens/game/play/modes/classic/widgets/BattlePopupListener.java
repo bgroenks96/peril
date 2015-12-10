@@ -4,9 +4,9 @@ import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 
 public interface BattlePopupListener extends PopupListener
 {
-  void onAttack (final String attackingCountryName, final String defendingCountryName);
+  void onBattle ();
 
-  void onRetreat (final String attackingCountryName, final String defendingCountryName);
+  void onAttackerWinFinal ();
 
-  void onToggleAutoAttack (final boolean isEnabled);
+  void onAttackerLoseFinal ();
 }

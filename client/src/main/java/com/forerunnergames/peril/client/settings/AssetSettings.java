@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.settings;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -169,6 +170,8 @@ public final class AssetSettings
           new MultiAtlasSkinLoader.SkinParameter (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
   public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+  public static final AssetDescriptor <Sound> CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/sounds/artillery_explosion07_48k.wav", Sound.class);
 
   // Peril Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -212,6 +215,7 @@ public final class AssetSettings
           .<AssetDescriptor <?>> of (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR,
                                      PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
