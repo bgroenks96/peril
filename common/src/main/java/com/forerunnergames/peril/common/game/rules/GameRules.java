@@ -18,6 +18,10 @@ public interface GameRules
 
   int getMaxArmiesInHand ();
 
+  int getMinArmiesOnCountry ();
+
+  int getMaxArmiesOnCountry ();
+
   int getMinPlayerLimit ();
 
   int getMaxPlayerLimit ();

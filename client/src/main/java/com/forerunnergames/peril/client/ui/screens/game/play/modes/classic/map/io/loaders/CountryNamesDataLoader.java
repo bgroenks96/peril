@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders;
 
-import com.forerunnergames.peril.common.io.AbstractDataLoader;
+import com.forerunnergames.peril.common.io.AbstractBiMapDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableBiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CountryNamesDataLoader extends AbstractDataLoader <Id, String>
+public final class CountryNamesDataLoader extends AbstractBiMapDataLoader <Id, String>
 {
   private static final Logger log = LoggerFactory.getLogger (CountryNamesDataLoader.class);
   private ImmutableBiMap.Builder <Id, String> countryNamesBuilder;

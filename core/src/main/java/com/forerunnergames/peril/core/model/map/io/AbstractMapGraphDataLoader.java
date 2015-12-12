@@ -2,11 +2,13 @@ package com.forerunnergames.peril.core.model.map.io;
 
 import com.forerunnergames.peril.common.io.AbstractDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
+import com.forerunnergames.peril.core.model.map.TerritoryGraphModel;
 import com.forerunnergames.peril.core.model.map.territory.Territory;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.graph.DefaultGraphModel;
+import com.forerunnergames.tools.common.graph.GraphModel;
 import com.forerunnergames.tools.common.io.StreamParser;
 
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -14,9 +16,10 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractMapGraphDataLoader <T extends Territory> extends AbstractDataLoader <T, Iterable <T>>
+public abstract class AbstractMapGraphDataLoader <T extends Territory, U extends TerritoryGraphModel <T>>
+        extends AbstractDataLoader <U>
 {
-  private final ImmutableBiMap.Builder <T, Iterable <T>> adjListBuilder = new ImmutableBiMap.Builder <> ();
+  private final DefaultGraphModel.Builder <T> adjListBuilder = DefaultGraphModel.builder ();
   private final StreamParserFactory streamParserFactory;
   private final ImmutableMap <String, T> namesToData;
   private StreamParser streamParser;
@@ -38,10 +41,12 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory> extends A
     this.streamParserFactory = streamParserFactory;
   }
 
+  protected abstract U finalizeData (final GraphModel <T> internalGraphModel);
+
   @Override
-  protected ImmutableBiMap <T, Iterable <T>> finalizeData ()
+  protected U finalizeData ()
   {
-    return adjListBuilder.build ();
+    return finalizeData (adjListBuilder.build ());
   }
 
   @Override
@@ -72,6 +77,9 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory> extends A
     assert lineData != null;
 
     final T first = lineData.remove (0);
-    adjListBuilder.put (first, lineData);
+    for (final T node : lineData)
+    {
+      adjListBuilder.setAdjacent (first, node);
+    }
   }
 }

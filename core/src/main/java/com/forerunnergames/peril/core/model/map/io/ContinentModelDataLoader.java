@@ -1,14 +1,12 @@
 package com.forerunnergames.peril.core.model.map.io;
 
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
 import com.forerunnergames.peril.common.io.AbstractDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.io.StreamParser;
 
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
@@ -18,10 +16,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ContinentModelDataLoader extends AbstractDataLoader <Id, Continent>
+public final class ContinentModelDataLoader extends AbstractDataLoader <ContinentFactory>
 {
   private static final Logger log = LoggerFactory.getLogger (ContinentModelDataLoader.class);
-  private final ImmutableBiMap.Builder <Id, Continent> continentsBuilder = new ImmutableBiMap.Builder <> ();
+  private final ContinentFactory continentFactory = new ContinentFactory ();
   private final StreamParserFactory streamParserFactory;
   private final CountryIdResolver countryIdResolver;
   private final Set <Id> countryIds = new HashSet <> ();
@@ -42,12 +40,12 @@ public final class ContinentModelDataLoader extends AbstractDataLoader <Id, Cont
   }
 
   @Override
-  protected ImmutableBiMap <Id, Continent> finalizeData ()
+  protected ContinentFactory finalizeData ()
   {
     streamParser.verifyEndOfFile ();
     streamParser.close ();
 
-    return continentsBuilder.build ();
+    return continentFactory;
   }
 
   @Override
@@ -86,11 +84,8 @@ public final class ContinentModelDataLoader extends AbstractDataLoader <Id, Cont
       countryIds.add (countryIdResolver.getIdOf (countryName));
     }
 
-    final Continent continent = ContinentFactory.create (continentName, reinforcementBonus,
-                                                         ImmutableSet.copyOf (countryIds));
+    continentFactory.newContinentWith (continentName, reinforcementBonus, ImmutableSet.copyOf (countryIds));
 
-    log.debug ("Successfully loaded [{}] with countries [{}] from file [{}].", continent, countryNames, fileName);
-
-    continentsBuilder.put (continent.getId (), continent);
+    log.debug ("Successfully loaded [{}] with countries [{}] from file [{}].", continentName, countryNames, fileName);
   }
 }

@@ -7,7 +7,6 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.TestSessions.TestSession;
@@ -37,7 +36,7 @@ public class DedicatedGameSession implements TestSession
   private final String serverAddress;
   private final int serverPort;
   private final TestClientPool clientPool = new TestClientPool ();
-  private StateMachineActionHandler gameModel;
+  private GameModel gameModel;
   private StateMachineEventHandler stateMachine;
   private TestServerApplication serverApplication;
 
@@ -73,7 +72,7 @@ public class DedicatedGameSession implements TestSession
     return isShutDown.get ();
   }
 
-  public StateMachineActionHandler getGameModel ()
+  public GameModel getGameModel ()
   {
     return gameModel;
   }
@@ -100,7 +99,7 @@ public class DedicatedGameSession implements TestSession
 
   private void initializeServer ()
   {
-    gameModel = new StateMachineActionHandler (GameModel.builder (gameRules).eventBus (eventBus).build ());
+    gameModel = GameModel.builder (gameRules).eventBus (eventBus).build ();
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     config.setGameModel (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);

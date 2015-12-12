@@ -11,14 +11,39 @@ import java.util.Set;
 
 public final class ContinentFactory
 {
-  public static ContinentBuilder builder (final String name)
+  private final ImmutableSet.Builder <Continent> continents = ImmutableSet.builder ();
+  private int continentCount = 0;
+
+  public void newContinentWith (final String name, final ImmutableSet <Id> countries)
+  {
+    continents.add (create (name, countries));
+    continentCount++;
+  }
+
+  public void newContinentWith (final String name, final int reinforcementBonus, final ImmutableSet <Id> countries)
+  {
+    continents.add (create (name, reinforcementBonus, countries));
+    continentCount++;
+  }
+
+  public int getContinentCount ()
+  {
+    return continentCount;
+  }
+
+  ImmutableSet <Continent> getContinents ()
+  {
+    return continents.build ();
+  }
+
+  static ContinentBuilder builder (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
     return new ContinentBuilder (name);
   }
 
-  public static Continent create (final String name, final ImmutableSet <Id> countries)
+  static Continent create (final String name, final ImmutableSet <Id> countries)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (countries, "countries");
@@ -27,7 +52,7 @@ public final class ContinentFactory
     return builder (name).countries (countries).build ();
   }
 
-  public static Continent create (final String name, final int reinforcementBonus, final ImmutableSet <Id> countries)
+  static Continent create (final String name, final int reinforcementBonus, final ImmutableSet <Id> countries)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNegative (reinforcementBonus, "reinforcementBonus");
@@ -37,13 +62,13 @@ public final class ContinentFactory
     return builder (name).reinforcementBonus (reinforcementBonus).countries (countries).build ();
   }
 
-  public static class ContinentBuilder
+  static class ContinentBuilder
   {
     private final String continentName;
     private final Id id;
 
     private int reinforcementBonus;
-    private Set <Id> countries = new HashSet <> ();
+    private final Set <Id> countries = new HashSet <> ();
 
     public ContinentBuilder (final String continentName)
     {

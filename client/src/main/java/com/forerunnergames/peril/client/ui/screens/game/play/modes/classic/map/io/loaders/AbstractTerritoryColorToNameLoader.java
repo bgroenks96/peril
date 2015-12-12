@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.TerritoryColor;
-import com.forerunnergames.peril.common.io.AbstractDataLoader;
+import com.forerunnergames.peril.common.io.AbstractBiMapDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParser;
@@ -9,7 +9,7 @@ import com.forerunnergames.tools.common.io.StreamParser;
 import com.google.common.collect.ImmutableBiMap;
 
 public abstract class AbstractTerritoryColorToNameLoader <T extends TerritoryColor <?>>
-        extends AbstractDataLoader <T, String> implements TerritoryColorToNameLoader <T>
+        extends AbstractBiMapDataLoader <T, String> implements TerritoryColorToNameLoader <T>
 {
   private final ImmutableBiMap.Builder <T, String> territoryColorsToNames = new ImmutableBiMap.Builder <> ();
   private final StreamParserFactory streamParserFactory;

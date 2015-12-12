@@ -1,14 +1,10 @@
 package com.forerunnergames.peril.integration.core;
 
-import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 
 public final class CoreFactory
 {
@@ -21,28 +17,27 @@ public final class CoreFactory
   {
     Arguments.checkIsNotNull (config, "config");
 
-    final StateMachineActionHandler gameModel = config.getGameModel ();
+    final GameModel gameModel = config.getGameModel ();
     return new StateMachineEventHandler (gameModel);
   }
 
-  public static ImmutableSet <Country> generateTestCountries (final int count)
+  public static CountryFactory generateTestCountries (final int count)
   {
     Arguments.checkIsNotNegative (count, "count");
 
-    final Builder <Country> countrySetBuilder = ImmutableSet.builder ();
+    final CountryFactory countryFactory = new CountryFactory ();
     for (int i = 0; i < count; ++i)
     {
-      final Country country = CountryFactory.create ("Country-" + i);
-      countrySetBuilder.add (country);
+      countryFactory.newCountryWith ("TestCountry-" + i);
     }
-    return countrySetBuilder.build ();
+    return countryFactory;
   }
 
   public static final class GameStateMachineConfig
   {
-    private StateMachineActionHandler gameModel;
+    private GameModel gameModel;
 
-    public GameStateMachineConfig setGameModel (final StateMachineActionHandler gameModel)
+    public GameStateMachineConfig setGameModel (final GameModel gameModel)
     {
       Arguments.checkIsNotNull (gameModel, "gameModel");
 
@@ -50,7 +45,7 @@ public final class CoreFactory
       return this;
     }
 
-    public StateMachineActionHandler getGameModel ()
+    public GameModel getGameModel ()
     {
       return gameModel;
     }

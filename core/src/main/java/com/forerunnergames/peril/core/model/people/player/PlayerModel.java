@@ -2,6 +2,8 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -36,11 +38,13 @@ public interface PlayerModel
 
   int getPlayerLimit ();
 
-  ImmutableSet <Player> getPlayers ();
+  ImmutableSet <PlayerPacket> getPlayerPackets ();
 
-  ImmutableSortedSet <Player> getTurnOrderedPlayers ();
+  ImmutableSet <Id> getPlayerIds ();
 
-  ImmutableSet <Player> getAllPlayersExcept (final Player player);
+  ImmutableSortedSet <PlayerPacket> getTurnOrderedPlayers ();
+
+  ImmutableSet <PlayerPacket> getAllPlayersExcept (final Id playerId);
 
   boolean hasArmiesInHandOf (final Id playerId, final int armies);
 
@@ -60,23 +64,39 @@ public interface PlayerModel
 
   boolean playerLimitIsAtLeast (final int limit);
 
-  Player playerWith (final Id id);
+  Id playerWith (final String name);
 
-  Player playerWith (final String name);
+  Id playerWith (final PlayerColor color);
 
-  Player playerWith (final PlayerColor color);
+  Id playerWith (final PlayerTurnOrder turnOrder);
 
-  Player playerWith (final PlayerTurnOrder turnOrder);
+  PlayerPacket playerPacketWith (final Id id);
 
-  Player playerWithName (final String name);
+  PlayerPacket playerPacketWith (final String name);
+
+  PlayerPacket playerPacketWith (final PlayerColor color);
+
+  PlayerPacket playerPacketWith (final PlayerTurnOrder turnOrder);
+
+  PlayerPacket playerPacketWithName (final String name);
+
+  String nameOf (final Id player);
+
+  PlayerColor colorOf (final Id player);
+
+  PlayerTurnOrder turnOrderOf (final Id player);
+
+  PersonIdentity identityOf (final Id player);
+
+  Id idOf (final String playerName);
 
   void removeAllArmiesFromHandsOfAllPlayers ();
 
   void removeArmiesFromHandOf (final Id playerId, final int armies);
 
-  Result <PlayerJoinGameDeniedEvent.Reason> requestToAdd (final Player player);
+  ImmutableSet <PlayerJoinGameStatus> requestToAdd (final PlayerFactory players);
 
-  void remove (final Player player);
+  void remove (final Id playerId);
 
   void removeByColor (final PlayerColor color);
 
@@ -88,4 +108,45 @@ public interface PlayerModel
 
   @Override
   String toString ();
+
+  public static class PlayerJoinGameStatus implements Result.ReturnStatus <PlayerJoinGameDeniedEvent.Reason>
+  {
+    private final PlayerPacket player;
+    private final Result <PlayerJoinGameDeniedEvent.Reason> result;
+
+    public PlayerJoinGameStatus (final PlayerPacket player, final Result <PlayerJoinGameDeniedEvent.Reason> result)
+    {
+      Arguments.checkIsNotNull (player, "player");
+      Arguments.checkIsNotNull (result, "result");
+
+      this.player = player;
+      this.result = result;
+    }
+
+    public PlayerPacket getPlayer ()
+    {
+      return player;
+    }
+
+    @Override
+    public Result <PlayerJoinGameDeniedEvent.Reason> getResult ()
+    {
+      return result;
+    }
+
+    public PlayerJoinGameDeniedEvent.Reason getFailureReason ()
+    {
+      return result.getFailureReason ();
+    }
+
+    public boolean failed ()
+    {
+      return result.failed ();
+    }
+
+    public boolean succeeded ()
+    {
+      return result.succeeded ();
+    }
+  }
 }

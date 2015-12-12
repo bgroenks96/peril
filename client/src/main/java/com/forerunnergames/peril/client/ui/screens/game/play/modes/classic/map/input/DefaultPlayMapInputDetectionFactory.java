@@ -29,7 +29,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders.PlayMapInputDetectionImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.pathparsers.AbsoluteMapResourcesPathParser;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.pathparsers.MapResourcesPathParser;
-import com.forerunnergames.peril.common.io.DataLoader;
+import com.forerunnergames.peril.common.io.BiMapDataLoader;
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.peril.common.map.MapMetadata;
@@ -88,10 +88,10 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
 
     final StreamParserFactory streamParserFactory = new ExternalStreamParserFactory ();
 
-    final DataLoader <CountryColor, String> countryColorToNameLoader =
+    final BiMapDataLoader <CountryColor, String> countryColorToNameLoader =
             new CountryColorToNameLoader (streamParserFactory);
 
-    final DataLoader <ContinentColor, String> continentColorToNameLoader =
+    final BiMapDataLoader <ContinentColor, String> continentColorToNameLoader =
             new ContinentColorToNameLoader (streamParserFactory);
 
     final MapResourcesPathParser absoluteMapResourcesPathParser =

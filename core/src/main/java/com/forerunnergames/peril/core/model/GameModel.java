@@ -1,11 +1,7 @@
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.common.net.events.EventFluency.withPlayerNameFrom;
-import static com.forerunnergames.tools.common.ResultFluency.failureReasonFrom;
-import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
-
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
@@ -14,6 +10,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
@@ -30,20 +27,31 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforc
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
+import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
-import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
+import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
+import com.forerunnergames.peril.core.model.map.continent.ContinentOwnerModel;
+import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
-import com.forerunnergames.peril.core.model.people.player.Player;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.state.StateEntryAction;
+import com.forerunnergames.peril.core.model.state.StateTransitionAction;
+import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
+import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
@@ -72,6 +80,11 @@ public final class GameModel
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
   private final PlayerModel playerModel;
   private final PlayMapModel playMapModel;
+  private final CountryOwnerModel countryOwnerModel;
+  private final CountryMapGraphModel countryMapGraphModel;
+  private final CountryArmyModel countryArmyModel;
+  private final ContinentOwnerModel continentOwnerModel;
+  private final ContinentMapGraphModel continentMapGraphModel;
   private final CardModel cardModel;
   private final PlayerTurnModel playerTurnModel;
   private final GameRules rules;
@@ -97,6 +110,12 @@ public final class GameModel
     this.playerTurnModel = playerTurnModel;
     this.rules = rules;
     this.eventBus = eventBus;
+
+    countryOwnerModel = playMapModel.getCountryOwnerModel ();
+    countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    countryArmyModel = playMapModel.getCountryArmyModel ();
+    continentOwnerModel = playMapModel.getContinentOwnerModel ();
+    continentMapGraphModel = playMapModel.getContinentMapGraphModel ();
   }
 
   public static Builder builder (final GameRules rules)
@@ -106,42 +125,69 @@ public final class GameModel
     return new Builder (rules);
   }
 
-  void beginTurn ()
+  @StateMachineAction
+  @StateTransitionAction
+  public void beginGame ()
+  {
+    log.info ("Starting a new game...");
+
+    playerModel.removeAllArmiesFromHandsOfAllPlayers ();
+    countryOwnerModel.unassignAllCountries ();
+
+    // TODO Clear all country armies.
+    // TODO Reset entire game state.
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void endGame ()
+  {
+    log.info ("Game over.");
+
+    // TODO End the game gracefully - this can be called DURING ANY GAME STATE
+  }
+
+  public void beginTurnPhase ()
   {
     log.info ("Turn begins for player [{}].", getCurrentPlayer ().getName ());
 
-    eventBus.publish (new BeginPlayerTurnEvent (Packets.from (getCurrentPlayer ())));
+    eventBus.publish (new BeginPlayerTurnEvent (getCurrentPlayer ()));
   }
 
-  void endTurn ()
+  public void endTurnPhase ()
   {
     log.info ("Turn ends for player [{}].", getCurrentPlayer ().getName ());
 
-    eventBus.publish (new EndPlayerTurnEvent (Packets.from (getCurrentPlayer ())));
+    eventBus.publish (new EndPlayerTurnEvent (getCurrentPlayer ()));
   }
 
-  void determinePlayerTurnOrder ()
+  @StateMachineAction
+  @StateEntryAction
+  public void determinePlayerTurnOrder ()
   {
     log.info ("Determining player turn order randomly...");
 
-    final ImmutableSet <Player> players = playerModel.getPlayers ();
-    final List <Player> shuffledPlayers = Randomness.shuffle (players);
-    final Iterator <Player> randomPlayerItr = shuffledPlayers.iterator ();
+    final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
+    final List <PlayerPacket> shuffledPlayers = Randomness.shuffle (players);
+    final Iterator <PlayerPacket> randomPlayerItr = shuffledPlayers.iterator ();
 
     for (final PlayerTurnOrder turnOrder : PlayerTurnOrder.validSortedValues ())
     {
       if (!randomPlayerItr.hasNext ()) break;
 
-      final Player player = randomPlayerItr.next ();
-      playerModel.changeTurnOrderOfPlayer (player.getId (), turnOrder);
+      final PlayerPacket player = randomPlayerItr.next ();
+      final Id playerId = playerModel.idOf (player.getName ());
+      playerModel.changeTurnOrderOfPlayer (playerId, turnOrder);
 
       log.info ("Set turn order of player [{}] to [{}].", player.getName (), turnOrder);
     }
 
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (Packets.fromPlayers (playerModel.getPlayers ())));
+    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayerPackets ()));
   }
 
-  void distributeInitialArmies ()
+  @StateMachineAction
+  @StateEntryAction
+  public void distributeInitialArmies ()
   {
     final int armies = rules.getInitialArmies ();
 
@@ -149,11 +195,12 @@ public final class GameModel
 
     // Create a status message listing which player received how many armies.
     final StringBuilder statusMessageBuilder = new StringBuilder ();
-    for (final Player player : playerModel.getTurnOrderedPlayers ())
+    for (final PlayerPacket player : playerModel.getTurnOrderedPlayers ())
     {
-      playerModel.addArmiesToHandOf (player.getId (), armies);
+      final Id playerId = playerModel.idOf (player.getName ());
+      playerModel.addArmiesToHandOf (playerId, armies);
 
-      eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (player), armies));
+      eventBus.publish (new PlayerArmiesChangedEvent (player, armies));
 
       // @formatter:off
       statusMessageBuilder
@@ -165,10 +212,12 @@ public final class GameModel
     }
     if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
 
-    eventBus.publish (new DistributeInitialArmiesCompleteEvent (Packets.fromPlayers (playerModel.getPlayers ())));
+    eventBus.publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayerPackets ()));
   }
 
-  void waitForCountrySelectionToBegin ()
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForCountrySelectionToBegin ()
   {
     switch (rules.getInitialCountryAssignment ())
     {
@@ -192,7 +241,9 @@ public final class GameModel
     }
   }
 
-  void randomlyAssignPlayerCountries ()
+  @StateMachineAction
+  @StateEntryAction
+  public void randomlyAssignPlayerCountries ()
   {
     // if there are no players, just give up now!
     if (playerModel.isEmpty ())
@@ -201,72 +252,83 @@ public final class GameModel
       return;
     }
 
-    final List <Country> countries = Randomness.shuffle (new HashSet <> (playMapModel.getCountries ()));
-    final List <Player> players = Randomness.shuffle (playerModel.getPlayers ());
+    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryMapGraphModel.getCountryIds ()));
+    final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules
             .getInitialPlayerCountryDistribution (players.size ());
 
     log.info ("Randomly assigning {} countries to {} players...", countries.size (), players.size ());
 
-    final Iterator <Country> countryItr = countries.iterator ();
+    final Iterator <Id> countryItr = countries.iterator ();
     for (int i = 0; i < players.size (); ++i)
     {
-      final Player nextPlayer = players.get (i);
+      final PlayerPacket nextPlayer = players.get (i);
+      final Id nextPlayerId = playerModel.idOf (nextPlayer.getName ());
       final int playerCountryCount = playerCountryDistribution.get (i);
 
       int assignSuccessCount = 0; // for logging purposes
       for (int count = 0; count < playerCountryCount && countryItr.hasNext (); count++)
       {
-        final Country toAssign = countryItr.next ();
+        final Id toAssign = countryItr.next ();
         final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
-        result = playMapModel.requestToAssignCountryOwner (idOf (toAssign), idOf (nextPlayer));
+        result = countryOwnerModel.requestToAssignCountryOwner (toAssign, nextPlayerId);
         if (result.failed ())
         {
-          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", toAssign.getName (), nextPlayer.getName (),
-                    failureReasonFrom (result));
+          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryMapGraphModel.nameOf (toAssign),
+                    nextPlayer.getName (), result.getFailureReason ());
         }
         else
         {
-          playerModel.removeArmiesFromHandOf (nextPlayer.getId (), 1);
+          playerModel.removeArmiesFromHandOf (nextPlayerId, 1);
           assignSuccessCount++;
         }
         countryItr.remove ();
       }
 
       log.info ("Assigned {} countries to [{}].", assignSuccessCount, nextPlayer.getName ());
-      eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (nextPlayer), -1 * assignSuccessCount));
+      eventBus.publish (new PlayerArmiesChangedEvent (nextPlayer, -1 * assignSuccessCount));
     }
 
     // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
     final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
-    playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+    playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
 
     eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
   }
 
-  void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
+  @StateMachineAction
+  @StateTransitionAction
+  public void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
-    final Player player = PlayerFactory.create (withPlayerNameFrom (event));
-    final Result <PlayerJoinGameDeniedEvent.Reason> result;
+    final PlayerFactory playerFactory = new PlayerFactory ();
+    playerFactory.newPlayerWith (event.getPlayerName ());
+    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (playerFactory);
 
-    result = playerModel.requestToAdd (player);
-
-    if (result.failed ())
+    // for loop is a formality; there should only ever be one result for this case.
+    for (final PlayerJoinGameStatus result : results)
     {
-      eventBus.publish (new PlayerJoinGameDeniedEvent (nameOf (player), failureReasonFrom (result)));
-      return;
+      final PlayerPacket player = result.getPlayer ();
+      if (result.failed ())
+      {
+        eventBus.publish (new PlayerJoinGameDeniedEvent (player.getName (), result.getFailureReason ()));
+        continue;
+      }
+
+      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
     }
-
-    final PlayerPacket playerPacket = Packets.from (player);
-
-    eventBus.publish (new PlayerJoinGameSuccessEvent (playerPacket));
   }
 
-  void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
+  /**
+   * This method will be called after {@link InternalCommunicationHandler} has already handled the
+   * {@link InternalPlayerLeaveGameEvent}.
+   */
+  @StateMachineAction
+  @StateTransitionAction
+  public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -281,108 +343,117 @@ public final class GameModel
     }
   }
 
-  void waitForPlayersToSelectInitialCountries ()
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForPlayersToSelectInitialCountries ()
   {
-    final Player currentPlayer = getCurrentPlayer ();
+    final PlayerPacket currentPlayer = getCurrentPlayer ();
 
-    if (playMapModel.allCountriesAreOwned ())
+    if (countryOwnerModel.allCountriesAreOwned ())
     {
       // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
-      playMapViewPackets = Packets.fromPlayMap (buildPlayMapViewFrom (playerModel, playMapModel));
+      playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
       eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
       return;
     }
 
     log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
-    eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+    eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer));
   }
 
-  boolean verifyPlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
+  @StateMachineCondition
+  public boolean verifyPlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
-    final Player currentPlayer = getCurrentPlayer ();
+    final PlayerPacket currentPlayer = getCurrentPlayer ();
+    final Id currentPlayerId = playerModel.idOf (currentPlayer.getName ());
 
     final String selectedCountryName = event.getSelectedCountryName ();
 
-    if (!playMapModel.existsCountryWith (selectedCountryName))
+    if (!countryMapGraphModel.existsCountryWith (selectedCountryName))
     {
-      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (Packets.from (currentPlayer), selectedCountryName,
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (currentPlayer, selectedCountryName,
               PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
       // send a new request
-      eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer));
       return false;
     }
+
+    final Id countryId = countryMapGraphModel.idOf (selectedCountryName);
 
     final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
-    result = playMapModel.requestToAssignCountryOwner (idOf (playMapModel.countryWith (selectedCountryName)),
-                                                       idOf (currentPlayer));
+    result = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
     if (result.failed ())
     {
-      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (Packets.from (currentPlayer), selectedCountryName,
-              failureReasonFrom (result)));
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (currentPlayer, selectedCountryName,
+              result.getFailureReason ()));
       // send a new request
-      eventBus.publish (new PlayerSelectCountryRequestEvent (Packets.from (currentPlayer)));
+      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer));
       return false;
     }
 
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (Packets.from (currentPlayer), selectedCountryName));
-    eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (currentPlayer), -1));
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (currentPlayer, selectedCountryName));
+    eventBus.publish (new PlayerArmiesChangedEvent (currentPlayer, -1));
 
     playerTurnModel.advance ();
 
     return true;
   }
 
-  void beginReinforcementPhase ()
+  @StateMachineAction
+  @StateEntryAction
+  public void beginReinforcementPhase ()
   {
-    final Player player = getCurrentPlayer ();
+    final PlayerPacket player = getCurrentPlayer ();
+    final Id playerId = playerModel.idOf (player.getName ());
 
     log.info ("Begin reinforcement phase for player [{}].", player);
 
-    eventBus.publish (new BeginReinforcementPhaseEvent (Packets.from (player)));
+    eventBus.publish (new BeginReinforcementPhaseEvent (player));
 
     // add country reinforcements and publish event
     final int countryReinforcementBonus = rules
-            .calculateCountryReinforcements (playMapModel.countCountriesOwnedBy (player.getId ()));
+            .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
     int continentReinforcementBonus = 0;
-    final ImmutableSet <Continent> playerOwnedContinents = playMapModel.getContinentsOwnedBy (player.getId ());
-    for (final Continent cont : playerOwnedContinents)
+    final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
+    for (final ContinentPacket cont : playerOwnedContinents)
     {
       continentReinforcementBonus += cont.getReinforcementBonus ();
     }
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
-    player.addArmiesToHand (totalReinforcementBonus);
+    playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
-    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (player.getId ());
-    final int cardCount = cardModel.countCardsInHand (player.getId ());
-    final ImmutableSet <CountryPacket> playerOwnedCountries = Packets
-            .fromCountries (playMapModel.getCountriesOwnedBy (player.getId ()));
-    final ImmutableSet <CardSetPacket> matchPackets = Packets.fromCardMatchSet (matches);
+    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
+    final int cardCount = cardModel.countCardsInHand (playerId);
+    final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
+    final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
     // publish card trade in request
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (Packets.from (player), countryReinforcementBonus,
+    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, countryReinforcementBonus,
             continentReinforcementBonus, cardModel.getNextTradeInBonus (), playerOwnedCountries, matchPackets,
             cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
-    eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (player), totalReinforcementBonus));
+    eventBus.publish (new PlayerArmiesChangedEvent (player, totalReinforcementBonus));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
 
-  boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
+  @StateMachineCondition
+  public boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final Player player = getCurrentPlayer ();
+    final PlayerPacket player = getCurrentPlayer ();
+    final Id playerId = playerModel.idOf (player.getName ());
 
-    Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> result = Result.success ();
+    Result <CountryArmyChangeDeniedEvent.Reason> result = Result.success ();
 
     // --- process card trade-ins --- //
 
     final CardSetPacket tradeIn = event.getTradeIn ();
 
-    final ImmutableSet <Card> cards = Packets.toCardSet (tradeIn.getCards (), cardModel);
+    final ImmutableSet <Card> cards = CardPackets.toCardSet (tradeIn.getCards (), cardModel);
     final CardSet cardSet = new CardSet (rules, cards);
     if (!cardSet.isEmpty () && !cardSet.isMatch ())
     {
@@ -393,17 +464,16 @@ public final class GameModel
 
     if (!cardSet.isEmpty () && result.succeeded ())
     {
-      result = cardModel.requestTradeInCards (player.getId (), cardSet.match (), TurnPhase.REINFORCE);
+      result = cardModel.requestTradeInCards (playerId, cardSet.match (), TurnPhase.REINFORCE);
     }
 
     if (!cardSet.isEmpty () && result.succeeded ())
     {
-      player.addArmiesToHand (cardTradeInBonus);
+      playerModel.addArmiesToHandOf (playerId, cardTradeInBonus);
     }
     else if (result.failed ())
     {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (Packets.from (player),
-              result.getFailureReason ()));
+      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, result.getFailureReason ()));
       return false;
     }
 
@@ -418,153 +488,134 @@ public final class GameModel
     }
     if (totalReinforcementCount > player.getArmiesInHand ())
     {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (Packets.from (player),
+      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player,
               PlayerReinforceCountriesResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
       return false;
     }
 
     for (final String countryName : reinforcedCountries.keySet ())
     {
-      if (!playMapModel.existsCountryWith (countryName))
+      if (!countryMapGraphModel.existsCountryWith (countryName))
       {
         result = Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
         break;
       }
-      final Country country = playMapModel.countryWith (countryName);
-      if (!playMapModel.isCountryOwnedBy (country.getId (), player.getId ()))
+      final CountryPacket country = countryMapGraphModel.countryPacketWith (countryName);
+      final Id countryId = countryMapGraphModel.idOf (country.getName ());
+      if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
       {
         result = Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
         break;
       }
       final int reinforcementCount = reinforcedCountries.get (countryName);
-      country.addArmies (reinforcementCount);
-      player.removeArmiesFromHand (reinforcementCount);
+      result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
+      playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
     }
 
     if (result.failed ())
     {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (Packets.from (player),
-              result.getFailureReason ()));
+      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, result.getFailureReason ()));
       return false;
     }
 
-    eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (Packets.from (player)));
-    eventBus.publish (new PlayerArmiesChangedEvent (Packets.from (player), cardTradeInBonus - totalReinforcementCount));
+    eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (player));
+    eventBus.publish (new PlayerArmiesChangedEvent (player, cardTradeInBonus - totalReinforcementCount));
 
     return true;
   }
 
-  void beginAttackPhase ()
+  @StateMachineAction
+  @StateEntryAction
+  public void beginAttackPhase ()
   {
-    final Player player = getCurrentPlayer ();
+    final PlayerPacket player = getCurrentPlayer ();
 
     log.info ("Begin attack phase for player [{}].", player);
 
-    eventBus.publish (new BeginAttackPhaseEvent (Packets.from (player)));
+    eventBus.publish (new BeginAttackPhaseEvent (player));
   }
 
-  PlayerModel getPlayerModel ()
-  {
-    return playerModel;
-  }
-
-  PlayMapModel getPlayMapModel ()
-  {
-    return playMapModel;
-  }
-
-  PlayerTurnModel getPlayerTurnModel ()
-  {
-    return playerTurnModel;
-  }
-
-  GameRules getRules ()
-  {
-    return rules;
-  }
-
-  MBassador <Event> getEventBus ()
-  {
-    return eventBus;
-  }
-
-  boolean isFull ()
+  @StateMachineCondition
+  public boolean isFull ()
   {
     return playerModel.isFull ();
   }
 
-  boolean isNotFull ()
+  @StateMachineCondition
+  public boolean isNotFull ()
   {
     return playerModel.isNotFull ();
   }
 
-  boolean isEmpty ()
+  public boolean isEmpty ()
   {
     return playerModel.isEmpty ();
   }
 
-  boolean playerCountIs (final int count)
+  public boolean playerCountIs (final int count)
   {
     Arguments.checkIsNotNegative (count, "count");
 
     return playerModel.playerCountIs (count);
   }
 
-  boolean playerCountIsNot (final int count)
+  public boolean playerCountIsNot (final int count)
   {
     Arguments.checkIsNotNegative (count, "count");
 
     return playerModel.playerCountIsNot (count);
   }
 
-  boolean playerLimitIs (final int limit)
+  public boolean playerLimitIs (final int limit)
   {
     Arguments.checkIsNotNegative (limit, "limit");
 
     return playerModel.playerLimitIs (limit);
   }
 
-  int getPlayerCount ()
+  public int getPlayerCount ()
   {
     return playerModel.getPlayerCount ();
   }
 
-  int getPlayerLimit ()
+  public int getPlayerLimit ()
   {
     return playerModel.getPlayerLimit ();
   }
 
-  PlayerTurnOrder getTurn ()
+  public PlayerTurnOrder getTurn ()
   {
     return playerTurnModel.getTurnOrder ();
   }
 
-  boolean playerLimitIsAtLeast (final int limit)
+  public boolean playerLimitIsAtLeast (final int limit)
   {
     Arguments.checkIsNotNegative (limit, "limit");
 
     return playerModel.playerLimitIsAtLeast (limit);
   }
 
-  Player getCurrentPlayer ()
+  public PlayerPacket getCurrentPlayer ()
   {
-    return playerModel.playerWith (playerTurnModel.getTurnOrder ());
+    return playerModel.playerPacketWith (playerTurnModel.getTurnOrder ());
   }
 
-  private ImmutableMap <Country, Player> buildPlayMapViewFrom (final PlayerModel playerModel,
-                                                               final PlayMapModel playMapModel)
+  private static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
+                                                                                  final PlayMapModel playMapModel)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
-    final ImmutableSet <Country> countries = playMapModel.getCountries ();
-    final ImmutableMap.Builder <Country, Player> playMapView = ImmutableMap.builder ();
-    for (final Country country : countries)
-    {
-      if (!playMapModel.isCountryOwned (idOf (country))) continue;
+    final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
 
-      final Id ownerId = playMapModel.ownerOf (idOf (country));
-      playMapView.put (country, playerModel.playerWith (ownerId));
+    final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapView = ImmutableMap.builder ();
+    for (final Id countryId : countryMapGraphModel)
+    {
+      if (!countryOwnerModel.isCountryOwned (countryId)) continue;
+
+      final Id ownerId = countryOwnerModel.ownerOf (countryId);
+      playMapView.put (countryMapGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
     }
     return playMapView.build ();
   }
@@ -572,8 +623,8 @@ public final class GameModel
   public static class Builder
   {
     private final GameRules gameRules;
-    private PlayerModel playerModel;
     private PlayMapModel playMapModel;
+    private PlayerModel playerModel;
     private CardModel cardModel;
     private PlayerTurnModel playerTurnModel;
     private MBassador <Event> eventBus = EventBusFactory.create ();
@@ -583,19 +634,19 @@ public final class GameModel
       return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, gameRules, eventBus);
     }
 
-    public Builder playerModel (final PlayerModel playerModel)
-    {
-      Arguments.checkIsNotNull (playerModel, "playerModel");
-
-      this.playerModel = playerModel;
-      return this;
-    }
-
     public Builder playMapModel (final PlayMapModel playMapModel)
     {
       Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
       this.playMapModel = playMapModel;
+      return this;
+    }
+
+    public Builder playerModel (final PlayerModel playerModel)
+    {
+      Arguments.checkIsNotNull (playerModel, "playerModel");
+
+      this.playerModel = playerModel;
       return this;
     }
 
@@ -628,9 +679,15 @@ public final class GameModel
       Arguments.checkIsNotNull (gameRules, "gameRules");
 
       this.gameRules = gameRules;
+      final CountryFactory defaultCountryFactory = CountryFactory
+              .generateDefaultCountries (gameRules.getTotalCountryCount ());
+      final ContinentFactory emptyContinentFactory = new ContinentFactory ();
+      final CountryMapGraphModel disjointCountryGraph = CountryMapGraphModel
+              .disjointCountryGraphFrom (defaultCountryFactory);
+      playMapModel = new DefaultPlayMapModelFactory (gameRules)
+              .create (defaultCountryFactory, disjointCountryGraph, emptyContinentFactory,
+                       ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
-      playMapModel = new DefaultPlayMapModel (DefaultPlayMapModel.generateDefaultCountries (gameRules),
-              ImmutableSet.<Continent> of (), gameRules);
       cardModel = new DefaultCardModel (gameRules, ImmutableSet.<Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
     }

@@ -1,17 +1,12 @@
 package com.forerunnergames.peril.integration.server;
 
-import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.StateMachineActionHandler;
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
-import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
-import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.common.map.DefaultMapMetadata;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
@@ -20,6 +15,16 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
+import com.forerunnergames.peril.core.model.map.PlayMapModelFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.DefaultCountryIdResolver;
+import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.server.application.ServerApplication;
@@ -34,8 +39,6 @@ import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.Server;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerController;
-
-import com.google.common.collect.ImmutableSet;
 
 import de.matthiasmann.AsyncExecution;
 
@@ -63,10 +66,15 @@ public class ServerFactory
     final GameMode gameMode = GameMode.CLASSIC;
     final int winPercentage = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
     final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
-    final ImmutableSet <Country> countries = PlayMapModelDataFactoryCreator.create (gameMode).createCountries (MAP_METADATA);
-    final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.size (), initialCountryAssignment);
+    final CountryFactory countries = PlayMapModelDataFactoryCreator.create (gameMode).createCountries (MAP_METADATA);
+    final ContinentFactory continents = PlayMapModelDataFactoryCreator.create (gameMode).createContinents (MAP_METADATA, new DefaultCountryIdResolver (countries));
+    final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.getCountryCount (), initialCountryAssignment);
+    final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
+    final CountryMapGraphModel countryMapGraphModel = CountryMapGraphModel.disjointCountryGraphFrom (countries);
+    final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModel.disjointContinentGraphFrom (continents, countryMapGraphModel);
     final GameStateMachineConfig config = new GameStateMachineConfig ();
-    config.setGameModel (new StateMachineActionHandler (GameModel.builder (gameRules).eventBus (eventBus).build ()));
+    final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModelFactory.create (countries, countryMapGraphModel, continents, continentMapGraphModel)).eventBus (eventBus).build ();
+    config.setGameModel (gameModel);
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
     return newTestServer (eventBus, type, gameMode, MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
     // @formatter:on

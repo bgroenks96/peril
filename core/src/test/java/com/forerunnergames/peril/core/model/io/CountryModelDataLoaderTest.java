@@ -1,70 +1,51 @@
 package com.forerunnergames.peril.core.model.io;
 
-import static org.hamcrest.Matchers.equalTo;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.peril.core.model.map.io.CountryModelDataLoader;
 import com.forerunnergames.peril.common.io.DataLoader;
-import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.map.country.CountryNameMatcher;
+import com.forerunnergames.peril.core.model.map.io.CountryModelDataLoader;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.hamcrest.FeatureMatcher;
-import org.hamcrest.Matcher;
+import com.google.common.collect.ImmutableSet;
 
 import org.junit.BeforeClass;
 
-public class CountryModelDataLoaderTest extends DataLoaderTest <Id, Country>
+public class CountryModelDataLoaderTest extends DataLoaderTest <CountryFactory>
 {
   private static final String TEST_COUNTRIES_FILENAME = "test-countries.txt";
   private static final int EXPECTED_COUNTRY_COUNT_FROM_FILE = 10;
-  private static Collection <Matcher <? super Country>> countryMatchers = new ArrayList <> ();
+  private static ImmutableSet <String> expectedCountryNames;
+  private static CountryNameMatcher countryNameMatcher;
 
   @BeforeClass
   public static void setupClass ()
   {
+    final ImmutableSet.Builder <String> countryNames = ImmutableSet.builder ();
     for (int i = 1; i <= EXPECTED_COUNTRY_COUNT_FROM_FILE; ++i)
     {
-      final Country expectedCountry = mock (Country.class);
       final String expectedCountryName = "Test Country " + i;
 
-      when (expectedCountry.getName ()).thenReturn (expectedCountryName);
-
-      countryMatchers.add (hasName (equalTo (expectedCountryName)));
+      countryNames.add (expectedCountryName);
     }
+
+    expectedCountryNames = countryNames.build ();
+    countryNameMatcher = new CountryNameMatcher (expectedCountryNames);
   }
 
   @Override
-  public DataLoader <Id, Country> createDataLoader ()
+  public DataLoader <CountryFactory> createDataLoader ()
   {
     return new CountryModelDataLoader (new InternalStreamParserFactory ());
   }
 
   @Override
-  public Collection <Matcher <? super Country>> getDataMatchers ()
+  public boolean verifyData (final CountryFactory data)
   {
-    return countryMatchers;
+    return countryNameMatcher.countryNamesMatch (data);
   }
 
   @Override
   public String getTestDataFileName ()
   {
     return TEST_COUNTRIES_FILENAME;
-  }
-
-  private static Matcher <Country> hasName (final Matcher <String> nameMatcher)
-  {
-    return new FeatureMatcher <Country, String> (nameMatcher, "Country with name", "name")
-    {
-      @Override
-      protected String featureValueOf (final Country actual)
-      {
-        return actual.getName ();
-      }
-    };
   }
 }

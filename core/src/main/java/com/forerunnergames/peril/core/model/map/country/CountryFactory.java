@@ -4,23 +4,51 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
+import com.google.common.collect.ImmutableSet;
+
 public final class CountryFactory
 {
-  public static CountryBuilder builder (final String name)
+  private final ImmutableSet.Builder <Country> countries = ImmutableSet.builder ();
+
+  private int countryCount = 0;
+
+  public void newCountryWith (final String name)
+  {
+    countries.add (create (name));
+    countryCount++;
+  }
+
+  public void newCountryWith (final String name, final int armyCount)
+  {
+    countries.add (create (name, armyCount));
+    countryCount++;
+  }
+
+  public int getCountryCount ()
+  {
+    return countryCount;
+  }
+
+  ImmutableSet <Country> getCountries ()
+  {
+    return countries.build ();
+  }
+
+  static CountryBuilder builder (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
     return new CountryBuilder (name);
   }
 
-  public static Country create (final String name)
+  static Country create (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
     return builder (name).build ();
   }
 
-  public static Country create (final String name, final int armyCount)
+  static Country create (final String name, final int armyCount)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
@@ -28,7 +56,7 @@ public final class CountryFactory
     return builder (name).armies (armyCount).build ();
   }
 
-  public static class CountryBuilder
+  static class CountryBuilder
   {
     private final String name;
     private final Id id;
@@ -54,5 +82,17 @@ public final class CountryFactory
     {
       return new DefaultCountry (name, id, armyCount);
     }
+  }
+
+  public static CountryFactory generateDefaultCountries (final int count)
+  {
+    Arguments.checkIsNotNegative (count, "count");
+
+    final CountryFactory countryFactory = new CountryFactory ();
+    for (int i = 0; i < count; ++i)
+    {
+      countryFactory.newCountryWith ("Country-" + i);
+    }
+    return countryFactory;
   }
 }

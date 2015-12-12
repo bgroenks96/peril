@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.model.card.io;
 
 import com.forerunnergames.peril.common.game.CardType;
-import com.forerunnergames.peril.common.io.AbstractDataLoader;
+import com.forerunnergames.peril.common.io.AbstractBiMapDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardFactory;
@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableBiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CardModelDataLoader extends AbstractDataLoader <Id, Card>
+public final class CardModelDataLoader extends AbstractBiMapDataLoader <Id, Card>
 {
   private static final Logger log = LoggerFactory.getLogger (CardModelDataLoader.class);
   private final ImmutableBiMap.Builder <Id, Card> cardsBuilder = ImmutableBiMap.builder ();

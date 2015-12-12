@@ -1,13 +1,15 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.defaults.DefaultPlayerSelectCountryResponseEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangeDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangeDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerSelectCountryResponseEvent
-        implements PlayerResponseDeniedEvent <PlayerSelectCountryResponseDeniedEvent.Reason>
+        implements CountryOwnerChangeDeniedEvent, PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerPacket player;
   private final Reason reason;
@@ -23,13 +25,6 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
 
     this.player = player;
     this.reason = reason;
-  }
-
-  public enum Reason
-  {
-    COUNTRY_DOES_NOT_EXIST,
-    COUNTRY_DISABLED,
-    COUNTRY_ALREADY_OWNED;
   }
 
   @Override
