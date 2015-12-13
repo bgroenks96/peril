@@ -57,6 +57,6 @@ public final class DefaultPlayMapModelDataFactory implements PlayMapModelDataFac
     final ContinentMapGraphDataLoader continentMapGraphDataLoader = PlayMapDataLoadersFactory
             .createContinentMapGraphDataLoader (mapMetadata.getType (), continentFactory, countryMapGraphModel);
 
-    return continentMapGraphDataLoader.load (mapDataPathParser.parseCountryGraphFileNamePath (mapMetadata));
+    return continentMapGraphDataLoader.load (mapDataPathParser.parseContinentGraphFileNamePath (mapMetadata));
   }
 }

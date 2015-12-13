@@ -62,6 +62,12 @@ public final class ContinentFactory
     return builder (name).reinforcementBonus (reinforcementBonus).countries (countries).build ();
   }
 
+  @Override
+  public String toString ()
+  {
+    return continents.build ().toString ();
+  }
+
   static class ContinentBuilder
   {
     private final String continentName;

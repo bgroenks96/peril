@@ -12,7 +12,7 @@ public final class CountryMapGraphDataLoader extends AbstractMapGraphDataLoader 
   }
 
   @Override
-  protected CountryMapGraphModel finalizeData (final GraphModel <Country> internalGraphModel)
+  protected CountryMapGraphModel createGraphModel (final GraphModel <Country> internalGraphModel)
   {
     return new CountryMapGraphModel (internalGraphModel);
   }

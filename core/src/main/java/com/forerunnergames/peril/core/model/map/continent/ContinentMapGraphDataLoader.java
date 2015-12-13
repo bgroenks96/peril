@@ -22,7 +22,7 @@ public final class ContinentMapGraphDataLoader extends AbstractMapGraphDataLoade
   }
 
   @Override
-  protected ContinentMapGraphModel finalizeData (final GraphModel <Continent> internalGraphModel)
+  protected ContinentMapGraphModel createGraphModel (final GraphModel <Continent> internalGraphModel)
   {
     return new ContinentMapGraphModel (internalGraphModel, countryMapGraphModel);
   }
