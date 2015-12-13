@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
@@ -9,7 +9,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.math.IntMath;
 
-public final class DefaultPlayer extends AbstractPerson implements Player
+final class DefaultPlayer extends AbstractPerson implements Player
 {
   private PlayerColor color;
   private PlayerTurnOrder turnOrder;

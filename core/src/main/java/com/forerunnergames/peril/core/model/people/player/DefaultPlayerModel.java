@@ -1,16 +1,12 @@
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.colorOf;
-import static com.forerunnergames.peril.core.model.people.player.PlayerFluency.turnOrderOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
-
 import static com.google.common.base.Predicates.equalTo;
 import static com.google.common.base.Predicates.not;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
@@ -50,7 +46,7 @@ public final class DefaultPlayerModel implements PlayerModel
                                        + " armies in hand. The maximum armies allowed in a player's hand is "
                                        + rules.getMaxArmiesInHand () + ".");
 
-    playerWith (playerId).addArmiesToHand (armies);
+    modelPlayerWith (playerId).addArmiesToHand (armies);
   }
 
   @Override
@@ -59,7 +55,8 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    return playerWith (playerId).getArmiesInHand () <= IntMath.checkedSubtract (rules.getMaxArmiesInHand (), armies);
+    return playerPacketWith (playerId).getArmiesInHand () <= IntMath.checkedSubtract (rules.getMaxArmiesInHand (),
+                                                                                      armies);
   }
 
   @Override
@@ -68,7 +65,7 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    return playerWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
+    return playerPacketWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
   }
 
   @Override
@@ -78,13 +75,13 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (toTurnOrder, "toTurnOrder");
     Arguments.checkIsFalse (toTurnOrder.is (PlayerTurnOrder.UNKNOWN), "Invalid player turn order.");
 
-    final Player player = playerWith (playerId);
+    final Player player = modelPlayerWith (playerId);
 
     if (player.has (toTurnOrder)) return;
 
     if (existsPlayerWith (toTurnOrder))
     {
-      final Player old = playerWith (toTurnOrder);
+      final Player old = modelPlayerWith (toTurnOrder);
       old.setTurnOrder (PlayerTurnOrder.UNKNOWN);
       player.setTurnOrder (toTurnOrder);
       old.setTurnOrder (nextAvailableTurnOrder ());
@@ -166,7 +163,7 @@ public final class DefaultPlayerModel implements PlayerModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    return playerWith (playerId).getArmiesInHand ();
+    return playerPacketWith (playerId).getArmiesInHand ();
   }
 
   @Override
@@ -182,21 +179,36 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
-  public ImmutableSet <Player> getPlayers ()
+  public ImmutableSet <Id> getPlayerIds ()
   {
-    return ImmutableSet.copyOf (players ());
+    final ImmutableSet.Builder <Id> playerIds = ImmutableSet.builder ();
+    for (final Player player : players ())
+    {
+      playerIds.add (player.getId ());
+    }
+    return playerIds.build ();
   }
 
   @Override
-  public ImmutableSortedSet <Player> getTurnOrderedPlayers ()
+  public ImmutableSet <PlayerPacket> getPlayerPackets ()
   {
-    return ImmutableSortedSet.copyOf (Player.TURN_ORDER_COMPARATOR, players ());
+    return PlayerPackets.fromPlayers (players ());
   }
 
   @Override
-  public ImmutableSet <Player> getAllPlayersExcept (final Player player)
+  public ImmutableSortedSet <PlayerPacket> getTurnOrderedPlayers ()
   {
-    return ImmutableSet.copyOf (Collections2.filter (players.values (), not (equalTo (player))));
+    return ImmutableSortedSet.copyOf (PlayerPacket.TURN_ORDER_COMPARATOR, PlayerPackets.fromPlayers (players ()));
+  }
+
+  @Override
+  public ImmutableSet <PlayerPacket> getAllPlayersExcept (final Id playerId)
+  {
+    Preconditions.checkIsTrue (existsPlayerWith (playerId),
+                               Strings.format ("No player with id [{}] exists.", playerId));
+
+    final Player player = modelPlayerWith (playerId);
+    return PlayerPackets.fromPlayers (Collections2.filter (players.values (), not (equalTo (player))));
   }
 
   @Override
@@ -205,7 +217,7 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    return playerWith (playerId).hasArmiesInHand (armies);
+    return playerPacketWith (playerId).hasArmiesInHand (armies);
   }
 
   @Override
@@ -257,7 +269,48 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
-  public Player playerWith (final Id id)
+  public Id playerWith (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    for (final Player player : players ())
+    {
+      if (player.has (name)) return player.getId ();
+    }
+
+    throw new IllegalStateException ("Cannot find any player named: [" + name + "].");
+  }
+
+  @Override
+  public Id playerWith (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
+
+    for (final Player player : players ())
+    {
+      if (player.has (color)) return player.getId ();
+    }
+
+    throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
+  }
+
+  @Override
+  public Id playerWith (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+    Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
+
+    for (final Player player : players ())
+    {
+      if (player.has (turnOrder)) return player.getId ();
+    }
+
+    throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
+  }
+
+  @Override
+  public PlayerPacket playerPacketWith (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
 
@@ -265,54 +318,86 @@ public final class DefaultPlayerModel implements PlayerModel
 
     if (player == null) throw new IllegalStateException ("Cannot find any player with id [" + id + "].");
 
-    return player;
+    return PlayerPackets.from (player);
   }
 
   @Override
-  public Player playerWith (final String name)
+  public PlayerPacket playerPacketWith (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
     for (final Player player : players ())
     {
-      if (player.has (name)) return player;
+      if (player.has (name)) return PlayerPackets.from (player);
     }
 
     throw new IllegalStateException ("Cannot find any player named: [" + name + "].");
   }
 
   @Override
-  public Player playerWith (final PlayerColor color)
+  public PlayerPacket playerPacketWith (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
 
-    for (final Player player : getPlayers ())
+    for (final Player player : players ())
     {
-      if (player.has (color)) return player;
+      if (player.has (color)) return PlayerPackets.from (player);
     }
 
     throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
   }
 
   @Override
-  public Player playerWith (final PlayerTurnOrder turnOrder)
+  public PlayerPacket playerPacketWith (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
     Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
 
-    for (final Player player : getPlayers ())
+    for (final Player player : players ())
     {
-      if (player.has (turnOrder)) return player;
+      if (player.has (turnOrder)) return PlayerPackets.from (player);
     }
 
     throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
   }
 
   @Override
-  public Player playerWithName (final String name)
+  public PlayerPacket playerPacketWithName (final String name)
   {
-    return playerWith (name);
+    return playerPacketWith (name);
+  }
+
+  @Override
+  public String nameOf (final Id playerId)
+  {
+    return modelPlayerWith (playerId).getName ();
+  }
+
+  @Override
+  public PlayerColor colorOf (final Id playerId)
+  {
+    return modelPlayerWith (playerId).getColor ();
+  }
+
+  @Override
+  public PlayerTurnOrder turnOrderOf (final Id playerId)
+  {
+    return modelPlayerWith (playerId).getTurnOrder ();
+  }
+
+  @Override
+  public PersonIdentity identityOf (final Id playerId)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+
+    return modelPlayerWith (playerId).getIdentity ();
+  }
+
+  @Override
+  public Id idOf (final String playerName)
+  {
+    return modelPlayerWith (playerName).getId ();
   }
 
   @Override
@@ -335,36 +420,42 @@ public final class DefaultPlayerModel implements PlayerModel
                                        + " armies in hand. The minimum armies allowed in a player's hand is "
                                        + rules.getMinArmiesInHand () + ".");
 
-    playerWith (playerId).removeArmiesFromHand (armies);
+    modelPlayerWith (playerId).removeArmiesFromHand (armies);
   }
 
   @Override
-  public Result <PlayerJoinGameDeniedEvent.Reason> requestToAdd (final Player player)
+  public ImmutableSet <PlayerJoinGameStatus> requestToAdd (final PlayerFactory players)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (players, "players");
 
-    // @formatter:off
-    if (!GameSettings.isValidPlayerNameWithOptionalClanTag (player.getName ())) return Result.failure (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME);
-    if (isFull ()) return Result.failure (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL);
-    if (existsPlayerWith (idOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID);
-    if (existsPlayerWith (nameOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
-    if (existsPlayerWith (colorOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_COLOR);
-    if (existsPlayerWith (turnOrderOf (player))) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_TURN_ORDER);
-    if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) return Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_SELF_IDENTITY);
-    // @formatter:on
+    final ImmutableSet.Builder <PlayerJoinGameStatus> joinGameResults = ImmutableSet.builder ();
+    for (final Player player : players.getPlayers ())
+    {
+      Result <PlayerJoinGameDeniedEvent.Reason> result = Result.success ();
+      // @formatter:off
+      if (existsPlayerWith (player.getId ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID);
+      if (existsPlayerWith (player.getName ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+      if (existsPlayerWith (player.getColor ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_COLOR);
+      if (existsPlayerWith (player.getTurnOrder ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_TURN_ORDER);
+      if (player.has (PersonIdentity.SELF) && existsPlayerWith (PersonIdentity.SELF)) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_SELF_IDENTITY);
+      if (!GameSettings.isValidPlayerNameWithOptionalClanTag (player.getName ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME);
+      if (isFull ()) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL);
+      // @formatter:on
+      if (result.succeeded ()) add (player);
+      joinGameResults.add (new PlayerJoinGameStatus (PlayerPackets.from (player), result));
+    }
 
-    add (player);
-
-    return Result.success ();
+    return joinGameResults.build ();
   }
 
   @Override
-  public void remove (final Player player)
+  public void remove (final Id playerId)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playerId, "playerId");
 
-    if (!existsPlayerWith (idOf (player))) return;
+    if (!existsPlayerWith (playerId)) return;
 
+    final Player player = modelPlayerWith (playerId);
     deregister (player);
     fixTurnOrdersAfterRemovalOfPlayer (player);
   }
@@ -377,7 +468,7 @@ public final class DefaultPlayerModel implements PlayerModel
 
     if (!existsPlayerWith (color)) return;
 
-    remove (playerWith (color));
+    remove (modelPlayerWith (color).getId ());
   }
 
   @Override
@@ -387,7 +478,7 @@ public final class DefaultPlayerModel implements PlayerModel
 
     if (!existsPlayerWith (id)) return;
 
-    remove (playerWith (id));
+    remove (modelPlayerWith (id).getId ());
   }
 
   @Override
@@ -397,7 +488,7 @@ public final class DefaultPlayerModel implements PlayerModel
 
     if (!existsPlayerWith (name)) return;
 
-    remove (playerWithName (name));
+    remove (modelPlayerWith (name).getId ());
   }
 
   @Override
@@ -408,7 +499,61 @@ public final class DefaultPlayerModel implements PlayerModel
 
     if (!existsPlayerWith (turnOrder)) return;
 
-    remove (playerWith (turnOrder));
+    remove (modelPlayerWith (turnOrder).getId ());
+  }
+
+  Player modelPlayerWith (final Id id)
+  {
+    Arguments.checkIsNotNull (id, "id");
+
+    final Player player = players.get (id);
+
+    if (player == null) throw new IllegalStateException ("Cannot find any player with id [" + id + "].");
+
+    return player;
+  }
+
+  Player modelPlayerWith (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    for (final Player player : players ())
+    {
+      if (player.has (name)) return player;
+    }
+
+    throw new IllegalStateException ("Cannot find any player named: [" + name + "].");
+  }
+
+  Player modelPlayerWith (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
+
+    for (final Player player : players ())
+    {
+      if (player.has (color)) return player;
+    }
+
+    throw new IllegalStateException ("Cannot find any player with color: [" + color + "].");
+  }
+
+  Player modelPlayerWith (final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+    Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
+
+    for (final Player player : players ())
+    {
+      if (player.has (turnOrder)) return player;
+    }
+
+    throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
+  }
+
+  Player modelPlayerWithName (final String name)
+  {
+    return modelPlayerWith (name);
   }
 
   private void add (final Player player)
@@ -429,7 +574,7 @@ public final class DefaultPlayerModel implements PlayerModel
   {
     assert players.containsValue (player);
 
-    players.remove (idOf (player));
+    players.remove (player.getId ());
   }
 
   private void fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
@@ -452,7 +597,7 @@ public final class DefaultPlayerModel implements PlayerModel
       if (!existsPlayerWith (turnOrder)) continue;
       if (turnOrder.getPosition () <= danglingTurnOrderPosition) continue;
 
-      playerWith (turnOrder).setTurnOrderByPosition (turnOrder.getPosition () - 1);
+      modelPlayerWith (turnOrder).setTurnOrderByPosition (turnOrder.getPosition () - 1);
     }
   }
 
@@ -483,11 +628,11 @@ public final class DefaultPlayerModel implements PlayerModel
 
   private void register (final Player player)
   {
-    assert!players.containsValue (player);
+    assert !players.containsValue (player);
     assert player.doesNotHave (PlayerColor.UNKNOWN);
     assert player.doesNotHave (PlayerTurnOrder.UNKNOWN);
 
-    players.put (idOf (player), player);
+    players.put (player.getId (), player);
   }
 
   @Override

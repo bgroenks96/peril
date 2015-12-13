@@ -1,39 +1,32 @@
 package com.forerunnergames.peril.core.model.io;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.io.DataLoader;
 
-import com.google.common.collect.ImmutableBiMap;
-
-import java.util.Collection;
-
-import org.hamcrest.Matcher;
-
 import org.junit.Test;
 
-public abstract class DataLoaderTest <T, V>
+public abstract class DataLoaderTest <T>
 {
-  protected abstract DataLoader <T, V> createDataLoader ();
+  protected abstract DataLoader <T> createDataLoader ();
 
-  protected abstract Collection <Matcher <? super V>> getDataMatchers ();
+  protected abstract boolean verifyData (final T data);
 
   protected abstract String getTestDataFileName ();
 
   @Test
   public void testLoadSuccessful ()
   {
-    final DataLoader <T, V> loader = createDataLoader ();
-    final ImmutableBiMap <T, V> actualData = loader.load (getTestDataFileName ());
+    final DataLoader <T> loader = createDataLoader ();
+    final T actualData = loader.load (getTestDataFileName ());
 
-    assertThat (actualData.values (), containsInAnyOrder (getDataMatchers ()));
+    assertTrue (verifyData (actualData));
   }
 
   @Test (expected = RuntimeException.class)
   public void testLoadFailsFileNotFound ()
   {
-    final DataLoader <T, V> loader = createDataLoader ();
+    final DataLoader <T> loader = createDataLoader ();
     loader.load ("non-existent-file");
   }
 }

@@ -10,7 +10,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
-import com.forerunnergames.peril.core.model.StateMachineActionHandler;
+import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
@@ -53,11 +53,11 @@ public final class StateMachineEventHandler
   private final CompositeStateMachineListener stateMachineListener = new CompositeStateMachineListener ();
   private Optional <Throwable> errorState = Optional.absent ();
 
-  public StateMachineEventHandler (final StateMachineActionHandler stateMachineActionHandler)
+  public StateMachineEventHandler (final GameModel gameModel)
   {
-    Arguments.checkIsNotNull (stateMachineActionHandler, "stateMachineActionHandler");
+    Arguments.checkIsNotNull (gameModel, "gameModel");
 
-    context = new GameStateMachineContext (stateMachineActionHandler);
+    context = new GameStateMachineContext (gameModel);
     context.setObserver (stateMachineListener);
 
     context.setEndHandler (new IContextEnd ()

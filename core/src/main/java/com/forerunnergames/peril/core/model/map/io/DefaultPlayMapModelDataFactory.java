@@ -2,14 +2,13 @@ package com.forerunnergames.peril.core.model.map.io;
 
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.io.MapDataPathParser;
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphDataLoader;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphDataLoader;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
-
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableSet;
 
 public final class DefaultPlayMapModelDataFactory implements PlayMapModelDataFactory
 {
@@ -23,59 +22,41 @@ public final class DefaultPlayMapModelDataFactory implements PlayMapModelDataFac
   }
 
   @Override
-  public ImmutableSet <Country> createCountries (final MapMetadata mapMetadata)
+  public CountryFactory createCountries (final MapMetadata mapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    final CountryModelDataLoader countryDataLoader = PlayMapDataLoadersFactory
+            .createCountryModelDataLoader (mapMetadata.getType ());
 
-    final CountryModelDataLoader loader =
-            PlayMapDataLoadersFactory.createCountryModelDataLoader (mapMetadata.getType ());
-
-    return ImmutableSet.copyOf (loader.load (mapDataPathParser.parseCountriesFileNamePath (mapMetadata)).values ());
+    return countryDataLoader.load (mapDataPathParser.parseCountriesFileNamePath (mapMetadata));
   }
 
   @Override
-  public ImmutableSet <Continent> createContinents (final MapMetadata mapMetadata,
-                                                    final CountryIdResolver countryIdResolver)
+  public ContinentFactory createContinents (final MapMetadata mapMetadata, final CountryIdResolver countryIdResolver)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Arguments.checkIsNotNull (countryIdResolver, "countryIdResolver");
+    final ContinentModelDataLoader continentDataLoader = PlayMapDataLoadersFactory
+            .createContinentModelDataLoader (mapMetadata.getType (), countryIdResolver);
 
-    final ContinentModelDataLoader loader =
-            PlayMapDataLoadersFactory.createContinentModelDataLoader (mapMetadata.getType (), countryIdResolver);
-
-    return ImmutableSet.copyOf (loader.load (mapDataPathParser.parseContinentsFileNamePath (mapMetadata)).values ());
+    return continentDataLoader.load (mapDataPathParser.parseContinentsFileNamePath (mapMetadata));
   }
 
   @Override
-  public GraphModel <Country> createCountryGraph (final MapMetadata mapMetadata, final ImmutableSet <Country> countries)
+  public CountryMapGraphModel createCountryMapGraphModel (final MapMetadata mapMetadata,
+                                                          final CountryFactory countryFactory)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Arguments.checkIsNotNull (countries, "countries");
-    Arguments.checkHasNoNullElements (countries, "countries");
+    final CountryMapGraphDataLoader countryMapGraphDataLoader = PlayMapDataLoadersFactory
+            .createCountryMapGraphDataLoader (mapMetadata.getType (), countryFactory);
 
-    final CountryMapGraphDataLoader loader =
-            PlayMapDataLoadersFactory.createCountryMapGraphDataLoader (mapMetadata.getType (), countries);
-
-    final ImmutableBiMap <Country, Iterable <Country>> adjListData =
-            loader.load (mapDataPathParser.parseCountryGraphFileNamePath (mapMetadata));
-
-    return DefaultGraphModel.from (adjListData);
+    return countryMapGraphDataLoader.load (mapDataPathParser.parseCountryGraphFileNamePath (mapMetadata));
   }
 
   @Override
-  public GraphModel <Continent> createContinentGraph (final MapMetadata mapMetadata,
-                                                      final ImmutableSet <Continent> continents)
+  public ContinentMapGraphModel createContinentMapGraphModel (final MapMetadata mapMetadata,
+                                                              final ContinentFactory continentFactory,
+                                                              final CountryMapGraphModel countryMapGraphModel)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Arguments.checkIsNotNull (continents, "continents");
-    Arguments.checkHasNoNullElements (continents, "continents");
+    final ContinentMapGraphDataLoader continentMapGraphDataLoader = PlayMapDataLoadersFactory
+            .createContinentMapGraphDataLoader (mapMetadata.getType (), continentFactory, countryMapGraphModel);
 
-    final ContinentMapGraphDataLoader loader =
-            PlayMapDataLoadersFactory.createContinentMapGraphDataLoader (mapMetadata.getType (), continents);
-
-    final ImmutableBiMap <Continent, Iterable <Continent>> adjListData =
-            loader.load (mapDataPathParser.parseCountryGraphFileNamePath (mapMetadata));
-
-    return DefaultGraphModel.from (adjListData);
+    return continentMapGraphDataLoader.load (mapDataPathParser.parseCountryGraphFileNamePath (mapMetadata));
   }
 }

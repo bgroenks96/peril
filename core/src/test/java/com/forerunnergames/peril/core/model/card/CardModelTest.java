@@ -9,10 +9,10 @@ import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
-import com.forerunnergames.peril.core.model.people.player.Player;
-import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -34,7 +34,7 @@ public abstract class CardModelTest
   {
     return CardDealerTest.generateTestCards ();
   }
-  
+
   public static ImmutableSet <Card> generateCards (final CardType type, final int count)
   {
     return CardDealerTest.generateCards (type, count);
@@ -45,10 +45,10 @@ public abstract class CardModelTest
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.REINFORCE);
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
-    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Id testPlayerId = IdGenerator.generateUniqueId ();
     for (int i = 0; i < maxCards + 1; i++)
     {
-      cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
+      cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
     }
   }
 
@@ -57,10 +57,10 @@ public abstract class CardModelTest
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.ATTACK);
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
-    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Id testPlayerId = IdGenerator.generateUniqueId ();
     for (int i = 0; i < maxCards + 1; i++)
     {
-      cardModel.giveCard (testPlayer.getId (), TurnPhase.ATTACK);
+      cardModel.giveCard (testPlayerId, TurnPhase.ATTACK);
     }
   }
 
@@ -69,10 +69,10 @@ public abstract class CardModelTest
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.FORTIFY);
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
-    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Id testPlayerId = IdGenerator.generateUniqueId ();
     for (int i = 0; i < maxCards + 1; i++)
     {
-      cardModel.giveCard (testPlayer.getId (), TurnPhase.FORTIFY);
+      cardModel.giveCard (testPlayerId, TurnPhase.FORTIFY);
     }
   }
 
@@ -91,19 +91,19 @@ public abstract class CardModelTest
 
     final CardSet.Match match = cardSet.match ();
     final CardModel cardModel = createCardModel (rules, dealer, match.getCards ());
-    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Id testPlayerId = IdGenerator.generateUniqueId ();
     for (int i = 0; i < deckSize; i++)
     {
-      cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
+      cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
     }
 
-    final Result <Reason> result = cardModel.requestTradeInCards (testPlayer.getId (), match, TurnPhase.REINFORCE);
+    final Result <Reason> result = cardModel.requestTradeInCards (testPlayerId, match, TurnPhase.REINFORCE);
     // use if/fail so failure reason can be printed;
     // assertTrue causes Result to throw IllegalStateException when successful
     if (result.failed ()) fail (result.getFailureReason ().toString ());
 
     // make sure cards were moved from hand back to the deck/discard-pile
-    assertFalse (cardModel.areCardsInHand (testPlayer.getId (), createCardSetFrom (match.getCards ())));
+    assertFalse (cardModel.areCardsInHand (testPlayerId, createCardSetFrom (match.getCards ())));
     for (final Card card : match.getCards ())
     {
       assertTrue (dealer.isInDiscardPile (card));
@@ -124,14 +124,14 @@ public abstract class CardModelTest
     final int tradeInCount = 2;
     for (int i = 0; i < tradeInCount; i++)
     {
-      final Player testPlayer = PlayerFactory.create ("TestPlayer" + i);
+      final Id testPlayerId = IdGenerator.generateUniqueId ();
       for (int k = 0; k < 3; k++)
       {
-        cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
+        cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
       }
-      final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayer.getId ());
+      final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayerId);
       // there will only be one match; turn set into list and fetch it
-      cardModel.requestTradeInCards (testPlayer.getId (), matches.asList ().get (0), TurnPhase.REINFORCE);
+      cardModel.requestTradeInCards (testPlayerId, matches.asList ().get (0), TurnPhase.REINFORCE);
     }
     assertEquals (rules.calculateTradeInBonusReinforcements (2), cardModel.getNextTradeInBonus ());
   }
@@ -143,14 +143,14 @@ public abstract class CardModelTest
     final int tradeInCount = 7;
     for (int i = 0; i < tradeInCount; i++)
     {
-      final Player testPlayer = PlayerFactory.create ("TestPlayer" + i);
+      final Id testPlayerId = IdGenerator.generateUniqueId ();
       for (int k = 0; k < 3; k++)
       {
-        cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
+        cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
       }
-      final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayer.getId ());
+      final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayerId);
       // there will only be one match; turn set into list and fetch it
-      cardModel.requestTradeInCards (testPlayer.getId (), matches.asList ().get (0), TurnPhase.REINFORCE);
+      cardModel.requestTradeInCards (testPlayerId, matches.asList ().get (0), TurnPhase.REINFORCE);
     }
     assertEquals (rules.calculateTradeInBonusReinforcements (7), cardModel.getNextTradeInBonus ());
   }
@@ -161,12 +161,12 @@ public abstract class CardModelTest
     final int deckSize = rules.getCardTradeInCount ();
     // all wildcards; shouldn't match (for ClassicGameRules at leasts)
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.WILDCARD, deckSize));
-    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Id testPlayerId = IdGenerator.generateUniqueId ();
     for (int i = 0; i < rules.getCardTradeInCount (); i++)
     {
-      cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE);
+      cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
     }
-    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayer.getId ());
+    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayerId);
     // assert no matches
     assertEquals (0, matches.size ());
   }
@@ -176,14 +176,14 @@ public abstract class CardModelTest
   {
     final int deckSize = rules.getCardTradeInCount ();
     final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE2, deckSize));
-    final Player testPlayer = PlayerFactory.create ("TestPlayer");
+    final Id testPlayerId = IdGenerator.generateUniqueId ();
     final ImmutableSet.Builder <Card> builder = ImmutableSet.builder ();
     for (int i = 0; i < rules.getCardTradeInCount (); i++)
     {
-      builder.add (cardModel.giveCard (testPlayer.getId (), TurnPhase.REINFORCE));
+      builder.add (cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE));
     }
     final ImmutableSet <Card> expected = builder.build ();
-    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayer.getId ());
+    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (testPlayerId);
     // make sure there isn't somehow more than one match...
     assertEquals (1, matches.size ());
     // assert match equals expected

@@ -2,7 +2,7 @@ package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent.Reason;
 import com.forerunnergames.peril.core.model.card.CardSet.Match;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;

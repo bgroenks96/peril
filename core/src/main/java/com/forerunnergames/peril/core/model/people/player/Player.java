@@ -4,7 +4,7 @@ import com.forerunnergames.peril.core.model.people.person.Person;
 
 import java.util.Comparator;
 
-public interface Player extends Person
+interface Player extends Person
 {
   void addArmiesToHand (final int armies);
 
@@ -23,14 +23,14 @@ public interface Player extends Person
   void setTurnOrder (final PlayerTurnOrder turnOrder);
 
   /**
-   * Position 1 is PlayerTurnOrder.FIRST, position 2 is PlayerTurnOrder.SECOND, etc.
-   * Position 0 is invalid & cannot be set.
+   * Position 1 is PlayerTurnOrder.FIRST, position 2 is PlayerTurnOrder.SECOND, etc. Position 0 is invalid & cannot be
+   * set.
    */
   int getTurnOrderPosition ();
 
   /**
-   * Position 1 is PlayerTurnOrder.FIRST, position 2 is PlayerTurnOrder.SECOND, etc.
-   * Position 0 is invalid & cannot be set.
+   * Position 1 is PlayerTurnOrder.FIRST, position 2 is PlayerTurnOrder.SECOND, etc. Position 0 is invalid & cannot be
+   * set.
    */
   void setTurnOrderByPosition (final int position);
 

@@ -4,7 +4,7 @@
   http://www.stateforge.com/StateMachineJava-v1">
   <!-- General settings -->
   <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
-    <object instance="stateMachineActionHandler" class="StateMachineActionHandler" namespace="com.forerunnergames.peril.core.model" />
+    <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model" />
   </settings>
 
   <!-- Events -->
@@ -94,9 +94,9 @@
         <!-- First parallel section -->
         <state name="PlayerHandler">
           <state name="WaitForPlayerEvent">
-            <transition event="onPlayerJoinGameRequestEvent" action="stateMachineActionHandler.handlePlayerJoinGameRequest (event)"
+            <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)"
                         nextState="WaitForPlayerEvent" />
-            <transition event="onPlayerLeaveGameEvent" action="stateMachineActionHandler.handlePlayerLeaveGame(event)"
+            <transition event="onPlayerLeaveGameEvent" action="gameModel.handlePlayerLeaveGame(event)"
                         nextState="WaitForPlayerEvent" />
           </state>
         </state>
@@ -104,8 +104,8 @@
         <!-- Second parallel section -->
         <state name="GameHandler">
           <state name="WaitForGameToBegin">
-            <transition event="onPlayerJoinGameSuccessEvent" condition="stateMachineActionHandler.isFull()"
-                        action="stateMachineActionHandler.beginGame()" nextState="DeterminePlayerTurnOrder" />
+            <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()"
+                        action="gameModel.beginGame()" nextState="DeterminePlayerTurnOrder" />
           </state>
           <state name="PlayingGame">
             <!-- A player leaving during the game should end the game, for now -->
@@ -113,53 +113,53 @@
             <!-- Ending the game can occur at any time during the game -->
             <transition event="onEndGameEvent" nextState="EndGame" />
             <state name="DeterminePlayerTurnOrder">
-              <onEntry action="stateMachineActionHandler.determinePlayerTurnOrder()" />
+              <onEntry action="gameModel.determinePlayerTurnOrder()" />
               <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies" />
             </state>
             <state name="DistributeInitialArmies">
-              <onEntry action="stateMachineActionHandler.distributeInitialArmies()" />
+              <onEntry action="gameModel.distributeInitialArmies()" />
               <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries" />
             </state>
             <state name="AssignPlayerCountries">
               <state name="WaitForCountrySelectionToBegin">
-                <onEntry action="stateMachineActionHandler.waitForCountrySelectionToBegin()" />
+                <onEntry action="gameModel.waitForCountrySelectionToBegin()" />
                 <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries" />
                 <transition event="onBeginManualCountrySelectionEvent" nextState="ManuallyAssignPlayerCountries" />
               </state>
               <state name="RandomlyAssignPlayerCountries">
-                <onEntry action="stateMachineActionHandler.randomlyAssignPlayerCountries()" />
+                <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
                 <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
               </state>
               <state name="ManuallyAssignPlayerCountries">
                 <state name="WaitForPlayersToSelectInitialCountries">
-                  <onEntry action="stateMachineActionHandler.waitForPlayersToSelectInitialCountries()" />
+                  <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
                   <transition event="onPlayerSelectCountryResponseRequestEvent"
-                              condition="stateMachineActionHandler.verifyPlayerCountrySelectionRequest(event)"
+                              condition="gameModel.verifyPlayerCountrySelectionRequest(event)"
                               nextState="WaitForPlayersToSelectInitialCountries" />
                   <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
                 </state>
               </state>
             </state>
             <state name="TurnPhase">
-              <onEntry action="stateMachineActionHandler.beginTurnPhase()" />
-              <onExit action="stateMachineActionHandler.endTurnPhase()" />
+              <onEntry action="gameModel.beginTurnPhase()" />
+              <onExit action="gameModel.endTurnPhase()" />
               <state name="ReinforcementPhase">
-                <onEntry action="stateMachineActionHandler.beginReinforcementPhase()" />
+                <onEntry action="gameModel.beginReinforcementPhase()" />
                 <state name="WaitForPlayerToPlaceReinforcements">
                   <transition event="onPlayerReinforceCountriesResponseRequestEvent"
-                              condition="stateMachineActionHandler.verifyPlayerCountryReinforcements(event)"
+                              condition="gameModel.verifyPlayerCountryReinforcements(event)"
                               nextState="AttackPhase" />
                 </state>
               </state>
               <state name="AttackPhase">
-                <onEntry action="stateMachineActionHandler.beginAttackPhase()" />
+                <onEntry action="gameModel.beginAttackPhase()" />
               </state>
             </state>
           </state>
           <state name="EndGame">
-            <onEntry action="stateMachineActionHandler.endGame()" />
-            <transition event="onCreateGameEvent" condition="stateMachineActionHandler.isNotFull()" nextState="WaitForGameToBegin" />
-            <transition event="onCreateGameEvent" condition="stateMachineActionHandler.isFull()" nextState="DeterminePlayerTurnOrder" />
+            <onEntry action="gameModel.endGame()" />
+            <transition event="onCreateGameEvent" condition="gameModel.isNotFull()" nextState="WaitForGameToBegin" />
+            <transition event="onCreateGameEvent" condition="gameModel.isFull()" nextState="DeterminePlayerTurnOrder" />
           </state>
         </state>
       </parallel>

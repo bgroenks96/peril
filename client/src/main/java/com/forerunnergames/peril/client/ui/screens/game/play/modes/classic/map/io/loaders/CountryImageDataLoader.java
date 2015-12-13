@@ -3,14 +3,14 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 import com.badlogic.gdx.math.Vector2;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.data.CountryImageData;
-import com.forerunnergames.peril.common.io.AbstractDataLoader;
+import com.forerunnergames.peril.common.io.AbstractBiMapDataLoader;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParser;
 
 import com.google.common.collect.ImmutableBiMap;
 
-public final class CountryImageDataLoader extends AbstractDataLoader <String, CountryImageData>
+public final class CountryImageDataLoader extends AbstractBiMapDataLoader <String, CountryImageData>
 {
   private final StreamParserFactory streamParserFactory;
   private ImmutableBiMap.Builder <String, CountryImageData> countryImageDataBuilder;

@@ -1,25 +1,23 @@
-package com.forerunnergames.peril.core.model.map.io;
+package com.forerunnergames.peril.core.model.map.country;
 
-import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.io.CountryIdResolver;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 public final class DefaultCountryIdResolver implements CountryIdResolver
 {
   private final ImmutableMap <String, Id> countryNamesToIds;
 
-  public DefaultCountryIdResolver (final ImmutableSet <Country> countries)
+  public DefaultCountryIdResolver (final CountryFactory factory)
   {
-    Arguments.checkIsNotNull (countries, "countries");
-    Arguments.checkHasNoNullElements (countries, "countries");
+    Arguments.checkIsNotNull (factory, "factory");
 
     final ImmutableMap.Builder <String, Id> countryNamesToIdsBuilder = ImmutableMap.builder ();
 
-    for (final Country country : countries)
+    for (final Country country : factory.getCountries ())
     {
       countryNamesToIdsBuilder.put (country.getName (), country.getId ());
     }

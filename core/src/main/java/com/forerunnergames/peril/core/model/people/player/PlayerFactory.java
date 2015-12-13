@@ -5,24 +5,93 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
+
 public final class PlayerFactory
 {
-  public static PlayerBuilder builder (final String playerName)
+  private final ImmutableSet.Builder <Player> playerSetBuilder = ImmutableSet.builder ();
+  private int playerCount = 0;
+
+  public void newPlayerWith (final String name)
   {
-    return new PlayerBuilder (playerName);
+    Arguments.checkIsNotNull (name, "name");
+
+    playerSetBuilder.add (create (name));
+    playerCount++;
   }
 
-  public static Player create (final String name)
+  public void newPlayerWith (final String name,
+                             final PersonIdentity identity,
+                             final PlayerColor color,
+                             final PlayerTurnOrder turnOrder)
   {
+    Arguments.checkIsNotNull (name, "name");
+    Arguments.checkIsNotNull (identity, "identity");
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+
+    playerSetBuilder.add (create (name, identity, color, turnOrder));
+    playerCount++;
+  }
+
+  public void newPlayerFrom (final PlayerBuilder builder)
+  {
+    Arguments.checkIsNotNull (builder, "builder");
+
+    playerSetBuilder.add (builder.build ());
+    playerCount++;
+  }
+
+  public int getPlayerCount ()
+  {
+    return playerCount;
+  }
+
+  ImmutableSet <Player> getPlayers ()
+  {
+    return playerSetBuilder.build ();
+  }
+
+  static Player create (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
     return builder (name).build ();
   }
 
-  public static Player create (final String name,
-                               final PersonIdentity identity,
-                               final PlayerColor color,
-                               final PlayerTurnOrder turnOrder)
+  static Player create (final String name,
+                        final PersonIdentity identity,
+                        final PlayerColor color,
+                        final PlayerTurnOrder turnOrder)
   {
+    Arguments.checkIsNotNull (name, "name");
+    Arguments.checkIsNotNull (identity, "identity");
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+
     return builder (name).identity (identity).color (color).turnOrder (turnOrder).build ();
+  }
+
+  static PlayerFactory from (final ImmutableCollection <Player> players)
+  {
+    Arguments.checkIsNotNull (players, "players");
+    Arguments.checkHasNoNullElements (players, "players");
+
+    final PlayerFactory factory = new PlayerFactory ();
+    for (final Player player : players)
+    {
+      factory.playerSetBuilder.add (player);
+      factory.playerCount++;
+    }
+    return factory;
+  }
+
+  public static PlayerBuilder builder (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return new PlayerBuilder (playerName);
   }
 
   /*
@@ -43,11 +112,6 @@ public final class PlayerFactory
 
       this.name = name;
       id = IdGenerator.generateUniqueId ();
-    }
-
-    public Player build ()
-    {
-      return new DefaultPlayer (name, id, identity, color, turnOrder);
     }
 
     public PlayerBuilder color (final PlayerColor color)
@@ -75,6 +139,18 @@ public final class PlayerFactory
       this.turnOrder = turnOrder;
 
       return this;
+    }
+
+    public PlayerFactory toFactory ()
+    {
+      final PlayerFactory factory = new PlayerFactory ();
+      factory.newPlayerFrom (this);
+      return factory;
+    }
+
+    Player build ()
+    {
+      return new DefaultPlayer (name, id, identity, color, turnOrder);
     }
   }
 }

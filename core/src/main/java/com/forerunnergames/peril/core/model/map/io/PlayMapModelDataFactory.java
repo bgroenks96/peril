@@ -1,20 +1,20 @@
 package com.forerunnergames.peril.core.model.map.io;
 
 import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.tools.common.graph.GraphModel;
-
-import com.google.common.collect.ImmutableSet;
+import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
 
 public interface PlayMapModelDataFactory
 {
-  ImmutableSet <Country> createCountries (final MapMetadata mapMetadata);
+  CountryFactory createCountries (final MapMetadata mapMetadata);
 
-  ImmutableSet <Continent> createContinents (final MapMetadata mapMetadata, final CountryIdResolver countryIdResolver);
+  ContinentFactory createContinents (final MapMetadata mapMetadata, final CountryIdResolver countryIdResolver);
 
-  GraphModel <Country> createCountryGraph (final MapMetadata mapMetadata, final ImmutableSet <Country> countries);
+  CountryMapGraphModel createCountryMapGraphModel (final MapMetadata mapMetadata, final CountryFactory countryFactory);
 
-  GraphModel <Continent> createContinentGraph (final MapMetadata mapMetadata,
-                                               final ImmutableSet <Continent> continents);
+  ContinentMapGraphModel createContinentMapGraphModel (final MapMetadata mapMetadata,
+                                                       final ContinentFactory continentFactory,
+                                                       final CountryMapGraphModel countryMapGraphModel);
 }

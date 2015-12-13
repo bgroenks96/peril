@@ -1,88 +1,26 @@
 package com.forerunnergames.peril.core.model.map;
 
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.country.Country;
-import com.forerunnergames.tools.common.Result;
-import com.forerunnergames.tools.common.id.Id;
-
-import com.google.common.collect.ImmutableSet;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.core.model.map.continent.ContinentArmyModel;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
+import com.forerunnergames.peril.core.model.map.continent.ContinentOwnerModel;
+import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 
 public interface PlayMapModel
 {
-  boolean existsCountryWith (final Id countryId);
+  CountryOwnerModel getCountryOwnerModel ();
 
-  Country countryWith (final Id countryId);
+  CountryMapGraphModel getCountryMapGraphModel ();
 
-  boolean existsCountryWith (final String countryName);
+  CountryArmyModel getCountryArmyModel ();
 
-  Country countryWith (final String countryName);
+  ContinentOwnerModel getContinentOwnerModel ();
 
-  boolean existsContinentWith (final Id id);
+  ContinentMapGraphModel getContinentMapGraphModel ();
 
-  Continent continentWith (final Id id);
+  ContinentArmyModel getContinentArmyModel ();
 
-  boolean existsContinentWith (final String continentName);
-
-  Continent continentWith (final String continentName);
-
-  boolean hasAnyUnownedCountries ();
-
-  boolean allCountriesAreUnowned ();
-
-  boolean hasAnyOwnedCountries ();
-
-  boolean allCountriesAreOwned ();
-
-  boolean isCountryOwned (final Id countryId);
-
-  boolean isCountryOwned (final String countryName);
-
-  boolean isCountryOwnedBy (final Id countryId, final Id ownerId);
-
-  /**
-   * Assigns the Country specified by countryId to the owner specified by ownerId.
-   *
-   * @return success/failure Result with reason
-   */
-  Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
-                                                                                      final Id ownerId);
-
-  /**
-   * Unassigns the Country specified by the given id from its current owner.
-   *
-   * @return success/failure Result
-   */
-  Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToUnassignCountry (final Id countryId);
-
-  /**
-   * @return the Id of the owner to which the Country specified by countryId is currently assigned.
-   */
-  Id ownerOf (final Id countryId);
-
-  ImmutableSet <Country> getCountries ();
-
-  ImmutableSet <Country> getCountriesOwnedBy (final Id ownerId);
-
-  ImmutableSet <String> getCountryNamesOwnedBy (final Id ownerId);
-
-  ImmutableSet <Continent> getContinentsOwnedBy (final Id ownerId);
-
-  void unassignAllCountries ();
-
-  void unassignAllCountriesOwnedBy (final Id ownerId);
-
-  int countCountriesOwnedBy (final Id ownerId);
-
-  int getCountryCount ();
-
-  boolean countryCountIs (final int n);
-
-  boolean countryCountIsAtLeast (final int n);
-
-  int getOwnedCountryCount ();
-
-  boolean ownedCountryCountIs (final int n);
-
-  boolean ownedCountryCountIsAtLeast (final int n);
+  GameRules getRules ();
 }

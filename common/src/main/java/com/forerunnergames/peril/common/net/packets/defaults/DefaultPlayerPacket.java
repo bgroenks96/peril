@@ -22,7 +22,6 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   {
     super (name, playerId);
 
-    Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNegative (turnOrder, "turnOrder");
     Arguments.checkIsNotNegative (armiesInHand, "armiesInHand");
@@ -71,7 +70,7 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   {
     Arguments.checkIsNotNegative (armies, "armiesInHand");
 
-    return this.armiesInHand == armies;
+    return armiesInHand == armies;
   }
 
   @Override
@@ -102,8 +101,8 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   {
     super (null, null);
 
-    this.color = null;
-    this.turnOrder = 0;
-    this.armiesInHand = 0;
+    color = null;
+    turnOrder = 0;
+    armiesInHand = 0;
   }
 }

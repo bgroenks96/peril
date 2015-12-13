@@ -22,6 +22,8 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_TOTAL_COUNTRY_COUNT = 1000;
   public static final int MIN_ARMIES_IN_HAND = 0;
   public static final int MAX_ARMIES_IN_HAND = Integer.MAX_VALUE;
+  public static final int MIN_ARMIES_ON_COUNTRY = 0;
+  public static final int MAX_ARMIES_ON_COUNTRY = 99;
   public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
@@ -68,6 +70,18 @@ public final class ClassicGameRules implements GameRules
   public int getMaxArmiesInHand ()
   {
     return MAX_ARMIES_IN_HAND;
+  }
+
+  @Override
+  public int getMinArmiesOnCountry ()
+  {
+    return MIN_ARMIES_ON_COUNTRY;
+  }
+
+  @Override
+  public int getMaxArmiesOnCountry ()
+  {
+    return MAX_ARMIES_ON_COUNTRY;
   }
 
   @Override

@@ -5,7 +5,7 @@ import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
 
-public interface Continent extends Territory
+interface Continent extends Territory
 {
   ImmutableSet <Id> getCountryIds ();
 

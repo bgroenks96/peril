@@ -12,17 +12,20 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.StateMachineActionHandler;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
 import com.forerunnergames.peril.core.model.card.io.CardModelDataFactoryCreator;
-import com.forerunnergames.peril.core.model.map.DefaultPlayMapModel;
+import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.continent.Continent;
-import com.forerunnergames.peril.core.model.map.country.Country;
+import com.forerunnergames.peril.core.model.map.PlayMapModelFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
+import com.forerunnergames.peril.core.model.map.country.DefaultCountryIdResolver;
 import com.forerunnergames.peril.core.model.map.io.CoreMapMetadataFinderFactory;
-import com.forerunnergames.peril.core.model.map.io.DefaultCountryIdResolver;
+import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactory;
 import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -71,25 +74,35 @@ public final class ServerApplicationFactory
     final MapMetadataFinder mapMetadataFinder = CoreMapMetadataFinderFactory.create (args.gameMode);
     final MapMetadata mapMetadata = mapMetadataFinder.find (args.mapName);
 
-    final ImmutableSet <Country> countries = PlayMapModelDataFactoryCreator.create (args.gameMode)
-            .createCountries (mapMetadata);
+    final PlayMapModelDataFactory dataFactory = PlayMapModelDataFactoryCreator.create (args.gameMode);
 
-    final ImmutableSet <Continent> continents = PlayMapModelDataFactoryCreator.create (args.gameMode)
-            .createContinents (mapMetadata, new DefaultCountryIdResolver (countries));
+    final CountryFactory countryFactory = dataFactory.createCountries (mapMetadata);
+
+    final ContinentFactory continentFactory = dataFactory
+            .createContinents (mapMetadata, new DefaultCountryIdResolver (countryFactory));
+
+    final CountryMapGraphModel countryMapGraphModel = dataFactory.createCountryMapGraphModel (mapMetadata,
+                                                                                              countryFactory);
+
+    final ContinentMapGraphModel continentMapGraphModel = dataFactory
+            .createContinentMapGraphModel (mapMetadata, continentFactory, countryMapGraphModel);
 
     final ImmutableSet <Card> cards = CardModelDataFactoryCreator.create (args.gameMode).createCards (mapMetadata);
 
     final GameRules gameRules = GameRulesFactory.create (args.gameMode, args.playerLimit, args.winPercentage,
-                                                         countries.size (), args.initialCountryAssignment);
+                                                         countryFactory.getCountryCount (),
+                                                         args.initialCountryAssignment);
+
+    final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
 
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
-    final PlayMapModel playMapModel = new DefaultPlayMapModel (countries, continents, gameRules);
+    final PlayMapModel playMapModel = playMapModelFactory.create (countryFactory, countryMapGraphModel,
+                                                                  continentFactory, continentMapGraphModel);
     final CardModel cardModel = new DefaultCardModel (gameRules, cards);
     final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (args.playerLimit);
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
             .cardModel (cardModel).playerTurnModel (playerTurnModel).eventBus (eventBus).build ();
-    final StateMachineActionHandler stateMachineActionHandler = new StateMachineActionHandler (gameModel);
-    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (stateMachineActionHandler);
+    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, args.playerLimit,
             args.winPercentage, args.initialCountryAssignment, mapMetadata);

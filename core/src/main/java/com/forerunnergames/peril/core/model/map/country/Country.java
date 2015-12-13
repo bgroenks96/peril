@@ -2,7 +2,7 @@ package com.forerunnergames.peril.core.model.map.country;
 
 import com.forerunnergames.peril.core.model.map.territory.Territory;
 
-public interface Country extends Territory
+interface Country extends Territory
 {
   int getArmyCount ();
 

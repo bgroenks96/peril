@@ -6,7 +6,7 @@ import com.forerunnergames.tools.common.assets.AbstractAsset;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultCountry extends AbstractAsset implements Country
+final class DefaultCountry extends AbstractAsset implements Country
 {
   private int armyCount;
 

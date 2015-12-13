@@ -22,7 +22,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders.DefaultCountryImagesFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders.DefaultPlayMapBackgroundImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders.PlayMapBackgroundImageLoader;
-import com.forerunnergames.peril.common.io.DataLoader;
+import com.forerunnergames.peril.common.io.BiMapDataLoader;
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.peril.common.map.MapMetadata;
@@ -44,7 +44,7 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
   private final PlayMapBackgroundImageLoader playMapBackgroundImageLoader;
   private final CountryImagesFactory countryImagesFactory = new DefaultCountryImagesFactory ();
   private final StreamParserFactory streamParserFactory = new ExternalStreamParserFactory ();
-  private final DataLoader <String, CountryImageData> countryImageDataLoader = new CountryImageDataLoader (streamParserFactory);
+  private final BiMapDataLoader <String, CountryImageData> countryImageDataLoader = new CountryImageDataLoader (streamParserFactory);
   private final CountryImageDataRepositoryFactory countryImageDataRepositoryFactory = new DefaultCountryImageDataRepositoryFactory (countryImageDataLoader);
   // @formatter:on
 
