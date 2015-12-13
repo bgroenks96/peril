@@ -75,6 +75,8 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory, U extends
   {
     assert lineData != null;
 
+    if (lineData.size () <= 0) return;
+
     final T first = lineData.remove (0);
     for (final T node : lineData)
     {
