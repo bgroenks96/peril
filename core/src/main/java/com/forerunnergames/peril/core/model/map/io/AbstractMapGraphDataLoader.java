@@ -9,10 +9,10 @@ import com.forerunnergames.tools.common.graph.DefaultGraphModel;
 import com.forerunnergames.tools.common.graph.GraphModel;
 import com.forerunnergames.tools.common.io.StreamParser;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,12 +61,11 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory, U extends
   protected boolean readData ()
   {
     final Iterator <String> lineDataItr = streamParser.getNextRemainingQuotedStringsOnLine ().iterator ();
-    final ImmutableList.Builder <T> listBuilder = ImmutableList.builder ();
+    lineData = new ArrayList <> ();
     while (lineDataItr.hasNext ())
     {
-      listBuilder.add (namesToData.get (lineDataItr.next ()));
+      lineData.add (namesToData.get (lineDataItr.next ()));
     }
-    lineData = listBuilder.build ();
 
     return !streamParser.isEndOfFile ();
   }
