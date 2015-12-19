@@ -9,8 +9,16 @@ import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.common.settings.CrashSettings;
+import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Throwables;
+
+import java.awt.Dimension;
+
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +34,32 @@ public final class DesktopLauncher
       @Override
       public void uncaughtException (final Thread t, final Throwable e)
       {
-        log.error ("The client application has crashed!\n\nA crash file has been created in \""
-                + CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY + "\".\n", e);
+        final String errorMessage = Strings.format (
+                                                    "The client application has crashed!\n\nA crash file has been "
+                                                            + "created in \"{}\".\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                    CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                    Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
-        try
+        log.error (errorMessage);
+
+        if (Gdx.app != null) Gdx.app.exit ();
+
+        SwingUtilities.invokeLater (new Runnable ()
         {
-          Gdx.app.exit ();
-        }
-        catch (final Throwable ignored)
-        {
-          System.exit (1);
-        }
+          @Override
+          public void run ()
+          {
+            final JTextArea textArea = new JTextArea (errorMessage);
+            textArea.setLineWrap (true);
+            textArea.setWrapStyleWord (true);
+            textArea.setEditable (false);
+
+            final JScrollPane scrollPane = new JScrollPane (textArea);
+            scrollPane.setPreferredSize (new Dimension (1000, 382));
+
+            JOptionPane.showMessageDialog (null, scrollPane, "Peril", JOptionPane.ERROR_MESSAGE);
+          }
+        });
       }
     });
 
