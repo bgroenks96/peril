@@ -17,6 +17,7 @@ import com.forerunnergames.tools.common.Strings;
 import com.google.common.collect.ImmutableSet;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,6 +50,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         generalCountryAtlasError ("Cannot find any country atlases", externalCountryAtlasesDirectory, mapMetadata,
                                   expectedAtlasIndex);
       }
+      
+      Arrays.sort (childPathFiles);
 
       final String relativeCountryAtlasesPath = relativeMapResourcesPathParser.parseCountryAtlasesPath (mapMetadata);
 
