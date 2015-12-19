@@ -20,8 +20,13 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMetadataLoader
 {
+  private static final Logger log = LoggerFactory.getLogger (DefaultCountryAtlasMetadataLoader.class);
+
   @Override
   public ImmutableSet <CountryAtlasMetadata> load (final MapMetadata mapMetadata)
   {
@@ -49,21 +54,45 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
       for (final File childPathFile : childPathFiles)
       {
-        if (childPathFile.isDirectory () || childPathFile.isHidden ()) continue;
+        if (childPathFile.isDirectory ())
+        {
+          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is a directory", childPathFile,
+                     mapMetadata);
+          continue;
+        }
+
+        if (childPathFile.isHidden ())
+        {
+          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is hidden.", childPathFile,
+                     mapMetadata);
+          continue;
+        }
 
         // Each country atlas pack file, e.g., countries1.atlas,
         // must be accompanied by a country atlas image file with matching atlas index, e.g., countries1.png.
-        // These two guard clauses skip valid, matching .png country atlas image files.
+        // The following two guard clauses skip valid, matching .png country atlas image files.
 
         // Covers the case where countries1.png is found BEFORE countries1.atlas, for example,
         // so expectedAtlasIndex is still 1.
-        if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex)) continue;
+        if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex))
+        {
+          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because although it's a valid country "
+                  + "atlas *image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
+                     childPathFile, mapMetadata, expectedAtlasIndex);
+          continue;
+        }
 
         // Covers the case where countries1.png is found AFTER countries1.atlas, for example,
         // so expectedAtlasIndex is already incremented to 2.
         // In the first iteration, this will result in checking for countries0.png,
         // but in that corner case it will always return false, so it's not a problem.
-        if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex - 1)) continue;
+        if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex - 1))
+        {
+          log.trace ("Ignoring child path file [{}] for map [{}] because although it's a valid country atlas "
+                  + "*image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
+                     childPathFile, mapMetadata, expectedAtlasIndex);
+          continue;
+        }
 
         final String rawCountryAtlasFileName = childPathFile.getName ();
 
@@ -88,6 +117,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
           invalidCountryAtlasError ("Found duplicate country atlas filename", rawCountryAtlasFileName,
                                     externalCountryAtlasesDirectory, mapMetadata, expectedAtlasIndex);
         }
+
+        log.debug ("Successfully loaded country atlas metadata [{}].", countryAtlasMetadata);
 
         ++expectedAtlasIndex;
       }
@@ -124,11 +155,14 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
                                                 final MapMetadata mapMetadata,
                                                 final int expectedAtlasIndex)
   {
+    // @formatter:off
     throw new PlayMapLoadingException (Strings
-            .format ("{} for {} map: \'{}\'\n\nIn Location:\n\n{}\n\nExpected country atlas named: \'{}\'\n\nNaming rules for country atlases:\n\n{}",
+            .format ("{} for {} map: \'{}\'\n\nIn Location:\n\n{}\n\nExpected country atlas named: \'{}\'\n\n" +
+                    "Naming rules for country atlases:\n\n{}",
                      prependedMessage, mapMetadata.getType ().name ().toLowerCase (),
                      Strings.toProperCase (mapMetadata.getName ()), externalCountryAtlasesDirectory.getAbsolutePath (),
                      AssetSettings.getValidCountryAtlasPackFileName (expectedAtlasIndex),
                      AssetSettings.VALID_COUNTRY_ATLAS_FILENAME_DESCRIPTION));
+    // @formatter:on
   }
 }

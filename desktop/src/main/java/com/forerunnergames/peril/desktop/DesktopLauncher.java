@@ -8,10 +8,9 @@ import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
+import com.forerunnergames.peril.common.settings.CrashSettings;
 
 import com.google.common.base.Throwables;
-
-import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ public final class DesktopLauncher
       public void uncaughtException (final Thread t, final Throwable e)
       {
         log.error ("The client application has crashed!\n\nA crash file has been created in \""
-                + System.getProperty ("user.home") + File.separator + "peril" + File.separator + "crashes\".\n", e);
+                + CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY + "\".\n", e);
 
         try
         {

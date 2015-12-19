@@ -49,6 +49,7 @@ import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.settings.CrashSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
@@ -539,11 +540,12 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       public void run ()
       {
         // @formatter:off
-        handleErrorDuringLoading (Strings
-                .format ("There was a problem loading a game resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                         event.getFileName (), event.getFileType ().getSimpleName (),
-                         Throwables.getRootCause (event.getThrowable ()).getMessage (),
-                         Strings.toString (event.getThrowable ())));
+        handleErrorDuringLoading (event.getThrowable (),
+                Strings.format ("There was a problem loading a game resource.\n\nResource Name: {}\n" +
+                        "Resource Type: {}\n\nProblem:\n\n{}\n\nA crash file has been created in \"{}\".\n\n" +
+                        "Details:\n\n{}", event.getFileName (), event.getFileType ().getSimpleName (),
+                        Throwables.getRootCause (event.getThrowable ()).getMessage (),
+                        Strings.toString (event.getThrowable ())));
         // @formatter:on
       }
     });
@@ -649,8 +651,10 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     loadPlayScreenAssetsAsync ();
   }
 
-  private void handleErrorDuringLoading (final String message)
+  private void handleErrorDuringLoading (final Throwable throwable, final String message)
   {
+    log.error (message, throwable);
+
     errorPopup.setMessage (new DefaultMessage (message));
     errorPopup.show ();
 
@@ -692,11 +696,13 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     catch (final PlayMapLoadingException e)
     {
       // @formatter:off
-      handleErrorDuringLoading (Strings
-              .format ("There was a problem loading resources for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
-                       gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
-                       Throwables.getRootCause (e).getMessage (), Strings.toString (e)));
+      handleErrorDuringLoading (e,
+              Strings.format ("There was a problem loading resources for {} map \'{}\'.\n\nProblem:\n\n{}\n\n" +
+                      "A crash file has been created in \"{}\".\n\nDetails:\n\n{}",
+                      gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
+                      gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
+                      Throwables.getRootCause (e).getMessage (), CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                      Strings.toString (e)));
       // @formatter:on
     }
   }
