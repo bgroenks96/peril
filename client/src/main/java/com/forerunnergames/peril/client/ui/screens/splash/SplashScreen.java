@@ -36,6 +36,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.common.settings.CrashSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
@@ -283,15 +284,14 @@ public final class SplashScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        // @formatter:off
-        handleErrorDuringLoading (
-                Strings.format (
-                        "There was a problem loading a game resource.\n\nResource Name: {}\n" +
-                        "Resource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                        event.getFileName (), event.getFileType ().getSimpleName (),
-                        Throwables.getRootCause (event.getThrowable ()).getMessage (),
-                        Throwables.getStackTraceAsString (event.getThrowable ())));
-        // @formatter:on
+        handleErrorDuringLoading (Strings.format (
+                                                  "A crash file has been created in \"{}\".\n\nThere was a problem "
+                                                          + "loading a game resource.\n\nResource Name: {}\n"
+                                                          + "Resource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                  CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                  event.getFileName (), event.getFileType ().getSimpleName (),
+                                                  Throwables.getRootCause (event.getThrowable ()).getMessage (),
+                                                  Throwables.getStackTraceAsString (event.getThrowable ())));
       }
     });
   }
@@ -314,9 +314,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final GdxRuntimeException e)
     {
-      handleErrorDuringLoading (Strings
-              .format ("The application encountered a problem.\n\n" + "Problem:\n\n{}\n\nDetails:\n\n{}",
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings.format (
+                                                "A crash file has been created in \"{}\".\n\nThe application "
+                                                        + "encountered a problem.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                Throwables.getRootCause (e).getMessage (),
+                                                Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -354,9 +357,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final RuntimeException e)
     {
-      handleErrorDuringLoading (Strings
-              .format ("There was a problem updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings.format (
+                                                "A crash file has been created in \"{}\".\n\nThere was a problem "
+                                                        + "updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                Throwables.getRootCause (e).getMessage (),
+                                                Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -374,9 +380,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final RuntimeException e)
     {
-      handleErrorDuringLoading (Strings
-              .format ("There was a problem loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings.format (
+                                                "A crash file has been created in \"{}\".\n\nThere was a problem "
+                                                        + "loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                Throwables.getRootCause (e).getMessage (),
+                                                Throwables.getStackTraceAsString (e)));
     }
   }
 

@@ -540,10 +540,11 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       public void run ()
       {
         // @formatter:off
-        handleErrorDuringLoading (event.getThrowable (),
-                Strings.format ("There was a problem loading a game resource.\n\nResource Name: {}\n" +
-                        "Resource Type: {}\n\nProblem:\n\n{}\n\nA crash file has been created in \"{}\".\n\n" +
-                        "Details:\n\n{}", event.getFileName (), event.getFileType ().getSimpleName (),
+        handleErrorDuringLoading (
+                Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading a game " +
+                        "resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                        CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, event.getFileName (),
+                        event.getFileType ().getSimpleName (),
                         Throwables.getRootCause (event.getThrowable ()).getMessage (),
                         Strings.toString (event.getThrowable ())));
         // @formatter:on
@@ -651,9 +652,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     loadPlayScreenAssetsAsync ();
   }
 
-  private void handleErrorDuringLoading (final Throwable throwable, final String message)
+  private void handleErrorDuringLoading (final String message)
   {
-    log.error (message, throwable);
+    log.error (message);
 
     errorPopup.setMessage (new DefaultMessage (message));
     errorPopup.show ();
@@ -696,13 +697,13 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     catch (final PlayMapLoadingException e)
     {
       // @formatter:off
-      handleErrorDuringLoading (e,
-              Strings.format ("There was a problem loading resources for {} map \'{}\'.\n\nProblem:\n\n{}\n\n" +
-                      "A crash file has been created in \"{}\".\n\nDetails:\n\n{}",
+      handleErrorDuringLoading (
+              Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources " +
+                      "for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                      CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
                       gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
                       gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
-                      Throwables.getRootCause (e).getMessage (), CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                      Strings.toString (e)));
+                      Throwables.getRootCause (e).getMessage (), Strings.toString (e)));
       // @formatter:on
     }
   }
