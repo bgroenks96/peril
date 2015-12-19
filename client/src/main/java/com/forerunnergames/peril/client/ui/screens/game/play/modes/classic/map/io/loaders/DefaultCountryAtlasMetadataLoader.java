@@ -54,6 +54,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
       for (final File childPathFile : childPathFiles)
       {
+        log.trace ("Processing potential country atlas file [{}].", childPathFile.getAbsolutePath ());
+
         if (childPathFile.isDirectory ())
         {
           log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is a directory", childPathFile,
