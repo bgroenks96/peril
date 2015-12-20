@@ -56,8 +56,12 @@ import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
+  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
   private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC)
           .create (MapType.STOCK, MapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
@@ -419,10 +423,13 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
     catch (final PlayMapLoadingException e)
     {
-      errorPopup.setMessage (new DefaultMessage (
-              Strings.format ("There was a problem loading map data.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
-                              Throwables.getRootCause (e).getMessage (), Strings.toString (e))));
+      final String errorMessage = Strings.format (
+                                                  "There was a problem loading map data.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
+                                                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
+      log.error (errorMessage);
+
+      errorPopup.setMessage (new DefaultMessage (errorMessage));
       errorPopup.show ();
 
       return ImmutableSet.of (MapMetadata.NULL_MAP_METADATA);
@@ -437,11 +444,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
     catch (final PlayMapLoadingException e)
     {
-      errorPopup.setMessage (new DefaultMessage (Strings
+      final String errorMessage = Strings
               .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
                        currentMap.getType ().name ().toLowerCase (), Strings.toProperCase (currentMap.getName ()),
-                       Throwables.getRootCause (e).getMessage (), Strings.toString (e))));
+                       Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
+      log.error (errorMessage);
+
+      errorPopup.setMessage (new DefaultMessage (errorMessage));
       errorPopup.show ();
 
       return ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
@@ -519,7 +529,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         errorPopup.setMessage (new DefaultMessage (
                 Strings.format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", mapName)));
         errorPopup.show ();
+
         mapIterator = null;
+
         return nextMap ();
       }
     }

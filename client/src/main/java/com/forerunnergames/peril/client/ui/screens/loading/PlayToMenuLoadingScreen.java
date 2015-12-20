@@ -276,6 +276,8 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
   private void handleErrorDuringLoading (final String message)
   {
+    log.error (message);
+
     errorPopup.setMessage (new DefaultMessage (message));
     errorPopup.show ();
 
