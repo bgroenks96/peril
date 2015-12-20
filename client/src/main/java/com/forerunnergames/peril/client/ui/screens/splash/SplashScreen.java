@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -72,6 +73,8 @@ public final class SplashScreen extends InputAdapter implements Screen
   private final Popup errorPopup;
   private final int windowWidth;
   private final int windowHeight;
+  private final Label loadingStatusTextLabel;
+  private String statusMessageText = "";
   private boolean isLoading = false;
   private boolean isUpdatingAssets = false;
   private boolean isLoadingUpdatedAssets = false;
@@ -116,12 +119,16 @@ public final class SplashScreen extends InputAdapter implements Screen
     rootStack.setFillParent (true);
     rootStack.add (background);
 
+    loadingStatusTextLabel = widgetFactory.createLabel ("", Align.left, "loading-status-text");
+
     final Table foregroundTable = new Table ().top ();
     foregroundTable.add ().height (394);
     foregroundTable.row ();
     foregroundTable.add (widgetFactory.createLabel ("LOADING", Align.center, "loading-text")).size (560, 62);
     foregroundTable.row ().bottom ();
-    foregroundTable.add (progressBar).size (560, 20).padBottom (124);
+    foregroundTable.add (progressBar).size (560, 20).padBottom (10);
+    foregroundTable.row ();
+    foregroundTable.add (loadingStatusTextLabel);
 
     rootStack.add (foregroundTable);
 
@@ -349,10 +356,12 @@ public final class SplashScreen extends InputAdapter implements Screen
 
   private void startUpdatingAssets ()
   {
+    loadingStatusTextLabel.setText ("Please wait for asset updating to begin...");
+    isUpdatingAssets = true;
+    isLoadingUpdatedAssets = false;
+
     try
     {
-      isUpdatingAssets = true;
-      isLoadingUpdatedAssets = false;
       assetUpdater.updateAssets ();
     }
     catch (final RuntimeException e)
@@ -368,11 +377,13 @@ public final class SplashScreen extends InputAdapter implements Screen
 
   private void startLoadingUpdatedAssets ()
   {
+    loadingStatusTextLabel.setText ("Please wait for asset loading to begin...");
+
+    isUpdatingAssets = false;
+    isLoadingUpdatedAssets = true;
+
     try
     {
-      isUpdatingAssets = false;
-      isLoadingUpdatedAssets = true;
-
       for (final AssetDescriptor <?> descriptor : AssetSettings.INITIAL_ASSET_DESCRIPTORS)
       {
         assetManager.load (descriptor);
@@ -427,6 +438,35 @@ public final class SplashScreen extends InputAdapter implements Screen
     currentLoadingProgressPercent = assetUpdater.getProgressPercent () * ASSET_UPDATING_PROGRESS_WEIGHT
             + (isLoadingUpdatedAssets ? assetManager.getProgressLoading () * UPDATED_ASSET_LOADING_PROGRESS_WEIGHT
                     : 0.0f);
+
+    updateLoadingStatusText ();
+  }
+
+  private void updateLoadingStatusText ()
+  {
+    if (isUpdatingAssets && progressBar.getVisualPercent () < .001f)
+    {
+      statusMessageText = "Please wait for asset updating to begin...";
+    }
+    else if (isUpdatingAssets)
+    {
+      statusMessageText = "Updating assets... " + getPrettyLoadingPercentText ();
+    }
+    else if (isLoadingUpdatedAssets)
+    {
+      statusMessageText = "Loading assets... " + getPrettyLoadingPercentText ();
+    }
+    else
+    {
+      statusMessageText = "Finished!";
+    }
+
+    loadingStatusTextLabel.setText (statusMessageText);
+  }
+
+  private String getPrettyLoadingPercentText ()
+  {
+    return Math.round (progressBar.getVisualPercent () * 100.0f) + " %";
   }
 
   private boolean loadingProgressIncreased ()
