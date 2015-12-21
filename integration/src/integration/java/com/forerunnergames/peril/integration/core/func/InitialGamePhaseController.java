@@ -31,7 +31,7 @@ class InitialGamePhaseController
     final TestClientPool clientPool = session.getTestClientPool ();
     for (int i = 0; i < clientPool.count (); i++)
     {
-      clientPool.send (i, new PlayerJoinGameRequestEvent (Strings.format ("TestPlayer-{}", i)));
+      clientPool.send (i, new PlayerJoinGameRequestEvent (Strings.format ("TestPlayer{}", i)));
     }
   }
 }

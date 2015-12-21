@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.integration.core.func;
 
-import static org.testng.Assert.fail;
+import static org.testng.Assert.assertFalse;
 
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -12,6 +12,9 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Queues;
+
+import java.util.Queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,7 @@ import org.testng.annotations.Test;
 public class InitialGamePhaseTest
 {
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseTest.class);
-  private static final int DEFAULT_TEST_TIMEOUT = 30000;
+  private static final int DEFAULT_TEST_TIMEOUT = 45000;
   private final String sessionName;
   private DedicatedGameSession session;
 
@@ -55,17 +58,29 @@ public class InitialGamePhaseTest
   {
     final InitialGamePhaseController controller = new InitialGamePhaseController (session);
     final TestClientPool clientPool = session.getTestClientPool ();
+    final Queue <String> failureMessageQueue = Queues.newConcurrentLinkedQueue ();
     final ClientEventCallback <PlayerJoinGameSuccessEvent> playerJoinGameCallback = new ClientEventCallback <PlayerJoinGameSuccessEvent> ()
     {
       @Override
       public void onEventReceived (final Optional <PlayerJoinGameSuccessEvent> event, final TestClient client)
       {
-        if (!event.isPresent ()) fail (Strings.format ("Event not received by {}.", client));
+        if (!event.isPresent ())
+        {
+          failureMessageQueue.add (Strings.format ("Event not received by client [{}]", client));
+          return;
+
+        }
         client.setPlayer (event.get ().getPlayer ());
       }
     };
 
     controller.sendForAllClientsJoinGameRequest ();
     clientPool.waitForAllClientsToReceive (PlayerJoinGameSuccessEvent.class, playerJoinGameCallback);
+    final int failureCount = failureMessageQueue.size ();
+    while (failureMessageQueue.size () > 0)
+    {
+      log.debug (failureMessageQueue.poll ());
+    }
+    assertFalse (failureCount > 0);
   }
 }
