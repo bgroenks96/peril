@@ -9,6 +9,9 @@ public interface CountryOwnerChangeDeniedEvent extends DeniedEvent <Reason>
   {
     COUNTRY_ALREADY_OWNED,
     COUNTRY_DOES_NOT_EXIST,
-    COUNTRY_DISABLED;
+    COUNTRY_DISABLED,
+    NOT_OWNER_OF_COUNTRY,
+    INSUFFICIENT_ARMIES,
+    COUNTRY_NOT_ADJACENT;
   }
 }

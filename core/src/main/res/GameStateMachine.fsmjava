@@ -51,6 +51,26 @@
           name="event"
           type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent" />
       </event>
+      <event id="onPlayerAttackCountryRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCountryRequestEvent" />
+      </event>
+      <event id="onPlayerAttackCountrySuccessEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent" />
+      </event>
+      <event id="onPlayerEndAttackPhaseRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent" />
+      </event>
+      <event id="onPlayerDefendCountryResponseRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent" />
+      </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event" />
       </event>
@@ -128,15 +148,15 @@
               </state>
               <state name="RandomlyAssignPlayerCountries">
                 <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
-                <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
+                <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="TurnPhase" />
               </state>
               <state name="ManuallyAssignPlayerCountries">
                 <state name="WaitForPlayersToSelectInitialCountries">
                   <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
                   <transition event="onPlayerSelectCountryResponseRequestEvent"
-                              condition="gameModel.verifyPlayerCountrySelectionRequest(event)"
+                              condition="gameModel.verifyPlayerClaimCountrySelectionRequest(event)"
                               nextState="WaitForPlayersToSelectInitialCountries" />
-                  <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="EndGame" />
+                  <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="TurnPhase" />
                 </state>
               </state>
             </state>
@@ -153,6 +173,27 @@
               </state>
               <state name="AttackPhase">
                 <onEntry action="gameModel.beginAttackPhase()" />
+                <state name="WaitForPlayerAttackOrders">
+                  <transition event="onPlayerAttackCountryRequestEvent"
+                              condition="gameModel.verifyPlayerAttackCountryRequest(event)"
+                              nextState="WaitForDefenderResponse"/>
+                  <transition event="onPlayerEndAttackPhaseRequestEvent"
+                              condition="gameModel.verifyPlayerEndAttackPhaseRequest(event)"
+                              nextState="EndGame" />
+                </state>
+                <state name="WaitForDefenderResponse">
+                  <transition event="onPlayerDefendCountryResponseRequestEvent"
+                              condition="gameModel.verifyPlayerDefendCountryResponseRequestEvent(event)"
+                              nextState="GenerateBattleResult" />
+                </state>
+                <state name="GenerateBattleResult">
+                  <onEntry action="gameModel.generateBattleResult()" />
+                  <transition event="onPlayerAttackCountrySuccessEvent"
+                              nextState="WaitForPlayerAttackOrders" />
+                </state>
+              </state>
+              <state name="FortifyPhase">
+                <!-- TODO -->
               </state>
             </state>
           </state>

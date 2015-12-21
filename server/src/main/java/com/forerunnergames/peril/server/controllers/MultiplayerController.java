@@ -9,11 +9,14 @@ import com.forerunnergames.peril.common.net.NetworkEventHandler;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -217,14 +220,34 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ServerNotificationEvent event)
+  public void onEvent (final PlayerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
+    sendToAllPlayers (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerDeniedEvent <?> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    sendToPlayer (event.getPlayer (), event);
+  }
+
+  @Handler
+  public void onEvent (final ServerNotificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
     // We have a separate handler / sender for this ServerNotificationEvent, so don't send twice.
     if (event instanceof PlayerLeaveGameEvent) return;
+
+    log.trace ("Event received [{}]", event);
 
     sendToAllPlayers (event);
   }
@@ -435,6 +458,35 @@ public final class MultiplayerController extends ControllerAdapter
             new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
+  void handleEvent (final PlayerRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    log.trace ("Event received [{}]", event);
+
+    Optional <PlayerPacket> playerQuery;
+    try
+    {
+      playerQuery = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+      return;
+    }
+
+    if (!playerQuery.isPresent ())
+    {
+      log.warn ("Ignoring event [{}] from non-player client [{}]", event, client);
+      return;
+    }
+
+    final PlayerPacket player = playerQuery.get ();
+
+    coreCommunicator.publishPlayerRequestEvent (player, event);
+  }
+
   void handleEvent (final ResponseRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -559,7 +611,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       if (requestClass.isInstance (request))
       {
-        eventBus.publish (responseRequest);
+        coreCommunicator.publishPlayerResponseRequestEvent (player, responseRequest);
         final boolean wasRemoved = playerInputRequestEventCache.remove (player, request);
         assert wasRemoved;
         return;

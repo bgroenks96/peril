@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.events.player.InternalPlayerRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
@@ -12,8 +13,13 @@ import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+
+import java.util.Map;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -29,6 +35,7 @@ final class InternalCommunicationHandler
   private final PlayMapModel playMapModel;
   private final PlayerTurnModel playerTurnModel;
   private final MBassador <Event> eventBus;
+  private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
 
   InternalCommunicationHandler (final PlayerModel playerModel,
                                 final PlayMapModel playMapModel,
@@ -44,6 +51,27 @@ final class InternalCommunicationHandler
     this.playMapModel = playMapModel;
     this.playerTurnModel = playerTurnModel;
     this.eventBus = eventBus;
+  }
+
+  /**
+   * Fetches the PlayerPacket representing the player from whom this client request event was received. This method can
+   * only be called once per registered event since the entry is cleared after being fetched.
+   */
+  Optional <PlayerPacket> senderOf (final RequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Optional.fromNullable (requestEvents.remove (event));
+  }
+
+  @Handler
+  void onEvent (final InternalPlayerRequestEvent <? extends RequestEvent> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    requestEvents.put (event.getRequestEvent (), event.getPlayer ());
+
+    eventBus.publish (event.getRequestEvent ());
   }
 
   @Handler

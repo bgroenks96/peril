@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.NetworkEventHandler;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
@@ -60,6 +61,14 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
 
   @Handler
   public void onEvent (final ChatMessageRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    controller.handleEvent (event, clientFor (event));
+  }
+
+  @Handler
+  public void onEvent (final PlayerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

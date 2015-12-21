@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.server.controllers;
 
-import com.esotericsoftware.minlog.Log;
-
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
@@ -14,8 +12,12 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class ClientPlayerMapping
 {
+  private static final Logger log = LoggerFactory.getLogger (ClientPlayerMapping.class);
   private final BiMap <Remote, PlayerPacket> clientsToPlayers;
   private final CoreCommunicator coreCommunicator;
 
@@ -96,7 +98,7 @@ public final class ClientPlayerMapping
       final Optional <Remote> client = Optional.fromNullable (clientsToPlayers.inverse ().get (current));
       if (!client.isPresent ())
       {
-        Log.warn ("Received player [{}] from core with no client mapping.");
+        log.warn ("Received player [{}] from core with no client mapping.");
         continue;
       }
       clientsToPlayers.forcePut (client.get (), current);

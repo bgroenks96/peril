@@ -285,7 +285,7 @@ public class GameModelTest
 
     final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
             randomCountryName);
-    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
@@ -301,7 +301,7 @@ public class GameModelTest
 
     final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
             "Transylvania");
-    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseDeniedEvent.class));
     assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
@@ -320,13 +320,13 @@ public class GameModelTest
     final Id country = randomCountry ();
     final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
             countryMapGraphModel.nameOf (country));
-    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
     // should be successful for first player
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (gameModel.getTurn () == PlayerTurnOrder.SECOND);
 
-    gameModel.verifyPlayerCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
     // unsuccessful for second player
     assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseDeniedEvent.class));
     assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));

@@ -2,8 +2,9 @@ package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
-import com.forerunnergames.peril.common.net.events.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
@@ -12,13 +13,19 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   private final PlayerDeniedEvent <String> playerDeniedEvent;
   private final KickEvent kickEvent;
 
-  public KickPlayerFromGameDeniedEvent (final String reasonForKick, final String reason)
+  public KickPlayerFromGameDeniedEvent (final PlayerPacket player, final String reasonForKick, final String reason)
   {
     Arguments.checkIsNotNull (reasonForKick, "reasonForKick");
     Arguments.checkIsNotNull (reason, "reason");
 
-    playerDeniedEvent = new DefaultPlayerDeniedEvent (reason);
+    playerDeniedEvent = new DefaultPlayerDeniedEvent (player, reason);
     kickEvent = new DefaultKickEvent (reasonForKick);
+  }
+
+  @Override
+  public PlayerPacket getPlayer ()
+  {
+    return playerDeniedEvent.getPlayer ();
   }
 
   @Override

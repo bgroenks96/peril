@@ -65,6 +65,16 @@ public final class CountryMapGraphModel extends TerritoryGraphModel <Country>
     return country.get ().getId ();
   }
 
+  public Id countryWith (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    final Optional <Country> country = findCountryByName (countryName);
+    if (!country.isPresent ()) Exceptions.throwIllegalArg ("No country with name [{}] exists!", countryName);
+
+    return country.get ().getId ();
+  }
+
   public CountryPacket countryPacketWith (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
@@ -119,14 +129,14 @@ public final class CountryMapGraphModel extends TerritoryGraphModel <Country>
     return countryCount <= getCountryCount ();
   }
 
-  Country countryWith (final Id countryId)
+  Country modelCountryWith (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
 
     return countryIdsToCountries.get (countryId);
   }
 
-  Country countryWith (final String countryName)
+  Country modelCountryWith (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
