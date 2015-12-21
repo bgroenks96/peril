@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -208,6 +210,26 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerReinforceCountriesResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onPlayerAttackCountryRequestEvent (final PlayerAttackCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerAttackCountryRequestEvent (event);
+  }
+
+  @Handler
+  public void onPlayerEndAttackPhaseRequestEvent (final PlayerEndAttackPhaseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerEndAttackPhaseRequestEvent (event);
   }
 
   @Handler

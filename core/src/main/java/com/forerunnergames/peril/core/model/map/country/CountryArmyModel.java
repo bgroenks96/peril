@@ -13,5 +13,7 @@ public interface CountryArmyModel
 
   int getArmyCountFor (final Id countryId);
 
+  boolean armyCountIs (final int armyCount, final Id countryId);
+
   boolean armyCountIsAtLeast (final int minArmyCount, final Id countryId);
 }

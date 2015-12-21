@@ -28,7 +28,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
-    final Country country = countryMapGraphModel.countryWith (countryId);
+    final Country country = countryMapGraphModel.modelCountryWith (countryId);
     if (country.getArmyCount () + armyCount > rules.getMaxArmiesOnCountry ())
     {
       return Result.failure (Reason.COUNTRY_ARMY_COUNT_OVERFLOW);
@@ -45,7 +45,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
-    final Country country = countryMapGraphModel.countryWith (countryId);
+    final Country country = countryMapGraphModel.modelCountryWith (countryId);
     if (country.getArmyCount () - armyCount > rules.getMinArmiesOnCountry ())
     {
       return Result.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
@@ -63,7 +63,16 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     Preconditions.checkIsTrue (countryMapGraphModel.existsCountryWith (countryId),
                                Strings.format ("No country with id [{}] exists.", countryId));
 
-    return countryMapGraphModel.countryWith (countryId).getArmyCount ();
+    return countryMapGraphModel.modelCountryWith (countryId).getArmyCount ();
+  }
+
+  @Override
+  public boolean armyCountIs (final int armyCount, final Id countryId)
+  {
+    Arguments.checkIsNotNegative (armyCount, "minArmyCount");
+    Arguments.checkIsNotNull (countryId, "countryId");
+
+    return getArmyCountFor (countryId) == armyCount;
   }
 
   @Override

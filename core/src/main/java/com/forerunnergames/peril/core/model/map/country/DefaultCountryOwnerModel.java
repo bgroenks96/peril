@@ -155,7 +155,7 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
     {
       if (!countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
 
-      final Country country = countryMapGraphModel.countryWith (countryIdToOwnerIdEntry.getKey ());
+      final Country country = countryMapGraphModel.modelCountryWith (countryIdToOwnerIdEntry.getKey ());
 
       if (country != null) countryBuilder.add (CountryPackets.from (country));
     }
@@ -176,7 +176,7 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
     {
       if (!countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
 
-      final Country country = countryMapGraphModel.countryWith (countryIdToOwnerIdEntry.getKey ());
+      final Country country = countryMapGraphModel.modelCountryWith (countryIdToOwnerIdEntry.getKey ());
 
       if (country != null) countryNameBuilder.add (country.getName ());
     }
@@ -262,7 +262,7 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
 
     if (!countryMapGraphModel.existsCountryWith (name)) return Optional.absent ();
 
-    return Optional.of (countryMapGraphModel.countryWith (name));
+    return Optional.of (countryMapGraphModel.modelCountryWith (name));
   }
 
   private ImmutableSet <Country> getOwnedCountries ()
@@ -272,7 +272,7 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
     {
       if (countryIdsToOwnerIds.containsKey (id))
       {
-        countrySetBuilder.add (countryMapGraphModel.countryWith (id));
+        countrySetBuilder.add (countryMapGraphModel.modelCountryWith (id));
       }
     }
     return countrySetBuilder.build ();

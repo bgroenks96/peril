@@ -7,9 +7,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -32,6 +34,7 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -55,6 +58,7 @@ import com.forerunnergames.tools.net.client.ClientConnector;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
@@ -74,6 +78,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class MultiplayerControllerTest
 {
@@ -705,6 +711,26 @@ public class MultiplayerControllerTest
   private void mockCoreCommunicatorPlayersWith (final PlayerPacket... players)
   {
     when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.copyOf (players));
+    // mock core communicator request publishing
+    doAnswer (new Answer <InvocationOnMock> ()
+    {
+      @Override
+      public InvocationOnMock answer (final InvocationOnMock invocation) throws Throwable
+      {
+        eventBus.publish ((Event) invocation.getArguments () [1]);
+        return null;
+      }
+    }).when (mockCoreCommunicator).publishPlayerResponseRequestEvent (any (PlayerPacket.class),
+                                                                      any (ResponseRequestEvent.class));
+    doAnswer (new Answer <InvocationOnMock> ()
+    {
+      @Override
+      public InvocationOnMock answer (final InvocationOnMock invocation) throws Throwable
+      {
+        eventBus.publish ((Event) invocation.getArguments () [1]);
+        return null;
+      }
+    }).when (mockCoreCommunicator).publishPlayerRequestEvent (any (PlayerPacket.class), any (PlayerRequestEvent.class));
   }
 
   private void assertLastEventWasType (final Class <?> eventType)

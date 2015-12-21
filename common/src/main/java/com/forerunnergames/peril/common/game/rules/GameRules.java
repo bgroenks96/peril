@@ -22,6 +22,8 @@ public interface GameRules
 
   int getMaxArmiesOnCountry ();
 
+  int getMinArmiesOnCountryForAttack ();
+
   int getMinPlayerLimit ();
 
   int getMaxPlayerLimit ();

@@ -4,9 +4,15 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndAttackPhaseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
@@ -14,21 +20,37 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmy
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.model.PlayerTurnDataCache.CacheKey;
+import com.forerunnergames.peril.core.model.battle.AttackOrder;
+import com.forerunnergames.peril.core.model.battle.BattleActor;
+import com.forerunnergames.peril.core.model.battle.BattleModel;
+import com.forerunnergames.peril.core.model.battle.BattlePackets;
+import com.forerunnergames.peril.core.model.battle.BattleResult;
+import com.forerunnergames.peril.core.model.battle.DefaultBattleActor;
+import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardPackets;
@@ -57,13 +79,17 @@ import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCou
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.HashSet;
@@ -84,23 +110,27 @@ public final class GameModel
   private final CountryMapGraphModel countryMapGraphModel;
   private final CountryArmyModel countryArmyModel;
   private final ContinentOwnerModel continentOwnerModel;
-  private final ContinentMapGraphModel continentMapGraphModel;
   private final CardModel cardModel;
   private final PlayerTurnModel playerTurnModel;
+  private final BattleModel battleModel;
+  private final PlayerTurnDataCache turnDataCache;
   private final GameRules rules;
+  private final InternalCommunicationHandler internalCommHandler;
   private final MBassador <Event> eventBus;
 
-  public GameModel (final PlayerModel playerModel,
-                    final PlayMapModel playMapModel,
-                    final CardModel cardModel,
-                    final PlayerTurnModel playerTurnModel,
-                    final GameRules rules,
-                    final MBassador <Event> eventBus)
+  GameModel (final PlayerModel playerModel,
+             final PlayMapModel playMapModel,
+             final CardModel cardModel,
+             final PlayerTurnModel playerTurnModel,
+             final BattleModel battleModel,
+             final GameRules rules,
+             final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
     Arguments.checkIsNotNull (cardModel, "cardModel");
     Arguments.checkIsNotNull (playerTurnModel, "playerTurnModel");
+    Arguments.checkIsNotNull (battleModel, "battleModel");
     Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
@@ -108,6 +138,7 @@ public final class GameModel
     this.playMapModel = playMapModel;
     this.cardModel = cardModel;
     this.playerTurnModel = playerTurnModel;
+    this.battleModel = battleModel;
     this.rules = rules;
     this.eventBus = eventBus;
 
@@ -115,7 +146,12 @@ public final class GameModel
     countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
     countryArmyModel = playMapModel.getCountryArmyModel ();
     continentOwnerModel = playMapModel.getContinentOwnerModel ();
-    continentMapGraphModel = playMapModel.getContinentMapGraphModel ();
+    // continentMapGraphModel = playMapModel.getContinentMapGraphModel ();
+
+    internalCommHandler = new InternalCommunicationHandler (playerModel, playMapModel, playerTurnModel, eventBus);
+    turnDataCache = new PlayerTurnDataCache ();
+
+    eventBus.subscribe (internalCommHandler);
   }
 
   public static Builder builder (final GameRules rules)
@@ -123,6 +159,13 @@ public final class GameModel
     Arguments.checkIsNotNull (rules, "rules");
 
     return new Builder (rules);
+  }
+
+  public static GameModel create (final GameRules rules)
+  {
+    Arguments.checkIsNotNull (rules, "rules");
+
+    return builder (rules).build ();
   }
 
   @StateMachineAction
@@ -149,16 +192,19 @@ public final class GameModel
 
   public void beginTurnPhase ()
   {
-    log.info ("Turn begins for player [{}].", getCurrentPlayer ().getName ());
+    log.info ("Turn begins for player [{}].", getCurrentPlayerPacket ().getName ());
 
-    eventBus.publish (new BeginPlayerTurnEvent (getCurrentPlayer ()));
+    // clear state data cache
+    turnDataCache.clearAll ();
+
+    eventBus.publish (new BeginPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
 
   public void endTurnPhase ()
   {
-    log.info ("Turn ends for player [{}].", getCurrentPlayer ().getName ());
+    log.info ("Turn ends for player [{}].", getCurrentPlayerPacket ().getName ());
 
-    eventBus.publish (new EndPlayerTurnEvent (getCurrentPlayer ()));
+    eventBus.publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
 
   @StateMachineAction
@@ -347,7 +393,7 @@ public final class GameModel
   @StateEntryAction
   public void waitForPlayersToSelectInitialCountries ()
   {
-    final PlayerPacket currentPlayer = getCurrentPlayer ();
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
     if (countryOwnerModel.allCountriesAreOwned ())
     {
@@ -363,13 +409,13 @@ public final class GameModel
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
+  public boolean verifyPlayerClaimCountrySelectionRequest (final PlayerSelectCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
-    final PlayerPacket currentPlayer = getCurrentPlayer ();
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
     final Id currentPlayerId = playerModel.idOf (currentPlayer.getName ());
 
     final String selectedCountryName = event.getSelectedCountryName ();
@@ -408,7 +454,7 @@ public final class GameModel
   @StateEntryAction
   public void beginReinforcementPhase ()
   {
-    final PlayerPacket player = getCurrentPlayer ();
+    final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = playerModel.idOf (player.getName ());
 
     log.info ("Begin reinforcement phase for player [{}].", player);
@@ -431,11 +477,12 @@ public final class GameModel
     final int cardCount = cardModel.countCardsInHand (playerId);
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
     final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
-    // publish card trade in request
+
+    eventBus.publish (new PlayerArmiesChangedEvent (player, totalReinforcementBonus));
+    // publish reinforcement request
     eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, countryReinforcementBonus,
             continentReinforcementBonus, cardModel.getNextTradeInBonus (), playerOwnedCountries, matchPackets,
             cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
-    eventBus.publish (new PlayerArmiesChangedEvent (player, totalReinforcementBonus));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
 
@@ -444,7 +491,7 @@ public final class GameModel
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final PlayerPacket player = getCurrentPlayer ();
+    final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = playerModel.idOf (player.getName ());
 
     Result <CountryArmyChangeDeniedEvent.Reason> result = Result.success ();
@@ -528,11 +575,216 @@ public final class GameModel
   @StateEntryAction
   public void beginAttackPhase ()
   {
-    final PlayerPacket player = getCurrentPlayer ();
+    final Id player = getCurrentPlayerId ();
 
     log.info ("Begin attack phase for player [{}].", player);
 
-    eventBus.publish (new BeginAttackPhaseEvent (player));
+    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
+    for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (player))
+    {
+      final Id countryId = countryMapGraphModel.countryWith (country.getName ());
+      builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
+    }
+
+    eventBus.publish (new BeginAttackPhaseEvent (getCurrentPlayerPacket (), builder.build ()));
+  }
+
+  @StateMachineCondition
+  public boolean verifyPlayerAttackCountryRequest (final PlayerAttackCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final Id currentPlayer = getCurrentPlayerId ();
+    final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
+
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent ())
+    {
+      log.warn ("No registered sender for event [{}].", event);
+      return false;
+    }
+    if (!currentPlayerPacket.equals (sender.get ()))
+    {
+      eventBus.publish (new PlayerAttackCountryDeniedEvent (sender.get (),
+              PlayerAttackCountryDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
+      return false;
+    }
+
+    final String sourceCountryName = event.getSourceCountryName ();
+    final Id sourceCountry = countryMapGraphModel.countryWith (sourceCountryName);
+    final String targetCountryName = event.getTargetCounryName ();
+    final Id targetCountry = countryMapGraphModel.countryWith (targetCountryName);
+    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
+
+    if (!countryMapGraphModel.existsCountryWith (sourceCountryName))
+    {
+      eventBus.publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket,
+              PlayerAttackCountryDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
+      return false;
+    }
+
+    if (!countryMapGraphModel.existsCountryWith (targetCountryName))
+    {
+      eventBus.publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket,
+              PlayerAttackCountryDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
+      return false;
+    }
+
+    final int dieCount = event.getAttackerDieCount ();
+
+    final DataResult <AttackOrder, PlayerAttackCountryDeniedEvent.Reason> result;
+    result = battleModel.newPlayerAttackOrder (currentPlayer, sourceCountry, targetCountry, dieCount, playMapModel);
+    if (result.failed ())
+    {
+      eventBus.publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
+      return false;
+    }
+
+    // store pending attack order id
+    turnDataCache.put (CacheKey.BATTLE_PENDING_ATTACK_ORDER, result.getReturnValue ());
+
+    final PlayerPacket defendingPlayer = playerModel.playerPacketWith (countryOwnerModel.ownerOf (targetCountry));
+    final BattleActor attacker = new DefaultBattleActor (currentPlayer, sourceCountry, dieCount);
+    turnDataCache.put (CacheKey.BATTLE_ATTACKER_DATA, attacker);
+
+    // send out request event to defender
+    eventBus.publish (new PlayerDefendCountryRequestEvent (defendingPlayer, targetCountryPacket,
+            BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
+    return true;
+  }
+
+  @StateMachineCondition
+  public boolean verifyPlayerEndAttackPhaseRequest (final PlayerEndAttackPhaseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent ())
+    {
+      log.warn ("No registered sender for event [{}].", event);
+      return false;
+    }
+
+    if (!currentPlayer.equals (sender.get ()))
+    {
+      eventBus.publish (new PlayerEndAttackPhaseDeniedEvent (currentPlayer,
+              PlayerEndAttackPhaseDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
+      return false;
+    }
+
+    eventBus.publish (new PlayerEndAttackPhaseSuccessEvent (currentPlayer));
+
+    return true;
+  }
+
+  @StateMachineCondition
+  public boolean verifyPlayerDefendCountryResponseRequestEvent (final PlayerDefendCountryResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent ())
+    {
+      log.warn ("No registered sender for event [{}].", event);
+      return false;
+    }
+
+    // fail if cache values are not set; this would indicate a pretty serious bug in the state
+    // machine logic
+    checkCacheValues (CacheKey.BATTLE_PENDING_ATTACK_ORDER, CacheKey.BATTLE_ATTACKER_DATA);
+
+    final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_PENDING_ATTACK_ORDER, AttackOrder.class);
+    final BattleActor attacker = turnDataCache.get (CacheKey.BATTLE_ATTACKER_DATA, BattleActor.class);
+    final Id defendingPlayerId = countryOwnerModel.ownerOf (attackOrder.getTargetCountry ());
+    final PlayerPacket defendingPlayer = playerModel.playerPacketWith (defendingPlayerId);
+    final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackOrder.getTargetCountry ());
+
+    if (!defendingPlayer.equals (sender.get ()))
+    {
+      log.warn ("Sender of event [{}] does not match registered defending player [{}].", sender.get (),
+                defendingPlayer);
+      return false;
+    }
+
+    final int dieCount = event.getDefenderDieCount ();
+    if (dieCount < rules.getMinAttackerDieCount (defendingCountry.getArmyCount ())
+            || dieCount > rules.getMaxAttackerDieCount (defendingCountry.getArmyCount ()))
+    {
+      eventBus.publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
+              PlayerDefendCountryResponseDeniedEvent.Reason.INVALID_DIE_COUNT));
+      // re-publish request event on failure
+      eventBus.publish (new PlayerDefendCountryRequestEvent (defendingPlayer, defendingCountry,
+              BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
+      return false;
+    }
+
+    eventBus.publish (new PlayerDefendCountryResponseSuccessEvent (defendingPlayer, defendingCountry, dieCount,
+            BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
+
+    final BattleActor defender = new DefaultBattleActor (defendingPlayerId, attackOrder.getTargetCountry (), dieCount);
+    turnDataCache.put (CacheKey.BATTLE_DEFENDER_DATA, defender);
+
+    return true;
+  }
+
+  @StateMachineAction
+  public void generateBattleResult ()
+  {
+    checkCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
+                      CacheKey.BATTLE_PENDING_ATTACK_ORDER);
+
+    final BattleActor attacker = turnDataCache.get (CacheKey.BATTLE_ATTACKER_DATA, BattleActor.class);
+    final BattleActor defender = turnDataCache.get (CacheKey.BATTLE_DEFENDER_DATA, BattleActor.class);
+    // create packet types for passing information to log message
+    final BattleActorPacket attackerPacket = BattlePackets.from (attacker, playerModel, countryMapGraphModel);
+    final BattleActorPacket defenderPacket = BattlePackets.from (defender, playerModel, countryMapGraphModel);
+
+    log.info ("Processing battle: Attacker: [{}] | Defender: [{}]", attackerPacket, defenderPacket);
+
+    final int initialAttackerArmyCount = countryArmyModel.getArmyCountFor (attacker.getCountryId ());
+    final int initialDefenderAmryCount = countryArmyModel.getArmyCountFor (defender.getCountryId ());
+
+    final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_PENDING_ATTACK_ORDER, AttackOrder.class);
+    final BattleResult result = battleModel.generateResultFor (attackOrder, defender.getDieCount (), playerModel,
+                                                               playMapModel);
+    log.trace ("Battle result: {}", result);
+
+    final int newAttackerArmyCount = countryArmyModel.getArmyCountFor (result.getAttacker ().getCountryId ());
+    final int newDefenderArmyCount = countryArmyModel.getArmyCountFor (result.getDefender ().getCountryId ());
+    final int attackerArmyCountDelta = newAttackerArmyCount - initialAttackerArmyCount;
+    final int defenderArmyCountDelta = newDefenderArmyCount - initialDefenderAmryCount;
+    // publish notification events
+    if (attackerArmyCountDelta != 0)
+    {
+      final CountryPacket attackerCountry = countryMapGraphModel.countryPacketWith (attacker.getCountryId ());
+      eventBus.publish (new CountryArmiesChangedEvent (attackerCountry, attackerArmyCountDelta));
+    }
+    if (defenderArmyCountDelta != 0)
+    {
+      final CountryPacket defenderCountry = countryMapGraphModel.countryPacketWith (defender.getCountryId ());
+      eventBus.publish (new CountryArmiesChangedEvent (defenderCountry, defenderArmyCountDelta));
+    }
+    if (result.getDefendingCountryOwner ().isNot (defender.getPlayerId ()))
+    {
+      final CountryPacket defenderCountry = countryMapGraphModel.countryPacketWith (defender.getCountryId ());
+      final Id newOwner = countryOwnerModel.ownerOf (defender.getCountryId ());
+      eventBus.publish (new CountryOwnerChangedEvent (defenderCountry,
+              playerModel.playerPacketWith (defender.getPlayerId ()), playerModel.playerPacketWith (newOwner)));
+    }
+
+    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel);
+
+    clearCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
+                      CacheKey.BATTLE_PENDING_ATTACK_ORDER);
+
+    eventBus.publish (new PlayerAttackCountrySuccessEvent (resultPacket));
   }
 
   @StateMachineCondition
@@ -595,9 +847,52 @@ public final class GameModel
     return playerModel.playerLimitIsAtLeast (limit);
   }
 
-  public PlayerPacket getCurrentPlayer ()
+  public PlayerPacket getCurrentPlayerPacket ()
   {
     return playerModel.playerPacketWith (playerTurnModel.getTurnOrder ());
+  }
+
+  public Id getCurrentPlayerId ()
+  {
+    return playerModel.playerWith (playerTurnModel.getTurnOrder ());
+  }
+
+  public void dumpDataCacheToLog ()
+  {
+    log.debug ("Turn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getTurn (), getCurrentPlayerId (),
+               turnDataCache);
+  }
+
+  /**
+   * Checks that the given keys have set values in the turn data cache. An exception is thrown if any of the given keys
+   * are not set.
+   */
+  private void checkCacheValues (final CacheKey... keys)
+  {
+    assert keys != null;
+
+    for (final CacheKey key : keys)
+    {
+      if (turnDataCache.isNotSet (key))
+      {
+        Exceptions.throwIllegalState ("No value for {} set in turn data cache.", key);
+      }
+    }
+  }
+
+  private void clearCacheValues (final CacheKey... keys)
+  {
+    assert keys != null;
+
+    for (final CacheKey key : keys)
+    {
+      if (turnDataCache.isNotSet (key))
+      {
+        log.warn ("Cannot clear value for {} from turn data cache; no value currently set.", key);
+        continue;
+      }
+      turnDataCache.clear (key);
+    }
   }
 
   private static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
@@ -627,11 +922,12 @@ public final class GameModel
     private PlayerModel playerModel;
     private CardModel cardModel;
     private PlayerTurnModel playerTurnModel;
+    private BattleModel battleModel;
     private MBassador <Event> eventBus = EventBusFactory.create ();
 
     public GameModel build ()
     {
-      return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, gameRules, eventBus);
+      return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules, eventBus);
     }
 
     public Builder playMapModel (final PlayMapModel playMapModel)
@@ -666,6 +962,14 @@ public final class GameModel
       return this;
     }
 
+    public Builder battleModel (final BattleModel battleModel)
+    {
+      Arguments.checkIsNotNull (battleModel, "battleModel");
+
+      this.battleModel = battleModel;
+      return this;
+    }
+
     public Builder eventBus (final MBassador <Event> eventBus)
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -690,6 +994,7 @@ public final class GameModel
       playerModel = new DefaultPlayerModel (gameRules);
       cardModel = new DefaultCardModel (gameRules, ImmutableSet.<Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
+      battleModel = new DefaultBattleModel (gameRules);
     }
   }
 }
