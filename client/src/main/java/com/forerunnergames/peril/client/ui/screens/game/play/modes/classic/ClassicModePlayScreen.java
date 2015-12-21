@@ -641,8 +641,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
 
       // TODO Production: Remove
-      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (destinationCountryName, deltaArmies),
-              deltaArmies));
+      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
 
       // TODO: Production: Publish event (OccupyCountryRequestEvent?)
     }
@@ -681,8 +680,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
 
       // TODO Production: Remove
-      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (destinationCountryName, deltaArmies),
-              deltaArmies));
+      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
 
       // TODO: Production: Publish event (OccupyCountryRequestEvent?)
     }
@@ -743,14 +741,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       // TODO Production: Remove
       if (attackingCountryDeltaArmies != 0)
       {
-        final CountryPacket attackingCountry = DebugPackets.from (attackingCountryName, attackingCountryDeltaArmies);
+        final CountryPacket attackingCountry = DebugPackets.from (attackingCountryName);
         eventBus.publish (new CountryArmiesChangedEvent (attackingCountry, attackingCountryDeltaArmies));
       }
 
       // TODO Production: Remove
       if (defendingCountryDeltaArmies != 0)
       {
-        final CountryPacket defendingCountry = DebugPackets.from (defendingCountryName, defendingCountryDeltaArmies);
+        final CountryPacket defendingCountry = DebugPackets.from (defendingCountryName);
         eventBus.publish (new CountryArmiesChangedEvent (defendingCountry, defendingCountryDeltaArmies));
       }
 
@@ -887,13 +885,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       playBattleEffects (attackingCountryDeltaArmies, defendingCountryDeltaArmies);
 
       // TODO Production: Remove
-      final CountryPacket attackingCountryPacket = DebugPackets.from (attackingCountryName,
-                                                                      attackingCountryDeltaArmies);
+      final CountryPacket attackingCountryPacket = DebugPackets.from (attackingCountryName);
       eventBus.publish (new CountryArmiesChangedEvent (attackingCountryPacket, attackingCountryDeltaArmies));
 
       // TODO Production: Remove
-      final CountryPacket defendingCountryPacket = DebugPackets.from (defendingCountryName,
-                                                                      defendingCountryDeltaArmies);
+      final CountryPacket defendingCountryPacket = DebugPackets.from (defendingCountryName);
       eventBus.publish (new CountryArmiesChangedEvent (defendingCountryPacket, defendingCountryDeltaArmies));
 
       // TODO Production: Remove

@@ -2,6 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debu
 
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultCountryPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
 import com.google.common.collect.Maps;
@@ -15,11 +16,16 @@ public final class DebugPackets
 
   public static CountryPacket from (final String countryName, final int armyCount)
   {
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNegative (armyCount, "armyCount");
+
     return new DefaultCountryPacket (idFor (countryName), countryName, armyCount);
   }
 
   public static CountryPacket from (final String countryName)
   {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
     return from (countryName, 0);
   }
 
