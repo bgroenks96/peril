@@ -24,8 +24,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.engio.mbassy.bus.MBassador;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DedicatedGameSession implements TestSession
 {
+  private static final Logger log = LoggerFactory.getLogger (DedicatedGameSession.class);
   public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
   private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
           NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
@@ -60,6 +64,7 @@ public class DedicatedGameSession implements TestSession
   @Override
   public void shutDown ()
   {
+    log.info ("Shutting down server application [{}:{}]", serverAddress, serverPort);
     clientPool.disposeAll ();
     serverApplication.shutDown ();
     portPool.releasePort (serverPort);
@@ -105,11 +110,13 @@ public class DedicatedGameSession implements TestSession
     stateMachine = CoreFactory.createGameStateMachine (config);
     serverApplication = ServerFactory.createTestServer (eventBus, GameServerType.DEDICATED, gameRules, stateMachine,
                                                         serverAddress, serverPort);
+    log.trace ("Starting server application [{}] on port {}", serverAddress, serverPort);
     serverApplication.start ();
   }
 
   private void initializeClients ()
   {
+    log.trace ("Connecting {} clients to server [{}]", gameRules.getPlayerLimit (), serverPort);
     clientPool.connectNew (externalAddressResolver.resolveIp (), serverPort, gameRules.getPlayerLimit ());
   }
 }

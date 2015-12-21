@@ -1,7 +1,5 @@
 package com.forerunnergames.peril.integration.server;
 
-import com.esotericsoftware.minlog.Log;
-
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -24,8 +22,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TestClient extends AbstractClientController
 {
+  private static final Logger log = LoggerFactory.getLogger (TestClient.class);
   private static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;
   private static final int DEFAULT_WAIT_TIMEOUT_MS = 6000;
   private static final int DEFAULT_MAX_ATTEMPTS = 2;
@@ -77,14 +79,18 @@ public class TestClient extends AbstractClientController
           while (keepAlive.get ())
           {
             final Event next = inboundEventQueue.poll ();
+            if (next == null)
+            {
+              Thread.sleep (10);
+              continue;
+            }
+            log.debug ("Event received [{}] | type expected: {}", next, type);
             if (type.isInstance (next)) exchanger.exchange (type.cast (next));
-            Thread.yield ();
-            Thread.sleep (5);
           }
         }
         catch (final InterruptedException e)
         {
-          Log.warn ("Listener thread timed out on exchange.");
+          log.warn ("Listener thread timed out on exchange.");
         }
       }
     });

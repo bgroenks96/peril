@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Core Functionality Integration Tests (Standalone)">
+<suite name="Core Functionality Integration Tests (Standalone)" parallel="true">
   <test name="Game Integrated Test Run">
     <classes>
       <class name="com.forerunnergames.peril.integration.core.func.TestFactory" />

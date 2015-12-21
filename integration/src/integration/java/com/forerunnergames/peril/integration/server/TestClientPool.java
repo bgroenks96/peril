@@ -41,6 +41,7 @@ public class TestClientPool
         final TestClient newClient = new TestClient (new KryonetClient ());
         newClient.initialize ();
         newClient.connect (serverAddress, serverPort);
+        log.debug ("Successfully connected client [{}]", newClient.getClientId ());
         clients.add (newClient);
         pendingOperationCount.decrementAndGet ();
       }
@@ -55,6 +56,7 @@ public class TestClientPool
 
     for (int i = 0; i < count; i++)
     {
+      log.debug ("Attempting to connect client {} to {}:{}", i, serverAddress, serverPort);
       connectNew (serverAddress, serverPort);
     }
   }
@@ -117,7 +119,6 @@ public class TestClientPool
           catch (final Throwable t)
           {
             log.warn ("Executor caught error: ", t);
-            throw t;
           }
           finally
           {
