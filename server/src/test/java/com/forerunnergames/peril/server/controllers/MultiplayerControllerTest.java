@@ -71,15 +71,12 @@ import net.engio.mbassy.bus.MBassador;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class MultiplayerControllerTest
 {
@@ -117,7 +114,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSuccessfulHostClientJoinGameServer ()
   {
-    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
     final Remote host = createHost ();
     connect (host);
@@ -190,7 +187,6 @@ public class MultiplayerControllerTest
     final Remote client = createClient ();
     connect (client);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
@@ -217,14 +213,11 @@ public class MultiplayerControllerTest
   @Test
   public void testHostClientJoinDedicatedGameServerDenied ()
   {
-    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.DEDICATED).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.DEDICATED).build (eventBus);
 
     final Remote host = createHost ();
     connect (host);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
-            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
     communicateEventFromClient (new JoinGameServerRequestEvent (), host);
 
     final BaseMatcher <JoinGameServerDeniedEvent> deniedEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
@@ -250,7 +243,7 @@ public class MultiplayerControllerTest
   @Test
   public void testNonHostClientJoinGameServerAfterHostSuccessful ()
   {
-    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
     final Remote host = createHost ();
     connect (host);
@@ -293,8 +286,6 @@ public class MultiplayerControllerTest
     connect (host);
 
     final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (DEFAULT_TEST_GAME_SERVER_NAME,
-            GameServerType.HOST_AND_PLAY, mpc.getGameConfiguration (), serverConfig);
     communicateEventFromClient (new JoinGameServerRequestEvent (), host);
 
     final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
@@ -333,7 +324,6 @@ public class MultiplayerControllerTest
     final Remote client = createClientWith ("");
     connect (client);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
@@ -365,7 +355,6 @@ public class MultiplayerControllerTest
     final Remote client = createClientWith ("1.2.3.4");
     connect (client);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     eventBus.publish (new ClientCommunicationEvent (new JoinGameServerRequestEvent (), client));
 
     final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
@@ -636,26 +625,9 @@ public class MultiplayerControllerTest
     final PlayerPacket player = mock (PlayerPacket.class);
     when (player.getName ()).thenReturn (playerName);
 
-    // setup mock core-communicator
-    final Matcher <PlayerPacket> playerMatcher = new BaseMatcher <PlayerPacket> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        if (!(arg0 instanceof PlayerPacket)) return false;
-        return ((PlayerPacket) arg0).hasName (playerName);
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-
     final PlayerPacket updatedPlayerPacket = mock (PlayerPacket.class);
     when (updatedPlayerPacket.getName ()).thenReturn (playerName);
     // here's the updated part
-    final int newArmiesInHandValue = 5;
     when (updatedPlayerPacket.getArmiesInHand ()).thenReturn (5);
     mockCoreCommunicatorPlayersWith (updatedPlayerPacket);
 

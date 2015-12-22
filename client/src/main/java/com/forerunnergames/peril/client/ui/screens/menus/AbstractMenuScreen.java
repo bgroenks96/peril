@@ -237,11 +237,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     {
       return this == menuBarState;
     }
-
-    public boolean isNot (final MenuBarState menuBarState)
-    {
-      return !is (menuBarState);
-    }
   }
 
   @Override

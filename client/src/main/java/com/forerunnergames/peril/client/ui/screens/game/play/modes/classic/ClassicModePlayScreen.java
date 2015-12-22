@@ -62,7 +62,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AttackPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattleOutcome;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.DefendPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.OccupationPopup;
@@ -731,7 +730,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
       final String attackingCountryName = tempOutcome.getAttackingCountryName ();
       final String defendingCountryName = tempOutcome.getDefendingCountryName ();
-      final String attackingPlayerName = tempOutcome.getAttackingPlayerName ();
       final String defendingPlayerName = tempOutcome.getDefendingPlayerName ();
       final int attackingCountryDeltaArmies = tempOutcome.getAttackingCountryDeltaArmies ();
       final int defendingCountryDeltaArmies = tempOutcome.getDefendingCountryDeltaArmies ();
@@ -878,7 +876,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       final String attackingCountryName = tempOutcome.getAttackingCountryName ();
       final String defendingCountryName = tempOutcome.getDefendingCountryName ();
       final String attackingPlayerName = tempOutcome.getAttackingPlayerName ();
-      final String defendingPlayerName = tempOutcome.getDefendingPlayerName ();
       final int attackingCountryDeltaArmies = tempOutcome.getAttackingCountryDeltaArmies ();
       final int defendingCountryDeltaArmies = tempOutcome.getDefendingCountryDeltaArmies ();
 
