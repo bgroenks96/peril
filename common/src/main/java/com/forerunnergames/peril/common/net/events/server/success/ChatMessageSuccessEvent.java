@@ -11,7 +11,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageSuccessEvent implements ChatMessageEvent, ServerEvent, SuccessEvent
+public final class ChatMessageSuccessEvent implements ChatMessageEvent, SuccessEvent
 {
   private final ChatMessageEvent event;
 

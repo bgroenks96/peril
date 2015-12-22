@@ -32,7 +32,7 @@ public final class PlayerReinforceCountriesResponseDeniedEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | Reason: [{}]", this.getClass ().getSimpleName (), player.getName (),
+    return Strings.format ("{}: Player: [{}] | Reason: [{}]", getClass ().getSimpleName (), player.getName (),
                            reason.toString ());
   }
 }

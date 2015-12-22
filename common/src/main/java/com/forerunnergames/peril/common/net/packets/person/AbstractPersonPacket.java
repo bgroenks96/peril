@@ -49,6 +49,6 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   {
     super (null, null);
 
-    this.identity = null;
+    identity = null;
   }
 }

@@ -109,7 +109,7 @@ public interface PlayerModel
   @Override
   String toString ();
 
-  public static class PlayerJoinGameStatus implements Result.ReturnStatus <PlayerJoinGameDeniedEvent.Reason>
+  class PlayerJoinGameStatus implements Result.ReturnStatus <PlayerJoinGameDeniedEvent.Reason>
   {
     private final PlayerPacket player;
     private final Result <PlayerJoinGameDeniedEvent.Reason> result;

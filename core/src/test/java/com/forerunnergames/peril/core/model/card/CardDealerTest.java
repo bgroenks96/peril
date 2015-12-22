@@ -80,7 +80,7 @@ public abstract class CardDealerTest
     final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
     for (int i = 0; i < CardModelTest.DEFAULT_CARD_COUNT; i++)
     {
-      final int type = (i % 3) + 1; // cycle over values 1, 2, and 3.
+      final int type = i % 3 + 1; // cycle over values 1, 2, and 3.
       cardSetBuilder.add (CardFactory.create ("TestCard-" + i, CardType.fromValue (type)));
     }
     for (int i = 0; i < CardModelTest.DEFAULT_WILDCARD_COUNT; i++)

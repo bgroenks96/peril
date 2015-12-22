@@ -57,7 +57,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link com.badlogic.gdx.Input.Keys} keyCode of the key to get the repeat rate of. Must be a
+   *          The {@link Input.Keys} keyCode of the key to get the repeat rate of. Must be a
    *          NON-PRINTABLE key (See above).
    * @return The key repeat rate of the specified key in milliseconds. If no repeat rate was set for that specific key,
    *         then the default value will be returned, see {@link #DEFAULT_KEY_REPEAT_RATE_MILLIS}. The value will always
@@ -75,7 +75,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link com.badlogic.gdx.Input.Keys} keyCode of the key to get the repeat start delay of. Must be a
+   *          The {@link Input.Keys} keyCode of the key to get the repeat start delay of. Must be a
    *          NON-PRINTABLE key (See above).
    * @return The key repeat start delay of the specified key in milliseconds. If no repeat start delay was set for that
    *         specific key, then the default value will be returned, see {@link #DEFAULT_KEY_REPEAT_START_DELAY_MILLIS}.
@@ -93,7 +93,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link com.badlogic.gdx.Input.Keys} keyCode of the key to check. Must be a NON-PRINTABLE key (See
+   *          The {@link Input.Keys} keyCode of the key to check. Must be a NON-PRINTABLE key (See
    *          above).
    * @return The repeat status of the specified key.
    */
@@ -109,7 +109,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link com.badlogic.gdx.Input.Keys} keyCode of the key to repeat. Must be a NON-PRINTABLE key (See
+   *          The {@link Input.Keys} keyCode of the key to repeat. Must be a NON-PRINTABLE key (See
    *          above).
    * @param isEnabled
    *          Whether to enable or disable key repeat for the specified key.
@@ -134,7 +134,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link com.badlogic.gdx.Input.Keys} keyCode of the key to set the repeat rate of. Must be a
+   *          The {@link Input.Keys} keyCode of the key to set the repeat rate of. Must be a
    *          NON-PRINTABLE key (See above).
    * @param repeatRateMillis
    *          The repeat rate in milliseconds, must be greater than 0.
@@ -152,7 +152,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link com.badlogic.gdx.Input.Keys} keyCode of the key to set the repeat start delay of. Must be a
+   *          The {@link Input.Keys} keyCode of the key to set the repeat start delay of. Must be a
    *          NON-PRINTABLE key (See above).
    * @param repeatStartDelayMillis
    *          The repeat start delay in milliseconds, must be non-negative.

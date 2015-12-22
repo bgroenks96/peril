@@ -40,7 +40,7 @@ public class CountryOwnerModelTest
   @Before
   public void setup ()
   {
-    this.defaultTestCountries = generateTestCountries (TEST_COUNTRY_COUNT);
+    defaultTestCountries = generateTestCountries (TEST_COUNTRY_COUNT);
     countryMapGraphModel = CountryMapGraphModelTest.createCountryMapGraphModelWith (defaultTestCountries);
   }
 

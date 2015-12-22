@@ -4,7 +4,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public interface PlayerSuccessEvent extends SuccessEvent, ServerEvent
+public interface PlayerSuccessEvent extends SuccessEvent
 {
   PlayerPacket getPlayer ();
 }

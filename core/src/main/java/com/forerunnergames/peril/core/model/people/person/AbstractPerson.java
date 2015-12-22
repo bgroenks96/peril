@@ -7,7 +7,7 @@ import com.forerunnergames.tools.common.assets.AbstractAsset;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractPerson extends AbstractAsset implements Person, Author
+public abstract class AbstractPerson extends AbstractAsset implements Person
 {
   private PersonIdentity identity = PersonIdentity.UNKNOWN;
 

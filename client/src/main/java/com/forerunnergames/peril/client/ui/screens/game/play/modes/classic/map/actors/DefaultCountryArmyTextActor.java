@@ -151,7 +151,7 @@ public class DefaultCountryArmyTextActor implements CountryArmyTextActor
   private final class BitmapFontActor extends Actor
   {
     private BitmapFont font;
-    private GlyphLayout layout;
+    private final GlyphLayout layout;
 
     BitmapFontActor (final BitmapFont font)
     {

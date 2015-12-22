@@ -116,6 +116,7 @@ public final class LocalGameServerCreator implements GameServerCreator
 
     new Thread (new Runnable ()
     {
+      @Override
       public void run ()
       {
         final Scanner scanner = new Scanner (inputStream);

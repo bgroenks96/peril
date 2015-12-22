@@ -4,5 +4,5 @@ public enum TurnPhase
 {
   REINFORCE,
   ATTACK,
-  FORTIFY;
+  FORTIFY
 }

@@ -53,6 +53,6 @@ public final class DefaultCountryPacket extends AbstractTerritoryPacket implemen
   {
     super (null, null);
 
-    this.armyCount = 0;
+    armyCount = 0;
   }
 }

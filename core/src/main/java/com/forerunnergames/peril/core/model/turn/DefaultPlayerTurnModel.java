@@ -76,7 +76,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
     Arguments.checkIsNotNegative (newTurnCount, "newTurnCount");
     Arguments.checkUpperInclusiveBound (newTurnCount, PlayerTurnOrder.validCount (), "newTurnCount");
 
-    this.turnCount = newTurnCount;
+    turnCount = newTurnCount;
 
     if (newTurnCount >= turn) reset ();
   }

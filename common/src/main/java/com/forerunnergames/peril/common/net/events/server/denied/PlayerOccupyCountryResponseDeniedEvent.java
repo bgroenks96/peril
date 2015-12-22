@@ -14,7 +14,7 @@ public class PlayerOccupyCountryResponseDeniedEvent extends AbstractDeniedEvent 
   public enum Reason
   {
     DELTA_ARMY_COUNT_BELOW_MIN,
-    DELTA_ARMY_COUNT_EXCEEDS_MAX;
+    DELTA_ARMY_COUNT_EXCEEDS_MAX
   }
 
   @RequiredForNetworkSerialization

@@ -348,7 +348,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
   private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
   {
     return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
-            - (COUNTRY_BOX_WIDTH - (COUNTRY_BOX_INNER_PADDING * 2.0f) - countryImagePostLayout.getImageWidth ())));
+            - (COUNTRY_BOX_WIDTH - COUNTRY_BOX_INNER_PADDING * 2.0f - countryImagePostLayout.getImageWidth ())));
   }
 
   private static Image asImage (final CountryActor countryActor)

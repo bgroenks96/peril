@@ -22,7 +22,7 @@ public class PlayerEndAttackPhaseDeniedEvent extends AbstractDeniedEvent <Reason
 
   public enum Reason
   {
-    PLAYER_NOT_IN_TURN;
+    PLAYER_NOT_IN_TURN
   }
 
   @Override

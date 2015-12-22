@@ -846,7 +846,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     }
   }
 
-  private final class DefendPopupListener extends AbstractBattlePopupListener implements BattlePopupListener
+  private final class DefendPopupListener extends AbstractBattlePopupListener
   {
     @Override
     public void onBattle ()

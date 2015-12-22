@@ -19,7 +19,7 @@ public class PlayerAttackCountryDeniedEvent extends AbstractDeniedEvent <Reason>
     INSUFFICIENT_ARMY_COUNT,
     INVALID_DIE_COUNT,
     COUNTRIES_NOT_ADJACENT,
-    PLAYER_NOT_IN_TURN;
+    PLAYER_NOT_IN_TURN
   }
 
   public PlayerAttackCountryDeniedEvent (final PlayerPacket player, final Reason reason)

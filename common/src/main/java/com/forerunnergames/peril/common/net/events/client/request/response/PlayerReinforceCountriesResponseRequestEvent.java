@@ -35,11 +35,11 @@ public class PlayerReinforceCountriesResponseRequestEvent implements ResponseReq
   {
     return countryNamesToReinforcements;
   }
-  
+
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Trade-In: [{}] | Reinforcements: [{}]", this.getClass ().getSimpleName (), tradeIn, countryNamesToReinforcements);
+    return Strings.format ("{}: Trade-In: [{}] | Reinforcements: [{}]", getClass ().getSimpleName (), tradeIn, countryNamesToReinforcements);
   }
 
   @Override

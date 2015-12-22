@@ -36,7 +36,7 @@ abstract class AbstractDie implements Die
   private DieState currentState = Die.DEFAULT_STATE;
   private DieOutcome currentOutcome = Die.DEFAULT_OUTCOME;
   private boolean isSpinning = true;
-  private float spinThresholdTimeSeconds = GameSettings.DICE_SPINNING_INTERVAL_SECONDS;
+  private final float spinThresholdTimeSeconds = GameSettings.DICE_SPINNING_INTERVAL_SECONDS;
   private float currentSpinTimeSeconds = 0.0f;
   // @formatter:on
 

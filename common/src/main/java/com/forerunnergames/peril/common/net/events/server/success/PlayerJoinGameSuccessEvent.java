@@ -6,7 +6,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class PlayerJoinGameSuccessEvent implements ServerEvent, SuccessEvent
+public final class PlayerJoinGameSuccessEvent implements SuccessEvent
 {
   private final PlayerPacket player;
 

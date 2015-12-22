@@ -8,7 +8,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class CommandMessageSuccessEvent implements CommandMessageEvent, ServerEvent, SuccessEvent
+public final class CommandMessageSuccessEvent implements CommandMessageEvent, SuccessEvent
 {
   private final CommandMessageEvent event;
 

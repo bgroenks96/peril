@@ -20,7 +20,7 @@ public final class PlayerDefendCountryResponseSuccessEvent extends AbstractPlaye
   {
     super (defendingPlayer, defendingCountry, attackerData);
 
-    this.defenderData = new DefaultBattleActorPacket (defendingPlayer, defendingCountry, defenderDieCount);
+    defenderData = new DefaultBattleActorPacket (defendingPlayer, defendingCountry, defenderDieCount);
   }
 
   public BattleActorPacket getDefenderData ()

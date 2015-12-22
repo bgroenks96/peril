@@ -57,7 +57,7 @@ public final class KryonetRegistration
   // Set of all classes external to net package that must be registered
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
   private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet
-          .<Class <?>> of (
+          .of (
   // @formatter:off
           ArrayList.class,
           Classes.class,

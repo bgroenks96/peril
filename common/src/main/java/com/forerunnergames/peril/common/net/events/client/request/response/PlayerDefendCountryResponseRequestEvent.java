@@ -13,7 +13,7 @@ public class PlayerDefendCountryResponseRequestEvent implements ResponseRequestE
   {
     Arguments.checkIsNotNegative (numDiceToRoll, "numDiceToRoll");
 
-    this.defenderDieCount = numDiceToRoll;
+    defenderDieCount = numDiceToRoll;
   }
 
   public int getDefenderDieCount ()

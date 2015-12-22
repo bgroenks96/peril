@@ -29,7 +29,7 @@ public final class DefaultCard extends AbstractAsset implements Card
   {
     Arguments.checkIsNotNull (level, "level");
 
-    return this.type == level;
+    return type == level;
   }
 
   @Override

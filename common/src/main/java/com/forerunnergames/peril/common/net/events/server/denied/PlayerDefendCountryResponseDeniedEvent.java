@@ -27,6 +27,6 @@ public class PlayerDefendCountryResponseDeniedEvent extends AbstractDeniedEvent 
 
   public enum Reason
   {
-    INVALID_DIE_COUNT;
+    INVALID_DIE_COUNT
   }
 }

@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
 
-public final class JoinGameServerSuccessEvent implements ServerEvent, SuccessEvent
+public final class JoinGameServerSuccessEvent implements SuccessEvent
 {
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;

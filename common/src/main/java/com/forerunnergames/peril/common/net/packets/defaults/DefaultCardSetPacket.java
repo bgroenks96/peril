@@ -34,6 +34,6 @@ public class DefaultCardSetPacket implements CardSetPacket
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Cards: [{}]", this.getClass ().getSimpleName (), cards);
+    return Strings.format ("{}: Cards: [{}]", getClass ().getSimpleName (), cards);
   }
 }

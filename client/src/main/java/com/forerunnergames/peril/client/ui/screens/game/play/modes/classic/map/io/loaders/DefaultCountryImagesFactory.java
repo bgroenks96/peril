@@ -182,9 +182,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   private static <E extends Enum <E> & CountryImageState <E>> E createCountryImageStateFrom (final Class <E> countryImageStateClass,
                                                                                              final ImmutableList <String> countryAtlasRegionNameSegments)
   {
-    final E countryImageState = E
-            .valueOf (countryImageStateClass,
-                      countryAtlasRegionNameSegments.get (countryAtlasRegionNameSegments.size () - 1).toUpperCase ());
+    final E countryImageState = Enum.valueOf (countryImageStateClass, countryAtlasRegionNameSegments.get (countryAtlasRegionNameSegments.size () - 1).toUpperCase ());
 
     log.trace ("Created country image state [{}] from country atlas region name segments [{}]", countryImageState,
                countryAtlasRegionNameSegments);

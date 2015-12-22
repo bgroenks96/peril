@@ -44,7 +44,7 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultJoinGameServerHandler.class);
   private final MBassador <Event> eventBus;
-  private Set <PlayerPacket> players = new HashSet <> ();
+  private final Set <PlayerPacket> players = new HashSet <> ();
   @Nullable
   private String playerName = null;
   @Nullable

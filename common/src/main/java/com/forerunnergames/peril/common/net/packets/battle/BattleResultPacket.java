@@ -26,7 +26,7 @@ public interface BattleResultPacket
   /**
    * Network packet version of {@link com.forerunnergames.peril.core.game.DieOutcome}
    */
-  public enum DieOutcome
+  enum DieOutcome
   {
     WIN,
     LOSE,

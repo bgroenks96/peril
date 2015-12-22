@@ -7,7 +7,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
-public final class KickPlayerFromGameSuccessEvent implements KickEvent, ServerEvent, SuccessEvent
+public final class KickPlayerFromGameSuccessEvent implements KickEvent, SuccessEvent
 {
   private final KickEvent kickEvent;
 

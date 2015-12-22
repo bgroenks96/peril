@@ -118,7 +118,7 @@ public final class ClientPlayerMapping
       Arguments.checkIsNotNull (playerName, "playerName");
       Arguments.checkIsNotNull (client, "client");
 
-      this.message = Strings.format ("Player [{}] not found for client [{}].", playerName, client);
+      message = Strings.format ("Player [{}] not found for client [{}].", playerName, client);
     }
   }
 }
