@@ -72,6 +72,10 @@ public interface GameRules
 
   int getMaxDefenderDieCount (final int defendingCountryArmyCount);
 
+  int getMinOccupyArmyCount (final int attackingPlayerDieCount);
+
+  int getMaxOccupyArmyCount (final int attackingCountryArmyCount);
+
   DieOutcome determineAttackerOutcome (final DieFaceValue attackerDie, final DieFaceValue defenderDie);
 
   DieOutcome determineDefenderOutcome (final DieFaceValue defenderDie, final DieFaceValue attackerDie);

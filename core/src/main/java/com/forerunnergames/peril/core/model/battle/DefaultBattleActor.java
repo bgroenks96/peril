@@ -4,7 +4,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
-public class DefaultBattleActor implements BattleActor
+public final class DefaultBattleActor implements BattleActor
 {
   private final Id playerId;
   private final Id countryId;

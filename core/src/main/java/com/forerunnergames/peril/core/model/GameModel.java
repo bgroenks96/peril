@@ -8,12 +8,14 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCo
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndAttackPhaseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent;
@@ -29,12 +31,14 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerArm
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
@@ -760,23 +764,27 @@ public final class GameModel
     final int newDefenderArmyCount = countryArmyModel.getArmyCountFor (result.getDefender ().getCountryId ());
     final int attackerArmyCountDelta = newAttackerArmyCount - initialAttackerArmyCount;
     final int defenderArmyCountDelta = newDefenderArmyCount - initialDefenderAmryCount;
+    final CountryPacket attackerCountry = countryMapGraphModel.countryPacketWith (attacker.getCountryId ());
+    final CountryPacket defenderCountry = countryMapGraphModel.countryPacketWith (defender.getCountryId ());
     // publish notification events
     if (attackerArmyCountDelta != 0)
     {
-      final CountryPacket attackerCountry = countryMapGraphModel.countryPacketWith (attacker.getCountryId ());
       eventBus.publish (new CountryArmiesChangedEvent (attackerCountry, attackerArmyCountDelta));
     }
     if (defenderArmyCountDelta != 0)
     {
-      final CountryPacket defenderCountry = countryMapGraphModel.countryPacketWith (defender.getCountryId ());
       eventBus.publish (new CountryArmiesChangedEvent (defenderCountry, defenderArmyCountDelta));
     }
     if (result.getDefendingCountryOwner ().isNot (defender.getPlayerId ()))
     {
-      final CountryPacket defenderCountry = countryMapGraphModel.countryPacketWith (defender.getCountryId ());
       final Id newOwner = countryOwnerModel.ownerOf (defender.getCountryId ());
+      final PlayerPacket newOwnerPlayer = playerModel.playerPacketWith (newOwner);
+      // publish country owner change notification
       eventBus.publish (new CountryOwnerChangedEvent (defenderCountry,
-              playerModel.playerPacketWith (defender.getPlayerId ()), playerModel.playerPacketWith (newOwner)));
+              playerModel.playerPacketWith (defender.getPlayerId ()), newOwnerPlayer));
+      // publish occupation request event (this must occur before attack success event in order for the
+      // correct state transition to occur)
+      eventBus.publish (new PlayerOccupyCountryRequestEvent (newOwnerPlayer, attackerCountry, defenderCountry));
     }
 
     final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel);
@@ -784,7 +792,60 @@ public final class GameModel
     clearCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
                       CacheKey.BATTLE_PENDING_ATTACK_ORDER);
 
+    turnDataCache.put (CacheKey.OCCUPY_SOURCE_COUNTRY, attackerCountry);
+    turnDataCache.put (CacheKey.OCCUPY_DEST_COUNTRY, defenderCountry);
+    turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
+
     eventBus.publish (new PlayerAttackCountrySuccessEvent (resultPacket));
+  }
+
+  @StateMachineCondition
+  public boolean verifyPlayerOccupyCountryResponseRequestEvent (final PlayerOccupyCountryResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    checkCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_MIN_ARMY_COUNT);
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+
+    final CountryPacket sourceCountry = turnDataCache.get (CacheKey.OCCUPY_SOURCE_COUNTRY, CountryPacket.class);
+    final CountryPacket destCountry = turnDataCache.get (CacheKey.OCCUPY_DEST_COUNTRY, CountryPacket.class);
+    final int minDeltaArmyCount = turnDataCache.get (CacheKey.OCCUPY_MIN_ARMY_COUNT, int.class);
+    final int deltaArmyCount = event.getDeltaArmyCount ();
+
+    if (deltaArmyCount < minDeltaArmyCount)
+    {
+      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_BELOW_MIN));
+      eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      return false;
+    }
+
+    if (deltaArmyCount > rules.getMaxOccupyArmyCount (sourceCountry.getArmyCount ()))
+    {
+      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_EXCEEDS_MAX));
+      eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      return false;
+    }
+
+    final Id sourceCountryId = countryMapGraphModel.countryWith (sourceCountry.getName ());
+    final Id destCountryId = countryMapGraphModel.countryWith (destCountry.getName ());
+    countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
+    countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
+
+    final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
+    final CountryPacket updatedDestCountry = countryMapGraphModel.countryPacketWith (destCountryId);
+    eventBus.publish (new CountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
+    eventBus.publish (new CountryArmiesChangedEvent (updatedDestCountry, deltaArmyCount));
+    eventBus.publish (new PlayerOccupyCountryResponseSuccessEvent (player, updatedSourceCountry, updatedDestCountry,
+            deltaArmyCount));
+
+    clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_MIN_ARMY_COUNT);
+
+    return true;
   }
 
   @StateMachineCondition

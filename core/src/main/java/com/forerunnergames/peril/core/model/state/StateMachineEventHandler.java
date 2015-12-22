@@ -3,6 +3,8 @@ package com.forerunnergames.peril.core.model.state;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -10,6 +12,8 @@ import com.forerunnergames.peril.common.net.events.server.notification.Determine
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.model.GameModel;
@@ -103,7 +107,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onCreateGameEvent (final CreateGameEvent event)
+  public void onEvent (final CreateGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -113,7 +117,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onDestroyGameEvent (final DestroyGameEvent event)
+  public void onEvent (final DestroyGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -123,7 +127,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEndGameEvent (final EndGameEvent event)
+  public void onEvent (final EndGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -133,7 +137,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onDeterminePlayerTurnOrderCompleteEvent (final DeterminePlayerTurnOrderCompleteEvent event)
+  public void onEvent (final DeterminePlayerTurnOrderCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -143,7 +147,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onDistributeInitialArmiesCompleteEvent (final DistributeInitialArmiesCompleteEvent event)
+  public void onEvent (final DistributeInitialArmiesCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -153,7 +157,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onBeginManualCountrySelectionEvent (final BeginManualCountrySelectionEvent event)
+  public void onEvent (final BeginManualCountrySelectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -163,7 +167,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onRandomlyAssignPlayerCountriesEvent (final RandomlyAssignPlayerCountriesEvent event)
+  public void onEvent (final RandomlyAssignPlayerCountriesEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -173,7 +177,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerSelectCountryResponseRequestEvent (final PlayerSelectCountryResponseRequestEvent event)
+  public void onEvent (final PlayerSelectCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -183,7 +187,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerSelectCountryResponseSuccessEvent (final PlayerSelectCountryResponseSuccessEvent event)
+  public void onEvent (final PlayerSelectCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -193,7 +197,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerCountryAssignmentCompleteEvent (final PlayerCountryAssignmentCompleteEvent event)
+  public void onEvent (final PlayerCountryAssignmentCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -203,7 +207,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerReinforceCountriesResponseRequestEvent (final PlayerReinforceCountriesResponseRequestEvent event)
+  public void onEvent (final PlayerReinforceCountriesResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -213,7 +217,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerAttackCountryRequestEvent (final PlayerAttackCountryRequestEvent event)
+  public void onEvent (final PlayerAttackCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -223,7 +227,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerEndAttackPhaseRequestEvent (final PlayerEndAttackPhaseRequestEvent event)
+  public void onEvent (final PlayerEndAttackPhaseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -233,7 +237,47 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerJoinGameDeniedEvent (final PlayerJoinGameDeniedEvent event)
+  public void onEvent (final PlayerDefendCountryResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerDefendCountryResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerAttackCountrySuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerAttackCountrySuccessEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerOccupyCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerOccupyCountryRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerOccupyCountryResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerOccupyCountryResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerJoinGameDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -243,7 +287,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerJoinGameRequestEvent (final PlayerJoinGameRequestEvent event)
+  public void onEvent (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -253,7 +297,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
+  public void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -263,7 +307,7 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onPlayerLeaveGameEvent (final PlayerLeaveGameEvent event)
+  public void onEvent (final PlayerLeaveGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

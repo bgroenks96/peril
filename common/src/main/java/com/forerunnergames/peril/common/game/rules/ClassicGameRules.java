@@ -284,6 +284,22 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
+  public int getMinOccupyArmyCount (final int attackingPlayerDieCount)
+  {
+    Arguments.checkIsNotNegative (attackingPlayerDieCount, "attackingPlayerDieCount");
+
+    return attackingPlayerDieCount + 1;
+  }
+
+  @Override
+  public int getMaxOccupyArmyCount (final int attackingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
+
+    return attackingCountryArmyCount - 1;
+  }
+
+  @Override
   public DieOutcome determineAttackerOutcome (final DieFaceValue attackerDie, final DieFaceValue defenderDie)
   {
     Arguments.checkIsNotNull (attackerDie, "attackerDie");
