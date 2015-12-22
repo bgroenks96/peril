@@ -41,7 +41,6 @@ public final class LocalGameServerCreator implements GameServerCreator
     try
     {
       // @formatter:off
-      // TODO ProcessBuilder is unportable between operating systems?!
       serverProcess = new ProcessBuilder ("java",
                       "-jar",
                       "-ea", // TODO Production: Remove
