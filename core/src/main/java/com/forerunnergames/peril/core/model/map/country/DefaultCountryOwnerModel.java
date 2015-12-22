@@ -43,13 +43,13 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   @Override
   public boolean allCountriesAreUnowned ()
   {
-    return countryIdsToOwnerIds.size () == 0;
+    return countryIdsToOwnerIds.isEmpty ();
   }
 
   @Override
   public boolean hasAnyOwnedCountries ()
   {
-    return countryIdsToOwnerIds.size () > 0;
+    return !countryIdsToOwnerIds.isEmpty ();
   }
 
   @Override
