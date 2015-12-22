@@ -269,7 +269,7 @@ public final class EventBusHandler
       // final Optional <String> causeMessage = Optional.fromNullable (error.getCause ().getMessage ());
       // if (causeMessage.isPresent () && causeMessage.get ().contains (getClass ().getSimpleName ())) return;
 
-      final StringBuilder errorTraceBuilder = new StringBuilder (error.toString () + "\n");
+      final StringBuilder errorTraceBuilder = new StringBuilder (error + "\n");
       final Deque <Throwable> causeChain = new ArrayDeque <> ();
       addCause (errorTraceBuilder, error.getCause (), causeChain);
       fail (Strings.format ("{}: Error caught in EventBus:\n{}", getClass ().getSimpleName (),
@@ -284,7 +284,7 @@ public final class EventBusHandler
 
       if (cause == null) return;
 
-      errorTraceBuilder.append ("Cause: " + cause.toString () + "\n");
+      errorTraceBuilder.append ("Cause: " + cause + "\n");
       throwableChain.push (cause);
       final Optional <Throwable> nextCause = Optional.fromNullable (cause.getCause ());
       if (nextCause.isPresent () && !throwableChain.contains (nextCause.get ()))

@@ -173,8 +173,8 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
 
     countryNameStringBuilder.deleteCharAt (countryNameStringBuilder.lastIndexOf (" "));
 
-    log.trace ("Created country name [{}] from country atlas region name segments [{}]",
-               countryNameStringBuilder.toString (), countryAtlasRegionNameSegments);
+    log.trace ("Created country name [{}] from country atlas region name segments [{}]", countryNameStringBuilder,
+               countryAtlasRegionNameSegments);
 
     return countryNameStringBuilder.toString ();
   }
