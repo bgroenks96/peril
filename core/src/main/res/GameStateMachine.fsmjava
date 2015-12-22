@@ -71,6 +71,16 @@
           name="event"
           type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent" />
       </event>
+      <event id="onPlayerOccupyCountryRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent" />
+      </event>
+      <event id="onPlayerOccupyCountryResponseRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent" />
+      </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event" />
       </event>
@@ -189,6 +199,15 @@
                 <state name="GenerateBattleResult">
                   <onEntry action="gameModel.generateBattleResult()" />
                   <transition event="onPlayerAttackCountrySuccessEvent"
+                              nextState="WaitForPlayerAttackOrders" />
+                  <!-- Note: the occupation request event must be sent before the attack success event in order
+                       for the correct transition to occur -->
+                  <transition event="onPlayerOccupyCountryRequestEvent"
+                              nextState="WaitForPlayerToOccupyCountry" />
+                </state>
+                <state name="WaitForPlayerToOccupyCountry">
+                  <transition event="onPlayerOccupyCountryResponseRequestEvent"
+                              condition="gameModel.verifyPlayerOccupyCountryResponseRequestEvent(event)"
                               nextState="WaitForPlayerAttackOrders" />
                 </state>
               </state>
