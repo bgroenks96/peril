@@ -31,7 +31,7 @@
 
   "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
     "popup-message":       { "font": "dejaVu-16",  "fontColor": "white",      "background": null },
-    "loading-text":        { "font": "pirulen-22", "fontColor": "light-gray", "background": null }
+    "loading-text":        { "font": "pirulen-22", "fontColor": "light-gray", "background": null },
     "loading-status-text": { "font": "dejaVu-16",  "fontColor": "light-gray", "background": null }
   }
 }
