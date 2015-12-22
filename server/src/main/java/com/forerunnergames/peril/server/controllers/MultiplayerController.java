@@ -70,8 +70,8 @@ public final class MultiplayerController extends ControllerAdapter
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
-  private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
-  private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet<Remote> ());
+  private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <> ());
+  private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final GameServerConfiguration gameServerConfig;

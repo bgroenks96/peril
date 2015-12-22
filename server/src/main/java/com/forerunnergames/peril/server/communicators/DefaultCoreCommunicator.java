@@ -60,14 +60,14 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   @Override
   public <T extends PlayerRequestEvent> void publishPlayerRequestEvent (final PlayerPacket player, final T event)
   {
-    eventBus.publish (new DefaultInternalPlayerRequestEvent <T> (player, event));
+    eventBus.publish (new DefaultInternalPlayerRequestEvent <> (player, event));
   }
 
   @Override
   public <T extends ResponseRequestEvent> void publishPlayerResponseRequestEvent (final PlayerPacket player,
                                                                                   final T responseRequestEvent)
   {
-    eventBus.publish (new DefaultInternalPlayerRequestEvent <T> (player, responseRequestEvent));
+    eventBus.publish (new DefaultInternalPlayerRequestEvent <> (player, responseRequestEvent));
   }
 
   // --- response handlers --- //
