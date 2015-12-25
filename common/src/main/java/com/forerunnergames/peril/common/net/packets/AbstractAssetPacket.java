@@ -30,7 +30,7 @@ public abstract class AbstractAssetPacket implements AssetPacket
   {
     Arguments.checkIsNotNull (name, "name");
 
-    return name.equals (name);
+    return this.name.equals (name);
   }
 
   @Override
@@ -73,7 +73,7 @@ public abstract class AbstractAssetPacket implements AssetPacket
   public boolean equals (final Object obj)
   {
     if (this == obj) return true;
-    return obj instanceof AbstractAssetPacket && ((AbstractAssetPacket) obj).id == id;
+    return obj instanceof AbstractAssetPacket && ((AbstractAssetPacket) obj).id.equals (id);
   }
 
   @Override
