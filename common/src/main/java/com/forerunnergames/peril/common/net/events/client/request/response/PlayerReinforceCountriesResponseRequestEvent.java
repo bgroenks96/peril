@@ -26,6 +26,12 @@ public class PlayerReinforceCountriesResponseRequestEvent implements ResponseReq
     this.countryNamesToReinforcements = countryNamesToReinforcements;
   }
 
+  @Override
+  public Class <? extends ServerRequestEvent> getRequestType ()
+  {
+    return PlayerReinforceCountriesRequestEvent.class;
+  }
+
   public CardSetPacket getTradeIn ()
   {
     return tradeIn;
@@ -39,13 +45,8 @@ public class PlayerReinforceCountriesResponseRequestEvent implements ResponseReq
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Trade-In: [{}] | Reinforcements: [{}]", getClass ().getSimpleName (), tradeIn, countryNamesToReinforcements);
-  }
-
-  @Override
-  public Class <? extends ServerRequestEvent> getRequestType ()
-  {
-    return PlayerReinforceCountriesRequestEvent.class;
+    return Strings.format ("{}: Trade-In: [{}] | Reinforcements: [{}]", getClass ().getSimpleName (), tradeIn,
+                           countryNamesToReinforcements);
   }
 
   @RequiredForNetworkSerialization
