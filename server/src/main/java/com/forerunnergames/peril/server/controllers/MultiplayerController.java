@@ -164,24 +164,43 @@ public final class MultiplayerController extends ControllerAdapter
 
     final String playerName = event.getPlayerName ();
 
-    // if no client mapping is available, silently ignore success event
-    // this is to prevent failure under cases such as client disconnecting while join request is being processed
-    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
-
-    final Remote client = playerJoinGameRequestCache.get (playerName);
-
-    final PlayerPacket newPlayer = event.getPlayer ();
-    final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
-    if (oldPlayer.isPresent ())
+    // if no client mapping is available, silently ignore success event and tell core to remove this player
+    // this shouldn't happen, since this would imply that core processed a player join game request without
+    // server receiving one... so basically the result of a bug or a hack.
+    if (!playerJoinGameRequestCache.containsKey (playerName))
     {
-      // this generally shouldn't happen... but if it does, log a warning message
-      log.warn ("Overwrote previous player mapping for client [{}] | old player: [{}] | new player: [{}]", client,
-                oldPlayer.get (), newPlayer);
+      log.warn ("No client join game request in cache for player: {}. Player will be removed.", playerName);
+      coreCommunicator.notifyRemovePlayerFromGame (event.getPlayer ());
+      return;
     }
 
-    sendToAllPlayers (event);
+    // fetch and remove player name from request cache
+    final Remote client = playerJoinGameRequestCache.remove (playerName);
 
-    playerJoinGameRequestCache.remove (playerName);
+    final PlayerPacket newPlayer = event.getPlayer ();
+
+    // only add a player/client mapping if the client still exists in the game server
+    if (clientsInServer.contains (client))
+    {
+      final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
+      if (oldPlayer.isPresent ())
+      {
+        // this generally shouldn't happen... but if it does, log a warning message
+        log.warn ("Overwrote previous player mapping for client [{}] | old player: [{}] | new player: [{}]", client,
+                  oldPlayer.get (), newPlayer);
+      }
+    }
+    else
+    {
+      // this should cover the case where the client disconnected before the successful join game request was processed.
+      // core will be notified that the player has left. The subsequent PlayerLeaveGameEvent will be ignored since there
+      // will be no client mapping for the disconnected player.
+      log.warn ("Client [{}] for player [{}] is no longer connected to the server. Player will be removed.");
+      coreCommunicator.notifyRemovePlayerFromGame (event.getPlayer ());
+      return;
+    }
+
+    sendToAllPlayers (event); // send success event regardless of current client status
   }
 
   @Handler
