@@ -23,7 +23,7 @@ public class TestClientPool
 {
   private static final Logger log = LoggerFactory.getLogger (TestClientPool.class);
   private static final int MAX_THREADS = 2;
-  private final List <TestClient> clients = Collections.synchronizedList (new ArrayList <> ());
+  private final List <TestClient> clients = Collections.synchronizedList (new ArrayList <TestClient> ());
   private final ExecutorService clientThreadPool = Executors.newFixedThreadPool (MAX_THREADS);
   private final AtomicInteger pendingOperationCount = new AtomicInteger ();
 

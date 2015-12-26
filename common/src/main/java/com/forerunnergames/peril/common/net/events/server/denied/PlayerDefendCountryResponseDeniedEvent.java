@@ -2,12 +2,13 @@ package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerDefendCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
-        implements ResponseDeniedEvent <Reason>
+public final class PlayerDefendCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
+        implements PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerPacket player;
 
@@ -20,6 +21,7 @@ public class PlayerDefendCountryResponseDeniedEvent extends AbstractDeniedEvent 
     this.player = player;
   }
 
+  @Override
   public PlayerPacket getPlayer ()
   {
     return player;
@@ -28,5 +30,13 @@ public class PlayerDefendCountryResponseDeniedEvent extends AbstractDeniedEvent 
   public enum Reason
   {
     INVALID_DIE_COUNT
+  }
+
+  @RequiredForNetworkSerialization
+  private PlayerDefendCountryResponseDeniedEvent ()
+  {
+    super (null);
+
+    player = null;
   }
 }

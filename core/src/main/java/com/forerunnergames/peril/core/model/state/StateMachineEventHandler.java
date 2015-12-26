@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.model.state;
 
-import com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -13,7 +13,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.Distribut
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.model.GameModel;
@@ -217,23 +217,23 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerAttackCountryRequestEvent event)
+  public void onEvent (final PlayerAttackCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerAttackCountryRequestEvent (event);
+    context.onPlayerAttackCountryResponseRequestEvent (event);
   }
 
   @Handler
-  public void onEvent (final PlayerEndAttackPhaseRequestEvent event)
+  public void onEvent (final PlayerEndAttackPhaseResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerEndAttackPhaseRequestEvent (event);
+    context.onPlayerEndAttackPhaseResponseRequestEvent (event);
   }
 
   @Handler
@@ -247,13 +247,13 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerAttackCountrySuccessEvent event)
+  public void onEvent (final PlayerAttackCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerAttackCountrySuccessEvent (event);
+    context.onPlayerAttackCountryResponseSuccessEvent (event);
   }
 
   @Handler

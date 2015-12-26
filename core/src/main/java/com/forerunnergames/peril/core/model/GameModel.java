@@ -4,16 +4,15 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerAttackCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndAttackPhaseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
@@ -30,13 +29,14 @@ import com.forerunnergames.peril.common.net.events.server.notification.EndPlayer
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
@@ -583,6 +583,10 @@ public final class GameModel
 
     log.info ("Begin attack phase for player [{}].", player);
 
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+
+    eventBus.publish (new BeginAttackPhaseEvent (currentPlayer));
+
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
     for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (player))
     {
@@ -590,11 +594,11 @@ public final class GameModel
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
     }
 
-    eventBus.publish (new BeginAttackPhaseEvent (getCurrentPlayerPacket (), builder.build ()));
+    eventBus.publish (new PlayerAttackCountryRequestEvent (currentPlayer, builder.build ()));
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerAttackCountryRequest (final PlayerAttackCountryRequestEvent event)
+  public boolean verifyPlayerAttackOrder (final PlayerAttackCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -602,19 +606,6 @@ public final class GameModel
 
     final Id currentPlayer = getCurrentPlayerId ();
     final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
-
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
-    if (!sender.isPresent ())
-    {
-      log.warn ("No registered sender for event [{}].", event);
-      return false;
-    }
-    if (!currentPlayerPacket.equals (sender.get ()))
-    {
-      eventBus.publish (new PlayerAttackCountryDeniedEvent (sender.get (),
-              PlayerAttackCountryDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
-      return false;
-    }
 
     final String sourceCountryName = event.getSourceCountryName ();
     final Id sourceCountry = countryMapGraphModel.countryWith (sourceCountryName);
@@ -624,25 +615,25 @@ public final class GameModel
 
     if (!countryMapGraphModel.existsCountryWith (sourceCountryName))
     {
-      eventBus.publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket,
-              PlayerAttackCountryDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
+      eventBus.publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerAttackCountryResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryMapGraphModel.existsCountryWith (targetCountryName))
     {
-      eventBus.publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket,
-              PlayerAttackCountryDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
+      eventBus.publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerAttackCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     final int dieCount = event.getAttackerDieCount ();
 
-    final DataResult <AttackOrder, PlayerAttackCountryDeniedEvent.Reason> result;
+    final DataResult <AttackOrder, PlayerAttackCountryResponseDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackOrder (currentPlayer, sourceCountry, targetCountry, dieCount, playMapModel);
     if (result.failed ())
     {
-      eventBus.publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
+      eventBus.publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
       return false;
     }
 
@@ -660,28 +651,15 @@ public final class GameModel
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerEndAttackPhaseRequest (final PlayerEndAttackPhaseRequestEvent event)
+  public boolean verifyPlayerEndAttackPhase (final PlayerEndAttackPhaseResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
-    if (!sender.isPresent ())
-    {
-      log.warn ("No registered sender for event [{}].", event);
-      return false;
-    }
 
-    if (!currentPlayer.equals (sender.get ()))
-    {
-      eventBus.publish (new PlayerEndAttackPhaseDeniedEvent (currentPlayer,
-              PlayerEndAttackPhaseDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
-      return false;
-    }
-
-    eventBus.publish (new PlayerEndAttackPhaseSuccessEvent (currentPlayer));
+    eventBus.publish (new PlayerEndAttackPhaseResponseSuccessEvent (currentPlayer));
 
     return true;
   }
@@ -760,6 +738,7 @@ public final class GameModel
                                                                playMapModel);
     log.trace ("Battle result: {}", result);
 
+    // -- send notification and/or occupation request events -- //
     final int newAttackerArmyCount = countryArmyModel.getArmyCountFor (result.getAttacker ().getCountryId ());
     final int newDefenderArmyCount = countryArmyModel.getArmyCountFor (result.getDefender ().getCountryId ());
     final int attackerArmyCountDelta = newAttackerArmyCount - initialAttackerArmyCount;
@@ -787,8 +766,6 @@ public final class GameModel
       eventBus.publish (new PlayerOccupyCountryRequestEvent (newOwnerPlayer, attackerCountry, defenderCountry));
     }
 
-    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel);
-
     clearCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
                       CacheKey.BATTLE_PENDING_ATTACK_ORDER);
 
@@ -796,7 +773,8 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_DEST_COUNTRY, defenderCountry);
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
 
-    eventBus.publish (new PlayerAttackCountrySuccessEvent (resultPacket));
+    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel);
+    eventBus.publish (new PlayerAttackCountryResponseSuccessEvent (resultPacket));
   }
 
   @StateMachineCondition
@@ -817,7 +795,7 @@ public final class GameModel
 
     if (deltaArmyCount < minDeltaArmyCount)
     {
-      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (
+      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_BELOW_MIN));
       eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
@@ -825,7 +803,7 @@ public final class GameModel
 
     if (deltaArmyCount > rules.getMaxOccupyArmyCount (sourceCountry.getArmyCount ()))
     {
-      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (
+      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_EXCEEDS_MAX));
       eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;

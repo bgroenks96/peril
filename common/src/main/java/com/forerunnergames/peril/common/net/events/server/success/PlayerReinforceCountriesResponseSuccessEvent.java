@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent;
 
-public class PlayerReinforceCountriesResponseSuccessEvent implements ResponseSuccessEvent
+public class PlayerReinforceCountriesResponseSuccessEvent implements PlayerResponseSuccessEvent
 {
   private final PlayerPacket player;
 
@@ -16,6 +16,7 @@ public class PlayerReinforceCountriesResponseSuccessEvent implements ResponseSuc
     this.player = player;
   }
 
+  @Override
   public PlayerPacket getPlayer ()
   {
     return player;

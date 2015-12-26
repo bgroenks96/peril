@@ -1,16 +1,17 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerAttackCountrySuccessEvent implements PlayerSuccessEvent
+public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResponseSuccessEvent
 {
   private final BattleResultPacket result;
 
-  public PlayerAttackCountrySuccessEvent (final BattleResultPacket result)
+  public PlayerAttackCountryResponseSuccessEvent (final BattleResultPacket result)
   {
     Arguments.checkIsNotNull (result, "result");
 
@@ -46,5 +47,11 @@ public final class PlayerAttackCountrySuccessEvent implements PlayerSuccessEvent
   public CountryPacket getDefendingCountry ()
   {
     return result.getDefender ().getCountry ();
+  }
+
+  @RequiredForNetworkSerialization
+  private PlayerAttackCountryResponseSuccessEvent ()
+  {
+    result = null;
   }
 }
