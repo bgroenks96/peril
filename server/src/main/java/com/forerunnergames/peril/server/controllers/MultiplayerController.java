@@ -200,7 +200,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayers (event); // send success event regardless of current client status
+    sendToAllPlayers (event);
   }
 
   @Handler
@@ -242,6 +242,8 @@ public final class MultiplayerController extends ControllerAdapter
   public void onEvent (final PlayerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    if (event instanceof PlayerJoinGameSuccessEvent) return;
 
     log.trace ("Event received [{}]", event);
 
