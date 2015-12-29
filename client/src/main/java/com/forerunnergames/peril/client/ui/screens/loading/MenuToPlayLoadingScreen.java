@@ -55,14 +55,19 @@ import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.common.DeadMessage;
 import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
@@ -90,6 +95,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private final CreateGameServerListener createGameServerListener;
   private final ProgressBar progressBar;
   private final Popup errorPopup;
+  private final List <ServerEvent> incomingServerEvents = new ArrayList <> ();
   private boolean isLoading = false;
   @Nullable
   private GameServerConfiguration gameServerConfiguration = null;
@@ -552,6 +558,27 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     });
   }
 
+  // After having joined the game, server events start arriving intended for the play screen,
+  // while the play map is still loading on this screen (play screen not active yet - cannot receive events).
+  // Collect unhandled server events, which will be published after the play screen is active.
+  @Handler
+  void onEvent (final DeadMessage deadMessage)
+  {
+    Arguments.checkIsNotNull (deadMessage, "deadMessage");
+
+    if (!(deadMessage.getMessage () instanceof ServerEvent))
+    {
+      log.warn ("Not collecting dead event for play screen: [{}]", deadMessage.getMessage ());
+      return;
+    }
+
+    final ServerEvent event = (ServerEvent) deadMessage.getMessage ();
+
+    log.debug ("Collecting dead event for play screen: [{}]", event);
+
+    incomingServerEvents.add (event);
+  }
+
   private static void hideCursor ()
   {
     Gdx.graphics.setCursor (null);
@@ -603,11 +630,12 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private void goToPlayScreen ()
   {
-    if (gameServerConfiguration == null) throw new IllegalStateException (Strings
-            .format ("Cannot go to play screen because {} is null.", GameServerConfiguration.class.getSimpleName ()));
+    if (gameServerConfiguration == null) throw new IllegalStateException (
+            Strings.format ("Cannot go to play screen because {} is null.",
+                            GameServerConfiguration.class.getSimpleName ()));
 
-    if (clientConfiguration == null) throw new IllegalStateException (Strings
-            .format ("Cannot go to play screen because {} is null.", ClientConfiguration.class.getSimpleName ()));
+    if (clientConfiguration == null) throw new IllegalStateException (
+            Strings.format ("Cannot go to play screen because {} is null.", ClientConfiguration.class.getSimpleName ()));
 
     if (playersInGame == null) throw new IllegalStateException (
             Strings.format ("Cannot go to play screen because playersInGame is null.",
@@ -634,13 +662,20 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       }
       default:
       {
-        throw new UnsupportedOperationException (
-                Strings.format ("Unsupported {}: [{}].", GameMode.class.getSimpleName (),
-                                gameServerConfiguration.getGameMode ()));
+        throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].",
+                                                                 GameMode.class.getSimpleName (),
+                                                                 gameServerConfiguration.getGameMode ()));
       }
     }
 
+    // The play screen is now active & can therefore receive events.
+
     eventBus.publish (playGameEvent);
+
+    for (final ServerEvent event : incomingServerEvents)
+    {
+      eventBus.publish (event);
+    }
   }
 
   private void startLoading (final MapMetadata mapMetadata)
@@ -732,9 +767,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentLoadingProgressPercent = (playMapActorFactory
-            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
-            + assetManager.getProgressLoading ()) / 2.0f;
+    currentLoadingProgressPercent = (playMapActorFactory.getAssetLoadingProgressPercent (gameServerConfiguration
+            .getMapMetadata ()) + assetManager.getProgressLoading ()) / 2.0f;
   }
 
   private boolean loadingProgressIncreased ()
