@@ -636,6 +636,24 @@ public class MultiplayerControllerTest
     // TODO ... need some mechanism for polling player data from core/server
   }
 
+  // unit test for bug detailed in PERIL-100: https://forerunnergames.atlassian.net/browse/PERIL-100
+  @Test
+  public void testClientDisconnectAfterSendingPlayerJoinGameRequest ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final Remote client = joinClientToGameServer ();
+    final String playerName = "TestPlayer";
+    final PlayerPacket mockPlayerPacket = mock (PlayerPacket.class);
+    when (mockPlayerPacket.getName ()).thenReturn (playerName);
+    when (mockPlayerPacket.toString ()).thenReturn (playerName);
+    communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName), client);
+    // disconnect client
+    eventBus.publish (new ClientDisconnectionEvent (client));
+    assertFalse (mpc.isClientInServer (client));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket));
+    verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (mockPlayerPacket));
+  }
+
   // <<<<<<<<<<<< Test helper facilities >>>>>>>>>>>>>> //
 
   // convenience method for fetching a new MultiplayerControllerBuilder

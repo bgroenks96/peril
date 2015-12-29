@@ -153,6 +153,13 @@ public final class MultiplayerController extends ControllerAdapter
     return clientsToPlayers.clientFor (player).isPresent ();
   }
 
+  public boolean isClientInServer (final Remote client)
+  {
+    Arguments.checkIsNotNull (client, "client");
+
+    return clientsInServer.contains (client);
+  }
+
   // <<<<< inbound events from core module >>>>> //
 
   @Handler
@@ -195,7 +202,8 @@ public final class MultiplayerController extends ControllerAdapter
       // this should cover the case where the client disconnected before the successful join game request was processed.
       // core will be notified that the player has left. The subsequent PlayerLeaveGameEvent will be ignored since there
       // will be no client mapping for the disconnected player.
-      log.warn ("Client [{}] for player [{}] is no longer connected to the server. Player will be removed.");
+      log.warn ("Client [{}] for player [{}] is no longer connected to the server. Player will be removed.", client,
+                event.getPlayerName ());
       coreCommunicator.notifyRemovePlayerFromGame (event.getPlayer ());
       return;
     }
@@ -330,7 +338,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.info ("Client [{}] disconnected.", client);
 
-    Optional <PlayerPacket> playerQuery;
+    Optional <PlayerPacket> playerQuery = Optional.absent ();
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);
@@ -338,8 +346,6 @@ public final class MultiplayerController extends ControllerAdapter
     catch (final RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
-      remove (client);
-      return;
     }
 
     if (!playerQuery.isPresent ())
