@@ -118,8 +118,8 @@ project (":common") {
   targetCompatibility = projectTargetCompatibility
 
   dependencies {
-    compile ("com.forerunnergames.tools:common:1.0-SNAPSHOT")
-    compile ("com.forerunnergames.tools:net:1.0-SNAPSHOT")
+    compile ("com.forerunnergames.tools:fg-tools-common:1.0-SNAPSHOT")
+    compile ("com.forerunnergames.tools:fg-tools-net:1.0-SNAPSHOT")
     compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
       exclude module: "kryo"
     }
