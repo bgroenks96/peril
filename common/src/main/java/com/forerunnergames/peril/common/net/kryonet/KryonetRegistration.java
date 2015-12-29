@@ -47,18 +47,18 @@ import org.slf4j.LoggerFactory;
 
 public final class KryonetRegistration
 {
-  public static final ImmutableSet <Class <?>> CLASSES;
   /**
    * Kryonet registration class set
    */
+  public static final ImmutableSet <Class <?>> CLASSES;
   private static final Logger log = LoggerFactory.getLogger (KryonetRegistration.class);
   private static final String COMMON_NET_PACKAGE_NAME = "com.forerunnergames.peril.common.net";
-  // @formatter:on
   // Set of all classes external to net package that must be registered
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
-  private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet
-          .of (
+  // TODO Java 8: Remove @SuppressWarnings ("RedundantTypeArguments")
   // @formatter:off
+  @SuppressWarnings ("RedundantTypeArguments")
+  private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet.<Class <?>> of (
           ArrayList.class,
           Classes.class,
           DefaultClientConfiguration.class,
