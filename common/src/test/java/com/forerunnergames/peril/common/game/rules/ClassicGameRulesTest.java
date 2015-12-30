@@ -361,6 +361,36 @@ public class ClassicGameRulesTest
     assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.TYPE2, CardType.TYPE1, CardType.TYPE2)));
   }
 
+  public void testCalculateCountryReinforcementsMultipleOfThree ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertEquals (4, rules.calculateCountryReinforcements (12));
+  }
+
+  public void testCalculateCountryReinforcementsWithRemainder_v1 ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertEquals (4, rules.calculateCountryReinforcements (14));
+  }
+
+  public void testCalculateCountryReinforcementsWithRemainder_v2 ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertEquals (6, rules.calculateCountryReinforcements (20));
+  }
+
+  public void testCalculateCountryReinforcementsForOneCountryOwned ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertEquals (3, rules.calculateCountryReinforcements (1));
+  }
+
+  public void testCalculateCountryReinforcementsForFiveCountriesOwned ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+    assertEquals (3, rules.calculateCountryReinforcements (5));
+  }
+
   @Test
   public void testCalculateTradeInBonusReinforcementsZeroToFive ()
   {

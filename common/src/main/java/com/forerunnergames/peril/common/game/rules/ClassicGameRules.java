@@ -33,6 +33,7 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_TOTAL_ATTACKER_DIE_COUNT = 3;
   public static final int MIN_TOTAL_DEFENDER_DIE_COUNT = 1;
   public static final int MAX_TOTAL_DEFENDER_DIE_COUNT = 2;
+  private static final int MIN_REINFORCEMENT_COUNT = 3;
   private static final int CARD_TRADE_IN_COUNT = 3;
   private static final int MAX_CARDS_IN_HAND_REINFORCE_PHASE = 6;
   private static final int MAX_CARDS_IN_HAND_ATTACK_PHASE = 9;
@@ -365,9 +366,11 @@ public final class ClassicGameRules implements GameRules
   @Override
   public int calculateCountryReinforcements (final int ownedCountryCount)
   {
-    Arguments.checkIsNotNegative (ownedCountryCount, "ownedCountryCount");
+    Arguments.checkLowerExclusiveBound (ownedCountryCount, 0, "ownedCountryCount");
 
-    return (int) Math.floor (ownedCountryCount / 3.0f); // floor function included for clarity
+    final int reinforcementCount = (int) Math.floor (ownedCountryCount / 3.0f); // floor function included for clarity
+
+    return Math.max (reinforcementCount, MIN_REINFORCEMENT_COUNT);
   }
 
   // @formatter:off
