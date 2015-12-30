@@ -81,9 +81,10 @@ public final class StateMachineEventHandler
   public String getCurrentGameStateName ()
   {
     final GameStateMachineOperatingParallel operatingState = context.getGameStateMachineOperatingParallel ();
+    if (operatingState == null) throw new IllegalStateException ("State machine is not in operating state.");
     final GameStateMachineGameHandlerState current = operatingState.getGameStateMachineGameHandlerContext ()
             .getStateCurrent ();
-    if (current == null) throw new IllegalStateException ("State machine is no longer in main game state.");
+    if (current == null) throw new IllegalStateException ("State machine is not in main game state.");
     return current.getName ();
   }
 

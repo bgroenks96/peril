@@ -49,7 +49,7 @@ public class GameStateMachineSmokeTest
   {
     final StateMachineTest stateTest = new StateMachineTest (gameStateMachine, log);
     eventBus.publish (new CreateGameEvent ());
-    stateTest.checkStateIs ("WaitForGameToBegin");
+    stateTest.checkCurrentStateIs ("WaitForGameToBegin");
   }
 
   @Test (dependsOnMethods = "testCreateGame", timeOut = StateMachineTest.DEFAULT_TEST_TIMEOUT)

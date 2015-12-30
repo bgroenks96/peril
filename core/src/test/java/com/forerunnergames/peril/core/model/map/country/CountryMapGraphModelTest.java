@@ -5,8 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.tools.common.graph.DefaultGraphModel;
+import com.forerunnergames.tools.common.graph.GraphModel;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -130,6 +134,26 @@ public class CountryMapGraphModelTest
   public static CountryMapGraphModel createCountryMapGraphModelWith (final CountryFactory countries)
   {
     return createCountryMapGraphModelWith (countries.getCountries ());
+  }
+
+  public static CountryMapGraphModel createCountryMapGraphModelFrom (final GraphModel <String> countryNameGraph)
+  {
+    final DefaultGraphModel.Builder <Country> graphBuilder = DefaultGraphModel.builder ();
+    final Map <String, Country> namesToCountries = Maps.newHashMap ();
+    for (final String node : countryNameGraph)
+    {
+      namesToCountries.put (node, CountryFactory.create (node));
+    }
+    for (final String node : countryNameGraph)
+    {
+      final Country countryNode = namesToCountries.get (node);
+      for (final String adj : countryNameGraph.getAdjacentNodes (node))
+      {
+        final Country adjCountryNode = namesToCountries.get (adj);
+        graphBuilder.setAdjacent (countryNode, adjCountryNode);
+      }
+    }
+    return new CountryMapGraphModel (graphBuilder.build ());
   }
 
   static CountryMapGraphModel createCountryMapGraphModelWith (final ImmutableSet <Country> countries)

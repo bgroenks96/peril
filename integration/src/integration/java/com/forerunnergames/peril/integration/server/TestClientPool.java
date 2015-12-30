@@ -8,6 +8,7 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,11 +79,14 @@ public class TestClientPool
     }
   }
 
-  public <T> void waitForAllClientsToReceive (final Class <T> eventType)
+  /**
+   * @return set of clients that did not receive the event
+   */
+  public <T> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType)
   {
     Arguments.checkIsNotNull (eventType, "eventType");
 
-    waitForAllClientsToReceive (eventType, new ClientEventCallback <T> ()
+    return waitForAllClientsToReceive (eventType, new ClientEventCallback <T> ()
     {
       @Override
       public void onEventReceived (final Optional <T> event, final TestClient client)
@@ -98,10 +102,16 @@ public class TestClientPool
     });
   }
 
-  public <T> void waitForAllClientsToReceive (final Class <T> eventType, final ClientEventCallback <T> callback)
+  /**
+   * @return set of clients that did not receive the event
+   */
+  public <T> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType,
+                                                                   final ClientEventCallback <T> callback)
   {
     Arguments.checkIsNotNull (eventType, "eventType");
     Arguments.checkIsNotNull (callback, "callback");
+
+    final ImmutableSet.Builder <TestClient> failed = ImmutableSet.builder ();
 
     for (final TestClient client : clients)
     {
@@ -114,6 +124,7 @@ public class TestClientPool
           try
           {
             final Optional <T> event = client.waitForEventCommunication (eventType, false);
+            if (!event.isPresent ()) failed.add (client);
             callback.onEventReceived (event, client);
           }
           catch (final Throwable t)
@@ -128,6 +139,7 @@ public class TestClientPool
       });
     }
     waitForAllClients ();
+    return failed.build ();
   }
 
   public int indexOf (final TestClient client)

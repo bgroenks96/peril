@@ -7,8 +7,10 @@ import static org.junit.Assert.assertTrue;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -18,7 +20,7 @@ public class PlayerPacketTest
   private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
 
   @Test
-  public void testTwoCommonPlayerPlayerPacketsAreEqual ()
+  public void testTwoCommonPlayerPacketsAreEqual ()
   {
     final Player player = PlayerFactory.create ("TestPlayer-1");
 
@@ -29,7 +31,48 @@ public class PlayerPacketTest
   }
 
   @Test
-  public void testTwoDifferentPlayerPlayerPacketsAreNotEqual ()
+  public void testTwoCommonPlayerPacketsInHashSet ()
+  {
+    final Player player = PlayerFactory.create ("TestPlayer-1");
+
+    final PlayerPacket packet0 = PlayerPackets.from (player);
+    final PlayerPacket packet1 = PlayerPackets.from (player);
+
+    final Set <PlayerPacket> set = Sets.newHashSet (packet0);
+
+    assertTrue (set.contains (packet0));
+    assertTrue (set.contains (packet1));
+  }
+
+  @Test
+  public void testTwoCommonPlayerPacketsDifferentAttribsAreEqual ()
+  {
+    final Player player = PlayerFactory.create ("TestPlayer-1");
+
+    final PlayerPacket packet0 = PlayerPackets.from (player);
+    player.setTurnOrder (PlayerTurnOrder.TENTH);
+    final PlayerPacket packet1 = PlayerPackets.from (player);
+
+    assertEquals (packet0, packet1);
+  }
+
+  @Test
+  public void testTwoCommonPlayerPacketsDifferentAttribsInHashSet ()
+  {
+    final Player player = PlayerFactory.create ("TestPlayer-1");
+
+    final PlayerPacket packet0 = PlayerPackets.from (player);
+    player.setTurnOrder (PlayerTurnOrder.TENTH);
+    final PlayerPacket packet1 = PlayerPackets.from (player);
+
+    final Set <PlayerPacket> set = Sets.newHashSet (packet0);
+
+    assertTrue (set.contains (packet0));
+    assertTrue (set.contains (packet1));
+  }
+
+  @Test
+  public void testTwoDifferentPlayerPacketsAreNotEqual ()
   {
     final Player player0 = PlayerFactory.builder ("TestPlayer-0").build ();
     final Player player1 = PlayerFactory.builder ("TestPlayer-1").build ();
@@ -41,7 +84,7 @@ public class PlayerPacketTest
   }
 
   @Test
-  public void testManyDifferentPlayerPlayerPacketsAreNotEqual ()
+  public void testManyDifferentPlayerPacketsAreNotEqual ()
   {
     final ImmutableMap.Builder <PlayerPacket, Player> mapBuilder = ImmutableMap.builder ();
     final int n = SAMPLE_SIZE_MANY;

@@ -19,8 +19,7 @@ public class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent 
     ALREADY_OWNER_OF_TARGET_COUNTRY,
     INSUFFICIENT_ARMY_COUNT,
     INVALID_DIE_COUNT,
-    COUNTRIES_NOT_ADJACENT,
-    PLAYER_NOT_IN_TURN
+    COUNTRIES_NOT_ADJACENT;
   }
 
   public PlayerAttackCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)

@@ -4,7 +4,6 @@ import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
@@ -67,7 +66,7 @@ public final class DefaultBattleModel implements BattleModel
     for (final Id countryId : adjacentCountries)
     {
       final CountryPacket country = countryMapGraphModel.countryPacketWith (countryId);
-      if (countryOwnerModel.ownerOf (sourceCountry).isNot (owner)) validAdjacentTargets.add (country);
+      if (countryOwnerModel.ownerOf (countryId).isNot (owner)) validAdjacentTargets.add (country);
     }
 
     return validAdjacentTargets.build ();
@@ -118,7 +117,7 @@ public final class DefaultBattleModel implements BattleModel
       return DataResult.failureNoData (Reason.INVALID_DIE_COUNT);
     }
 
-    final AttackOrder attackOrder = new AttackOrder (playerId, sourceCountry, targetCountry, dieCount);
+    final AttackOrder attackOrder = new DefaultAttackOrder (playerId, sourceCountry, targetCountry, dieCount);
     pendingAttackOrders.add (attackOrder);
 
     return DataResult.success (attackOrder);
@@ -155,8 +154,9 @@ public final class DefaultBattleModel implements BattleModel
             .orderedBy (DieFaceValue.DESCENDING_ORDER);
     final ImmutableSortedMap.Builder <DieFaceValue, DieOutcome> defenderRollResults = ImmutableSortedMap
             .orderedBy (DieFaceValue.DESCENDING_ORDER);
+    final int minDieCount = Math.min (attackerRoll.size (), defenderRoll.size ());
     boolean battleFinished = false;
-    for (int i = 0; i < defenderRoll.size (); i++)
+    for (int i = 0; i < minDieCount; i++)
     {
       final DieFaceValue attackerDieValue = attackerRoll.get (i);
       final DieFaceValue defenderDieValue = defenderRoll.get (i);
@@ -167,8 +167,7 @@ public final class DefaultBattleModel implements BattleModel
       // i.e. if both parties have not yet depleted all available armies
       if (attackerOutcome == DieOutcome.LOSE && !battleFinished)
       {
-        final Result <?> result;
-        result = countryArmyModel.requestToRemoveArmiesFromCountry (attackerCountry, 1);
+        final Result <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (attackerCountry, 1);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to remove army from attacking country [id={}] | Reason: {}",
@@ -178,8 +177,7 @@ public final class DefaultBattleModel implements BattleModel
 
       if (defenderOutcome == DieOutcome.LOSE && !battleFinished)
       {
-        final Result <CountryArmyChangeDeniedEvent.Reason> result;
-        result = countryArmyModel.requestToRemoveArmiesFromCountry (defenderCountry, 1);
+        final Result <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (defenderCountry, 1);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to remove army from defending country [id={}] | Reason: {}",

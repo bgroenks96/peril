@@ -22,7 +22,7 @@ public class Providers
 {
   private static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
   private static final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-          NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
+          NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
   private static final NetworkPortPool portPool = NetworkPortPool.getInstance ();
 
   @DataProvider (name = "environmentProvider", parallel = true)

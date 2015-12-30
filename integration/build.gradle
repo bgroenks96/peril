@@ -38,5 +38,5 @@ def getSuitesToRun() {
 test.testLogging.showStandardStreams = true;
 
 eclipse.project {
-  name = appName + "-core"
+  name = appName + "-integration"
 }

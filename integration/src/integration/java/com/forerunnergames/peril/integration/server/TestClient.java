@@ -84,8 +84,13 @@ public class TestClient extends AbstractClientController
               Thread.sleep (10);
               continue;
             }
-            log.debug ("Event received [{}] | type expected: {}", next, type);
-            if (type.isInstance (next)) exchanger.exchange (type.cast (next));
+            log.debug ("[{}] Event received: Type: {} | Expected: {}", this, next.getClass (), type);
+            log.trace ("[{}] Event data: [{}]", this, next);
+            if (type.isInstance (next))
+            {
+              exchanger.exchange (type.cast (next));
+              keepAlive.set (false);
+            }
           }
         }
         catch (final InterruptedException e)

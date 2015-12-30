@@ -53,6 +53,7 @@ public class ServerMultiplayerControllerSmokeTest
   @Test
   public void testConnectToServer ()
   {
+    log.debug ("Attempting to connect to server at: {}:{}", serverAddr, serverPort);
     assertTrue (client.connect (serverAddr, serverPort).isSuccessful ());
   }
 

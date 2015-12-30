@@ -46,7 +46,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
-    if (country.getArmyCount () - armyCount > rules.getMinArmiesOnCountry ())
+    if (country.getArmyCount () - armyCount < rules.getMinArmiesOnCountry ())
     {
       return Result.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
     }
