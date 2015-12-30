@@ -1,10 +1,9 @@
 package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.game.DieFaceValue;
-import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.id.Id;
 
-import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSet;
 
 public interface BattleResult
 {
@@ -18,7 +17,7 @@ public interface BattleResult
    */
   Id getDefendingCountryOwner ();
 
-  ImmutableSortedMap <DieFaceValue, DieOutcome> getAttackerRollResults ();
+  ImmutableSet <DieRoll> getAttackerRollResults ();
 
-  ImmutableSortedMap <DieFaceValue, DieOutcome> getDefenderRollResults ();
+  ImmutableSet <DieRoll> getDefenderRollResults ();
 }

@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model.battle;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -22,7 +23,6 @@ import com.forerunnergames.tools.common.id.Id;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
@@ -145,15 +145,12 @@ public final class DefaultBattleModel implements BattleModel
 
     // assertion sanity checks
     assert countryArmyModel.armyCountIsAtLeast (rules.getMinArmiesOnCountryForAttack (), attackerCountry);
-    assert attackOrder.getDieCount () >= defenderDieCount;
 
     final ImmutableList <DieFaceValue> attackerRoll = generatedSortedDieValues (attackOrder.getDieCount ());
     final ImmutableList <DieFaceValue> defenderRoll = generatedSortedDieValues (defenderDieCount);
 
-    final ImmutableSortedMap.Builder <DieFaceValue, DieOutcome> attackerRollResults = ImmutableSortedMap
-            .orderedBy (DieFaceValue.DESCENDING_ORDER);
-    final ImmutableSortedMap.Builder <DieFaceValue, DieOutcome> defenderRollResults = ImmutableSortedMap
-            .orderedBy (DieFaceValue.DESCENDING_ORDER);
+    final ImmutableSet.Builder <DieRoll> attackerRollResults = ImmutableSet.builder ();
+    final ImmutableSet.Builder <DieRoll> defenderRollResults = ImmutableSet.builder ();
     final int minDieCount = Math.min (attackerRoll.size (), defenderRoll.size ());
     boolean battleFinished = false;
     for (int i = 0; i < minDieCount; i++)
@@ -202,8 +199,8 @@ public final class DefaultBattleModel implements BattleModel
               || countryArmyModel.armyCountIs (rules.getMinArmiesOnCountry (), defenderCountry);
 
       // store die values and outcomes regardless of whether or not the battle has already finished
-      attackerRollResults.put (attackerDieValue, attackerOutcome);
-      defenderRollResults.put (defenderDieValue, defenderOutcome);
+      attackerRollResults.add (new DieRoll (attackerDieValue, attackerOutcome));
+      defenderRollResults.add (new DieRoll (defenderDieValue, defenderOutcome));
     }
 
     final BattleActor attacker = new DefaultBattleActor (attackOrder.getPlayerId (), attackerCountry,

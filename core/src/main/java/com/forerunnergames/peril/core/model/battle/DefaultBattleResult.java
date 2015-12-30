@@ -1,26 +1,25 @@
 package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.game.DieFaceValue;
-import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
-import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSet;
 
 public final class DefaultBattleResult implements BattleResult
 {
   private final BattleActor attacker;
   private final BattleActor defender;
   private final Id defendingCountryOwner;
-  private final ImmutableSortedMap <DieFaceValue, DieOutcome> attackerRollResults;
-  private final ImmutableSortedMap <DieFaceValue, DieOutcome> defenderRollResults;
+  private final ImmutableSet <DieRoll> attackerRollResults;
+  private final ImmutableSet <DieRoll> defenderRollResults;
 
   public DefaultBattleResult (final BattleActor attacker,
                               final BattleActor defender,
                               final Id defendingCountryOwner,
-                              final ImmutableSortedMap <DieFaceValue, DieOutcome> attackerRollResults,
-                              final ImmutableSortedMap <DieFaceValue, DieOutcome> defenderRollResults)
+                              final ImmutableSet <DieRoll> attackerRollResults,
+                              final ImmutableSet <DieRoll> defenderRollResults)
   {
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
@@ -54,13 +53,13 @@ public final class DefaultBattleResult implements BattleResult
   }
 
   @Override
-  public ImmutableSortedMap <DieFaceValue, DieOutcome> getAttackerRollResults ()
+  public ImmutableSet <DieRoll> getAttackerRollResults ()
   {
     return attackerRollResults;
   }
 
   @Override
-  public ImmutableSortedMap <DieFaceValue, DieOutcome> getDefenderRollResults ()
+  public ImmutableSet <DieRoll> getDefenderRollResults ()
   {
     return defenderRollResults;
   }

@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -7,21 +8,21 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSet;
 
 public final class DefaultBattleResultPacket implements BattleResultPacket
 {
   private final BattleActorPacket attacker;
   private final BattleActorPacket defender;
   private final PlayerPacket defendingCountryOwner;
-  private final ImmutableSortedMap <Integer, DieOutcome> attackerRollResults;
-  private final ImmutableSortedMap <Integer, DieOutcome> defenderRollResults;
+  private final ImmutableSet <DieRoll> attackerRollResults;
+  private final ImmutableSet <DieRoll> defenderRollResults;
 
   public DefaultBattleResultPacket (final BattleActorPacket attacker,
                                     final BattleActorPacket defender,
                                     final PlayerPacket defendingCountryOwner,
-                                    final ImmutableSortedMap <Integer, DieOutcome> attackerRollResults,
-                                    final ImmutableSortedMap <Integer, DieOutcome> defenderRollResults)
+                                    final ImmutableSet <DieRoll> attackerRollResults,
+                                    final ImmutableSet <DieRoll> defenderRollResults)
   {
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
@@ -55,13 +56,13 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
-  public ImmutableSortedMap <Integer, DieOutcome> getAttackerRollResults ()
+  public ImmutableSet <DieRoll> getAttackerRollResults ()
   {
     return attackerRollResults;
   }
 
   @Override
-  public ImmutableSortedMap <Integer, DieOutcome> getDefenderRollResults ()
+  public ImmutableSet <DieRoll> getDefenderRollResults ()
   {
     return defenderRollResults;
   }

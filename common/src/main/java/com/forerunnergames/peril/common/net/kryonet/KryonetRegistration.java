@@ -3,6 +3,9 @@ package com.forerunnergames.peril.common.net.kryonet;
 import com.esotericsoftware.kryo.Kryo;
 
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
+import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.map.DefaultMapMetadata;
@@ -66,6 +69,9 @@ public final class KryonetRegistration
           DefaultMapMetadata.class,
           DefaultMessage.class,
           DefaultServerConfiguration.class,
+          DieFaceValue.class,
+          DieOutcome.class,
+          DieRoll.class,
           GameMode.class,
           GameServerType.class,
           HashMap.class,

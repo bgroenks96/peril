@@ -1,10 +1,9 @@
 package com.forerunnergames.peril.common.net.packets.battle;
 
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
-import com.google.common.collect.ImmutableSortedMap;
-
-import java.util.Comparator;
+import com.google.common.collect.ImmutableSet;
 
 public interface BattleResultPacket
 {
@@ -19,26 +18,7 @@ public interface BattleResultPacket
    */
   PlayerPacket getDefendingCountryOwner ();
 
-  ImmutableSortedMap <Integer, DieOutcome> getAttackerRollResults ();
+  ImmutableSet <DieRoll> getAttackerRollResults ();
 
-  ImmutableSortedMap <Integer, DieOutcome> getDefenderRollResults ();
-
-  /**
-   * Network packet version of {@link com.forerunnergames.peril.core.game.DieOutcome}
-   */
-  enum DieOutcome
-  {
-    WIN,
-    LOSE,
-    NONE;
-
-    public static final Comparator <Integer> DESCENDING = new Comparator <Integer> ()
-    {
-      @Override
-      public int compare (final Integer arg0, final Integer arg1)
-      {
-        return arg1.compareTo (arg0);
-      }
-    };
-  }
+  ImmutableSet <DieRoll> getDefenderRollResults ();
 }
