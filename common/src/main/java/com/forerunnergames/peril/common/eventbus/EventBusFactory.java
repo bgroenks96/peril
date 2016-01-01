@@ -8,9 +8,6 @@ import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.common.DeadMessage;
-import net.engio.mbassy.bus.common.Properties;
-import net.engio.mbassy.bus.config.BusConfiguration;
-import net.engio.mbassy.bus.config.Feature;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 import net.engio.mbassy.listener.Handler;
@@ -50,11 +47,8 @@ public final class EventBusFactory
     Arguments.checkIsNotNull (deadEventHandlers, "deadEventHandlers");
     Arguments.checkHasNoNullElements (deadEventHandlers, "deadEventHandlers");
 
-    final MBassador <Event> eventBus = new MBassador <> (new BusConfiguration ()
-            .addFeature (Feature.SyncPubSub.Default ()).addFeature (Feature.AsynchronousHandlerInvocation.Default ())
-            .addFeature (Feature.AsynchronousMessageDispatch.Default ())
-            .setProperty (Properties.Handler.PublicationError,
-                          new PublicationErrorDispatcher (ImmutableSet.copyOf (publicationErrorHandlers))));
+    final MBassador <Event> eventBus = new MBassador <> (new PublicationErrorDispatcher (
+            ImmutableSet.copyOf (publicationErrorHandlers)));
 
     eventBus.subscribe (new DeadMessageDispatcher (ImmutableSet.copyOf (deadEventHandlers)));
 
