@@ -1,10 +1,10 @@
 android {
-  buildToolsVersion "23.0.1"
-  compileSdkVersion 22
+  buildToolsVersion "23.0.2"
+  compileSdkVersion 23
 
   defaultConfig {
     minSdkVersion 8
-    targetSdkVersion 22
+    targetSdkVersion 23
     versionCode 1
     versionName "0.1-SNAPSHOT"
     multiDexEnabled true
