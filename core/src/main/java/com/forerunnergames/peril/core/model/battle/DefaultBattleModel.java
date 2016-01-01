@@ -160,7 +160,7 @@ public final class DefaultBattleModel implements BattleModel
       final DieOutcome attackerOutcome = rules.determineAttackerOutcome (attackerDieValue, defenderDieValue);
       final DieOutcome defenderOutcome = rules.determineDefenderOutcome (attackerDieValue, defenderDieValue);
 
-      // remove armies from losing battles iff the battle has not already been finished
+      // remove armies from losing battles if the battle has not already been finished
       // i.e. if both parties have not yet depleted all available armies
       if (attackerOutcome == DieOutcome.LOSE && !battleFinished)
       {
