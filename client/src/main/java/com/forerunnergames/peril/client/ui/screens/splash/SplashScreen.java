@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 public final class SplashScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (SplashScreen.class);
-  private static final boolean IS_WINDOW_FULLSCREEN = false;
   private static final float ONE_THIRD = 1.0f / 3.0f;
   private static final float TWO_THIRDS = 2.0f / 3.0f;
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
@@ -181,7 +180,7 @@ public final class SplashScreen extends InputAdapter implements Screen
   @Override
   public void show ()
   {
-    Gdx.graphics.setDisplayMode (windowWidth, windowHeight, IS_WINDOW_FULLSCREEN);
+    Gdx.graphics.setWindowedMode (windowWidth, windowHeight);
 
     showCursor ();
 
@@ -262,8 +261,7 @@ public final class SplashScreen extends InputAdapter implements Screen
                 Throwables.getStackTraceAsString (e));
     }
 
-    Gdx.graphics.setDisplayMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT,
-                                 GraphicsSettings.IS_FULLSCREEN);
+    Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT);
 
     for (final AssetDescriptor <?> descriptor : AssetSettings.UNLOAD_AFTER_SPLASH_SCREEN_ASSET_DESCRIPTORS)
     {
