@@ -30,7 +30,7 @@ def getSuitesToRun() {
   if (project.property("tests") == "smoke.standalone") {
     return smokeTestsStandalone
   }
-  if (project.property("tests") == "smomke.all") {
+  if (project.property("tests") == "smoke.all") {
     return smokeTestsAll
   }
 }

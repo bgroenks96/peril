@@ -140,7 +140,7 @@ public final class CountryMapGraphModel extends TerritoryGraphModel <Country>
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return countryIdsToCountries.get (countryName);
+    return countryIdsToCountries.get (idOf (countryName));
   }
 
   ImmutableSet <Country> getCountries ()
