@@ -42,6 +42,20 @@ public final class NullCountryPrimaryImages implements CountryImages <CountryPri
   }
 
   @Override
+  public boolean has (final CountryPrimaryImageState state)
+  {
+    Arguments.checkIsNotNull (state, "state");
+
+    return imageStatesToImages.containsKey (state);
+  }
+
+  @Override
+  public boolean doesNotHave (final CountryPrimaryImageState state)
+  {
+    return ! has (state);
+  }
+
+  @Override
   public CountryPrimaryImage get (final CountryPrimaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");

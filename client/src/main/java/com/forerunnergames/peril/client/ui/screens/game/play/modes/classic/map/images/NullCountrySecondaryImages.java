@@ -43,6 +43,20 @@ public final class NullCountrySecondaryImages
   }
 
   @Override
+  public boolean has (final CountrySecondaryImageState state)
+  {
+    Arguments.checkIsNotNull (state, "state");
+
+    return imageStatesToImages.containsKey (state);
+  }
+
+  @Override
+  public boolean doesNotHave (final CountrySecondaryImageState state)
+  {
+    return ! has (state);
+  }
+
+  @Override
   public CountrySecondaryImage get (final CountrySecondaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");

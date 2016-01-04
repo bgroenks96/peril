@@ -18,8 +18,12 @@ import com.forerunnergames.tools.common.Randomness;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class DefaultCountryActor implements CountryActor
 {
+  private static final Logger log = LoggerFactory.getLogger (DefaultCountryActor.class);
   private final Group group = new Group ();
   private final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages;
   private final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages;
@@ -104,6 +108,14 @@ public final class DefaultCountryActor implements CountryActor
   {
     Arguments.checkIsNotNull (state, "state");
 
+    if (primaryImages.doesNotHave (state))
+    {
+      log.warn ("Cannot change {} [{}] to {} [{}] because that {} doesn't exist.", getClass ().getSimpleName (),
+                imageData.getCountryName (), CountryPrimaryImageState.class.getSimpleName (), state,
+                CountryPrimaryImageState.class.getSimpleName ());
+      return;
+    }
+
     hide (currentPrimaryImageState);
     currentPrimaryImageState = state;
     currentPrimaryImage = primaryImages.get (state);
@@ -115,6 +127,14 @@ public final class DefaultCountryActor implements CountryActor
   public void changeSecondaryStateTo (final CountrySecondaryImageState state)
   {
     Arguments.checkIsNotNull (state, "state");
+
+    if (secondaryImages.doesNotHave (state))
+    {
+      log.warn ("Cannot change {} [{}] to {} [{}] because that {} doesn't exist.", getClass ().getSimpleName (),
+                imageData.getCountryName (), CountrySecondaryImageState.class.getSimpleName (), state,
+                CountrySecondaryImageState.class.getSimpleName ());
+      return;
+    }
 
     hide (currentSecondaryImageState);
     currentSecondaryImageState = state;

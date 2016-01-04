@@ -10,6 +10,10 @@ public interface CountryImages <E extends Enum <E> & CountryImageState <E>, T ex
 
   void show (E state);
 
+  boolean has (E state);
+
+  boolean doesNotHave (E state);
+
   T get (E state);
 
   ImmutableCollection <T> getAll ();
