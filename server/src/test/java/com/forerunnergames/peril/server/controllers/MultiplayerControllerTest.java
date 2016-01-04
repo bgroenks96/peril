@@ -44,6 +44,7 @@ import com.forerunnergames.peril.common.net.events.server.success.JoinGameServer
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
@@ -468,7 +469,7 @@ public class MultiplayerControllerTest
     mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
     // Request that the player/client select an available country.
-    eventBus.publish (new PlayerSelectCountryRequestEvent (clientPlayer.player ()));
+    eventBus.publish (new PlayerSelectCountryRequestEvent (clientPlayer.player (), ImmutableSet.<CountryPacket> of ()));
     verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerSelectCountryRequestEvent.class));
 
     // Simulate player/client selecting a country.
@@ -509,7 +510,7 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple second = addClientAndMockPlayerToGameServer ("Test Player 2", mpc);
 
     // Request that the player/client select an available country.
-    eventBus.publish (new PlayerSelectCountryRequestEvent (first.player ()));
+    eventBus.publish (new PlayerSelectCountryRequestEvent (first.player (), ImmutableSet.<CountryPacket> of ()));
     verify (mockClientCommunicator).sendTo (eq (first.client ()), isA (PlayerSelectCountryRequestEvent.class));
 
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
@@ -535,7 +536,8 @@ public class MultiplayerControllerTest
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
 
     // Request that the first player/client select an available country.
-    final Event selectCountryRequestEvent1 = new PlayerSelectCountryRequestEvent (first.player ());
+    final Event selectCountryRequestEvent1 = new PlayerSelectCountryRequestEvent (first.player (),
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (selectCountryRequestEvent1);
     verify (mockClientCommunicator).sendTo (first.client (), selectCountryRequestEvent1);
     // Make sure that the request was not sent to the second player/client.
@@ -547,7 +549,8 @@ public class MultiplayerControllerTest
     assertLastEventWas (selectCountryResponseRequestEvent1);
 
     // Request that the second player/client select an available country.
-    final Event selectCountryRequestEvent2 = new PlayerSelectCountryRequestEvent (second.player ());
+    final Event selectCountryRequestEvent2 = new PlayerSelectCountryRequestEvent (second.player (),
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (selectCountryRequestEvent2);
     verify (mockClientCommunicator).sendTo (second.client (), selectCountryRequestEvent2);
     // Make sure that the request was not sent to the first player/client.
@@ -559,7 +562,8 @@ public class MultiplayerControllerTest
     assertLastEventWas (selectCountryResponseRequestEvent2);
 
     // Request that the first player/client select an available country.
-    final Event selectCountryRequestEvent3 = new PlayerSelectCountryRequestEvent (first.player ());
+    final Event selectCountryRequestEvent3 = new PlayerSelectCountryRequestEvent (first.player (),
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (selectCountryRequestEvent3);
     verify (mockClientCommunicator).sendTo (first.client (), selectCountryRequestEvent3);
     // Make sure that the request was not sent to the second player/client.
@@ -571,7 +575,8 @@ public class MultiplayerControllerTest
     assertLastEventWas (selectCountryResponseRequestEvent3);
 
     // Request that the second player/client select an available country.
-    final Event selectCountryRequestEvent4 = new PlayerSelectCountryRequestEvent (second.player ());
+    final Event selectCountryRequestEvent4 = new PlayerSelectCountryRequestEvent (second.player (),
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (selectCountryRequestEvent4);
     verify (mockClientCommunicator).sendTo (second.client (), selectCountryRequestEvent4);
     // Make sure that the request was not sent to the first player/client.
@@ -583,7 +588,8 @@ public class MultiplayerControllerTest
     assertLastEventWas (selectCountryResponseRequestEvent4);
 
     // Request that the first player/client select an available country.
-    final Event selectCountryRequestEvent5 = new PlayerSelectCountryRequestEvent (first.player ());
+    final Event selectCountryRequestEvent5 = new PlayerSelectCountryRequestEvent (first.player (),
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (selectCountryRequestEvent5);
     verify (mockClientCommunicator).sendTo (first.client (), selectCountryRequestEvent5);
     // Make sure that the request was not sent to the second player/client.
