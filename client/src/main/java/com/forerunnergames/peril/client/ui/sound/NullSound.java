@@ -94,9 +94,4 @@ public final class NullSound implements Sound
   public void setPan (final long soundId, final float pan, final float volume)
   {
   }
-
-  @Override
-  public void setPriority (final long soundId, final int priority)
-  {
-  }
 }
