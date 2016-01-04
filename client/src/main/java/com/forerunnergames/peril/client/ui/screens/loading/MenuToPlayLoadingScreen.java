@@ -641,7 +641,26 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
             Strings.format ("Cannot go to play screen because playersInGame is null.",
                             ClientConfiguration.class.getSimpleName ()));
 
-    final PlayMapActor playMapActor = playMapActorFactory.create (gameServerConfiguration.getMapMetadata ());
+    final PlayMapActor playMapActor;
+
+    try
+    {
+      playMapActor = playMapActorFactory.create (gameServerConfiguration.getMapMetadata ());
+    }
+    catch (final PlayMapLoadingException e)
+    {
+      // @formatter:off
+      handleErrorDuringLoading (
+              Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources " +
+                      "for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                      CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                      gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
+                      gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
+                      Throwables.getRootCause (e).getMessage (), Strings.toString (e)));
+      // @formatter:on
+      return;
+    }
+
     final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, playersInGame,
             playMapActor);
 
