@@ -185,6 +185,17 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   }
 
   @Override
+  public ImmutableSet <CountryPacket> getUnownedCountries ()
+  {
+    final ImmutableSet.Builder <CountryPacket> unownedCountries = ImmutableSet.builder ();
+    for (final Id countryId : countryMapGraphModel)
+    {
+      if (!isCountryOwned (countryId)) unownedCountries.add (countryMapGraphModel.countryPacketWith (countryId));
+    }
+    return unownedCountries.build ();
+  }
+
+  @Override
   public void unassignAllCountries ()
   {
     countryIdsToOwnerIds.clear ();

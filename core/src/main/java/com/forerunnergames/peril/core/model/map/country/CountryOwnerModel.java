@@ -41,6 +41,8 @@ public interface CountryOwnerModel
 
   ImmutableSet <CountryPacket> getCountriesOwnedBy (final Id ownerId);
 
+  ImmutableSet <CountryPacket> getUnownedCountries ();
+
   ImmutableSet <String> getCountryNamesOwnedBy (final Id ownerId);
 
   void unassignAllCountries ();

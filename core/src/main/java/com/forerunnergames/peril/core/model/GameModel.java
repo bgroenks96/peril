@@ -409,7 +409,7 @@ public final class GameModel
     }
 
     log.info ("Waiting for player [{}] to select a country...", currentPlayer.getName ());
-    eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer));
+    eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
   }
 
   @StateMachineCondition
@@ -429,7 +429,7 @@ public final class GameModel
       eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (currentPlayer, selectedCountryName,
               PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
       // send a new request
-      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer));
+      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
     }
 
@@ -442,7 +442,7 @@ public final class GameModel
       eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (currentPlayer, selectedCountryName,
               result.getFailureReason ()));
       // send a new request
-      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer));
+      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
     }
 
