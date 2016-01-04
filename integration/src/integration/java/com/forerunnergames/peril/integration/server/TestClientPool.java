@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestClientPool
+public class TestClientPool implements Iterable <TestClient>
 {
   private static final Logger log = LoggerFactory.getLogger (TestClientPool.class);
   private static final int MAX_THREADS = 2;
@@ -201,6 +202,12 @@ public class TestClientPool
       client.dispose ();
     }
     clients.clear ();
+  }
+
+  @Override
+  public Iterator <TestClient> iterator ()
+  {
+    return clients.iterator ();
   }
 
   public interface ClientEventCallback <T>

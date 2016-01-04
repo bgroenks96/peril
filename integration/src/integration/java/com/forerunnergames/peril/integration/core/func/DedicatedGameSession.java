@@ -17,6 +17,7 @@ import com.forerunnergames.peril.integration.server.TestClientPool;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.DefaultExternalAddressResolver;
 import com.forerunnergames.tools.net.ExternalAddressResolver;
 
@@ -31,27 +32,33 @@ public class DedicatedGameSession implements TestSession
 {
   private static final Logger log = LoggerFactory.getLogger (DedicatedGameSession.class);
   public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
-  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-          NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
+  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (NetworkSettings.EXTERNAL_IP_RESOLVER_URL,
+                                                                                                      NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
   private final NetworkPortPool portPool = NetworkPortPool.getInstance ();
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
   private final GameRules gameRules;
   private final String serverAddress;
+  private final String externalServerAddress;
+  private final String sessionName;
   private final int serverPort;
   private final TestClientPool clientPool = new TestClientPool ();
   private GameModel gameModel;
   private StateMachineEventHandler stateMachine;
   private TestServerApplication serverApplication;
 
-  public DedicatedGameSession (final GameRules gameRules, final String serverAddress)
+  public DedicatedGameSession (final String sessionName, final String serverAddress, final GameRules gameRules)
   {
-    Arguments.checkIsNotNull (gameRules, "gameRules");
+    Arguments.checkIsNotNull (sessionName, "sessionName");
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
+    Arguments.checkIsNotNull (gameRules, "gameRules");
 
+    this.sessionName = sessionName;
     this.gameRules = gameRules;
     this.serverAddress = serverAddress;
+
     serverPort = portPool.getAvailablePort ();
+    externalServerAddress = externalAddressResolver.resolveIp ();
   }
 
   @Override
@@ -77,9 +84,20 @@ public class DedicatedGameSession implements TestSession
     return isShutDown.get ();
   }
 
+  @Override
+  public String getName ()
+  {
+    return sessionName;
+  }
+
   public GameModel getGameModel ()
   {
     return gameModel;
+  }
+
+  public GameRules getRules ()
+  {
+    return gameRules;
   }
 
   public StateMachineEventHandler getStateMachine ()
@@ -102,6 +120,14 @@ public class DedicatedGameSession implements TestSession
     return clientPool;
   }
 
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
+                           getClass ().getSimpleName (), sessionName, externalServerAddress, serverPort,
+                           gameRules.getInitialCountryAssignment ());
+  }
+
   private void initializeServer ()
   {
     gameModel = GameModel.builder (gameRules).eventBus (eventBus).build ();
@@ -117,6 +143,6 @@ public class DedicatedGameSession implements TestSession
   private void initializeClients ()
   {
     log.trace ("Connecting {} clients to server [{}]", gameRules.getPlayerLimit (), serverPort);
-    clientPool.connectNew (externalAddressResolver.resolveIp (), serverPort, gameRules.getPlayerLimit ());
+    clientPool.connectNew (externalServerAddress, serverPort, gameRules.getPlayerLimit ());
   }
 }

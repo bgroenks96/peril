@@ -63,8 +63,26 @@ public class TestClient extends AbstractClientController
     shutDown ();
   }
 
+  public <T> Optional <T> waitForEventCommunication (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    return waitForEventCommunication (type, DEFAULT_WAIT_TIMEOUT_MS, false);
+  }
+
   public <T> Optional <T> waitForEventCommunication (final Class <T> type, final boolean exceptionOnFail)
   {
+    Arguments.checkIsNotNull (type, "type");
+
+    return waitForEventCommunication (type, DEFAULT_WAIT_TIMEOUT_MS, exceptionOnFail);
+  }
+
+  public <T> Optional <T> waitForEventCommunication (final Class <T> type,
+                                                     final long waitTimeoutMillis,
+                                                     final boolean exceptionOnFail)
+  {
+    Arguments.checkIsNotNegative (waitTimeoutMillis, "waitTimeoutMillis");
+
     Arguments.checkIsNotNull (type, "type");
 
     final Exchanger <T> exchanger = new Exchanger <> ();
@@ -101,7 +119,7 @@ public class TestClient extends AbstractClientController
     });
     try
     {
-      final T event = exchanger.exchange (null, DEFAULT_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+      final T event = exchanger.exchange (null, waitTimeoutMillis, TimeUnit.MILLISECONDS);
       return Optional.fromNullable (event);
     }
     catch (InterruptedException | TimeoutException e)
@@ -113,6 +131,36 @@ public class TestClient extends AbstractClientController
     {
       keepAlive.set (false);
     }
+  }
+
+  public boolean assertNoEventsReceived (final long waitTimeoutMillis)
+  {
+    Arguments.checkIsNotNegative (waitTimeoutMillis, "waitTimeoutMillis");
+
+    if (inboundEventQueue.size () > 0) return false;
+    try
+    {
+      Thread.sleep (waitTimeoutMillis);
+    }
+    catch (final InterruptedException e)
+    {
+      log.warn ("Interrupted during wait.");
+    }
+    return inboundEventQueue.isEmpty ();
+  }
+
+  public Optional <Event> getNextEventPendingInQueue ()
+  {
+    return Optional.fromNullable (inboundEventQueue.peek ());
+  }
+
+  public boolean nextEventHasType (final Class <?> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    final Optional <Event> nextEvent = getNextEventPendingInQueue ();
+    if (!nextEvent.isPresent ()) return false;
+    return type.isInstance (nextEvent.get ());
   }
 
   public int getClientId ()
