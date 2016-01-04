@@ -2,1274 +2,1274 @@ countries1.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-alaskaBlue
+Alaska - Blue
   rotate: false
   xy: 1822, 2
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaBrown
+Alaska - Brown
   rotate: false
   xy: 1822, 109
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaCyan
+Alaska - Cyan
   rotate: false
   xy: 1822, 216
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaDisabled
+Alaska - Disabled
   rotate: true
   xy: 871, 307
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaGold
+Alaska - Gold
   rotate: false
   xy: 1456, 268
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaGreen
+Alaska - Green
   rotate: false
   xy: 1456, 375
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaHovered
+Alaska - Hovered
   rotate: false
   xy: 1226, 414
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaPink
+Alaska - Pink
   rotate: true
   xy: 871, 530
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaPurple
+Alaska - Purple
   rotate: false
   xy: 1816, 323
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaRed
+Alaska - Red
   rotate: false
   xy: 1816, 430
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaSilver
+Alaska - Silver
   rotate: false
   xy: 1449, 482
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaTeal
+Alaska - Teal
   rotate: false
   xy: 1226, 521
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-alaskaUnowned
+Alaska - Unowned
   rotate: false
   xy: 1449, 589
   size: 221, 105
   orig: 221, 105
   offset: 0, 0
   index: -1
-albertaBlue
+Alberta - Blue
   rotate: true
   xy: 268, 1023
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaBrown
+Alberta - Brown
   rotate: true
   xy: 335, 1023
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaCyan
+Alberta - Cyan
   rotate: true
   xy: 402, 1023
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaDisabled
+Alberta - Disabled
   rotate: true
   xy: 469, 1023
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaGold
+Alberta - Gold
   rotate: true
   xy: 536, 1023
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaGreen
+Alberta - Green
   rotate: true
   xy: 603, 1013
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaHovered
+Alberta - Hovered
   rotate: true
   xy: 670, 1013
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaPink
+Alberta - Pink
   rotate: true
   xy: 737, 1013
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaPurple
+Alberta - Purple
   rotate: true
   xy: 804, 1013
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaRed
+Alberta - Red
   rotate: false
   xy: 1226, 628
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaSilver
+Alberta - Silver
   rotate: true
   xy: 871, 1011
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaTeal
+Alberta - Teal
   rotate: true
   xy: 938, 1011
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-albertaUnowned
+Alberta - Unowned
   rotate: false
   xy: 1226, 695
   size: 206, 65
   orig: 206, 65
   offset: 0, 0
   index: -1
-centralAmericaBlue
+Central America - Blue
   rotate: true
   xy: 692, 1684
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaBrown
+Central America - Brown
   rotate: true
   xy: 544, 323
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaCyan
+Central America - Cyan
   rotate: true
   xy: 544, 553
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaDisabled
+Central America - Disabled
   rotate: true
   xy: 544, 783
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaGold
+Central America - Gold
   rotate: true
   xy: 687, 1221
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaGreen
+Central America - Green
   rotate: true
   xy: 838, 1684
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaHovered
+Central America - Hovered
   rotate: true
   xy: 690, 323
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaPink
+Central America - Pink
   rotate: true
   xy: 690, 553
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaPurple
+Central America - Purple
   rotate: true
   xy: 690, 783
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaRed
+Central America - Red
   rotate: true
   xy: 833, 1221
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaSilver
+Central America - Silver
   rotate: true
   xy: 984, 1684
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaTeal
+Central America - Teal
   rotate: false
   xy: 1226, 268
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-centralAmericaUnowned
+Central America - Unowned
   rotate: true
   xy: 1077, 268
   size: 228, 144
   orig: 228, 144
   offset: 0, 0
   index: -1
-easternUnitedStatesBlue
+Eastern United States - Blue
   rotate: true
   xy: 1679, 268
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesBrown
+Eastern United States - Brown
   rotate: true
   xy: 1679, 439
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesCyan
+Eastern United States - Cyan
   rotate: false
   xy: 836, 874
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesDisabled
+Eastern United States - Disabled
   rotate: false
   xy: 1007, 874
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesGold
+Eastern United States - Gold
   rotate: false
   xy: 1178, 868
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesGreen
+Eastern United States - Green
   rotate: false
   xy: 1349, 865
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesHovered
+Eastern United States - Hovered
   rotate: false
   xy: 1816, 537
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesPink
+Eastern United States - Pink
   rotate: true
   xy: 1672, 610
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesPurple
+Eastern United States - Purple
   rotate: false
   xy: 1809, 674
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesRed
+Eastern United States - Red
   rotate: true
   xy: 1669, 781
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesSilver
+Eastern United States - Silver
   rotate: false
   xy: 1806, 811
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesTeal
+Eastern United States - Teal
   rotate: false
   xy: 1806, 948
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-easternUnitedStatesUnowned
+Eastern United States - Unowned
   rotate: true
   xy: 1520, 911
   size: 169, 135
   orig: 169, 135
   offset: 0, 0
   index: -1
-greatBritainBlue
+Great Britain - Blue
   rotate: false
   xy: 1434, 696
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainBrown
+Great Britain - Brown
   rotate: false
   xy: 1511, 696
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainCyan
+Great Britain - Cyan
   rotate: true
   xy: 1987, 537
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainDisabled
+Great Britain - Disabled
   rotate: false
   xy: 2, 268
   size: 70, 50
   orig: 75, 56
   offset: 2, 3
   index: -1
-greatBritainGold
+Great Britain - Gold
   rotate: true
   xy: 1987, 614
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainGreen
+Great Britain - Green
   rotate: false
   xy: 1588, 696
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainHovered
+Great Britain - Hovered
   rotate: true
   xy: 1303, 1367
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainPink
+Great Britain - Pink
   rotate: true
   xy: 1303, 1444
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainPurple
+Great Britain - Purple
   rotate: true
   xy: 1303, 1521
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainRed
+Great Britain - Red
   rotate: true
   xy: 1234, 1545
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainSilver
+Great Britain - Silver
   rotate: true
   xy: 1292, 1598
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainTeal
+Great Britain - Teal
   rotate: true
   xy: 1234, 1622
   size: 75, 56
   orig: 75, 56
   offset: 0, 0
   index: -1
-greatBritainUnowned
+Great Britain - Unowned
   rotate: false
   xy: 74, 268
   size: 70, 50
   orig: 75, 56
   offset: 2, 3
   index: -1
-greenlandBlue
+Greenland - Blue
   rotate: true
   xy: 2, 1688
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandBrown
+Greenland - Brown
   rotate: true
   xy: 135, 1233
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandCyan
+Greenland - Cyan
   rotate: true
   xy: 140, 1686
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandDisabled
+Greenland - Disabled
   rotate: true
   xy: 278, 1686
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandGold
+Greenland - Gold
   rotate: true
   xy: 268, 323
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandGreen
+Greenland - Green
   rotate: true
   xy: 268, 673
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandHovered
+Greenland - Hovered
   rotate: true
   xy: 273, 1231
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandPink
+Greenland - Pink
   rotate: true
   xy: 411, 1231
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandPurple
+Greenland - Purple
   rotate: true
   xy: 416, 1684
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandRed
+Greenland - Red
   rotate: true
   xy: 554, 1684
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandSilver
+Greenland - Silver
   rotate: true
   xy: 406, 323
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandTeal
+Greenland - Teal
   rotate: true
   xy: 406, 673
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-greenlandUnowned
+Greenland - Unowned
   rotate: true
   xy: 549, 1231
   size: 348, 136
   orig: 348, 136
   offset: 0, 0
   index: -1
-icelandBlue
+Iceland - Blue
   rotate: false
   xy: 146, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandBrown
+Iceland - Brown
   rotate: false
   xy: 214, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandCyan
+Iceland - Cyan
   rotate: false
   xy: 282, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandDisabled
+Iceland - Disabled
   rotate: true
   xy: 836, 375
   size: 60, 17
   orig: 66, 41
   offset: 3, 12
   index: -1
-icelandGold
+Iceland - Gold
   rotate: false
   xy: 350, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandGreen
+Iceland - Green
   rotate: false
   xy: 418, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandHovered
+Iceland - Hovered
   rotate: true
   xy: 836, 307
   size: 66, 23
   orig: 66, 41
   offset: 0, 9
   index: -1
-icelandPink
+Iceland - Pink
   rotate: false
   xy: 486, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandPurple
+Iceland - Purple
   rotate: false
   xy: 554, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandRed
+Iceland - Red
   rotate: false
   xy: 622, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandSilver
+Iceland - Silver
   rotate: false
   xy: 690, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandTeal
+Iceland - Teal
   rotate: false
   xy: 758, 268
   size: 66, 37
   orig: 66, 41
   offset: 0, 2
   index: -1
-icelandUnowned
+Iceland - Unowned
   rotate: false
   xy: 826, 268
   size: 60, 37
   orig: 66, 41
   offset: 3, 2
   index: -1
-northernEuropeBlue
+Northern Europe - Blue
   rotate: false
   xy: 836, 753
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeBrown
+Northern Europe - Brown
   rotate: false
   xy: 1130, 800
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeCyan
+Northern Europe - Cyan
   rotate: true
   xy: 1980, 691
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeDisabled
+Northern Europe - Disabled
   rotate: true
   xy: 1977, 813
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeGold
+Northern Europe - Gold
   rotate: true
   xy: 1977, 935
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeGreen
+Northern Europe - Green
   rotate: true
   xy: 1977, 1057
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeHovered
+Northern Europe - Hovered
   rotate: false
   xy: 1395, 1002
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropePink
+Northern Europe - Pink
   rotate: false
   xy: 1395, 1070
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropePurple
+Northern Europe - Purple
   rotate: false
   xy: 1657, 952
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeRed
+Northern Europe - Red
   rotate: false
   xy: 1657, 1020
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeSilver
+Northern Europe - Silver
   rotate: false
   xy: 1517, 1082
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeTeal
+Northern Europe - Teal
   rotate: false
   xy: 1395, 1138
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northernEuropeUnowned
+Northern Europe - Unowned
   rotate: false
   xy: 1639, 1088
   size: 120, 66
   orig: 120, 66
   offset: 0, 0
   index: -1
-northwestTerritoryBlue
+Northwest Territory - Blue
   rotate: false
   xy: 2, 2
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryBrown
+Northwest Territory - Brown
   rotate: false
   xy: 457, 2
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryCyan
+Northwest Territory - Cyan
   rotate: false
   xy: 912, 2
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryDisabled
+Northwest Territory - Disabled
   rotate: false
   xy: 1367, 2
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryGold
+Northwest Territory - Gold
   rotate: false
   xy: 2, 135
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryGreen
+Northwest Territory - Green
   rotate: false
   xy: 457, 135
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryHovered
+Northwest Territory - Hovered
   rotate: false
   xy: 912, 135
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryPink
+Northwest Territory - Pink
   rotate: false
   xy: 1367, 135
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryPurple
+Northwest Territory - Purple
   rotate: true
   xy: 2, 323
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryRed
+Northwest Territory - Red
   rotate: true
   xy: 2, 778
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritorySilver
+Northwest Territory - Silver
   rotate: true
   xy: 2, 1233
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryTeal
+Northwest Territory - Teal
   rotate: true
   xy: 135, 323
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-northwestTerritoryUnowned
+Northwest Territory - Unowned
   rotate: true
   xy: 135, 778
   size: 453, 131
   orig: 453, 131
   offset: 0, 0
   index: -1
-ontarioBlue
+Ontario - Blue
   rotate: false
   xy: 135, 1583
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioBrown
+Ontario - Brown
   rotate: false
   xy: 292, 1581
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioCyan
+Ontario - Cyan
   rotate: false
   xy: 449, 1581
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioDisabled
+Ontario - Disabled
   rotate: false
   xy: 606, 1581
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioGold
+Ontario - Gold
   rotate: false
   xy: 763, 1581
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioGreen
+Ontario - Green
   rotate: false
   xy: 920, 1581
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioHovered
+Ontario - Hovered
   rotate: false
   xy: 1077, 1575
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioPink
+Ontario - Pink
   rotate: false
   xy: 1252, 762
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioPurple
+Ontario - Purple
   rotate: false
   xy: 1409, 762
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioRed
+Ontario - Red
   rotate: true
   xy: 1566, 754
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioSilver
+Ontario - Silver
   rotate: false
   xy: 1779, 1085
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioTeal
+Ontario - Teal
   rotate: false
   xy: 1779, 1188
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-ontarioUnowned
+Ontario - Unowned
   rotate: false
   xy: 1779, 1291
   size: 155, 101
   orig: 155, 101
   offset: 0, 0
   index: -1
-quebecBlue
+Quebec - Blue
   rotate: true
   xy: 1936, 1179
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecBrown
+Quebec - Brown
   rotate: true
   xy: 1517, 1150
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecCyan
+Quebec - Cyan
   rotate: true
   xy: 1936, 1335
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecDisabled
+Quebec - Disabled
   rotate: true
   xy: 1369, 1206
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecGold
+Quebec - Gold
   rotate: true
   xy: 1480, 1306
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecGreen
+Quebec - Green
   rotate: true
   xy: 1369, 1362
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecHovered
+Quebec - Hovered
   rotate: false
   xy: 1591, 1340
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecPink
+Quebec - Pink
   rotate: false
   xy: 1747, 1394
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecPurple
+Quebec - Purple
   rotate: false
   xy: 1591, 1451
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecRed
+Quebec - Red
   rotate: true
   xy: 1480, 1462
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecSilver
+Quebec - Silver
   rotate: true
   xy: 1361, 1518
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecTeal
+Quebec - Teal
   rotate: true
   xy: 1903, 1491
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-quebecUnowned
+Quebec - Unowned
   rotate: false
   xy: 1747, 1505
   size: 154, 109
   orig: 154, 109
   offset: 0, 0
   index: -1
-scandinaviaBlue
+Scandinavia - Blue
   rotate: true
   xy: 979, 268
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaBrown
+Scandinavia - Brown
   rotate: true
   xy: 1130, 498
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaCyan
+Scandinavia - Cyan
   rotate: false
   xy: 979, 506
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaDisabled
+Scandinavia - Disabled
   rotate: false
   xy: 979, 598
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaGold
+Scandinavia - Gold
   rotate: true
   xy: 1130, 649
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaGreen
+Scandinavia - Green
   rotate: false
   xy: 979, 690
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaHovered
+Scandinavia - Hovered
   rotate: false
   xy: 979, 782
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaPink
+Scandinavia - Pink
   rotate: false
   xy: 1628, 1156
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaPurple
+Scandinavia - Purple
   rotate: false
   xy: 1628, 1248
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaRed
+Scandinavia - Red
   rotate: false
   xy: 1591, 1562
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaSilver
+Scandinavia - Silver
   rotate: false
   xy: 1742, 1616
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaTeal
+Scandinavia - Teal
   rotate: false
   xy: 1893, 1647
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-scandinaviaUnowned
+Scandinavia - Unowned
   rotate: false
   xy: 1571, 1654
   size: 149, 90
   orig: 149, 90
   offset: 0, 0
   index: -1
-westernEuropeBlue
+Western Europe - Blue
   rotate: false
   xy: 978, 419
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeBrown
+Western Europe - Brown
   rotate: false
   xy: 1130, 1678
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeCyan
+Western Europe - Cyan
   rotate: false
   xy: 1472, 1618
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeDisabled
+Western Europe - Disabled
   rotate: false
   xy: 1350, 1674
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeGold
+Western Europe - Gold
   rotate: false
   xy: 1229, 1699
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeGreen
+Western Europe - Green
   rotate: false
   xy: 1130, 1765
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeHovered
+Western Europe - Hovered
   rotate: false
   xy: 1449, 1705
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropePink
+Western Europe - Pink
   rotate: false
   xy: 1328, 1761
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropePurple
+Western Europe - Purple
   rotate: false
   xy: 1229, 1786
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeRed
+Western Europe - Red
   rotate: false
   xy: 1722, 1708
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeSilver
+Western Europe - Silver
   rotate: false
   xy: 1548, 1746
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeTeal
+Western Europe - Teal
   rotate: false
   xy: 1427, 1792
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernEuropeUnowned
+Western Europe - Unowned
   rotate: false
   xy: 1328, 1848
   size: 97, 85
   orig: 97, 85
   offset: 0, 0
   index: -1
-westernUnitedStatesBlue
+Western United States - Blue
   rotate: false
   xy: 692, 1914
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesBrown
+Western United States - Brown
   rotate: false
   xy: 687, 1451
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesCyan
+Western United States - Cyan
   rotate: false
   xy: 870, 1914
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesDisabled
+Western United States - Disabled
   rotate: false
   xy: 865, 1451
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesGold
+Western United States - Gold
   rotate: false
   xy: 1048, 1914
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesGreen
+Western United States - Green
   rotate: true
   xy: 979, 1219
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesHovered
+Western United States - Hovered
   rotate: true
   xy: 1043, 1397
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesPink
+Western United States - Pink
   rotate: true
   xy: 1005, 1011
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesPurple
+Western United States - Purple
   rotate: true
   xy: 1109, 1189
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesRed
+Western United States - Red
   rotate: true
   xy: 1135, 1011
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesSilver
+Western United States - Silver
   rotate: true
   xy: 1173, 1367
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesTeal
+Western United States - Teal
   rotate: true
   xy: 1239, 1189
   size: 176, 128
   orig: 176, 128
   offset: 0, 0
   index: -1
-westernUnitedStatesUnowned
+Western United States - Unowned
   rotate: true
   xy: 1265, 1005
   size: 176, 128

@@ -2,819 +2,819 @@ countries4.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-chinaBlue
+China - Blue
   rotate: false
   xy: 2, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaBrown
+China - Brown
   rotate: false
   xy: 281, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaCyan
+China - Cyan
   rotate: false
   xy: 560, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaDisabled
+China - Disabled
   rotate: false
   xy: 839, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaGold
+China - Gold
   rotate: false
   xy: 1118, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaGreen
+China - Green
   rotate: false
   xy: 1397, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaHovered
+China - Hovered
   rotate: false
   xy: 1676, 2
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaPink
+China - Pink
   rotate: true
   xy: 2, 268
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaPurple
+China - Purple
   rotate: true
   xy: 2, 547
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaRed
+China - Red
   rotate: true
   xy: 2, 826
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaSilver
+China - Silver
   rotate: true
   xy: 2, 1105
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaTeal
+China - Teal
   rotate: true
   xy: 2, 1384
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-chinaUnowned
+China - Unowned
   rotate: true
   xy: 2, 1663
   size: 277, 174
   orig: 277, 174
   offset: 0, 0
   index: -1
-easternAustraliaBlue
+Eastern Australia - Blue
   rotate: false
   xy: 178, 1752
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaBrown
+Eastern Australia - Brown
   rotate: false
   xy: 319, 1752
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaCyan
+Eastern Australia - Cyan
   rotate: false
   xy: 347, 1547
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaDisabled
+Eastern Australia - Disabled
   rotate: false
   xy: 460, 1736
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaGold
+Eastern Australia - Gold
   rotate: false
   xy: 488, 1547
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaGreen
+Eastern Australia - Green
   rotate: false
   xy: 601, 1736
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaHovered
+Eastern Australia - Hovered
   rotate: true
   xy: 1131, 533
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaPink
+Eastern Australia - Pink
   rotate: true
   xy: 1320, 533
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaPurple
+Eastern Australia - Purple
   rotate: true
   xy: 1509, 533
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaRed
+Eastern Australia - Red
   rotate: true
   xy: 1802, 640
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaSilver
+Eastern Australia - Silver
   rotate: true
   xy: 1802, 781
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaTeal
+Eastern Australia - Teal
   rotate: true
   xy: 1131, 674
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-easternAustraliaUnowned
+Eastern Australia - Unowned
   rotate: true
   xy: 922, 719
   size: 139, 187
   orig: 139, 187
   offset: 0, 0
   index: -1
-indiaBlue
+India - Blue
   rotate: false
   xy: 1826, 268
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaBrown
+India - Brown
   rotate: true
   xy: 347, 502
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaCyan
+India - Cyan
   rotate: true
   xy: 347, 711
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaDisabled
+India - Disabled
   rotate: true
   xy: 347, 920
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaGold
+India - Gold
   rotate: true
   xy: 347, 1129
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaGreen
+India - Green
   rotate: true
   xy: 347, 1338
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaHovered
+India - Hovered
   rotate: false
   xy: 922, 347
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaPink
+India - Pink
   rotate: false
   xy: 533, 485
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaPurple
+India - Purple
   rotate: false
   xy: 1131, 347
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaRed
+India - Red
   rotate: false
   xy: 1340, 347
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaSilver
+India - Silver
   rotate: false
   xy: 1549, 347
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaTeal
+India - Teal
   rotate: false
   xy: 1821, 454
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indiaUnowned
+India - Unowned
   rotate: false
   xy: 922, 533
   size: 207, 184
   orig: 207, 184
   offset: 0, 0
   index: -1
-indonesiaBlue
+Indonesia - Blue
   rotate: false
   xy: 2, 1942
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaBrown
+Indonesia - Brown
   rotate: false
   xy: 186, 1941
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaCyan
+Indonesia - Cyan
   rotate: false
   xy: 370, 1941
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaDisabled
+Indonesia - Disabled
   rotate: true
   xy: 347, 318
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaGold
+Indonesia - Gold
   rotate: false
   xy: 554, 1925
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaGreen
+Indonesia - Green
   rotate: false
   xy: 738, 1925
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaHovered
+Indonesia - Hovered
   rotate: true
   xy: 629, 671
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaPink
+Indonesia - Pink
   rotate: true
   xy: 1698, 611
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaPurple
+Indonesia - Purple
   rotate: false
   xy: 733, 767
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaRed
+Indonesia - Red
   rotate: true
   xy: 629, 855
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaSilver
+Indonesia - Silver
   rotate: false
   xy: 1320, 674
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaTeal
+Indonesia - Teal
   rotate: false
   xy: 1504, 674
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-indonesiaUnowned
+Indonesia - Unowned
   rotate: false
   xy: 1320, 778
   size: 182, 102
   orig: 182, 102
   offset: 0, 0
   index: -1
-japanBlue
+Japan - Blue
   rotate: true
   xy: 1955, 170
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanBrown
+Japan - Brown
   rotate: false
   xy: 2, 178
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanCyan
+Japan - Cyan
   rotate: false
   xy: 100, 178
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanDisabled
+Japan - Disabled
   rotate: false
   xy: 1955, 2
   size: 90, 82
   orig: 96, 87
   offset: 3, 3
   index: -1
-japanGold
+Japan - Gold
   rotate: false
   xy: 198, 178
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanGreen
+Japan - Green
   rotate: false
   xy: 296, 178
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanHovered
+Japan - Hovered
   rotate: true
   xy: 460, 318
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanPink
+Japan - Pink
   rotate: false
   xy: 1826, 178
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanPurple
+Japan - Purple
   rotate: true
   xy: 533, 671
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanRed
+Japan - Red
   rotate: true
   xy: 533, 769
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanSilver
+Japan - Silver
   rotate: true
   xy: 533, 867
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanTeal
+Japan - Teal
   rotate: true
   xy: 533, 965
   size: 96, 87
   orig: 96, 87
   offset: 0, 0
   index: -1
-japanUnowned
+Japan - Unowned
   rotate: false
   xy: 1955, 86
   size: 90, 82
   orig: 96, 87
   offset: 3, 3
   index: -1
-middleEastBlue
+Middle East - Blue
   rotate: true
   xy: 178, 268
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastBrown
+Middle East - Brown
   rotate: true
   xy: 178, 480
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastCyan
+Middle East - Cyan
   rotate: true
   xy: 178, 692
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastDisabled
+Middle East - Disabled
   rotate: true
   xy: 178, 904
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastGold
+Middle East - Gold
   rotate: true
   xy: 178, 1116
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastGreen
+Middle East - Green
   rotate: true
   xy: 178, 1328
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastHovered
+Middle East - Hovered
   rotate: true
   xy: 178, 1540
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastPink
+Middle East - Pink
   rotate: false
   xy: 554, 178
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastPurple
+Middle East - Purple
   rotate: false
   xy: 766, 178
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastRed
+Middle East - Red
   rotate: false
   xy: 978, 178
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastSilver
+Middle East - Silver
   rotate: false
   xy: 1190, 178
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastTeal
+Middle East - Teal
   rotate: false
   xy: 1402, 178
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-middleEastUnowned
+Middle East - Unowned
   rotate: false
   xy: 1614, 178
   size: 210, 167
   orig: 210, 167
   offset: 0, 0
   index: -1
-newGuineaBlue
+New Guinea - Blue
   rotate: false
   xy: 451, 416
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaBrown
+New Guinea - Brown
   rotate: false
   xy: 549, 347
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaCyan
+New Guinea - Cyan
   rotate: false
   xy: 589, 416
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaDisabled
+New Guinea - Disabled
   rotate: true
   xy: 1758, 347
   size: 130, 61
   orig: 136, 67
   offset: 3, 3
   index: -1
-newGuineaGold
+New Guinea - Gold
   rotate: true
   xy: 1427, 882
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaGreen
+New Guinea - Green
   rotate: true
   xy: 1427, 1020
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaHovered
+New Guinea - Hovered
   rotate: true
   xy: 533, 1063
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaPink
+New Guinea - Pink
   rotate: true
   xy: 533, 1201
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaPurple
+New Guinea - Purple
   rotate: true
   xy: 533, 1339
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaRed
+New Guinea - Red
   rotate: false
   xy: 533, 1477
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaSilver
+New Guinea - Silver
   rotate: true
   xy: 728, 1209
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaTeal
+New Guinea - Teal
   rotate: false
   xy: 671, 1450
   size: 136, 67
   orig: 136, 67
   offset: 0, 0
   index: -1
-newGuineaUnowned
+New Guinea - Unowned
   rotate: true
   xy: 1758, 479
   size: 130, 61
   orig: 136, 67
   offset: 3, 3
   index: -1
-siamBlue
+Siam - Blue
   rotate: true
   xy: 742, 1011
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamBrown
+Siam - Brown
   rotate: false
   xy: 629, 1039
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamCyan
+Siam - Cyan
   rotate: true
   xy: 742, 1110
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamDisabled
+Siam - Disabled
   rotate: false
   xy: 629, 1195
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamGold
+Siam - Gold
   rotate: true
   xy: 602, 1351
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamGreen
+Siam - Green
   rotate: true
   xy: 1238, 1022
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamHovered
+Siam - Hovered
   rotate: true
   xy: 1080, 1095
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamPink
+Siam - Pink
   rotate: true
   xy: 922, 1140
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamPurple
+Siam - Purple
   rotate: false
   xy: 797, 1209
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamRed
+Siam - Red
   rotate: false
   xy: 629, 1546
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamSilver
+Siam - Silver
   rotate: true
   xy: 1236, 1121
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamTeal
+Siam - Teal
   rotate: true
   xy: 1078, 1194
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-siamUnowned
+Siam - Unowned
   rotate: true
   xy: 922, 1239
   size: 97, 154
   orig: 97, 154
   offset: 0, 0
   index: -1
-westernAustraliaBlue
+Western Australia - Blue
   rotate: false
   xy: 394, 178
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaBrown
+Western Australia - Brown
   rotate: false
   xy: 742, 347
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaCyan
+Western Australia - Cyan
   rotate: false
   xy: 742, 487
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaDisabled
+Western Australia - Disabled
   rotate: false
   xy: 742, 627
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaGold
+Western Australia - Gold
   rotate: false
   xy: 1504, 778
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaGreen
+Western Australia - Green
   rotate: true
   xy: 1662, 795
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaHovered
+Western Australia - Hovered
   rotate: false
   xy: 1111, 815
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaPink
+Western Australia - Pink
   rotate: false
   xy: 922, 860
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaPurple
+Western Australia - Purple
   rotate: false
   xy: 742, 871
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaRed
+Western Australia - Red
   rotate: false
   xy: 1269, 882
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaSilver
+Western Australia - Silver
   rotate: false
   xy: 1496, 918
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaTeal
+Western Australia - Teal
   rotate: false
   xy: 1080, 955
   size: 156, 138
   orig: 156, 138
   offset: 0, 0
   index: -1
-westernAustraliaUnowned
+Western Australia - Unowned
   rotate: false
   xy: 922, 1000
   size: 156, 138

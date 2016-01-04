@@ -2,1092 +2,1092 @@ countries2.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-argentinaBlue
+Argentina - Blue
   rotate: true
   xy: 1009, 204
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaBrown
+Argentina - Brown
   rotate: true
   xy: 1227, 204
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaCyan
+Argentina - Cyan
   rotate: true
   xy: 1445, 204
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaDisabled
+Argentina - Disabled
   rotate: true
   xy: 1663, 204
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaGold
+Argentina - Gold
   rotate: false
   xy: 817, 378
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaGreen
+Argentina - Green
   rotate: false
   xy: 817, 596
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaHovered
+Argentina - Hovered
   rotate: false
   xy: 817, 814
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaPink
+Argentina - Pink
   rotate: false
   xy: 928, 1199
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaPurple
+Argentina - Purple
   rotate: false
   xy: 949, 1417
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaRed
+Argentina - Red
   rotate: false
   xy: 949, 1635
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaSilver
+Argentina - Silver
   rotate: false
   xy: 944, 354
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaTeal
+Argentina - Teal
   rotate: false
   xy: 944, 572
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-argentinaUnowned
+Argentina - Unowned
   rotate: false
   xy: 944, 790
   size: 125, 216
   orig: 125, 216
   offset: 0, 0
   index: -1
-brazilBlue
+Brazil - Blue
   rotate: false
   xy: 2, 1511
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilBrown
+Brazil - Brown
   rotate: false
   xy: 2, 1740
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilCyan
+Brazil - Cyan
   rotate: false
   xy: 204, 336
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilDisabled
+Brazil - Disabled
   rotate: false
   xy: 204, 565
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilGold
+Brazil - Gold
   rotate: false
   xy: 204, 794
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilGreen
+Brazil - Green
   rotate: false
   xy: 204, 1023
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilHovered
+Brazil - Hovered
   rotate: false
   xy: 204, 1252
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilPink
+Brazil - Pink
   rotate: false
   xy: 225, 1481
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilPurple
+Brazil - Purple
   rotate: false
   xy: 225, 1710
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilRed
+Brazil - Red
   rotate: false
   xy: 427, 336
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilSilver
+Brazil - Silver
   rotate: false
   xy: 427, 565
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilTeal
+Brazil - Teal
   rotate: false
   xy: 427, 794
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-brazilUnowned
+Brazil - Unowned
   rotate: false
   xy: 427, 1023
   size: 221, 227
   orig: 221, 227
   offset: 0, 0
   index: -1
-congoBlue
+Congo - Blue
   rotate: true
   xy: 2, 204
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoBrown
+Congo - Brown
   rotate: true
   xy: 141, 204
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoCyan
+Congo - Cyan
   rotate: true
   xy: 280, 204
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoDisabled
+Congo - Disabled
   rotate: true
   xy: 419, 204
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoGold
+Congo - Gold
   rotate: true
   xy: 558, 204
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoGreen
+Congo - Green
   rotate: true
   xy: 697, 204
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoHovered
+Congo - Hovered
   rotate: false
   xy: 1009, 1902
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoPink
+Congo - Pink
   rotate: false
   xy: 1316, 487
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoPurple
+Congo - Purple
   rotate: true
   xy: 1772, 661
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoRed
+Congo - Red
   rotate: false
   xy: 1911, 783
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoSilver
+Congo - Silver
   rotate: false
   xy: 1910, 922
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoTeal
+Congo - Teal
   rotate: true
   xy: 1822, 1156
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-congoUnowned
+Congo - Unowned
   rotate: true
   xy: 1615, 1239
   size: 126, 137
   orig: 126, 137
   offset: 0, 0
   index: -1
-eastAfricaBlue
+East Africa - Blue
   rotate: false
   xy: 427, 1252
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaBrown
+East Africa - Brown
   rotate: false
   xy: 448, 1477
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaCyan
+East Africa - Cyan
   rotate: false
   xy: 594, 1252
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaDisabled
+East Africa - Disabled
   rotate: false
   xy: 448, 1702
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaGold
+East Africa - Gold
   rotate: false
   xy: 615, 1477
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaGreen
+East Africa - Green
   rotate: false
   xy: 615, 1702
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaHovered
+East Africa - Hovered
   rotate: false
   xy: 650, 336
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaPink
+East Africa - Pink
   rotate: false
   xy: 650, 561
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaPurple
+East Africa - Purple
   rotate: false
   xy: 650, 786
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaRed
+East Africa - Red
   rotate: false
   xy: 650, 1011
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaSilver
+East Africa - Silver
   rotate: false
   xy: 761, 1236
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaTeal
+East Africa - Teal
   rotate: false
   xy: 782, 1461
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-eastAfricaUnowned
+East Africa - Unowned
   rotate: false
   xy: 782, 1686
   size: 165, 223
   orig: 165, 223
   offset: 0, 0
   index: -1
-egyptBlue
+Egypt - Blue
   rotate: false
   xy: 91, 1969
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptBrown
+Egypt - Brown
   rotate: true
   xy: 928, 204
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptCyan
+Egypt - Cyan
   rotate: true
   xy: 1119, 1748
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptDisabled
+Egypt - Disabled
   rotate: true
   xy: 1137, 1898
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptGold
+Egypt - Gold
   rotate: true
   xy: 1196, 1748
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptGreen
+Egypt - Green
   rotate: true
   xy: 1214, 1898
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptHovered
+Egypt - Hovered
   rotate: true
   xy: 1273, 1748
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptPink
+Egypt - Pink
   rotate: true
   xy: 1291, 1898
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptPurple
+Egypt - Purple
   rotate: true
   xy: 1350, 1748
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptRed
+Egypt - Red
   rotate: true
   xy: 1368, 1898
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptSilver
+Egypt - Silver
   rotate: true
   xy: 1071, 331
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptTeal
+Egypt - Teal
   rotate: true
   xy: 1071, 481
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-egyptUnowned
+Egypt - Unowned
   rotate: true
   xy: 1071, 631
   size: 148, 75
   orig: 148, 75
   offset: 0, 0
   index: -1
-falklandIslandsBlue
+Falkland Islands - Blue
   rotate: false
   xy: 836, 204
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsBrown
+Falkland Islands - Brown
   rotate: false
   xy: 836, 291
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsCyan
+Falkland Islands - Cyan
   rotate: false
   xy: 1325, 1327
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsDisabled
+Falkland Islands - Disabled
   rotate: true
   xy: 204, 1481
   size: 21, 7
   orig: 89, 89
   offset: 34, 41
   index: -1
-falklandIslandsGold
+Falkland Islands - Gold
   rotate: false
   xy: 1768, 408
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsGreen
+Falkland Islands - Green
   rotate: false
   xy: 1855, 408
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsHovered
+Falkland Islands - Hovered
   rotate: false
   xy: 1533, 1160
   size: 80, 80
   orig: 89, 89
   offset: 4, 5
   index: -1
-falklandIslandsPink
+Falkland Islands - Pink
   rotate: false
   xy: 1942, 408
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsPurple
+Falkland Islands - Purple
   rotate: false
   xy: 1961, 1156
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsRed
+Falkland Islands - Red
   rotate: false
   xy: 1961, 1243
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsSilver
+Falkland Islands - Silver
   rotate: false
   xy: 1445, 1325
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsTeal
+Falkland Islands - Teal
   rotate: false
   xy: 1754, 1284
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-falklandIslandsUnowned
+Falkland Islands - Unowned
   rotate: false
   xy: 1841, 1284
   size: 85, 85
   orig: 89, 89
   offset: 2, 2
   index: -1
-madagascarBlue
+Madagascar - Blue
   rotate: true
   xy: 949, 1853
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarBrown
+Madagascar - Brown
   rotate: true
   xy: 1034, 1853
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarCyan
+Madagascar - Cyan
   rotate: true
   xy: 1071, 948
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarDisabled
+Madagascar - Disabled
   rotate: false
   xy: 48, 1969
   size: 41, 77
   orig: 49, 83
   offset: 4, 3
   index: -1
-madagascarGold
+Madagascar - Gold
   rotate: true
   xy: 1156, 948
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarGreen
+Madagascar - Green
   rotate: false
   xy: 1705, 757
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarHovered
+Madagascar - Hovered
   rotate: false
   xy: 1705, 842
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarPink
+Madagascar - Pink
   rotate: false
   xy: 1646, 922
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarPurple
+Madagascar - Purple
   rotate: false
   xy: 1695, 927
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarRed
+Madagascar - Red
   rotate: false
   xy: 1617, 1007
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarSilver
+Madagascar - Silver
   rotate: false
   xy: 1666, 1012
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarTeal
+Madagascar - Teal
   rotate: false
   xy: 1617, 1092
   size: 47, 83
   orig: 49, 83
   offset: 1, 0
   index: -1
-madagascarUnowned
+Madagascar - Unowned
   rotate: false
   xy: 2, 1969
   size: 44, 77
   orig: 49, 83
   offset: 2, 3
   index: -1
-northAfricaBlue
+North Africa - Blue
   rotate: false
   xy: 2, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaBrown
+North Africa - Brown
   rotate: false
   xy: 237, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaCyan
+North Africa - Cyan
   rotate: false
   xy: 472, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaDisabled
+North Africa - Disabled
   rotate: false
   xy: 707, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaGold
+North Africa - Gold
   rotate: false
   xy: 942, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaGreen
+North Africa - Green
   rotate: false
   xy: 1177, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaHovered
+North Africa - Hovered
   rotate: false
   xy: 1412, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaPink
+North Africa - Pink
   rotate: false
   xy: 1647, 2
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaPurple
+North Africa - Purple
   rotate: true
   xy: 2, 336
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaRed
+North Africa - Red
   rotate: true
   xy: 2, 571
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaSilver
+North Africa - Silver
   rotate: true
   xy: 2, 806
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaTeal
+North Africa - Teal
   rotate: true
   xy: 2, 1041
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-northAfricaUnowned
+North Africa - Unowned
   rotate: true
   xy: 2, 1276
   size: 233, 200
   orig: 233, 200
   offset: 0, 0
   index: -1
-peruBlue
+Peru - Blue
   rotate: false
   xy: 1149, 997
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruBrown
+Peru - Brown
   rotate: false
   xy: 1221, 1162
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruCyan
+Peru - Cyan
   rotate: false
   xy: 1237, 758
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruDisabled
+Peru - Disabled
   rotate: false
   xy: 1444, 497
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruGold
+Peru - Gold
   rotate: false
   xy: 1305, 995
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruGreen
+Peru - Green
   rotate: false
   xy: 1393, 758
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruHovered
+Peru - Hovered
   rotate: false
   xy: 1600, 497
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruPink
+Peru - Pink
   rotate: false
   xy: 1612, 331
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruPurple
+Peru - Purple
   rotate: false
   xy: 1377, 1160
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruRed
+Peru - Red
   rotate: false
   xy: 1461, 995
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruSilver
+Peru - Silver
   rotate: false
   xy: 1549, 757
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruTeal
+Peru - Teal
   rotate: false
   xy: 1756, 496
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-peruUnowned
+Peru - Unowned
   rotate: false
   xy: 1754, 789
   size: 154, 163
   orig: 154, 163
   offset: 0, 0
   index: -1
-southAfricaBlue
+South Africa - Blue
   rotate: true
   xy: 1882, 2
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaBrown
+South Africa - Brown
   rotate: true
   xy: 1882, 169
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaCyan
+South Africa - Cyan
   rotate: true
   xy: 817, 1032
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaDisabled
+South Africa - Disabled
   rotate: true
   xy: 983, 1008
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaGold
+South Africa - Gold
   rotate: true
   xy: 1055, 1175
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaGreen
+South Africa - Green
   rotate: true
   xy: 1076, 1414
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaHovered
+South Africa - Hovered
   rotate: true
   xy: 1076, 1581
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaPink
+South Africa - Pink
   rotate: true
   xy: 1242, 1414
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaPurple
+South Africa - Purple
   rotate: true
   xy: 1242, 1581
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaRed
+South Africa - Red
   rotate: false
   xy: 1445, 331
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaSilver
+South Africa - Silver
   rotate: false
   xy: 1149, 331
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaTeal
+South Africa - Teal
   rotate: false
   xy: 1149, 497
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southAfricaUnowned
+South Africa - Unowned
   rotate: true
   xy: 1071, 781
   size: 165, 164
   orig: 165, 164
   offset: 0, 0
   index: -1
-southernEuropeBlue
+Southern Europe - Blue
   rotate: true
   xy: 865, 1911
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeBrown
+Southern Europe - Brown
   rotate: true
   xy: 937, 1911
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeCyan
+Southern Europe - Cyan
   rotate: false
   xy: 1055, 1342
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeDisabled
+Southern Europe - Disabled
   rotate: false
   xy: 1190, 1342
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeGold
+Southern Europe - Gold
   rotate: false
   xy: 1241, 923
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeGreen
+Southern Europe - Green
   rotate: false
   xy: 1376, 923
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeHovered
+Southern Europe - Hovered
   rotate: false
   xy: 1511, 923
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropePink
+Southern Europe - Pink
   rotate: false
   xy: 1912, 336
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropePurple
+Southern Europe - Purple
   rotate: false
   xy: 1768, 336
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeRed
+Southern Europe - Red
   rotate: false
   xy: 1912, 495
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeSilver
+Southern Europe - Silver
   rotate: false
   xy: 1912, 567
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeTeal
+Southern Europe - Teal
   rotate: false
   xy: 1912, 639
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-southernEuropeUnowned
+Southern Europe - Unowned
   rotate: false
   xy: 1911, 711
   size: 133, 70
   orig: 133, 70
   offset: 0, 0
   index: -1
-venezuelaBlue
+Venezuela - Blue
   rotate: false
   xy: 241, 1939
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaBrown
+Venezuela - Brown
   rotate: false
   xy: 397, 1939
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaCyan
+Venezuela - Cyan
   rotate: false
   xy: 553, 1927
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaDisabled
+Venezuela - Disabled
   rotate: false
   xy: 709, 1927
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaGold
+Venezuela - Gold
   rotate: true
   xy: 1325, 331
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaGreen
+Venezuela - Green
   rotate: false
   xy: 1148, 663
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaHovered
+Venezuela - Hovered
   rotate: false
   xy: 1304, 663
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaPink
+Venezuela - Pink
   rotate: false
   xy: 1460, 662
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaPurple
+Venezuela - Purple
   rotate: false
   xy: 1616, 662
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaRed
+Venezuela - Red
   rotate: false
   xy: 1744, 954
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaSilver
+Venezuela - Silver
   rotate: false
   xy: 1715, 1049
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaTeal
+Venezuela - Teal
   rotate: false
   xy: 1871, 1061
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaUnowned
+Venezuela - Unowned
   rotate: false
   xy: 1666, 1144
   size: 154, 93

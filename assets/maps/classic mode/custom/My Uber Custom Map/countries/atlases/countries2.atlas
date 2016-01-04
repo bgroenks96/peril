@@ -2,91 +2,91 @@ countries2.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-venezuelaBlue
+Venezuela - Blue
   rotate: false
   xy: 1544, 896
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaBrown
+Venezuela - Brown
   rotate: false
   xy: 1700, 932
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaCyan
+Venezuela - Cyan
   rotate: false
   xy: 1544, 991
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaDisabled
+Venezuela - Disabled
   rotate: false
   xy: 1388, 995
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaGold
+Venezuela - Gold
   rotate: false
   xy: 1011, 1069
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaGreen
+Venezuela - Green
   rotate: false
   xy: 1228, 1040
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaHovered
+Venezuela - Hovered
   rotate: false
   xy: 1011, 1164
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaPink
+Venezuela - Pink
   rotate: true
   xy: 892, 1126
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaPurple
+Venezuela - Purple
   rotate: false
   xy: 1856, 1006
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaRed
+Venezuela - Red
   rotate: false
   xy: 1700, 1027
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaSilver
+Venezuela - Silver
   rotate: false
   xy: 1544, 1086
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaTeal
+Venezuela - Teal
   rotate: false
   xy: 1384, 1090
   size: 154, 93
   orig: 154, 93
   offset: 0, 0
   index: -1
-venezuelaUnowned
+Venezuela - Unowned
   rotate: false
   xy: 1228, 1135
   size: 154, 93

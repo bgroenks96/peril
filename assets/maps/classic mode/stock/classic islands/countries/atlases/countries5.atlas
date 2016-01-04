@@ -2,91 +2,91 @@ countries5.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-antarcticaBlue
+Antarctica - Blue
   rotate: false
   xy: 0, 0
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaBrown
+Antarctica - Brown
   rotate: false
   xy: 0, 155
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaCyan
+Antarctica - Cyan
   rotate: false
   xy: 0, 310
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaDisabled
+Antarctica - Disabled
   rotate: false
   xy: 0, 465
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaGold
+Antarctica - Gold
   rotate: false
   xy: 0, 620
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaGreen
+Antarctica - Green
   rotate: false
   xy: 0, 775
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaHovered
+Antarctica - Hovered
   rotate: false
   xy: 0, 930
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaPink
+Antarctica - Pink
   rotate: false
   xy: 0, 1085
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaPurple
+Antarctica - Purple
   rotate: false
   xy: 0, 1240
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaRed
+Antarctica - Red
   rotate: false
   xy: 0, 1395
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaSilver
+Antarctica - Silver
   rotate: false
   xy: 0, 1550
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaTeal
+Antarctica - Teal
   rotate: false
   xy: 0, 1705
   size: 2048, 154
   orig: 2048, 154
   offset: 0, 0
   index: -1
-antarcticaUnowned
+Antarctica - Unowned
   rotate: false
   xy: 0, 1860
   size: 2048, 154
