@@ -50,7 +50,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private static final Interpolation menuBarTransitionInterpolation = Interpolation.pow2;
   private static final float menuBarTransitionTimeSeconds = 0.5f;
   private final Collection <Cell <ImageTextButton>> menuChoiceCells = new ArrayList <> ();
-  private final Collection <ImageTextButton> menuChoices = new ArrayList<> ();
+  private final Collection <ImageTextButton> menuChoices = new ArrayList <> ();
   private final MenuScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final Cursor normalCursor;
@@ -223,11 +223,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     private final int width;
 
-    MenuBarState (final int width)
-    {
-      this.width = width;
-    }
-
     public int getWidth ()
     {
       return width;
@@ -236,6 +231,11 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     public boolean is (final MenuBarState menuBarState)
     {
       return this == menuBarState;
+    }
+
+    MenuBarState (final int width)
+    {
+      this.width = width;
     }
   }
 
@@ -265,7 +265,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     }
     for (final Actor actor : buttonTable.getChildren ())
     {
-      if (! (actor instanceof TextButton)) continue;
+      if (!(actor instanceof TextButton)) continue;
       ((TextButton) actor).setStyle (widgetFactory.createTextButtonStyle ("default"));
     }
   }
@@ -556,6 +556,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
   private void hideCursor ()
   {
-    Gdx.graphics.setCursor (null);
+    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
   }
 }

@@ -575,7 +575,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
   private static void hideCursor ()
   {
-    Gdx.graphics.setCursor (null);
+    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
   }
 
   private void showCursor ()

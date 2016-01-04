@@ -248,7 +248,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
   private static void hideCursor ()
   {
-    Gdx.graphics.setCursor (null);
+    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
   }
 
   private boolean loading ()
