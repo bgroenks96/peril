@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.AttackPopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.KeyListener;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;

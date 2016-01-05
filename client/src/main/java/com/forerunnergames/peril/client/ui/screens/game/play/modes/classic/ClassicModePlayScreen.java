@@ -61,6 +61,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.a
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AbstractBattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AttackPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.AttackPopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.BattleOutcome;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.DefendPopup;
