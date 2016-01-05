@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.input;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.colors.ContinentColor;
@@ -68,9 +70,10 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
   }
 
   @Override
-  public PlayMapInputDetection create (final MapMetadata mapMetadata)
+  public PlayMapInputDetection create (final MapMetadata mapMetadata, final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
     Preconditions.checkIsTrue (isFinishedLoadingAssets (mapMetadata),
                                Strings.format ("Assets must finish loading before creating {} for map [{}].",
                                                PlayMapInputDetection.class.getSimpleName (), mapMetadata));
@@ -120,7 +123,7 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
                     continentColorToNameConverter);
 
     final ScreenToPlayMapCoordinateConverter screenToPlayMapCoordinateConverter =
-            new DefaultScreenToPlayMapCoordinateConverter (screenSize);
+            new DefaultScreenToPlayMapCoordinateConverter (screenSize, playMapReferenceSize);
 
     final ScreenCoordinateToTerritoryNameConverter screenCoordinateToCountryNameConverter =
             new DefaultScreenCoordinateToTerritoryNameConverter (

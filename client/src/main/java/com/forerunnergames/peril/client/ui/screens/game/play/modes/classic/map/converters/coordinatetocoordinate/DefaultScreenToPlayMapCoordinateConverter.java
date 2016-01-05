@@ -10,12 +10,15 @@ public final class DefaultScreenToPlayMapCoordinateConverter implements ScreenTo
 {
   private final ScreenSize screenSize;
   private final Vector2 coordinate = new Vector2 ();
+  private final Vector2 playMapReferenceSize;
 
-  public DefaultScreenToPlayMapCoordinateConverter (final ScreenSize screenSize)
+  public DefaultScreenToPlayMapCoordinateConverter (final ScreenSize screenSize, final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (screenSize, "screenSize");
+    Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
 
     this.screenSize = screenSize;
+    this.playMapReferenceSize = playMapReferenceSize;
   }
 
   @Override
@@ -25,6 +28,6 @@ public final class DefaultScreenToPlayMapCoordinateConverter implements ScreenTo
 
     return coordinate.set (actualScreenCoordinate).scl (screenSize.actualToReferenceScaling ())
             .add (PlayMapSettings.REFERENCE_SCREEN_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_TRANSLATION)
-            .scl (PlayMapSettings.ACTUAL_PLAY_MAP_SPACE_TO_REFERENCE_PLAY_MAP_SPACE_SCALING);
+            .scl (PlayMapSettings.actualToReferencePlayMapScaling (playMapReferenceSize));
   }
 }

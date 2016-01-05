@@ -38,21 +38,26 @@ public final class DefaultCountryActor implements CountryActor
   public DefaultCountryActor (final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages,
                               final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages,
                               final CountryImageData imageData,
-                              final CountryArmyTextActor armyTextActor)
+                              final CountryArmyTextActor armyTextActor,
+                              final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (primaryImages, "primaryImages");
     Arguments.checkIsNotNull (secondaryImages, "secondaryImages");
     Arguments.checkIsNotNull (imageData, "imageData");
     Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
+    Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
 
     this.primaryImages = primaryImages;
     this.secondaryImages = secondaryImages;
     this.imageData = imageData;
     this.armyTextActor = armyTextActor;
 
+    final Vector2 referenceToActualPlayMapSpaceScaling = PlayMapSettings
+            .referenceToActualPlayMapScaling (playMapReferenceSize);
+
     final Vector2 tempPosition = new Vector2 (imageData.getReferenceDestination ());
-    tempPosition.y = PlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
-    tempPosition.scl (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+    tempPosition.y = playMapReferenceSize.y - tempPosition.y;
+    tempPosition.scl (referenceToActualPlayMapSpaceScaling);
 
     group.setName (imageData.getCountryName ());
     group.setTransform (false);
@@ -61,7 +66,7 @@ public final class DefaultCountryActor implements CountryActor
     {
       primaryImage.setVisible (false);
       primaryImage.setPosition (tempPosition);
-      primaryImage.setScale (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+      primaryImage.setScale (referenceToActualPlayMapSpaceScaling);
       group.addActor (primaryImage.asActor ());
     }
 
@@ -69,7 +74,7 @@ public final class DefaultCountryActor implements CountryActor
     {
       countrySecondaryImage.setVisible (false);
       countrySecondaryImage.setPosition (tempPosition);
-      countrySecondaryImage.setScale (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+      countrySecondaryImage.setScale (referenceToActualPlayMapSpaceScaling);
       group.addActor (countrySecondaryImage.asActor ());
     }
 

@@ -12,19 +12,22 @@ public final class CountryArmyTextActorFactory
 {
   private static final Vector2 tempPosition = new Vector2 ();
 
-  public static CountryArmyTextActor create (final CountryImageData countryImageData, final BitmapFont font)
+  public static CountryArmyTextActor create (final CountryImageData countryImageData,
+                                             final BitmapFont font,
+                                             final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (countryImageData, "countryImageData");
     Arguments.checkIsNotNull (font, "font");
+    Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
 
     final CountryArmyTextActor countryArmyTextActor = new DefaultCountryArmyTextActor (font);
 
     tempPosition.set (countryImageData.getReferenceTextUpperLeft ());
-    tempPosition.y = PlayMapSettings.REFERENCE_HEIGHT - tempPosition.y;
-    tempPosition.scl (PlayMapSettings.REFERENCE_PLAY_MAP_SPACE_TO_ACTUAL_PLAY_MAP_SPACE_SCALING);
+    tempPosition.y = playMapReferenceSize.y - tempPosition.y;
+    tempPosition.scl (PlayMapSettings.referenceToActualPlayMapScaling (playMapReferenceSize));
 
     countryArmyTextActor.setCircleTopLeft (tempPosition);
-    countryArmyTextActor.setCircleSize (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_ACTUAL_PLAY_MAP_SPACE);
+    countryArmyTextActor.setCircleSize (PlayMapSettings.countryArmyCircleSizeActualPlayMapSpace (playMapReferenceSize));
     countryArmyTextActor.asActor ().setName (countryImageData.getCountryName ());
 
     return countryArmyTextActor;

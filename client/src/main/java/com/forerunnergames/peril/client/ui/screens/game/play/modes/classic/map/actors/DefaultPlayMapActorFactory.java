@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
@@ -100,8 +101,9 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
     // @formatter:off
     final BitmapFont font = new BitmapFont ();
     final CountryImageDataRepository countryImageDataRepository = countryImageDataRepositoryFactory.create (mapMetadata);
-    final PlayMapInputDetection playMapInputDetection = playMapInputDetectionFactory.create (mapMetadata);
     final Image backgroundImage = playMapBackgroundImageLoader.get (mapMetadata);
+    final Vector2 playMapReferenceSize = new Vector2 (backgroundImage.getWidth (), backgroundImage.getHeight ());
+    final PlayMapInputDetection playMapInputDetection = playMapInputDetectionFactory.create (mapMetadata, playMapReferenceSize);
     final HoveredTerritoryTextActor hoveredTerritoryTextActor = new HoveredTerritoryTextActor (playMapInputDetection, mouseInput, font);
     final ImmutableMap.Builder <String, CountryActor> countryNamesToActorsBuilder = ImmutableMap.builder ();
     countryImagesFactory.create (mapMetadata, countryAtlasesLoader.get (mapMetadata));
@@ -111,7 +113,7 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
             countryImagesFactory.getPrimary (mapMetadata), countryImagesFactory.getSecondary (mapMetadata));
 
     final CountryActorFactory countryActorFactory = new CountryActorFactory (countryImageDataRepository,
-            countryImagesRepository);
+            countryImagesRepository, playMapReferenceSize);
 
     for (final String countryName : countryImageDataRepository.getCountryNames ())
     {

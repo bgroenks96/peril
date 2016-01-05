@@ -2,7 +2,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.
 
 import com.badlogic.gdx.math.Vector2;
 
-import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.tools.common.Arguments;
 
 public class DefaultInputToScreenCoordinateConverter implements InputToScreenCoordinateConverter
@@ -14,7 +13,6 @@ public class DefaultInputToScreenCoordinateConverter implements InputToScreenCoo
   {
     Arguments.checkIsNotNull (inputCoordinate, "inputCoordinate");
 
-    return screenCoordinate.set (inputCoordinate)
-            .add (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION);
+    return screenCoordinate.set (inputCoordinate);
   }
 }
