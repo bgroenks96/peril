@@ -7,6 +7,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.common.map.MapMetadata;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 
 public interface PlayMapActor
@@ -42,6 +44,8 @@ public interface PlayMapActor
   boolean existsCountryActorWithName (final String countryName);
 
   CountryActor getCountryActorWithName (final String countryName);
+
+  ImmutableSet <String> getAllCountryNames ();
 
   boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName);
 

@@ -66,7 +66,7 @@ public final class DebugInputProcessor extends InputAdapter
     this.attackPopup = attackPopup;
     this.defendPopup = defendPopup;
 
-    eventGenerator = new DebugEventGenerator (eventBus);
+    eventGenerator = new DebugEventGenerator (playMapActor, eventBus);
   }
 
   @Override
@@ -361,7 +361,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          sourceCountryName = DebugEventGenerator.getRandomCountryName ();
+          sourceCountryName = eventGenerator.getRandomCountryName ();
         }
         while (!playMapActor.existsCountryActorWithName (sourceCountryName));
 
@@ -369,7 +369,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          destinationCountryName = DebugEventGenerator.getRandomCountryName ();
+          destinationCountryName = eventGenerator.getRandomCountryName ();
         }
         while (destinationCountryName.equals (sourceCountryName)
                 || !playMapActor.existsCountryActorWithName (destinationCountryName));
@@ -394,7 +394,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          sourceCountryName = DebugEventGenerator.getRandomCountryName ();
+          sourceCountryName = eventGenerator.getRandomCountryName ();
         }
         while (!playMapActor.existsCountryActorWithName (sourceCountryName));
 
@@ -402,7 +402,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          destinationCountryName = DebugEventGenerator.getRandomCountryName ();
+          destinationCountryName = eventGenerator.getRandomCountryName ();
         }
         while (destinationCountryName.equals (sourceCountryName)
                 || !playMapActor.existsCountryActorWithName (destinationCountryName));
@@ -427,7 +427,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          attackingCountryName = DebugEventGenerator.getRandomCountryName ();
+          attackingCountryName = eventGenerator.getRandomCountryName ();
         }
         while (!playMapActor.existsCountryActorWithName (attackingCountryName));
 
@@ -435,17 +435,17 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          defendingCountryName = DebugEventGenerator.getRandomCountryName ();
+          defendingCountryName = eventGenerator.getRandomCountryName ();
         }
         while (defendingCountryName.equals (attackingCountryName)
                 || !playMapActor.existsCountryActorWithName (defendingCountryName));
 
-        final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+        final String attackingPlayerName = eventGenerator.getRandomPlayerName ();
         String defendingPlayerName;
 
         do
         {
-          defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+          defendingPlayerName = eventGenerator.getRandomPlayerName ();
         }
         while (defendingPlayerName.equals (attackingPlayerName));
 
@@ -470,7 +470,7 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          attackingCountryName = DebugEventGenerator.getRandomCountryName ();
+          attackingCountryName = eventGenerator.getRandomCountryName ();
         }
         while (!playMapActor.existsCountryActorWithName (attackingCountryName));
 
@@ -478,17 +478,17 @@ public final class DebugInputProcessor extends InputAdapter
 
         do
         {
-          defendingCountryName = DebugEventGenerator.getRandomCountryName ();
+          defendingCountryName = eventGenerator.getRandomCountryName ();
         }
         while (defendingCountryName.equals (attackingCountryName)
                 || !playMapActor.existsCountryActorWithName (defendingCountryName));
 
-        final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+        final String attackingPlayerName = eventGenerator.getRandomPlayerName ();
         String defendingPlayerName;
 
         do
         {
-          defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
+          defendingPlayerName = eventGenerator.getRandomPlayerName ();
         }
         while (defendingPlayerName.equals (attackingPlayerName));
 
@@ -516,6 +516,8 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (playMapActor, "playMapActor");
 
     this.playMapActor = playMapActor;
+
+    eventGenerator.setPlayMapActor (playMapActor);
   }
 
   public void reset ()

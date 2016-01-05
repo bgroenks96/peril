@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debu
 import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.messages.StatusMessage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -65,20 +66,23 @@ public final class DebugEventGenerator
   private final Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
   private UnmodifiableIterator <String> playerColorIterator = createPlayerColorIterator ();
   private UnmodifiableIterator <Integer> playerTurnOrderIterator = createPlayerTurnOrderIterator ();
+  private PlayMapActor playMapActor;
 
-  public DebugEventGenerator (final MBassador <Event> eventBus)
+  public DebugEventGenerator (final PlayMapActor playMapActor, final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (playMapActor, "playMapActor");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.playMapActor = playMapActor;
     this.eventBus = eventBus;
   }
 
-  public static String getRandomCountryName ()
+  public String getRandomCountryName ()
   {
-    return Randomness.getRandomElementFrom (COUNTRY_NAMES);
+    return Randomness.getRandomElementFrom (playMapActor.getAllCountryNames ());
   }
 
-  public static String getRandomPlayerName ()
+  public String getRandomPlayerName ()
   {
     return Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES);
   }
@@ -117,6 +121,13 @@ public final class DebugEventGenerator
     playerTurnOrderIterator = createPlayerTurnOrderIterator ();
     availablePlayerNames.clear ();
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
+  }
+
+  public void setPlayMapActor (final PlayMapActor playMapActor)
+  {
+    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+
+    this.playMapActor = playMapActor;
   }
 
   private static int getRandomCountryDeltaArmyCount ()

@@ -9,6 +9,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 
 final class NullPlayMapActor implements PlayMapActor
@@ -112,6 +114,12 @@ final class NullPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
 
     return nullCountryActor;
+  }
+
+  @Override
+  public ImmutableSet <String> getAllCountryNames ()
+  {
+    return ImmutableSet.of ();
   }
 
   @Override

@@ -352,6 +352,12 @@ public final class DefaultPlayMapActor implements PlayMapActor
   }
 
   @Override
+  public ImmutableSet <String> getAllCountryNames ()
+  {
+    return countryNamesToActors.keySet ();
+  }
+
+  @Override
   public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
