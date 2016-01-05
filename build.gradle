@@ -15,6 +15,8 @@ buildscript {
     androidToolsVersion = json.androidBuildtoolsVersion
     androidSDKVersion = json.androidSDKVersion
     androidGradleToolsVersion = json.androidGradleToolVersion
+    logbackClassicVersion = "1.1.3"
+    fgToolsVersion = "1.0-SNAPSHOT"
   }
 
   repositories {
@@ -71,7 +73,7 @@ project (":desktop") {
     compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-    runtime "ch.qos.logback:logback-classic:1.1.3"
+    runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
 
@@ -111,7 +113,7 @@ project (":ios") {
     compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
     compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-    runtime "ch.qos.logback:logback-classic:1.1.3"
+    runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
 
@@ -123,8 +125,8 @@ project (":common") {
   targetCompatibility = projectTargetCompatibility
 
   dependencies {
-    compile ("com.forerunnergames.tools:fg-tools-common:1.0-SNAPSHOT")
-    compile ("com.forerunnergames.tools:fg-tools-net:1.0-SNAPSHOT")
+    compile ("com.forerunnergames.tools:fg-tools-common:$fgToolsVersion")
+    compile ("com.forerunnergames.tools:fg-tools-net:$fgToolsVersion")
     compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
       exclude module: "kryo"
     }
@@ -136,7 +138,7 @@ project (":common") {
     testCompile "junit:junit:4.12"
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "org.mockito:mockito-core:1.9.5"
-    testRuntime "ch.qos.logback:logback-classic:1.1.3"
+    testRuntime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
 
@@ -156,7 +158,7 @@ project (":core") {
     testCompile "junit:junit:4.12"
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "org.mockito:mockito-core:1.9.5"
-    testRuntime "ch.qos.logback:logback-classic:1.1.3"
+    testRuntime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
 
@@ -172,7 +174,7 @@ project (":client") {
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile "com.amazonaws:aws-java-sdk:1.10.44"
     testCompile project (path: ":common", configuration: "testRuntime")
-    testRuntime "ch.qos.logback:logback-classic:1.1.3"
+    testRuntime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
 
@@ -189,8 +191,8 @@ project (":server") {
     testCompile "junit:junit:4.12"
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "org.mockito:mockito-core:1.9.5"
-    testRuntime "ch.qos.logback:logback-classic:1.1.3"
-    runtime "ch.qos.logback:logback-classic:1.1.3"
+    testRuntime "ch.qos.logback:logback-classic:$logbackClassicVersion"
+    runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
 
