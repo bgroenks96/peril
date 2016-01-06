@@ -77,6 +77,10 @@ project (":desktop") {
   }
 }
 
+task createWrapper (type: Wrapper) {
+  gradleVersion = "2.10"
+}
+
 project (":android") {
   apply plugin: "android"
 
