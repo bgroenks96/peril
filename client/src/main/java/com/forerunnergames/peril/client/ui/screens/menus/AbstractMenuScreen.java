@@ -67,6 +67,12 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private final Label subTitleLabel;
   private final Stage stage;
   private final InputProcessor inputProcessor;
+  private final Stack rootStack;
+  private final Table tableL0;
+  private final Table tableL1;
+  private final Table tableL2;
+  private final Table tableL3;
+  private final Table tableL5;
   private final Table interactionTable;
   private final Table titleTable;
   private final Table menuChoicesTable;
@@ -111,23 +117,23 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     stage = new Stage (viewport, batch);
 
     // Layer 0 - screen background
-    final Stack rootStack = new Stack ();
+    rootStack = new Stack ();
     rootStack.setFillParent (true);
-    final Table tableL0 = new Table ().top ().left ();
+    tableL0 = new Table ().top ().left ();
     tableL0.add (screenBackgroundLeft);
     tableL0.add ().expandX ();
     tableL0.add (screenBackgroundRight);
     rootStack.add (tableL0);
 
     // Layer 1 - menu bar & right background shadow
-    final Table tableL1 = new Table ().top ().left ();
+    tableL1 = new Table ().top ().left ();
     tableL1.add ().width (302);
     tableL1.add (menuBar).width (MenuBarState.CONTRACTED.getWidth ()).expandY ().fillY ();
     tableL1.add (rightBackgroundShadow).expandY ().fill ();
     rootStack.add (tableL1);
 
     // Layer 2 - top & bottom background shadows
-    final Table tableL2 = new Table ().top ().left ();
+    tableL2 = new Table ().top ().left ();
     tableL2.add ().width (300);
     tableL2.add (topBackgroundShadow).size (692, 302).fill ();
     tableL2.row ();
@@ -138,7 +144,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     rootStack.add (tableL2);
 
     // Layer 3 - title background
-    final Table tableL3 = new Table ().top ().left ();
+    tableL3 = new Table ().top ().left ();
     tableL3.add ().width (301).height (400);
     tableL3.row ();
     tableL3.add ();
@@ -167,7 +173,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     rootStack.add (interactionTable);
 
     // Layer 5 - left & right menu bar shadows
-    final Table tableL5 = new Table ().top ().left ();
+    tableL5 = new Table ().top ().left ();
     tableL5.add ().width (300);
     tableL5.add (leftMenuBarShadow).expandY ().fill ();
     tableL5.add ().width (MenuBarState.CONTRACTED.getWidth () - 42);
@@ -420,7 +426,16 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
       menuChoiceCell.width (MenuBarState.EXPANDED.getWidth ());
     }
 
+    rootStack.invalidate ();
+    tableL0.invalidate ();
+    tableL1.invalidate ();
+    tableL2.invalidate ();
+    tableL3.invalidate ();
     interactionTable.invalidate ();
+    tableL5.invalidate ();
+    titleTable.invalidate ();
+    menuChoicesTable.invalidate ();
+    buttonTable.invalidate ();
 
     menuBar.addAction (
             Actions.sizeBy (

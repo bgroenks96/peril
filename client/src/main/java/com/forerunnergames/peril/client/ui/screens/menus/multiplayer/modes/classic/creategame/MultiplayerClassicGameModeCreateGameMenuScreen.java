@@ -195,7 +195,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       initialCountryAssignments.add (Strings.toProperCase (initialCountryAssignment.name ()));
     }
     initialCountryAssignmentSelectBox.setItems (initialCountryAssignments);
-    initialCountryAssignmentSelectBox.setSelected (Strings.toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
+    initialCountryAssignmentSelectBox
+            .setSelected (Strings.toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
     // @formatter:on
 
     winPercentSelectBox = widgetFactory.createWinPercentSelectBox ();
@@ -216,60 +217,81 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);
 
-    // @formatter:off
     final Table playerSettingsTable = new Table ().top ().left ();
-    playerSettingsTable.add ().height (23).colspan (5);
+    playerSettingsTable.add ().height (23);
     playerSettingsTable.row ();
-    playerSettingsTable.add (playerSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).padRight (60).left ().colspan (5);
-    playerSettingsTable.row ();
-    playerSettingsTable.add (playerNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playerSettingsTable.add (playerNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
-    playerSettingsTable.add ().expandX ().fill ();
-    playerSettingsTable.row ();
-    playerSettingsTable.add (clanTagSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playerSettingsTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
-    playerSettingsTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
-    playerSettingsTable.add ().width (102).fill ();
-    playerSettingsTable.add ().expandX ().fill ();
-    verticalGroup.addActor (playerSettingsTable);
-    // @formatter:on
+    playerSettingsTable.add (playerSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).left ();
 
-    // @formatter:off
+    playerSettingsTable.row ();
+
+    final Table playerNameTable = new Table ();
+    playerNameTable.add (playerNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    playerNameTable.add (playerNameTextField).size (236, 28).fill ().left ().spaceLeft (10);
+    playerSettingsTable.add (playerNameTable).left ();
+
+    playerSettingsTable.row ();
+
+    final Table clanTable = new Table ();
+    clanTable.add (clanTagSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    clanTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
+    clanTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
+    playerSettingsTable.add (clanTable).left ();
+
+    verticalGroup.addActor (playerSettingsTable);
+
     final Table gameSettingsTable = new Table ().top ().left ();
     gameSettingsTable.row ();
-    gameSettingsTable.add ().height (18).colspan (5);
+    gameSettingsTable.add ().height (18);
     gameSettingsTable.row ();
-    gameSettingsTable.add (gameSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).padRight (60).left ().colspan (5);
+    gameSettingsTable.add (gameSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).left ();
+
     gameSettingsTable.row ();
-    gameSettingsTable.add (serverNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    gameSettingsTable.add (serverNameTextField).size (204, 28).fill ().left ().colspan (3).spaceLeft (10);
-    gameSettingsTable.add ().expandX ().fill ();
+
+    final Table serverNameTable = new Table ();
+    serverNameTable.add (serverNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    serverNameTable.add (serverNameTextField).size (236, 28).fill ().left ().spaceLeft (10);
+    gameSettingsTable.add (serverNameTable).left ();
+
     gameSettingsTable.row ();
-    gameSettingsTable.add (playerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    gameSettingsTable.add (playerLimitLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
-    gameSettingsTable.add (customizePlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
-    gameSettingsTable.add ().width (102).fill ();
-    gameSettingsTable.add ().expandX ().fill ();
+
+    final Table mapTable = new Table ();
+    mapTable.add (mapSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    mapTable.add (mapNameLabel).size (204, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    mapTable.add (customizeMapButton).size (28, 28).fill ().left ().spaceLeft (4);
+    gameSettingsTable.add (mapTable).left ();
+
     gameSettingsTable.row ();
-    gameSettingsTable.add (spectatorsSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    gameSettingsTable.add (spectatorsSelectBox).size (102, 28).fill ().left ().spaceLeft (10).colspan (2);
-    gameSettingsTable.add ().expandX ().fill ();
+
+    final Table playersTable = new Table ();
+    playersTable.add (playerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    playersTable.add (playerLimitLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    playersTable.add (customizePlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
+    gameSettingsTable.add (playersTable).left ();
+
     gameSettingsTable.row ();
-    gameSettingsTable.add (mapSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    gameSettingsTable.add (mapNameLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
-    gameSettingsTable.add (customizeMapButton).size (28, 28).fill ().left ().spaceLeft (4);
-    gameSettingsTable.add ().width (102).fill ();
-    gameSettingsTable.add ().expandX ().fill ();
+
+    final Table spectatorsTable = new Table ();
+    spectatorsTable.add (spectatorsSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    spectatorsTable.add (spectatorsSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    gameSettingsTable.add (spectatorsTable).left ();
+
     gameSettingsTable.row ();
-    gameSettingsTable.add (winPercentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    gameSettingsTable.add (winPercentSelectBox).size (102, 28).fill ().left ().spaceLeft (10).colspan (2);
-    gameSettingsTable.add ().expandX ().fill ();
+
+    final Table winPercentTable = new Table ();
+    winPercentTable.add (winPercentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    winPercentTable.add (winPercentSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    gameSettingsTable.add (winPercentTable).left ();
+
     gameSettingsTable.row ();
-    gameSettingsTable.add (initialCountryAssignmentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    gameSettingsTable.add (initialCountryAssignmentSelectBox).size (102, 28).fill ().left ().spaceLeft (10).colspan (2);
-    gameSettingsTable.add ().expandX ().fill ();
-    verticalGroup.addActor (gameSettingsTable);
+
+    // @formatter:off
+    final Table initialCountryAssignmentTable = new Table ();
+    initialCountryAssignmentTable.add (initialCountryAssignmentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    initialCountryAssignmentTable.add (initialCountryAssignmentSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    gameSettingsTable.add (initialCountryAssignmentTable).left ();
     // @formatter:on
+
+    verticalGroup.addActor (gameSettingsTable);
 
     addContent (verticalGroup);
 
