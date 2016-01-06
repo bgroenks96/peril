@@ -262,6 +262,8 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
 
     Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT);
+    // this is using the DisplayMode for the current monitor; should be updated for multi-monitor support
+    if (GraphicsSettings.IS_FULLSCREEN) Gdx.graphics.setFullscreenMode (Gdx.graphics.getDisplayMode ());
 
     for (final AssetDescriptor <?> descriptor : AssetSettings.UNLOAD_AFTER_SPLASH_SCREEN_ASSET_DESCRIPTORS)
     {
