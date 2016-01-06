@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.client.ui.screens.splash;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -180,7 +181,7 @@ public final class SplashScreen extends InputAdapter implements Screen
   @Override
   public void show ()
   {
-    Gdx.graphics.setWindowedMode (windowWidth, windowHeight);
+    setSplashScreenDisplayMode ();
 
     showCursor ();
 
@@ -251,24 +252,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     isUpdatingAssets = false;
     isLoadingUpdatedAssets = false;
 
-    try
-    {
-      System.setProperty ("org.lwjgl.opengl.Window.undecorated", "false");
-    }
-    catch (final SecurityException e)
-    {
-      log.warn ("Couldn't make window decorated upon leaving splash screen.\nCause:\n{}",
-                Throwables.getStackTraceAsString (e));
-    }
-
-    Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT);
-    // this is using the DisplayMode for the current monitor; should be updated for multi-monitor support
-    if (GraphicsSettings.IS_FULLSCREEN) Gdx.graphics.setFullscreenMode (Gdx.graphics.getDisplayMode ());
-
     for (final AssetDescriptor <?> descriptor : AssetSettings.UNLOAD_AFTER_SPLASH_SCREEN_ASSET_DESCRIPTORS)
     {
       assetManager.unload (descriptor);
     }
+
+    setNextScreenDisplayMode ();
   }
 
   @Override
@@ -306,6 +295,37 @@ public final class SplashScreen extends InputAdapter implements Screen
   private static void hideCursor ()
   {
     Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
+  }
+
+  private void setSplashScreenDisplayMode ()
+  {
+    Gdx.graphics.setWindowedMode (windowWidth, windowHeight);
+  }
+
+  private void setNextScreenDisplayMode ()
+  {
+    try
+    {
+      System.setProperty ("org.lwjgl.opengl.Window.undecorated", "false");
+    }
+    catch (final SecurityException e)
+    {
+      log.warn ("Couldn't make window decorated upon leaving splash screen.\nCause:\n{}",
+                Throwables.getStackTraceAsString (e));
+    }
+
+    // TODO Add multi-monitor support.
+
+    final Graphics.DisplayMode currentMonitorMode = Gdx.graphics.getDisplayMode ();
+
+    // @formatter:off
+    if (GraphicsSettings.IS_FULLSCREEN && Gdx.graphics.setFullscreenMode (currentMonitorMode)) return;
+    if (Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT)) return;
+    if (Gdx.graphics.setWindowedMode (currentMonitorMode.width, currentMonitorMode.height)) return;
+    // @formatter:on
+
+    throw new GdxRuntimeException (
+            Strings.format ("Could not set any display mode upon leaving {}.", SplashScreen.class.getSimpleName ()));
   }
 
   private boolean loadingUpdatedAssets ()
