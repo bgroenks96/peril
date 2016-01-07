@@ -38,8 +38,6 @@ public class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent 
   @RequiredForNetworkSerialization
   private PlayerAttackCountryResponseDeniedEvent ()
   {
-    super (null);
-
     player = null;
   }
 }

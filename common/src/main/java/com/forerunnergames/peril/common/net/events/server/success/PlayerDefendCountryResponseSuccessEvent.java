@@ -31,8 +31,6 @@ public final class PlayerDefendCountryResponseSuccessEvent extends AbstractPlaye
   @RequiredForNetworkSerialization
   private PlayerDefendCountryResponseSuccessEvent ()
   {
-    super (null, null, null);
-
     defenderData = null;
   }
 }

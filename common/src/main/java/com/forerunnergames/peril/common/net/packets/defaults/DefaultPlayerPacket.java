@@ -99,8 +99,6 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   @RequiredForNetworkSerialization
   private DefaultPlayerPacket ()
   {
-    super (null, null);
-
     color = null;
     turnOrder = 0;
     armiesInHand = 0;

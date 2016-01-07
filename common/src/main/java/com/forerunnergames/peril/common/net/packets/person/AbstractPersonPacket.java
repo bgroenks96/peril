@@ -45,10 +45,8 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   }
 
   @RequiredForNetworkSerialization
-  private AbstractPersonPacket ()
+  protected AbstractPersonPacket ()
   {
-    super (null, null);
-
     identity = null;
   }
 }

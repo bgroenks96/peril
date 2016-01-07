@@ -42,7 +42,7 @@ public abstract class AbstractPlayerDefendCountryEvent implements ServerEvent
   }
 
   @RequiredForNetworkSerialization
-  private AbstractPlayerDefendCountryEvent ()
+  protected AbstractPlayerDefendCountryEvent ()
   {
     defendingPlayer = null;
     defendingCountry = null;

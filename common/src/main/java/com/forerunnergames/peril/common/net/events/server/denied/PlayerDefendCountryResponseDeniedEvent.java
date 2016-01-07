@@ -35,8 +35,6 @@ public final class PlayerDefendCountryResponseDeniedEvent extends AbstractDenied
   @RequiredForNetworkSerialization
   private PlayerDefendCountryResponseDeniedEvent ()
   {
-    super (null);
-
     player = null;
   }
 }

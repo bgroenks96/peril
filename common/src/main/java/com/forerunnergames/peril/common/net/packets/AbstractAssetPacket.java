@@ -89,7 +89,7 @@ public abstract class AbstractAssetPacket implements AssetPacket
   }
 
   @RequiredForNetworkSerialization
-  private AbstractAssetPacket ()
+  protected AbstractAssetPacket ()
   {
     name = null;
     id = null;

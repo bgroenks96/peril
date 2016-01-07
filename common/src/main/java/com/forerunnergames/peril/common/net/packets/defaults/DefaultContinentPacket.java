@@ -63,8 +63,6 @@ public class DefaultContinentPacket extends AbstractTerritoryPacket implements C
   @RequiredForNetworkSerialization
   private DefaultContinentPacket ()
   {
-    super (null, null);
-
     countries = null;
     reinforcementBonus = 0;
   }

@@ -42,7 +42,6 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
   @RequiredForNetworkSerialization
   private PlayerSelectCountryResponseDeniedEvent ()
   {
-    super (null);
     player = null;
     reason = null;
   }

@@ -13,8 +13,7 @@ public class AbstractTerritoryPacket extends AbstractAssetPacket implements Terr
   }
 
   @RequiredForNetworkSerialization
-  private AbstractTerritoryPacket ()
+  protected AbstractTerritoryPacket ()
   {
-    super (null, null);
   }
 }

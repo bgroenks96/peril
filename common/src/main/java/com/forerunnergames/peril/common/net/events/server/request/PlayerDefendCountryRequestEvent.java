@@ -20,6 +20,5 @@ public final class PlayerDefendCountryRequestEvent extends AbstractPlayerDefendC
   @RequiredForNetworkSerialization
   private PlayerDefendCountryRequestEvent ()
   {
-    super (null, null, null);
   }
 }

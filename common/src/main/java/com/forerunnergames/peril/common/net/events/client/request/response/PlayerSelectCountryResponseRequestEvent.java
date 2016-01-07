@@ -23,6 +23,5 @@ public final class PlayerSelectCountryResponseRequestEvent extends DefaultPlayer
   @RequiredForNetworkSerialization
   private PlayerSelectCountryResponseRequestEvent ()
   {
-    super (null);
   }
 }

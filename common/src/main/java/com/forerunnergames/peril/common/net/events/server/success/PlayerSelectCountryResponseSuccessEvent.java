@@ -34,7 +34,6 @@ public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayer
   @RequiredForNetworkSerialization
   private PlayerSelectCountryResponseSuccessEvent ()
   {
-    super (null);
     player = null;
   }
 }

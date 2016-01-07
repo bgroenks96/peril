@@ -28,7 +28,7 @@ public class DefaultPlayerSelectCountryResponseEvent implements PlayerSelectCoun
   }
 
   @RequiredForNetworkSerialization
-  private DefaultPlayerSelectCountryResponseEvent ()
+  protected DefaultPlayerSelectCountryResponseEvent ()
   {
     selectedCountryName = null;
   }

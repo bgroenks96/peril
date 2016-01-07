@@ -51,8 +51,6 @@ public final class DefaultCountryPacket extends AbstractTerritoryPacket implemen
   @RequiredForNetworkSerialization
   private DefaultCountryPacket ()
   {
-    super (null, null);
-
     armyCount = 0;
   }
 }
