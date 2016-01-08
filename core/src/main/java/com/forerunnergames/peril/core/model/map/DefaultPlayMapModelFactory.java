@@ -2,13 +2,11 @@ package com.forerunnergames.peril.core.model.map;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.map.continent.ContinentArmyModel;
-import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
 import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
 import com.forerunnergames.peril.core.model.map.continent.ContinentOwnerModel;
 import com.forerunnergames.peril.core.model.map.continent.DefaultContinentArmyModel;
 import com.forerunnergames.peril.core.model.map.continent.DefaultContinentOwnerModel;
 import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
 import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.map.country.DefaultCountryArmyModel;
@@ -27,9 +25,7 @@ public class DefaultPlayMapModelFactory implements PlayMapModelFactory
   }
 
   @Override
-  public PlayMapModel create (final CountryFactory countryFactory,
-                              final CountryMapGraphModel countryMapGraphModel,
-                              final ContinentFactory continentFactory,
+  public PlayMapModel create (final CountryMapGraphModel countryMapGraphModel,
                               final ContinentMapGraphModel continentMapGraphModel)
   {
     final CountryOwnerModel countryOwnerModel = new DefaultCountryOwnerModel (countryMapGraphModel, rules);

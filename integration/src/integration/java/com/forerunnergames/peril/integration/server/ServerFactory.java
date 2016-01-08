@@ -73,7 +73,7 @@ public class ServerFactory
     final CountryMapGraphModel countryMapGraphModel = CountryMapGraphModel.disjointCountryGraphFrom (countries);
     final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModel.disjointContinentGraphFrom (continents, countryMapGraphModel);
     final GameStateMachineConfig config = new GameStateMachineConfig ();
-    final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModelFactory.create (countries, countryMapGraphModel, continents, continentMapGraphModel)).eventBus (eventBus).build ();
+    final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModelFactory.create (countryMapGraphModel, continentMapGraphModel)).eventBus (eventBus).build ();
     config.setGameModel (gameModel);
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
     return newTestServer (eventBus, type, gameMode, MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);

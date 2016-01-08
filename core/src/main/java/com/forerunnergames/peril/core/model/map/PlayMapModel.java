@@ -23,4 +23,8 @@ public interface PlayMapModel
   ContinentArmyModel getContinentArmyModel ();
 
   GameRules getRules ();
+
+  int getCountryCount ();
+
+  int getContinentCount ();
 }

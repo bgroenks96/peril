@@ -58,6 +58,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.graph.DefaultGraphModel;
+import com.forerunnergames.tools.common.graph.GraphModel;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
@@ -86,6 +88,7 @@ public class GameModelTest
   private int maxPlayers;
   private GameModel gameModel;
   private PlayerModel playerModel;
+  private PlayMapModel playMapModel;
   private CountryOwnerModel countryOwnerModel;
   private CountryMapGraphModel countryMapGraphModel;
   private CardModel cardModel;
@@ -98,7 +101,10 @@ public class GameModelTest
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
     eventHandler = new EventBusHandler ();
     eventHandler.subscribe (eventBus);
-    gameModel = createGameModelWithCountryCount (defaultTestCountryCount);
+    // crate default play map + game model
+    playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
+    initializeGameModelWith (playMapModel);
+    assert gameModel != null;
   }
 
   @Test
@@ -188,7 +194,7 @@ public class GameModelTest
     // test case in honor of Aaron on PR 27 ;)
     // can't use 5, though, because 5 < ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT
 
-    gameModel = createGameModelWithCountryCount (10);
+    initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (10)));
     for (int i = 0; i < 10; ++i)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
@@ -212,7 +218,8 @@ public class GameModelTest
   @Test
   public void testRandomlyAssignPlayerCountriesMaxPlayersMaxCountries ()
   {
-    gameModel = createGameModelWithCountryCount (ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT);
+    final int countryCount = ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT;
+    initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (countryCount)));
 
     addMaxPlayers ();
 
@@ -350,8 +357,7 @@ public class GameModelTest
 
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginReinforcementPhaseEvent.class));
-    assertTrue (eventHandler.lastEventOfType (BeginReinforcementPhaseEvent.class).getCurrentPlayer ()
-            .is (testPlayerPacket));
+    assertTrue (eventHandler.lastEventOfType (BeginReinforcementPhaseEvent.class).getPlayer ().is (testPlayerPacket));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
@@ -436,8 +442,6 @@ public class GameModelTest
     final int numCardsInHand = gameRules.getMinCardsInHandToRequireTradeIn (TurnPhase.REINFORCE) - 1;
 
     cardDeck = CardModelTest.generateCards (CardType.TYPE1, numCardsInHand + 1);
-
-    gameModel = createGameModelWithCountryCount (defaultTestCountryCount);
 
     addMaxPlayers ();
 
@@ -670,33 +674,80 @@ public class GameModelTest
     return Randomness.getRandomElementFrom (countryMapGraphModel.getCountryIds ());
   }
 
-  private GameModel createGameModelWithCountryCount (final int totalCountryCount)
+  private void initializeGameModelWith (final PlayMapModel playMapModel)
   {
-    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (totalCountryCount).build ();
+    gameRules = playMapModel.getRules ();
     playerModel = new DefaultPlayerModel (gameRules);
+    cardModel = new DefaultCardModel (gameRules, cardDeck);
+    countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    countryOwnerModel = playMapModel.getCountryOwnerModel ();
+    this.playMapModel = playMapModel;
 
-    final CountryFactory countryFactory = new CountryFactory ();
-    for (int i = 0; i < totalCountryCount; i++)
+    initialArmies = gameRules.getInitialArmies ();
+    playerLimit = playerModel.getPlayerLimit ();
+    maxPlayers = gameRules.getMaxPlayers ();
+    gameModel = GameModel.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel).playerModel (playerModel)
+            .cardModel (cardModel).build ();
+  }
+
+  private PlayMapModel createPlayMapModelWithDisjointMapGraph (final ImmutableList <String> countryNames)
+  {
+    final CountryFactory factory = new CountryFactory ();
+    for (final String name : countryNames)
     {
-      countryFactory.newCountryWith ("TestCountry-" + i);
+      factory.newCountryWith (name);
     }
-    countryMapGraphModel = CountryMapGraphModelTest.createCountryMapGraphModelWith (countryFactory);
+    final CountryMapGraphModel countryMapGraphModel = CountryMapGraphModelTest
+            .createDisjointCountryMapGraphModelWith (factory);
 
     // create empty continent graph
     final ContinentFactory continentFactory = new ContinentFactory ();
     final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModelTest
             .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
-    final PlayMapModel playMapModel = new DefaultPlayMapModelFactory (gameRules)
-            .create (countryFactory, countryMapGraphModel, continentFactory, continentMapGraphModel);
-    countryOwnerModel = playMapModel.getCountryOwnerModel ();
+    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (countryMapGraphModel.size ()).build ();
+    return new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
+  }
 
-    cardModel = new DefaultCardModel (gameRules, cardDeck);
+  private PlayMapModel createPlayMapModelWithTestMapGraph (final ImmutableList <String> countryNames)
+  {
+    final CountryMapGraphModel countryMapGraphModel = createDefaultTestCountryMapGraph (countryNames);
+    // create empty continent graph
+    final ContinentFactory continentFactory = new ContinentFactory ();
+    final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModelTest
+            .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
+    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (countryMapGraphModel.size ()).build ();
+    playMapModel = new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
+    return playMapModel;
+  }
 
-    initialArmies = gameRules.getInitialArmies ();
-    playerLimit = playerModel.getPlayerLimit ();
-    maxPlayers = gameRules.getMaxPlayers ();
-    return GameModel.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel).playerModel (playerModel)
-            .cardModel (cardModel).build ();
+  public static CountryMapGraphModel createDefaultTestCountryMapGraph (final ImmutableList <String> countryNames)
+  {
+    final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
+    // set every node adjacent to country 0
+    for (int i = 1; i < countryNames.size (); i++)
+    {
+      countryNameGraphBuilder.setAdjacent (countryNames.get (0), countryNames.get (i));
+    }
+    // set each country 1-4 adjacent to its sequential neighbors
+    for (int i = 2; i < countryNames.size (); i++)
+    {
+      countryNameGraphBuilder.setAdjacent (countryNames.get (i - 1), countryNames.get (i));
+    }
+    // complete the cycle by setting country 1 adjacent to last country
+    countryNameGraphBuilder.setAdjacent (countryNames.get (countryNames.size () - 1), countryNames.get (1));
+    final GraphModel <String> countryNameGraph = countryNameGraphBuilder.build ();
+    return CountryMapGraphModelTest.createCountryMapGraphModelFrom (countryNameGraph);
+  }
+
+  private static ImmutableList <String> generateTestCountryNames (final int totalCountryCount)
+  {
+    final ImmutableList.Builder <String> countryNames = ImmutableList.builder ();
+    for (int i = 0; i < totalCountryCount; i++)
+    {
+      countryNames.add ("TestCountry-" + i);
+    }
+    return countryNames.build ();
   }
 }

@@ -96,8 +96,7 @@ public final class ServerApplicationFactory
     final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
 
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
-    final PlayMapModel playMapModel = playMapModelFactory.create (countryFactory, countryMapGraphModel,
-                                                                  continentFactory, continentMapGraphModel);
+    final PlayMapModel playMapModel = playMapModelFactory.create (countryMapGraphModel, continentMapGraphModel);
     final CardModel cardModel = new DefaultCardModel (gameRules, cards);
     final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (args.playerLimit);
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)

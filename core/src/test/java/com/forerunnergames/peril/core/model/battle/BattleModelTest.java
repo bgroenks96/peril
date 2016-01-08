@@ -12,11 +12,11 @@ import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.model.GameModelTest;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.PlayMapStateBuilder;
 import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
 import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModelTest;
 import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.map.country.DefaultCountryArmyModel;
 import com.forerunnergames.peril.core.model.map.country.DefaultCountryOwnerModel;
@@ -25,8 +25,6 @@ import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Result;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
@@ -49,7 +47,7 @@ public class BattleModelTest
   @Before
   public void prepare ()
   {
-    countryMapGraphModel = createDefaultTestCountryMapGraph ();
+    countryMapGraphModel = GameModelTest.createDefaultTestCountryMapGraph (countryNames);
     gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
             .totalCountryCount (countryMapGraphModel.size ()).build ();
     countryOwnerModel = new DefaultCountryOwnerModel (countryMapGraphModel, gameRules);
@@ -311,25 +309,6 @@ public class BattleModelTest
       builder.add (countryMapGraphModel.countryWith (name));
     }
     return builder.build ();
-  }
-
-  private static CountryMapGraphModel createDefaultTestCountryMapGraph ()
-  {
-    final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
-    // set every node adjacent to country 0
-    for (int i = 1; i < countryNames.size (); i++)
-    {
-      countryNameGraphBuilder.setAdjacent (countryNames.get (0), countryNames.get (i));
-    }
-    // set each country 1-4 adjacent to its sequential neighbors
-    for (int i = 2; i < countryNames.size (); i++)
-    {
-      countryNameGraphBuilder.setAdjacent (countryNames.get (i - 1), countryNames.get (i));
-    }
-    // complete the cycle by setting country 1 adjacent to last country
-    countryNameGraphBuilder.setAdjacent (countryNames.get (countryNames.size () - 1), countryNames.get (1));
-    final GraphModel <String> countryNameGraph = countryNameGraphBuilder.build ();
-    return CountryMapGraphModelTest.createCountryMapGraphModelFrom (countryNameGraph);
   }
 
   private static final ImmutableList <String> generateCountryNameList (final int count)

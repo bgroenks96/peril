@@ -41,7 +41,7 @@ public class CountryOwnerModelTest
   public void setup ()
   {
     defaultTestCountries = generateTestCountries (TEST_COUNTRY_COUNT);
-    countryMapGraphModel = CountryMapGraphModelTest.createCountryMapGraphModelWith (defaultTestCountries);
+    countryMapGraphModel = CountryMapGraphModelTest.createDisjointCountryMapGraphModelWith (defaultTestCountries);
   }
 
   @Test

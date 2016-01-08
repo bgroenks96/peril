@@ -86,4 +86,16 @@ public class DefaultPlayMapModel implements PlayMapModel
   {
     return gameRules;
   }
+
+  @Override
+  public int getCountryCount ()
+  {
+    return countryMapGraphModel.size ();
+  }
+
+  @Override
+  public int getContinentCount ()
+  {
+    return continentMapGraphModel.size ();
+  }
 }

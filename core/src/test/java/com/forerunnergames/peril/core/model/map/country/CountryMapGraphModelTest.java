@@ -34,7 +34,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testCountryPacketWithId ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     for (final Country testCountry : defaultTestCountries)
     {
@@ -45,7 +45,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testCountryPacketWithName ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     for (final Country testCountry : defaultTestCountries)
     {
@@ -56,7 +56,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testExistsCountryWithId ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     for (final Country testCountry : defaultTestCountries)
     {
@@ -67,7 +67,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testExistsCountryWithName ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     for (final Country testCountry : defaultTestCountries)
     {
@@ -78,7 +78,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testDoesNotExistsCountryWithName ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertFalse (modelTest.existsCountryWith ("invalid-name"));
   }
@@ -86,7 +86,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testGetCountryCount ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertEquals (defaultTestCountries.size (), modelTest.getCountryCount ());
   }
@@ -94,7 +94,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testGetCountryCountIsSizeOfDefault ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertTrue (modelTest.countryCountIs (defaultTestCountries.size ()));
   }
@@ -102,7 +102,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testGetCountryCountIsFalseOnCountPlusOne ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertFalse (modelTest.countryCountIs (defaultTestCountries.size () + 1));
   }
@@ -110,7 +110,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testGetCountryCountIsAtLeastSizeOfDefault ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertTrue (modelTest.countryCountIsAtLeast (defaultTestCountries.size ()));
   }
@@ -118,7 +118,7 @@ public class CountryMapGraphModelTest
   @Test
   public void testGetCountryCountIsAtLeastSizeOfDefaultMinusOne ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertTrue (modelTest.countryCountIsAtLeast (defaultTestCountries.size () - 1));
   }
@@ -126,14 +126,14 @@ public class CountryMapGraphModelTest
   @Test
   public void testGetCountryCountIsAtLeastFalseForSizeOfDefaultPlusOne ()
   {
-    final CountryMapGraphModel modelTest = createCountryMapGraphModelWith (defaultTestCountries);
+    final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertFalse (modelTest.countryCountIsAtLeast (defaultTestCountries.size () + 1));
   }
 
-  public static CountryMapGraphModel createCountryMapGraphModelWith (final CountryFactory countries)
+  public static CountryMapGraphModel createDisjointCountryMapGraphModelWith (final CountryFactory countries)
   {
-    return createCountryMapGraphModelWith (countries.getCountries ());
+    return createDisjointCountryMapGraphModelWith (countries.getCountries ());
   }
 
   public static CountryMapGraphModel createCountryMapGraphModelFrom (final GraphModel <String> countryNameGraph)
@@ -156,7 +156,7 @@ public class CountryMapGraphModelTest
     return new CountryMapGraphModel (graphBuilder.build ());
   }
 
-  static CountryMapGraphModel createCountryMapGraphModelWith (final ImmutableSet <Country> countries)
+  static CountryMapGraphModel createDisjointCountryMapGraphModelWith (final ImmutableSet <Country> countries)
   {
     final DefaultGraphModel.Builder <Country> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
     for (final Country country : countries)
