@@ -83,6 +83,7 @@ public final class DesktopLauncher
     config.vSyncEnabled = GraphicsSettings.IS_VSYNC_ENABLED;
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;
+    config.useGL30 = GraphicsSettings.USE_OPENGL_CORE_PROFILE;
 
     new LwjglApplication (LibGdxGameFactory.create (), config);
   }

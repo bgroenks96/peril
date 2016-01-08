@@ -1,13 +1,12 @@
 package com.forerunnergames.peril.client.ui.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.input.LibGdxMouseInput;
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
+import com.forerunnergames.peril.client.ui.SpriteBatchFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -39,7 +38,7 @@ public final class ScreenFactoryCreator
     return new ScreenFactory (screenChanger,
             new LibGdxScreenSize (Gdx.graphics, ScreenSettings.REFERENCE_SCREEN_WIDTH,
                     ScreenSettings.REFERENCE_SCREEN_HEIGHT),
-            new LibGdxMouseInput (Gdx.input), new SpriteBatch (GraphicsSettings.SPRITES_IN_BATCH), assetManager,
-            assetUpdater, eventBus);
+            new LibGdxMouseInput (Gdx.input), SpriteBatchFactory.create (assetManager), assetManager, assetUpdater,
+            eventBus);
   }
 }

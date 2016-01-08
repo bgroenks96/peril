@@ -7,9 +7,11 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.io.MultiAtlasSkinLoader;
+import com.forerunnergames.peril.client.io.ShaderProgramLoader;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.net.NetworkConstants;
@@ -137,6 +139,9 @@ public final class AssetSettings
           new MultiAtlasSkinLoader.SkinParameter (SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
 
   // General
+  public static final AssetDescriptor <ShaderProgram> SPRITE_BATCH_SHADER_PROGRAM_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "shaders/spriteBatch.vert", ShaderProgram.class,
+          new ShaderProgramLoader.FragmentShaderParameter ("shaders/spriteBatch.frag"));
   public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "cursors/normalCursor.png", Pixmap.class);
 
@@ -184,8 +189,8 @@ public final class AssetSettings
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> LOAD_BEFORE_SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (NORMAL_CURSOR_ASSET_DESCRIPTOR, SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
-                                     SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR);
+          .<AssetDescriptor <?>> of (SPRITE_BATCH_SHADER_PROGRAM_ASSET_DESCRIPTOR, NORMAL_CURSOR_ASSET_DESCRIPTOR,
+                                     SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR, SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> UNLOAD_AFTER_SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList
@@ -196,9 +201,9 @@ public final class AssetSettings
           .<AssetDescriptor <?>> of (LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR, LOADING_SCREEN_SKIN_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-  public static final ImmutableList <AssetDescriptor <?>> ALWAYS_LOADED_ASSET_DESCRIPTORS =
-          new ImmutableList.Builder <AssetDescriptor <?>> ()
-                  .add (NORMAL_CURSOR_ASSET_DESCRIPTOR).addAll (LOADING_SCREEN_ASSET_DESCRIPTORS).build ();
+  public static final ImmutableList <AssetDescriptor <?>> ALWAYS_LOADED_ASSET_DESCRIPTORS = new ImmutableList.Builder <AssetDescriptor <?>> ()
+          .add (SPRITE_BATCH_SHADER_PROGRAM_ASSET_DESCRIPTOR).add (NORMAL_CURSOR_ASSET_DESCRIPTOR)
+          .addAll (LOADING_SCREEN_ASSET_DESCRIPTORS).build ();
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> MENU_SCREEN_ASSET_DESCRIPTORS = ImmutableList
@@ -206,9 +211,8 @@ public final class AssetSettings
                                      MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR, MENU_SCREEN_SKIN_ASSET_DESCRIPTOR,
                                      MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR);
 
-  public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS =
-          new ImmutableList.Builder <AssetDescriptor <?>> ()
-                  .addAll (ALWAYS_LOADED_ASSET_DESCRIPTORS).addAll (MENU_SCREEN_ASSET_DESCRIPTORS).build ();
+  public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = new ImmutableList.Builder <AssetDescriptor <?>> ()
+          .addAll (ALWAYS_LOADED_ASSET_DESCRIPTORS).addAll (MENU_SCREEN_ASSET_DESCRIPTORS).build ();
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList

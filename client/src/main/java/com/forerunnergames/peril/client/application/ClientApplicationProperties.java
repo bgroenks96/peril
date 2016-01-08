@@ -46,6 +46,7 @@ public final class ClientApplicationProperties
   public static final String WINDOW_TITLE_PROPERTY_KEY = "window-title";
   public static final String FULLSCREEN_PROPERTY_KEY = "fullscreen";
   public static final String VSYNC_PROPERTY_KEY = "vsync";
+  public static final String OPENGL_CORE_PROFILE_PROPERTY_KEY = "opengl-core-profile";
   public static final String MUSIC_ENABLED_PROPERTY_KEY = "music-enabled";
   public static final String MUSIC_VOLUME_PROPERTY_KEY = "music-volume";
   public static final String START_SCREEN_PROPERTY_KEY = "start-screen";
@@ -81,6 +82,8 @@ public final class ClientApplicationProperties
           + FULLSCREEN_PROPERTY_KEY
           + ": true, false\n\n "
           + VSYNC_PROPERTY_KEY
+          + ": true, false\n\n "
+          + OPENGL_CORE_PROFILE_PROPERTY_KEY
           + ": true, false\n\n "
           + MUSIC_ENABLED_PROPERTY_KEY
           + ": true, false\n\n "
@@ -143,6 +146,7 @@ public final class ClientApplicationProperties
     defaults.setProperty (WINDOW_TITLE_PROPERTY_KEY, String.valueOf (GraphicsSettings.WINDOW_TITLE));
     defaults.setProperty (FULLSCREEN_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_FULLSCREEN));
     defaults.setProperty (VSYNC_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_VSYNC_ENABLED));
+    defaults.setProperty (OPENGL_CORE_PROFILE_PROPERTY_KEY, String.valueOf (GraphicsSettings.USE_OPENGL_CORE_PROFILE));
     defaults.setProperty (MUSIC_ENABLED_PROPERTY_KEY, String.valueOf (MusicSettings.IS_ENABLED));
     defaults.setProperty (MUSIC_VOLUME_PROPERTY_KEY, String.valueOf (MusicSettings.INITIAL_VOLUME));
     defaults.setProperty (START_SCREEN_PROPERTY_KEY, String.valueOf (ScreenSettings.START_SCREEN));
@@ -190,6 +194,7 @@ public final class ClientApplicationProperties
     GraphicsSettings.WINDOW_TITLE = properties.getProperty (WINDOW_TITLE_PROPERTY_KEY);
     GraphicsSettings.IS_FULLSCREEN = parseBoolean (FULLSCREEN_PROPERTY_KEY);
     GraphicsSettings.IS_VSYNC_ENABLED = parseBoolean (VSYNC_PROPERTY_KEY);
+    GraphicsSettings.USE_OPENGL_CORE_PROFILE = parseBoolean (OPENGL_CORE_PROFILE_PROPERTY_KEY);
     MusicSettings.IS_ENABLED = parseBoolean (MUSIC_ENABLED_PROPERTY_KEY);
     MusicSettings.INITIAL_VOLUME = parseFloat (MUSIC_VOLUME_PROPERTY_KEY, MusicSettings.MIN_VOLUME, MusicSettings.MAX_VOLUME);
     ScreenSettings.START_SCREEN = parseStartScreen (START_SCREEN_PROPERTY_KEY);
