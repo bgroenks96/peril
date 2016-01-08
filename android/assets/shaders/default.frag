@@ -1,4 +1,4 @@
-#version 300
+#version 330
 
 #ifdef GL_ES
   precision mediump float;
@@ -10,7 +10,7 @@ in vec4 v_pos;
 in vec4 v_color;
 in vec2 v_texCoords;
 
-layout(location = 0) vec4 fragOut;
+layout(location=0) out vec4 fragOut;
 
 void main()
 {
