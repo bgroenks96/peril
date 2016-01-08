@@ -14,8 +14,10 @@ import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableList;
 
-public class MultiAtlasSkinLoader extends AsynchronousAssetLoader <Skin, MultiAtlasSkinLoader.SkinParameter>
+public final class MultiAtlasSkinLoader extends AsynchronousAssetLoader <Skin, MultiAtlasSkinLoader.SkinParameter>
 {
+  private Skin skin;
+
   public MultiAtlasSkinLoader (final FileHandleResolver resolver)
   {
     super (resolver);
@@ -27,6 +29,12 @@ public class MultiAtlasSkinLoader extends AsynchronousAssetLoader <Skin, MultiAt
                          final FileHandle file,
                          final SkinParameter parameter)
   {
+    skin = new Skin ();
+
+    for (final AssetDescriptor <TextureAtlas> descriptor : parameter.getTextureAtlasAssetDescriptors ())
+    {
+      skin.addRegions (manager.get (descriptor));
+    }
   }
 
   @Override
@@ -39,13 +47,6 @@ public class MultiAtlasSkinLoader extends AsynchronousAssetLoader <Skin, MultiAt
     Arguments.checkIsNotNull (fileName, "fileName");
     Arguments.checkIsNotNull (file, "file");
     Arguments.checkIsNotNull (parameter, "parameter");
-
-    final Skin skin = new Skin ();
-
-    for (final AssetDescriptor <TextureAtlas> descriptor : parameter.getTextureAtlasAssetDescriptors ())
-    {
-      skin.addRegions (manager.get (descriptor));
-    }
 
     skin.load (file);
 
