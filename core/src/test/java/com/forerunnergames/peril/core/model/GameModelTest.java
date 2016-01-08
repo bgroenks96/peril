@@ -23,11 +23,13 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -46,6 +48,7 @@ import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
 import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.map.PlayMapStateBuilder;
 import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
 import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
 import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModelTest;
@@ -65,6 +68,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
@@ -77,10 +81,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 public class GameModelTest
 {
   private static final Logger log = LoggerFactory.getLogger (GameModelTest.class);
   private final int defaultTestCountryCount = 30;
+  private final ImmutableList <String> defaultTestCountries = generateTestCountryNames (defaultTestCountryCount);
   private MBassador <Event> eventBus;
   private EventBusHandler eventHandler;
   private int playerLimit;
@@ -581,6 +588,43 @@ public class GameModelTest
   }
 
   @Test
+  public void testBeginFortifyPhase ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
+
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForAttack () + 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.beginFortifyPhase ();
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (BeginFortifyPhaseEvent.class));
+    assertEquals (playerModel.playerPacketWith (player1),
+                  eventHandler.lastEventOfType (BeginFortifyPhaseEvent.class).getPlayer ());
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryRequestEvent.class));
+    assertEquals (playerModel.playerPacketWith (player1),
+                  eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getPlayer ());
+    final ImmutableMultimap <CountryPacket, CountryPacket> expectedFortifyVectors;
+    expectedFortifyVectors = buildCountryMultimapFromIndices (defaultTestCountries, adj (0, 1, 3), adj (1, 0),
+                                                              adj (3, 0));
+    assertEquals (expectedFortifyVectors,
+                  eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getValidFortifyVectors ());
+  }
+
+  @Test
   public void testHandlePlayerJoinGameRequestFailed ()
   {
     addMaxPlayers ();
@@ -674,6 +718,45 @@ public class GameModelTest
     return Randomness.getRandomElementFrom (countryMapGraphModel.getCountryIds ());
   }
 
+  private ImmutableList <Id> countryIdsFor (final ImmutableList <String> countryNames,
+                                            final ImmutableList <Integer> indices)
+  {
+    final ImmutableList.Builder <Id> countryIds = ImmutableList.builder ();
+    for (final int i : indices)
+    {
+      countryIds.add (countryMapGraphModel.countryWith (countryNames.get (i)));
+    }
+    return countryIds.build ();
+  }
+
+  private CountryAdjacencyIndices adj (final int... adjArr)
+  {
+    assert adjArr != null;
+    assert adjArr.length >= 1;
+
+    return new CountryAdjacencyIndices (adjArr [0], ArrayUtils.subarray (adjArr, 1, adjArr.length));
+  }
+
+  private ImmutableMultimap <CountryPacket, CountryPacket> buildCountryMultimapFromIndices (final ImmutableList <String> countryNameList,
+                                                                                            final CountryAdjacencyIndices... adjacencyIndices)
+  {
+    assert countryNameList != null;
+    assert adjacencyIndices != null;
+
+    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> expectedFortifyVectors = ImmutableMultimap
+            .builder ();
+    for (final CountryAdjacencyIndices adjInd : adjacencyIndices)
+    {
+      final CountryPacket cp0 = countryMapGraphModel.countryPacketWith (countryNameList.get (adjInd.c0));
+      for (final int adj : adjInd.adj)
+      {
+        final CountryPacket cpAdj = countryMapGraphModel.countryPacketWith (countryNameList.get (adj));
+        expectedFortifyVectors.put (cp0, cpAdj);
+      }
+    }
+    return expectedFortifyVectors.build ();
+  }
+
   private void initializeGameModelWith (final PlayMapModel playMapModel)
   {
     gameRules = playMapModel.getRules ();
@@ -749,5 +832,17 @@ public class GameModelTest
       countryNames.add ("TestCountry-" + i);
     }
     return countryNames.build ();
+  }
+
+  private class CountryAdjacencyIndices
+  {
+    final int c0;
+    final int[] adj;
+
+    CountryAdjacencyIndices (final int c0, final int... adj)
+    {
+      this.c0 = c0;
+      this.adj = adj;
+    }
   }
 }

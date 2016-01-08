@@ -81,6 +81,11 @@
           name="event"
           type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent" />
       </event>
+      <event id="onPlayerFortifyCountryResponseRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent" />
+      </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event" />
       </event>
@@ -171,48 +176,55 @@
               </state>
             </state>
             <state name="TurnPhase">
-              <onEntry action="gameModel.beginTurnPhase()" />
-              <onExit action="gameModel.endTurnPhase()" />
-              <state name="ReinforcementPhase">
-                <onEntry action="gameModel.beginReinforcementPhase()" />
-                <state name="WaitForPlayerToPlaceReinforcements">
-                  <transition event="onPlayerReinforceCountriesResponseRequestEvent"
-                              condition="gameModel.verifyPlayerCountryReinforcements(event)"
-                              nextState="AttackPhase" />
+              <state name="PlayerTurn">
+                <onEntry action="gameModel.beginPlayerTurn()" />
+                <onExit action="gameModel.endPlayerTurn()" />
+                <state name="ReinforcementPhase">
+                  <onEntry action="gameModel.beginReinforcementPhase()" />
+                  <state name="WaitForPlayerToPlaceReinforcements">
+                    <transition event="onPlayerReinforceCountriesResponseRequestEvent"
+                                condition="gameModel.verifyPlayerCountryReinforcements(event)"
+                                nextState="AttackPhase" />
+                  </state>
                 </state>
-              </state>
-              <state name="AttackPhase">
-                <onEntry action="gameModel.beginAttackPhase()" />
-                <state name="WaitForPlayerAttackOrders">
-                  <transition event="onPlayerAttackCountryResponseRequestEvent"
-                              condition="gameModel.verifyPlayerAttackOrder(event)"
-                              nextState="WaitForDefenderResponse"/>
-                  <transition event="onPlayerEndAttackPhaseResponseRequestEvent"
-                              condition="gameModel.verifyPlayerEndAttackPhase(event)"
-                              nextState="EndGame" />
+                <state name="AttackPhase">
+                  <onEntry action="gameModel.beginAttackPhase()" />
+                  <state name="WaitForPlayerAttackOrders">
+                    <transition event="onPlayerAttackCountryResponseRequestEvent"
+                                condition="gameModel.verifyPlayerAttackOrder(event)"
+                                nextState="WaitForDefenderResponse"/>
+                    <transition event="onPlayerEndAttackPhaseResponseRequestEvent"
+                                condition="gameModel.verifyPlayerEndAttackPhase(event)"
+                                nextState="EndGame" />
+                  </state>
+                  <state name="WaitForDefenderResponse">
+                    <transition event="onPlayerDefendCountryResponseRequestEvent"
+                                condition="gameModel.verifyPlayerDefendCountryResponseRequest(event)"
+                                nextState="GenerateBattleResult" />
+                  </state>
+                  <state name="GenerateBattleResult">
+                    <onEntry action="gameModel.generateBattleResult()" />
+                    <transition event="onPlayerAttackCountryResponseSuccessEvent"
+                                nextState="WaitForPlayerAttackOrders" />
+                    <!-- Note: the occupation request event must be sent before the attack success event in order
+                         for the correct transition to occur -->
+                    <transition event="onPlayerOccupyCountryRequestEvent"
+                                nextState="WaitForPlayerToOccupyCountry" />
+                  </state>
+                  <state name="WaitForPlayerToOccupyCountry">
+                    <transition event="onPlayerOccupyCountryResponseRequestEvent"
+                                condition="gameModel.verifyPlayerOccupyCountryResponseRequest(event)"
+                                nextState="WaitForPlayerAttackOrders" />
+                  </state>
                 </state>
-                <state name="WaitForDefenderResponse">
-                  <transition event="onPlayerDefendCountryResponseRequestEvent"
-                              condition="gameModel.verifyPlayerDefendCountryResponseRequestEvent(event)"
-                              nextState="GenerateBattleResult" />
+                <state name="FortifyPhase">
+                  <onEntry action="gameModel.beginFortifyPhase()" />
+                  <state name="WaitForPlayerToFortifyCountry">
+                    <transition event="onPlayerFortifyCountryResponseRequestEvent"
+                                condition="gameModel.verifyPlayerFortifyCountryResponseRequest(event)"
+                                nextState="TurnPhase" />
+                  </state>
                 </state>
-                <state name="GenerateBattleResult">
-                  <onEntry action="gameModel.generateBattleResult()" />
-                  <transition event="onPlayerAttackCountryResponseSuccessEvent"
-                              nextState="WaitForPlayerAttackOrders" />
-                  <!-- Note: the occupation request event must be sent before the attack success event in order
-                       for the correct transition to occur -->
-                  <transition event="onPlayerOccupyCountryRequestEvent"
-                              nextState="WaitForPlayerToOccupyCountry" />
-                </state>
-                <state name="WaitForPlayerToOccupyCountry">
-                  <transition event="onPlayerOccupyCountryResponseRequestEvent"
-                              condition="gameModel.verifyPlayerOccupyCountryResponseRequestEvent(event)"
-                              nextState="WaitForPlayerAttackOrders" />
-                </state>
-              </state>
-              <state name="FortifyPhase">
-                <!-- TODO -->
               </state>
             </state>
           </state>

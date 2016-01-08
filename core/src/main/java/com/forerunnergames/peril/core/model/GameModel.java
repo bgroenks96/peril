@@ -8,6 +8,7 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -19,6 +20,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
@@ -31,6 +33,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
@@ -194,7 +197,7 @@ public final class GameModel
     // TODO End the game gracefully - this can be called DURING ANY GAME STATE
   }
 
-  public void beginTurnPhase ()
+  public void beginPlayerTurn ()
   {
     log.info ("Turn begins for player [{}].", getCurrentPlayerPacket ().getName ());
 
@@ -204,9 +207,11 @@ public final class GameModel
     eventBus.publish (new BeginPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
 
-  public void endTurnPhase ()
+  public void endPlayerTurn ()
   {
     log.info ("Turn ends for player [{}].", getCurrentPlayerPacket ().getName ());
+
+    playerTurnModel.advance ();
 
     eventBus.publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
@@ -665,7 +670,7 @@ public final class GameModel
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerDefendCountryResponseRequestEvent (final PlayerDefendCountryResponseRequestEvent event)
+  public boolean verifyPlayerDefendCountryResponseRequest (final PlayerDefendCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -778,7 +783,7 @@ public final class GameModel
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerOccupyCountryResponseRequestEvent (final PlayerOccupyCountryResponseRequestEvent event)
+  public boolean verifyPlayerOccupyCountryResponseRequest (final PlayerOccupyCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -824,6 +829,42 @@ public final class GameModel
     clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_MIN_ARMY_COUNT);
 
     return true;
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void beginFortifyPhase ()
+  {
+    final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
+
+    log.info ("Begin fortify phase for player [{}].", currentPlayerPacket);
+
+    eventBus.publish (new BeginFortifyPhaseEvent (currentPlayerPacket));
+
+    final Id currentPlayerId = getCurrentPlayerId ();
+    final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
+    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectors = ImmutableMultimap.builder ();
+    for (final CountryPacket country : ownedCountries)
+    {
+      if (!country.hasAtLeastNArmies (rules.getMinArmiesOnCountryForAttack ())) continue;
+      final Id countryId = countryMapGraphModel.countryWith (country.getName ());
+      final ImmutableSet <Id> adjCountries = countryMapGraphModel.getAdjacentNodes (countryId);
+      for (final Id adjCountry : adjCountries)
+      {
+        if (!countryOwnerModel.isCountryOwnedBy (adjCountry, currentPlayerId)) continue;
+        validFortifyVectors.put (country, countryMapGraphModel.countryPacketWith (adjCountry));
+      }
+    }
+
+    eventBus.publish (new PlayerFortifyCountryRequestEvent (currentPlayerPacket, validFortifyVectors.build ()));
+  }
+
+  @StateMachineCondition
+  public boolean verifyPlayerFortifyCountryResponseRequest (final PlayerFortifyCountryResponseRequestEvent event)
+  {
+    // TODO
+
+    return false;
   }
 
   @StateMachineCondition
@@ -877,6 +918,11 @@ public final class GameModel
   public PlayerTurnOrder getTurn ()
   {
     return playerTurnModel.getTurnOrder ();
+  }
+
+  public boolean turnIs (final PlayerTurnOrder turn)
+  {
+    return playerTurnModel.getTurnOrder ().is (turn);
   }
 
   public boolean playerLimitIsAtLeast (final int limit)
@@ -1028,7 +1074,7 @@ public final class GameModel
       final CountryMapGraphModel disjointCountryGraph = CountryMapGraphModel
               .disjointCountryGraphFrom (defaultCountryFactory);
       playMapModel = new DefaultPlayMapModelFactory (gameRules)
-              .create (defaultCountryFactory, disjointCountryGraph, emptyContinentFactory,
+              .create (disjointCountryGraph,
                        ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
       cardModel = new DefaultCardModel (gameRules, ImmutableSet.<Card> of ());

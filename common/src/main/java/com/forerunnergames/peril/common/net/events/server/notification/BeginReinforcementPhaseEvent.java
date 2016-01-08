@@ -1,12 +1,12 @@
 package com.forerunnergames.peril.common.net.events.server.notification;
 
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
-public final class BeginReinforcementPhaseEvent implements ServerNotificationEvent
+public final class BeginReinforcementPhaseEvent implements PlayerNotificationEvent
 {
   private final PlayerPacket currentPlayer;
 
@@ -17,7 +17,8 @@ public final class BeginReinforcementPhaseEvent implements ServerNotificationEve
     this.currentPlayer = currentPlayer;
   }
 
-  public PlayerPacket getCurrentPlayer ()
+  @Override
+  public PlayerPacket getPlayer ()
   {
     return currentPlayer;
   }

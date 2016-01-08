@@ -251,8 +251,6 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
-    if (event instanceof PlayerJoinGameSuccessEvent) return;
-
     log.trace ("Event received [{}]", event);
 
     sendToAllPlayers (event);

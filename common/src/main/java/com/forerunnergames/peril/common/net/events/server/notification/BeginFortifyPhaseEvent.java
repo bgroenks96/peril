@@ -6,32 +6,32 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class BeginAttackPhaseEvent implements PlayerNotificationEvent
+public final class BeginFortifyPhaseEvent implements PlayerNotificationEvent
 {
-  private final PlayerPacket currentPlayer;
+  private final PlayerPacket player;
 
-  public BeginAttackPhaseEvent (final PlayerPacket currentPlayer)
+  public BeginFortifyPhaseEvent (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (player, "player");
 
-    this.currentPlayer = currentPlayer;
+    this.player = player;
   }
 
   @Override
   public PlayerPacket getPlayer ()
   {
-    return currentPlayer;
+    return player;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), currentPlayer);
+    return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);
   }
 
   @RequiredForNetworkSerialization
-  public BeginAttackPhaseEvent ()
+  private BeginFortifyPhaseEvent ()
   {
-    currentPlayer = null;
+    player = null;
   }
 }
