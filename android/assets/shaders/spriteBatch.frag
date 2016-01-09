@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 
 #ifdef GL_ES
   precision mediump float;
@@ -14,5 +14,5 @@ layout(location=0) out vec4 fragOut;
 
 void main()
 {
-  fragOut = v_color * texture2D(u_texture, v_texCoords);
+  fragOut = v_color * texture(u_texture, v_texCoords);
 }
