@@ -18,8 +18,10 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
@@ -32,6 +34,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
@@ -70,6 +73,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 
 import java.util.Iterator;
 
@@ -600,7 +604,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForAttack () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -622,6 +626,172 @@ public class GameModelTest
                                                               adj (3, 0));
     assertEquals (expectedFortifyVectors,
                   eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getValidFortifyVectors ());
+  }
+
+  @Test
+  public void testVerifyEmptyPlayerFortifyCountryResponseRequest ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent ());
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseDeniedEvent.class));
+  }
+
+  @Test
+  public void testVerifyValidPlayerFortifyCountryResponseRequest ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
+
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (3), countryArmyCount - 1));
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseDeniedEvent.class));
+  }
+
+  @Test
+  public void testVerifyInvalidPlayerFortifyCountryResponseRequestSourceCountryNotOwned ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
+
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
+            defaultTestCountries.get (2), defaultTestCountries.get (0), countryArmyCount - 1));
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
+    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY,
+                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
+  }
+
+  @Test
+  public void testVerifyInvalidPlayerFortifyCountryResponseRequestTargetCountryNotOwned ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
+
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (2), countryArmyCount - 1));
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
+    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY,
+                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
+  }
+
+  @Test
+  public void testVerifyInvalidPlayerFortifyCountryResponseRequestCountriesNotAdjacent ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
+
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
+            defaultTestCountries.get (1), defaultTestCountries.get (3), countryArmyCount - 1));
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
+    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT,
+                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
+  }
+
+  @Test
+  public void testVerifyInvalidPlayerFortifyCountryResponseRequestTooManyArmies ()
+  {
+    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+
+    addMaxPlayers ();
+
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
+
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (1), countryArmyCount));
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
+    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW,
+                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
   }
 
   @Test
@@ -667,6 +837,8 @@ public class GameModelTest
 
     assertTrue (gameModel.isFull ());
   }
+
+  // --- private test utility methods --- //
 
   private void verifyPlayerCountryAssignmentCompleteEvent ()
   {
@@ -743,7 +915,7 @@ public class GameModelTest
     assert countryNameList != null;
     assert adjacencyIndices != null;
 
-    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> expectedFortifyVectors = ImmutableMultimap
+    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> expectedFortifyVectors = ImmutableSetMultimap
             .builder ();
     for (final CountryAdjacencyIndices adjInd : adjacencyIndices)
     {

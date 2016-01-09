@@ -14,6 +14,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
@@ -39,6 +40,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCo
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
@@ -97,6 +99,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -842,7 +845,8 @@ public final class GameModel
 
     final Id currentPlayerId = getCurrentPlayerId ();
     final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
-    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectors = ImmutableMultimap.builder ();
+    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectors = ImmutableSetMultimap
+            .builder ();
     for (final CountryPacket country : ownedCountries)
     {
       if (!country.hasAtLeastNArmies (rules.getMinArmiesOnCountryForAttack ())) continue;
@@ -861,9 +865,77 @@ public final class GameModel
   @StateMachineCondition
   public boolean verifyPlayerFortifyCountryResponseRequest (final PlayerFortifyCountryResponseRequestEvent event)
   {
-    // TODO
+    Arguments.checkIsNotNull (event, "event");
 
-    return false;
+    final Id currentPlayerId = getCurrentPlayerId ();
+    final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
+
+    if (!event.isCountryDataPresent ())
+    {
+      // empty fortify actions do not need to be checked
+      eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket));
+      return true;
+    }
+
+    if (!countryMapGraphModel.existsCountryWith (event.getSourceCountry ().get ()))
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
+      return false;
+    }
+
+    if (!countryMapGraphModel.existsCountryWith (event.getTargetCountry ().get ()))
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
+      return false;
+    }
+
+    final Id sourceCountryId = countryMapGraphModel.countryWith (event.getSourceCountry ().get ());
+    final Id targetCountryId = countryMapGraphModel.countryWith (event.getTargetCountry ().get ());
+
+    if (!countryOwnerModel.isCountryOwnedBy (sourceCountryId, currentPlayerId))
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
+      return false;
+    }
+
+    if (!countryOwnerModel.isCountryOwnedBy (targetCountryId, currentPlayerId))
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY));
+      return false;
+    }
+
+    if (!countryMapGraphModel.areAdjacent (sourceCountryId, targetCountryId))
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
+      return false;
+    }
+
+    final int fortifyArmyCount = event.getFortifyArmyCount ();
+
+    if (fortifyArmyCount == 0)
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_UNDERFLOW));
+      return false;
+    }
+
+    if (fortifyArmyCount > rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId)))
+    {
+      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW));
+      return false;
+    }
+
+    eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket,
+            countryMapGraphModel.countryPacketWith (sourceCountryId),
+            countryMapGraphModel.countryPacketWith (targetCountryId), fortifyArmyCount));
+
+    return true;
   }
 
   @StateMachineCondition
@@ -921,6 +993,8 @@ public final class GameModel
 
   public boolean turnIs (final PlayerTurnOrder turn)
   {
+    Arguments.checkIsNotNull (turn, "turn");
+
     return playerTurnModel.getTurnOrder ().is (turn);
   }
 

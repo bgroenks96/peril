@@ -24,6 +24,8 @@ public interface GameRules
 
   int getMinArmiesOnCountryForAttack ();
 
+  int getMinArmiesOnCountryForFortify ();
+
   int getMinPlayerLimit ();
 
   int getMaxPlayerLimit ();
@@ -75,6 +77,8 @@ public interface GameRules
   int getMinOccupyArmyCount (final int attackingPlayerDieCount);
 
   int getMaxOccupyArmyCount (final int attackingCountryArmyCount);
+
+  int getMaxFortifyArmyCount (final int sourceCountryArmyCount);
 
   DieOutcome determineAttackerOutcome (final DieFaceValue attackerDie, final DieFaceValue defenderDie);
 

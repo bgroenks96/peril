@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
@@ -275,6 +276,16 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerOccupyCountryResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerFortifyCountryResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerFortifyCountryResponseRequestEvent (event);
   }
 
   @Handler

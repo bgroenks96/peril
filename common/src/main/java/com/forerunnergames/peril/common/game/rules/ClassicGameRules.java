@@ -25,6 +25,7 @@ public final class ClassicGameRules implements GameRules
   public static final int MIN_ARMIES_ON_COUNTRY = 0;
   public static final int MAX_ARMIES_ON_COUNTRY = 99;
   public static final int MIN_ARMIES_ON_COUNTRY_FOR_ATTACK = 2;
+  public static final int MIN_ARMIES_ON_COUNTRY_FOR_FORTIFY = 2;
   public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
@@ -90,6 +91,12 @@ public final class ClassicGameRules implements GameRules
   public int getMinArmiesOnCountryForAttack ()
   {
     return MIN_ARMIES_ON_COUNTRY_FOR_ATTACK;
+  }
+
+  @Override
+  public int getMinArmiesOnCountryForFortify ()
+  {
+    return MIN_ARMIES_ON_COUNTRY_FOR_FORTIFY;
   }
 
   @Override
@@ -298,6 +305,14 @@ public final class ClassicGameRules implements GameRules
     Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
 
     return attackingCountryArmyCount - 1;
+  }
+
+  @Override
+  public int getMaxFortifyArmyCount (final int sourceCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (sourceCountryArmyCount, "sourceCountryArmyCount");
+
+    return sourceCountryArmyCount - 1;
   }
 
   @Override

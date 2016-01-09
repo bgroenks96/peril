@@ -52,7 +52,7 @@ public final class PlayerFortifyCountryResponseRequestEvent implements ResponseR
     return targetCountry;
   }
 
-  public int fortifyArmyCount ()
+  public int getFortifyArmyCount ()
   {
     return fortifyArmyCount;
   }
