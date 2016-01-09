@@ -15,6 +15,7 @@ import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.server.Server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,6 +100,14 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
   {
     Arguments.checkIsNotNegative (tcpPort, "tcpPort");
 
+    start (new InetSocketAddress (tcpPort));
+  }
+
+  @Override
+  public void start (final InetSocketAddress addressWithTcpPort)
+  {
+    Arguments.checkIsNotNull (addressWithTcpPort, "addressWithTcpPort");
+
     if (isRunning)
     {
       log.warn ("Cannot start the server because it's already running.");
@@ -110,11 +119,12 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
     try
     {
-      bind (tcpPort);
+      bind (addressWithTcpPort, null);
 
       isRunning = true;
 
-      log.info ("Started the server on port [{}] (TCP).", tcpPort);
+      log.info ("Started the server on address [{}] & port [{}] (TCP).", addressWithTcpPort.getAddress (),
+                addressWithTcpPort.getPort ());
     }
     catch (final IOException e)
     {
@@ -122,7 +132,8 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
       isRunning = false;
 
-      log.error ("Could not start the server on port [{}] (TCP). Reason: [{}].", tcpPort, Strings.toString (e));
+      log.error ("Could not start the server on address [{}] & port [{}] (TCP). Reason: [{}].",
+                 addressWithTcpPort.getAddress (), addressWithTcpPort.getPort (), Strings.toString (e));
     }
   }
 
