@@ -2,7 +2,7 @@ package com.forerunnergames.peril.server.communicators;
 
 import com.forerunnergames.peril.common.events.InternalRequestEvent;
 import com.forerunnergames.peril.common.events.InternalResponseEvent;
-import com.forerunnergames.peril.common.events.player.DefaultInternalPlayerRequestEvent;
+import com.forerunnergames.peril.common.events.player.DefaultInboundPlayerRequestEvent;
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
@@ -60,14 +60,14 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   @Override
   public <T extends PlayerRequestEvent> void publishPlayerRequestEvent (final PlayerPacket player, final T event)
   {
-    eventBus.publish (new DefaultInternalPlayerRequestEvent <> (player, event));
+    eventBus.publish (new DefaultInboundPlayerRequestEvent <> (player, event));
   }
 
   @Override
   public <T extends ResponseRequestEvent> void publishPlayerResponseRequestEvent (final PlayerPacket player,
                                                                                   final T responseRequestEvent)
   {
-    eventBus.publish (new DefaultInternalPlayerRequestEvent <> (player, responseRequestEvent));
+    eventBus.publish (new DefaultInboundPlayerRequestEvent <> (player, responseRequestEvent));
   }
 
   // --- response handlers --- //

@@ -18,7 +18,6 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
@@ -503,7 +502,7 @@ public final class GameModel
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = playerModel.idOf (player.getName ());
 
-    Result <CountryArmyChangeDeniedEvent.Reason> result = Result.success ();
+    Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> result = Result.success ();
 
     // --- process card trade-ins --- //
 

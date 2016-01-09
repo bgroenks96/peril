@@ -2,7 +2,8 @@ package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.core.model.card.CardSet.Match;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
@@ -110,7 +111,7 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
-  public Result <Reason> requestTradeInCards (final Id playerId, final Match tradeInCards, final TurnPhase turnPhase)
+  public Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> requestTradeInCards (final Id playerId, final Match tradeInCards, final TurnPhase turnPhase)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (tradeInCards, "tradeInCards");
@@ -122,16 +123,16 @@ public final class DefaultCardModel implements CardModel
     final boolean isRequiredTradeInNotAllowed = numCards >= rules.getMinCardsInHandToRequireTradeIn (turnPhase);
     if (isOptionalTradeInNotAllowed && isRequiredTradeInNotAllowed)
     {
-      return Result.failure (Reason.TRADE_IN_NOT_ALLOWED);
+      return Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.TRADE_IN_NOT_ALLOWED);
     }
 
     final CardSet playerHand = playerCardHandler.getCardsInHand (playerId);
     final CardSet matchSet = tradeInCards.getCardSet ();
     if (turnPhase == TurnPhase.REINFORCE && numCards - matchSet.size () > rules.getMaxCardsInHand (TurnPhase.REINFORCE))
     {
-      return Result.failure (Reason.TOO_MANY_CARDS_IN_HAND);
+      return Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.TOO_MANY_CARDS_IN_HAND);
     }
-    if (!playerHand.containsAll (matchSet)) return Result.failure (Reason.CARDS_NOT_IN_HAND);
+    if (!playerHand.containsAll (matchSet)) return Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.CARDS_NOT_IN_HAND);
     playerCardHandler.removeCardsFromHand (playerId, matchSet);
     cardDealer.discard (matchSet);
     tradeInCount++;

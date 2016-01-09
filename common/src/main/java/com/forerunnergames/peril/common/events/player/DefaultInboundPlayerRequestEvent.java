@@ -6,13 +6,13 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
-public class DefaultInternalPlayerRequestEvent <T extends RequestEvent> extends AbstractInternalCommunicationEvent
-        implements InternalPlayerRequestEvent <T>
+public class DefaultInboundPlayerRequestEvent <T extends RequestEvent> extends AbstractInternalCommunicationEvent
+        implements InboundPlayerRequestEvent <T>
 {
   private final PlayerPacket player;
   private final T event;
 
-  public DefaultInternalPlayerRequestEvent (final PlayerPacket player, final T event)
+  public DefaultInboundPlayerRequestEvent (final PlayerPacket player, final T event)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (event, "event");
@@ -34,7 +34,7 @@ public class DefaultInternalPlayerRequestEvent <T extends RequestEvent> extends 
   }
 
   @RequiredForNetworkSerialization
-  private DefaultInternalPlayerRequestEvent ()
+  private DefaultInboundPlayerRequestEvent ()
   {
     player = null;
     event = null;

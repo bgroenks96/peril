@@ -9,7 +9,8 @@ import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
@@ -97,7 +98,7 @@ public abstract class CardModelTest
       cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
     }
 
-    final Result <Reason> result = cardModel.requestTradeInCards (testPlayerId, match, TurnPhase.REINFORCE);
+    final Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> result = cardModel.requestTradeInCards (testPlayerId, match, TurnPhase.REINFORCE);
     // use if/fail so failure reason can be printed;
     // assertTrue causes Result to throw IllegalStateException when successful
     if (result.failed ()) fail (result.getFailureReason ().toString ());

@@ -1,14 +1,14 @@
 package com.forerunnergames.peril.core.model.map.country;
 
-import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmyChangeDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
 public interface CountryArmyModel
 {
-  Result <CountryArmyChangeDeniedEvent.Reason> requestToAddArmiesToCountry (final Id countryId, final int armyCount);
+  Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> requestToAddArmiesToCountry (final Id countryId, final int armyCount);
 
-  Result <CountryArmyChangeDeniedEvent.Reason> requestToRemoveArmiesFromCountry (final Id countryId,
+  Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> requestToRemoveArmiesFromCountry (final Id countryId,
                                                                                  final int armyCount);
 
   int getArmyCountFor (final Id countryId);

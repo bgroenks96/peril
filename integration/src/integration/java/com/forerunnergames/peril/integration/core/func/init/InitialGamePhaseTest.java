@@ -10,7 +10,6 @@ import static org.testng.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
@@ -204,7 +203,7 @@ public class InitialGamePhaseTest
     final Optional <PlayerSelectCountryResponseDeniedEvent> deniedEvent = firstClient
             .waitForEventCommunication (PlayerSelectCountryResponseDeniedEvent.class);
     assertTrue (deniedEvent.isPresent ());
-    assertEquals (CountryOwnerChangeDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, deniedEvent.get ().getReason ());
+    assertEquals (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, deniedEvent.get ().getReason ());
   }
 
   @Test (dependsOnMethods = { "testManualCountrySelectionReceivesDeniedEventOnInvalidRequest",

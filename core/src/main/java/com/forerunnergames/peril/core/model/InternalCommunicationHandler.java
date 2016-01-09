@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.events.player.InternalPlayerRequestEvent;
+import com.forerunnergames.peril.common.events.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
@@ -65,7 +65,7 @@ final class InternalCommunicationHandler
   }
 
   @Handler
-  void onEvent (final InternalPlayerRequestEvent <? extends RequestEvent> event)
+  void onEvent (final InboundPlayerRequestEvent <? extends RequestEvent> event)
   {
     Arguments.checkIsNotNull (event, "event");
 
