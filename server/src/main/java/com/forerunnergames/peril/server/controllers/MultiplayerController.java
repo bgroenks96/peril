@@ -8,9 +8,11 @@ import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.NetworkEventHandler;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.ObserverJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.ObserverJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
@@ -20,17 +22,24 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSucce
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.ObserverJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
+import com.forerunnergames.peril.common.net.packets.defaults.DefaultObserverPacket;
+import com.forerunnergames.peril.common.net.packets.person.ObserverPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
+import com.forerunnergames.peril.server.communicators.ObserverCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
+import com.forerunnergames.peril.server.controllers.ClientObserverMapping.RegisteredClientObserverNotFoundException;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
@@ -54,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -73,10 +83,12 @@ public final class MultiplayerController extends ControllerAdapter
   private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
   private final ClientPlayerMapping clientsToPlayers;
+  private final ClientObserverMapping clientsToObservers = new ClientObserverMapping ();
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final GameServerConfiguration gameServerConfig;
   private final ClientConnector clientConnector;
   private final PlayerCommunicator playerCommunicator;
+  private final ObserverCommunicator observerCommunicator;
   private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
   private boolean shouldShutDown = false;
@@ -90,18 +102,21 @@ public final class MultiplayerController extends ControllerAdapter
   public MultiplayerController (final GameServerConfiguration gameServerConfig,
                                 final ClientConnector clientConnector,
                                 final PlayerCommunicator playerCommunicator,
+                                final ObserverCommunicator observerCommunicator,
                                 final CoreCommunicator coreCommunicator,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
     Arguments.checkIsNotNull (playerCommunicator, "playerCommunicator");
+    Arguments.checkIsNotNull (observerCommunicator, "observerCommunicator");
     Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.gameServerConfig = gameServerConfig;
     this.clientConnector = clientConnector;
     this.playerCommunicator = playerCommunicator;
+    this.observerCommunicator = observerCommunicator;
     this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
 
@@ -138,6 +153,8 @@ public final class MultiplayerController extends ControllerAdapter
 
   public void setClientConnectTimeout (final int connectionTimeoutMillis)
   {
+    Arguments.checkIsNotNegative (connectionTimeoutMillis, "connectionTimeoutMillis");
+
     this.connectionTimeoutMillis = connectionTimeoutMillis;
   }
 
@@ -208,7 +225,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayers (event);
+    sendToAllPlayersAndObservers (event);
   }
 
   @Handler
@@ -234,6 +251,8 @@ public final class MultiplayerController extends ControllerAdapter
   @Handler
   public void onEvent (final PlayerLeaveGameEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
     final Optional <Remote> client = clientsToPlayers.clientFor (event.getPlayer ());
     if (!client.isPresent ())
     {
@@ -242,8 +261,8 @@ public final class MultiplayerController extends ControllerAdapter
     }
     // remove client mapping
     remove (client.get ());
-    // send to all players still in the server
-    sendToAllPlayers (event);
+    // send to everyone still in the server
+    sendToAllPlayersAndObservers (event);
   }
 
   @Handler
@@ -253,7 +272,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    sendToAllPlayers (event);
+    sendToAllPlayersAndObservers (event);
   }
 
   @Handler
@@ -276,7 +295,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    sendToAllPlayers (event);
+    sendToAllPlayersAndObservers (event);
   }
 
   @Handler
@@ -299,7 +318,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    sendToAllPlayers (event);
+    sendToAllPlayersAndObservers (event);
   }
 
   @Handler
@@ -337,24 +356,33 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Client [{}] disconnected.", client);
 
     Optional <PlayerPacket> playerQuery = Optional.absent ();
+    Optional <ObserverPacket> observerQuery = Optional.absent ();
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);
+      observerQuery = clientsToObservers.observerFor (client);
     }
-    catch (final RegisteredClientPlayerNotFoundException e)
+    catch (final RegisteredClientPlayerNotFoundException | RegisteredClientObserverNotFoundException e)
     {
-      log.error ("Error resolving client to player.", e);
+      log.error ("Error resolving client.", e);
     }
 
-    if (!playerQuery.isPresent ())
+    // client is a player
+    if (playerQuery.isPresent ())
     {
-      log.warn ("Client [{}] disconnected but did not exist as a player.", client);
-      remove (client);
+      final PlayerPacket disconnectedPlayer = playerQuery.get ();
+      coreCommunicator.notifyRemovePlayerFromGame (disconnectedPlayer);
+      // let the leave game event handle removing the player
       return;
     }
 
-    final PlayerPacket disconnectedPlayer = playerQuery.get ();
-    coreCommunicator.notifyRemovePlayerFromGame (disconnectedPlayer);
+    // if client is neither a player nor an observer, log a warning
+    if (!playerQuery.isPresent () && !observerQuery.isPresent ())
+    {
+      log.warn ("Client [{}] disconnected but did not exist as a player or observer.", client);
+    }
+
+    remove (client);
   }
 
   @Handler
@@ -445,6 +473,18 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
+    if (clientsToObservers.existsObserverWith (event.getPlayerName ()))
+    {
+      final ObserverPacket nameConflictObserver = clientsToObservers.observerWith (event.getPlayerName ()).get ();
+      log.warn ("Rejecting {} from [{}] because an observer client [{}] => [{}] already exists with that name.",
+                event.getClass ().getSimpleName (), client, clientsToObservers.clientFor (nameConflictObserver).get (),
+                nameConflictObserver);
+      // this will bypass core and immediately publish the event using the existing event handler in this class
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+              PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME));
+      return;
+    }
+
     // spam guard: if client request is already being processed, ignore new request event
     if (playerJoinGameRequestCache.containsKey (event.getPlayerName ())) return;
 
@@ -453,6 +493,24 @@ public final class MultiplayerController extends ControllerAdapter
     playerJoinGameRequestCache.put (event.getPlayerName (), client);
 
     eventBus.publish (event);
+  }
+
+  void handleEvent (final ObserverJoinGameRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    final Result <ObserverJoinGameDeniedEvent.Reason> result = verifyObserverName (event.getObserverName ());
+    if (result.failed ())
+    {
+      sendTo (client, new ObserverJoinGameDeniedEvent (event.getObserverName (), result.getFailureReason ()));
+      return;
+    }
+
+    final ObserverPacket observer = new DefaultObserverPacket (event.getObserverName (), UUID.randomUUID ());
+    clientsToObservers.put (client, observer);
+
+    sendToAllPlayersAndObservers (new ObserverJoinGameSuccessEvent (observer));
   }
 
   void handleEvent (final ChatMessageRequestEvent event, final Remote client)
@@ -479,7 +537,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayers (new ChatMessageSuccessEvent (
+    sendToAllPlayersAndObservers (new ChatMessageSuccessEvent (
             new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
@@ -570,20 +628,27 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerConfig.getServerAddress ();
   }
 
+  private void sendTo (final Remote client, final Object object)
+  {
+    playerCommunicator.sendTo (client, object);
+  }
+
   private void sendToPlayer (final PlayerPacket player, final Object object)
   {
     playerCommunicator.sendToPlayer (player, object, clientsToPlayers);
   }
 
-  private void sendToAllPlayers (final Object object)
+  private void sendToAllPlayersAndObservers (final Object object)
   {
     playerCommunicator.sendToAllPlayers (object, clientsToPlayers);
+    observerCommunicator.sendToAllObservers (object, clientsToObservers);
   }
 
   private void remove (final Remote client)
   {
     clientsInServer.remove (client);
-    clientsToPlayers.remove (client);
+    clientsToPlayers.remove (client); // remove from players, if client is a player
+    clientsToObservers.remove (client); // remove from observers, if client is an observer
   }
 
   private void sendJoinGameServerSuccess (final Remote client, final ImmutableSet <PlayerPacket> players)
@@ -626,6 +691,21 @@ public final class MultiplayerController extends ControllerAdapter
     }
 
     return false;
+  }
+
+  private Result <ObserverJoinGameDeniedEvent.Reason> verifyObserverName (final String name)
+  {
+    if (clientsToPlayers.existsPlayerWith (name) || clientsToObservers.existsObserverWith (name))
+    {
+      return Result.failure (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+    }
+
+    if (!GameSettings.isValidPlayerNameWithOptionalClanTag (name))
+    {
+      return Result.failure (ObserverJoinGameDeniedEvent.Reason.INVALID_NAME);
+    }
+
+    return Result.success ();
   }
 
   private void handlePlayerResponseTo (final Class <? extends ServerRequestEvent> requestClass,

@@ -33,20 +33,27 @@ import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.ObserverJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.ObserverJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.ObserverJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
+import com.forerunnergames.peril.common.net.packets.person.ObserverPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultObserverCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
+import com.forerunnergames.peril.server.communicators.ObserverCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -72,6 +79,7 @@ import net.engio.mbassy.bus.MBassador;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 import org.junit.After;
 import org.junit.Before;
@@ -91,10 +99,12 @@ public class MultiplayerControllerTest
   private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
   private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
                                                                   Mockito.RETURNS_SMART_NULLS);
+  private final PlayerCommunicator defaultPlayerCommunicator = new DefaultPlayerCommunicator (mockClientCommunicator);
+  private final ObserverCommunicator defaultObserverCommunicator = new DefaultObserverCommunicator (
+          mockClientCommunicator);
   private final CoreCommunicator mockCoreCommunicator = mock (CoreCommunicator.class, Mockito.RETURNS_SMART_NULLS);
-  private final MultiplayerControllerBuilder mpcBuilder = builder (mockConnector,
-                                                                   new PlayerCommunicator (mockClientCommunicator),
-                                                                   mockCoreCommunicator);
+  private final MultiplayerControllerBuilder mpcBuilder = builder (mockConnector, defaultPlayerCommunicator,
+                                                                   defaultObserverCommunicator, mockCoreCommunicator);
   private int clientCount = 0;
   private MBassador <Event> eventBus;
 
@@ -283,7 +293,8 @@ public class MultiplayerControllerTest
   @Test
   public void testHostClientJoinGameServerAfterHostDenied ()
   {
-    final MultiplayerController mpc = mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    // MPC still needs to be built in order to register the event bus
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
     final Remote host = createHost ();
     connect (host);
@@ -455,6 +466,76 @@ public class MultiplayerControllerTest
     // make sure nothing was sent to the disconnecting player
     verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), isA (PlayerLeaveGameEvent.class));
     assertFalse (mpc.isPlayerInGame (clientPlayer.player ()));
+  }
+
+  @Test
+  public void testObserverJoinGameSuccess ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+    final Remote observerClient = addClient ();
+    addMockObserverToGameWithName ("TestObserver", observerClient, mpc);
+    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
+    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (ObserverJoinGameSuccessEvent.class));
+    verify (mockClientCommunicator).sendTo (eq (observerClient), isA (ObserverJoinGameSuccessEvent.class));
+  }
+
+  @Test
+  public void testObserverJoinGameDeniedDuplicatesPlayerName ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+    final Remote observerClient = addClient ();
+    communicateEventFromClient (new ObserverJoinGameRequestEvent ("TestPlayer"), observerClient);
+    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
+    final Matcher <ObserverJoinGameDeniedEvent> matcher = new BaseMatcher <ObserverJoinGameDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        if (!(arg0 instanceof ObserverJoinGameDeniedEvent)) return false;
+        return ((ObserverJoinGameDeniedEvent) arg0).getReason ()
+                .equals (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+        arg0.appendText (ObserverJoinGameDeniedEvent.class.getSimpleName () + ": ")
+                .appendValue (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+      }
+    };
+    verify (mockClientCommunicator).sendTo (eq (observerClient), argThat (matcher));
+    verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), argThat (matcher));
+  }
+
+  @Test
+  public void testObserverJoinGameDeniedDuplicatesObserverName ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+    final Remote observerClient1 = addClient ();
+    addMockObserverToGameWithName ("TestObserver", observerClient1, mpc);
+    final Remote observerClient2 = addClient ();
+    communicateEventFromClient (new ObserverJoinGameRequestEvent ("TestObserver"), observerClient2);
+    final Matcher <ObserverJoinGameDeniedEvent> matcher = new BaseMatcher <ObserverJoinGameDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        if (!(arg0 instanceof ObserverJoinGameDeniedEvent)) return false;
+        return ((ObserverJoinGameDeniedEvent) arg0).getReason ()
+                .equals (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+        arg0.appendText (ObserverJoinGameDeniedEvent.class.getSimpleName () + ": ")
+                .appendValue (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+      }
+    };
+    verify (mockClientCommunicator).sendTo (eq (observerClient2), argThat (matcher));
   }
 
   @Test
@@ -666,12 +747,13 @@ public class MultiplayerControllerTest
   // Note: package private visibility is intended; other test classes in package should have access.
   static MultiplayerControllerBuilder builder (final ClientConnector connector,
                                                final PlayerCommunicator communicator,
+                                               final ObserverCommunicator observerCommunicator,
                                                final CoreCommunicator coreCommunicator)
   {
     Arguments.checkIsNotNull (connector, "connector");
     Arguments.checkIsNotNull (communicator, "communicator");
 
-    return new MultiplayerControllerBuilder (connector, communicator, coreCommunicator);
+    return new MultiplayerControllerBuilder (connector, communicator, observerCommunicator, coreCommunicator);
   }
 
   private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
@@ -697,6 +779,7 @@ public class MultiplayerControllerTest
   {
     final PlayerPacket mockPlayerPacket = mock (PlayerPacket.class);
     when (mockPlayerPacket.getName ()).thenReturn (playerName);
+    when (mockPlayerPacket.hasName (eq (playerName))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName), client);
     eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket));
@@ -704,6 +787,20 @@ public class MultiplayerControllerTest
     assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
 
     return mockPlayerPacket;
+  }
+
+  private ObserverPacket addMockObserverToGameWithName (final String observerName,
+                                                        final Remote client,
+                                                        final MultiplayerController mpc)
+  {
+    final ObserverPacket mockObserverPacket = mock (ObserverPacket.class);
+    when (mockObserverPacket.getName ()).thenReturn (observerName);
+    when (mockObserverPacket.hasName (eq (observerName))).thenReturn (true);
+    when (mockObserverPacket.toString ()).thenReturn (observerName);
+    communicateEventFromClient (new ObserverJoinGameRequestEvent (observerName), client);
+    verify (mockClientCommunicator).sendTo (eq (client), isA (ObserverJoinGameSuccessEvent.class));
+
+    return mockObserverPacket;
   }
 
   private void mockCoreCommunicatorPlayersWith (final PlayerPacket... players)
@@ -819,6 +916,7 @@ public class MultiplayerControllerTest
   {
     private final ClientConnector connector;
     private final PlayerCommunicator communicator;
+    private final ObserverCommunicator observerCommunicator;
     private final CoreCommunicator coreCommunicator;
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
@@ -905,7 +1003,7 @@ public class MultiplayerControllerTest
               gameServerType, gameConfig, serverConfig);
 
       final MultiplayerController controller = new MultiplayerController (gameServerConfig, connector, communicator,
-              coreCommunicator, eventBus);
+              observerCommunicator, coreCommunicator, eventBus);
 
       controller.initialize ();
 
@@ -916,10 +1014,12 @@ public class MultiplayerControllerTest
 
     private MultiplayerControllerBuilder (final ClientConnector connector,
                                           final PlayerCommunicator communicator,
+                                          final ObserverCommunicator observerCommunicator,
                                           final CoreCommunicator coreCommunicator)
     {
       this.connector = connector;
       this.communicator = communicator;
+      this.observerCommunicator = observerCommunicator;
       this.coreCommunicator = coreCommunicator;
     }
   }

@@ -580,9 +580,7 @@ public final class DefaultPlayerModel implements PlayerModel
   private void fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
   {
     // Ensure the removed player is really removed, or this will not work.
-    // @formatter:off
     assert !players.containsValue (removedPlayer);
-    // @formatter:on
 
     final int danglingTurnOrderPosition = removedPlayer.getTurnOrderPosition ();
 

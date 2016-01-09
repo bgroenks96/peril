@@ -11,6 +11,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,10 +71,29 @@ public final class ClientPlayerMapping
     return Optional.fromNullable (clientsToPlayers.inverse ().get (player));
   }
 
+  public boolean existsPlayerWith (final String name)
+  {
+    return playerWith (name).isPresent ();
+  }
+
+  public Optional <PlayerPacket> playerWith (final String name)
+  {
+    for (final PlayerPacket player : clientsToPlayers.values ())
+    {
+      if (player.hasName (name)) return Optional.of (player);
+    }
+    return Optional.absent ();
+  }
+
   public ImmutableSet <PlayerPacket> players ()
   {
     syncPlayerData ();
     return ImmutableSet.copyOf (clientsToPlayers.values ());
+  }
+
+  public ImmutableSet <PlayerPacket> playersExcept (final PlayerPacket player)
+  {
+    return ImmutableSet.copyOf (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)));
   }
 
   public ImmutableSet <Remote> clients ()

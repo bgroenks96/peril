@@ -29,7 +29,8 @@ import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.server.application.ServerApplication;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
-import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultObserverCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
@@ -126,7 +127,8 @@ public class ServerFactory
             gameConfig, serverConfig);
 
     final MultiplayerController multiplayerController = new MultiplayerController (gameServerConfig, serverController,
-            new PlayerCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventBus);
+            new DefaultPlayerCommunicator (serverController), new DefaultObserverCommunicator (serverController),
+            new DefaultCoreCommunicator (eventBus), eventBus);
 
     final ServerApplication serverApplication = new ServerApplication (stateMachine, eventBus, mainThreadExecutor,
             serverController, multiplayerController);
