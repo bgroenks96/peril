@@ -523,13 +523,6 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    final Result <SpectatorJoinGameDeniedEvent.Reason> validateName = validateSpectatorName (event.getSpectatorName ());
-    if (validateName.failed ())
-    {
-      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), validateName.getFailureReason ());
-      return;
-    }
-
     if (gameServerConfig.getSpectatorLimit () == 0)
     {
       sendSpectatorJoinGameDenied (client, event.getSpectatorName (),
@@ -540,6 +533,13 @@ public final class MultiplayerController extends ControllerAdapter
     if (clientsToSpectators.spectatorCount () >= gameServerConfig.getSpectatorLimit ())
     {
       sendSpectatorJoinGameDenied (client, event.getSpectatorName (), SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
+      return;
+    }
+
+    final Result <SpectatorJoinGameDeniedEvent.Reason> validateName = validateSpectatorName (event.getSpectatorName ());
+    if (validateName.failed ())
+    {
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), validateName.getFailureReason ());
       return;
     }
 

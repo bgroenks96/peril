@@ -483,7 +483,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedDuplicatesPlayerName ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (GameSettings.MAX_SPECTATORS).build (eventBus);
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient = addClient ();
     communicateEventFromClient (new SepctatorJoinGameRequestEvent ("TestPlayer"), spectatorClient);
