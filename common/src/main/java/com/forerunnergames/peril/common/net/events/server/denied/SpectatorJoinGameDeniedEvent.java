@@ -15,8 +15,7 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
     GAME_IS_FULL,
     OBSERVING_DISABLED,
     INVALID_NAME,
-    DUPLICATE_NAME,
-    DUPLICATE_SELF_IDENTITY;
+    DUPLICATE_NAME;
   }
 
   public SpectatorJoinGameDeniedEvent (final String deniedName, final Reason reason)

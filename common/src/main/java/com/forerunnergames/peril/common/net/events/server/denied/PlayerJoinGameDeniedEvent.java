@@ -20,8 +20,6 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
   public enum Reason
   {
     GAME_IS_FULL,
-    DUPLICATE_SELF_IDENTITY,
-    DUPLICATE_ID,
     DUPLICATE_NAME,
     DUPLICATE_COLOR,
     DUPLICATE_TURN_ORDER,
