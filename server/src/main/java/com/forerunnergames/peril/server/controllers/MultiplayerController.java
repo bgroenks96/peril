@@ -524,10 +524,23 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    final Result <SpectatorJoinGameDeniedEvent.Reason> result = validateSpectatorName (event.getSpectatorName ());
-    if (result.failed ())
+    final Result <SpectatorJoinGameDeniedEvent.Reason> validateName = validateSpectatorName (event.getSpectatorName ());
+    if (validateName.failed ())
     {
-      sendTo (client, new SpectatorJoinGameDeniedEvent (event.getSpectatorName (), result.getFailureReason ()));
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), validateName.getFailureReason ());
+      return;
+    }
+
+    if (gameServerConfig.getSpectatorLimit () == 0)
+    {
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (),
+                                   SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED);
+      return;
+    }
+
+    if (clientsToSpectators.spectatorCount () >= gameServerConfig.getSpectatorLimit ())
+    {
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
       return;
     }
 
@@ -694,6 +707,13 @@ public final class MultiplayerController extends ControllerAdapter
     clientConnector.disconnect (client);
 
     log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
+  }
+
+  private void sendSpectatorJoinGameDenied (final Remote client,
+                                            final String name,
+                                            final SpectatorJoinGameDeniedEvent.Reason reason)
+  {
+    sendTo (client, new SpectatorJoinGameDeniedEvent (name, reason));
   }
 
   private boolean isHostConnected ()

@@ -471,7 +471,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameSuccess ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (GameSettings.MAX_SPECTATORS).build (eventBus);
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient = addClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient, mpc);
@@ -512,7 +512,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedDuplicatesSpectatorName ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (GameSettings.MAX_SPECTATORS).build (eventBus);
     addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient1 = addClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient1, mpc);
@@ -536,6 +536,62 @@ public class MultiplayerControllerTest
       }
     };
     verify (mockClientCommunicator).sendTo (eq (spectatorClient2), argThat (matcher));
+  }
+
+  @Test
+  public void testSpectatorJoinGameDeniedMaxSpectatorCountReached ()
+  {
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (1).build (eventBus);
+    addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+    final Remote spectatorClient1 = addClient ();
+    addMockSpectatorToGameWithName ("TestSpectator1", spectatorClient1, mpc);
+    final Remote spectatorClient2 = addClient ();
+    communicateEventFromClient (new SepctatorJoinGameRequestEvent ("TestSpectator2"), spectatorClient2);
+    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
+        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
+                .equals (SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
+                .appendValue (SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
+      }
+    };
+    verify (mockClientCommunicator).sendTo (eq (spectatorClient2), argThat (matcher));
+  }
+
+  @Test
+  public void testSpectatorJoinGameDeniedSpectatingDisabled ()
+  {
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (0).build (eventBus);
+    addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+    final Remote spectatorClient = addClient ();
+    communicateEventFromClient (new SepctatorJoinGameRequestEvent ("TestSpectator"), spectatorClient);
+    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
+    {
+      @Override
+      public boolean matches (final Object arg0)
+      {
+        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
+        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
+                .equals (SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED);
+      }
+
+      @Override
+      public void describeTo (final Description arg0)
+      {
+        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
+                .appendValue (SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED);
+      }
+    };
+    verify (mockClientCommunicator).sendTo (eq (spectatorClient), argThat (matcher));
   }
 
   @Test

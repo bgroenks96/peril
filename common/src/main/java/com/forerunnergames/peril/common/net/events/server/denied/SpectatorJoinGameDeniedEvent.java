@@ -13,7 +13,7 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
   public enum Reason
   {
     GAME_IS_FULL,
-    OBSERVING_DISABLED,
+    SPECTATING_DISABLED,
     INVALID_NAME,
     DUPLICATE_NAME;
   }

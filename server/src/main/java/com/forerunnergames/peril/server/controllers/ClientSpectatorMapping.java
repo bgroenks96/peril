@@ -97,6 +97,11 @@ public final class ClientSpectatorMapping
     return Optional.fromNullable (clientsToSpectators.remove (client));
   }
 
+  public int spectatorCount ()
+  {
+    return clientsToSpectators.size ();
+  }
+
   @Override
   public String toString ()
   {
