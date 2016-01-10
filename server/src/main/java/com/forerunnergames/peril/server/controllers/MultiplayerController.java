@@ -500,6 +500,14 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
+    if (!clientsInServer.contains (client))
+    {
+      log.warn ("Ignoring join game request from observer [{}] | REASON: unrecognized client [{}].",
+                event.getObserverName (), client);
+      clientConnector.disconnect (client);
+      return;
+    }
+
     final Result <ObserverJoinGameDeniedEvent.Reason> result = verifyObserverName (event.getObserverName ());
     if (result.failed ())
     {

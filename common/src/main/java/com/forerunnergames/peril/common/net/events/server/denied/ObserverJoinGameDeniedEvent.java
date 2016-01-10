@@ -12,8 +12,11 @@ public final class ObserverJoinGameDeniedEvent extends AbstractDeniedEvent <Reas
 
   public enum Reason
   {
+    GAME_IS_FULL,
+    OBSERVING_DISABLED,
     INVALID_NAME,
-    DUPLICATE_NAME;
+    DUPLICATE_NAME,
+    DUPLICATE_SELF_IDENTITY;
   }
 
   public ObserverJoinGameDeniedEvent (final String deniedName, final Reason reason)
