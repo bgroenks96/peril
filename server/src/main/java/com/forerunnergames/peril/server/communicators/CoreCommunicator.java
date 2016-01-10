@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.communicators;
 
-import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 

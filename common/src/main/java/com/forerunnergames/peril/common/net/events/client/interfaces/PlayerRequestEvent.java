@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.common.net.events.client.request;
+package com.forerunnergames.peril.common.net.events.client.interfaces;
 
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 

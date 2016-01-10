@@ -6,7 +6,7 @@ import com.forerunnergames.peril.common.events.player.DefaultInboundPlayerReques
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
