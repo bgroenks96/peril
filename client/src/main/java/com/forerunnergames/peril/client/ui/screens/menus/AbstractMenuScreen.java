@@ -51,6 +51,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
+import com.forerunnergames.peril.client.ui.ScreenshotFactory;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -216,7 +217,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
       }
     });
 
-    inputProcessor = new InputMultiplexer (stage, new InputAdapter ()
+    inputProcessor = new InputMultiplexer (stage, ScreenshotFactory.input (), new InputAdapter ()
     {
       @Override
       public boolean keyDown (final int keycode)
@@ -297,8 +298,8 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   @Override
   public void render (final float delta)
   {
-    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
+    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
     update (delta);
     stage.draw ();
