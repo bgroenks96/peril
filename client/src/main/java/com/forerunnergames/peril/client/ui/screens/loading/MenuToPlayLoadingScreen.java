@@ -592,14 +592,6 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       {
         return "This game is already full.";
       }
-      case DUPLICATE_SELF_IDENTITY:
-      {
-        return "You have already joined this game.";
-      }
-      case DUPLICATE_ID:
-      {
-        return "Your id is already taken by another player.";
-      }
       case DUPLICATE_NAME:
       {
         return "Your name, " + playerName + ", is already taken by another player.";
@@ -636,9 +628,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     if (clientConfiguration == null) throw new IllegalStateException (Strings
             .format ("Cannot go to play screen because {} is null.", ClientConfiguration.class.getSimpleName ()));
 
-    if (playersInGame == null) throw new IllegalStateException (
-            Strings.format ("Cannot go to play screen because playersInGame is null.",
-                            ClientConfiguration.class.getSimpleName ()));
+    if (playersInGame == null)
+      throw new IllegalStateException (Strings.format ("Cannot go to play screen because playersInGame is null.",
+                                                       ClientConfiguration.class.getSimpleName ()));
 
     final PlayMapActor playMapActor;
 
@@ -763,12 +755,12 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private boolean isFinishedLoading ()
   {
-    if (!isLoading) throw new IllegalStateException (
-            "Cannot check whether finished loading because assets are not being loaded.");
+    if (!isLoading)
+      throw new IllegalStateException ("Cannot check whether finished loading because assets are not being loaded.");
 
-    if (gameServerConfiguration == null) throw new IllegalStateException (
-            Strings.format ("Cannot check whether finished loading because {} is null.",
-                            GameServerConfiguration.class.getSimpleName ()));
+    if (gameServerConfiguration == null)
+      throw new IllegalStateException (Strings.format ("Cannot check whether finished loading because {} is null.",
+                                                       GameServerConfiguration.class.getSimpleName ()));
 
     return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f
             && playMapActorFactory.isFinishedLoadingAssets (gameServerConfiguration.getMapMetadata ());
@@ -776,12 +768,12 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private void updateLoadingProgress ()
   {
-    if (!isLoading) throw new IllegalStateException (
-            "Cannot get loading progress percent because assets are not being loaded.");
+    if (!isLoading)
+      throw new IllegalStateException ("Cannot get loading progress percent because assets are not being loaded.");
 
-    if (gameServerConfiguration == null) throw new IllegalStateException (
-            Strings.format ("Cannot get loading progress percent because {} is null.",
-                            GameServerConfiguration.class.getSimpleName ()));
+    if (gameServerConfiguration == null)
+      throw new IllegalStateException (Strings.format ("Cannot get loading progress percent because {} is null.",
+                                                       GameServerConfiguration.class.getSimpleName ()));
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 

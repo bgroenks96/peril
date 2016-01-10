@@ -443,7 +443,7 @@ public class MultiplayerControllerTest
     final PlayerPacket mockPacket = mock (PlayerPacket.class);
     when (mockPacket.getName ()).thenReturn (playerName);
     // make up a reason... doesn't have to be true :)
-    final PlayerJoinGameDeniedEvent.Reason reason = PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID;
+    final PlayerJoinGameDeniedEvent.Reason reason = PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME;
     final DeniedEvent <PlayerJoinGameDeniedEvent.Reason> deniedEvent = new PlayerJoinGameDeniedEvent (playerName,
             reason);
     eventBus.publish (deniedEvent);

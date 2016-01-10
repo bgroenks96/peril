@@ -543,35 +543,6 @@ public class PlayerModelTest
   }
 
   @Test
-  public void testRequestAddPlayerFailedWithDuplicateId ()
-  {
-    final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Id duplicateId = IdGenerator.generateUniqueId ();
-    final Player player1 = new DefaultPlayer ("TestPlayer1", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-            PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("TestPlayer2", duplicateId, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
-            PlayerTurnOrder.UNKNOWN);
-
-    assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factoryFrom (player1))));
-    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player2));
-    assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_ID));
-    assertTrue (playerModel.playerCountIs (1));
-  }
-
-  @Test
-  public void testRequestAddPlayerFailedWithDuplicateSelfIdentity ()
-  {
-    final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Player player1 = PlayerFactory.builder ("TestPlayer1").identity (PersonIdentity.SELF).build ();
-    final Player player2 = PlayerFactory.builder ("TestPlayer2").identity (PersonIdentity.SELF).build ();
-
-    assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factoryFrom (player1))));
-    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player2));
-    assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_SELF_IDENTITY));
-    assertTrue (playerModel.playerCountIs (1));
-  }
-
-  @Test
   public void testRequestAddPlayerFailedWithDuplicateTurnOrder ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
