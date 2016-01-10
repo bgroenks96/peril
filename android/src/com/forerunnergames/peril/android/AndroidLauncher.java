@@ -1,12 +1,12 @@
 package com.forerunnergames.peril.android;
 
-import android.os.Bundle;
-
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
+
+import android.os.Bundle;
 
 public final class AndroidLauncher extends AndroidApplication
 {
@@ -15,7 +15,7 @@ public final class AndroidLauncher extends AndroidApplication
   {
     super.onCreate (savedInstanceState);
 
-    new ClientApplicationProperties ();
+    ClientApplicationProperties.set ();
 
     initialize (LibGdxGameFactory.create (), new AndroidApplicationConfiguration ());
   }

@@ -65,7 +65,7 @@ public final class DesktopLauncher
 
     final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration ();
 
-    new ClientApplicationProperties ();
+    ClientApplicationProperties.set ();
 
     try
     {
