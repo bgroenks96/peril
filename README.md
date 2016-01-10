@@ -5,3 +5,5 @@ peril [per-uhl] (noun)
 See also: Risk
 
 [from Old French peril, from Latin perīculum]
+
+[![Build Status](http://ci.forerunnergames.com:8080/buildStatus/icon?job=peril)](http://ci.forerunnergames.com:8080/job/peril/)
