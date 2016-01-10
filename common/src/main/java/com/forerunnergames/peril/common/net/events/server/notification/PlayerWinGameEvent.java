@@ -4,9 +4,6 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotif
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-/**
- * An event reserved only for the biggest of failures and truest of scrubs.
- */
 public final class PlayerWinGameEvent implements PlayerNotificationEvent
 {
   private final PlayerPacket player;
