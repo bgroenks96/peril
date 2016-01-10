@@ -87,7 +87,7 @@ class PlayerTurnDataCache
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: [{}]", dataCache);
+    return Strings.format ("{}: [{}]", getClass ().getSimpleName (), dataCache);
   }
 
   enum CacheKey

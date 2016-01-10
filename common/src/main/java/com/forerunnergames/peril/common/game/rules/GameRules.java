@@ -14,6 +14,10 @@ public interface GameRules
 
   InitialCountryAssignment getInitialCountryAssignment ();
 
+  int getMinPlayerCountryCount ();
+
+  int getMaxPlayerCountryCount ();
+
   int getMinArmiesInHand ();
 
   int getMaxArmiesInHand ();

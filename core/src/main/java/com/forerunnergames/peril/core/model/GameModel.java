@@ -31,6 +31,8 @@ import com.forerunnergames.peril.common.net.events.server.notification.EndPlayer
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
@@ -83,6 +85,7 @@ import com.forerunnergames.peril.core.model.state.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
+import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
@@ -212,6 +215,12 @@ public final class GameModel
   public void endPlayerTurn ()
   {
     log.info ("Turn ends for player [{}].", getCurrentPlayerPacket ().getName ());
+
+    // verify win/lose status of all players
+    for (final Id playerId : playerModel.getPlayerIds ())
+    {
+      checkPlayerGameStatus (playerId);
+    }
 
     playerTurnModel.advance ();
 
@@ -763,14 +772,17 @@ public final class GameModel
     }
     if (result.getDefendingCountryOwner ().isNot (defender.getPlayerId ()))
     {
-      final Id newOwner = countryOwnerModel.ownerOf (defender.getCountryId ());
-      final PlayerPacket newOwnerPlayer = playerModel.playerPacketWith (newOwner);
-      // publish country owner change notification
-      eventBus.publish (new CountryOwnerChangedEvent (defenderCountry,
-              playerModel.playerPacketWith (defender.getPlayerId ()), newOwnerPlayer));
+      final Id newOwnerId = countryOwnerModel.ownerOf (attacker.getCountryId ());
+      final Id prevOwnerId = countryOwnerModel.ownerOf (defender.getCountryId ());
+      final PlayerPacket prevOwner = playerModel.playerPacketWith (prevOwnerId);
+      final PlayerPacket newOwner = playerModel.playerPacketWith (newOwnerId);
+      final CountryPacket updatedDefenderCountry = countryMapGraphModel.countryPacketWith (defender.getCountryId ());
+      eventBus.publish (new CountryOwnerChangedEvent (updatedDefenderCountry, prevOwner, newOwner));
+
       // publish occupation request event (this must occur before attack success event in order for the
       // correct state transition to occur)
-      eventBus.publish (new PlayerOccupyCountryRequestEvent (newOwnerPlayer, attackerCountry, defenderCountry));
+      eventBus.publish (new PlayerOccupyCountryRequestEvent (newOwner,
+              countryMapGraphModel.countryPacketWith (attacker.getCountryId ()), updatedDefenderCountry));
     }
 
     clearCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
@@ -1019,6 +1031,26 @@ public final class GameModel
   {
     log.debug ("Turn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getTurn (), getCurrentPlayerId (),
                turnDataCache);
+  }
+
+  // checks whether or not a player has won or lost the game in the current game state
+  private void checkPlayerGameStatus (final Id playerId)
+  {
+    final int playerCountryCount = countryOwnerModel.countCountriesOwnedBy (playerId);
+    if (playerCountryCount < rules.getMinPlayerCountryCount ())
+    {
+      eventBus.publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
+      playerModel.remove (playerId);
+      return;
+    }
+
+    if (playerCountryCount >= rules.getWinningCountryCount ())
+    {
+      // player won! huzzah!
+      eventBus.publish (new PlayerWinGameEvent (playerModel.playerPacketWith (playerId)));
+      // end the game
+      eventBus.publish (new EndGameEvent ());
+    }
   }
 
   /**

@@ -20,6 +20,7 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerRespo
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ObserverJoinGameSuccessEvent;
@@ -262,8 +263,25 @@ public final class MultiplayerController extends ControllerAdapter
     }
     // remove client mapping
     remove (client.get ());
-    // send to everyone still in the server
-    sendToAllPlayersAndObservers (event);
+
+    // let handler for server notification events handle forwarding the event
+  }
+
+  @Handler
+  public void onEvent (final PlayerLoseGameEvent event)
+  {
+    final Optional <Remote> client = clientsToPlayers.clientFor (event.getPlayer ());
+    if (!client.isPresent ())
+    {
+      log.warn ("No client mapping for player in received event [{}].", event);
+      return;
+    }
+    // remove client/player mapping; keep client in server
+    clientsToPlayers.remove (client.get ());
+    // add client as an observer
+    clientsToObservers.put (client.get (), createNewObserverFromValidName (event.getPlayer ().getName ()));
+
+    // let handler for server notification events handle forwarding the event
   }
 
   @Handler
@@ -290,9 +308,6 @@ public final class MultiplayerController extends ControllerAdapter
   public void onEvent (final ServerNotificationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-
-    // We have a separate handler / sender for this ServerNotificationEvent, so don't send twice.
-    if (event instanceof PlayerLeaveGameEvent) return;
 
     log.trace ("Event received [{}]", event);
 
@@ -509,14 +524,14 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    final Result <ObserverJoinGameDeniedEvent.Reason> result = verifyObserverName (event.getObserverName ());
+    final Result <ObserverJoinGameDeniedEvent.Reason> result = validateObserverName (event.getObserverName ());
     if (result.failed ())
     {
       sendTo (client, new ObserverJoinGameDeniedEvent (event.getObserverName (), result.getFailureReason ()));
       return;
     }
 
-    final ObserverPacket observer = new DefaultObserverPacket (event.getObserverName (), UUID.randomUUID ());
+    final ObserverPacket observer = createNewObserverFromValidName (event.getObserverName ());
     clientsToObservers.put (client, observer);
 
     sendToAllPlayersAndObservers (new ObserverJoinGameSuccessEvent (observer));
@@ -702,7 +717,7 @@ public final class MultiplayerController extends ControllerAdapter
     return false;
   }
 
-  private Result <ObserverJoinGameDeniedEvent.Reason> verifyObserverName (final String name)
+  private Result <ObserverJoinGameDeniedEvent.Reason> validateObserverName (final String name)
   {
     if (clientsToPlayers.existsPlayerWith (name) || clientsToObservers.existsObserverWith (name))
     {
@@ -715,6 +730,12 @@ public final class MultiplayerController extends ControllerAdapter
     }
 
     return Result.success ();
+  }
+
+  // note: this method assumes that 'name' has already been validated
+  private ObserverPacket createNewObserverFromValidName (final String name)
+  {
+    return new DefaultObserverPacket (name, UUID.randomUUID ());
   }
 
   private void handlePlayerResponseTo (final Class <? extends ServerRequestEvent> requestClass,

@@ -20,6 +20,7 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_WIN_PERCENTAGE = 100;
   public static final int MIN_TOTAL_COUNTRY_COUNT = MAX_PLAYERS;
   public static final int MAX_TOTAL_COUNTRY_COUNT = 1000;
+  public static final int MIN_PLAYER_COUNTRY_COUNT = 1;
   public static final int MIN_ARMIES_IN_HAND = 0;
   public static final int MAX_ARMIES_IN_HAND = Integer.MAX_VALUE;
   public static final int MIN_ARMIES_ON_COUNTRY = 0;
@@ -61,6 +62,18 @@ public final class ClassicGameRules implements GameRules
   public InitialCountryAssignment getInitialCountryAssignment ()
   {
     return initialCountryAssignment;
+  }
+
+  @Override
+  public int getMinPlayerCountryCount ()
+  {
+    return MIN_PLAYER_COUNTRY_COUNT;
+  }
+
+  @Override
+  public int getMaxPlayerCountryCount ()
+  {
+    return getWinningCountryCount () - 1;
   }
 
   @Override
