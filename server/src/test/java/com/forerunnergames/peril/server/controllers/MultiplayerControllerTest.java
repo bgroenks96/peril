@@ -930,6 +930,7 @@ public class MultiplayerControllerTest
     private String serverAddress = DEFAULT_TEST_SERVER_ADDRESS;
     private int serverPort = DEFAULT_TEST_SERVER_PORT;
     private int playerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
+    private int spectatorLimit = GameSettings.DEFAULT_SPECTATOR_LIMIT;
     private int winPercent = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
 
     MultiplayerControllerBuilder gameServerName (final String gameServerName)
@@ -973,6 +974,14 @@ public class MultiplayerControllerTest
       return this;
     }
 
+    MultiplayerControllerBuilder spectatorLimit (final int spectatorLimit)
+    {
+      Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
+
+      this.spectatorLimit = spectatorLimit;
+      return this;
+    }
+
     MultiplayerControllerBuilder winPercent (final int winPercent)
     {
       Arguments.checkIsNotNegative (winPercent, "winPercent");
@@ -994,8 +1003,8 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
 
-      final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playerLimit, winPercent,
-              initialCountryAssignment, mapMetadata);
+      final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playerLimit, spectatorLimit,
+              winPercent, initialCountryAssignment, mapMetadata);
 
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

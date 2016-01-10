@@ -45,6 +45,12 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
+  public int getSpectatorLimit ()
+  {
+    return gameConfig.getSpectatorLimit ();
+  }
+
+  @Override
   public int getWinPercentage ()
   {
     return gameConfig.getWinPercentage ();

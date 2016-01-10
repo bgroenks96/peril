@@ -73,7 +73,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final CheckBox clanNameCheckBox;
   private final SelectBox <Integer> winPercentSelectBox;
   private final SelectBox <String> initialCountryAssignmentSelectBox;
-  private final SelectBox <Integer> spectatorsSelectBox;
+  private final SelectBox <Integer> spectatorLimitSelectBox;
   private final Label playerLimitLabel;
   private final Label mapNameLabel;
   private final ImageButton customizePlayersButton;
@@ -85,7 +85,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label gameSettingsSectionTitleLabel;
   private final Label serverNameSettingLabel;
   private final Label playerLimitSettingLabel;
-  private final Label spectatorsSettingLabel;
+  private final Label spectatorLimitSettingLabel;
   private final Label mapSettingLabel;
   private final Label winPercentSettingLabel;
   private final Label initialCountryAssignmentSettingLabel;
@@ -177,14 +177,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     });
 
     // @formatter:off
-    spectatorsSelectBox = widgetFactory.createSpectatorsSelectBox ();
-    final Array <Integer> spectatorCounts = new Array <> (GameSettings.MAX_SPECTATORS - GameSettings.MIN_SPECTATORS + 1);
+    spectatorLimitSelectBox = widgetFactory.createSpectatorsSelectBox ();
+    final Array <Integer> spectatorLimits = new Array <> (GameSettings.MAX_SPECTATORS - GameSettings.MIN_SPECTATORS + 1);
     for (int i = GameSettings.MIN_SPECTATORS; i <= GameSettings.MAX_SPECTATORS; ++i)
     {
-      spectatorCounts.add (i);
+      spectatorLimits.add (i);
     }
-    spectatorsSelectBox.setItems (spectatorCounts);
-    spectatorsSelectBox.setSelected (InputSettings.INITIAL_SPECTATOR_LIMIT);
+    spectatorLimitSelectBox.setItems (spectatorLimits);
+    spectatorLimitSelectBox.setSelected (InputSettings.INITIAL_SPECTATOR_LIMIT);
     // @formatter:off
 
     // @formatter:on
@@ -209,7 +209,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     gameSettingsSectionTitleLabel = widgetFactory.createGameSettingsSectionTitleLabel ();
     serverNameSettingLabel = widgetFactory.createMenuSettingLabel ("Title");
     playerLimitSettingLabel = widgetFactory.createMenuSettingLabel ("Players");
-    spectatorsSettingLabel = widgetFactory.createMenuSettingLabel ("Spectators");
+    spectatorLimitSettingLabel = widgetFactory.createMenuSettingLabel ("Spectators");
     mapSettingLabel = widgetFactory.createMenuSettingLabel ("Map");
     winPercentSettingLabel = widgetFactory.createMenuSettingLabel ("Win Percent");
     initialCountryAssignmentSettingLabel = widgetFactory.createMenuSettingLabel ("Initial Countries");
@@ -271,8 +271,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     gameSettingsTable.row ();
 
     final Table spectatorsTable = new Table ();
-    spectatorsTable.add (spectatorsSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    spectatorsTable.add (spectatorsSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    spectatorsTable.add (spectatorLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    spectatorsTable.add (spectatorLimitSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
     gameSettingsTable.add (spectatorsTable).left ();
 
     gameSettingsTable.row ();
@@ -348,11 +348,12 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName,
                                                                                                     clanName);
         final int playerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
+        final int spectatorLimit = spectatorLimitSelectBox.getSelected ();
         final int winPercent = winPercentSelectBox.getSelected ();
         final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment
                 .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
-        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit, winPercent,
-                initialCountryAssignment, currentMap);
+        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit,
+                spectatorLimit, winPercent, initialCountryAssignment, currentMap);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))
@@ -394,10 +395,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     winPercentSelectBox.setStyle (winPercentSelectBoxStyle);
     winPercentSelectBox.getScrollPane ().setStyle (winPercentSelectBoxStyle.scrollStyle);
     winPercentSelectBox.getList ().setStyle (winPercentSelectBoxStyle.listStyle);
-    final SelectBox.SelectBoxStyle spectatorsSelectBoxStyle = widgetFactory.createSpectatorsSelectBoxStyle ();
-    spectatorsSelectBox.setStyle (spectatorsSelectBoxStyle);
-    spectatorsSelectBox.getScrollPane ().setStyle (spectatorsSelectBoxStyle.scrollStyle);
-    spectatorsSelectBox.getList ().setStyle (spectatorsSelectBoxStyle.listStyle);
+    final SelectBox.SelectBoxStyle spectatorLimitSelectBoxStyle = widgetFactory.createSpectatorLimitSelectBoxStyle ();
+    spectatorLimitSelectBox.setStyle (spectatorLimitSelectBoxStyle);
+    spectatorLimitSelectBox.getScrollPane ().setStyle (spectatorLimitSelectBoxStyle.scrollStyle);
+    spectatorLimitSelectBox.getList ().setStyle (spectatorLimitSelectBoxStyle.listStyle);
     final SelectBox.SelectBoxStyle initialCountryAssignmentSelectBoxStyle = widgetFactory.createInitialCountryAssignmentSelectBoxStyle ();
     initialCountryAssignmentSelectBox.setStyle (initialCountryAssignmentSelectBoxStyle);
     initialCountryAssignmentSelectBox.getScrollPane ().setStyle (initialCountryAssignmentSelectBoxStyle.scrollStyle);
@@ -412,7 +413,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     gameSettingsSectionTitleLabel.setStyle (widgetFactory.createGameSettingsSectionTitleLabelStyle ());
     serverNameSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     playerLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
-    spectatorsSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    spectatorLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     mapSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     winPercentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     initialCountryAssignmentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());

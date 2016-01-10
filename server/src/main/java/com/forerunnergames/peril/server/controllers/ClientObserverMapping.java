@@ -17,10 +17,11 @@ public final class ClientObserverMapping
 {
   private final BiMap <Remote, ObserverPacket> clientsToObservers;
 
-  public ClientObserverMapping ()
+  public ClientObserverMapping (final int spectatorLimit)
   {
+    Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
 
-    clientsToObservers = Maps.synchronizedBiMap (HashBiMap.<Remote, ObserverPacket> create ());
+    clientsToObservers = Maps.synchronizedBiMap (HashBiMap.<Remote, ObserverPacket> create (spectatorLimit));
   }
 
   public Optional <ObserverPacket> put (final Remote client, final ObserverPacket observer)

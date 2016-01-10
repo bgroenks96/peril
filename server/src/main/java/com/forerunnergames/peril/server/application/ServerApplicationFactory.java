@@ -105,7 +105,7 @@ public final class ServerApplicationFactory
     final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, args.playerLimit,
-            args.winPercentage, args.initialCountryAssignment, mapMetadata);
+            args.spectatorLimit, args.winPercentage, args.initialCountryAssignment, mapMetadata);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);

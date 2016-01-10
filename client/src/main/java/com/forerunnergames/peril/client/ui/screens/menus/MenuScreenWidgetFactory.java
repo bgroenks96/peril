@@ -322,10 +322,10 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public SelectBox <Integer> createSpectatorsSelectBox ()
   {
-    return createSelectBox (createSpectatorsSelectBoxStyle ());
+    return createSelectBox (createSpectatorLimitSelectBoxStyle ());
   }
 
-  public SelectBox.SelectBoxStyle createSpectatorsSelectBoxStyle ()
+  public SelectBox.SelectBoxStyle createSpectatorLimitSelectBoxStyle ()
   {
     return createSelectBoxStyle ("default");
   }

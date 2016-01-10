@@ -83,7 +83,7 @@ public final class MultiplayerController extends ControllerAdapter
   private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
   private final ClientPlayerMapping clientsToPlayers;
-  private final ClientObserverMapping clientsToObservers = new ClientObserverMapping ();
+  private final ClientObserverMapping clientsToObservers;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final GameServerConfiguration gameServerConfig;
   private final ClientConnector clientConnector;
@@ -121,6 +121,7 @@ public final class MultiplayerController extends ControllerAdapter
     this.eventBus = eventBus;
 
     clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameServerConfig.getPlayerLimit ());
+    clientsToObservers = new ClientObserverMapping (gameServerConfig.getSpectatorLimit ());
   }
 
   @Override

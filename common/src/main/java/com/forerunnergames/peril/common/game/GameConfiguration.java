@@ -9,6 +9,8 @@ public interface GameConfiguration
 
   int getPlayerLimit ();
 
+  int getSpectatorLimit ();
+
   int getWinPercentage ();
 
   InitialCountryAssignment getInitialCountryAssignment ();

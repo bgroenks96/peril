@@ -49,6 +49,7 @@ public class ServerFactory
 {
   private static final MapMetadata MAP_METADATA = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME,
           MapType.STOCK, GameMode.CLASSIC);
+  private static final int SPECTATOR_LIMIT = 0;
   private static volatile int testGameServerId = 0;
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
@@ -119,7 +120,7 @@ public class ServerFactory
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
-            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
+            SPECTATOR_LIMIT, gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

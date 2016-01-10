@@ -10,24 +10,28 @@ public final class DefaultGameConfiguration implements GameConfiguration
 {
   private final GameMode gameMode;
   private final int playerLimit;
+  private final int spectatorLimit;
   private final int winPercentage;
   private final InitialCountryAssignment initialCountryAssignment;
   private final MapMetadata mapMetadata;
 
   public DefaultGameConfiguration (final GameMode gameMode,
                                    final int playerLimit,
+                                   final int spectatorLimit,
                                    final int winPercentage,
                                    final InitialCountryAssignment initialCountryAssignment,
                                    final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
     Arguments.checkIsNotNegative (playerLimit, "playerLimit");
+    Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
     Arguments.checkIsNotNegative (winPercentage, "winPercentage");
     Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
     this.gameMode = gameMode;
     this.playerLimit = playerLimit;
+    this.spectatorLimit = spectatorLimit;
     this.winPercentage = winPercentage;
     this.initialCountryAssignment = initialCountryAssignment;
     this.mapMetadata = mapMetadata;
@@ -43,6 +47,12 @@ public final class DefaultGameConfiguration implements GameConfiguration
   public int getPlayerLimit ()
   {
     return playerLimit;
+  }
+
+  @Override
+  public int getSpectatorLimit ()
+  {
+    return spectatorLimit;
   }
 
   @Override
@@ -79,10 +89,10 @@ public final class DefaultGameConfiguration implements GameConfiguration
   public String toString ()
   {
     return Strings.format (
-                           "{}: Game mode: {} | Player limit: {} | Win Percentage: {}"
+                           "{}: Game mode: {} | Player limit: {} | Spectator Limit: {} | Win Percentage: {}"
                                    + " | Initial Country Assignment: {} | Map: {}",
-                           getClass ().getSimpleName (), gameMode, playerLimit, winPercentage, initialCountryAssignment,
-                           mapMetadata);
+                           getClass ().getSimpleName (), gameMode, playerLimit, spectatorLimit, winPercentage,
+                           initialCountryAssignment, mapMetadata);
   }
 
   @RequiredForNetworkSerialization
@@ -90,6 +100,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
   {
     gameMode = null;
     playerLimit = 0;
+    spectatorLimit = 0;
     winPercentage = 0;
     initialCountryAssignment = null;
     mapMetadata = null;

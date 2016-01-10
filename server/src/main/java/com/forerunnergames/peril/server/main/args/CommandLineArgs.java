@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.GameServerType;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 
 public final class CommandLineArgs
@@ -27,6 +28,9 @@ public final class CommandLineArgs
 
   @Parameter (names = { "--players", "-pl" }, description = "Maximum number of players allowed", required = true)
   public Integer playerLimit;
+
+  @Parameter (names = { "--spectators", "-sp" }, description = "Maximum number of spectators allowed", required = false)
+  public Integer spectatorLimit = GameSettings.DEFAULT_SPECTATOR_LIMIT;
 
   @Parameter (names = { "--port", "-p", }, description = "TCP port number", required = false)
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;
