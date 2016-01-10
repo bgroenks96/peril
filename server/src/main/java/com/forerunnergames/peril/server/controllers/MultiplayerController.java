@@ -304,7 +304,7 @@ public final class MultiplayerController extends ControllerAdapter
     sendToPlayer (event.getPlayer (), event);
   }
 
-  @Handler
+  @Handler (priority = Integer.MIN_VALUE)
   public void onEvent (final ServerNotificationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
