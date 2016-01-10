@@ -26,6 +26,7 @@ public final class ClassicGameRules implements GameRules
   public static final int MIN_ARMIES_ON_COUNTRY = 0;
   public static final int MAX_ARMIES_ON_COUNTRY = 99;
   public static final int MIN_ARMIES_ON_COUNTRY_FOR_ATTACK = 2;
+  public static final int MIN_ARMIES_ON_COUNTRY_FOR_DEFEND = 1;
   public static final int MIN_ARMIES_ON_COUNTRY_FOR_FORTIFY = 2;
   public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
@@ -457,6 +458,24 @@ public final class ClassicGameRules implements GameRules
     // wildcard logic is implied by pattern 2; for example, wildcard (0) + 2 unique types is a unique int string
     final String matchExp = String.format ("([1-9])\\1{%d}|^(?:(\\d)(?!.*\\2)){%d,}", matchLen - 1, matchLen);
     return matchStr.matches (matchExp);
+  }
+
+  @Override
+  public boolean canBattle (final int attackingCountryArmies, final int defendingCountryArmies)
+  {
+    return attackerCanBattle (attackingCountryArmies) && defenderCanBattle (defendingCountryArmies);
+  }
+
+  @Override
+  public boolean attackerCanBattle (final int attackingCountryArmies)
+  {
+    return attackingCountryArmies >= MIN_ARMIES_ON_COUNTRY_FOR_ATTACK;
+  }
+
+  @Override
+  public boolean defenderCanBattle (final int defendingCountryArmies)
+  {
+    return defendingCountryArmies >= MIN_ARMIES_ON_COUNTRY_FOR_DEFEND;
   }
 
   // @formatter:off

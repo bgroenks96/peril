@@ -375,24 +375,6 @@ abstract class AbstractBattlePopup extends OkPopup
     defenderDice.setTouchable (areTouchable);
   }
 
-  // TODO Production: Move to common::GameRules.
-  private static boolean canBattle (final int attackingCountryArmies, final int defendingCountryArmies)
-  {
-    return attackerCanBattle (attackingCountryArmies) && defenderCanBattle (defendingCountryArmies);
-  }
-
-  // TODO Production: Move to common::GameRules.
-  private static boolean attackerCanBattle (final int attackingCountryArmies)
-  {
-    return attackingCountryArmies > 1;
-  }
-
-  // TODO Production: Move to common::GameRules.
-  private static boolean defenderCanBattle (final int defendingCountryArmies)
-  {
-    return defendingCountryArmies > 0;
-  }
-
   private static Image asImage (final CountryActor countryActor)
   {
     return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
@@ -410,7 +392,7 @@ abstract class AbstractBattlePopup extends OkPopup
         final int attackingCountryArmies = getAttackingCountryArmies ();
         final int defendingCountryArmies = getDefendingCountryArmies ();
 
-        if (canBattle (attackingCountryArmies, defendingCountryArmies))
+        if (gameRules.canBattle (attackingCountryArmies, defendingCountryArmies))
         {
           resetDieFaces ();
           resetDieOutcomes ();
@@ -418,11 +400,11 @@ abstract class AbstractBattlePopup extends OkPopup
           resetDiceSpinning ();
           clampDice (attackingCountryArmies, defendingCountryArmies);
         }
-        else if (!attackerCanBattle (attackingCountryArmies))
+        else if (!gameRules.attackerCanBattle (attackingCountryArmies))
         {
           listener.onAttackerLoseFinal ();
         }
-        else if (!defenderCanBattle (defendingCountryArmies))
+        else if (!gameRules.defenderCanBattle (defendingCountryArmies))
         {
           listener.onAttackerWinFinal ();
         }
@@ -458,7 +440,7 @@ abstract class AbstractBattlePopup extends OkPopup
   private void updateDiceTouchability (final int attackingCountryArmies, final int defendingCountryArmies)
   {
     setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE
-            && canBattle (attackingCountryArmies, defendingCountryArmies));
+            && gameRules.canBattle (attackingCountryArmies, defendingCountryArmies));
   }
 
   private void resetDieFaces ()

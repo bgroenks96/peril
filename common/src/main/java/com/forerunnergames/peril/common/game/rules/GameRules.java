@@ -97,4 +97,10 @@ public interface GameRules
   boolean isValidWinPercentage (final int winPercentage);
 
   boolean isValidCardSet (final ImmutableList <CardType> cardTypes);
+
+  boolean canBattle (final int attackingCountryArmies, final int defendingCountryArmies);
+
+  boolean attackerCanBattle (final int attackingCountryArmies);
+
+  boolean defenderCanBattle (final int defendingCountryArmies);
 }

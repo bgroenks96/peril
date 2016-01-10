@@ -722,4 +722,116 @@ public class ClassicGameRulesTest
 
     rules.determineDefenderOutcome (null, null);
   }
+
+  @Test
+  public void testAttackerCanBattleTrueMinArmiesRequiredForAttack ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertTrue (rules.attackerCanBattle (ClassicGameRules.MIN_ARMIES_ON_COUNTRY_FOR_ATTACK));
+  }
+
+  @Test
+  public void testAttackerCanBattleTrueOneMoreThanMinArmiesRequiredForAttack ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertTrue (rules.attackerCanBattle (ClassicGameRules.MIN_ARMIES_ON_COUNTRY_FOR_ATTACK + 1));
+  }
+
+  @Test
+  public void testAttackerCanBattleTrueIntegerMaxValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertTrue (rules.attackerCanBattle (Integer.MAX_VALUE));
+  }
+
+  @Test
+  public void testAttackerCanBattleFalseOneLessThanMinArmiesRequiredForAttack ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.attackerCanBattle (ClassicGameRules.MIN_ARMIES_ON_COUNTRY_FOR_ATTACK - 1));
+  }
+
+  @Test
+  public void testAttackerCanBattleFalseZero ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.attackerCanBattle (0));
+  }
+
+  @Test
+  public void testAttackerCanBattleFalseNegative ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.attackerCanBattle (-1));
+  }
+
+  @Test
+  public void testAttackerCanBattleFalseIntegerMinValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.attackerCanBattle (Integer.MIN_VALUE));
+  }
+
+  @Test
+  public void testDefenderCanBattleTrueMinArmiesRequiredForDefend ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertTrue (rules.defenderCanBattle (ClassicGameRules.MIN_ARMIES_ON_COUNTRY_FOR_DEFEND));
+  }
+
+  @Test
+  public void testDefenderCanBattleTrueOneMoreThanMinArmiesRequiredForDefend ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertTrue (rules.defenderCanBattle (ClassicGameRules.MIN_ARMIES_ON_COUNTRY_FOR_DEFEND + 1));
+  }
+
+  @Test
+  public void testDefenderCanBattleTrueIntegerMaxValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertTrue (rules.defenderCanBattle (Integer.MAX_VALUE));
+  }
+
+  @Test
+  public void testDefenderCanBattleFalseOneLessThanMinArmiesRequiredForDefend ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.defenderCanBattle (ClassicGameRules.MIN_ARMIES_ON_COUNTRY_FOR_DEFEND - 1));
+  }
+
+  @Test
+  public void testDefenderCanBattleFalseZero ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.defenderCanBattle (0));
+  }
+
+  @Test
+  public void testDefenderCanBattleFalseNegative ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.defenderCanBattle (-1));
+  }
+
+  @Test
+  public void testDefenderCanBattleFalseIntegerMinValue ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertFalse (rules.defenderCanBattle (Integer.MIN_VALUE));
+  }
 }
