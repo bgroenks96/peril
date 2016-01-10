@@ -38,7 +38,7 @@ import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
-import com.forerunnergames.peril.server.main.CommandLineArgs;
+import com.forerunnergames.peril.server.main.args.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;

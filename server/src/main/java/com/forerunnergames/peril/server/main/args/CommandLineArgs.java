@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.server.main;
+package com.forerunnergames.peril.server.main.args;
 
 import com.beust.jcommander.Parameter;
 
