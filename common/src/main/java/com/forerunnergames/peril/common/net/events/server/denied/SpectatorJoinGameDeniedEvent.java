@@ -1,12 +1,12 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.ObserverJoinGameDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class ObserverJoinGameDeniedEvent extends AbstractDeniedEvent <Reason>
+public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Reason>
 {
   private final String deniedName;
 
@@ -19,7 +19,7 @@ public final class ObserverJoinGameDeniedEvent extends AbstractDeniedEvent <Reas
     DUPLICATE_SELF_IDENTITY;
   }
 
-  public ObserverJoinGameDeniedEvent (final String deniedName, final Reason reason)
+  public SpectatorJoinGameDeniedEvent (final String deniedName, final Reason reason)
   {
     super (reason);
 
@@ -28,7 +28,7 @@ public final class ObserverJoinGameDeniedEvent extends AbstractDeniedEvent <Reas
     this.deniedName = deniedName;
   }
 
-  public String getObserverName ()
+  public String getSpectatorName ()
   {
     return deniedName;
   }
@@ -40,7 +40,7 @@ public final class ObserverJoinGameDeniedEvent extends AbstractDeniedEvent <Reas
   }
 
   @RequiredForNetworkSerialization
-  private ObserverJoinGameDeniedEvent ()
+  private SpectatorJoinGameDeniedEvent ()
   {
     deniedName = null;
   }

@@ -8,12 +8,12 @@ import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.NetworkEventHandler;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.ObserverJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.ObserverJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
@@ -23,21 +23,21 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerLea
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.ObserverJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
-import com.forerunnergames.peril.common.net.packets.defaults.DefaultObserverPacket;
-import com.forerunnergames.peril.common.net.packets.person.ObserverPacket;
+import com.forerunnergames.peril.common.net.packets.defaults.DefaultSpectatorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
-import com.forerunnergames.peril.server.communicators.ObserverCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
-import com.forerunnergames.peril.server.controllers.ClientObserverMapping.RegisteredClientObserverNotFoundException;
+import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
+import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping.RegisteredClientSpectatorNotFoundException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
@@ -84,12 +84,12 @@ public final class MultiplayerController extends ControllerAdapter
   private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
   private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
   private final ClientPlayerMapping clientsToPlayers;
-  private final ClientObserverMapping clientsToObservers;
+  private final ClientSpectatorMapping clientsToSpectators;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final GameServerConfiguration gameServerConfig;
   private final ClientConnector clientConnector;
   private final PlayerCommunicator playerCommunicator;
-  private final ObserverCommunicator observerCommunicator;
+  private final SpectatorCommunicator spectatorCommunicator;
   private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
   private boolean shouldShutDown = false;
@@ -103,26 +103,26 @@ public final class MultiplayerController extends ControllerAdapter
   public MultiplayerController (final GameServerConfiguration gameServerConfig,
                                 final ClientConnector clientConnector,
                                 final PlayerCommunicator playerCommunicator,
-                                final ObserverCommunicator observerCommunicator,
+                                final SpectatorCommunicator spectatorCommunicator,
                                 final CoreCommunicator coreCommunicator,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
     Arguments.checkIsNotNull (playerCommunicator, "playerCommunicator");
-    Arguments.checkIsNotNull (observerCommunicator, "observerCommunicator");
+    Arguments.checkIsNotNull (spectatorCommunicator, "spectatorCommunicator");
     Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.gameServerConfig = gameServerConfig;
     this.clientConnector = clientConnector;
     this.playerCommunicator = playerCommunicator;
-    this.observerCommunicator = observerCommunicator;
+    this.spectatorCommunicator = spectatorCommunicator;
     this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
 
     clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameServerConfig.getPlayerLimit ());
-    clientsToObservers = new ClientObserverMapping (gameServerConfig.getSpectatorLimit ());
+    clientsToSpectators = new ClientSpectatorMapping (gameServerConfig.getSpectatorLimit ());
   }
 
   @Override
@@ -227,7 +227,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayersAndObservers (event);
+    sendToAllPlayersAndSpectators (event);
   }
 
   @Handler
@@ -278,8 +278,8 @@ public final class MultiplayerController extends ControllerAdapter
     }
     // remove client/player mapping; keep client in server
     clientsToPlayers.remove (client.get ());
-    // add client as an observer
-    clientsToObservers.put (client.get (), createNewObserverFromValidName (event.getPlayer ().getName ()));
+    // add client as an spectator
+    clientsToSpectators.put (client.get (), createNewSpectatorFromValidName (event.getPlayer ().getName ()));
 
     // let handler for server notification events handle forwarding the event
   }
@@ -291,7 +291,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    sendToAllPlayersAndObservers (event);
+    sendToAllPlayersAndSpectators (event);
   }
 
   @Handler
@@ -311,7 +311,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    sendToAllPlayersAndObservers (event);
+    sendToAllPlayersAndSpectators (event);
   }
 
   @Handler
@@ -334,7 +334,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    sendToAllPlayersAndObservers (event);
+    sendToAllPlayersAndSpectators (event);
   }
 
   @Handler
@@ -372,13 +372,13 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Client [{}] disconnected.", client);
 
     Optional <PlayerPacket> playerQuery = Optional.absent ();
-    Optional <ObserverPacket> observerQuery = Optional.absent ();
+    Optional <SpectatorPacket> spectatorQuery = Optional.absent ();
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);
-      observerQuery = clientsToObservers.observerFor (client);
+      spectatorQuery = clientsToSpectators.spectatorFor (client);
     }
-    catch (final RegisteredClientPlayerNotFoundException | RegisteredClientObserverNotFoundException e)
+    catch (final RegisteredClientPlayerNotFoundException | RegisteredClientSpectatorNotFoundException e)
     {
       log.error ("Error resolving client.", e);
     }
@@ -392,10 +392,10 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    // if client is neither a player nor an observer, log a warning
-    if (!playerQuery.isPresent () && !observerQuery.isPresent ())
+    // if client is neither a player nor an spectator, log a warning
+    if (!playerQuery.isPresent () && !spectatorQuery.isPresent ())
     {
-      log.warn ("Client [{}] disconnected but did not exist as a player or observer.", client);
+      log.warn ("Client [{}] disconnected but did not exist as a player or spectator.", client);
     }
 
     remove (client);
@@ -489,12 +489,12 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    if (clientsToObservers.existsObserverWith (event.getPlayerName ()))
+    if (clientsToSpectators.existsSpectatorWith (event.getPlayerName ()))
     {
-      final ObserverPacket nameConflictObserver = clientsToObservers.observerWith (event.getPlayerName ()).get ();
-      log.warn ("Rejecting {} from [{}] because an observer client [{}] => [{}] already exists with that name.",
-                event.getClass ().getSimpleName (), client, clientsToObservers.clientFor (nameConflictObserver).get (),
-                nameConflictObserver);
+      final SpectatorPacket nameConflictSpectator = clientsToSpectators.spectatorWith (event.getPlayerName ()).get ();
+      log.warn ("Rejecting {} from [{}] because an spectator client [{}] => [{}] already exists with that name.",
+                event.getClass ().getSimpleName (), client,
+                clientsToSpectators.clientFor (nameConflictSpectator).get (), nameConflictSpectator);
       // this will bypass core and immediately publish the event using the existing event handler in this class
       eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
               PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME));
@@ -511,30 +511,30 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (event);
   }
 
-  void handleEvent (final ObserverJoinGameRequestEvent event, final Remote client)
+  void handleEvent (final SepctatorJoinGameRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
     if (!clientsInServer.contains (client))
     {
-      log.warn ("Ignoring join game request from observer [{}] | REASON: unrecognized client [{}].",
-                event.getObserverName (), client);
+      log.warn ("Ignoring join game request from spectator [{}] | REASON: unrecognized client [{}].",
+                event.getSpectatorName (), client);
       clientConnector.disconnect (client);
       return;
     }
 
-    final Result <ObserverJoinGameDeniedEvent.Reason> result = validateObserverName (event.getObserverName ());
+    final Result <SpectatorJoinGameDeniedEvent.Reason> result = validateSpectatorName (event.getSpectatorName ());
     if (result.failed ())
     {
-      sendTo (client, new ObserverJoinGameDeniedEvent (event.getObserverName (), result.getFailureReason ()));
+      sendTo (client, new SpectatorJoinGameDeniedEvent (event.getSpectatorName (), result.getFailureReason ()));
       return;
     }
 
-    final ObserverPacket observer = createNewObserverFromValidName (event.getObserverName ());
-    clientsToObservers.put (client, observer);
+    final SpectatorPacket spectator = createNewSpectatorFromValidName (event.getSpectatorName ());
+    clientsToSpectators.put (client, spectator);
 
-    sendToAllPlayersAndObservers (new ObserverJoinGameSuccessEvent (observer));
+    sendToAllPlayersAndSpectators (new SpectatorJoinGameSuccessEvent (spectator));
   }
 
   void handleEvent (final ChatMessageRequestEvent event, final Remote client)
@@ -561,7 +561,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayersAndObservers (new ChatMessageSuccessEvent (
+    sendToAllPlayersAndSpectators (new ChatMessageSuccessEvent (
             new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
   }
 
@@ -662,17 +662,17 @@ public final class MultiplayerController extends ControllerAdapter
     playerCommunicator.sendToPlayer (player, object, clientsToPlayers);
   }
 
-  private void sendToAllPlayersAndObservers (final Object object)
+  private void sendToAllPlayersAndSpectators (final Object object)
   {
     playerCommunicator.sendToAllPlayers (object, clientsToPlayers);
-    observerCommunicator.sendToAllObservers (object, clientsToObservers);
+    spectatorCommunicator.sendToAllSpectators (object, clientsToSpectators);
   }
 
   private void remove (final Remote client)
   {
     clientsInServer.remove (client);
     clientsToPlayers.remove (client); // remove from players, if client is a player
-    clientsToObservers.remove (client); // remove from observers, if client is an observer
+    clientsToSpectators.remove (client); // remove from spectators, if client is an spectator
   }
 
   private void sendJoinGameServerSuccess (final Remote client, final ImmutableSet <PlayerPacket> players)
@@ -717,25 +717,25 @@ public final class MultiplayerController extends ControllerAdapter
     return false;
   }
 
-  private Result <ObserverJoinGameDeniedEvent.Reason> validateObserverName (final String name)
+  private Result <SpectatorJoinGameDeniedEvent.Reason> validateSpectatorName (final String name)
   {
-    if (clientsToPlayers.existsPlayerWith (name) || clientsToObservers.existsObserverWith (name))
+    if (clientsToPlayers.existsPlayerWith (name) || clientsToSpectators.existsSpectatorWith (name))
     {
-      return Result.failure (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+      return Result.failure (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
     }
 
     if (!GameSettings.isValidPlayerNameWithOptionalClanTag (name))
     {
-      return Result.failure (ObserverJoinGameDeniedEvent.Reason.INVALID_NAME);
+      return Result.failure (SpectatorJoinGameDeniedEvent.Reason.INVALID_NAME);
     }
 
     return Result.success ();
   }
 
   // note: this method assumes that 'name' has already been validated
-  private ObserverPacket createNewObserverFromValidName (final String name)
+  private SpectatorPacket createNewSpectatorFromValidName (final String name)
   {
-    return new DefaultObserverPacket (name, UUID.randomUUID ());
+    return new DefaultSpectatorPacket (name, UUID.randomUUID ());
   }
 
   private void handlePlayerResponseTo (final Class <? extends ServerRequestEvent> requestClass,

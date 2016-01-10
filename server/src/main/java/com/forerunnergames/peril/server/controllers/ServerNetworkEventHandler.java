@@ -3,7 +3,7 @@ package com.forerunnergames.peril.server.controllers;
 import com.forerunnergames.peril.common.net.NetworkEventHandler;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.ObserverJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -61,7 +61,7 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   }
 
   @Handler
-  public void onEvent (final ObserverJoinGameRequestEvent event)
+  public void onEvent (final SepctatorJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

@@ -1,5 +1,5 @@
 package com.forerunnergames.peril.common.net.packets.person;
 
-public interface ObserverPacket extends PersonPacket
+public interface SpectatorPacket extends PersonPacket
 {
 }

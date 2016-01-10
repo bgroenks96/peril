@@ -33,7 +33,7 @@ import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
-import com.forerunnergames.peril.server.communicators.DefaultObserverCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
@@ -117,7 +117,7 @@ public final class ServerApplicationFactory
             args.gameServerType, gameConfig, serverConfig);
 
     final Controller multiplayerController = new MultiplayerController (gameServerConfig, serverController,
-            new DefaultPlayerCommunicator (serverController), new DefaultObserverCommunicator (serverController),
+            new DefaultPlayerCommunicator (serverController), new DefaultSpectatorCommunicator (serverController),
             new DefaultCoreCommunicator (eventBus), eventBus);
 
     return new ServerApplication (gameStateMachine, eventBus, mainThreadExecutor, serverController,

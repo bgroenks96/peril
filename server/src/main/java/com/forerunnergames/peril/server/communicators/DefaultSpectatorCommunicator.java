@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.server.communicators;
 
-import com.forerunnergames.peril.common.net.packets.person.ObserverPacket;
-import com.forerunnergames.peril.server.controllers.ClientObserverMapping;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
+import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
@@ -11,12 +11,12 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DefaultObserverCommunicator implements ObserverCommunicator
+public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultObserverCommunicator.class);
+  private static final Logger log = LoggerFactory.getLogger (DefaultSpectatorCommunicator.class);
   private final ClientCommunicator clientCommunicator;
 
-  public DefaultObserverCommunicator (final ClientCommunicator clientCommunicator)
+  public DefaultSpectatorCommunicator (final ClientCommunicator clientCommunicator)
   {
     Arguments.checkIsNotNull (clientCommunicator, "clientCommunicator");
 
@@ -50,17 +50,17 @@ public final class DefaultObserverCommunicator implements ObserverCommunicator
   }
 
   @Override
-  public void sendToObserver (final ObserverPacket observer, final Object msg, final ClientObserverMapping mapping)
+  public void sendToSpectator (final SpectatorPacket spectator, final Object msg, final ClientSpectatorMapping mapping)
   {
-    Arguments.checkIsNotNull (observer, "observer");
+    Arguments.checkIsNotNull (spectator, "spectator");
     Arguments.checkIsNotNull (msg, "msg");
     Arguments.checkIsNotNull (mapping, "mapping");
 
-    final Optional <Remote> clientQuery = mapping.clientFor (observer);
+    final Optional <Remote> clientQuery = mapping.clientFor (spectator);
 
     if (!clientQuery.isPresent ())
     {
-      log.warn ("Ignoring attempt to send [{}] to disconnected observer [{}].");
+      log.warn ("Ignoring attempt to send [{}] to disconnected spectator [{}].");
       return;
     }
 
@@ -68,27 +68,29 @@ public final class DefaultObserverCommunicator implements ObserverCommunicator
   }
 
   @Override
-  public void sendToAllObservers (final Object msg, final ClientObserverMapping mapping)
+  public void sendToAllSpectators (final Object msg, final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (msg, "msg");
     Arguments.checkIsNotNull (mapping, "mapping");
 
-    for (final ObserverPacket next : mapping.observers ())
+    for (final SpectatorPacket next : mapping.spectators ())
     {
-      sendToObserver (next, msg, mapping);
+      sendToSpectator (next, msg, mapping);
     }
   }
 
   @Override
-  public void sendToAllObserversExcept (final ObserverPacket observer, final Object msg, final ClientObserverMapping mapping)
+  public void sendToAllSpectatorsExcept (final SpectatorPacket spectator,
+                                         final Object msg,
+                                         final ClientSpectatorMapping mapping)
   {
-    Arguments.checkIsNotNull (observer, "observer");
+    Arguments.checkIsNotNull (spectator, "spectator");
     Arguments.checkIsNotNull (msg, "msg");
     Arguments.checkIsNotNull (mapping, "mapping");
 
-    for (final ObserverPacket next : mapping.observersExcept (observer))
+    for (final SpectatorPacket next : mapping.spectatorsExcept (spectator))
     {
-      sendToObserver (next, msg, mapping);
+      sendToSpectator (next, msg, mapping);
     }
   }
 }

@@ -33,28 +33,28 @@ import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.ObserverJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.ObserverJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.ObserverJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
-import com.forerunnergames.peril.common.net.packets.person.ObserverPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
-import com.forerunnergames.peril.server.communicators.DefaultObserverCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
-import com.forerunnergames.peril.server.communicators.ObserverCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
+import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
@@ -100,11 +100,11 @@ public class MultiplayerControllerTest
   private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
                                                                   Mockito.RETURNS_SMART_NULLS);
   private final PlayerCommunicator defaultPlayerCommunicator = new DefaultPlayerCommunicator (mockClientCommunicator);
-  private final ObserverCommunicator defaultObserverCommunicator = new DefaultObserverCommunicator (
+  private final SpectatorCommunicator defaultSpectatorCommunicator = new DefaultSpectatorCommunicator (
           mockClientCommunicator);
   private final CoreCommunicator mockCoreCommunicator = mock (CoreCommunicator.class, Mockito.RETURNS_SMART_NULLS);
   private final MultiplayerControllerBuilder mpcBuilder = builder (mockConnector, defaultPlayerCommunicator,
-                                                                   defaultObserverCommunicator, mockCoreCommunicator);
+                                                                   defaultSpectatorCommunicator, mockCoreCommunicator);
   private int clientCount = 0;
   private MBassador <Event> eventBus;
 
@@ -469,73 +469,73 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testObserverJoinGameSuccess ()
+  public void testSpectatorJoinGameSuccess ()
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
-    final Remote observerClient = addClient ();
-    addMockObserverToGameWithName ("TestObserver", observerClient, mpc);
+    final Remote spectatorClient = addClient ();
+    addMockSpectatorToGameWithName ("TestSpectator", spectatorClient, mpc);
     verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
-    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (ObserverJoinGameSuccessEvent.class));
-    verify (mockClientCommunicator).sendTo (eq (observerClient), isA (ObserverJoinGameSuccessEvent.class));
+    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (SpectatorJoinGameSuccessEvent.class));
+    verify (mockClientCommunicator).sendTo (eq (spectatorClient), isA (SpectatorJoinGameSuccessEvent.class));
   }
 
   @Test
-  public void testObserverJoinGameDeniedDuplicatesPlayerName ()
+  public void testSpectatorJoinGameDeniedDuplicatesPlayerName ()
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
     final ClientPlayerTuple clientPlayer = addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
-    final Remote observerClient = addClient ();
-    communicateEventFromClient (new ObserverJoinGameRequestEvent ("TestPlayer"), observerClient);
+    final Remote spectatorClient = addClient ();
+    communicateEventFromClient (new SepctatorJoinGameRequestEvent ("TestPlayer"), spectatorClient);
     verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
-    final Matcher <ObserverJoinGameDeniedEvent> matcher = new BaseMatcher <ObserverJoinGameDeniedEvent> ()
+    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
     {
       @Override
       public boolean matches (final Object arg0)
       {
-        if (!(arg0 instanceof ObserverJoinGameDeniedEvent)) return false;
-        return ((ObserverJoinGameDeniedEvent) arg0).getReason ()
-                .equals (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
+        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
+                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
       }
 
       @Override
       public void describeTo (final Description arg0)
       {
-        arg0.appendText (ObserverJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
+                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
       }
     };
-    verify (mockClientCommunicator).sendTo (eq (observerClient), argThat (matcher));
+    verify (mockClientCommunicator).sendTo (eq (spectatorClient), argThat (matcher));
     verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), argThat (matcher));
   }
 
   @Test
-  public void testObserverJoinGameDeniedDuplicatesObserverName ()
+  public void testSpectatorJoinGameDeniedDuplicatesSpectatorName ()
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
     addClientAndMockPlayerToGameServer ("TestPlayer", mpc);
-    final Remote observerClient1 = addClient ();
-    addMockObserverToGameWithName ("TestObserver", observerClient1, mpc);
-    final Remote observerClient2 = addClient ();
-    communicateEventFromClient (new ObserverJoinGameRequestEvent ("TestObserver"), observerClient2);
-    final Matcher <ObserverJoinGameDeniedEvent> matcher = new BaseMatcher <ObserverJoinGameDeniedEvent> ()
+    final Remote spectatorClient1 = addClient ();
+    addMockSpectatorToGameWithName ("TestSpectator", spectatorClient1, mpc);
+    final Remote spectatorClient2 = addClient ();
+    communicateEventFromClient (new SepctatorJoinGameRequestEvent ("TestSpectator"), spectatorClient2);
+    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
     {
       @Override
       public boolean matches (final Object arg0)
       {
-        if (!(arg0 instanceof ObserverJoinGameDeniedEvent)) return false;
-        return ((ObserverJoinGameDeniedEvent) arg0).getReason ()
-                .equals (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
+        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
+                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
       }
 
       @Override
       public void describeTo (final Description arg0)
       {
-        arg0.appendText (ObserverJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (ObserverJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
+                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
       }
     };
-    verify (mockClientCommunicator).sendTo (eq (observerClient2), argThat (matcher));
+    verify (mockClientCommunicator).sendTo (eq (spectatorClient2), argThat (matcher));
   }
 
   @Test
@@ -747,13 +747,13 @@ public class MultiplayerControllerTest
   // Note: package private visibility is intended; other test classes in package should have access.
   static MultiplayerControllerBuilder builder (final ClientConnector connector,
                                                final PlayerCommunicator communicator,
-                                               final ObserverCommunicator observerCommunicator,
+                                               final SpectatorCommunicator spectatorCommunicator,
                                                final CoreCommunicator coreCommunicator)
   {
     Arguments.checkIsNotNull (connector, "connector");
     Arguments.checkIsNotNull (communicator, "communicator");
 
-    return new MultiplayerControllerBuilder (connector, communicator, observerCommunicator, coreCommunicator);
+    return new MultiplayerControllerBuilder (connector, communicator, spectatorCommunicator, coreCommunicator);
   }
 
   private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
@@ -789,18 +789,18 @@ public class MultiplayerControllerTest
     return mockPlayerPacket;
   }
 
-  private ObserverPacket addMockObserverToGameWithName (final String observerName,
-                                                        final Remote client,
-                                                        final MultiplayerController mpc)
+  private SpectatorPacket addMockSpectatorToGameWithName (final String spectatorName,
+                                                          final Remote client,
+                                                          final MultiplayerController mpc)
   {
-    final ObserverPacket mockObserverPacket = mock (ObserverPacket.class);
-    when (mockObserverPacket.getName ()).thenReturn (observerName);
-    when (mockObserverPacket.hasName (eq (observerName))).thenReturn (true);
-    when (mockObserverPacket.toString ()).thenReturn (observerName);
-    communicateEventFromClient (new ObserverJoinGameRequestEvent (observerName), client);
-    verify (mockClientCommunicator).sendTo (eq (client), isA (ObserverJoinGameSuccessEvent.class));
+    final SpectatorPacket mockSpectatorPacket = mock (SpectatorPacket.class);
+    when (mockSpectatorPacket.getName ()).thenReturn (spectatorName);
+    when (mockSpectatorPacket.hasName (eq (spectatorName))).thenReturn (true);
+    when (mockSpectatorPacket.toString ()).thenReturn (spectatorName);
+    communicateEventFromClient (new SepctatorJoinGameRequestEvent (spectatorName), client);
+    verify (mockClientCommunicator).sendTo (eq (client), isA (SpectatorJoinGameSuccessEvent.class));
 
-    return mockObserverPacket;
+    return mockSpectatorPacket;
   }
 
   private void mockCoreCommunicatorPlayersWith (final PlayerPacket... players)
@@ -828,6 +828,7 @@ public class MultiplayerControllerTest
     }).when (mockCoreCommunicator).publishPlayerRequestEvent (any (PlayerPacket.class), any (PlayerRequestEvent.class));
   }
 
+  @SuppressWarnings ("unused")
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
@@ -916,7 +917,7 @@ public class MultiplayerControllerTest
   {
     private final ClientConnector connector;
     private final PlayerCommunicator communicator;
-    private final ObserverCommunicator observerCommunicator;
+    private final SpectatorCommunicator spectatorCommunicator;
     private final CoreCommunicator coreCommunicator;
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
@@ -1012,7 +1013,7 @@ public class MultiplayerControllerTest
               gameServerType, gameConfig, serverConfig);
 
       final MultiplayerController controller = new MultiplayerController (gameServerConfig, connector, communicator,
-              observerCommunicator, coreCommunicator, eventBus);
+              spectatorCommunicator, coreCommunicator, eventBus);
 
       controller.initialize ();
 
@@ -1023,12 +1024,12 @@ public class MultiplayerControllerTest
 
     private MultiplayerControllerBuilder (final ClientConnector connector,
                                           final PlayerCommunicator communicator,
-                                          final ObserverCommunicator observerCommunicator,
+                                          final SpectatorCommunicator spectatorCommunicator,
                                           final CoreCommunicator coreCommunicator)
     {
       this.connector = connector;
       this.communicator = communicator;
-      this.observerCommunicator = observerCommunicator;
+      this.spectatorCommunicator = spectatorCommunicator;
       this.coreCommunicator = coreCommunicator;
     }
   }
