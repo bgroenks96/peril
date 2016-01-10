@@ -28,18 +28,18 @@ public final class CommandLineArgs
   @Parameter (names = { "--players", "-pl" }, description = "Maximum number of players allowed", required = true)
   public Integer playerLimit;
 
-  @Parameter (names = { "--port", "-p", }, description = "TCP port number")
+  @Parameter (names = { "--port", "-p", }, description = "TCP port number", required = false)
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;
 
   @Parameter (names = { "--win-percent", "-w" },
-              description = "Minimum percentage of countries one must conquer to win the game")
+              description = "Minimum percentage of countries one must conquer to win the game", required = false)
   public Integer winPercentage = 100;
 
   @Parameter (names = { "--assignment", "-a" }, description = "Initial country assignment",
               converter = InitialCountryAssignmentParameterConverter.class,
-              validateWith = InitialCountryAssignmentParameterValidator.class)
+              validateWith = InitialCountryAssignmentParameterValidator.class, required = false)
   public InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
 
-  @Parameter (names = { "--help" }, help = true, description = "Show usage")
+  @Parameter (names = { "--help" }, help = true, description = "Show usage", required = false)
   public boolean help = false;
 }
