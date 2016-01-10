@@ -6,7 +6,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class BeginPlayerTurnEvent implements PlayerNotificationEvent
+public final class BeginPlayerTurnEvent implements PlayerNotificationEvent
 {
   private final PlayerPacket player;
 

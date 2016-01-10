@@ -5,6 +5,7 @@ import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResponseSuccessEvent
@@ -47,6 +48,12 @@ public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResp
   public CountryPacket getDefendingCountry ()
   {
     return result.getDefender ().getCountry ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Result: [{}]", getClass ().getSimpleName (), result);
   }
 
   @RequiredForNetworkSerialization

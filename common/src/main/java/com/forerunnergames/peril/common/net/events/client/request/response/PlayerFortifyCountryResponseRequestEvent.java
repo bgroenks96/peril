@@ -66,7 +66,7 @@ public final class PlayerFortifyCountryResponseRequestEvent implements ResponseR
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {} | FortifyArmyCount: {}", sourceCountry,
-                           targetCountry, fortifyArmyCount);
+    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {} | FortifyArmyCount: {}",
+                           getClass ().getSimpleName (), sourceCountry, targetCountry, fortifyArmyCount);
   }
 }

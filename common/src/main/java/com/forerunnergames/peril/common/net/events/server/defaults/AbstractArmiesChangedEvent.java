@@ -13,7 +13,7 @@ public class AbstractArmiesChangedEvent implements ServerNotificationEvent
    * @param deltaArmyCount
    *          army change delta value; negative values are ALLOWED
    */
-  public AbstractArmiesChangedEvent (@AllowNegative final int deltaArmyCount)
+  protected AbstractArmiesChangedEvent (@AllowNegative final int deltaArmyCount)
   {
     this.deltaArmyCount = deltaArmyCount;
   }
@@ -26,11 +26,11 @@ public class AbstractArmiesChangedEvent implements ServerNotificationEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Army Count Delta: {}", getClass ().getSimpleName (), deltaArmyCount);
+    return Strings.format ("{}: DeltaArmyCount: {}", getClass ().getSimpleName (), deltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
-  private AbstractArmiesChangedEvent ()
+  protected AbstractArmiesChangedEvent ()
   {
     deltaArmyCount = 0;
   }

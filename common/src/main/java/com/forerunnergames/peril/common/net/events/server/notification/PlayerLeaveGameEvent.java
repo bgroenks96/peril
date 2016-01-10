@@ -2,6 +2,7 @@ package com.forerunnergames.peril.common.net.events.server.notification;
 
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
@@ -38,7 +39,8 @@ public final class PlayerLeaveGameEvent implements ServerNotificationEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player: %2$s", getClass ().getSimpleName (), player);
+    return Strings.format ("{}: Player: [{}] | RemainingPlayers: [{}]", getClass ().getSimpleName (), player,
+                           playersLeftInGame);
   }
 
   @RequiredForNetworkSerialization

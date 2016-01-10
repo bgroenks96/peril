@@ -11,4 +11,10 @@ public final class PlayerEndAttackPhaseResponseRequestEvent implements ResponseR
   {
     return PlayerAttackCountryRequestEvent.class;
   }
+
+  @Override
+  public String toString ()
+  {
+    return getClass ().getSimpleName ();
+  }
 }

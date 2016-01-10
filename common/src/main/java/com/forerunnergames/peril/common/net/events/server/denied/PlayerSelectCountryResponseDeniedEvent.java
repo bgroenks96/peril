@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.defaults.DefaultPlayerSelectC
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerSelectCountryResponseEvent
@@ -45,6 +46,12 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
   public PlayerSelectCountryResponseDeniedEvent.Reason getReason ()
   {
     return reason;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Player: [{}] | Reason: {}", super.toString (), player, reason);
   }
 
   @RequiredForNetworkSerialization

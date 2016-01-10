@@ -6,6 +6,7 @@ import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerDefendCountryResponseSuccessEvent extends AbstractPlayerDefendCountryEvent
@@ -26,6 +27,12 @@ public final class PlayerDefendCountryResponseSuccessEvent extends AbstractPlaye
   public BattleActorPacket getDefenderData ()
   {
     return defenderData;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: DefenderData: [{}]", getClass ().getSimpleName (), defenderData);
   }
 
   @RequiredForNetworkSerialization

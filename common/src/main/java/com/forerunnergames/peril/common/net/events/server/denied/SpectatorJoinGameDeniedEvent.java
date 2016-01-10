@@ -8,7 +8,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Reason>
 {
-  private final String deniedName;
+  private final String spectatorName;
 
   public enum Reason
   {
@@ -24,23 +24,23 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
 
     Arguments.checkIsNotNull (deniedName, "deniedName");
 
-    this.deniedName = deniedName;
+    this.spectatorName = deniedName;
   }
 
   public String getSpectatorName ()
   {
-    return deniedName;
+    return spectatorName;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Reason: {}", getClass ().getSimpleName (), deniedName);
+    return Strings.format ("{} | SpectatorName: {}", super.toString (), spectatorName);
   }
 
   @RequiredForNetworkSerialization
   private SpectatorJoinGameDeniedEvent ()
   {
-    deniedName = null;
+    spectatorName = null;
   }
 }

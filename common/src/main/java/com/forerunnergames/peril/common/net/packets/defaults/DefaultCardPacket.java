@@ -3,6 +3,7 @@ package com.forerunnergames.peril.common.net.packets.defaults;
 import com.forerunnergames.peril.common.net.packets.AbstractAssetPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 
 import java.util.UUID;
 
@@ -23,6 +24,12 @@ public class DefaultCardPacket extends AbstractAssetPacket implements CardPacket
   public int getType ()
   {
     return type;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Type: {}", super.toString (), type);
   }
 
   @Override

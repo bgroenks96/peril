@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
@@ -37,7 +38,7 @@ public class PlayerSelectCountryRequestEvent implements PlayerInputRequestEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player: %2$s", getClass ().getSimpleName (), player);
+    return Strings.format ("{}: Player: {}", getClass ().getSimpleName (), player);
   }
 
   @RequiredForNetworkSerialization

@@ -2,6 +2,7 @@ package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.Reason>
@@ -34,8 +35,7 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Player name: %2$s | %3$s", getClass ().getSimpleName (), playerName,
-                          super.toString ());
+    return Strings.format ("{} | PlayerName: {}", super.toString (), playerName);
   }
 
   @RequiredForNetworkSerialization

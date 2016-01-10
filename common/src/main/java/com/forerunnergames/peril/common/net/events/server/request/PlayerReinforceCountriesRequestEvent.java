@@ -5,6 +5,7 @@ import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
@@ -50,22 +51,22 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
   {
     return player;
   }
-  
+
   public int getCountryReinforcementBonus ()
   {
     return countryReinforcementBonus;
   }
-  
+
   public int getContinentReinforcementBonus ()
   {
     return continentReinforcementBonus;
   }
-  
+
   public int getNextCardTradeInBonus ()
   {
     return nextCardTradeInBonus;
   }
-  
+
   public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
   {
     return playerOwnedCountries;
@@ -79,6 +80,15 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
   public boolean isTradeInRequired ()
   {
     return tradeInRequired;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format (
+                           "{}: Player: [{}] | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | NextCardTradeInBonus: {} | PlayerOwnedCountries: [{}] | TradeInMatches: [{}] | TradeInRequired: {}",
+                           player, countryReinforcementBonus, continentReinforcementBonus, nextCardTradeInBonus,
+                           playerOwnedCountries, tradeInMatches, tradeInRequired);
   }
 
   @RequiredForNetworkSerialization

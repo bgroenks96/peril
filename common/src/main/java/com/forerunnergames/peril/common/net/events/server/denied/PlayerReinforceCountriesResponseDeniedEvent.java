@@ -1,12 +1,15 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountriesResponseDeniedEvent
-        implements PlayerResponseDeniedEvent <PlayerReinforceCountriesResponseDeniedEvent.Reason>
+public final class PlayerReinforceCountriesResponseDeniedEvent extends AbstractDeniedEvent <Reason>
+        implements PlayerResponseDeniedEvent <Reason>
 {
   public enum Reason
   {
@@ -24,13 +27,15 @@ public final class PlayerReinforceCountriesResponseDeniedEvent
   }
 
   private final PlayerPacket player;
-  private final Reason reason;
 
   public PlayerReinforceCountriesResponseDeniedEvent (final PlayerPacket player,
                                                       final PlayerReinforceCountriesResponseDeniedEvent.Reason reason)
   {
+    super (reason);
+
+    Arguments.checkIsNotNull (player, "player");
+
     this.player = player;
-    this.reason = reason;
   }
 
   @Override
@@ -40,22 +45,14 @@ public final class PlayerReinforceCountriesResponseDeniedEvent
   }
 
   @Override
-  public PlayerReinforceCountriesResponseDeniedEvent.Reason getReason ()
-  {
-    return reason;
-  }
-
-  @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | Reason: [{}]", getClass ().getSimpleName (), player.getName (),
-                           reason.toString ());
+    return Strings.format ("{} | Player: [{}]", super.toString (), player);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountriesResponseDeniedEvent ()
   {
     player = null;
-    reason = null;
   }
 }

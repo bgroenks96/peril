@@ -45,7 +45,8 @@ public final class DefaultBattleActorPacket implements BattleActorPacket
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | Country: [{}] | Die count: {}", player, country, dieCount);
+    return Strings.format ("{}: Player: [{}] | Country: [{}] | Die count: {}", getClass ().getSimpleName (), player,
+                           country, dieCount);
   }
 
   @RequiredForNetworkSerialization

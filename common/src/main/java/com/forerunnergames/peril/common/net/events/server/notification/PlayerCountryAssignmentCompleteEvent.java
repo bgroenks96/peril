@@ -49,7 +49,7 @@ public final class PlayerCountryAssignmentCompleteEvent implements ServerNotific
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Country Packets to Player Packets: {}", getClass ().getSimpleName (),
+    return Strings.format ("{}: CountryToPlayerPackets: [{}]", getClass ().getSimpleName (),
                            Strings.toString (countryToPlayerPackets));
   }
 

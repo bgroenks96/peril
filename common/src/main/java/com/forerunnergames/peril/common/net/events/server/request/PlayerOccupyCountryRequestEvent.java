@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerOccupyCountryRequestEvent implements PlayerInputRequestEvent
@@ -39,6 +40,13 @@ public final class PlayerOccupyCountryRequestEvent implements PlayerInputRequest
   public CountryPacket getDestinationCountry ()
   {
     return destinationCountry;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Player: [{}] | SourceCountry: [{}] | DestinationCountry: [{}]",
+                           getClass ().getSimpleName (), sourceCountry, destinationCountry);
   }
 
   @RequiredForNetworkSerialization

@@ -2,6 +2,7 @@ package com.forerunnergames.peril.common.net.events.defaults;
 
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryResponseEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public class DefaultPlayerSelectCountryResponseEvent implements PlayerSelectCountryResponseEvent
@@ -24,7 +25,7 @@ public class DefaultPlayerSelectCountryResponseEvent implements PlayerSelectCoun
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Selected Country Name: %2$s", getClass ().getSimpleName (), selectedCountryName);
+    return Strings.format ("{}: SelectedCountryName: {}", getClass ().getSimpleName (), selectedCountryName);
   }
 
   @RequiredForNetworkSerialization

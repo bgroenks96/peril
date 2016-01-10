@@ -5,11 +5,17 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCou
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerDefendCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
         implements PlayerResponseDeniedEvent <Reason>
 {
+  public enum Reason
+  {
+    INVALID_DIE_COUNT
+  }
+
   private final PlayerPacket player;
 
   public PlayerDefendCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
@@ -27,9 +33,10 @@ public final class PlayerDefendCountryResponseDeniedEvent extends AbstractDenied
     return player;
   }
 
-  public enum Reason
+  @Override
+  public String toString ()
   {
-    INVALID_DIE_COUNT
+    return Strings.format ("{} | Player: [{}]", super.toString (), player);
   }
 
   @RequiredForNetworkSerialization

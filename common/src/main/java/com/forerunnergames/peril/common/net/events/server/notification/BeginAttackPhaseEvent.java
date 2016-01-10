@@ -30,7 +30,7 @@ public final class BeginAttackPhaseEvent implements PlayerNotificationEvent
   }
 
   @RequiredForNetworkSerialization
-  public BeginAttackPhaseEvent ()
+  private BeginAttackPhaseEvent ()
   {
     currentPlayer = null;
   }

@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractArmie
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
@@ -31,10 +32,15 @@ public final class PlayerArmiesChangedEvent extends AbstractArmiesChangedEvent i
     return player.getName ();
   }
 
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Player: [{}]", super.toString (), player);
+  }
+
   @RequiredForNetworkSerialization
   private PlayerArmiesChangedEvent ()
   {
-    super (0);
     player = null;
   }
 }

@@ -92,12 +92,11 @@ public final class MultiplayerController extends ControllerAdapter
   private final SpectatorCommunicator spectatorCommunicator;
   private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
+  private NetworkEventHandler networkEventHandler = null;
   private boolean shouldShutDown = false;
   private int connectionTimeoutMillis = NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS;
   @Nullable
   private Remote host = null;
-  @Nullable
-  private NetworkEventHandler networkEventHandler = null;
   // @formatter:on
 
   public MultiplayerController (final GameServerConfiguration gameServerConfig,

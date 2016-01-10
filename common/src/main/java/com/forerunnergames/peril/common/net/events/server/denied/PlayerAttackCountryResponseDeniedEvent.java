@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDenie
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
@@ -33,6 +34,12 @@ public class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent 
   public PlayerPacket getPlayer ()
   {
     return player;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Player: [{}]", super.toString (), player);
   }
 
   @RequiredForNetworkSerialization

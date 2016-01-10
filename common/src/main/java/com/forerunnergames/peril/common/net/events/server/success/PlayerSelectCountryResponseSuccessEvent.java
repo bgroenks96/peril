@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.defaults.DefaultPlayerSelectC
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayerSelectCountryResponseEvent
@@ -29,6 +30,12 @@ public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayer
   public String getPlayerColor ()
   {
     return player.getColor ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);
   }
 
   @RequiredForNetworkSerialization
