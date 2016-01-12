@@ -87,8 +87,8 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
   {
     return Strings.format (
                            "{}: Player: [{}] | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | NextCardTradeInBonus: {} | PlayerOwnedCountries: [{}] | TradeInMatches: [{}] | TradeInRequired: {}",
-                           player, countryReinforcementBonus, continentReinforcementBonus, nextCardTradeInBonus,
-                           playerOwnedCountries, tradeInMatches, tradeInRequired);
+                           getClass ().getSimpleName (), player, countryReinforcementBonus, continentReinforcementBonus,
+                           nextCardTradeInBonus, playerOwnedCountries, tradeInMatches, tradeInRequired);
   }
 
   @RequiredForNetworkSerialization
