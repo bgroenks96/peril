@@ -173,7 +173,7 @@
               </state>
               <state name="RandomlyAssignPlayerCountries">
                 <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
-                <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="TurnPhase" />
+                <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase" />
               </state>
               <state name="ManuallyAssignPlayerCountries">
                 <state name="WaitForPlayersToSelectInitialCountries">
