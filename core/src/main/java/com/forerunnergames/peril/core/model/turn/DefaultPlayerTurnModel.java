@@ -28,7 +28,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   @Override
   public void advance ()
   {
-    turn = (turn + 1) % turnCount;
+    turn = getNextTurnValue ();
   }
 
   @Override
@@ -61,7 +61,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   @Override
   public boolean isLastTurn ()
   {
-    return getTurnOrder ().hasNextValid ();
+    return turn == turnCount - 1;
   }
 
   @Override
@@ -85,5 +85,10 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   public String toString ()
   {
     return Strings.format ("{}: At turn {} / {}", getClass ().getSimpleName (), turn + 1, turnCount);
+  }
+
+  private int getNextTurnValue ()
+  {
+    return (turn + 1) % turnCount;
   }
 }
