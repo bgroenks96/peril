@@ -37,21 +37,39 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
-public class InitialGamePhaseTestFactory
+public final class InitialGamePhaseTestFactory
 {
-  private static final String RANDOM_MODE_SESSION_NAME = TestSessions.createUniqueNameFrom ("randomCountryAssignment");
-  private static final String MANUAL_MODE_SESSION_NAME = TestSessions.createUniqueNameFrom ("manualCountryAssignment");
+  private static final String RANDOM_MODE_SESSION_NAME = TestSessions.createUniqueNameFrom ("randomCountrySelection");
+  private static final String MANUAL_MODE_SESSION_NAME = TestSessions.createUniqueNameFrom ("manualCountrySelection");
   private static final Set <String> sessionNames = Sets.newHashSet ();
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseTestFactory.class);
 
-  @BeforeTest // run before initial game phase tests begin
+  @Factory
+  @Parameters ({ COUNTRY_ASSIGNMENT_MODE_PARAM_KEY })
+  public Object[] createInitialGamePhaseTestWithMode (final String selectionMode)
+  {
+    switch (selectionMode)
+    {
+      case RANDOM_COUNTRY_ASSIGNMENT_MODE_PARAM_VALUE:
+        return new Object [] { new InitialGamePhaseTest (RANDOM_MODE_SESSION_NAME) };
+      case MANUAL_COUNTRY_ASSIGNMENT_MODE_PARAM_VALUE:
+        return new Object [] { new InitialGamePhaseTest (MANUAL_MODE_SESSION_NAME) };
+      default:
+        throw new IllegalArgumentException (Strings.format ("Illegal parameter value for key {}: {}",
+                                                            COUNTRY_ASSIGNMENT_MODE_PARAM_KEY, selectionMode));
+    }
+  }
+
+  // ---- Test Game Session Start/Stop ---- //
+
+  @BeforeSuite // run before initial game phase tests begin
   public static void initializeSessions ()
   {
     final GameRules randSelRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT)
@@ -76,9 +94,7 @@ public class InitialGamePhaseTestFactory
     sessionNames.add (MANUAL_MODE_SESSION_NAME);
   }
 
-  // ---- Test Game Session Start/Stop ---- //
-
-  @AfterTest
+  @AfterSuite
   public static void tearDownSessions ()
   {
     for (final String session : sessionNames)
@@ -86,22 +102,4 @@ public class InitialGamePhaseTestFactory
       TestSessions.end (session);
     }
   }
-
-  @Factory
-  @Parameters ({ COUNTRY_ASSIGNMENT_MODE_PARAM_KEY })
-  public Object[] createInitialGamePhaseTestWithMode (final String countryAssignmentMode)
-  {
-    switch (countryAssignmentMode)
-    {
-      case RANDOM_COUNTRY_ASSIGNMENT_MODE_PARAM_VALUE:
-        return new Object [] { new InitialGamePhaseTest (RANDOM_MODE_SESSION_NAME) };
-      case MANUAL_COUNTRY_ASSIGNMENT_MODE_PARAM_VALUE:
-        return new Object [] { new InitialGamePhaseTest (MANUAL_MODE_SESSION_NAME) };
-      default:
-        throw new IllegalArgumentException (Strings.format ("Illegal parameter value for key {}: {}",
-                                                            COUNTRY_ASSIGNMENT_MODE_PARAM_KEY, countryAssignmentMode));
-    }
-  }
-
-  // -------------------------------------- //
 }

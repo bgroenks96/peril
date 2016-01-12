@@ -18,19 +18,25 @@
 
 package com.forerunnergames.peril.integration;
 
-import com.esotericsoftware.minlog.Log;
-
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.pool.PoolFactory;
 import com.forerunnergames.tools.common.pool.Pools;
 import com.forerunnergames.tools.common.pool.RecyclableObjectPool;
+import com.forerunnergames.tools.net.NetworkConstants;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages a limited pool of local network port numbers for concurrent use by test providers.
  */
-public class NetworkPortPool
+public final class NetworkPortPool
 {
-  private static final int PORT_POOL_SIZE = 5;
+  private static final Logger log = LoggerFactory.getLogger (NetworkPortPool.class);
+  private static final int PORT_POOL_SIZE = 20;
   private static NetworkPortPool provider;
   private final RecyclableObjectPool <Integer> portNumberPool;
 
@@ -47,7 +53,7 @@ public class NetworkPortPool
     }
     catch (final InterruptedException e)
     {
-      Log.warn ("Interrupted while waiting to acquire port: ", e);
+      log.warn ("Interrupted while waiting to acquire port: ", e);
     }
     return -1;
   }
@@ -76,11 +82,31 @@ public class NetworkPortPool
       @Override
       public Integer make ()
       {
+        portValue = findAvailablePortFrom (portValue);
         return portValue++;
       }
     });
     portNumberPool.allocate (PORT_POOL_SIZE);
 
     provider = this;
+  }
+
+  private static int findAvailablePortFrom (final int initialValue)
+  {
+    boolean found = false;
+    int nextPort = initialValue;
+    while (!found && nextPort < NetworkConstants.MAX_PORT)
+    {
+      try (final ServerSocket serv = new ServerSocket (nextPort))
+      {
+        log.trace ("Found available port {}", nextPort);
+        found = true;
+      }
+      catch (final IOException e)
+      {
+        log.debug ("Port {} not available! Checking {}...", nextPort, ++nextPort);
+      }
+    }
+    return nextPort;
   }
 }

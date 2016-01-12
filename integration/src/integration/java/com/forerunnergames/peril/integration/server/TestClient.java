@@ -120,12 +120,15 @@ public class TestClient extends AbstractClientController
               Thread.sleep (10);
               continue;
             }
-            log.debug ("[{}] Event received: Type: {} | Expected: {}", this, next.getClass (), type);
-            log.trace ("[{}] Event data: [{}]", this, next);
+            log.trace ("[{}] Event received: [{}]", TestClient.this, next);
             if (type.isInstance (next))
             {
               exchanger.exchange (type.cast (next));
               keepAlive.set (false);
+            }
+            else
+            {
+              log.warn ("[{}] Unexpected event: {} | Expected: {}", TestClient.this, next.getClass (), type);
             }
           }
         }

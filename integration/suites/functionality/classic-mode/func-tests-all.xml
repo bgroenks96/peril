@@ -44,4 +44,9 @@
       <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestFactory" />
     </classes>
   </test>
+  <test name="Turn Phase Test" time-out="45000">
+    <classes>
+      <class name="com.forerunnergames.peril.integration.core.func.turn.TurnPhaseTestFactory" />
+    </classes>
+  </test>
 </suite>
