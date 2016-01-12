@@ -1,8 +1,7 @@
 package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -24,7 +23,9 @@ public interface CardModel
 
   ImmutableSet <CardSet.Match> computeMatchesFor (final Id playerId);
 
-  Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> requestTradeInCards (final Id playerId, final CardSet.Match tradeInCards, final TurnPhase turnPhase);
+  Result <PlayerTradeInCardsResponseDeniedEvent.Reason> requestTradeInCards (final Id playerId,
+                                                                             final CardSet.Match tradeInCards,
+                                                                             final TurnPhase turnPhase);
 
   int getNextTradeInBonus ();
 

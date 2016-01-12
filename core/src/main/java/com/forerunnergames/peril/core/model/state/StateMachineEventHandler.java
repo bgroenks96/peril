@@ -8,9 +8,11 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.InitialReinforcementPhaseCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
@@ -209,6 +211,16 @@ public final class StateMachineEventHandler
   }
 
   @Handler
+  public void onEvent (final InitialReinforcementPhaseCompleteEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onInitialReinforcementPhaseCompleteEvent (event);
+  }
+
+  @Handler
   public void onEvent (final PlayerReinforceCountriesResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -216,6 +228,16 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerReinforceCountriesResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerTradeInCardsResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerTradeInCardsResponseRequestEvent (event);
   }
 
   @Handler

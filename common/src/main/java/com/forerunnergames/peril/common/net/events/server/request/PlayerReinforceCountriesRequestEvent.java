@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.common.net.events.server.request;
 
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -15,35 +15,26 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
   private final PlayerPacket player;
   private final int countryReinforcementBonus;
   private final int continentReinforcementBonus;
-  private final int nextCardTradeInBonus;
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
-  private final ImmutableSet <CardSetPacket> tradeInMatches;
-  private final boolean tradeInRequired;
+  private final ImmutableSet <ContinentPacket> playerOwnedContinents;
 
   public PlayerReinforceCountriesRequestEvent (final PlayerPacket player,
                                                final int countryReinforcementBonus,
                                                final int continentReinforcementBonus,
-                                               final int nextCardTradeInBonus,
                                                final ImmutableSet <CountryPacket> playerOwnedCountries,
-                                               final ImmutableSet <CardSetPacket> tradeInMatches,
-                                               final boolean tradeInRequired)
+                                               final ImmutableSet <ContinentPacket> playerOwnedContinents)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNegative (countryReinforcementBonus, "countryReinforcementBonus");
     Arguments.checkIsNotNegative (continentReinforcementBonus, "contienentReinforcementBonus");
-    Arguments.checkIsNotNegative (nextCardTradeInBonus, "nextCardTradeInBonus");
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
-    Arguments.checkHasNoNullElements (playerOwnedCountries, "playerOwnedCountries");
-    Arguments.checkIsNotNull (tradeInMatches, "tradeInMatches");
-    Arguments.checkHasNoNullElements (tradeInMatches, "tradeInMatches");
+    Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");
 
     this.player = player;
     this.countryReinforcementBonus = countryReinforcementBonus;
     this.continentReinforcementBonus = continentReinforcementBonus;
-    this.nextCardTradeInBonus = nextCardTradeInBonus;
     this.playerOwnedCountries = playerOwnedCountries;
-    this.tradeInMatches = tradeInMatches;
-    this.tradeInRequired = tradeInRequired;
+    this.playerOwnedContinents = playerOwnedContinents;
   }
 
   @Override
@@ -62,33 +53,18 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
     return continentReinforcementBonus;
   }
 
-  public int getNextCardTradeInBonus ()
-  {
-    return nextCardTradeInBonus;
-  }
-
   public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
   {
     return playerOwnedCountries;
-  }
-
-  public ImmutableSet <CardSetPacket> getMatches ()
-  {
-    return tradeInMatches;
-  }
-
-  public boolean isTradeInRequired ()
-  {
-    return tradeInRequired;
   }
 
   @Override
   public String toString ()
   {
     return Strings.format (
-                           "{}: Player: [{}] | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | NextCardTradeInBonus: {} | PlayerOwnedCountries: [{}] | TradeInMatches: [{}] | TradeInRequired: {}",
+                           "{}: Player: [{}] | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
                            getClass ().getSimpleName (), player, countryReinforcementBonus, continentReinforcementBonus,
-                           nextCardTradeInBonus, playerOwnedCountries, tradeInMatches, tradeInRequired);
+                           playerOwnedCountries, playerOwnedContinents);
   }
 
   @RequiredForNetworkSerialization
@@ -97,9 +73,7 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
     player = null;
     countryReinforcementBonus = 0;
     continentReinforcementBonus = 0;
-    nextCardTradeInBonus = 0;
     playerOwnedCountries = null;
-    tradeInMatches = null;
-    tradeInRequired = false;
+    playerOwnedContinents = null;
   }
 }

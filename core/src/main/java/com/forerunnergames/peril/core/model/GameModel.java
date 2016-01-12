@@ -12,6 +12,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
@@ -19,6 +20,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
@@ -28,6 +30,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.CountryOw
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.InitialReinforcementPhaseCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
@@ -39,6 +42,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyC
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseResponseSuccessEvent;
@@ -47,6 +51,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
@@ -465,9 +470,41 @@ public final class GameModel
     eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (currentPlayer, selectedCountryName));
     eventBus.publish (new PlayerArmiesChangedEvent (currentPlayer, -1));
 
-    playerTurnModel.advance ();
-
     return true;
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForPlayersToReinforceInitialCountries ()
+  {
+    log.info ("Begin initial reinforcement phase...");
+
+    int totalArmySum = 0;
+    for (final Id playerId : playerModel.getPlayerIds ())
+    {
+      totalArmySum += playerModel.getArmiesInHand (playerId);
+    }
+
+    if (totalArmySum == 0)
+    {
+      eventBus.publish (new InitialReinforcementPhaseCompleteEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
+      return;
+    }
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+    final Id playerId = getCurrentPlayerId ();
+    // add country reinforcements and publish event
+    final int countryReinforcementBonus = rules
+            .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
+    final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
+    int continentReinforcementBonus = 0;
+    final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
+    for (final ContinentPacket cont : playerOwnedContinents)
+    {
+      continentReinforcementBonus += cont.getReinforcementBonus ();
+    }
+    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, countryReinforcementBonus,
+            continentReinforcementBonus, playerOwnedCountries, playerOwnedContinents));
   }
 
   @StateMachineAction
@@ -499,13 +536,15 @@ public final class GameModel
     final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
 
     eventBus.publish (new PlayerArmiesChangedEvent (player, totalReinforcementBonus));
+    eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
+            cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
     // publish reinforcement request
     eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, countryReinforcementBonus,
-            continentReinforcementBonus, cardModel.getNextTradeInBonus (), playerOwnedCountries, matchPackets,
-            cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
+            continentReinforcementBonus, playerOwnedCountries, playerOwnedContinents));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
 
+  @StateMachineAction
   @StateMachineCondition
   public boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
   {
@@ -515,34 +554,6 @@ public final class GameModel
     final Id playerId = playerModel.idOf (player.getName ());
 
     Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> result = Result.success ();
-
-    // --- process card trade-ins --- //
-
-    final CardSetPacket tradeIn = event.getTradeIn ();
-
-    final ImmutableSet <Card> cards = CardPackets.toCardSet (tradeIn.getCards (), cardModel);
-    final CardSet cardSet = new CardSet (rules, cards);
-    if (!cardSet.isEmpty () && !cardSet.isMatch ())
-    {
-      result = Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.INVALID_CARD_SET);
-    }
-
-    final int cardTradeInBonus = cardModel.getNextTradeInBonus ();
-
-    if (!cardSet.isEmpty () && result.succeeded ())
-    {
-      result = cardModel.requestTradeInCards (playerId, cardSet.match (), TurnPhase.REINFORCE);
-    }
-
-    if (!cardSet.isEmpty () && result.succeeded ())
-    {
-      playerModel.addArmiesToHandOf (playerId, cardTradeInBonus);
-    }
-    else if (result.failed ())
-    {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, result.getFailureReason ()));
-      return false;
-    }
 
     // --- process country reinforcements --- //
 
@@ -560,6 +571,7 @@ public final class GameModel
       return false;
     }
 
+    final ImmutableMap.Builder <CountryPacket, Integer> builder = ImmutableMap.builder ();
     for (final String countryName : reinforcedCountries.keySet ())
     {
       if (!countryMapGraphModel.existsCountryWith (countryName))
@@ -576,7 +588,9 @@ public final class GameModel
       }
       final int reinforcementCount = reinforcedCountries.get (countryName);
       result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
+      if (result.failed ()) break;
       playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
+      builder.put (country, reinforcementCount);
     }
 
     if (result.failed ())
@@ -585,10 +599,71 @@ public final class GameModel
       return false;
     }
 
+    final ImmutableMap <CountryPacket, Integer> countriesToDeltaArmyCounts = builder.build ();
     eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (player));
-    eventBus.publish (new PlayerArmiesChangedEvent (player, cardTradeInBonus - totalReinforcementCount));
+    eventBus.publish (new PlayerArmiesChangedEvent (player, -totalReinforcementCount));
+    for (final CountryPacket country : countriesToDeltaArmyCounts.keySet ())
+    {
+      eventBus.publish (new CountryArmiesChangedEvent (country, countriesToDeltaArmyCounts.get (country)));
+    }
 
     return true;
+  }
+
+  @StateMachineAction
+  public void handlePlayerCardTradeIn (final PlayerTradeInCardsResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+    final Id playerId = playerModel.idOf (player.getName ());
+
+    Result <PlayerTradeInCardsResponseDeniedEvent.Reason> result = Result.success ();
+
+    final CardSetPacket tradeIn = event.getTradeIn ();
+
+    final ImmutableSet <Card> cards = CardPackets.toCardSet (tradeIn.getCards (), cardModel);
+    final CardSet cardSet = new CardSet (rules, cards);
+    if (!cardSet.isEmpty () && !cardSet.isMatch ())
+    {
+      result = Result.failure (PlayerTradeInCardsResponseDeniedEvent.Reason.INVALID_CARD_SET);
+    }
+
+    final int cardTradeInBonus = cardModel.getNextTradeInBonus ();
+
+    if (!cardSet.isEmpty () && result.succeeded ())
+    {
+      result = cardModel.requestTradeInCards (playerId, cardSet.match (), TurnPhase.REINFORCE);
+    }
+
+    if (!cardSet.isEmpty () && result.succeeded ())
+    {
+      playerModel.addArmiesToHandOf (playerId, cardTradeInBonus);
+    }
+    else if (result.failed ())
+    {
+      eventBus.publish (new PlayerTradeInCardsResponseDeniedEvent (player, result.getFailureReason ()));
+      // send new request event
+      final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
+      final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
+      eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
+              cardModel.countCardsInHand (playerId) > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
+      return;
+    }
+
+    eventBus.publish (new PlayerTradeInCardsResponseSuccessEvent (player, event.getTradeIn (), cardTradeInBonus));
+    eventBus.publish (new PlayerArmiesChangedEvent (player, cardTradeInBonus));
+  }
+
+  @StateMachineCondition
+  public boolean isReinforcementComplete ()
+  {
+    final Optional <Boolean> isReinforcementValid = turnDataCache
+            .checkAndGet (CacheKey.REINFORCE_COUNTRY_REINFORCEMENT_VALID, boolean.class);
+    final Optional <Boolean> isCardTradeInValid = turnDataCache.checkAndGet (CacheKey.REINFORCE_CARD_TRADEIN_VALID,
+                                                                             boolean.class);
+    if (!isReinforcementValid.isPresent () || !isCardTradeInValid.isPresent ()) return false;
+    return isReinforcementValid.get () && isCardTradeInValid.get ();
   }
 
   @StateMachineAction
@@ -948,6 +1023,12 @@ public final class GameModel
             countryMapGraphModel.countryPacketWith (targetCountryId), fortifyArmyCount));
 
     return true;
+  }
+
+  @StateMachineAction
+  public void advanceTurn ()
+  {
+    playerTurnModel.advance ();
   }
 
   @StateMachineCondition

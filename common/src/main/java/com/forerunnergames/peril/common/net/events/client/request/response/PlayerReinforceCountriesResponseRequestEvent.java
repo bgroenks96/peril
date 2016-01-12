@@ -10,7 +10,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEv
 
 import com.google.common.collect.ImmutableMap;
 
-public class PlayerReinforceCountriesResponseRequestEvent implements ResponseRequestEvent
+public final class PlayerReinforceCountriesResponseRequestEvent implements ResponseRequestEvent
 {
   private final CardSetPacket tradeIn;
   private final ImmutableMap <String, Integer> countryNamesToReinforcements;

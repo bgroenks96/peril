@@ -55,6 +55,14 @@ class PlayerTurnDataCache
 
     return valueType.cast (dataCache.get (key));
   }
+  
+  <T> Optional <T> checkAndGet (final CacheKey key, final Class <T> valueType)
+  {
+    Arguments.checkIsNotNull (key, "key");
+    Arguments.checkIsNotNull (valueType, "valueType");
+    
+    return Optional.fromNullable (valueType.cast (dataCache.get (key)));
+  }
 
   void clear (final CacheKey key)
   {
@@ -92,6 +100,8 @@ class PlayerTurnDataCache
 
   enum CacheKey
   {
+    REINFORCE_COUNTRY_REINFORCEMENT_VALID,
+    REINFORCE_CARD_TRADEIN_VALID,
     BATTLE_PENDING_ATTACK_ORDER,
     BATTLE_ATTACKER_DATA,
     BATTLE_DEFENDER_DATA,

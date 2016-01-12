@@ -73,6 +73,7 @@ public final class DefaultContinentOwnerModel implements ContinentOwnerModel
     final ImmutableSet.Builder <ContinentPacket> ownedContinents = ImmutableSet.builder ();
     for (final Id continentId : continentMapGraphModel)
     {
+      if (!isContinentOwnedBy (continentId, ownerId)) continue;
       ownedContinents.add (continentMapGraphModel.continentPacketWith (continentId));
     }
     return ownedContinents.build ();
