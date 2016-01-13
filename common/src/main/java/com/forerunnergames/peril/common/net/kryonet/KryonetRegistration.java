@@ -24,6 +24,7 @@ import com.forerunnergames.tools.net.client.UnknownClientConfiguration;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.UnknownServerConfiguration;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -83,6 +84,9 @@ public final class KryonetRegistration
           InetSocketAddress.class,
           InitialCountryAssignment.class,
           MapType.class,
+          Optional.class,
+          Optional.absent ().getClass (),
+          Optional.of ("").getClass (),
           PersonIdentity.class,
           PlayerJoinGameDeniedEvent.Reason.class,
           PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
