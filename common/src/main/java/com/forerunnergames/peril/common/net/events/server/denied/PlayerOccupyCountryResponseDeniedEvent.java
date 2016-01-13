@@ -32,6 +32,12 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractDenied
   }
 
   @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{} | Player: [{}]", super.toString (), player);

@@ -7,24 +7,17 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
-public final class DefaultPlayerDeniedEvent implements PlayerDeniedEvent <String>
+public final class DefaultPlayerDeniedEvent extends AbstractPlayerEvent implements PlayerDeniedEvent <String>
 {
-  private final PlayerPacket player;
   private final DeniedEvent <String> deniedEvent;
 
   public DefaultPlayerDeniedEvent (final PlayerPacket player, final String reason)
   {
+    super (player);
+
     Arguments.checkIsNotNull (reason, "reason");
 
-    this.player = player;
-
     deniedEvent = new DefaultDeniedEvent (reason);
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
   }
 
   @Override
@@ -36,13 +29,12 @@ public final class DefaultPlayerDeniedEvent implements PlayerDeniedEvent <String
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: {}", getClass ().getSimpleName (), deniedEvent);
+    return Strings.format ("{} | {}", super.toString (), deniedEvent);
   }
 
   @RequiredForNetworkSerialization
   private DefaultPlayerDeniedEvent ()
   {
-    player = null;
     deniedEvent = null;
   }
 }

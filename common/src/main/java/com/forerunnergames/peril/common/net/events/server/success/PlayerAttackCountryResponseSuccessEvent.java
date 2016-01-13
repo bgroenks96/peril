@@ -25,6 +25,12 @@ public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResp
     return getAttackingPlayer ();
   }
 
+  @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
   public BattleResultPacket getBattleResult ()
   {
     return result;

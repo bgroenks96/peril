@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.common.net.events.server.request;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -7,9 +8,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOccupyCountryRequestEvent implements PlayerInputRequestEvent
+public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
-  private final PlayerPacket player;
   private final CountryPacket sourceCountry;
   private final CountryPacket destinationCountry;
 
@@ -17,19 +17,13 @@ public final class PlayerOccupyCountryRequestEvent implements PlayerInputRequest
                                           final CountryPacket sourceCountry,
                                           final CountryPacket destinationCountry)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
+
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
 
-    this.player = player;
     this.sourceCountry = sourceCountry;
     this.destinationCountry = destinationCountry;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
   }
 
   public CountryPacket getSourceCountry ()
@@ -45,14 +39,13 @@ public final class PlayerOccupyCountryRequestEvent implements PlayerInputRequest
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | SourceCountry: [{}] | DestinationCountry: [{}]",
-                           getClass ().getSimpleName (), sourceCountry, destinationCountry);
+    return Strings.format ("{} | SourceCountry: [{}] | DestinationCountry: [{}]", super.toString (), sourceCountry,
+                           destinationCountry);
   }
 
   @RequiredForNetworkSerialization
   private PlayerOccupyCountryRequestEvent ()
   {
-    player = null;
     sourceCountry = null;
     destinationCountry = null;
   }

@@ -7,7 +7,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
+public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
         implements PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerPacket player;
@@ -34,6 +34,12 @@ public class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent 
   public PlayerPacket getPlayer ()
   {
     return player;
+  }
+
+  @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
   }
 
   @Override

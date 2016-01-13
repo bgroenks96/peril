@@ -18,7 +18,6 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDenie
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
@@ -226,7 +225,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayersAndSpectators (event);
+    // let handler for server notification events handle forwarding the event
   }
 
   @Handler
@@ -281,16 +280,6 @@ public final class MultiplayerController extends ControllerAdapter
     clientsToSpectators.put (client.get (), createNewSpectatorFromValidName (event.getPlayer ().getName ()));
 
     // let handler for server notification events handle forwarding the event
-  }
-
-  @Handler
-  public void onEvent (final PlayerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    sendToAllPlayersAndSpectators (event);
   }
 
   @Handler

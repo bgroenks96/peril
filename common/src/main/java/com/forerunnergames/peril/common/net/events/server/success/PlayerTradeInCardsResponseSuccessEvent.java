@@ -1,28 +1,26 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerTradeInCardsResponseSuccessEvent implements PlayerResponseSuccessEvent
+public final class PlayerTradeInCardsResponseSuccessEvent extends AbstractPlayerArmiesChangedEvent
+        implements PlayerResponseSuccessEvent
 {
-  private final PlayerPacket player;
   private final CardSetPacket tradeIn;
   private final int tradeInBonus;
 
-  public PlayerTradeInCardsResponseSuccessEvent (final PlayerPacket player, final CardSetPacket tradeIn, final int tradeInBonus)
+  public PlayerTradeInCardsResponseSuccessEvent (final PlayerPacket player,
+                                                 final CardSetPacket tradeIn,
+                                                 final int tradeInBonus)
   {
-    this.player = player;
+    super (player, tradeInBonus);
+
     this.tradeIn = tradeIn;
     this.tradeInBonus = tradeInBonus;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
   }
 
   public CardSetPacket getTradeIn ()
@@ -38,14 +36,12 @@ public final class PlayerTradeInCardsResponseSuccessEvent implements PlayerRespo
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | TradeIn: [{}] | TradeInBonus: [{}]", getClass ().getSimpleName (),
-                           player, tradeIn, tradeInBonus);
+    return Strings.format ("{} | TradeIn: [{}] | TradeInBonus: [{}]", super.toString (), tradeIn, tradeInBonus);
   }
 
   @RequiredForNetworkSerialization
   private PlayerTradeInCardsResponseSuccessEvent ()
   {
-    player = null;
     tradeIn = null;
     tradeInBonus = 0;
   }

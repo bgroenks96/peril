@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -9,7 +10,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.base.Optional;
 
-public final class PlayerFortifyCountryResponseSuccessEvent implements PlayerResponseSuccessEvent
+public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlayerEvent
+        implements PlayerResponseSuccessEvent
 {
   private final PlayerPacket player;
   private final Optional <CountryPacket> sourceCountry;

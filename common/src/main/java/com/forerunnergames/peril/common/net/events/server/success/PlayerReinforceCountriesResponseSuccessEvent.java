@@ -1,37 +1,21 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerReinforceCountriesResponseSuccessEvent implements PlayerResponseSuccessEvent
+public final class PlayerReinforceCountriesResponseSuccessEvent extends AbstractPlayerArmiesChangedEvent
+        implements PlayerResponseSuccessEvent, PlayerArmiesChangedEvent
 {
-  private final PlayerPacket player;
-
-  public PlayerReinforceCountriesResponseSuccessEvent (final PlayerPacket player)
+  public PlayerReinforceCountriesResponseSuccessEvent (final PlayerPacket player, final int deltaArmyCount)
   {
-    Arguments.checkIsNotNull (player, "player");
-
-    this.player = player;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);
+    super (player, deltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountriesResponseSuccessEvent ()
   {
-    player = null;
   }
 }

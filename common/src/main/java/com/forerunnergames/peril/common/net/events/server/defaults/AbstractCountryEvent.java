@@ -1,30 +1,29 @@
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.defaults;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class CountryArmiesChangedEvent extends AbstractArmiesChangedEvent
+public abstract class AbstractCountryEvent implements CountryEvent
 {
   private final CountryPacket country;
 
-  public CountryArmiesChangedEvent (final CountryPacket country, @AllowNegative final int deltaArmyCount)
+  public AbstractCountryEvent (final CountryPacket country)
   {
-    super (deltaArmyCount);
-
     Arguments.checkIsNotNull (country, "country");
 
     this.country = country;
   }
 
+  @Override
   public CountryPacket getCountry ()
   {
     return country;
   }
 
+  @Override
   public String getCountryName ()
   {
     return country.getName ();
@@ -33,13 +32,12 @@ public final class CountryArmiesChangedEvent extends AbstractArmiesChangedEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Country: [{}]", super.toString (), country);
+    return Strings.format ("{}: Country: [{}]", getClass ().getSimpleName (), country);
   }
 
   @RequiredForNetworkSerialization
-  private CountryArmiesChangedEvent ()
+  protected AbstractCountryEvent ()
   {
-    super (0);
     country = null;
   }
 }

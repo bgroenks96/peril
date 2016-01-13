@@ -29,6 +29,12 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   }
 
   @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
+  @Override
   public String getReason ()
   {
     return playerDeniedEvent.getReason ();

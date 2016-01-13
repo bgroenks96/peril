@@ -43,6 +43,12 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
   }
 
   @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
+  @Override
   public PlayerSelectCountryResponseDeniedEvent.Reason getReason ()
   {
     return reason;

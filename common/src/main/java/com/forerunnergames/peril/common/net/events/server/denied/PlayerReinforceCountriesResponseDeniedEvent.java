@@ -41,6 +41,12 @@ public final class PlayerReinforceCountriesResponseDeniedEvent extends AbstractD
   }
 
   @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{} | Player: [{}]", super.toString (), player);

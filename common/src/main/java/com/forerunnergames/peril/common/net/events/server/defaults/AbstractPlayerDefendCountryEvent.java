@@ -8,9 +8,8 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
-public abstract class AbstractPlayerDefendCountryEvent implements ServerEvent
+public abstract class AbstractPlayerDefendCountryEvent extends AbstractPlayerEvent implements ServerEvent
 {
-  private final PlayerPacket defendingPlayer;
   private final CountryPacket defendingCountry;
   private final BattleActorPacket attackerData;
 
@@ -18,18 +17,13 @@ public abstract class AbstractPlayerDefendCountryEvent implements ServerEvent
                                               final CountryPacket defendingCountry,
                                               final BattleActorPacket attackerData)
   {
-    Arguments.checkIsNotNull (defendingPlayer, "defendingPlayer");
+    super (defendingPlayer);
+
     Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
     Arguments.checkIsNotNull (attackerData, "attackerData");
 
-    this.defendingPlayer = defendingPlayer;
     this.defendingCountry = defendingCountry;
     this.attackerData = attackerData;
-  }
-
-  public PlayerPacket getPlayer ()
-  {
-    return defendingPlayer;
   }
 
   public CountryPacket getCountry ()
@@ -45,14 +39,13 @@ public abstract class AbstractPlayerDefendCountryEvent implements ServerEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: DefendingPlayer: [{}] | DefendingCountry: [{}] | AttackerData: [{}]", defendingPlayer,
+    return Strings.format ("{}: DefendingPlayer: [{}] | DefendingCountry: [{}] | AttackerData: [{}]", getPlayer (),
                            defendingCountry, attackerData);
   }
 
   @RequiredForNetworkSerialization
   protected AbstractPlayerDefendCountryEvent ()
   {
-    defendingPlayer = null;
     defendingCountry = null;
     attackerData = null;
   }

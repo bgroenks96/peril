@@ -40,6 +40,12 @@ public class PlayerFortifyCountryResponseDeniedEvent extends AbstractDeniedEvent
   }
 
   @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{} | Player: [{}]", super.toString (), player);

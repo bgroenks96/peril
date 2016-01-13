@@ -75,7 +75,8 @@ import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
 import com.forerunnergames.peril.common.game.DieFaceValue;
-import com.forerunnergames.peril.common.net.events.server.notification.CountryArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
@@ -638,10 +639,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               ImmutableSet.<PlayerPacket> of ()));
 
       // TODO Production: Remove
-      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
 
       // TODO Production: Remove
-      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
 
       // TODO: Production: Publish event (OccupyCountryRequestEvent?)
     }
@@ -677,10 +678,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               ImmutableSet.<PlayerPacket> of ()));
 
       // TODO Production: Remove
-      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
 
       // TODO Production: Remove
-      eventBus.publish (new CountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
 
       // TODO: Production: Publish event (OccupyCountryRequestEvent?)
     }
@@ -741,14 +742,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       if (attackingCountryDeltaArmies != 0)
       {
         final CountryPacket attackingCountry = DebugPackets.from (attackingCountryName);
-        eventBus.publish (new CountryArmiesChangedEvent (attackingCountry, attackingCountryDeltaArmies));
+        eventBus.publish (new DefaultCountryArmiesChangedEvent (attackingCountry, attackingCountryDeltaArmies));
       }
 
       // TODO Production: Remove
       if (defendingCountryDeltaArmies != 0)
       {
         final CountryPacket defendingCountry = DebugPackets.from (defendingCountryName);
-        eventBus.publish (new CountryArmiesChangedEvent (defendingCountry, defendingCountryDeltaArmies));
+        eventBus.publish (new DefaultCountryArmiesChangedEvent (defendingCountry, defendingCountryDeltaArmies));
       }
 
       // TODO Production: Remove
@@ -884,11 +885,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
       // TODO Production: Remove
       final CountryPacket attackingCountryPacket = DebugPackets.from (attackingCountryName);
-      eventBus.publish (new CountryArmiesChangedEvent (attackingCountryPacket, attackingCountryDeltaArmies));
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (attackingCountryPacket, attackingCountryDeltaArmies));
 
       // TODO Production: Remove
       final CountryPacket defendingCountryPacket = DebugPackets.from (defendingCountryName);
-      eventBus.publish (new CountryArmiesChangedEvent (defendingCountryPacket, defendingCountryDeltaArmies));
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (defendingCountryPacket, defendingCountryDeltaArmies));
 
       // TODO Production: Remove
       eventBus.publish (StatusMessageEventFactory

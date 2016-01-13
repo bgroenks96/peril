@@ -1,5 +1,7 @@
 package com.forerunnergames.peril.common.net.events.server.request;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -10,9 +12,9 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRequestEvent
+public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerArmiesChangedEvent
+        implements PlayerInputRequestEvent, PlayerArmiesChangedEvent
 {
-  private final PlayerPacket player;
   private final int countryReinforcementBonus;
   private final int continentReinforcementBonus;
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
@@ -24,23 +26,17 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
                                                final ImmutableSet <CountryPacket> playerOwnedCountries,
                                                final ImmutableSet <ContinentPacket> playerOwnedContinents)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player, countryReinforcementBonus + continentReinforcementBonus); // total armies changed
+
     Arguments.checkIsNotNegative (countryReinforcementBonus, "countryReinforcementBonus");
     Arguments.checkIsNotNegative (continentReinforcementBonus, "contienentReinforcementBonus");
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
     Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");
 
-    this.player = player;
     this.countryReinforcementBonus = countryReinforcementBonus;
     this.continentReinforcementBonus = continentReinforcementBonus;
     this.playerOwnedCountries = playerOwnedCountries;
     this.playerOwnedContinents = playerOwnedContinents;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
   }
 
   public int getCountryReinforcementBonus ()
@@ -62,15 +58,14 @@ public final class PlayerReinforceCountriesRequestEvent implements PlayerInputRe
   public String toString ()
   {
     return Strings.format (
-                           "{}: Player: [{}] | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
-                           getClass ().getSimpleName (), player, countryReinforcementBonus, continentReinforcementBonus,
+                           "{} | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
+                           super.toString (), countryReinforcementBonus, continentReinforcementBonus,
                            playerOwnedCountries, playerOwnedContinents);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountriesRequestEvent ()
   {
-    player = null;
     countryReinforcementBonus = 0;
     continentReinforcementBonus = 0;
     playerOwnedCountries = null;

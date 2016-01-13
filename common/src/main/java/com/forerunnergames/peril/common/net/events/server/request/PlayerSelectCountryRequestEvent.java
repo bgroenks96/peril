@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.common.net.events.server.request;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -9,25 +10,18 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public class PlayerSelectCountryRequestEvent implements PlayerInputRequestEvent
+public final class PlayerSelectCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
-  private final PlayerPacket player;
   private final ImmutableSet <CountryPacket> unownedCountries;
 
   public PlayerSelectCountryRequestEvent (final PlayerPacket player,
                                           final ImmutableSet <CountryPacket> unownedCountries)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
+
     Arguments.checkIsNotNull (unownedCountries, "unownedCountries");
 
-    this.player = player;
     this.unownedCountries = unownedCountries;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
   }
 
   public ImmutableSet <CountryPacket> getUnownedCountries ()
@@ -38,13 +32,12 @@ public class PlayerSelectCountryRequestEvent implements PlayerInputRequestEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: {}", getClass ().getSimpleName (), player);
+    return Strings.format ("{} | UnownedCountries: [{}]", super.toString (), unownedCountries);
   }
 
   @RequiredForNetworkSerialization
   private PlayerSelectCountryRequestEvent ()
   {
-    player = null;
     unownedCountries = null;
   }
 }
