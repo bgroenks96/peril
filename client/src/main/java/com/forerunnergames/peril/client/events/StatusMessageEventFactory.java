@@ -22,4 +22,9 @@ public final class StatusMessageEventFactory
 
     return new DefaultStatusMessageEvent (new DefaultStatusMessage (messageText), messageRecipients);
   }
+
+  public static StatusMessageEvent create (final String messageText)
+  {
+    return create (messageText, ImmutableSet.<PlayerPacket> of ());
+  }
 }
