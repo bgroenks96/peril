@@ -311,7 +311,7 @@ public final class MultiplayerController extends ControllerAdapter
     final boolean wasAdded = playerInputRequestEventCache.put (event.getPlayer (), event);
     assert wasAdded;
 
-    sendToPlayer (event.getPlayer (), event);
+    if (! (event instanceof ServerNotificationEvent)) sendToPlayer (event.getPlayer (), event);
   }
 
   @Handler
