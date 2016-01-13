@@ -1,7 +1,6 @@
 package com.forerunnergames.peril.common.net.events.server.request;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -12,8 +11,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerArmiesChangedEvent
-        implements PlayerInputRequestEvent, PlayerArmiesChangedEvent
+public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
   private final ImmutableSet <ContinentPacket> playerOwnedContinents;
@@ -28,7 +26,7 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerAr
                                                final int continentReinforcementBonus,
                                                final int maxArmiesPerCountry)
   {
-    super (player, countryReinforcementBonus + continentReinforcementBonus); // total armies changed
+    super (player);
 
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
     Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");

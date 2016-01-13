@@ -546,6 +546,8 @@ public final class GameModel
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
+    eventBus.publish (new DefaultPlayerArmiesChangedEvent (player, totalReinforcementBonus));
+
     final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
     final int cardCount = cardModel.countCardsInHand (playerId);
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
