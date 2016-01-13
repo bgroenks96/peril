@@ -103,12 +103,14 @@ import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -553,13 +555,22 @@ public final class GameModel
 
     final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
     final int cardCount = cardModel.countCardsInHand (playerId);
-    final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
+    final ImmutableSet <CountryPacket> validCountries;
+    final Predicate <CountryPacket> filter = new Predicate <CountryPacket> ()
+    {
+      @Override
+      public boolean apply (final CountryPacket input)
+      {
+        return input.getArmyCount () < rules.getMaxArmiesOnCountry ();
+      }
+    };
+    validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountriesOwnedBy (playerId), filter));
     final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
 
     eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
             cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
     // publish reinforcement request
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents,
+    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, validCountries, playerOwnedContinents,
             countryReinforcementBonus, continentReinforcementBonus, rules.getMaxArmiesOnCountry ()));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
