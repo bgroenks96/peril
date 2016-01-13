@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images;
 
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.enums.IterableEnumHelper;
 
 public enum CountryPrimaryImageState implements CountryImageState <CountryPrimaryImageState>
@@ -92,5 +93,12 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
   public static int count ()
   {
     return IterableEnumHelper.count (values ());
+  }
+
+  public static CountryPrimaryImageState fromPlayerColor (final String playerColor)
+  {
+    Arguments.checkIsNotNullOrEmptyOrBlank (playerColor, "playerColor");
+
+    return valueOf (playerColor.toUpperCase ());
   }
 }
