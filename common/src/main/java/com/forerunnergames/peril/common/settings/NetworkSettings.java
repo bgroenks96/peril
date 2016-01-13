@@ -17,10 +17,10 @@ public final class NetworkSettings
   public static final int MAX_SERVER_NAME_LENGTH = 30;
   public static final Pattern VALID_SERVER_NAME_PATTERN = Pattern.compile ("^(?=.{" + MIN_SERVER_NAME_LENGTH + ","
           + MAX_SERVER_NAME_LENGTH + "}$)(?!.* {2,})[a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z0-9]$");
-  public static final int CLIENT_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 8192;
-  public static final int CLIENT_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
-  public static final int SERVER_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 16382;
-  public static final int SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 8192;
+  public static final int CLIENT_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 32768;
+  public static final int CLIENT_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 32768;
+  public static final int SERVER_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 32768;
+  public static final int SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 32768;
   public static final String EXTERNAL_IP_RESOLVER_URL = "http://ci.forerunnergames.com:8888/get-wan-ip/getwanip";
   public static final String EXTERNAL_IP_RESOLVER_BACKUP_URL = "http://getwanip.appspot.com/getmyip";
 

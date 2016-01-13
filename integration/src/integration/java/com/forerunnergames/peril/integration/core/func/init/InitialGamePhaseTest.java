@@ -233,8 +233,7 @@ public class InitialGamePhaseTest
     verifyPlayerCountryAssignmentComplete ();
   }
 
-  @Test (enabled = false, dependsOnMethods = "testDistributeInitialArmies",
-         groups = { RANDOM_SELECTION_TEST_GROUP_NAME })
+  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { RANDOM_SELECTION_TEST_GROUP_NAME })
   public void testRandomCountrySelection ()
   {
     verifyPlayerCountryAssignmentComplete ();
