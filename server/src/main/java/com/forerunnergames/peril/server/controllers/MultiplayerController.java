@@ -17,7 +17,6 @@ import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGa
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
@@ -313,16 +312,6 @@ public final class MultiplayerController extends ControllerAdapter
     assert wasAdded;
 
     sendToPlayer (event.getPlayer (), event);
-  }
-
-  @Handler
-  public void onEvent (final PlayerResponseSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    sendToAllPlayersAndSpectators (event);
   }
 
   @Handler
