@@ -14,6 +14,7 @@ import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -27,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
@@ -56,12 +58,14 @@ public final class KryonetRegistration
   public static final ImmutableSet <Class <?>> CLASSES;
   private static final Logger log = LoggerFactory.getLogger (KryonetRegistration.class);
   private static final String COMMON_NET_PACKAGE_NAME = "com.forerunnergames.peril.common.net";
-  // Set of all classes external to net package that must be registered
+  // Set of all classes that are either:
+  // 1) external to net package that must be registered, or
+  // 2) are internal to the net package, but must be manually registered.
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
   // TODO Java 8: Remove @SuppressWarnings ("RedundantTypeArguments")
   // @formatter:off
   @SuppressWarnings ("RedundantTypeArguments")
-  private static final ImmutableSet <Class <?>> EXTERNAL = ImmutableSet.<Class <?>> of (
+  private static final ImmutableSet <Class <?>> OTHER = ImmutableSet.<Class <?>> of (
           ArrayList.class,
           Classes.class,
           DefaultClientConfiguration.class,
@@ -81,6 +85,7 @@ public final class KryonetRegistration
           MapType.class,
           PersonIdentity.class,
           PlayerJoinGameDeniedEvent.Reason.class,
+          PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
           PlayerSelectCountryResponseDeniedEvent.Reason.class,
           UnknownClientConfiguration.class,
           UnknownServerConfiguration.class);
@@ -94,7 +99,7 @@ public final class KryonetRegistration
   static
   {
     final Builder <Class <?>> classSetBuilder = ImmutableSet.builder ();
-    classSetBuilder.addAll (EXTERNAL);
+    classSetBuilder.addAll (OTHER);
 
     try
     {
@@ -155,12 +160,14 @@ public final class KryonetRegistration
 
     ImmutableListSerializer.registerSerializers (kryo);
     ImmutableSetSerializer.registerSerializers (kryo);
+    ImmutableSortedSetSerializer.registerSerializers (kryo);
     ImmutableMapSerializer.registerSerializers (kryo);
 
     kryo.register (UUID.class, new UUIDSerializer ());
 
     log.trace ("Registered custom serializers for [{}, {}, {}, {}]", ImmutableList.class.getSimpleName (),
-               ImmutableSet.class.getSimpleName (), ImmutableMap.class.getSimpleName (), UUID.class.getSimpleName ());
+               ImmutableSet.class.getSimpleName (), ImmutableSortedSet.class.getSimpleName (),
+               ImmutableMap.class.getSimpleName (), UUID.class.getSimpleName ());
   }
 
   private KryonetRegistration ()
