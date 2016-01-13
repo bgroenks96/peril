@@ -482,9 +482,12 @@ public final class GameModel
       return false;
     }
 
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (currentPlayer,
+    playerModel.removeArmiesFromHandOf (currentPlayerId, 1);
+
+    final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (updatedPlayer,
             countryMapGraphModel.countryPacketWith (countryId)));
-    eventBus.publish (new DefaultPlayerArmiesChangedEvent (currentPlayer, -1));
+    eventBus.publish (new DefaultPlayerArmiesChangedEvent (updatedPlayer, -1));
 
     return true;
   }
