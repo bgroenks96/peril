@@ -49,7 +49,11 @@ public interface PlayMapActor
 
   boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName);
 
+  boolean currentPrimaryImageStateOfCountryIsNot (final CountryPrimaryImageState state, final String countryName);
+
   boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName);
+
+  boolean currentSecondaryImageStateOfCountryIsNot (final CountrySecondaryImageState state, final String countryName);
 
   @Nullable
   CountryPrimaryImageState getCurrentPrimaryImageStateOf (final String countryName);

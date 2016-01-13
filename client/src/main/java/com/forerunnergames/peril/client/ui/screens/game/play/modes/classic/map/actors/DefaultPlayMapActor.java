@@ -367,6 +367,12 @@ public final class DefaultPlayMapActor implements PlayMapActor
   }
 
   @Override
+  public boolean currentPrimaryImageStateOfCountryIsNot (final CountryPrimaryImageState state, final String countryName)
+  {
+    return !currentPrimaryImageStateOfCountryIs (state, countryName);
+  }
+
+  @Override
   public boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
                                                         final String countryName)
   {
@@ -374,6 +380,13 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
 
     return existsCountryActorWithName (countryName) && getCurrentSecondaryImageStateOf (countryName) == state;
+  }
+
+  @Override
+  public boolean currentSecondaryImageStateOfCountryIsNot (final CountrySecondaryImageState state,
+                                                           final String countryName)
+  {
+    return !currentSecondaryImageStateOfCountryIs (state, countryName);
   }
 
   @Override

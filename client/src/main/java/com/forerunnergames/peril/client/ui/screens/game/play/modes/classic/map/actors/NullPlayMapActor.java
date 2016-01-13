@@ -132,6 +132,12 @@ final class NullPlayMapActor implements PlayMapActor
   }
 
   @Override
+  public boolean currentPrimaryImageStateOfCountryIsNot (final CountryPrimaryImageState state, final String countryName)
+  {
+    return !currentPrimaryImageStateOfCountryIs (state, countryName);
+  }
+
+  @Override
   public boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
                                                         final String countryName)
   {
@@ -139,6 +145,13 @@ final class NullPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
 
     return false;
+  }
+
+  @Override
+  public boolean currentSecondaryImageStateOfCountryIsNot (final CountrySecondaryImageState state,
+                                                           final String countryName)
+  {
+    return !currentSecondaryImageStateOfCountryIs (state, countryName);
   }
 
   @Nullable
