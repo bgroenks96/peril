@@ -108,6 +108,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.ImmutableSortedSet;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -253,7 +254,10 @@ public final class GameModel
       log.info ("Set turn order of player [{}] to [{}].", player.getName (), turnOrder);
     }
 
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (playerModel.getPlayerPackets ()));
+    final ImmutableSortedSet.Builder <PlayerPacket> ordered = ImmutableSortedSet
+            .orderedBy (PlayerPacket.TURN_ORDER_COMPARATOR);
+    ordered.addAll (playerModel.getPlayerPackets ());
+    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (ordered.build ()));
   }
 
   @StateMachineAction
@@ -515,8 +519,8 @@ public final class GameModel
     {
       continentReinforcementBonus += cont.getReinforcementBonus ();
     }
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, countryReinforcementBonus,
-            continentReinforcementBonus, playerOwnedCountries, playerOwnedContinents));
+    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents,
+            countryReinforcementBonus, continentReinforcementBonus, rules.getMaxArmiesOnCountry ()));
   }
 
   @StateMachineAction
@@ -550,8 +554,8 @@ public final class GameModel
     eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
             cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
     // publish reinforcement request
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, countryReinforcementBonus,
-            continentReinforcementBonus, playerOwnedCountries, playerOwnedContinents));
+    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents,
+            countryReinforcementBonus, continentReinforcementBonus, rules.getMaxArmiesOnCountry ()));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
 

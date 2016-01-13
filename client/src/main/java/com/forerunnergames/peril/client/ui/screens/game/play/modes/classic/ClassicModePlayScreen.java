@@ -510,7 +510,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playerBox.setPlayers (event.getOrderedPlayers ());
+        playerBox.setPlayers (event.getPlayersSortedByTurnOrder ());
       }
     });
   }

@@ -122,7 +122,7 @@ public class InitialGamePhaseTest
         Arguments.checkIsNotNull (client, "client");
 
         if (!event.isPresent ()) return;
-        if (event.get ().getOrderedPlayers ().contains (client.getPlayer ())) verifyCount.incrementAndGet ();
+        if (event.get ().getPlayersSortedByTurnOrder ().contains (client.getPlayer ())) verifyCount.incrementAndGet ();
       }
     };
     final ImmutableSet <TestClient> failed = clientPool

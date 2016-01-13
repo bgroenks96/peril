@@ -6,13 +6,13 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 public final class DeterminePlayerTurnOrderCompleteEvent implements ServerNotificationEvent
 {
-  private final ImmutableSet <PlayerPacket> turnOrderedPlayers;
+  private final ImmutableSortedSet <PlayerPacket> turnOrderedPlayers;
 
-  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSet <PlayerPacket> turnOrderedPlayers)
+  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSortedSet <PlayerPacket> turnOrderedPlayers)
   {
     Arguments.checkIsNotNull (turnOrderedPlayers, "turnOrderedPlayers");
     Arguments.checkHasNoNullElements (turnOrderedPlayers, "turnOrderedPlayers");
@@ -20,7 +20,7 @@ public final class DeterminePlayerTurnOrderCompleteEvent implements ServerNotifi
     this.turnOrderedPlayers = turnOrderedPlayers;
   }
 
-  public ImmutableSet <PlayerPacket> getOrderedPlayers ()
+  public ImmutableSortedSet <PlayerPacket> getPlayersSortedByTurnOrder ()
   {
     return turnOrderedPlayers;
   }

@@ -15,28 +15,32 @@ import com.google.common.collect.ImmutableSet;
 public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerArmiesChangedEvent
         implements PlayerInputRequestEvent, PlayerArmiesChangedEvent
 {
-  private final int countryReinforcementBonus;
-  private final int continentReinforcementBonus;
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
   private final ImmutableSet <ContinentPacket> playerOwnedContinents;
+  private final int countryReinforcementBonus;
+  private final int continentReinforcementBonus;
+  private final int maxArmiesPerCountry;
 
   public PlayerReinforceCountriesRequestEvent (final PlayerPacket player,
+                                               final ImmutableSet <CountryPacket> playerOwnedCountries,
+                                               final ImmutableSet <ContinentPacket> playerOwnedContinents,
                                                final int countryReinforcementBonus,
                                                final int continentReinforcementBonus,
-                                               final ImmutableSet <CountryPacket> playerOwnedCountries,
-                                               final ImmutableSet <ContinentPacket> playerOwnedContinents)
+                                               final int maxArmiesPerCountry)
   {
     super (player, countryReinforcementBonus + continentReinforcementBonus); // total armies changed
 
-    Arguments.checkIsNotNegative (countryReinforcementBonus, "countryReinforcementBonus");
-    Arguments.checkIsNotNegative (continentReinforcementBonus, "contienentReinforcementBonus");
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
     Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");
+    Arguments.checkIsNotNegative (countryReinforcementBonus, "countryReinforcementBonus");
+    Arguments.checkIsNotNegative (continentReinforcementBonus, "continentReinforcementBonus");
+    Arguments.checkIsNotNegative (maxArmiesPerCountry, "maxArmiesPerCountry");
 
-    this.countryReinforcementBonus = countryReinforcementBonus;
-    this.continentReinforcementBonus = continentReinforcementBonus;
     this.playerOwnedCountries = playerOwnedCountries;
     this.playerOwnedContinents = playerOwnedContinents;
+    this.countryReinforcementBonus = countryReinforcementBonus;
+    this.continentReinforcementBonus = continentReinforcementBonus;
+    this.maxArmiesPerCountry = maxArmiesPerCountry;
   }
 
   public int getCountryReinforcementBonus ()
@@ -47,6 +51,11 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerAr
   public int getContinentReinforcementBonus ()
   {
     return continentReinforcementBonus;
+  }
+
+  public int getMaxArmiesPerCountry ()
+  {
+    return maxArmiesPerCountry;
   }
 
   public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
@@ -66,21 +75,34 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerAr
     return false;
   }
 
+  public boolean canAddArmiesToCountry (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    for (final CountryPacket country : playerOwnedCountries)
+    {
+      if (country.hasName (countryName)) return country.getArmyCount () < maxArmiesPerCountry;
+    }
+
+    return false;
+  }
+
   @Override
   public String toString ()
   {
     return Strings.format (
-                           "{} | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
+                           "{} | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | MaxArmiesPerCountry: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
                            super.toString (), countryReinforcementBonus, continentReinforcementBonus,
-                           playerOwnedCountries, playerOwnedContinents);
+                           maxArmiesPerCountry, playerOwnedCountries, playerOwnedContinents);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountriesRequestEvent ()
   {
-    countryReinforcementBonus = 0;
-    continentReinforcementBonus = 0;
     playerOwnedCountries = null;
     playerOwnedContinents = null;
+    countryReinforcementBonus = 0;
+    continentReinforcementBonus = 0;
+    maxArmiesPerCountry = 0;
   }
 }
