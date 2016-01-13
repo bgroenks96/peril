@@ -14,6 +14,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
@@ -340,18 +341,29 @@ public final class GameModel
       for (int count = 0; count < playerCountryCount && countryItr.hasNext (); count++)
       {
         final Id toAssign = countryItr.next ();
-        final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
-        result = countryOwnerModel.requestToAssignCountryOwner (toAssign, nextPlayerId);
+        Result <?> result = countryOwnerModel.requestToAssignCountryOwner (toAssign, nextPlayerId);
         if (result.failed ())
         {
           log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryMapGraphModel.nameOf (toAssign),
-                    nextPlayer.getName (), result.getFailureReason ());
+                    nextPlayer, result.getFailureReason ());
+          continue;
         }
-        else
+
+        result = countryArmyModel.requestToAddArmiesToCountry (toAssign, 1);
+        if (result.failed ())
         {
-          playerModel.removeArmiesFromHandOf (nextPlayerId, 1);
-          assignSuccessCount++;
+          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryMapGraphModel.nameOf (toAssign),
+                    nextPlayer, result.getFailureReason ());
+          continue;
         }
+
+        playerModel.removeArmiesFromHandOf (nextPlayerId, 1);
+        assignSuccessCount++;
+
+        eventBus.publish (new DefaultCountryArmiesChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), 1));
+        eventBus.publish (new DefaultCountryOwnerChangedEvent (countryMapGraphModel.countryPacketWith (toAssign),
+                nextPlayer));
+
         countryItr.remove ();
       }
 
@@ -466,7 +478,8 @@ public final class GameModel
       return false;
     }
 
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (currentPlayer, selectedCountryName));
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (currentPlayer,
+            countryMapGraphModel.countryPacketWith (countryId)));
     eventBus.publish (new DefaultPlayerArmiesChangedEvent (currentPlayer, -1));
 
     return true;

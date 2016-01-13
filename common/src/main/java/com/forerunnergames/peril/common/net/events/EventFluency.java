@@ -2,10 +2,10 @@ package com.forerunnergames.peril.common.net.events;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.MessageEvent;
-import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryResponseEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
@@ -195,11 +195,18 @@ public final class EventFluency
     return event.getPlayerColor ();
   }
 
-  public static String selectedCountryNameFrom (final PlayerSelectCountryResponseEvent event)
+  public static String selectedCountryNameFrom (final PlayerSelectCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     return event.getSelectedCountryName ();
+  }
+
+  public static String selectedCountryNameFrom (final PlayerSelectCountryResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return event.getCountryName ();
   }
 
   public static ImmutableSet <CountryPacket> countriesFrom (final PlayerCountryAssignmentCompleteEvent event)

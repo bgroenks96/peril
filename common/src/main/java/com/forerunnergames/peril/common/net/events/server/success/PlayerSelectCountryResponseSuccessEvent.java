@@ -1,52 +1,65 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultPlayerSelectCountryResponseEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectCountryResponseSuccessEvent extends DefaultPlayerSelectCountryResponseEvent
-        implements PlayerResponseSuccessEvent
+import com.google.common.base.Optional;
+
+public final class PlayerSelectCountryResponseSuccessEvent extends AbstractPlayerEvent
+        implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
-  private final PlayerPacket player;
+  private final CountryPacket selectedCountry;
 
-  public PlayerSelectCountryResponseSuccessEvent (final PlayerPacket player, final String selectedCountryName)
+  public PlayerSelectCountryResponseSuccessEvent (final PlayerPacket player, final CountryPacket selectedCountry)
   {
-    super (selectedCountryName);
+    super (player);
 
-    Arguments.checkIsNotNull (player, "player");
-
-    this.player = player;
+    this.selectedCountry = selectedCountry;
   }
 
   @Override
-  public PlayerPacket getPlayer ()
+  public CountryPacket getCountry ()
   {
-    return player;
+    return selectedCountry;
   }
 
   @Override
-  public String getPlayerName ()
+  public String getCountryName ()
   {
-    return player.getName ();
+    return selectedCountry.getName ();
+  }
+
+  @Override
+  public Optional <PlayerPacket> getPreviousOwner ()
+  {
+    return Optional.absent ();
+  }
+
+  @Override
+  public PlayerPacket getNewOwner ()
+  {
+    return getPlayer ();
   }
 
   public String getPlayerColor ()
   {
-    return player.getColor ();
+    return getPlayer ().getColor ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);
+    return Strings.format ("{} | SelectedCountry: [{}]", super.toString (), getPlayer ());
   }
 
   @RequiredForNetworkSerialization
   private PlayerSelectCountryResponseSuccessEvent ()
   {
-    player = null;
+    selectedCountry = null;
   }
 }

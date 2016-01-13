@@ -1,14 +1,15 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultPlayerSelectCountryResponseEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerSelectCountryResponseEvent
-        implements PlayerResponseDeniedEvent <PlayerSelectCountryResponseDeniedEvent.Reason>
+public final class PlayerSelectCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
+        implements PlayerDeniedEvent <Reason>
 {
   public enum Reason
   {
@@ -21,19 +22,19 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
   }
 
   private final PlayerPacket player;
-  private final Reason reason;
+  private final String selectedCountryName;
 
   public PlayerSelectCountryResponseDeniedEvent (final PlayerPacket player,
                                                  final String selectedCountryName,
-                                                 final PlayerSelectCountryResponseDeniedEvent.Reason reason)
+                                                 final Reason reason)
   {
-    super (selectedCountryName);
+    super (reason);
 
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (reason, "reason");
+    Arguments.checkIsNotNull (selectedCountryName, "selectedCountryName");
 
     this.player = player;
-    this.reason = reason;
+    this.selectedCountryName = selectedCountryName;
   }
 
   @Override
@@ -49,21 +50,16 @@ public final class PlayerSelectCountryResponseDeniedEvent extends DefaultPlayerS
   }
 
   @Override
-  public PlayerSelectCountryResponseDeniedEvent.Reason getReason ()
-  {
-    return reason;
-  }
-
-  @Override
   public String toString ()
   {
-    return Strings.format ("{} | Player: [{}] | Reason: {}", super.toString (), player, reason);
+    return Strings.format ("{} | Player: [{}] | SelectedCountryName: {}", super.toString (), player,
+                           selectedCountryName);
   }
 
   @RequiredForNetworkSerialization
   private PlayerSelectCountryResponseDeniedEvent ()
   {
     player = null;
-    reason = null;
+    selectedCountryName = null;
   }
 }

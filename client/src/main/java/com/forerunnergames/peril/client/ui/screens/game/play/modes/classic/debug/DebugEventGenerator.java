@@ -112,7 +112,8 @@ public final class DebugEventGenerator
 
   public void generatePlayerSelectCountryResponseSuccessEvent ()
   {
-    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (createPlayer (), getRandomCountryName ()));
+    eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (createPlayer (),
+            DebugPackets.from (getRandomCountryName ())));
   }
 
   public void resetPlayers ()
