@@ -92,6 +92,8 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   /**
    * Assigns the Country specified by countryId to the owner specified by ownerId.
    *
+   * Note: the country MUST be unowned!
+   *
    * @return success/failure Result with reason
    */
   @Override
@@ -99,12 +101,32 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
                                                                                              final Id ownerId)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
-
     Arguments.checkIsNotNull (countryId, "countryId");
 
     //@formatter:off
     if (!countryMapGraphModel.existsCountryWith (countryId)) return Result.failure (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
     if (isCountryOwned (countryId)) return Result.failure (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED);
+    //@formatter:on
+
+    countryIdsToOwnerIds.put (countryId, ownerId);
+    return Result.success ();
+  }
+
+  /**
+   * Assigns the Country specified by countryId to the owner specified by ownerId.
+   *
+   * @return success/failure Result with reason
+   */
+  @Override
+  public Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
+                                                                                               final Id ownerId)
+  {
+    Arguments.checkIsNotNull (ownerId, "ownerId");
+    Arguments.checkIsNotNull (countryId, "countryId");
+
+    //@formatter:off
+    if (!countryMapGraphModel.existsCountryWith (countryId)) return Result.failure (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+    if (isCountryOwnedBy (countryId, ownerId)) return Result.failure (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED);
     //@formatter:on
 
     countryIdsToOwnerIds.put (countryId, ownerId);

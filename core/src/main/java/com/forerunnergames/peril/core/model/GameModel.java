@@ -462,10 +462,10 @@ public final class GameModel
 
     final String selectedCountryName = event.getSelectedCountryName ();
 
-    if (!countryMapGraphModel.existsCountryWith (selectedCountryName))
+    if (!playerModel.canRemoveArmiesFromHandOf (currentPlayerId, 1))
     {
       eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (currentPlayer, selectedCountryName,
-              PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+              PlayerSelectCountryResponseDeniedEvent.Reason.PLAYER_ARMY_COUNT_UNDERFLOW));
       // send a new request
       eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;

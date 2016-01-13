@@ -302,6 +302,9 @@ public class GameModelTest
   {
     addMaxPlayers ();
 
+    // add armies to player hands
+    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+
     final Id randomCountry = randomCountry ();
     final String randomCountryName = countryMapGraphModel.nameOf (randomCountry);
 
@@ -334,6 +337,10 @@ public class GameModelTest
   public void testVerifyPlayerCountrySelectionRequestInvalidCountryAlreadyOwned ()
   {
     addMaxPlayers ();
+
+    // add armies to player hands
+    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.SECOND), 1);
 
     final Id country = randomCountry ();
     final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (

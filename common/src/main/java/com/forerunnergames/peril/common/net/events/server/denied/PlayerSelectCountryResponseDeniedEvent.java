@@ -17,8 +17,7 @@ public final class PlayerSelectCountryResponseDeniedEvent extends AbstractDenied
     COUNTRY_DOES_NOT_EXIST,
     COUNTRY_DISABLED,
     NOT_OWNER_OF_COUNTRY,
-    INSUFFICIENT_ARMIES,
-    COUNTRY_NOT_ADJACENT
+    PLAYER_ARMY_COUNT_UNDERFLOW;
   }
 
   private final PlayerPacket player;

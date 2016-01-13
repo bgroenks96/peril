@@ -28,7 +28,11 @@ public interface CountryOwnerModel
    *
    * @return success/failure Result with reason
    */
-  Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId, final Id ownerId);
+  Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
+                                                                                      final Id ownerId);
+
+  Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
+                                                                                        final Id newOwner);
 
   /**
    * Unassigns the Country specified by the given id from its current owner.
