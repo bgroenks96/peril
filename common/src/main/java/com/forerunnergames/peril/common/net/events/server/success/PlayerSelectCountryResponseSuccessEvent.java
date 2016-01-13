@@ -54,7 +54,7 @@ public final class PlayerSelectCountryResponseSuccessEvent extends AbstractPlaye
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | SelectedCountry: [{}]", super.toString (), getPlayer ());
+    return Strings.format ("{} | SelectedCountry: [{}]", super.toString (), selectedCountry);
   }
 
   @RequiredForNetworkSerialization
