@@ -471,6 +471,15 @@ public final class GameModel
       return false;
     }
 
+    if (!countryMapGraphModel.existsCountryWith (selectedCountryName))
+    {
+      eventBus.publish (new PlayerSelectCountryResponseDeniedEvent (currentPlayer, selectedCountryName,
+              PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+      // send a new request
+      eventBus.publish (new PlayerSelectCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      return false;
+    }
+
     final Id countryId = countryMapGraphModel.idOf (selectedCountryName);
 
     final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
