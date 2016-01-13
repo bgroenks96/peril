@@ -54,6 +54,18 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerAr
     return playerOwnedCountries;
   }
 
+  public boolean isPlayerOwnedCountry (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    for (final CountryPacket country : playerOwnedCountries)
+    {
+      if (country.hasName (countryName)) return true;
+    }
+
+    return false;
+  }
+
   @Override
   public String toString ()
   {
