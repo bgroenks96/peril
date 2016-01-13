@@ -6,23 +6,23 @@ import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 public final class SelectCountryEvent implements LocalEvent
 {
-  private final String selectedCountryName;
+  private final String countryName;
 
-  public SelectCountryEvent (final String selectedCountryName)
+  public SelectCountryEvent (final String countryName)
   {
-    Arguments.checkIsNotNull (selectedCountryName, "selectedCountryName");
+    Arguments.checkIsNotNull (countryName, "countryName");
 
-    this.selectedCountryName = selectedCountryName;
+    this.countryName = countryName;
   }
 
-  public String getSelectedCountryName ()
+  public String getCountryName ()
   {
-    return selectedCountryName;
+    return countryName;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Selected Country Name: {}", getClass ().getSimpleName (), selectedCountryName);
+    return Strings.format ("{}: Country Name: {}", getClass ().getSimpleName (), countryName);
   }
 }
