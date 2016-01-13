@@ -194,7 +194,7 @@ public final class MultiplayerController extends ControllerAdapter
     }
 
     respondToServerRequest (PlayerSelectCountryRequestEvent.class,
-                            new PlayerSelectCountryResponseRequestEvent (event.getSelectedCountryName ()));
+                            new PlayerSelectCountryResponseRequestEvent (event.getCountryName ()));
   }
 
   @Handler
