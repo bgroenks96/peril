@@ -203,7 +203,8 @@ public class InitialGamePhaseTest
     final Optional <PlayerSelectCountryResponseDeniedEvent> deniedEvent = firstClient
             .waitForEventCommunication (PlayerSelectCountryResponseDeniedEvent.class);
     assertTrue (deniedEvent.isPresent ());
-    assertEquals (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, deniedEvent.get ().getReason ());
+    assertEquals (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST,
+                  deniedEvent.get ().getReason ());
   }
 
   @Test (dependsOnMethods = { "testManualCountrySelectionReceivesDeniedEventOnInvalidRequest",
@@ -232,7 +233,8 @@ public class InitialGamePhaseTest
     verifyPlayerCountryAssignmentComplete ();
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { RANDOM_SELECTION_TEST_GROUP_NAME })
+  @Test (enabled = false, dependsOnMethods = "testDistributeInitialArmies",
+         groups = { RANDOM_SELECTION_TEST_GROUP_NAME })
   public void testRandomCountrySelection ()
   {
     verifyPlayerCountryAssignmentComplete ();
