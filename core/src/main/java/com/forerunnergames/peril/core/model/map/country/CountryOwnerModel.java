@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.map.country;
 
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Result;
@@ -31,7 +32,7 @@ public interface CountryOwnerModel
   Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
                                                                                       final Id ownerId);
 
-  Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
+  Result <PlayerOccupyCountryResponseDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
                                                                                         final Id newOwner);
 
   /**

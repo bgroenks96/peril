@@ -12,6 +12,8 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractDenied
 {
   public enum Reason
   {
+    COUNTRY_DOES_NOT_EXIST,
+    COUNTRY_ALREADY_OWNED,
     DELTA_ARMY_COUNT_BELOW_MIN,
     DELTA_ARMY_COUNT_EXCEEDS_MAX
   }

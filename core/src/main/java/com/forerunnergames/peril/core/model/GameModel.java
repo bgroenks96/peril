@@ -496,9 +496,9 @@ public final class GameModel
     playerModel.removeArmiesFromHandOf (currentPlayerId, 1);
 
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
+    eventBus.publish (new DefaultPlayerArmiesChangedEvent (updatedPlayer, -1));
     eventBus.publish (new PlayerSelectCountryResponseSuccessEvent (updatedPlayer,
             countryMapGraphModel.countryPacketWith (countryId)));
-    eventBus.publish (new DefaultPlayerArmiesChangedEvent (updatedPlayer, -1));
 
     return true;
   }
@@ -641,11 +641,11 @@ public final class GameModel
     }
 
     final ImmutableMap <CountryPacket, Integer> countriesToDeltaArmyCounts = builder.build ();
-    eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
     for (final CountryPacket country : countriesToDeltaArmyCounts.keySet ())
     {
       eventBus.publish (new DefaultCountryArmiesChangedEvent (country, countriesToDeltaArmyCounts.get (country)));
     }
+    eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
 
     return true;
   }
@@ -949,6 +949,15 @@ public final class GameModel
     countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
     countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
 
+    final Result <PlayerOccupyCountryResponseDeniedEvent.Reason> result;
+    result = countryOwnerModel.requestToReassignCountryOwner (destCountryId, getCurrentPlayerId ());
+    if (result.failed ())
+    {
+      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player, result.getFailureReason ()));
+      eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      return false;
+    }
+
     final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
     final CountryPacket updatedDestCountry = countryMapGraphModel.countryPacketWith (destCountryId);
     eventBus.publish (new DefaultCountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
@@ -1060,9 +1069,15 @@ public final class GameModel
       return false;
     }
 
-    eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket,
-            countryMapGraphModel.countryPacketWith (sourceCountryId),
-            countryMapGraphModel.countryPacketWith (targetCountryId), fortifyArmyCount));
+    countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, fortifyArmyCount);
+    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
+    eventBus.publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
+    countryArmyModel.requestToAddArmiesToCountry (targetCountryId, fortifyArmyCount);
+    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+    eventBus.publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, fortifyArmyCount));
+
+    eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket, sourceCountryPacket,
+            targetCountryPacket, fortifyArmyCount));
 
     return true;
   }

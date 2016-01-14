@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model.map.country;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -118,15 +119,15 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
    * @return success/failure Result with reason
    */
   @Override
-  public Result <PlayerSelectCountryResponseDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
+  public Result <PlayerOccupyCountryResponseDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
                                                                                                final Id ownerId)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
     Arguments.checkIsNotNull (countryId, "countryId");
 
     //@formatter:off
-    if (!countryMapGraphModel.existsCountryWith (countryId)) return Result.failure (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
-    if (isCountryOwnedBy (countryId, ownerId)) return Result.failure (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED);
+    if (!countryMapGraphModel.existsCountryWith (countryId)) return Result.failure (PlayerOccupyCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+    if (isCountryOwnedBy (countryId, ownerId)) return Result.failure (PlayerOccupyCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED);
     //@formatter:on
 
     countryIdsToOwnerIds.put (countryId, ownerId);

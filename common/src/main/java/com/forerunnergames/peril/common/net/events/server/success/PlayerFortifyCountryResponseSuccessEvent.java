@@ -13,7 +13,6 @@ import com.google.common.base.Optional;
 public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlayerEvent
         implements PlayerResponseSuccessEvent
 {
-  private final PlayerPacket player;
   private final Optional <CountryPacket> sourceCountry;
   private final Optional <CountryPacket> targetCountry;
   private final int fortifyArmyCount;
@@ -23,12 +22,12 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
                                                    final CountryPacket targetCountry,
                                                    final int fortifyArmyCount)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
+
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (targetCountry, "targetCountry");
     Arguments.checkIsNotNegative (fortifyArmyCount, "fortifyArmyCount");
 
-    this.player = player;
     this.sourceCountry = Optional.of (sourceCountry);
     this.targetCountry = Optional.of (targetCountry);
     this.fortifyArmyCount = fortifyArmyCount;
@@ -36,9 +35,9 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
 
   public PlayerFortifyCountryResponseSuccessEvent (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
 
-    this.player = player;
+    Arguments.checkIsNotNull (player, "player");
 
     sourceCountry = Optional.absent ();
     targetCountry = Optional.absent ();
@@ -66,12 +65,6 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
   }
 
   @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
   public String toString ()
   {
     return Strings.format ("{}: SourceCountry: {} | TargetCountry: {} | FortifyArmyCount: {}", sourceCountry,
@@ -81,7 +74,6 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
   @RequiredForNetworkSerialization
   private PlayerFortifyCountryResponseSuccessEvent ()
   {
-    player = null;
     sourceCountry = null;
     targetCountry = null;
     fortifyArmyCount = 0;
