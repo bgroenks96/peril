@@ -6,8 +6,8 @@ import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
@@ -113,7 +113,7 @@ public final class DebugEventGenerator
   public void generatePlayerClaimCountryResponseSuccessEvent ()
   {
     eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createPlayer (),
-            DebugPackets.from (getRandomCountryName ())));
+            DebugPackets.from (getRandomCountryName ()), 1));
   }
 
   public void resetPlayers ()

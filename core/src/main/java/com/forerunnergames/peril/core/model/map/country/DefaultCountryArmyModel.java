@@ -1,8 +1,7 @@
 package com.forerunnergames.peril.core.model.map.country;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
@@ -24,7 +23,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
   }
 
   @Override
-  public Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> requestToAddArmiesToCountry (final Id countryId, final int armyCount)
+  public Result <Reason> requestToAddArmiesToCountry (final Id countryId, final int armyCount)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
@@ -32,7 +31,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
     if (country.getArmyCount () + armyCount > rules.getMaxArmiesOnCountry ())
     {
-      return Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_ARMY_COUNT_OVERFLOW);
+      return Result.failure (Reason.COUNTRY_ARMY_COUNT_OVERFLOW);
     }
 
     country.addArmies (armyCount);
@@ -41,7 +40,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
   }
 
   @Override
-  public Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> requestToRemoveArmiesFromCountry (final Id countryId, final int armyCount)
+  public Result <Reason> requestToRemoveArmiesFromCountry (final Id countryId, final int armyCount)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
@@ -49,7 +48,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
     if (country.getArmyCount () - armyCount < rules.getMinArmiesOnCountry ())
     {
-      return Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
+      return Result.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
     }
 
     country.removeArmies (armyCount);

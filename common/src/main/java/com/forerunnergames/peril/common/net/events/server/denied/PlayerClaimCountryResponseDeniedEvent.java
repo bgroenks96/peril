@@ -1,15 +1,12 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerClaimCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
-        implements PlayerDeniedEvent <Reason>
+public final class PlayerClaimCountryResponseDeniedEvent extends AbstractCountryStateChangeDeniedEvent
 {
   private final PlayerPacket player;
   private final String claimedCountryName;
@@ -25,14 +22,6 @@ public final class PlayerClaimCountryResponseDeniedEvent extends AbstractDeniedE
 
     this.player = player;
     this.claimedCountryName = claimedCountryName;
-  }
-
-  public enum Reason
-  {
-    COUNTRY_ALREADY_CLAIMED,
-    COUNTRY_DOES_NOT_EXIST,
-    COUNTRY_DISABLED,
-    PLAYER_ARMY_COUNT_UNDERFLOW;
   }
 
   @Override

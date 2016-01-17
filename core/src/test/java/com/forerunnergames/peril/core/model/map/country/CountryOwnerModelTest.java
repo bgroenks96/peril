@@ -95,7 +95,7 @@ public class CountryOwnerModelTest
 
     final Result <PlayerClaimCountryResponseDeniedEvent.Reason> result;
     result = modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId_2);
-    assertTrue (result.failedBecauseOf (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_CLAIMED));
+    assertTrue (result.failedBecauseOf (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED));
   }
 
   @Test

@@ -6,23 +6,24 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
@@ -37,20 +38,20 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerLea
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
@@ -465,7 +466,7 @@ public final class GameModel
     if (!playerModel.canRemoveArmiesFromHandOf (currentPlayerId, 1))
     {
       eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
-              PlayerClaimCountryResponseDeniedEvent.Reason.PLAYER_ARMY_COUNT_UNDERFLOW));
+              PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
       // send a new request
       eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
@@ -482,12 +483,23 @@ public final class GameModel
 
     final Id countryId = countryMapGraphModel.idOf (claimedCountryName);
 
-    final Result <PlayerClaimCountryResponseDeniedEvent.Reason> result;
-    result = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
-    if (result.failed ())
+    final Result <AbstractCountryStateChangeDeniedEvent.Reason> res1;
+    res1 = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
+    if (res1.failed ())
     {
       eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
-              result.getFailureReason ()));
+              res1.getFailureReason ()));
+      // send a new request
+      eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      return false;
+    }
+
+    final Result <AbstractCountryStateChangeDeniedEvent.Reason> res2;
+    res2 = countryArmyModel.requestToAddArmiesToCountry (countryId, 1);
+    if (res2.failed ())
+    {
+      eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
+              res2.getFailureReason ()));
       // send a new request
       eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
@@ -496,9 +508,8 @@ public final class GameModel
     playerModel.removeArmiesFromHandOf (currentPlayerId, 1);
 
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
-    eventBus.publish (new DefaultPlayerArmiesChangedEvent (updatedPlayer, -1));
     eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (updatedPlayer,
-            countryMapGraphModel.countryPacketWith (countryId)));
+            countryMapGraphModel.countryPacketWith (countryId), 1));
 
     return true;
   }
@@ -931,7 +942,7 @@ public final class GameModel
     if (deltaArmyCount < minDeltaArmyCount)
     {
       eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player,
-              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_BELOW_MIN));
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW));
       eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
     }
@@ -939,7 +950,7 @@ public final class GameModel
     if (deltaArmyCount > rules.getMaxOccupyArmyCount (sourceCountry.getArmyCount ()))
     {
       eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player,
-              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_EXCEEDS_MAX));
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
       eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
     }

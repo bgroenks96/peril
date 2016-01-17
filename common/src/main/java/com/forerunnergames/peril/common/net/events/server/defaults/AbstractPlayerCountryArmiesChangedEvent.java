@@ -6,6 +6,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public abstract class AbstractPlayerCountryArmiesChangedEvent
@@ -18,13 +19,11 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
 
   protected AbstractPlayerCountryArmiesChangedEvent (final PlayerPacket player,
                                                      final CountryPacket country,
-                                                     final int playerDeltaArmyCount,
-                                                     final int countryDeltaArmyCount)
+                                                     @AllowNegative final int playerDeltaArmyCount,
+                                                     @AllowNegative final int countryDeltaArmyCount)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (country, "country");
-    Arguments.checkIsNotNegative (playerDeltaArmyCount, "playerDeltaArmyCount");
-    Arguments.checkIsNotNegative (countryDeltaArmyCount, "countryDeltaArmyCount");
 
     this.player = player;
     this.country = country;
@@ -83,7 +82,7 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
   }
 
   @RequiredForNetworkSerialization
-  private AbstractPlayerCountryArmiesChangedEvent ()
+  protected AbstractPlayerCountryArmiesChangedEvent ()
   {
     player = null;
     country = null;
