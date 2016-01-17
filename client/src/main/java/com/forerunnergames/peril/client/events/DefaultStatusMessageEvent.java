@@ -42,6 +42,6 @@ public final class DefaultStatusMessageEvent implements StatusMessageEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("%{}: Message: {} | Recipients: {}", getClass ().getSimpleName (), message, recipients);
+    return Strings.format ("{}: Message: {} | Recipients: {}", getClass ().getSimpleName (), message, recipients);
   }
 }
