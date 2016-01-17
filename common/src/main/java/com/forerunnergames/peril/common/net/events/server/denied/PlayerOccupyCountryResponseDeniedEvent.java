@@ -10,14 +10,6 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
         implements PlayerResponseDeniedEvent <Reason>
 {
-  public enum Reason
-  {
-    COUNTRY_DOES_NOT_EXIST,
-    COUNTRY_ALREADY_OWNED,
-    DELTA_ARMY_COUNT_BELOW_MIN,
-    DELTA_ARMY_COUNT_EXCEEDS_MAX
-  }
-
   private final PlayerPacket player;
 
   public PlayerOccupyCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
@@ -25,6 +17,14 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractDenied
     super (reason);
 
     this.player = player;
+  }
+
+  public enum Reason
+  {
+    COUNTRY_DOES_NOT_EXIST,
+    COUNTRY_ALREADY_OWNED,
+    DELTA_ARMY_COUNT_BELOW_MIN,
+    DELTA_ARMY_COUNT_EXCEEDS_MAX
   }
 
   @Override
@@ -36,7 +36,13 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractDenied
   @Override
   public String getPlayerName ()
   {
-    return getPlayer ().getName ();
+    return player.getName ();
+  }
+
+  @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
   }
 
   @Override

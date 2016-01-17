@@ -44,7 +44,13 @@ public final class PlayerClaimCountryResponseDeniedEvent extends AbstractDeniedE
   @Override
   public String getPlayerName ()
   {
-    return getPlayer ().getName ();
+    return player.getName ();
+  }
+
+  @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
   }
 
   @Override

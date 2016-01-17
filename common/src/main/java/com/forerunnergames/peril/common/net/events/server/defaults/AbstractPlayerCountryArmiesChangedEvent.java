@@ -45,6 +45,12 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
   }
 
   @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
+  }
+
+  @Override
   public CountryPacket getCountry ()
   {
     return country;

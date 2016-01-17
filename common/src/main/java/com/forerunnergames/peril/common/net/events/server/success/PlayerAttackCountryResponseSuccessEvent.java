@@ -31,6 +31,12 @@ public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResp
     return getPlayer ().getName ();
   }
 
+  @Override
+  public String getPlayerColor ()
+  {
+    return getPlayer ().getColor ();
+  }
+
   public BattleResultPacket getBattleResult ()
   {
     return result;

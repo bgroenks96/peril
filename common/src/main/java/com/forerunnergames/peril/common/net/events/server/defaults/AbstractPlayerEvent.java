@@ -17,6 +17,12 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
     this.player = player;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractPlayerEvent ()
+  {
+    player = null;
+  }
+
   @Override
   public PlayerPacket getPlayer ()
   {
@@ -30,14 +36,14 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   }
 
   @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractPlayerEvent ()
-  {
-    player = null;
   }
 }

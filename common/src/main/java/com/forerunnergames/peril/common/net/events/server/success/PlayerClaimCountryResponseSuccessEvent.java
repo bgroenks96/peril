@@ -46,11 +46,6 @@ public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayer
     return getPlayer ();
   }
 
-  public String getPlayerColor ()
-  {
-    return getPlayer ().getColor ();
-  }
-
   @Override
   public String toString ()
   {

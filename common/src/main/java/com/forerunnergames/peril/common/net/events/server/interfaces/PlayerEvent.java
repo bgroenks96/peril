@@ -7,4 +7,6 @@ public interface PlayerEvent
   PlayerPacket getPlayer ();
 
   String getPlayerName ();
+
+  String getPlayerColor ();
 }

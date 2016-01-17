@@ -13,6 +13,15 @@ public class PlayerFortifyCountryResponseDeniedEvent extends AbstractDeniedEvent
 {
   private final PlayerPacket player;
 
+  public PlayerFortifyCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  {
+    super (reason);
+
+    Arguments.checkIsNotNull (player, "player");
+
+    this.player = player;
+  }
+
   public enum Reason
   {
     SOURCE_COUNTRY_DOES_NOT_EXIST,
@@ -24,15 +33,6 @@ public class PlayerFortifyCountryResponseDeniedEvent extends AbstractDeniedEvent
     FORTIFY_ARMY_COUNT_UNDERFLOW;
   }
 
-  public PlayerFortifyCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
-  {
-    super (reason);
-
-    Arguments.checkIsNotNull (player, "player");
-
-    this.player = player;
-  }
-
   @Override
   public PlayerPacket getPlayer ()
   {
@@ -42,7 +42,13 @@ public class PlayerFortifyCountryResponseDeniedEvent extends AbstractDeniedEvent
   @Override
   public String getPlayerName ()
   {
-    return getPlayer ().getName ();
+    return player.getName ();
+  }
+
+  @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
   }
 
   @Override

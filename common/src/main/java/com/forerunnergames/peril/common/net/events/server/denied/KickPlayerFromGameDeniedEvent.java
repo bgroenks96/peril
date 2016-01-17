@@ -6,6 +6,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayer
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <String>, KickEvent
@@ -35,6 +36,12 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   }
 
   @Override
+  public String getPlayerColor ()
+  {
+    return getPlayer ().getColor ();
+  }
+
+  @Override
   public String getReason ()
   {
     return playerDeniedEvent.getReason ();
@@ -49,7 +56,7 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), kickEvent, playerDeniedEvent);
+    return Strings.format ("{}: {} | {}", getClass ().getSimpleName (), kickEvent, playerDeniedEvent);
   }
 
   @RequiredForNetworkSerialization

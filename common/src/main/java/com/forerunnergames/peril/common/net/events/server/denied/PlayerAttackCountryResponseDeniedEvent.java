@@ -12,6 +12,13 @@ public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDenied
 {
   private final PlayerPacket player;
 
+  public PlayerAttackCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  {
+    super (reason);
+
+    this.player = player;
+  }
+
   public enum Reason
   {
     SOURCE_COUNTRY_DOES_NOT_EXIST,
@@ -23,13 +30,6 @@ public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDenied
     COUNTRIES_NOT_ADJACENT;
   }
 
-  public PlayerAttackCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
-  {
-    super (reason);
-
-    this.player = player;
-  }
-
   @Override
   public PlayerPacket getPlayer ()
   {
@@ -39,7 +39,13 @@ public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDenied
   @Override
   public String getPlayerName ()
   {
-    return getPlayer ().getName ();
+    return player.getName ();
+  }
+
+  @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
   }
 
   @Override

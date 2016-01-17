@@ -11,14 +11,6 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractDeniedEvent <Reason>
         implements PlayerResponseDeniedEvent <Reason>
 {
-  public enum Reason
-  {
-    TRADE_IN_NOT_ALLOWED,
-    CARDS_NOT_IN_HAND,
-    TOO_MANY_CARDS_IN_HAND,
-    INVALID_CARD_SET
-  }
-
   private final PlayerPacket player;
 
   public PlayerTradeInCardsResponseDeniedEvent (final PlayerPacket player, final Reason reason)
@@ -30,6 +22,14 @@ public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractDeniedE
     this.player = player;
   }
 
+  public enum Reason
+  {
+    TRADE_IN_NOT_ALLOWED,
+    CARDS_NOT_IN_HAND,
+    TOO_MANY_CARDS_IN_HAND,
+    INVALID_CARD_SET
+  }
+
   @Override
   public PlayerPacket getPlayer ()
   {
@@ -39,7 +39,13 @@ public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractDeniedE
   @Override
   public String getPlayerName ()
   {
-    return getPlayer ().getName ();
+    return player.getName ();
+  }
+
+  @Override
+  public String getPlayerColor ()
+  {
+    return player.getColor ();
   }
 
   @Override
