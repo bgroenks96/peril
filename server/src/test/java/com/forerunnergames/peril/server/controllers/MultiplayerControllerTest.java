@@ -36,12 +36,12 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerReque
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
@@ -595,7 +595,7 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testValidPlayerSelectCountryResponseRequestEvent ()
+  public void testValidPlayerClaimCountryResponseRequestEvent ()
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
@@ -605,21 +605,21 @@ public class MultiplayerControllerTest
 
     mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
-    // Request that the player/client select an available country.
-    eventBus.publish (new PlayerSelectCountryRequestEvent (clientPlayer.player (), ImmutableSet.<CountryPacket> of ()));
-    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerSelectCountryRequestEvent.class));
+    // Request that the player/client claim an available country.
+    eventBus.publish (new PlayerClaimCountryRequestEvent (clientPlayer.player (), ImmutableSet.<CountryPacket> of ()));
+    verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
-    // Simulate player/client selecting a country.
-    final Event event = new PlayerSelectCountryResponseRequestEvent ("Test Country 1");
+    // Simulate player/client claiming a country.
+    final Event event = new PlayerClaimCountryResponseRequestEvent ("Test Country 1");
     communicateEventFromClient (event, clientPlayer.client ());
 
-    // Verify that player/client's country selection was published.
-    assertEventFiredExactlyOnce (PlayerSelectCountryResponseRequestEvent.class);
+    // Verify that player/client's country claim was published.
+    assertEventFiredExactlyOnce (PlayerClaimCountryResponseRequestEvent.class);
     assertEventFiredExactlyOnce (event);
   }
 
   @Test
-  public void testInvalidPlayerSelectCountryResponseRequestEventIgnoredBecauseClientIsNotAPlayer ()
+  public void testInvalidPlayerClaimCountryResponseRequestEventIgnoredBecauseClientIsNotAPlayer ()
   {
     // Create a game server with manual initial country assignment.
     mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL).build (eventBus);
@@ -628,16 +628,16 @@ public class MultiplayerControllerTest
     final PlayerPacket player = mock (PlayerPacket.class);
     when (player.getName ()).thenReturn ("Test Player 1");
 
-    // Simulate player/client selecting a country.
-    final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"),
+    // Simulate player/client claiming a country.
+    final Event event = communicateEventFromClient (new PlayerClaimCountryResponseRequestEvent ("Test Country 1"),
                                                     client);
 
-    // Verify that player/client's country selection was NOT published.
+    // Verify that player/client's country claim was NOT published.
     assertLastEventWas (event);
   }
 
   @Test
-  public void testInvalidPlayerSelectCountryResponseRequestEventBecauseWrongClient ()
+  public void testInvalidPlayerClaimCountryResponseRequestEventBecauseWrongClient ()
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
@@ -646,22 +646,22 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple first = addClientAndMockPlayerToGameServer ("Test Player 1", mpc);
     final ClientPlayerTuple second = addClientAndMockPlayerToGameServer ("Test Player 2", mpc);
 
-    // Request that the player/client select an available country.
-    eventBus.publish (new PlayerSelectCountryRequestEvent (first.player (), ImmutableSet.<CountryPacket> of ()));
-    verify (mockClientCommunicator).sendTo (eq (first.client ()), isA (PlayerSelectCountryRequestEvent.class));
+    // Request that the player/client claim an available country.
+    eventBus.publish (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet.<CountryPacket> of ()));
+    verify (mockClientCommunicator).sendTo (eq (first.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
 
-    // Simulate WRONG player/client selecting a country.
-    final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"),
+    // Simulate WRONG player/client claiming a country.
+    final Event event = communicateEventFromClient (new PlayerClaimCountryResponseRequestEvent ("Test Country 1"),
                                                     second.client ());
 
-    // Verify that player/client's country selection was NOT published.
+    // Verify that player/client's country claim was NOT published.
     assertLastEventWas (event);
   }
 
   @Test
-  public void testInvalidPlayerSelectCountryResponseRequestEventBecauseWrongClientAfterMultipleRequests ()
+  public void testInvalidPlayerClaimCountryResponseRequestEventBecauseWrongClientAfterMultipleRequests ()
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
@@ -672,76 +672,76 @@ public class MultiplayerControllerTest
 
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
 
-    // Request that the first player/client select an available country.
-    final Event selectCountryRequestEvent1 = new PlayerSelectCountryRequestEvent (first.player (),
+    // Request that the first player/client claim an available country.
+    final Event claimCountryRequestEvent1 = new PlayerClaimCountryRequestEvent (first.player (),
             ImmutableSet.<CountryPacket> of ());
-    eventBus.publish (selectCountryRequestEvent1);
-    verify (mockClientCommunicator).sendTo (first.client (), selectCountryRequestEvent1);
+    eventBus.publish (claimCountryRequestEvent1);
+    verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent1);
     // Make sure that the request was not sent to the second player/client.
-    verify (mockClientCommunicator, never ()).sendTo (second.client (), selectCountryRequestEvent1);
+    verify (mockClientCommunicator, never ()).sendTo (second.client (), claimCountryRequestEvent1);
 
-    // Simulate & verify first player/client selecting a country.
-    final Event selectCountryResponseRequestEvent1 = new PlayerSelectCountryResponseRequestEvent ("Test Country 1");
-    communicateEventFromClient (selectCountryResponseRequestEvent1, first.client ());
-    assertLastEventWas (selectCountryResponseRequestEvent1);
+    // Simulate & verify first player/client claiming a country.
+    final Event claimCountryResponseRequestEvent1 = new PlayerClaimCountryResponseRequestEvent ("Test Country 1");
+    communicateEventFromClient (claimCountryResponseRequestEvent1, first.client ());
+    assertLastEventWas (claimCountryResponseRequestEvent1);
 
-    // Request that the second player/client select an available country.
-    final Event selectCountryRequestEvent2 = new PlayerSelectCountryRequestEvent (second.player (),
+    // Request that the second player/client claim an available country.
+    final Event claimCountryRequestEvent2 = new PlayerClaimCountryRequestEvent (second.player (),
             ImmutableSet.<CountryPacket> of ());
-    eventBus.publish (selectCountryRequestEvent2);
-    verify (mockClientCommunicator).sendTo (second.client (), selectCountryRequestEvent2);
+    eventBus.publish (claimCountryRequestEvent2);
+    verify (mockClientCommunicator).sendTo (second.client (), claimCountryRequestEvent2);
     // Make sure that the request was not sent to the first player/client.
-    verify (mockClientCommunicator, never ()).sendTo (first.client (), selectCountryRequestEvent2);
+    verify (mockClientCommunicator, never ()).sendTo (first.client (), claimCountryRequestEvent2);
 
-    // Simulate & verify second player/client selecting a country.
-    final Event selectCountryResponseRequestEvent2 = new PlayerSelectCountryResponseRequestEvent ("Test Country 2");
-    communicateEventFromClient (selectCountryResponseRequestEvent2, second.client ());
-    assertLastEventWas (selectCountryResponseRequestEvent2);
+    // Simulate & verify second player/client claiming a country.
+    final Event claimCountryResponseRequestEvent2 = new PlayerClaimCountryResponseRequestEvent ("Test Country 2");
+    communicateEventFromClient (claimCountryResponseRequestEvent2, second.client ());
+    assertLastEventWas (claimCountryResponseRequestEvent2);
 
-    // Request that the first player/client select an available country.
-    final Event selectCountryRequestEvent3 = new PlayerSelectCountryRequestEvent (first.player (),
+    // Request that the first player/client claim an available country.
+    final Event claimCountryRequestEvent3 = new PlayerClaimCountryRequestEvent (first.player (),
             ImmutableSet.<CountryPacket> of ());
-    eventBus.publish (selectCountryRequestEvent3);
-    verify (mockClientCommunicator).sendTo (first.client (), selectCountryRequestEvent3);
+    eventBus.publish (claimCountryRequestEvent3);
+    verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent3);
     // Make sure that the request was not sent to the second player/client.
-    verify (mockClientCommunicator, never ()).sendTo (second.client (), selectCountryRequestEvent3);
+    verify (mockClientCommunicator, never ()).sendTo (second.client (), claimCountryRequestEvent3);
 
-    // Simulate & verify first player/client selecting a country.
-    final Event selectCountryResponseRequestEvent3 = new PlayerSelectCountryResponseRequestEvent ("Test Country 3");
-    communicateEventFromClient (selectCountryResponseRequestEvent3, first.client ());
-    assertLastEventWas (selectCountryResponseRequestEvent3);
+    // Simulate & verify first player/client claiming a country.
+    final Event claimCountryResponseRequestEvent3 = new PlayerClaimCountryResponseRequestEvent ("Test Country 3");
+    communicateEventFromClient (claimCountryResponseRequestEvent3, first.client ());
+    assertLastEventWas (claimCountryResponseRequestEvent3);
 
-    // Request that the second player/client select an available country.
-    final Event selectCountryRequestEvent4 = new PlayerSelectCountryRequestEvent (second.player (),
+    // Request that the second player/client claim an available country.
+    final Event claimCountryRequestEvent4 = new PlayerClaimCountryRequestEvent (second.player (),
             ImmutableSet.<CountryPacket> of ());
-    eventBus.publish (selectCountryRequestEvent4);
-    verify (mockClientCommunicator).sendTo (second.client (), selectCountryRequestEvent4);
+    eventBus.publish (claimCountryRequestEvent4);
+    verify (mockClientCommunicator).sendTo (second.client (), claimCountryRequestEvent4);
     // Make sure that the request was not sent to the first player/client.
-    verify (mockClientCommunicator, never ()).sendTo (first.client (), selectCountryRequestEvent4);
+    verify (mockClientCommunicator, never ()).sendTo (first.client (), claimCountryRequestEvent4);
 
-    // Simulate & verify second player/client selecting a country.
-    final Event selectCountryResponseRequestEvent4 = new PlayerSelectCountryResponseRequestEvent ("Test Country 4");
-    communicateEventFromClient (selectCountryResponseRequestEvent4, second.client ());
-    assertLastEventWas (selectCountryResponseRequestEvent4);
+    // Simulate & verify second player/client claiming a country.
+    final Event claimCountryResponseRequestEvent4 = new PlayerClaimCountryResponseRequestEvent ("Test Country 4");
+    communicateEventFromClient (claimCountryResponseRequestEvent4, second.client ());
+    assertLastEventWas (claimCountryResponseRequestEvent4);
 
-    // Request that the first player/client select an available country.
-    final Event selectCountryRequestEvent5 = new PlayerSelectCountryRequestEvent (first.player (),
+    // Request that the first player/client claim an available country.
+    final Event claimCountryRequestEvent5 = new PlayerClaimCountryRequestEvent (first.player (),
             ImmutableSet.<CountryPacket> of ());
-    eventBus.publish (selectCountryRequestEvent5);
-    verify (mockClientCommunicator).sendTo (first.client (), selectCountryRequestEvent5);
+    eventBus.publish (claimCountryRequestEvent5);
+    verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent5);
     // Make sure that the request was not sent to the second player/client.
-    verify (mockClientCommunicator, never ()).sendTo (second.client (), selectCountryRequestEvent5);
+    verify (mockClientCommunicator, never ()).sendTo (second.client (), claimCountryRequestEvent5);
 
-    // Simulate WRONG (second) player/client selecting a country.
-    final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 5"),
+    // Simulate WRONG (second) player/client claiming a country.
+    final Event event = communicateEventFromClient (new PlayerClaimCountryResponseRequestEvent ("Test Country 5"),
                                                     second.client ());
 
-    // Verify that player/client's country selection was NOT published.
+    // Verify that player/client's country claim was NOT published.
     assertLastEventWas (event);
   }
 
   @Test
-  public void testInvalidPlayerSelectCountryResponseRequestEventBecauseNoPriorRequestSentFromServer ()
+  public void testInvalidPlayerClaimCountryResponseRequestEventBecauseNoPriorRequestSentFromServer ()
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
@@ -751,11 +751,11 @@ public class MultiplayerControllerTest
 
     mockCoreCommunicatorPlayersWith (first.player ());
 
-    // Simulate player/client selecting a country BEFORE receiving a request to do so from the server.
-    final Event event = communicateEventFromClient (new PlayerSelectCountryResponseRequestEvent ("Test Country 1"),
+    // Simulate player/client claiming a country BEFORE receiving a request to do so from the server.
+    final Event event = communicateEventFromClient (new PlayerClaimCountryResponseRequestEvent ("Test Country 1"),
                                                     first.client ());
 
-    // Verify that player/client's country selection was NOT published.
+    // Verify that player/client's country claim was NOT published.
     assertLastEventWas (event);
   }
 

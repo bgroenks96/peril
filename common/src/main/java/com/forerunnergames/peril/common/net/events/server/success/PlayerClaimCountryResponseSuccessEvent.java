@@ -10,28 +10,28 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.base.Optional;
 
-public final class PlayerSelectCountryResponseSuccessEvent extends AbstractPlayerEvent
+public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayerEvent
         implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
-  private final CountryPacket selectedCountry;
+  private final CountryPacket claimedCountry;
 
-  public PlayerSelectCountryResponseSuccessEvent (final PlayerPacket player, final CountryPacket selectedCountry)
+  public PlayerClaimCountryResponseSuccessEvent (final PlayerPacket player, final CountryPacket claimedCountry)
   {
     super (player);
 
-    this.selectedCountry = selectedCountry;
+    this.claimedCountry = claimedCountry;
   }
 
   @Override
   public CountryPacket getCountry ()
   {
-    return selectedCountry;
+    return claimedCountry;
   }
 
   @Override
   public String getCountryName ()
   {
-    return selectedCountry.getName ();
+    return claimedCountry.getName ();
   }
 
   @Override
@@ -54,12 +54,12 @@ public final class PlayerSelectCountryResponseSuccessEvent extends AbstractPlaye
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | SelectedCountry: [{}]", super.toString (), selectedCountry);
+    return Strings.format ("{} | Claimed Country: [{}]", super.toString (), claimedCountry);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerSelectCountryResponseSuccessEvent ()
+  private PlayerClaimCountryResponseSuccessEvent ()
   {
-    selectedCountry = null;
+    claimedCountry = null;
   }
 }

@@ -348,7 +348,7 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'd':
       {
-        eventGenerator.generatePlayerSelectCountryResponseSuccessEvent ();
+        eventGenerator.generatePlayerClaimCountryResponseSuccessEvent ();
 
         return true;
       }

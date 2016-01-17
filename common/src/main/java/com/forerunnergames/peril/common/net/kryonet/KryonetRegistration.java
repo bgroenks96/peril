@@ -12,7 +12,7 @@ import com.forerunnergames.peril.common.map.DefaultMapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -90,7 +90,7 @@ public final class KryonetRegistration
           PersonIdentity.class,
           PlayerJoinGameDeniedEvent.Reason.class,
           PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
-          PlayerSelectCountryResponseDeniedEvent.Reason.class,
+          PlayerClaimCountryResponseDeniedEvent.Reason.class,
           UnknownClientConfiguration.class,
           UnknownServerConfiguration.class);
   // @formatter:on

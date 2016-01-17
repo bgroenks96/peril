@@ -7,7 +7,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
@@ -18,9 +18,9 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerLea
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent;
+import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
@@ -161,13 +161,13 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final BeginManualCountrySelectionEvent event)
+  public void onEvent (final BeginManualCountryAssignmentEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onBeginManualCountrySelectionEvent (event);
+    context.onBeginManualCountryAssignmentEvent (event);
   }
 
   @Handler
@@ -181,23 +181,23 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerSelectCountryResponseRequestEvent event)
+  public void onEvent (final PlayerClaimCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerSelectCountryResponseRequestEvent (event);
+    context.onPlayerClaimCountryResponseRequestEvent (event);
   }
 
   @Handler
-  public void onEvent (final PlayerSelectCountryResponseSuccessEvent event)
+  public void onEvent (final PlayerClaimCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerSelectCountryResponseSuccessEvent (event);
+    context.onPlayerClaimCountryResponseSuccessEvent (event);
   }
 
   @Handler

@@ -5,7 +5,6 @@ import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmy
 import static com.forerunnergames.peril.common.net.events.EventFluency.hasAuthorFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.selectedCountryNameFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.withAuthorNameFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.withMessageFrom;
@@ -82,7 +81,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -516,7 +515,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final PlayerSelectCountryResponseSuccessEvent event)
+  void onEvent (final PlayerClaimCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -527,7 +526,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMapActor.setCountryState (selectedCountryNameFrom (event), CountryPrimaryImageState
+        playMapActor.setCountryState (event.getCountryName (), CountryPrimaryImageState
                 .valueOf (Strings.toCase (playerColorFrom (event), LetterCase.UPPER)));
       }
     });

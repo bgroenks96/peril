@@ -2,8 +2,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
 <suite name="Peril Classic Mode Core Functionality Tests">
-  <test name="Initial Game Phase Test (Random Country Selection)" time-out="45000">
-    <parameter name="selectionMode" value="random" />
+  <test name="Initial Game Phase Test (Random Country Assignment)" time-out="45000">
+    <parameter name="countryAssignmentMode" value="random" />
     <groups>
       <run>
         <include name="func.init" />
@@ -14,8 +14,8 @@
       <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestFactory" />
     </classes>
   </test>
-  <test name="Initial Game Phase Test (Manual Country Selection)" time-out="45000">
-    <parameter name="selectionMode" value="manual" />
+  <test name="Initial Game Phase Test (Manual Country Assignment)" time-out="45000">
+    <parameter name="countryAssignmentMode" value="manual" />
     <groups>
       <run>
         <include name="func.init" />

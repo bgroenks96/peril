@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 
 public class DedicatedGameSession implements TestSession
 {
-  private static final Logger log = LoggerFactory.getLogger (DedicatedGameSession.class);
   public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
-  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (NetworkSettings.EXTERNAL_IP_RESOLVER_URL,
-                                                                                                      NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
+  private static final Logger log = LoggerFactory.getLogger (DedicatedGameSession.class);
+  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
+          NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
   private final NetworkPortPool portPool = NetworkPortPool.getInstance ();
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
@@ -120,14 +120,6 @@ public class DedicatedGameSession implements TestSession
     return clientPool;
   }
 
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
-                           getClass ().getSimpleName (), sessionName, externalServerAddress, serverPort,
-                           gameRules.getInitialCountryAssignment ());
-  }
-
   private void initializeServer ()
   {
     gameModel = GameModel.builder (gameRules).eventBus (eventBus).build ();
@@ -144,5 +136,13 @@ public class DedicatedGameSession implements TestSession
   {
     log.trace ("Connecting {} clients to server [{}]", gameRules.getPlayerLimit (), serverPort);
     clientPool.connectNew (externalServerAddress, serverPort, gameRules.getPlayerLimit ());
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Name: {} | Server Address: {}:{} | Country Assignment Mode: {}",
+                           getClass ().getSimpleName (), sessionName, externalServerAddress, serverPort,
+                           gameRules.getInitialCountryAssignment ());
   }
 }

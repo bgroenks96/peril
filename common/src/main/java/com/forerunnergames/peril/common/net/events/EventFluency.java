@@ -2,7 +2,6 @@ package com.forerunnergames.peril.common.net.events;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.MessageEvent;
@@ -14,7 +13,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -188,25 +187,11 @@ public final class EventFluency
     return event.getCountryDeltaArmyCount ();
   }
 
-  public static String playerColorFrom (final PlayerSelectCountryResponseSuccessEvent event)
+  public static String playerColorFrom (final PlayerClaimCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     return event.getPlayerColor ();
-  }
-
-  public static String selectedCountryNameFrom (final PlayerSelectCountryResponseRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getSelectedCountryName ();
-  }
-
-  public static String selectedCountryNameFrom (final PlayerSelectCountryResponseSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getCountryName ();
   }
 
   public static ImmutableSet <CountryPacket> countriesFrom (final PlayerCountryAssignmentCompleteEvent event)

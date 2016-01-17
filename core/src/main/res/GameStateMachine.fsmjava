@@ -27,18 +27,18 @@
         <parameter type="com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent"
           name="event" />
       </event>
-      <event id="onBeginManualCountrySelectionEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountrySelectionEvent"
+      <event id="onBeginManualCountryAssignmentEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent"
           name="event" />
       </event>
-      <event id="onPlayerSelectCountryResponseRequestEvent">
+      <event id="onPlayerClaimCountryResponseRequestEvent">
         <parameter
-          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent"
           name="event" />
       </event>
-      <event id="onPlayerSelectCountryResponseSuccessEvent">
+      <event id="onPlayerClaimCountryResponseSuccessEvent">
         <parameter
-          type="com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent"
+          type="com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent"
           name="event" />
       </event>
       <event id="onPlayerCountryAssignmentCompleteEvent">
@@ -166,22 +166,22 @@
               <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries" />
             </state>
             <state name="AssignPlayerCountries">
-              <state name="WaitForCountrySelectionToBegin">
-                <onEntry action="gameModel.waitForCountrySelectionToBegin()" />
+              <state name="WaitForCountryAssignmentToBegin">
+                <onEntry action="gameModel.waitForCountryAssignmentToBegin()" />
                 <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries" />
-                <transition event="onBeginManualCountrySelectionEvent" nextState="ManuallyAssignPlayerCountries" />
+                <transition event="onBeginManualCountryAssignmentEvent" nextState="ManuallyAssignPlayerCountries" />
               </state>
               <state name="RandomlyAssignPlayerCountries">
                 <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
                 <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase" />
               </state>
               <state name="ManuallyAssignPlayerCountries">
-                <state name="WaitForPlayersToSelectInitialCountries">
-                  <onEntry action="gameModel.waitForPlayersToSelectInitialCountries()" />
+                <state name="WaitForPlayersToClaimInitialCountries">
+                  <onEntry action="gameModel.waitForPlayersToClaimInitialCountries()" />
                   <onExit action="gameModel.advanceTurn()" />
-                  <transition event="onPlayerSelectCountryResponseRequestEvent"
-                              condition="gameModel.verifyPlayerClaimCountrySelectionRequest(event)"
-                              nextState="WaitForPlayersToSelectInitialCountries" />
+                  <transition event="onPlayerClaimCountryResponseRequestEvent"
+                              condition="gameModel.verifyPlayerClaimCountryResponseRequest(event)"
+                              nextState="WaitForPlayersToClaimInitialCountries" />
                   <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase" />
                 </state>
               </state>

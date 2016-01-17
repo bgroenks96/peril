@@ -20,12 +20,12 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
@@ -35,12 +35,12 @@ import com.forerunnergames.peril.common.net.events.server.notification.Distribut
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
@@ -263,23 +263,23 @@ public class GameModelTest
   }
 
   @Test
-  public void testWaitForPlayersToSelectInitialCountriesAllUnowned ()
+  public void testWaitForPlayersToClaimInitialCountriesAllUnowned ()
   {
     addMaxPlayers ();
 
     assertTrue (countryOwnerModel.allCountriesAreUnowned ());
 
-    gameModel.waitForPlayersToSelectInitialCountries ();
+    gameModel.waitForPlayersToClaimInitialCountries ();
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryRequestEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryRequestEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
 
     final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
-    assertTrue (eventHandler.lastEvent (PlayerSelectCountryRequestEvent.class).getPlayer ().is (expectedPlayer));
+    assertTrue (eventHandler.lastEvent (PlayerClaimCountryRequestEvent.class).getPlayer ().is (expectedPlayer));
   }
 
   @Test
-  public void testWaitForPlayersToSelectInitialCountriesAllOwned ()
+  public void testWaitForPlayersToClaimInitialCountriesAllOwned ()
   {
     addMaxPlayers ();
 
@@ -291,14 +291,14 @@ public class GameModelTest
 
     assertTrue (countryOwnerModel.allCountriesAreOwned ());
 
-    gameModel.waitForPlayersToSelectInitialCountries ();
+    gameModel.waitForPlayersToClaimInitialCountries ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     verifyPlayerCountryAssignmentCompleteEvent ();
   }
 
   @Test
-  public void testVerifyPlayerCountrySelectionRequestWhenValid ()
+  public void testVerifyPlayerClaimCountryResponseRequestWhenValid ()
   {
     addMaxPlayers ();
 
@@ -308,33 +308,33 @@ public class GameModelTest
     final Id randomCountry = randomCountry ();
     final String randomCountryName = countryMapGraphModel.nameOf (randomCountry);
 
-    final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
+    final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             randomCountryName);
-    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
   }
 
   @Test
-  public void testVerifyPlayerCountrySelectionRequestInvalidCountryDoesNotExist ()
+  public void testVerifyPlayerClaimCountryResponseRequestInvalidCountryDoesNotExist ()
   {
     addMaxPlayers ();
 
-    final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
+    final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             "Transylvania");
-    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseDeniedEvent.class));
-    assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
-    assertTrue (eventHandler.wasNeverFired (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseDeniedEvent.class));
+    assertTrue (eventHandler.lastEventWasType (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
   }
 
   @Test
-  public void testVerifyPlayerCountrySelectionRequestInvalidCountryAlreadyOwned ()
+  public void testVerifyPlayerClaimCountryResponseRequestInvalidCountryAlreadyOwned ()
   {
     addMaxPlayers ();
 
@@ -343,19 +343,19 @@ public class GameModelTest
     playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.SECOND), 1);
 
     final Id country = randomCountry ();
-    final PlayerSelectCountryResponseRequestEvent responseRequest = new PlayerSelectCountryResponseRequestEvent (
+    final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             countryMapGraphModel.nameOf (country));
-    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // should be successful for first player
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
 
     gameModel.advanceTurn (); // state machine does this as state exit action
 
-    gameModel.verifyPlayerClaimCountrySelectionRequest (responseRequest);
+    gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // unsuccessful for second player
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerSelectCountryResponseDeniedEvent.class));
-    assertTrue (eventHandler.lastEventWasType (PlayerSelectCountryRequestEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerClaimCountryResponseDeniedEvent.class));
+    assertTrue (eventHandler.lastEventWasType (PlayerClaimCountryRequestEvent.class));
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
   }

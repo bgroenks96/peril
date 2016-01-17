@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
@@ -76,10 +76,10 @@ public class CountryOwnerModelTest
     final CountryOwnerModel modelTest = createDefaultCountryOwnerModelWith (countryMapGraphModel);
     final Id testPlayerId = IdGenerator.generateUniqueId ();
 
-    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
+    final Result <PlayerClaimCountryResponseDeniedEvent.Reason> result;
     // assign wrong id
     result = modelTest.requestToAssignCountryOwner (testPlayerId, testPlayerId);
-    assertTrue (result.failedBecauseOf (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+    assertTrue (result.failedBecauseOf (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
   }
 
   @Test
@@ -93,9 +93,9 @@ public class CountryOwnerModelTest
 
     final Id testPlayerId_2 = IdGenerator.generateUniqueId ();
 
-    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
+    final Result <PlayerClaimCountryResponseDeniedEvent.Reason> result;
     result = modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId_2);
-    assertTrue (result.failedBecauseOf (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_OWNED));
+    assertTrue (result.failedBecauseOf (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_ALREADY_CLAIMED));
   }
 
   @Test
@@ -116,10 +116,10 @@ public class CountryOwnerModelTest
     final CountryOwnerModel modelTest = createDefaultCountryOwnerModelWith (countryMapGraphModel);
     final Id testPlayerId = IdGenerator.generateUniqueId ();
 
-    final Result <PlayerSelectCountryResponseDeniedEvent.Reason> result;
+    final Result <PlayerClaimCountryResponseDeniedEvent.Reason> result;
     // assign wrong id
     result = modelTest.requestToUnassignCountry (testPlayerId);
-    assertTrue (result.failedBecauseOf (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+    assertTrue (result.failedBecauseOf (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
   }
 
   @Test

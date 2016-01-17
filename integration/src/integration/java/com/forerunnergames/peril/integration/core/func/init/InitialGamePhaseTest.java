@@ -1,22 +1,22 @@
 package com.forerunnergames.peril.integration.core.func.init;
 
 import static com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestConstants.INITIAL_GAME_PHASE_TEST_GROUP_NAME;
-import static com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestConstants.MANUAL_SELECTION_TEST_GROUP_NAME;
-import static com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestConstants.RANDOM_SELECTION_TEST_GROUP_NAME;
+import static com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestConstants.MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME;
+import static com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestConstants.RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
@@ -170,8 +170,8 @@ public class InitialGamePhaseTest
     assertFalse (stateMachineTest.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_SELECTION_TEST_GROUP_NAME })
-  public void testManualCountrySelectionNoServerResponseToIllegalClientRequest ()
+  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
+  public void testManualCountryAssignmentNoServerResponseToIllegalClientRequest ()
   {
     final TestClientPool clientPool = session.getTestClientPool ();
     Optional <TestClient> clientNotInTurn = Optional.absent ();
@@ -185,32 +185,30 @@ public class InitialGamePhaseTest
     }
     assertTrue (clientNotInTurn.isPresent ());
     final TestClient client = clientNotInTurn.get ();
-    client.sendEvent (new PlayerSelectCountryResponseRequestEvent (""));
+    client.sendEvent (new PlayerClaimCountryResponseRequestEvent (""));
     client.assertNoEventsReceived (5000); // wait for five seconds
-
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_SELECTION_TEST_GROUP_NAME })
-  public void testManualCountrySelectionReceivesDeniedEventOnInvalidRequest ()
+  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
+  public void testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest ()
   {
     final TestClientPool clientPool = session.getTestClientPool ();
     final ImmutableSortedSet <TestClient> sortedClients = TestUtil.sortClientsByPlayerTurnOrder (clientPool);
     final TestClient firstClient = sortedClients.first ();
-    final Optional <PlayerSelectCountryRequestEvent> requestEvent = firstClient
-            .waitForEventCommunication (PlayerSelectCountryRequestEvent.class);
+    final Optional <PlayerClaimCountryRequestEvent> requestEvent = firstClient
+            .waitForEventCommunication (PlayerClaimCountryRequestEvent.class);
     assertTrue (requestEvent.isPresent ());
-    firstClient.sendEvent (new PlayerSelectCountryResponseRequestEvent ("not_a_country"));
-    final Optional <PlayerSelectCountryResponseDeniedEvent> deniedEvent = firstClient
-            .waitForEventCommunication (PlayerSelectCountryResponseDeniedEvent.class);
+    firstClient.sendEvent (new PlayerClaimCountryResponseRequestEvent ("not_a_country"));
+    final Optional <PlayerClaimCountryResponseDeniedEvent> deniedEvent = firstClient
+            .waitForEventCommunication (PlayerClaimCountryResponseDeniedEvent.class);
     assertTrue (deniedEvent.isPresent ());
-    assertEquals (PlayerSelectCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST,
-                  deniedEvent.get ().getReason ());
+    assertEquals (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, deniedEvent.get ().getReason ());
   }
 
-  @Test (dependsOnMethods = { "testManualCountrySelectionReceivesDeniedEventOnInvalidRequest",
-                              "testManualCountrySelectionNoServerResponseToIllegalClientRequest" },
-         groups = { MANUAL_SELECTION_TEST_GROUP_NAME })
-  public void testManualCountrySelectionForAllClientsInOrder ()
+  @Test (dependsOnMethods = { "testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest",
+                              "testManualCountryAssignmentNoServerResponseToIllegalClientRequest" },
+         groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
+  public void testManualCountryAssignmentForAllClientsInOrder ()
   {
     final TestClientPool clientPool = session.getTestClientPool ();
     final ImmutableSortedSet <TestClient> sortedClients = TestUtil.sortClientsByPlayerTurnOrder (clientPool);
@@ -219,22 +217,22 @@ public class InitialGamePhaseTest
     {
       for (final TestClient client : sortedClients)
       {
-        final Optional <PlayerSelectCountryRequestEvent> event;
-        event = client.waitForEventCommunication (PlayerSelectCountryRequestEvent.class);
+        final Optional <PlayerClaimCountryRequestEvent> event;
+        event = client.waitForEventCommunication (PlayerClaimCountryRequestEvent.class);
         assertTrue (event.isPresent ());
-        final ImmutableSet <CountryPacket> availableCountries = event.get ().getUnownedCountries ();
+        final ImmutableSet <CountryPacket> availableCountries = event.get ().getUnclaimedCountries ();
         assertFalse (availableCountries.isEmpty ());
         final CountryPacket someCountry = Randomness.getRandomElementFrom (availableCountries);
-        client.sendEvent (new PlayerSelectCountryResponseRequestEvent (someCountry.getName ()));
-        assertTrue (client.waitForEventCommunication (PlayerSelectCountryResponseSuccessEvent.class).isPresent ());
+        client.sendEvent (new PlayerClaimCountryResponseRequestEvent (someCountry.getName ()));
+        assertTrue (client.waitForEventCommunication (PlayerClaimCountryResponseSuccessEvent.class).isPresent ());
         remainingCountryCount = availableCountries.size () - 1;
       }
     }
     verifyPlayerCountryAssignmentComplete ();
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { RANDOM_SELECTION_TEST_GROUP_NAME })
-  public void testRandomCountrySelection ()
+  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
+  public void testRandomCountryAssignment ()
   {
     verifyPlayerCountryAssignmentComplete ();
   }

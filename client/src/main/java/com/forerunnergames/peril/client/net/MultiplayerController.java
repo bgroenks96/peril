@@ -14,8 +14,8 @@ import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerCreator;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerSelectCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerSelectCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -186,15 +186,15 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}].", event);
 
-    if (!waitingForResponseTo (PlayerSelectCountryRequestEvent.class))
+    if (!waitingForResponseTo (PlayerClaimCountryRequestEvent.class))
     {
       log.warn ("Ignoring local event [{}] because no prior corresponding server request of type [{}] was received.",
-                event, PlayerSelectCountryRequestEvent.class);
+                event, PlayerClaimCountryRequestEvent.class);
       return;
     }
 
-    respondToServerRequest (PlayerSelectCountryRequestEvent.class,
-                            new PlayerSelectCountryResponseRequestEvent (event.getCountryName ()));
+    respondToServerRequest (PlayerClaimCountryRequestEvent.class,
+                            new PlayerClaimCountryResponseRequestEvent (event.getCountryName ()));
   }
 
   @Handler
