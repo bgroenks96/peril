@@ -531,15 +531,6 @@ public final class GameModel
 
   @StateMachineAction
   @StateEntryAction
-  public void beginInitialReinforcementPhase ()
-  {
-    log.info ("Begin initial reinforcement phase...");
-
-    playerTurnModel.reset ();
-  }
-
-  @StateMachineAction
-  @StateEntryAction
   public void waitForPlayersToReinforceInitialCountries ()
   {
     int totalArmySum = 0;
@@ -1138,6 +1129,12 @@ public final class GameModel
   public void advanceTurn ()
   {
     playerTurnModel.advance ();
+  }
+
+  @StateMachineAction
+  public void resetTurn ()
+  {
+    playerTurnModel.reset ();
   }
 
   @StateMachineCondition

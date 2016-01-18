@@ -186,7 +186,7 @@
                 </state>
               </state>
               <state name="InitialReinforcementPhase">
-                <onEntry action="gameModel.beginInitialReinforcementPhase()" />
+                <onEntry action="gameModel.resetTurn()" />
                 <state name="WaitForPlayersToReinforceInitialCountries">
                   <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()" />
                   <onExit action="gameModel.advanceTurn()" />
@@ -194,6 +194,7 @@
                               condition="gameModel.verifyPlayerCountryReinforcements(event)"
                               nextState="WaitForPlayersToReinforceInitialCountries" />
                   <transition event="onInitialReinforcementPhaseCompleteEvent"
+                              action="gameModel.resetTurn()"
                               nextState="TurnPhase" />
                 </state>
               </state>
