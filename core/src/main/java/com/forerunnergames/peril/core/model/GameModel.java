@@ -107,14 +107,12 @@ import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -139,6 +137,7 @@ public final class GameModel
   private final BattleModel battleModel;
   private final PlayerTurnDataCache turnDataCache;
   private final GameRules rules;
+  private final EventFactory eventFactory;
   private final InternalCommunicationHandler internalCommHandler;
   private final MBassador <Event> eventBus;
 
@@ -148,6 +147,9 @@ public final class GameModel
              final PlayerTurnModel playerTurnModel,
              final BattleModel battleModel,
              final GameRules rules,
+             final InternalCommunicationHandler internalCommHandler,
+             final PlayerTurnDataCache turnDataCache,
+             final EventFactory eventFactory,
              final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
@@ -164,6 +166,9 @@ public final class GameModel
     this.playerTurnModel = playerTurnModel;
     this.battleModel = battleModel;
     this.rules = rules;
+    this.internalCommHandler = internalCommHandler;
+    this.turnDataCache = turnDataCache;
+    this.eventFactory = eventFactory;
     this.eventBus = eventBus;
 
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
@@ -171,9 +176,6 @@ public final class GameModel
     countryArmyModel = playMapModel.getCountryArmyModel ();
     continentOwnerModel = playMapModel.getContinentOwnerModel ();
     // continentMapGraphModel = playMapModel.getContinentMapGraphModel ();
-
-    internalCommHandler = new InternalCommunicationHandler (playerModel, playMapModel, playerTurnModel, eventBus);
-    turnDataCache = new PlayerTurnDataCache ();
 
     eventBus.subscribe (internalCommHandler);
   }
@@ -586,26 +588,9 @@ public final class GameModel
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
     eventBus.publish (new DefaultPlayerArmiesChangedEvent (player, totalReinforcementBonus));
-
-    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
-    final int cardCount = cardModel.countCardsInHand (playerId);
-    final ImmutableSet <CountryPacket> validCountries;
-    final Predicate <CountryPacket> filter = new Predicate <CountryPacket> ()
-    {
-      @Override
-      public boolean apply (final CountryPacket input)
-      {
-        return input.getArmyCount () < rules.getMaxArmiesOnCountry ();
-      }
-    };
-    validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountriesOwnedBy (playerId), filter));
-    final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
-
-    eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
-            cardCount > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
+    eventBus.publish (eventFactory.createTradeInCardsRequestFor (playerId, TurnPhase.REINFORCE));
     // publish reinforcement request
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, validCountries, playerOwnedContinents,
-            countryReinforcementBonus, continentReinforcementBonus, rules.getMaxArmiesOnCountry ()));
+    eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
 
@@ -636,6 +621,7 @@ public final class GameModel
     {
       eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player,
               PlayerReinforceCountriesResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
+      eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
@@ -665,13 +651,13 @@ public final class GameModel
         break;
       }
       playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
-      final CountryPacket updatedCountryPacket = countryMapGraphModel.countryPacketWith (countryId);
-      builder.put (updatedCountryPacket, reinforcementCount);
+      builder.put (country, reinforcementCount);
     }
 
     if (failureResult.failed ())
     {
       eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, failureResult.getFailureReason ()));
+      eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
@@ -680,7 +666,9 @@ public final class GameModel
     final ImmutableMap <CountryPacket, Integer> countriesToDeltaArmyCounts = builder.build ();
     for (final CountryPacket country : countriesToDeltaArmyCounts.keySet ())
     {
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (country, countriesToDeltaArmyCounts.get (country)));
+      final CountryPacket updatedCountryPacket = countryMapGraphModel.countryPacketWith (country.getName ());
+      eventBus.publish (new DefaultCountryArmiesChangedEvent (updatedCountryPacket,
+              countriesToDeltaArmyCounts.get (country)));
     }
     eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
 
@@ -1315,11 +1303,16 @@ public final class GameModel
     private CardModel cardModel;
     private PlayerTurnModel playerTurnModel;
     private BattleModel battleModel;
+    private PlayerTurnDataCache turnDataCache;
     private MBassador <Event> eventBus = EventBusFactory.create ();
 
     public GameModel build ()
     {
-      return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules, eventBus);
+      final InternalCommunicationHandler internalCommHandler = new InternalCommunicationHandler (playerModel,
+              playMapModel, playerTurnModel, eventBus);
+      final EventFactory eventFactory = new DefaultEventFactory (playerModel, playMapModel, cardModel, gameRules);
+      return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules,
+              internalCommHandler, turnDataCache, eventFactory, eventBus);
     }
 
     public Builder playMapModel (final PlayMapModel playMapModel)
@@ -1362,6 +1355,14 @@ public final class GameModel
       return this;
     }
 
+    public Builder turnDataCache (final PlayerTurnDataCache turnDataCache)
+    {
+      Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
+
+      this.turnDataCache = turnDataCache;
+      return this;
+    }
+
     public Builder eventBus (final MBassador <Event> eventBus)
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -1387,6 +1388,7 @@ public final class GameModel
       cardModel = new DefaultCardModel (gameRules, ImmutableSet.<Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
       battleModel = new DefaultBattleModel (gameRules);
+      turnDataCache = new PlayerTurnDataCache ();
     }
   }
 }

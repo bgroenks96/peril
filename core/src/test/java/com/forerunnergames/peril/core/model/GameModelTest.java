@@ -61,6 +61,7 @@ import com.forerunnergames.peril.core.model.map.PlayMapStateBuilder;
 import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
 import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
 import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModelTest;
+import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
 import com.forerunnergames.peril.core.model.map.country.CountryFactory;
 import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
 import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModelTest;
@@ -107,6 +108,7 @@ public class GameModelTest
   private PlayerModel playerModel;
   private PlayMapModel playMapModel;
   private CountryOwnerModel countryOwnerModel;
+  private CountryArmyModel countryArmyModel;
   private CountryMapGraphModel countryMapGraphModel;
   private CardModel cardModel;
   private ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
@@ -447,7 +449,8 @@ public class GameModelTest
     final ImmutableMap.Builder <String, Integer> reinforcements = ImmutableMap.builder ();
     final Iterator <CountryPacket> countries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
-    for (int i = 0; i < testPlayerPacket.getArmiesInHand (); i++)
+    final int armiesInHand = testPlayerPacket.getArmiesInHand ();
+    for (int i = 0; i < armiesInHand; i++)
     {
       reinforcements.put (countries.next ().getName (), 1);
     }
@@ -464,6 +467,13 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountriesResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 3));
+
+    final Iterator <CountryPacket> updatedCountries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
+    for (int i = 0; i < armiesInHand; i++)
+    {
+      final String countryName = updatedCountries.next ().getName ();
+      assertEquals (1, countryArmyModel.getArmyCountFor (countryMapGraphModel.countryWith (countryName)));
+    }
   }
 
   @Test
@@ -489,7 +499,8 @@ public class GameModelTest
     final ImmutableMap.Builder <String, Integer> reinforcements = ImmutableMap.builder ();
     final Iterator <CountryPacket> countries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
-    for (int i = 0; i < testPlayerPacket.getArmiesInHand (); i++)
+    final int armiesInHand = testPlayerPacket.getArmiesInHand ();
+    for (int i = 0; i < armiesInHand; i++)
     {
       reinforcements.put (countries.next ().getName (), 1);
     }
@@ -508,6 +519,13 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 3));
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
+
+    final Iterator <CountryPacket> updatedCountries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
+    for (int i = 0; i < armiesInHand; i++)
+    {
+      final String countryName = updatedCountries.next ().getName ();
+      assertEquals (1, countryArmyModel.getArmyCountFor (countryMapGraphModel.countryWith (countryName)));
+    }
   }
 
   public void testVerifyPlayerCountryReinforcementWithOptionalTradeIn ()
@@ -535,7 +553,8 @@ public class GameModelTest
     final ImmutableMap.Builder <String, Integer> reinforcements = ImmutableMap.builder ();
     final Iterator <CountryPacket> countries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
-    for (int i = 0; i < testPlayerPacket.getArmiesInHand (); i++)
+    final int armiesInHand = testPlayerPacket.getArmiesInHand ();
+    for (int i = 0; i < armiesInHand; i++)
     {
       reinforcements.put (countries.next ().getName (), 1);
     }
@@ -555,6 +574,13 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 2));
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
+
+    final Iterator <CountryPacket> updatedCountries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
+    for (int i = 0; i < armiesInHand; i++)
+    {
+      final String countryName = updatedCountries.next ().getName ();
+      assertEquals (1, countryArmyModel.getArmyCountFor (countryMapGraphModel.countryWith (countryName)));
+    }
   }
 
   @Test
@@ -1019,6 +1045,7 @@ public class GameModelTest
     cardModel = new DefaultCardModel (gameRules, cardDeck);
     countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
+    countryArmyModel = playMapModel.getCountryArmyModel ();
     this.playMapModel = playMapModel;
 
     initialArmies = gameRules.getInitialArmies ();
