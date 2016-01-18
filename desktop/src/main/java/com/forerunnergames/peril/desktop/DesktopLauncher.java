@@ -1,5 +1,8 @@
 package com.forerunnergames.peril.desktop;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -7,8 +10,10 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.common.settings.CrashSettings;
+import com.forerunnergames.peril.desktop.args.CommandLineArgs;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Throwables;
@@ -84,6 +89,31 @@ public final class DesktopLauncher
     config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;
     config.useGL30 = GraphicsSettings.USE_OPENGL_CORE_PROFILE;
+
+    final CommandLineArgs jArgs = new CommandLineArgs ();
+    final JCommander jCommander = new JCommander (jArgs);
+    final StringBuilder usageStringBuilder = new StringBuilder ();
+
+    try
+    {
+      jCommander.parse (args);
+    }
+    catch (final ParameterException e)
+    {
+      jCommander.usage (usageStringBuilder);
+      log.info ("\n\n{}\n\nOptions with * are required\n\n{}", e.getMessage (), usageStringBuilder);
+      System.exit (1);
+    }
+
+    if (jArgs.help)
+    {
+      jCommander.usage (usageStringBuilder);
+      log.info ("\n\nOptions with * are required\n\n{}", usageStringBuilder);
+      System.exit (0);
+    }
+
+    if (!jArgs.playerName.isEmpty ()) InputSettings.INITIAL_PLAYER_NAME = jArgs.playerName;
+    if (!jArgs.clanName.isEmpty ()) InputSettings.INITIAL_CLAN_NAME = jArgs.clanName;
 
     new LwjglApplication (LibGdxGameFactory.create (), config);
   }
