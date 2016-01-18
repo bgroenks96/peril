@@ -349,13 +349,15 @@ public final class GameModel
       for (int count = 0; count < playerCountryCount && countryItr.hasNext (); count++)
       {
         final Id toAssign = countryItr.next ();
-        Result <?> result = countryOwnerModel.requestToAssignCountryOwner (toAssign, nextPlayerId);
+        MutatorResult <?> result = countryOwnerModel.requestToAssignCountryOwner (toAssign, nextPlayerId);
         if (result.failed ())
         {
           log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryMapGraphModel.nameOf (toAssign),
                     nextPlayer, result.getFailureReason ());
           continue;
         }
+
+        result.commitIfSuccessful ();
 
         result = countryArmyModel.requestToAddArmiesToCountry (toAssign, 1);
         if (result.failed ())
@@ -364,6 +366,8 @@ public final class GameModel
                     nextPlayer, result.getFailureReason ());
           continue;
         }
+
+        result.commitIfSuccessful ();
 
         playerModel.removeArmiesFromHandOf (nextPlayerId, 1);
         assignSuccessCount++;
@@ -633,14 +637,15 @@ public final class GameModel
       final MutatorResult <PlayerReinforceCountriesResponseDeniedEvent.Reason> result;
       if (!countryMapGraphModel.existsCountryWith (countryName))
       {
-        result = MutatorResult.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+        failureResult = MutatorResult
+                .failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
         break;
       }
       final CountryPacket country = countryMapGraphModel.countryPacketWith (countryName);
       final Id countryId = countryMapGraphModel.idOf (country.getName ());
       if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
       {
-        result = MutatorResult.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
+        failureResult = MutatorResult.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
         break;
       }
       final int reinforcementCount = reinforcedCountries.get (countryName);

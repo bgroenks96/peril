@@ -5,7 +5,7 @@ import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
 import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
-import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.MutatorResult;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
@@ -53,12 +53,13 @@ public final class PlayMapStateBuilder
       for (final Id country : countryIds)
       {
         final CountryPacket countryPacket = playMapModel.getCountryMapGraphModel ().countryPacketWith (country);
-        final Result <?> result = countryOwnerModel.requestToAssignCountryOwner (country, ownerId);
+        final MutatorResult <?> result = countryOwnerModel.requestToAssignCountryOwner (country, ownerId);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to assign country [{}] to owner [{}]: {}", countryPacket, ownerId,
                                         result.getFailureReason ());
         }
+        result.commitIfSuccessful ();
       }
       return this;
     }
@@ -69,12 +70,13 @@ public final class PlayMapStateBuilder
       for (final Id country : countryIds)
       {
         final CountryPacket countryPacket = playMapModel.getCountryMapGraphModel ().countryPacketWith (country);
-        final Result <?> result = countryArmyModel.requestToAddArmiesToCountry (country, armyCount);
+        final MutatorResult <?> result = countryArmyModel.requestToAddArmiesToCountry (country, armyCount);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to add {} armies to country [{}]: {}", armyCount, countryPacket,
                                         result.getFailureReason ());
         }
+        result.commitIfSuccessful ();
       }
       return this;
     }

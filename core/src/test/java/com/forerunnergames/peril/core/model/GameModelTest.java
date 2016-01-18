@@ -18,14 +18,14 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
@@ -33,14 +33,14 @@ import com.forerunnergames.peril.common.net.events.server.notification.BeginRein
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
@@ -286,7 +286,7 @@ public class GameModelTest
     final Id testPlayerOwner = playerModel.playerWith (PlayerTurnOrder.FIRST);
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayerOwner);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayerOwner).commitIfSuccessful ());
     }
 
     assertTrue (countryOwnerModel.allCountriesAreOwned ());
@@ -368,7 +368,7 @@ public class GameModelTest
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
 
     gameModel.beginReinforcementPhase ();
@@ -396,7 +396,7 @@ public class GameModelTest
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
 
     gameModel.beginReinforcementPhase ();
@@ -431,7 +431,7 @@ public class GameModelTest
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
 
     final int numCardsInHand = gameRules.getMinCardsInHandToRequireTradeIn (TurnPhase.REINFORCE);
@@ -522,7 +522,7 @@ public class GameModelTest
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
 
     final int numCardsInHand = gameRules.getMinCardsInHandToRequireTradeIn (TurnPhase.REINFORCE);
@@ -573,7 +573,7 @@ public class GameModelTest
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
       if (nextCountry.is (notOwnedCountry)) continue;
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
 
     gameModel.beginReinforcementPhase ();
@@ -604,7 +604,7 @@ public class GameModelTest
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
     {
-      countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
 
     gameModel.beginReinforcementPhase ();
@@ -703,8 +703,8 @@ public class GameModelTest
     playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
     playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
 
-    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
-            defaultTestCountries.get (0), defaultTestCountries.get (3), countryArmyCount - 1));
+    assertTrue (gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (3), countryArmyCount - 1)));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseDeniedEvent.class));

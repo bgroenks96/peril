@@ -52,7 +52,7 @@ public class CountryOwnerModelTest
 
     for (final Id testCountryId : countryMapGraphModel)
     {
-      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
       assertTrue (modelTest.ownerOf (testCountryId).is (testPlayerId));
     }
   }
@@ -65,7 +65,7 @@ public class CountryOwnerModelTest
     for (final Id testCountryId : countryMapGraphModel)
     {
       final Id testPlayerId = IdGenerator.generateUniqueId ();
-      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
       assertTrue (modelTest.ownerOf (testCountryId).is (testPlayerId));
     }
   }
@@ -89,7 +89,7 @@ public class CountryOwnerModelTest
     final Id testPlayerId_1 = IdGenerator.generateUniqueId ();
     final Id testCountryId = countryMapGraphModel.getCountryIds ().asList ().get (0);
 
-    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId_1).succeeded ());
+    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId_1).commitIfSuccessful ());
 
     final Id testPlayerId_2 = IdGenerator.generateUniqueId ();
 
@@ -129,7 +129,7 @@ public class CountryOwnerModelTest
     final Id testCountryId = countryMapGraphModel.getCountryIds ().asList ().get (0);
     final Id testPlayerId = IdGenerator.generateUniqueId ();
 
-    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     assertEquals (testPlayerId, modelTest.ownerOf (testCountryId));
   }
 
@@ -165,7 +165,7 @@ public class CountryOwnerModelTest
     for (final Id testCountryId : countryMapGraphModel)
     {
       assertTrue (countryMapGraphModel.existsCountryWith (testCountryId));
-      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     }
     assertFalse (modelTest.hasAnyUnownedCountries ());
   }
@@ -210,7 +210,7 @@ public class CountryOwnerModelTest
 
     final Id testCountryId = countryMapGraphModel.getCountryIds ().asList ().get (0);
     assertTrue (countryMapGraphModel.existsCountryWith (testCountryId));
-    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     assertTrue (modelTest.hasAnyOwnedCountries ());
   }
 
@@ -236,7 +236,7 @@ public class CountryOwnerModelTest
     for (final Id testCountryId : countryMapGraphModel)
     {
       assertTrue (countryMapGraphModel.existsCountryWith (testCountryId));
-      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     }
     assertTrue (modelTest.allCountriesAreOwned ());
   }
@@ -275,7 +275,7 @@ public class CountryOwnerModelTest
     for (final Id testCountryId : countryMapGraphModel)
     {
       assertTrue (countryMapGraphModel.existsCountryWith (testCountryId));
-      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     }
     assertFalse (modelTest.allCountriesAreUnowned ());
   }
@@ -288,7 +288,7 @@ public class CountryOwnerModelTest
 
     final Id testCountryId = countryMapGraphModel.getCountryIds ().asList ().get (0);
     assertTrue (countryMapGraphModel.existsCountryWith (testCountryId));
-    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     assertFalse (modelTest.allCountriesAreUnowned ());
   }
 
@@ -304,7 +304,7 @@ public class CountryOwnerModelTest
     while (i < n && countryItr.hasNext ())
     {
       final Country nextCountry = countryItr.next ();
-      assertTrue (modelTest.requestToAssignCountryOwner (nextCountry.getId (), testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (nextCountry.getId (), testPlayerId).commitIfSuccessful ());
       ++i;
     }
 
@@ -328,7 +328,7 @@ public class CountryOwnerModelTest
     final Id testPlayerId = IdGenerator.generateUniqueId ();
     final Id testCountryId = countryMapGraphModel.getCountryIds ().asList ().get (0);
 
-    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
 
     assertTrue (modelTest.ownedCountryCountIs (1));
   }
@@ -340,7 +340,7 @@ public class CountryOwnerModelTest
     final Id testPlayerId = IdGenerator.generateUniqueId ();
     final Id testCountryId = countryMapGraphModel.getCountryIds ().asList ().get (0);
 
-    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+    assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
 
     assertTrue (modelTest.ownedCountryCountIsAtLeast (1));
   }
@@ -353,7 +353,7 @@ public class CountryOwnerModelTest
 
     for (final Id testCountryId : countryMapGraphModel)
     {
-      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).succeeded ());
+      assertTrue (modelTest.requestToAssignCountryOwner (testCountryId, testPlayerId).commitIfSuccessful ());
     }
     assertTrue (modelTest.ownedCountryCountIsAtLeast (2));
   }

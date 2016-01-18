@@ -57,8 +57,6 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
       return MutatorResult.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
     }
 
-    country.removeArmies (armyCount);
-
     return MutatorResult.success (new MutatorCallback ()
     {
       @Override
