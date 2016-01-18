@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.common.net.events.server.notification;
 
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -12,13 +13,17 @@ import com.google.common.collect.ImmutableSet;
 
 public final class PlayerCountryAssignmentCompleteEvent implements ServerNotificationEvent
 {
+  private final InitialCountryAssignment assignmentMode;
   private final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets;
 
-  public PlayerCountryAssignmentCompleteEvent (final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets)
+  public PlayerCountryAssignmentCompleteEvent (final InitialCountryAssignment assignmentMode,
+                                               final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets)
   {
+    Arguments.checkIsNotNull (assignmentMode, "assignmentMode");
     Arguments.checkIsNotNull (countryToPlayerPackets, "countryToPlayerPackets");
     Arguments.checkHasNoNullKeysOrValues (countryToPlayerPackets, "countryToPlayerPackets");
 
+    this.assignmentMode = assignmentMode;
     this.countryToPlayerPackets = countryToPlayerPackets;
   }
 
@@ -46,16 +51,22 @@ public final class PlayerCountryAssignmentCompleteEvent implements ServerNotific
     return countryToPlayerPackets.get (country).getColor ();
   }
 
+  public InitialCountryAssignment getAssignmentMode ()
+  {
+    return assignmentMode;
+  }
+
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: CountryToPlayerPackets: [{}]", getClass ().getSimpleName (),
-                           Strings.toString (countryToPlayerPackets));
+    return Strings.format ("{}: AssignmentMode: {} | CountryToPlayerPackets: [{}]", getClass ().getSimpleName (),
+                           assignmentMode, Strings.toString (countryToPlayerPackets));
   }
 
   @RequiredForNetworkSerialization
   private PlayerCountryAssignmentCompleteEvent ()
   {
+    assignmentMode = null;
     countryToPlayerPackets = null;
   }
 }

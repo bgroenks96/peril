@@ -392,7 +392,8 @@ public final class GameModel
     final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
     playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
 
-    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
+    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (),
+            playMapViewPackets));
   }
 
   @StateMachineAction
@@ -453,7 +454,8 @@ public final class GameModel
       // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
       playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
-      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (playMapViewPackets));
+      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (),
+              playMapViewPackets));
       return;
     }
 
