@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.EventBusHandler;
 import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -29,6 +30,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
@@ -117,6 +119,8 @@ public class GameModelTest
     eventHandler = new EventBusHandler ();
     eventHandler.subscribe (eventBus);
     // crate default play map + game model
+    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (defaultTestCountryCount).build ();
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
     initializeGameModelWith (playMapModel);
     assert gameModel != null;
@@ -187,6 +191,42 @@ public class GameModelTest
   }
 
   @Test
+  public void testWaitForCountryAssignmentToBeginRandom ()
+  {
+    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (defaultTestCountryCount).initialCountryAssignment (InitialCountryAssignment.RANDOM)
+            .build ();
+    playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
+    initializeGameModelWith (playMapModel);
+
+    addMaxPlayers ();
+
+    gameModel.waitForCountryAssignmentToBegin ();
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (BeginPlayerCountryAssignmentEvent.class));
+    assertEquals (InitialCountryAssignment.RANDOM,
+                  eventHandler.lastEventOfType (BeginPlayerCountryAssignmentEvent.class).getAssignmentMode ());
+  }
+
+  @Test
+  public void testWaitForCountryAssignmentToBeginManual ()
+  {
+    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
+            .totalCountryCount (defaultTestCountryCount).initialCountryAssignment (InitialCountryAssignment.MANUAL)
+            .build ();
+    playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
+    initializeGameModelWith (playMapModel);
+
+    addMaxPlayers ();
+
+    gameModel.waitForCountryAssignmentToBegin ();
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (BeginPlayerCountryAssignmentEvent.class));
+    assertEquals (InitialCountryAssignment.MANUAL,
+                  eventHandler.lastEventOfType (BeginPlayerCountryAssignmentEvent.class).getAssignmentMode ());
+  }
+
+  @Test
   public void testRandomlyAssignPlayerCountriesMaxPlayers ()
   {
     addMaxPlayers ();
@@ -209,6 +249,7 @@ public class GameModelTest
     // test case in honor of Aaron on PR 27 ;)
     // can't use 5, though, because 5 < ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT
 
+    gameRules = new ClassicGameRules.Builder ().totalCountryCount (10).playerLimit (10).build ();
     initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (10)));
     for (int i = 0; i < 10; ++i)
     {
@@ -234,6 +275,8 @@ public class GameModelTest
   public void testRandomlyAssignPlayerCountriesMaxPlayersMaxCountries ()
   {
     final int countryCount = ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT;
+    gameRules = new ClassicGameRules.Builder ().totalCountryCount (countryCount)
+            .playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT).build ();
     initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (countryCount)));
 
     addMaxPlayers ();
@@ -999,8 +1042,6 @@ public class GameModelTest
     final ContinentFactory continentFactory = new ContinentFactory ();
     final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModelTest
             .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
-    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (countryMapGraphModel.size ()).build ();
     return new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
   }
 
@@ -1011,8 +1052,6 @@ public class GameModelTest
     final ContinentFactory continentFactory = new ContinentFactory ();
     final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModelTest
             .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
-    final GameRules gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (countryMapGraphModel.size ()).build ();
     playMapModel = new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
     return playMapModel;
   }

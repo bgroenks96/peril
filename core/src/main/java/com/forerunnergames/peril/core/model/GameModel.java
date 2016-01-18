@@ -28,6 +28,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
@@ -300,8 +301,9 @@ public final class GameModel
   @StateEntryAction
   public void waitForCountryAssignmentToBegin ()
   {
-    final InitialCountryAssignment config = rules.getInitialCountryAssignment ();
-    switch (config)
+    final InitialCountryAssignment assignmentMode = rules.getInitialCountryAssignment ();
+    eventBus.publish (new BeginPlayerCountryAssignmentEvent (assignmentMode));
+    switch (assignmentMode)
     {
       case RANDOM:
       {
@@ -317,7 +319,7 @@ public final class GameModel
       }
       default:
       {
-        Exceptions.throwRuntime ("Unrecognized value for initial country assignment: {}", config);
+        Exceptions.throwRuntime ("Unrecognized value for initial country assignment: {}", assignmentMode);
         break;
       }
     }
