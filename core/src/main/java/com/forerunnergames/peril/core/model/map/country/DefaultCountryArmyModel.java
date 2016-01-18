@@ -3,8 +3,9 @@ package com.forerunnergames.peril.core.model.map.country;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.MutatorResult;
+import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -23,7 +24,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
   }
 
   @Override
-  public Result <Reason> requestToAddArmiesToCountry (final Id countryId, final int armyCount)
+  public MutatorResult <Reason> requestToAddArmiesToCountry (final Id countryId, final int armyCount)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
@@ -31,16 +32,21 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
     if (country.getArmyCount () + armyCount > rules.getMaxArmiesOnCountry ())
     {
-      return Result.failure (Reason.COUNTRY_ARMY_COUNT_OVERFLOW);
+      return MutatorResult.failure (Reason.COUNTRY_ARMY_COUNT_OVERFLOW);
     }
 
-    country.addArmies (armyCount);
-
-    return Result.success ();
+    return MutatorResult.success (new MutatorCallback ()
+    {
+      @Override
+      public void commitChanges ()
+      {
+        country.addArmies (armyCount);
+      }
+    });
   }
 
   @Override
-  public Result <Reason> requestToRemoveArmiesFromCountry (final Id countryId, final int armyCount)
+  public MutatorResult <Reason> requestToRemoveArmiesFromCountry (final Id countryId, final int armyCount)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
@@ -48,12 +54,19 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
     if (country.getArmyCount () - armyCount < rules.getMinArmiesOnCountry ())
     {
-      return Result.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
+      return MutatorResult.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
     }
 
     country.removeArmies (armyCount);
 
-    return Result.success ();
+    return MutatorResult.success (new MutatorCallback ()
+    {
+      @Override
+      public void commitChanges ()
+      {
+        country.removeArmies (armyCount);
+      }
+    });
   }
 
   @Override

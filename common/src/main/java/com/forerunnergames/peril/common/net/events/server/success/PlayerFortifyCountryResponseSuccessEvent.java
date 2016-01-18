@@ -59,7 +59,7 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
     return targetCountry;
   }
 
-  public int fortifyArmyCount ()
+  public int getFortifyArmyCount ()
   {
     return fortifyArmyCount;
   }

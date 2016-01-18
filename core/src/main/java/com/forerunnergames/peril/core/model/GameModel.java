@@ -99,6 +99,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
+import com.forerunnergames.tools.common.MutatorResult;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
@@ -483,7 +484,7 @@ public final class GameModel
 
     final Id countryId = countryMapGraphModel.idOf (claimedCountryName);
 
-    final Result <AbstractCountryStateChangeDeniedEvent.Reason> res1;
+    final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res1;
     res1 = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
     if (res1.failed ())
     {
@@ -494,7 +495,7 @@ public final class GameModel
       return false;
     }
 
-    final Result <AbstractCountryStateChangeDeniedEvent.Reason> res2;
+    final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res2;
     res2 = countryArmyModel.requestToAddArmiesToCountry (countryId, 1);
     if (res2.failed ())
     {
@@ -505,6 +506,7 @@ public final class GameModel
       return false;
     }
 
+    MutatorResult.commitAllSuccessful (res1, res2);
     playerModel.removeArmiesFromHandOf (currentPlayerId, 1);
 
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
@@ -604,7 +606,10 @@ public final class GameModel
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = playerModel.idOf (player.getName ());
 
-    Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> result = Result.success ();
+    // failure result variable for storing first failed result
+    Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> failureResult = Result.success ();
+    // mutator result set builder for storing successful results
+    final ImmutableSet.Builder <MutatorResult <?>> results = ImmutableSet.builder ();
 
     // --- process country reinforcements --- //
 
@@ -625,31 +630,39 @@ public final class GameModel
     final ImmutableMap.Builder <CountryPacket, Integer> builder = ImmutableMap.builder ();
     for (final String countryName : reinforcedCountries.keySet ())
     {
+      final MutatorResult <PlayerReinforceCountriesResponseDeniedEvent.Reason> result;
       if (!countryMapGraphModel.existsCountryWith (countryName))
       {
-        result = Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+        result = MutatorResult.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
         break;
       }
       final CountryPacket country = countryMapGraphModel.countryPacketWith (countryName);
       final Id countryId = countryMapGraphModel.idOf (country.getName ());
       if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
       {
-        result = Result.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
+        result = MutatorResult.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
         break;
       }
       final int reinforcementCount = reinforcedCountries.get (countryName);
       result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
-      if (result.failed ()) break;
+      results.add (result);
+      if (result.failed ())
+      {
+        failureResult = result;
+        break;
+      }
       playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
       final CountryPacket updatedCountryPacket = countryMapGraphModel.countryPacketWith (countryId);
       builder.put (updatedCountryPacket, reinforcementCount);
     }
 
-    if (result.failed ())
+    if (failureResult.failed ())
     {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, result.getFailureReason ()));
+      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, failureResult.getFailureReason ()));
       return false;
     }
+
+    MutatorResult.commitAllSuccessful (results.build ());
 
     final ImmutableMap <CountryPacket, Integer> countriesToDeltaArmyCounts = builder.build ();
     for (final CountryPacket country : countriesToDeltaArmyCounts.keySet ())
@@ -697,8 +710,10 @@ public final class GameModel
       // send new request event
       final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
       final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
+      final boolean isTradeInRequired = cardModel.countCardsInHand (playerId) > rules
+              .getMaxCardsInHand (TurnPhase.REINFORCE);
       eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
-              cardModel.countCardsInHand (playerId) > rules.getMaxCardsInHand (TurnPhase.REINFORCE)));
+              isTradeInRequired));
       return;
     }
 
@@ -957,17 +972,21 @@ public final class GameModel
 
     final Id sourceCountryId = countryMapGraphModel.countryWith (sourceCountry.getName ());
     final Id destCountryId = countryMapGraphModel.countryWith (destCountry.getName ());
-    countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
-    countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
 
-    final Result <PlayerOccupyCountryResponseDeniedEvent.Reason> result;
-    result = countryOwnerModel.requestToReassignCountryOwner (destCountryId, getCurrentPlayerId ());
-    if (result.failed ())
+    final MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason> res1, res2, res3;
+    res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
+    res2 = countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
+    res3 = countryOwnerModel.requestToReassignCountryOwner (destCountryId, getCurrentPlayerId ());
+    final Optional <MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason>> failure;
+    failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2, res3));
+    if (failure.isPresent ())
     {
-      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player, result.getFailureReason ()));
+      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason ()));
       eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
     }
+
+    MutatorResult.commitAllSuccessful (res1, res2, res3);
 
     final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
     final CountryPacket updatedDestCountry = countryMapGraphModel.countryPacketWith (destCountryId);
@@ -1080,11 +1099,32 @@ public final class GameModel
       return false;
     }
 
-    countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, fortifyArmyCount);
     final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    eventBus.publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
-    countryArmyModel.requestToAddArmiesToCountry (targetCountryId, fortifyArmyCount);
     final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+
+    final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res1, res2;
+    res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, fortifyArmyCount);
+    res2 = countryArmyModel.requestToAddArmiesToCountry (targetCountryId, fortifyArmyCount);
+
+    // this case should never happen if the previous fortification checks passed
+    if (res1.failed ()) Exceptions.throwIllegalState ("Failed to remove armies from country: {}", sourceCountryPacket);
+    // check for target country army overflow
+    if (res2.failed ())
+    {
+      switch (res2.getFailureReason ())
+      {
+        case COUNTRY_ARMY_COUNT_OVERFLOW:
+          eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+                  PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_ARMY_COUNT_OVERFLOW));
+          return false;
+        default:
+          Exceptions.throwIllegalState ("Failed to add armies to country: {}", targetCountryPacket);
+      }
+    }
+
+    MutatorResult.commitAllSuccessful (res1, res2);
+
+    eventBus.publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
     eventBus.publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, fortifyArmyCount));
 
     eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket, sourceCountryPacket,

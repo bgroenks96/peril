@@ -30,7 +30,8 @@ public class PlayerFortifyCountryResponseDeniedEvent extends AbstractDeniedEvent
     NOT_OWNER_OF_SOURCE_COUNTRY,
     NOT_OWNER_OF_TARGET_COUNTRY,
     FORTIFY_ARMY_COUNT_OVERFLOW,
-    FORTIFY_ARMY_COUNT_UNDERFLOW;
+    FORTIFY_ARMY_COUNT_UNDERFLOW,
+    TARGET_COUNTRY_ARMY_COUNT_OVERFLOW;
   }
 
   @Override
