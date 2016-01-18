@@ -552,17 +552,10 @@ public final class GameModel
     final Id playerId = getCurrentPlayerId ();
 
     // add country reinforcements and publish event
-    final int countryReinforcementBonus = rules
-            .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
-    int continentReinforcementBonus = 0;
     final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
-    for (final ContinentPacket cont : playerOwnedContinents)
-    {
-      continentReinforcementBonus += cont.getReinforcementBonus ();
-    }
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents,
-            countryReinforcementBonus, continentReinforcementBonus, rules.getMaxArmiesOnCountry ()));
+    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents, 0,
+            0, rules.getMaxArmiesOnCountry ()));
   }
 
   @StateMachineAction

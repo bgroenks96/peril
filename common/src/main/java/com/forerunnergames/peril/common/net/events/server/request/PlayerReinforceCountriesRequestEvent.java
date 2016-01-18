@@ -53,7 +53,7 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerEv
 
   public int getTotalReinforcements ()
   {
-    return countryReinforcementBonus + continentReinforcementBonus;
+    return getPlayer ().getArmiesInHand () + countryReinforcementBonus + continentReinforcementBonus;
   }
 
   public int getMaxArmiesPerCountry ()
@@ -80,7 +80,7 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerEv
 
   public boolean isNotPlayerOwnedCountry (final String countryName)
   {
-    return ! isPlayerOwnedCountry (countryName);
+    return !isPlayerOwnedCountry (countryName);
   }
 
   public boolean canAddArmiesToCountry (final String countryName)
