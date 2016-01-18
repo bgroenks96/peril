@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
@@ -198,8 +199,9 @@ public final class GameModel
 
     playerModel.removeAllArmiesFromHandsOfAllPlayers ();
     countryOwnerModel.unassignAllCountries ();
+    countryArmyModel.resetAllCountries ();
+    playerTurnModel.reset ();
 
-    // TODO Clear all country armies.
     // TODO Reset entire game state.
   }
 
@@ -298,7 +300,8 @@ public final class GameModel
   @StateEntryAction
   public void waitForCountryAssignmentToBegin ()
   {
-    switch (rules.getInitialCountryAssignment ())
+    final InitialCountryAssignment config = rules.getInitialCountryAssignment ();
+    switch (config)
     {
       case RANDOM:
       {
@@ -314,7 +317,7 @@ public final class GameModel
       }
       default:
       {
-        log.info ("Unrecognized value for InitialCountryAssignment.");
+        Exceptions.throwRuntime ("Unrecognized value for initial country assignment: {}", config);
         break;
       }
     }

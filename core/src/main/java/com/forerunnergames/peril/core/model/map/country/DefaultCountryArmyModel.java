@@ -94,4 +94,14 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
 
     return getArmyCountFor (countryId) >= minArmyCount;
   }
+
+  @Override
+  public void resetAllCountries ()
+  {
+    for (final Id countryId : countryMapGraphModel)
+    {
+      final Country country = countryMapGraphModel.modelCountryWith (countryId);
+      country.removeArmies (country.getArmyCount ());
+    }
+  }
 }
