@@ -42,6 +42,11 @@ public final class PlayerClaimCountryResponseDeniedEvent extends AbstractCountry
     return player.getColor ();
   }
 
+  public String getCountryName ()
+  {
+    return claimedCountryName;
+  }
+
   @Override
   public String toString ()
   {
