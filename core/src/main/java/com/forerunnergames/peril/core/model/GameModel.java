@@ -525,10 +525,17 @@ public final class GameModel
 
   @StateMachineAction
   @StateEntryAction
-  public void waitForPlayersToReinforceInitialCountries ()
+  public void beginInitialReinforcementPhase ()
   {
     log.info ("Begin initial reinforcement phase...");
 
+    playerTurnModel.reset ();
+  }
+
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForPlayersToReinforceInitialCountries ()
+  {
     int totalArmySum = 0;
     for (final Id playerId : playerModel.getPlayerIds ())
     {
@@ -543,6 +550,7 @@ public final class GameModel
 
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
+
     // add country reinforcements and publish event
     final int countryReinforcementBonus = rules
             .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
