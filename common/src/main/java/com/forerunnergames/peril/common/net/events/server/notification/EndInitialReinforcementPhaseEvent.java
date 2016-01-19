@@ -9,11 +9,11 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificat
 
 import com.google.common.collect.ImmutableMap;
 
-public final class InitialReinforcementPhaseCompleteEvent implements ServerNotificationEvent
+public final class EndInitialReinforcementPhaseEvent implements ServerNotificationEvent
 {
   private final ImmutableMap <CountryPacket, PlayerPacket> playMapView;
 
-  public InitialReinforcementPhaseCompleteEvent (final ImmutableMap <CountryPacket, PlayerPacket> playMapView)
+  public EndInitialReinforcementPhaseEvent (final ImmutableMap <CountryPacket, PlayerPacket> playMapView)
   {
     Arguments.checkIsNotNull (playMapView, "playMapView");
 
@@ -32,7 +32,7 @@ public final class InitialReinforcementPhaseCompleteEvent implements ServerNotif
   }
 
   @RequiredForNetworkSerialization
-  private InitialReinforcementPhaseCompleteEvent ()
+  private EndInitialReinforcementPhaseEvent ()
   {
     playMapView = null;
   }

@@ -33,8 +33,11 @@ import com.forerunnergames.peril.common.net.events.server.notification.BeginPlay
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndAttackPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.InitialReinforcementPhaseCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
@@ -541,7 +544,7 @@ public final class GameModel
 
     if (totalArmySum == 0)
     {
-      eventBus.publish (new InitialReinforcementPhaseCompleteEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
+      eventBus.publish (new EndInitialReinforcementPhaseEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
       return;
     }
 
@@ -583,6 +586,16 @@ public final class GameModel
     // publish reinforcement request
     eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
+  }
+
+  @StateMachineAction
+  public void endReinforcementPhase ()
+  {
+    final PlayerPacket player = getCurrentPlayerPacket ();
+
+    log.info ("End reinforcement phase for player [{}].", player);
+
+    eventBus.publish (new EndReinforcementPhaseEvent (player));
   }
 
   @StateMachineAction
@@ -743,6 +756,16 @@ public final class GameModel
     }
 
     eventBus.publish (new PlayerAttackCountryRequestEvent (currentPlayer, builder.build ()));
+  }
+
+  @StateMachineAction
+  public void endAttackPhase ()
+  {
+    final PlayerPacket player = getCurrentPlayerPacket ();
+
+    log.info ("End attack phase for player [{}].", player);
+
+    eventBus.publish (new EndAttackPhaseEvent (player));
   }
 
   @StateMachineCondition
@@ -1020,6 +1043,16 @@ public final class GameModel
     }
 
     eventBus.publish (new PlayerFortifyCountryRequestEvent (currentPlayerPacket, validFortifyVectors.build ()));
+  }
+
+  @StateMachineAction
+  public void endFortifyPhase ()
+  {
+    final PlayerPacket player = getCurrentPlayerPacket ();
+
+    log.info ("End fortify phase for player [{}].", player);
+
+    eventBus.publish (new EndFortifyPhaseEvent (player));
   }
 
   @StateMachineCondition

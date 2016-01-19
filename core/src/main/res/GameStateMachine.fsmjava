@@ -46,10 +46,10 @@
           type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
           name="event" />
       </event>
-      <event id="onInitialReinforcementPhaseCompleteEvent">
+      <event id="onEndInitialReinforcementPhaseEvent">
         <parameter
           name="event"
-          type="com.forerunnergames.peril.common.net.events.server.notification.InitialReinforcementPhaseCompleteEvent" />
+          type="com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent" />
       </event>
       <event id="onPlayerReinforceCountriesResponseRequestEvent">
         <parameter
@@ -185,18 +185,18 @@
                   <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase" />
                 </state>
               </state>
-              <state name="InitialReinforcementPhase">
-                <onEntry action="gameModel.resetTurn()" />
-                <state name="WaitForPlayersToReinforceInitialCountries">
-                  <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()" />
-                  <onExit action="gameModel.advanceTurn()" />
-                  <transition event="onPlayerReinforceCountriesResponseRequestEvent"
-                              condition="gameModel.verifyPlayerCountryReinforcements(event)"
-                              nextState="WaitForPlayersToReinforceInitialCountries" />
-                  <transition event="onInitialReinforcementPhaseCompleteEvent"
-                              action="gameModel.resetTurn()"
-                              nextState="TurnPhase" />
-                </state>
+            </state>
+            <state name="InitialReinforcementPhase">
+              <onEntry action="gameModel.resetTurn()" />
+              <onExit  action="gameModel.resetTurn()" />
+              <state name="WaitForPlayersToReinforceInitialCountries">
+                <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()" />
+                <onExit action="gameModel.advanceTurn()" />
+                <transition event="onPlayerReinforceCountriesResponseRequestEvent"
+                            condition="gameModel.verifyPlayerCountryReinforcements(event)"
+                            nextState="WaitForPlayersToReinforceInitialCountries" />
+                <transition event="onEndInitialReinforcementPhaseEvent"
+                            nextState="TurnPhase" />
               </state>
             </state>
             <state name="TurnPhase">
@@ -205,6 +205,7 @@
                 <onExit action="gameModel.endPlayerTurn()" />
                 <state name="ReinforcementPhase">
                   <onEntry action="gameModel.beginReinforcementPhase()" />
+                  <onExit action="gameModel.endReinforcementPhase()" />
                   <state name="WaitForPlayerToPlaceReinforcements">
                     <transition event="onPlayerReinforceCountriesResponseRequestEvent"
                                 action="gameModel.verifyPlayerCountryReinforcements(event)"
@@ -218,6 +219,7 @@
                 </state>
                 <state name="AttackPhase">
                   <onEntry action="gameModel.beginAttackPhase()" />
+                  <onExit action="gameModel.endAttackPhase()" />
                   <state name="WaitForPlayerAttackOrders">
                     <transition event="onPlayerAttackCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerAttackOrder(event)"
@@ -248,6 +250,7 @@
                 </state>
                 <state name="FortifyPhase">
                   <onEntry action="gameModel.beginFortifyPhase()" />
+                  <onExit action="gameModel.endFortifyPhase()" />
                   <state name="WaitForPlayerToFortifyCountry">
                     <transition event="onPlayerFortifyCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerFortifyCountryResponseRequest(event)"
