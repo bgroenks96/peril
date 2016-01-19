@@ -227,7 +227,7 @@ public final class GameModel
     // clear state data cache
     turnDataCache.clearAll ();
 
-    eventBus.publish (new BeginPlayerTurnEvent (getCurrentPlayerPacket ()));
+    publish (new BeginPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
 
   public void endPlayerTurn ()
@@ -242,7 +242,7 @@ public final class GameModel
 
     playerTurnModel.advance ();
 
-    eventBus.publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
+    publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
 
   @StateMachineAction
@@ -269,7 +269,7 @@ public final class GameModel
     final ImmutableSortedSet.Builder <PlayerPacket> ordered = ImmutableSortedSet
             .orderedBy (PlayerPacket.TURN_ORDER_COMPARATOR);
     ordered.addAll (playerModel.getPlayerPackets ());
-    eventBus.publish (new DeterminePlayerTurnOrderCompleteEvent (ordered.build ()));
+    publish (new DeterminePlayerTurnOrderCompleteEvent (ordered.build ()));
   }
 
   @StateMachineAction
@@ -287,7 +287,7 @@ public final class GameModel
       final Id playerId = playerModel.idOf (player.getName ());
       playerModel.addArmiesToHandOf (playerId, armies);
 
-      eventBus.publish (new DefaultPlayerArmiesChangedEvent (player, armies));
+      publish (new DefaultPlayerArmiesChangedEvent (player, armies));
 
       // @formatter:off
       statusMessageBuilder
@@ -299,7 +299,7 @@ public final class GameModel
     }
     if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
 
-    eventBus.publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayerPackets ()));
+    publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayerPackets ()));
   }
 
   @StateMachineAction
@@ -307,19 +307,19 @@ public final class GameModel
   public void waitForCountryAssignmentToBegin ()
   {
     final InitialCountryAssignment assignmentMode = rules.getInitialCountryAssignment ();
-    eventBus.publish (new BeginPlayerCountryAssignmentEvent (assignmentMode));
+    publish (new BeginPlayerCountryAssignmentEvent (assignmentMode));
     switch (assignmentMode)
     {
       case RANDOM:
       {
         log.info ("Initial country assignment = RANDOM");
-        eventBus.publish (new RandomlyAssignPlayerCountriesEvent ());
+        publish (new RandomlyAssignPlayerCountriesEvent ());
         break;
       }
       case MANUAL:
       {
         log.info ("Initial country assignment = MANUAL");
-        eventBus.publish (new BeginManualCountryAssignmentEvent ());
+        publish (new BeginManualCountryAssignmentEvent ());
         break;
       }
       default:
@@ -382,23 +382,22 @@ public final class GameModel
         playerModel.removeArmiesFromHandOf (nextPlayerId, 1);
         assignSuccessCount++;
 
-        eventBus.publish (new DefaultCountryArmiesChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), 1));
-        eventBus.publish (new DefaultCountryOwnerChangedEvent (countryMapGraphModel.countryPacketWith (toAssign),
-                nextPlayer));
+        publish (new DefaultCountryArmiesChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), 1));
+        publish (new DefaultCountryOwnerChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), nextPlayer));
 
         countryItr.remove ();
       }
 
       log.info ("Assigned {} countries to [{}].", assignSuccessCount, nextPlayer.getName ());
-      eventBus.publish (new DefaultPlayerArmiesChangedEvent (nextPlayer, -1 * assignSuccessCount));
+      publish (new DefaultPlayerArmiesChangedEvent (nextPlayer, -1 * assignSuccessCount));
     }
 
-    // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
+    // create map of country -> player packets for
+    // PlayerCountryAssignmentCompleteEvent
     final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
     playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
 
-    eventBus.publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (),
-            playMapViewPackets));
+    publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
   }
 
   @StateMachineAction
@@ -413,17 +412,18 @@ public final class GameModel
     playerFactory.newPlayerWith (event.getPlayerName ());
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (playerFactory);
 
-    // for loop is a formality; there should only ever be one result for this case.
+    // for loop is a formality; there should only ever be one result for this
+    // case.
     for (final PlayerJoinGameStatus result : results)
     {
       final PlayerPacket player = result.getPlayer ();
       if (result.failed ())
       {
-        eventBus.publish (new PlayerJoinGameDeniedEvent (player.getName (), result.getFailureReason ()));
+        publish (new PlayerJoinGameDeniedEvent (player.getName (), result.getFailureReason ()));
         continue;
       }
 
-      eventBus.publish (new PlayerJoinGameSuccessEvent (player));
+      publish (new PlayerJoinGameSuccessEvent (player));
     }
   }
 
@@ -456,16 +456,16 @@ public final class GameModel
 
     if (countryOwnerModel.allCountriesAreOwned ())
     {
-      // create map of country -> player packets for PlayerCountryAssignmentCompleteEvent
+      // create map of country -> player packets for
+      // PlayerCountryAssignmentCompleteEvent
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
       playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
-      eventBus.publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (),
-              playMapViewPackets));
+      publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
       return;
     }
 
     log.info ("Waiting for player [{}] to claim a country...", currentPlayer.getName ());
-    eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+    publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
   }
 
   @StateMachineCondition
@@ -482,19 +482,19 @@ public final class GameModel
 
     if (!playerModel.canRemoveArmiesFromHandOf (currentPlayerId, 1))
     {
-      eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
       // send a new request
-      eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
     }
 
     if (!countryMapGraphModel.existsCountryWith (claimedCountryName))
     {
-      eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
       // send a new request
-      eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
     }
 
@@ -504,10 +504,9 @@ public final class GameModel
     res1 = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
     if (res1.failed ())
     {
-      eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
-              res1.getFailureReason ()));
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res1.getFailureReason ()));
       // send a new request
-      eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
     }
 
@@ -515,10 +514,9 @@ public final class GameModel
     res2 = countryArmyModel.requestToAddArmiesToCountry (countryId, 1);
     if (res2.failed ())
     {
-      eventBus.publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
-              res2.getFailureReason ()));
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res2.getFailureReason ()));
       // send a new request
-      eventBus.publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
       return false;
     }
 
@@ -526,7 +524,7 @@ public final class GameModel
     playerModel.removeArmiesFromHandOf (currentPlayerId, 1);
 
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
-    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (updatedPlayer,
+    publish (new PlayerClaimCountryResponseSuccessEvent (updatedPlayer,
             countryMapGraphModel.countryPacketWith (countryId), 1));
 
     return true;
@@ -535,7 +533,7 @@ public final class GameModel
   @StateMachineAction
   @StateEntryAction
   public void waitForPlayersToReinforceInitialCountries ()
-  {
+  { 
     int totalArmySum = 0;
     for (final Id playerId : playerModel.getPlayerIds ())
     {
@@ -544,18 +542,20 @@ public final class GameModel
 
     if (totalArmySum == 0)
     {
-      eventBus.publish (new EndInitialReinforcementPhaseEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
+      publish (new EndInitialReinforcementPhaseEvent (buildPlayMapViewFrom (playerModel, playMapModel)));
       return;
     }
 
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
+    
+    log.trace ("Waiting for [{}] to place initial reinforcements...", player);
 
     // add country reinforcements and publish event
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
     final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
-    eventBus.publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents, 0,
-            0, rules.getMaxArmiesOnCountry ()));
+    publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents, 0, 0,
+            rules.getMaxArmiesOnCountry ()));
   }
 
   @StateMachineAction
@@ -567,7 +567,7 @@ public final class GameModel
 
     log.info ("Begin reinforcement phase for player [{}].", player);
 
-    eventBus.publish (new BeginReinforcementPhaseEvent (player));
+    publish (new BeginReinforcementPhaseEvent (player));
 
     // add country reinforcements and publish event
     final int countryReinforcementBonus = rules
@@ -581,10 +581,10 @@ public final class GameModel
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
-    eventBus.publish (new DefaultPlayerArmiesChangedEvent (player, totalReinforcementBonus));
-    eventBus.publish (eventFactory.createTradeInCardsRequestFor (playerId, TurnPhase.REINFORCE));
+    publish (new DefaultPlayerArmiesChangedEvent (player, totalReinforcementBonus));
+    publish (eventFactory.createTradeInCardsRequestFor (playerId, TurnPhase.REINFORCE));
     // publish reinforcement request
-    eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
+    publish (eventFactory.createReinforcementRequestFor (playerId));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
   }
 
@@ -595,7 +595,7 @@ public final class GameModel
 
     log.info ("End reinforcement phase for player [{}].", player);
 
-    eventBus.publish (new EndReinforcementPhaseEvent (player));
+    publish (new EndReinforcementPhaseEvent (player));
   }
 
   @StateMachineAction
@@ -603,6 +603,8 @@ public final class GameModel
   public boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+    
+    log.trace ("Event received [{}]", event);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = playerModel.idOf (player.getName ());
@@ -623,9 +625,9 @@ public final class GameModel
     }
     if (totalReinforcementCount > player.getArmiesInHand ())
     {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player,
+      publish (new PlayerReinforceCountriesResponseDeniedEvent (player,
               PlayerReinforceCountriesResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
-      eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
+      publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
@@ -660,8 +662,8 @@ public final class GameModel
 
     if (failureResult.failed ())
     {
-      eventBus.publish (new PlayerReinforceCountriesResponseDeniedEvent (player, failureResult.getFailureReason ()));
-      eventBus.publish (eventFactory.createReinforcementRequestFor (playerId));
+      publish (new PlayerReinforceCountriesResponseDeniedEvent (player, failureResult.getFailureReason ()));
+      publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
@@ -671,10 +673,9 @@ public final class GameModel
     for (final CountryPacket country : countriesToDeltaArmyCounts.keySet ())
     {
       final CountryPacket updatedCountryPacket = countryMapGraphModel.countryPacketWith (country.getName ());
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (updatedCountryPacket,
-              countriesToDeltaArmyCounts.get (country)));
+      publish (new DefaultCountryArmiesChangedEvent (updatedCountryPacket, countriesToDeltaArmyCounts.get (country)));
     }
-    eventBus.publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
+    publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
 
     return true;
   }
@@ -683,6 +684,8 @@ public final class GameModel
   public void handlePlayerCardTradeIn (final PlayerTradeInCardsResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+    
+    log.trace ("Event received [{}]", event);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = playerModel.idOf (player.getName ());
@@ -711,18 +714,18 @@ public final class GameModel
     }
     else if (result.failed ())
     {
-      eventBus.publish (new PlayerTradeInCardsResponseDeniedEvent (player, result.getFailureReason ()));
+      publish (new PlayerTradeInCardsResponseDeniedEvent (player, result.getFailureReason ()));
       // send new request event
       final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
       final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
       final boolean isTradeInRequired = cardModel.countCardsInHand (playerId) > rules
               .getMaxCardsInHand (TurnPhase.REINFORCE);
-      eventBus.publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
+      publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
               isTradeInRequired));
       return;
     }
 
-    eventBus.publish (new PlayerTradeInCardsResponseSuccessEvent (player, event.getTradeIn (), cardTradeInBonus));
+    publish (new PlayerTradeInCardsResponseSuccessEvent (player, event.getTradeIn (), cardTradeInBonus));
   }
 
   @StateMachineCondition
@@ -746,7 +749,7 @@ public final class GameModel
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    eventBus.publish (new BeginAttackPhaseEvent (currentPlayer));
+    publish (new BeginAttackPhaseEvent (currentPlayer));
 
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
     for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (player))
@@ -755,7 +758,7 @@ public final class GameModel
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
     }
 
-    eventBus.publish (new PlayerAttackCountryRequestEvent (currentPlayer, builder.build ()));
+    publish (new PlayerAttackCountryRequestEvent (currentPlayer, builder.build ()));
   }
 
   @StateMachineAction
@@ -765,7 +768,7 @@ public final class GameModel
 
     log.info ("End attack phase for player [{}].", player);
 
-    eventBus.publish (new EndAttackPhaseEvent (player));
+    publish (new EndAttackPhaseEvent (player));
   }
 
   @StateMachineCondition
@@ -786,14 +789,14 @@ public final class GameModel
 
     if (!countryMapGraphModel.existsCountryWith (sourceCountryName))
     {
-      eventBus.publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerAttackCountryResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryMapGraphModel.existsCountryWith (targetCountryName))
     {
-      eventBus.publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerAttackCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
@@ -804,7 +807,7 @@ public final class GameModel
     result = battleModel.newPlayerAttackOrder (currentPlayer, sourceCountry, targetCountry, dieCount, playMapModel);
     if (result.failed ())
     {
-      eventBus.publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
+      publish (new PlayerAttackCountryResponseDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
       return false;
     }
 
@@ -816,7 +819,7 @@ public final class GameModel
     turnDataCache.put (CacheKey.BATTLE_ATTACKER_DATA, attacker);
 
     // send out request event to defender
-    eventBus.publish (new PlayerDefendCountryRequestEvent (defendingPlayer, targetCountryPacket,
+    publish (new PlayerDefendCountryRequestEvent (defendingPlayer, targetCountryPacket,
             BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
     return true;
   }
@@ -830,7 +833,7 @@ public final class GameModel
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    eventBus.publish (new PlayerEndAttackPhaseResponseSuccessEvent (currentPlayer));
+    publish (new PlayerEndAttackPhaseResponseSuccessEvent (currentPlayer));
 
     return true;
   }
@@ -849,7 +852,8 @@ public final class GameModel
       return false;
     }
 
-    // fail if cache values are not set; this would indicate a pretty serious bug in the state
+    // fail if cache values are not set; this would indicate a pretty serious
+    // bug in the state
     // machine logic
     checkCacheValues (CacheKey.BATTLE_PENDING_ATTACK_ORDER, CacheKey.BATTLE_ATTACKER_DATA);
 
@@ -870,15 +874,15 @@ public final class GameModel
     if (dieCount < rules.getMinAttackerDieCount (defendingCountry.getArmyCount ())
             || dieCount > rules.getMaxAttackerDieCount (defendingCountry.getArmyCount ()))
     {
-      eventBus.publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
+      publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
               PlayerDefendCountryResponseDeniedEvent.Reason.INVALID_DIE_COUNT));
       // re-publish request event on failure
-      eventBus.publish (new PlayerDefendCountryRequestEvent (defendingPlayer, defendingCountry,
+      publish (new PlayerDefendCountryRequestEvent (defendingPlayer, defendingCountry,
               BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
       return false;
     }
 
-    eventBus.publish (new PlayerDefendCountryResponseSuccessEvent (defendingPlayer, defendingCountry, dieCount,
+    publish (new PlayerDefendCountryResponseSuccessEvent (defendingPlayer, defendingCountry, dieCount,
             BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
 
     final BattleActor defender = new DefaultBattleActor (defendingPlayerId, attackOrder.getTargetCountry (), dieCount);
@@ -923,19 +927,21 @@ public final class GameModel
     // publish notification events
     if (attackerArmyCountDelta != 0)
     {
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (attackerCountry, attackerArmyCountDelta));
+      publish (new DefaultCountryArmiesChangedEvent (attackerCountry, attackerArmyCountDelta));
     }
     if (defenderArmyCountDelta != 0)
     {
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (defenderCountry, defenderArmyCountDelta));
+      publish (new DefaultCountryArmiesChangedEvent (defenderCountry, defenderArmyCountDelta));
     }
     if (result.getDefendingCountryOwner ().isNot (defender.getPlayerId ()))
     {
-      // eventBus.publish (new DefaultCountryOwnerChangedEvent (updatedDefenderCountry, prevOwner, newOwner));
+      // publish (new DefaultCountryOwnerChangedEvent (updatedDefenderCountry,
+      // prevOwner, newOwner));
 
-      // publish occupation request event (this must occur before attack success event in order for the
+      // publish occupation request event (this must occur before attack success
+      // event in order for the
       // correct state transition to occur)
-      eventBus.publish (new PlayerOccupyCountryRequestEvent (newOwner,
+      publish (new PlayerOccupyCountryRequestEvent (newOwner,
               countryMapGraphModel.countryPacketWith (attacker.getCountryId ()), defenderCountry));
     }
 
@@ -948,7 +954,7 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
 
     final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel);
-    eventBus.publish (new PlayerAttackCountryResponseSuccessEvent (resultPacket));
+    publish (new PlayerAttackCountryResponseSuccessEvent (resultPacket));
   }
 
   @StateMachineCondition
@@ -971,17 +977,17 @@ public final class GameModel
 
     if (deltaArmyCount < minDeltaArmyCount)
     {
-      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player,
+      publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW));
-      eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
     }
 
     if (deltaArmyCount > rules.getMaxOccupyArmyCount (sourceCountry.getArmyCount ()))
     {
-      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player,
+      publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
-      eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
     }
 
@@ -996,8 +1002,8 @@ public final class GameModel
     failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2, res3));
     if (failure.isPresent ())
     {
-      eventBus.publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason ()));
-      eventBus.publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason ()));
+      publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
       return false;
     }
 
@@ -1005,9 +1011,9 @@ public final class GameModel
 
     final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
     final CountryPacket updatedDestCountry = countryMapGraphModel.countryPacketWith (destCountryId);
-    eventBus.publish (new DefaultCountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
-    eventBus.publish (new DefaultCountryArmiesChangedEvent (updatedDestCountry, deltaArmyCount));
-    eventBus.publish (new PlayerOccupyCountryResponseSuccessEvent (player, prevDestCountryOwner, updatedSourceCountry,
+    publish (new DefaultCountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
+    publish (new DefaultCountryArmiesChangedEvent (updatedDestCountry, deltaArmyCount));
+    publish (new PlayerOccupyCountryResponseSuccessEvent (player, prevDestCountryOwner, updatedSourceCountry,
             updatedDestCountry, deltaArmyCount));
 
     clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
@@ -1024,7 +1030,7 @@ public final class GameModel
 
     log.info ("Begin fortify phase for player [{}].", currentPlayerPacket);
 
-    eventBus.publish (new BeginFortifyPhaseEvent (currentPlayerPacket));
+    publish (new BeginFortifyPhaseEvent (currentPlayerPacket));
 
     final Id currentPlayerId = getCurrentPlayerId ();
     final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
@@ -1042,7 +1048,7 @@ public final class GameModel
       }
     }
 
-    eventBus.publish (new PlayerFortifyCountryRequestEvent (currentPlayerPacket, validFortifyVectors.build ()));
+    publish (new PlayerFortifyCountryRequestEvent (currentPlayerPacket, validFortifyVectors.build ()));
   }
 
   @StateMachineAction
@@ -1052,7 +1058,7 @@ public final class GameModel
 
     log.info ("End fortify phase for player [{}].", player);
 
-    eventBus.publish (new EndFortifyPhaseEvent (player));
+    publish (new EndFortifyPhaseEvent (player));
   }
 
   @StateMachineCondition
@@ -1066,20 +1072,20 @@ public final class GameModel
     if (!event.isCountryDataPresent ())
     {
       // empty fortify actions do not need to be checked
-      eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket));
+      publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket));
       return true;
     }
 
     if (!countryMapGraphModel.existsCountryWith (event.getSourceCountry ().get ()))
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryMapGraphModel.existsCountryWith (event.getTargetCountry ().get ()))
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
@@ -1089,21 +1095,21 @@ public final class GameModel
 
     if (!countryOwnerModel.isCountryOwnedBy (sourceCountryId, currentPlayerId))
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
       return false;
     }
 
     if (!countryOwnerModel.isCountryOwnedBy (targetCountryId, currentPlayerId))
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY));
       return false;
     }
 
     if (!countryMapGraphModel.areAdjacent (sourceCountryId, targetCountryId))
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
       return false;
     }
@@ -1112,14 +1118,14 @@ public final class GameModel
 
     if (fortifyArmyCount == 0)
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_UNDERFLOW));
       return false;
     }
 
     if (fortifyArmyCount > rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId)))
     {
-      eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
               PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW));
       return false;
     }
@@ -1139,7 +1145,7 @@ public final class GameModel
       switch (res2.getFailureReason ())
       {
         case COUNTRY_ARMY_COUNT_OVERFLOW:
-          eventBus.publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+          publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
                   PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_ARMY_COUNT_OVERFLOW));
           return false;
         default:
@@ -1149,10 +1155,10 @@ public final class GameModel
 
     MutatorResult.commitAllSuccessful (res1, res2);
 
-    eventBus.publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
-    eventBus.publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, fortifyArmyCount));
+    publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
+    publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, fortifyArmyCount));
 
-    eventBus.publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket, sourceCountryPacket,
+    publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket, sourceCountryPacket,
             targetCountryPacket, fortifyArmyCount));
 
     return true;
@@ -1253,13 +1259,20 @@ public final class GameModel
                turnDataCache);
   }
 
-  // checks whether or not a player has won or lost the game in the current game state
+  private void publish (final Event event)
+  {
+    log.trace ("Publishing event [{}]", event);
+    eventBus.publish (event);
+  }
+
+  // checks whether or not a player has won or lost the game in the current game
+  // state
   private void checkPlayerGameStatus (final Id playerId)
   {
     final int playerCountryCount = countryOwnerModel.countCountriesOwnedBy (playerId);
     if (playerCountryCount < rules.getMinPlayerCountryCount ())
     {
-      eventBus.publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
+      publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
       playerModel.remove (playerId);
       return;
     }
@@ -1267,9 +1280,9 @@ public final class GameModel
     if (playerCountryCount >= rules.getWinningCountryCount ())
     {
       // player won! huzzah!
-      eventBus.publish (new PlayerWinGameEvent (playerModel.playerPacketWith (playerId)));
+      publish (new PlayerWinGameEvent (playerModel.playerPacketWith (playerId)));
       // end the game
-      eventBus.publish (new EndGameEvent ());
+      publish (new EndGameEvent ());
     }
   }
 
