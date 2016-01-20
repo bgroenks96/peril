@@ -533,7 +533,7 @@ public final class GameModel
   @StateMachineAction
   @StateEntryAction
   public void waitForPlayersToReinforceInitialCountries ()
-  { 
+  {
     int totalArmySum = 0;
     for (final Id playerId : playerModel.getPlayerIds ())
     {
@@ -548,7 +548,7 @@ public final class GameModel
 
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
-    
+
     log.trace ("Waiting for [{}] to place initial reinforcements...", player);
 
     // add country reinforcements and publish event
@@ -603,7 +603,7 @@ public final class GameModel
   public boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    
+
     log.trace ("Event received [{}]", event);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
@@ -684,7 +684,7 @@ public final class GameModel
   public void handlePlayerCardTradeIn (final PlayerTradeInCardsResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    
+
     log.trace ("Event received [{}]", event);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
@@ -726,17 +726,6 @@ public final class GameModel
     }
 
     publish (new PlayerTradeInCardsResponseSuccessEvent (player, event.getTradeIn (), cardTradeInBonus));
-  }
-
-  @StateMachineCondition
-  public boolean isReinforcementComplete ()
-  {
-    final Optional <Boolean> isReinforcementValid = turnDataCache
-            .checkAndGet (CacheKey.REINFORCE_COUNTRY_REINFORCEMENT_VALID, boolean.class);
-    final Optional <Boolean> isCardTradeInValid = turnDataCache.checkAndGet (CacheKey.REINFORCE_CARD_TRADEIN_VALID,
-                                                                             boolean.class);
-    if (!isReinforcementValid.isPresent () || !isCardTradeInValid.isPresent ()) return false;
-    return isReinforcementValid.get () && isCardTradeInValid.get ();
   }
 
   @StateMachineAction

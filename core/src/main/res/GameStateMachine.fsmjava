@@ -208,13 +208,11 @@
                   <onExit action="gameModel.endReinforcementPhase()" />
                   <state name="WaitForPlayerToPlaceReinforcements">
                     <transition event="onPlayerReinforceCountriesResponseRequestEvent"
-                                action="gameModel.verifyPlayerCountryReinforcements(event)"
-                                condition="gameModel.isReinforcementComplete()"
+                                condition="gameModel.verifyPlayerCountryReinforcements(event)"
                                 nextState="AttackPhase" />
                     <transition event="onPlayerTradeInCardsResponseRequestEvent"
                                 action="gameModel.handlePlayerCardTradeIn(event)"
-                                condition="gameModel.isReinforcementComplete()"
-                                nextState="AttackPhase" />
+                                nextState="WaitForPlayerToPlaceReinforcements" />
                   </state>
                 </state>
                 <state name="AttackPhase">
