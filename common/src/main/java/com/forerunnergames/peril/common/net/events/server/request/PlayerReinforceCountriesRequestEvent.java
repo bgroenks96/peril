@@ -53,7 +53,7 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerEv
 
   public int getTotalReinforcements ()
   {
-    return getPlayer ().getArmiesInHand () + countryReinforcementBonus + continentReinforcementBonus;
+    return getPlayer ().getArmiesInHand ();
   }
 
   public int getMaxArmiesPerCountry ()
