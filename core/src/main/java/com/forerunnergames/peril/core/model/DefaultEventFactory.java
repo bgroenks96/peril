@@ -3,6 +3,7 @@ package com.forerunnergames.peril.core.model;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -52,6 +53,13 @@ final class DefaultEventFactory implements EventFactory
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
     countryArmyModel = playMapModel.getCountryArmyModel ();
     continentOwnerModel = playMapModel.getContinentOwnerModel ();
+  }
+
+  @Override
+  public PlayerReinforceInitialCountryRequestEvent createInitialReinforcementRequestFor (final Id playerId)
+  {
+    final PlayerPacket player = playerModel.playerPacketWith (playerId);
+    return new PlayerReinforceInitialCountryRequestEvent (player);
   }
 
   @Override

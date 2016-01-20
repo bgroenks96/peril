@@ -46,6 +46,11 @@
           type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
           name="event" />
       </event>
+      <event id="onPlayerReinforceInitialCountryResponseRequestEvent">
+        <parameter
+          name="event"
+          type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceInitialCountryResponseRequestEvent" />
+      </event>
       <event id="onEndInitialReinforcementPhaseEvent">
         <parameter
           name="event"
@@ -192,8 +197,8 @@
               <state name="WaitForPlayersToReinforceInitialCountries">
                 <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()" />
                 <onExit action="gameModel.advanceTurn()" />
-                <transition event="onPlayerReinforceCountriesResponseRequestEvent"
-                            condition="gameModel.verifyPlayerCountryReinforcements(event)"
+                <transition event="onPlayerReinforceInitialCountryResponseRequestEvent"
+                            condition="gameModel.verifyPlayerInitialCountryReinforcements(event)"
                             nextState="WaitForPlayersToReinforceInitialCountries" />
                 <transition event="onEndInitialReinforcementPhaseEvent"
                             nextState="TurnPhase" />
@@ -202,7 +207,10 @@
             <state name="TurnPhase">
               <state name="PlayerTurn">
                 <onEntry action="gameModel.beginPlayerTurn()" />
-                <onExit action="gameModel.endPlayerTurn()" />
+                <onExit>
+                  <action>gameModel.endPlayerTurn()</action>
+                  <action>gameModel.advanceTurn()</action>
+                </onExit>
                 <state name="ReinforcementPhase">
                   <onEntry action="gameModel.beginReinforcementPhase()" />
                   <onExit action="gameModel.endReinforcementPhase()" />
@@ -224,7 +232,7 @@
                                 nextState="WaitForDefenderResponse"/>
                     <transition event="onPlayerEndAttackPhaseResponseRequestEvent"
                                 condition="gameModel.verifyPlayerEndAttackPhase(event)"
-                                nextState="EndGame" />
+                                nextState="FortifyPhase" />
                   </state>
                   <state name="WaitForDefenderResponse">
                     <transition event="onPlayerDefendCountryResponseRequestEvent"

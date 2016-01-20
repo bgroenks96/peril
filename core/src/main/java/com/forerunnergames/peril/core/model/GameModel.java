@@ -13,6 +13,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceInitialCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
@@ -25,6 +26,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCo
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceInitialCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
@@ -57,6 +59,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyC
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceInitialCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
@@ -239,8 +242,6 @@ public final class GameModel
     {
       checkPlayerGameStatus (playerId);
     }
-
-    playerTurnModel.advance ();
 
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
   }
@@ -558,12 +559,60 @@ public final class GameModel
             rules.getMaxArmiesOnCountry ()));
   }
 
+  @StateMachineCondition
+  public boolean verifyPlayerInitialCountryReinforcements (final PlayerReinforceInitialCountryResponseRequestEvent event)
+  {
+    log.info ("Event received [{}]", event);
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+    final Id playerId = getCurrentPlayerId ();
+
+    final int reinforcementCount = event.getReinforcementCount ();
+    if (reinforcementCount > player.getArmiesInHand ())
+    {
+      publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player,
+              PlayerReinforceInitialCountryResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
+      publish (eventFactory.createInitialReinforcementRequestFor (playerId));
+      return false;
+    }
+
+    final String countryName = event.getCountryName ();
+    if (!countryMapGraphModel.existsCountryWith (countryName))
+    {
+      publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player,
+              PlayerReinforceInitialCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+      publish (eventFactory.createInitialReinforcementRequestFor (playerId));
+      return false;
+    }
+
+    final Id countryId = countryMapGraphModel.countryWith (countryName);
+
+    final MutatorResult <PlayerReinforceInitialCountryResponseDeniedEvent.Reason> result;
+    result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
+
+    if (result.failed ())
+    {
+      publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player, result.getFailureReason ()));
+      publish (eventFactory.createInitialReinforcementRequestFor (playerId));
+      return false;
+    }
+
+    result.commitIfSuccessful ();
+    playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
+
+    final PlayerPacket updatedPlayer = playerModel.playerPacketWith (playerId);
+    final CountryPacket updatedCountry = countryMapGraphModel.countryPacketWith (countryId);
+
+    publish (new PlayerReinforceInitialCountryResponseSuccessEvent (updatedPlayer, updatedCountry, reinforcementCount));
+    return true;
+  }
+
   @StateMachineAction
   @StateEntryAction
   public void beginReinforcementPhase ()
   {
     final PlayerPacket player = getCurrentPlayerPacket ();
-    final Id playerId = playerModel.idOf (player.getName ());
+    final Id playerId = getCurrentPlayerId ();
 
     log.info ("Begin reinforcement phase for player [{}].", player);
 
@@ -586,16 +635,6 @@ public final class GameModel
     // publish reinforcement request
     publish (eventFactory.createReinforcementRequestFor (playerId));
     log.info ("Waiting for player [{}] to place reinforcements...", player);
-  }
-
-  @StateMachineAction
-  public void endReinforcementPhase ()
-  {
-    final PlayerPacket player = getCurrentPlayerPacket ();
-
-    log.info ("End reinforcement phase for player [{}].", player);
-
-    publish (new EndReinforcementPhaseEvent (player));
   }
 
   @StateMachineAction
@@ -678,6 +717,16 @@ public final class GameModel
     publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
 
     return true;
+  }
+
+  @StateMachineAction
+  public void endReinforcementPhase ()
+  {
+    final PlayerPacket player = getCurrentPlayerPacket ();
+
+    log.info ("End reinforcement phase for player [{}].", player);
+
+    publish (new EndReinforcementPhaseEvent (player));
   }
 
   @StateMachineAction
