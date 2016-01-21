@@ -36,6 +36,7 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_TOTAL_ATTACKER_DIE_COUNT = 3;
   public static final int MIN_TOTAL_DEFENDER_DIE_COUNT = 1;
   public static final int MAX_TOTAL_DEFENDER_DIE_COUNT = 2;
+  private static final int INITIAL_REINFORCEMENT_ARMY_COUNT = 1;
   private static final int MIN_REINFORCEMENT_COUNT = 3;
   private static final int CARD_TRADE_IN_COUNT = 3;
   private static final int MAX_CARDS_IN_HAND_REINFORCE_PHASE = 6;
@@ -183,6 +184,12 @@ public final class ClassicGameRules implements GameRules
   public int getWinningCountryCount ()
   {
     return winningCountryCount;
+  }
+
+  @Override
+  public int getInitialReinforcementArmyCount ()
+  {
+    return INITIAL_REINFORCEMENT_ARMY_COUNT;
   }
 
   @Override

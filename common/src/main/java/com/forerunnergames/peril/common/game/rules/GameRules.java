@@ -54,6 +54,8 @@ public interface GameRules
 
   int getWinningCountryCount ();
 
+  int getInitialReinforcementArmyCount ();
+
   int getCardTradeInCount ();
 
   int getMaxCardsInHand (final TurnPhase phase);

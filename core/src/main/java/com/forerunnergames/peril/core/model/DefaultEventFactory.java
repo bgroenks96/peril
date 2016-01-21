@@ -59,7 +59,8 @@ final class DefaultEventFactory implements EventFactory
   public PlayerReinforceInitialCountryRequestEvent createInitialReinforcementRequestFor (final Id playerId)
   {
     final PlayerPacket player = playerModel.playerPacketWith (playerId);
-    return new PlayerReinforceInitialCountryRequestEvent (player);
+    return new PlayerReinforceInitialCountryRequestEvent (player, countryOwnerModel.getCountriesOwnedBy (playerId),
+            rules.getInitialReinforcementArmyCount ());
   }
 
   @Override

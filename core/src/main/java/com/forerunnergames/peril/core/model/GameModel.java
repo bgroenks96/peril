@@ -567,7 +567,7 @@ public final class GameModel
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
 
-    final int reinforcementCount = event.getReinforcementCount ();
+    final int reinforcementCount = rules.getInitialReinforcementArmyCount ();
     if (reinforcementCount > player.getArmiesInHand ())
     {
       publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player,

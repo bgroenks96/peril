@@ -10,15 +10,12 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEv
 public final class PlayerReinforceInitialCountryResponseRequestEvent implements ResponseRequestEvent
 {
   private final String countryName;
-  private final int reinforcementCount;
 
-  public PlayerReinforceInitialCountryResponseRequestEvent (final String countryName, final int reinforcementCount)
+  public PlayerReinforceInitialCountryResponseRequestEvent (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
-    Arguments.checkIsNotNegative (reinforcementCount, "reinforcementCount");
 
     this.countryName = countryName;
-    this.reinforcementCount = reinforcementCount;
   }
 
   public String getCountryName ()
@@ -26,16 +23,10 @@ public final class PlayerReinforceInitialCountryResponseRequestEvent implements 
     return countryName;
   }
 
-  public int getReinforcementCount ()
-  {
-    return reinforcementCount;
-  }
-
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: CountryName: {} | ReinforcementCount: {}", getClass ().getSimpleName (), countryName,
-                           reinforcementCount);
+    return Strings.format ("{}: CountryName: {}", getClass ().getSimpleName (), countryName);
   }
 
   @Override
@@ -48,6 +39,5 @@ public final class PlayerReinforceInitialCountryResponseRequestEvent implements 
   private PlayerReinforceInitialCountryResponseRequestEvent ()
   {
     countryName = null;
-    reinforcementCount = 0;
   }
 }
