@@ -30,6 +30,8 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
@@ -447,6 +449,15 @@ public final class GameModel
       log.warn ("Received [{}], but player [{}] still exists.", event, event.getPlayer ());
       return;
     }
+  }
+
+  public void beginInitialReinforcementPhase ()
+  {
+    log.info ("Begin initial reinforcement phase...");
+
+    resetTurn ();
+
+    publish (new BeginInitialReinforcementPhaseEvent (getCurrentPlayerPacket ()));
   }
 
   @StateMachineAction
