@@ -31,7 +31,6 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCa
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
@@ -51,7 +50,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCou
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -565,9 +564,8 @@ public final class GameModel
 
     // add country reinforcements and publish event
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
-    final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
-    publish (new PlayerReinforceCountriesRequestEvent (player, playerOwnedCountries, playerOwnedContinents, 0, 0,
-            rules.getMaxArmiesOnCountry ()));
+    publish (new PlayerReinforceInitialCountryRequestEvent (player, playerOwnedCountries,
+            rules.getInitialReinforcementArmyCount ()));
   }
 
   @StateMachineCondition
