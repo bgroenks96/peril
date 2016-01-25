@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.desktop;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.jogamp.JoglNewtApplication;
+import com.badlogic.gdx.backends.jogamp.JoglNewtApplicationConfiguration;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -86,7 +86,7 @@ public final class DesktopLauncher
       }
     });
 
-    final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration ();
+    final JoglNewtApplicationConfiguration config = new JoglNewtApplicationConfiguration ();
 
     ClientApplicationProperties.set ();
 
@@ -134,6 +134,6 @@ public final class DesktopLauncher
     if (!jArgs.playerName.isEmpty ()) InputSettings.INITIAL_PLAYER_NAME = jArgs.playerName;
     if (!jArgs.clanName.isEmpty ()) InputSettings.INITIAL_CLAN_NAME = jArgs.clanName;
 
-    new LwjglApplication (LibGdxGameFactory.create (), config);
+    new JoglNewtApplication (LibGdxGameFactory.create (), config);
   }
 }

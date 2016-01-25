@@ -168,7 +168,7 @@ public final class SplashScreen extends AbstractLoadingScreen
     {
       assetUpdater.updateAssets ();
     }
-    catch (final RuntimeException e)
+    catch (final Exception e)
     {
       handleError ("A crash file has been created in \"{}\".\n\nThere was a problem updating a game resource.\n\n"
               + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
