@@ -1,5 +1,7 @@
 [![Build Status](http://ci.forerunnergames.com:8080/buildStatus/icon?job=peril)](http://ci.forerunnergames.com:8080/job/peril/)
 
+[![Build Status](https://travis-ci.org/forerunnergames/peril.svg?branch=master)](https://travis-ci.org/forerunnergames/peril)
+
 ```
 peril [per-uhl] (noun)
 
