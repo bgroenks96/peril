@@ -1,8 +1,30 @@
-language: java
+language: android
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-23.0.2
+    - android-23
+
+before_script:
+  - pip install --user codecov
+
+script:
+  - ./gradlew clean build integrationTest
+
+after_success:
+  - codecov
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+notifications:
+  hipchat:
+    rooms:
+      secure: BF31y6SwqiY2mOFdOqBELTG95JN6MTEqw0unlquddmZoDYY46QMyIh5BQlTh+XUP/Pdc4FwR7RZKAQqWMp/U9T27b34XSemiflVD9Fbm3oF6tCUhLSnLzGAaZWngI8ojIyv3+GFw23+c4k7GoC34WAg3sVyNZbIXeJDZWpX4YAr9moNsNcS6279+tYGnu1VgzF4DU3fNCYg/QSZSyrLdZ4Hcf7SGIVibdggIfJvxytURYr7pouVUR0OF+Cu6NNlfiIeOWh5rHGMdGkAAG1/lxBsrnDY4piYtJ9jO5FAbp8UeIdRxNFqIGKt3Qn7TBp6mbIMlRFHUCPeZxK+zx2Qx5hMTPY/0P9v8DXNL+4FnF50Zwpae6+KhMTkAoDlxAGjuEgt1BbN7RKpCX4r97g6ULEmXxe48EouU8Xfr4HbuWyicV2P401Wd96ehUqy4FXaG/uCxA+r95o4zepGOUvsj77sdtNmPqPDpFSbhLdhCToWEj+tiIibDhDPjKigYbvBQ3v30diglk4/HbFcu5Tr4kDG7un8xT2aqiBkSBvspTJUk8eHtzlrYRxuo5hMUAn60kt1y4haSIkPzjMX6r8ujh2/rraZEh+8yJxURRSwFhoE2a3DD8J+xzAekHavyiG6wpWkaeRNLr8cOZyE39+KYFm3k/LZZfgErmIOyiT+8RRg=
