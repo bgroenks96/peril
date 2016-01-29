@@ -19,36 +19,36 @@
 [compileJava]*.options*.encoding = "UTF-8"
 
 sourceSets {
-    integrationTest {
-        java.srcDir file('src/integration/java')
-        resources.srcDir file('src/integration/res')
-    }
+  integrationTest {
+    java.srcDir file ("src/integration/java")
+    resources.srcDir file ("src/integration/res")
+  }
 }
 
 task integrationTest (type: Test) {
-  description 'Run integration tests'
-  include '**/*Test*.*'
+  description "Run integration tests"
+  include "**/*Test*.*"
   testClassesDir = sourceSets.integrationTest.output.classesDir
   classpath = sourceSets.integrationTest.runtimeClasspath
-  useTestNG() {
+  useTestNG () {
     parallel "tests"
   }
   // configure testng suites
-  options.suites(getSuitesToRun())
+  options.suites (getSuitesToRun ())
 }
 
-def getSuitesToRun() {
+def getSuitesToRun () {
   // run standalone tests by default
-  if (!project.hasProperty("tests")) {
+  if (!project.hasProperty ("tests")) {
     return allTests
   }
-  if (project.property("tests") == "func.all") {
+  if (project.property ("tests") == "func.all") {
     return funcTestsAll
   }
-  if (project.property("tests") == "smoke.standalone") {
+  if (project.property ("tests") == "smoke.standalone") {
     return smokeTestsStandalone
   }
-  if (project.property("tests") == "smoke.all") {
+  if (project.property ("tests") == "smoke.all") {
     return smokeTestsAll
   }
 }
