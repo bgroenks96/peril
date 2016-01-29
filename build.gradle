@@ -75,12 +75,11 @@ allprojects {
   }
 
   repositories {
-    mavenLocal ()
     jcenter ()
     mavenCentral ()
+    maven { url "http://ci.forerunnergames.com:9090/repository/snapshots/" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-    maven { url "http://ci.forerunnergames.com:9090/repository/snapshots/" }
   }
 
   configurations.all {
