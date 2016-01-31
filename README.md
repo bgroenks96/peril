@@ -1,5 +1,5 @@
 [![Build Status](http://ci.forerunnergames.com:8080/buildStatus/icon?job=peril)](http://ci.forerunnergames.com:8080/job/peril/)
-[![Build Status](https://travis-ci.org/forerunnergames/peril.svg?branch=master)](https://travis-ci.org/forerunnergames/peril)
+[![Build Status](https://travis-ci.org/forerunnergames/peril.svg?branch=develop)](https://travis-ci.org/forerunnergames/peril)
 [![Code Coverage](https://img.shields.io/codecov/c/github/forerunnergames/peril/develop.svg)](https://codecov.io/github/forerunnergames/peril?branch=develop)
 [![Code Quality](https://img.shields.io/codacy/bf2b210c63de4349827e7aadaf019825/develop.svg)](https://www.codacy.com/app/forerunnergames/peril/)
 [![License: GPLv3](https://img.shields.io/badge/license-GPLv3%20(code)-blue.svg)](/legal/GPLv3.txt)
