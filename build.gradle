@@ -75,6 +75,7 @@ allprojects {
   }
 
   repositories {
+    mavenLocal ()
     jcenter ()
     mavenCentral ()
     maven { url "http://ci.forerunnergames.com:9090/repository/snapshots/" }
