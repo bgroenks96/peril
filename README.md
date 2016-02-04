@@ -2,8 +2,8 @@
 [![Build Status](https://travis-ci.org/forerunnergames/peril.svg?branch=develop)](https://travis-ci.org/forerunnergames/peril)
 [![Code Coverage](https://img.shields.io/codecov/c/github/forerunnergames/peril/develop.svg)](https://codecov.io/github/forerunnergames/peril?branch=develop)
 [![Code Quality](https://img.shields.io/codacy/bf2b210c63de4349827e7aadaf019825/develop.svg)](https://www.codacy.com/app/forerunnergames/peril/)
-[![License \[code\]: GPLv3](https://img.shields.io/badge/license%20[code]-GPLv3-blue.svg)](/legal/GPLv3.txt)
-[![License \[assets\]: CC BY-SA 4.0](https://img.shields.io/badge/license%20[assets]-CC%20BY--SA%204.0-blue.svg)](/legal/CC-BY-SA-4.txt)
+[![License (code): GPLv3](https://img.shields.io/badge/license%20[code]-GPLv3-blue.svg)](/legal/GPLv3.txt)
+[![License (assets): CC BY-SA 4.0](https://img.shields.io/badge/license%20[assets]-CC%20BY--SA%204.0-blue.svg)](/legal/CC-BY-SA-4.txt)
 
 ```
 peril [per-uhl] (noun)
