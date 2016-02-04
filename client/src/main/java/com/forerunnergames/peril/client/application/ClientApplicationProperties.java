@@ -299,14 +299,14 @@ public final class ClientApplicationProperties
       log.info ("Attempting to delete your old settings file \"{}\"...", PROPERTIES_FILE_PATH_AND_NAME);
 
       Files.delete (Paths.get (PROPERTIES_FILE_PATH_AND_NAME));
+
+      log.info ("Successfully deleted your old settings file \"{}\".", PROPERTIES_FILE_PATH_AND_NAME);
     }
     catch (final IOException e)
     {
       log.warn ("Failed to delete your old settings file \"{}\".\n\nDetails:\n\n{}", PROPERTIES_FILE_PATH_AND_NAME,
                 Throwables.getStackTraceAsString (e));
     }
-
-    log.info ("Successfully deleted your old settings file \"{}\".", PROPERTIES_FILE_PATH_AND_NAME);
   }
 
   private static void updateVersion ()
