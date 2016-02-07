@@ -23,7 +23,6 @@ import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.GameServerType;
-import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.integration.NetworkPortPool;
@@ -36,8 +35,8 @@ import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.DefaultExternalAddressResolver;
-import com.forerunnergames.tools.net.ExternalAddressResolver;
+import com.forerunnergames.tools.net.DefaultInternalAddressResolver;
+import com.forerunnergames.tools.net.InternalAddressResolver;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -48,16 +47,15 @@ import org.slf4j.LoggerFactory;
 
 public class DedicatedGameSession implements TestSession
 {
-  private static final Logger log = LoggerFactory.getLogger (DedicatedGameSession.class);
   public static final String FAKE_EXTERNAL_SERVER_ADDRESS = "0.0.0.0";
-  private final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-          NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
+  private static final Logger log = LoggerFactory.getLogger (DedicatedGameSession.class);
+  private final InternalAddressResolver internalAddressResolver = new DefaultInternalAddressResolver ();
   private final NetworkPortPool portPool = NetworkPortPool.getInstance ();
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
   private final GameRules gameRules;
   private final String serverAddress;
-  private final String externalServerAddress;
+  private final String internalServerAddress;
   private final String sessionName;
   private final int serverPort;
   private final TestClientPool clientPool = new TestClientPool ();
@@ -76,7 +74,7 @@ public class DedicatedGameSession implements TestSession
     this.serverAddress = serverAddress;
 
     serverPort = portPool.getAvailablePort ();
-    externalServerAddress = externalAddressResolver.resolveIp ();
+    internalServerAddress = internalAddressResolver.resolveIp ();
   }
 
   @Override
@@ -147,7 +145,7 @@ public class DedicatedGameSession implements TestSession
   public String toString ()
   {
     return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
-                           getClass ().getSimpleName (), sessionName, externalServerAddress, serverPort,
+                           getClass ().getSimpleName (), sessionName, internalServerAddress, serverPort,
                            gameRules.getInitialCountryAssignment ());
   }
 
@@ -166,6 +164,6 @@ public class DedicatedGameSession implements TestSession
   private void initializeClients ()
   {
     log.trace ("Connecting {} clients to server [{}]", gameRules.getPlayerLimit (), serverPort);
-    clientPool.connectNew (externalServerAddress, serverPort, gameRules.getPlayerLimit ());
+    clientPool.connectNew (internalServerAddress, serverPort, gameRules.getPlayerLimit ());
   }
 }
