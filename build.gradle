@@ -58,7 +58,7 @@ plugins {
 
 apply plugin: "cobertura"
 
-task createWrapper (type: Wrapper) {
+task wrapper (type: Wrapper) {
   gradleVersion = "2.10"
 }
 
