@@ -1,6 +1,7 @@
 sudo: false
 install: true
 language: android
+jdk: oraclejdk7
 
 android:
   components:
@@ -28,7 +29,7 @@ notifications:
     on_failure: always
   hipchat:
     rooms:
-      secure: BF31y6SwqiY2mOFdOqBELTG95JN6MTEqw0unlquddmZoDYY46QMyIh5BQlTh+XUP/Pdc4FwR7RZKAQqWMp/U9T27b34XSemiflVD9Fbm3oF6tCUhLSnLzGAaZWngI8ojIyv3+GFw23+c4k7GoC34WAg3sVyNZbIXeJDZWpX4YAr9moNsNcS6279+tYGnu1VgzF4DU3fNCYg/QSZSyrLdZ4Hcf7SGIVibdggIfJvxytURYr7pouVUR0OF+Cu6NNlfiIeOWh5rHGMdGkAAG1/lxBsrnDY4piYtJ9jO5FAbp8UeIdRxNFqIGKt3Qn7TBp6mbIMlRFHUCPeZxK+zx2Qx5hMTPY/0P9v8DXNL+4FnF50Zwpae6+KhMTkAoDlxAGjuEgt1BbN7RKpCX4r97g6ULEmXxe48EouU8Xfr4HbuWyicV2P401Wd96ehUqy4FXaG/uCxA+r95o4zepGOUvsj77sdtNmPqPDpFSbhLdhCToWEj+tiIibDhDPjKigYbvBQ3v30diglk4/HbFcu5Tr4kDG7un8xT2aqiBkSBvspTJUk8eHtzlrYRxuo5hMUAn60kt1y4haSIkPzjMX6r8ujh2/rraZEh+8yJxURRSwFhoE2a3DD8J+xzAekHavyiG6wpWkaeRNLr8cOZyE39+KYFm3k/LZZfgErmIOyiT+8RRg=
+      secure: bLWI50JgMihL5JARw3JDplfkT4sWCgnlEFzwnDtjg/UjfptinloR4nT7+hYHKVg90rCxId/YVYEhHjH7wjib4gOZB1Y0KDi2QhBn82yJITpQhtkUH/1xW4WTwafuOWTQW/ZHf88WyrDclORR8Pj0HhfxaL+4vA/2vEfjsFfquNStGD0U3wQ5NoQC3pkXFfl/8y1pKT+c4COdvWQYYkzRnpiAbsFr3+XXXVlzk3KD6URrUC+A3aPh6OI6gcm6w+n4Ta7mbBYUL9fgNBtol9qkhR1CZS0F7EHioENUyWZ61iyUjIOelPShuhP6EfUUTggUaQ2jVlYq+Rz25GbaJ168Lck+E7QNTpbIiNjEPQybEIkxmho327esRDa9X0PI+n7uMVeFp2c1HTlqwYA0PNkVnwY4yrON2bIJanbA90qdtlQrF1R/pqDejLVVdjeKqSQhKMhjChVxmqGJhMKuDNhFLj1PnbU/9ll47a6uGlvhKO86GvWwBUsQgtJzyEbljPL9km2z9axtIrzKgo1GiNf9N7UxytoaW4AF39aLGCGjNGK1CxV18efa09G3ruDSOAbH9LM+cyz7uieWGZFZy9+n5nO0VfXo350PkEOTiFsBsEzf64g2jaSDEhzNQydAy2QaUgLKL+w67rK4q48RDxKc0d8jxDaFi1IA+XbqhOqBu0U=
     template:
       - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
     format: html
