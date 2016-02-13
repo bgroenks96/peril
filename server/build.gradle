@@ -16,8 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
-
 sourceSets.main.java.srcDirs = ["src/main/java/"]
 sourceSets.main.resources.srcDirs = ["src/main/res/"]
 sourceSets.test.java.srcDirs = ["src/test/java/"]
@@ -47,8 +45,6 @@ task dist (type: Jar, dependsOn: classes) {
     attributes "Main-Class": project.mainClassName
   }
 }
-
-test.testLogging.showStandardStreams = true;
 
 eclipse {
   project {
