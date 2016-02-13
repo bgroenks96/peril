@@ -53,10 +53,7 @@ buildscript {
 
 plugins {
   id "com.github.ben-manes.versions" version "0.11.3"
-  id "net.saliman.cobertura" version "2.3.0"
 }
-
-apply plugin: "cobertura"
 
 task wrapper (type: Wrapper) {
   gradleVersion = "2.10"
@@ -92,7 +89,6 @@ allprojects {
 // Apply to all subprojects except android.
 configure (subprojects - project (":android")) {
   apply plugin: "java"
-  apply plugin: "cobertura"
 
   sourceCompatibility = projectSourceCompatibility
   targetCompatibility = projectTargetCompatibility
@@ -103,18 +99,6 @@ configure (subprojects - project (":android")) {
     testCompile "org.mockito:mockito-core:1.9.5"
     testRuntime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
-}
-
-// Apply to parent project & all subprojects except android & integration.
-//
-// We cannot configure the android module here because the cobertura plugin must be applied after
-// the android plugin, which has not happened yet in this block. See the android project configuration
-// in the root build.gradle for that specific cobertura configuration.
-//
-// We cannot configure the integration module here because the cobertura task must run only after
-// integration::integrationTest, not integration::test. Note: cobertura integration test coverage is broken.
-configure (allprojects - [project (":android"), project (":integration")]) {
-  test.finalizedBy (project.tasks.cobertura)
 }
 
 project (":desktop") {
@@ -131,7 +115,6 @@ project (":desktop") {
 
 project (":android") {
   apply plugin: "android"
-  apply plugin: "cobertura"
 
   configurations { natives }
 
@@ -150,8 +133,6 @@ project (":android") {
     compile "org.slf4j:slf4j-android:1.7.13"
     compile "com.amazonaws:aws-android-sdk-s3:2.2.9"
   }
-
-  test.finalizedBy (project.tasks.cobertura)
 }
 
 project (":ios") {
@@ -231,28 +212,6 @@ project (":integration") {
 
   test {
     useTestNG ()
-  }
-}
-
-// The "test" task doesn"t exist in the android subproject until the android plugin has been applied.
-evaluationDependsOn (":android")
-// Require subprojects" 'test' tasks to complete before the parent 'test' task.
-// This causes all subprojects to run Cobertura before the parent project,
-// which allows Cobertura to aggregate subproject coverage results in the parent project.
-test.dependsOn (subprojects.test)
-
-// Collect Cobertura data files from all subprojects.
-def files = subprojects.collect {
-  new File (it.projectDir, "/build/cobertura/cobertura.ser")
-}
-
-cobertura {
-  coverageFormats = ["html", "xml"]
-  coverageMergeDatafiles = files // Aggregate Cobertura data files from subprojects into a single data file.
-
-  // Ensure classes from all subprojects are included in the coverage check & results.
-  rootProject.subprojects.each {
-    coverageDirs << file ("${it.name}/build/classes/main")
   }
 }
 
