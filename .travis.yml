@@ -7,14 +7,8 @@ android:
     - build-tools-23.0.2
     - android-23
 
-before_script:
-  - pip install --user codecov
-
 script:
   - ./gradlew clean build integrationTest
-
-after_success:
-  - codecov
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
