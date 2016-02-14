@@ -25,6 +25,9 @@ addons:
 script:
   - ./gradlew clean build integrationTest
 
+after_success:
+  - ./gradlew desktop:dist server:dist
+
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 
