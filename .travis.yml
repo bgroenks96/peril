@@ -10,6 +10,19 @@ android:
     - build-tools-23.0.2
     - android-23
 
+addons:
+  artifacts:
+    debug: true
+    branch: develop
+    bucket: ci.forerunnergames.com
+    target_paths: builds/peril/$TRAVIS_BUILD_NUMBER
+    paths:
+      - $(find -type d -name 'build' | tr "\n" ":")
+    key:
+      secure: hZ5E0PwO+qB0sVFl9PhCE6RsTJAhTZarjlusBO2G7Xrn72QklBsST9mcv3GeWG4SrNPU3I90yIWpaklW4WH7wPzh+kHk0viq/sLihEIjm8GNPkUJ6VUOjHvfz9XMOgGZFGOI03BKYpi1NO16iwRfNoFmak5gECeq33HpLbL3fENgRVf9esOevqkxySiz1kWJSPw9JkRPD7aCCJwPVbpTe5SWNWuCUaJPrURps5tUQOnqetaTIr2wBucRYY+M0XS0WF7f9JKEMt6uh7U4rTpMyzKM8m6TvE6q2rqcDUAE/5TKP742tfUYOGyVQOidtZ8kDGDFlBA35mLaFEw5qIFTofl+b213xOcXfjuKCX/k+/EwUfNuxPwW4HdAa/Eq4HF2TvuCTNVHPBXTvFMovtBvWg1Q6iNf61m7gIYWvbSEhsmmAzXOCPxG6Q+2pmyotTnh43d3BrjKMuHZtE3vjFcoQgmrLbFGFIYaMPVb4lGGwI7jeHnwBbWlscTwXTssVfCOvrVp50WUPWiA1Lz7orAYVGQyhatKzvH6Ds0/rU4zOBz9c22QgLpN3BEPn6dVt9ottQ55ng1dWahkYQKt+BicAosYFcpneo5ndO33QKVm3G6badv4X1zWe8cbbjfdkXyNOqonxzWFZi7+QXe9eOqnjzDD6Z+KlqGxBdshnbvAmNM=
+    secret:
+      secure: ZEnfKsL9We7tPFV41O7itfg/uH0TynhdLgqLKC9B24NQTFQimI+curiqUU5XrDNGiDuel0zU7CNfcbrmKgW6Mp/9PwOkGusJSFJup/5qMmPwfmGaSc0CqR03l6LpdZE44ZfkAY8qZvyJwSV/AUpeimYGL2mzn+/jpv5sE9tGLKH1mYMjk+KtJTdbG6zXeJr1pHVfpZ4XiNxmSHhMBHW77ZV6dk7iA3riAQb4g5EUL00uJwr7MiezjrRJv0VzOUCqofFZCNcAn5HPWpu9icAvjSjTeqA+Uo3Bnaihj9igqNS50OuP8M4xG4/2dx38zvV61yZp/COHU1FAdyQMD3Ksy36gfxg0E9bGOPD8O2oW8tPt9G69B9rjwpmS6IkE3izc1f5hfquyLO41ObEYQb2o0uCkRVAmb7OCphqNWIVp394YEqx4Ho9nDmoxVQKlvyCzC5yMi4pdWyTuDe4dzDd/Co1G3sPYuCXUZd3lPDZleWamxzn0oskQY9TF+wozk8RViGGW8NkpMoOKfVJN0cWzpNxGvbpj6WCh2/Wwbxl682+DFweDew0/Pz5E5h9gQxknTlbeQPANfOCHTnRq+Ak1mNa8DextBbIAcpqP3dOWkTpTo4WgPmS0OZ1e0qY3O//uYoGI9ekNxokVvECqcVzmT3gnlltdKVuF1Mfp2uuDBdg=
+
 script:
   - ./gradlew clean build integrationTest
 
