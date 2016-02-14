@@ -12,7 +12,6 @@ android:
 
 addons:
   artifacts:
-    debug: true
     branch: develop
     bucket: ci.forerunnergames.com
     target_paths: builds/peril/$TRAVIS_BUILD_NUMBER
