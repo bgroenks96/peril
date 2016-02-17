@@ -10,23 +10,23 @@ android:
     - build-tools-23.0.2
     - android-23
 
-addons:
-  artifacts:
-    branch: develop
-    bucket: ci.forerunnergames.com
-    target_paths: builds/peril/$TRAVIS_BUILD_NUMBER
-    paths:
-      - $(find -type d -name 'build' | tr "\n" ":")
-    key:
-      secure: GCV2uDqxf5VQZktdNxJfXAfXtaWGIjUKHn8jmVUveUq//R3rBcxcem1ggzCmWfxBVqUUTjSNaFq7BQtjeZtcOLfeaPgXP3FTCsCuPEfrld1UbA9CL5Cy0g1bfO31QtPwlzsZ7SWxuTb2QOeOMzws9sg/OnX/6lVUTtu5JITK+9MyKrvzL9Qk3azmzBojGml6VszLBddWkfSzsH/yp5307nho/b0One2L9Y73e6n4u470pdxj+3JheK7WviiqpZWsbqe0QYzxfbKQU/PmFYV392jCGAkjeTHINaLJVmsW4XgdSSP1ZGMaHgu2UqnxvgsSnW88MMnC20KITRJf4ru5Vn/XdSX9mP3oIxoVDrWLGMnCklaLwZ0Wl9ssE/xcObRwRumSvanGCwuRM3cqpyrcbxU99+Qj+TmNP7/uL8TzGlk5uMp0niQeLXDcAuJSuWlTkfFiBWN3uhgRf4x0Y04/kJBBa4ve2uYMdr7/9kFj3AKpCOBPVP4HPT8POHJHAfIYHwoo+xdxCX9ypKmsFd90+9IBrT60m4mZT2O5zj/7Vhu3d5BuU9uzu1FaFw7IgtaP9nEzw+zrtzfPEW3LqwuMubSkukTLsVFbNMJeDakZ7BolT4cz0N1m9K1JGf6sCYCCiRTsQ5HTCp7P5S81fPm5qq68mHLcp0WNBLuHXDg+hzA=
-    secret:
-      secure: xOAX0p2YOTgWh2YoQqGhLyEjLjmIGIUy32/5G2nRmoHcmLcLE6WB/xsCUpnaFm2UJPlx+mZravXz417aiSmIB7XEbM5YBs5/iGBgbHObLTXQ2wmzhHnFZvCk1537RPeRyNNTT3zJrbamGZn2lXHqfBV0DqIj1/4mIrkar1WjnfCJPI6Dfl96TywFxxbHAd8jXMgZfn17u6sUCOlQ4rmABFTiGS0wuaYnf7CelPs7KUUgI9cvpyB4VENNDPIjNRherEQm6kNTulsaYpARoUzHH4g9L3GDJPk9v3VgbgGLJzCcV8pM3Db728LQJbEAIbmhp7xOARw3IQen66I4JBehhNJYKtSVOoUBOwxmbrrAOADhiU7QwR9bq4ZTa2j0t27upLMt/PvparCDUBO4SRJ7939j1wiJBmtpOwFI78c2NfxE8SSzbHY9qcmbJZtoRQqEdxLXek3aoEd7S+z0zhJ5jrG/kXcFL7ldmiFJT97r5XNbdhRDE6zu534GsMDVxqNhAGoSEUGCeV1b4o44aYB9iPu+tNw6QkiVk9OTelSKefVd4xrh/eXkj84NQvGXkrfMZQJxmUPAWsj38uYyCM6XHDDT1kfr55/LB3aIonbA0n8Vh8MJm+5fRlRRcQiEMexk/w4cBjAjrtc5bR+LJXvbigh2SVMYzmEaaZznzSYHFfc=
-
 script:
   - ./gradlew clean build integrationTest
 
 after_success:
   - ./gradlew desktop:dist server:dist
+  - ./collect-build-artifacts.sh
+
+addons:
+  artifacts:
+    branch: develop
+    bucket: ci.forerunnergames.com
+    target_paths: builds/peril/$TRAVIS_BUILD_NUMBER
+    paths: "build/uploaded"
+    key:
+      secure: GCV2uDqxf5VQZktdNxJfXAfXtaWGIjUKHn8jmVUveUq//R3rBcxcem1ggzCmWfxBVqUUTjSNaFq7BQtjeZtcOLfeaPgXP3FTCsCuPEfrld1UbA9CL5Cy0g1bfO31QtPwlzsZ7SWxuTb2QOeOMzws9sg/OnX/6lVUTtu5JITK+9MyKrvzL9Qk3azmzBojGml6VszLBddWkfSzsH/yp5307nho/b0One2L9Y73e6n4u470pdxj+3JheK7WviiqpZWsbqe0QYzxfbKQU/PmFYV392jCGAkjeTHINaLJVmsW4XgdSSP1ZGMaHgu2UqnxvgsSnW88MMnC20KITRJf4ru5Vn/XdSX9mP3oIxoVDrWLGMnCklaLwZ0Wl9ssE/xcObRwRumSvanGCwuRM3cqpyrcbxU99+Qj+TmNP7/uL8TzGlk5uMp0niQeLXDcAuJSuWlTkfFiBWN3uhgRf4x0Y04/kJBBa4ve2uYMdr7/9kFj3AKpCOBPVP4HPT8POHJHAfIYHwoo+xdxCX9ypKmsFd90+9IBrT60m4mZT2O5zj/7Vhu3d5BuU9uzu1FaFw7IgtaP9nEzw+zrtzfPEW3LqwuMubSkukTLsVFbNMJeDakZ7BolT4cz0N1m9K1JGf6sCYCCiRTsQ5HTCp7P5S81fPm5qq68mHLcp0WNBLuHXDg+hzA=
+    secret:
+      secure: xOAX0p2YOTgWh2YoQqGhLyEjLjmIGIUy32/5G2nRmoHcmLcLE6WB/xsCUpnaFm2UJPlx+mZravXz417aiSmIB7XEbM5YBs5/iGBgbHObLTXQ2wmzhHnFZvCk1537RPeRyNNTT3zJrbamGZn2lXHqfBV0DqIj1/4mIrkar1WjnfCJPI6Dfl96TywFxxbHAd8jXMgZfn17u6sUCOlQ4rmABFTiGS0wuaYnf7CelPs7KUUgI9cvpyB4VENNDPIjNRherEQm6kNTulsaYpARoUzHH4g9L3GDJPk9v3VgbgGLJzCcV8pM3Db728LQJbEAIbmhp7xOARw3IQen66I4JBehhNJYKtSVOoUBOwxmbrrAOADhiU7QwR9bq4ZTa2j0t27upLMt/PvparCDUBO4SRJ7939j1wiJBmtpOwFI78c2NfxE8SSzbHY9qcmbJZtoRQqEdxLXek3aoEd7S+z0zhJ5jrG/kXcFL7ldmiFJT97r5XNbdhRDE6zu534GsMDVxqNhAGoSEUGCeV1b4o44aYB9iPu+tNw6QkiVk9OTelSKefVd4xrh/eXkj84NQvGXkrfMZQJxmUPAWsj38uYyCM6XHDDT1kfr55/LB3aIonbA0n8Vh8MJm+5fRlRRcQiEMexk/w4cBjAjrtc5bR+LJXvbigh2SVMYzmEaaZznzSYHFfc=
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
