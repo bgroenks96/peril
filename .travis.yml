@@ -19,7 +19,7 @@ after_success:
 
 addons:
   artifacts:
-    branch: develop
+    branch: master
     bucket: ci.forerunnergames.com
     target_paths: builds/peril/$TRAVIS_BUILD_NUMBER
     paths: "build/uploaded"
