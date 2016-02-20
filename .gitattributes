@@ -43,6 +43,17 @@
 *.ini        text
 *.properties text
 *.glsl       text
+*.atlas      text
+*.frag       text
+*.vert       text
+*.md         text
+*.yml        text
+*.log        text
+*.mf         text
+LICENSE      text
+COPYING      text
+AUTHORS      text
+CONTRIBUTING text
 .htaccess    text
 
 # These files are binary and should be left untouched
@@ -68,6 +79,14 @@
 *.ear    binary
 *.war    binary
 *.so     binary
+*.wav    binary
+*.ogg    binary
+*.apk    binary
+*.ap_    binary
+*.dex    binary
+*.bin    binary
+*.idx    binary
+*.store  binary
 
 # Documents
 *.doc diff=astextplain
