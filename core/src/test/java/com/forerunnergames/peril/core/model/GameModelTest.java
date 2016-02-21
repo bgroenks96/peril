@@ -53,6 +53,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.BeginRein
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
@@ -330,6 +331,9 @@ public class GameModelTest
   {
     addMaxPlayers ();
 
+    // add army to first player's hand
+    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+
     assertTrue (countryOwnerModel.allCountriesAreUnowned ());
 
     gameModel.waitForPlayersToClaimInitialCountries ();
@@ -339,6 +343,23 @@ public class GameModelTest
 
     final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
     assertTrue (eventHandler.lastEvent (PlayerClaimCountryRequestEvent.class).getPlayer ().is (expectedPlayer));
+  }
+
+  @Test
+  public void testWaitForPlayersToClaimInitialCountriesSkipsPlayerWithEmptyHand ()
+  {
+    addMaxPlayers ();
+
+    assertTrue (countryOwnerModel.allCountriesAreUnowned ());
+
+    gameModel.waitForPlayersToClaimInitialCountries ();
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (SkipPlayerTurnEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
+
+    final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
+    assertTrue (eventHandler.lastEvent (SkipPlayerTurnEvent.class).getPlayer ().is (expectedPlayer));
   }
 
   @Test

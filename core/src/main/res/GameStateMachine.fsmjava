@@ -143,6 +143,10 @@
         <parameter type="com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent"
                    name="event" />
       </event>
+      <event id="onSkipPlayerTurnEvent">
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notification.SkipPlayerTurnEvent"
+                   name="event" />
+      </event>
     </eventSource>
   </events>
 
@@ -215,6 +219,9 @@
               <state name="WaitForPlayersToReinforceInitialCountries">
                 <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()" />
                 <onExit action="gameModel.advanceTurn()" />
+                <transition event="onSkipPlayerTurnEvent"
+                            action="gameModel.skipPlayerTurn(event)"
+                            nextState="WaitForPlayersToReinforceInitialCountries" />
                 <transition event="onPlayerReinforceInitialCountryResponseRequestEvent"
                             condition="gameModel.verifyPlayerInitialCountryReinforcements(event)"
                             nextState="WaitForPlayersToReinforceInitialCountries" />
@@ -229,6 +236,9 @@
                   <action>gameModel.endPlayerTurn()</action>
                   <action>gameModel.advanceTurn()</action>
                 </onExit>
+                <transition event="onSkipPlayerTurnEvent"
+                            action="gameModel.skipPlayerTurn(event)"
+                            nextState="PlayerTurn" />
                 <state name="ReinforcementPhase">
                   <onEntry action="gameModel.beginReinforcementPhase()" />
                   <onExit action="gameModel.endReinforcementPhase()" />

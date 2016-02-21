@@ -63,6 +63,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerCou
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
@@ -127,8 +128,10 @@ import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.MutatorResult;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -263,6 +266,15 @@ public final class GameModel
     }
 
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
+  }
+
+  public void skipPlayerTurn (final SkipPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Preconditions.checkIsTrue (event.getPlayer ().is (getCurrentPlayerPacket ()), Strings
+            .format ("[{}] is not in turn! Current player: [{}]", event.getPlayer (), getCurrentPlayerPacket ()));
+
+    log.info ("Skipping turn for player [{}].", getCurrentPlayerPacket ().getName ());
   }
 
   @StateMachineAction
@@ -490,6 +502,13 @@ public final class GameModel
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
       playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
       publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
+      return;
+    }
+
+    if (currentPlayer.getArmiesInHand () == 0)
+    {
+      log.info ("Player [{}] has no armies. Skipping...", currentPlayer);
+      publish (new SkipPlayerTurnEvent (currentPlayer));
       return;
     }
 
