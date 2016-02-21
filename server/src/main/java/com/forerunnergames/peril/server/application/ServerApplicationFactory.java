@@ -126,7 +126,7 @@ public final class ServerApplicationFactory
             args.spectatorLimit, args.winPercentage, args.initialCountryAssignment, mapMetadata);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
-            NetworkSettings.EXTERNAL_IP_RESOLVER_URL, NetworkSettings.EXTERNAL_IP_RESOLVER_BACKUP_URL);
+            NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (externalAddressResolver.resolveIp (),
             args.serverTcpPort);

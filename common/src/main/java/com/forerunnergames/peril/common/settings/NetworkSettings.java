@@ -29,7 +29,7 @@ public final class NetworkSettings
   public static final int DEFAULT_TCP_PORT = 55555;
   public static final int CLIENT_CONNECTION_TIMEOUT_MS = 10000;
   public static final int SERVER_CONNECTION_TIMEOUT_MS = 1000;
-  public static final int MAX_SERVER_CONNECTION_ATTEMPTS = 3;
+  public static final int MAX_SERVER_CONNECTION_ATTEMPTS = 10;
   public static final String SERVER_JAR_NAME = "peril-server-0.1-SNAPSHOT.jar"; // TODO This is bad...
   public static final int MIN_SERVER_NAME_LENGTH = 3;
   public static final int MAX_SERVER_NAME_LENGTH = 30;
@@ -39,8 +39,7 @@ public final class NetworkSettings
   public static final int CLIENT_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 32768;
   public static final int SERVER_SERIALIZATION_WRITE_BUFFER_SIZE_BYTES = 32768;
   public static final int SERVER_SERIALIZATION_READ_BUFFER_SIZE_BYTES = 32768;
-  public static final String EXTERNAL_IP_RESOLVER_URL = "http://ci.forerunnergames.com:8888/get-wan-ip/getwanip";
-  public static final String EXTERNAL_IP_RESOLVER_BACKUP_URL = "http://getwanip.appspot.com/getmyip";
+  public static final String EXTERNAL_IP_RESOLVER_URL = "http://getwanip.appspot.com/getmyip";
 
   // @formatter:off
 
