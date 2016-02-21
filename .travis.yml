@@ -35,6 +35,9 @@ after_success:
   - ./gradlew desktop:dist server:dist
   - ./collect-build-artifacts.sh
 
+after_failure:
+  - ./collect-build-artifacts.sh
+
 addons:
   artifacts:
     branch: master
