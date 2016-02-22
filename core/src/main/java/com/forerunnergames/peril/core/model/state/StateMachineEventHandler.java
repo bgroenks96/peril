@@ -167,6 +167,7 @@ public final class StateMachineEventHandler
 
     log.trace ("Received event {}", event);
 
+    context.onSkipPlayerTurnEvent (event);
   }
 
   @Handler
