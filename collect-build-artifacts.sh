@@ -24,9 +24,9 @@ SUBPROJECTS=($(sed -n -e 's/^include //p' settings.gradle | tr -d ",\"" | tr ' '
 
 printf "\nCollecting build artifacts...\n\n"
 printf "Working directory:\n\n"
-printf "  %s\n\n" `PWD`
+printf "  %s\n\n" `pwd`
 printf "Output directory:\n\n"
-printf "  %s\n\n" `PWD`/${OUTPUT_DIR}
+printf "  %s\n\n" `pwd`/${OUTPUT_DIR}
 printf "Projects to collect from:\n\n"
 for PROJECT in ${ROOT_PROJECT} ${SUBPROJECTS[@]}; do printf "  %s\n" ${PROJECT}; done
 printf "\nArtifacts to collect from each project:\n\n"
@@ -37,7 +37,7 @@ mkdir -p ${OUTPUT_DIR}
 
 for PROJECT in ${ROOT_PROJECT} ${SUBPROJECTS[@]}; do
   for ARTIFACT in ${ARTIFACTS[@]}; do
-    [[ ! -d ${PROJECT}/${ARTIFACT} && ! -f ${PROJECT}/${ARTIFACT} ]] && printf "  %s NOT FOUND - SKIPPING\n" ${PROJECT}/${ARTIFACT}
+    [[ -z $(find . -path "*${PROJECT}/${ARTIFACT}" -print -quit) ]] && printf "  %s NOT FOUND - SKIPPING\n" ${PROJECT}/${ARTIFACT}
     rsync -am --out-format="%f" ${PROJECT}/${ARTIFACT} ${OUTPUT_DIR}/${PROJECT}/ 2>/dev/null | awk '{ if ($1 > 0) { print "  " $1 } }'
   done
 done
