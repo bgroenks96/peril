@@ -17,16 +17,27 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-ROOT_DIR="build/uploaded"
+OUTPUT_DIR="build/collected"
+ARTIFACTS=("build/libs" "build/reports" "build/outputs" "build/*.log")
+ROOT_PROJECT=$(sed -n -e 's/^projectName=//p' gradle.properties)
+SUBPROJECTS=($(sed -n -e 's/^include //p' settings.gradle | tr -d ",\"" | tr ' ' "\n"))
 
-mkdir -p $ROOT_DIR
+printf "\nCollecting build artifacts...\n\n"
+printf "Working directory:\n\n"
+printf "  %s\n\n" `PWD`
+printf "Output directory:\n\n"
+printf "  %s\n\n" `PWD`/${OUTPUT_DIR}
+printf "Projects to collect from:\n\n"
+for PROJECT in ${ROOT_PROJECT} ${SUBPROJECTS[@]}; do printf "  %s\n" ${PROJECT}; done
+printf "\nArtifacts to collect from each project:\n\n"
+for ARTIFACT in ${ARTIFACTS[@]}; do printf "  %s\n" ${ARTIFACT}; done
+printf "\nCollecting:\n\n"
 
-for MODULE in android client common core desktop integration ios server
-do
-  rsync --archive --prune-empty-dirs $MODULE/build/libs $ROOT_DIR/$MODULE/ >/dev/null 2>&1
-  rsync --archive --prune-empty-dirs $MODULE/build/reports $ROOT_DIR/$MODULE/ >/dev/null 2>&1
+mkdir -p ${OUTPUT_DIR}
+
+for PROJECT in ${ROOT_PROJECT} ${SUBPROJECTS[@]}; do
+  for ARTIFACT in ${ARTIFACTS[@]}; do
+    [[ ! -d ${PROJECT}/${ARTIFACT} && ! -f ${PROJECT}/${ARTIFACT} ]] && printf "  %s NOT FOUND - SKIPPING\n" ${PROJECT}/${ARTIFACT}
+    rsync -am --out-format="%f" ${PROJECT}/${ARTIFACT} ${OUTPUT_DIR}/${PROJECT}/ 2>/dev/null | awk '{ if ($1 > 0) { print "  " $1 } }'
+  done
 done
-
-rsync --archive build/reports $ROOT_DIR/peril/ >/dev/null 2>&1
-rsync --archive android/build/outputs $ROOT_DIR/android/ >/dev/null 2>&1
-rsync --archive integration/test-latest.log $ROOT_DIR/integration/ >/dev/null 2>&1
