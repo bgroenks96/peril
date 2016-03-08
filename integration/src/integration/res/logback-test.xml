@@ -32,6 +32,9 @@
   <logger name="com.forerunnergames.peril" level="TRACE" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>
+  <logger name="com.forerunnergames.tools" level="TRACE" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
   <logger name="com.forerunnergames.peril.integration" level="TRACE" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>

@@ -54,6 +54,10 @@
     <appender-ref ref="STDOUT" />
   </logger>
 
+  <logger name="com.forerunnergames.tools" level="TRACE">
+    <appender-ref ref="STDOUT" />
+  </logger>
+
   <root level="ERROR">
     <appender-ref ref="SIFT" /> <!-- Write to file only for errors. -->
   </root>
