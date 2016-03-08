@@ -22,6 +22,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.events.JoinGameEvent;
+import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -61,6 +63,8 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
   private final Label clanTagSettingLabel;
   private final Label gameSettingsSectionTitleLabel;
   private final Label serverAddressSettingLabel;
+  private final Button forwardButton;
+  private boolean isFirstTimeOnScreen = true;
 
   public MultiplayerClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                        final ScreenChanger screenChanger,
@@ -157,10 +161,10 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
       }
     });
 
-    addForwardButton ("JOIN GAME", new ClickListener (Input.Buttons.LEFT)
+    forwardButton = addForwardButton ("JOIN GAME", new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void changed (ChangeEvent event, Actor actor)
       {
         final String playerName = playerNameTextField.getText ();
 
@@ -220,6 +224,12 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     clanTagSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     gameSettingsSectionTitleLabel.setStyle (widgetFactory.createGameSettingsSectionTitleLabelStyle ());
     serverAddressSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+
+    if (isFirstTimeOnScreen && InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
+    {
+      forwardButton.toggle ();
+      isFirstTimeOnScreen = false;
+    }
   }
 
   @Override

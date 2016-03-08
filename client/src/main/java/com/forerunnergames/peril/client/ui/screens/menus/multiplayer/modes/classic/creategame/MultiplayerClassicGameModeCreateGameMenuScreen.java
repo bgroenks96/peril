@@ -22,6 +22,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -107,11 +108,13 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label mapSettingLabel;
   private final Label winPercentSettingLabel;
   private final Label initialCountryAssignmentSettingLabel;
+  private final Button forwardButton;
   private Set <MapMetadata> maps;
   private int totalCountryCount;
   @Nullable
   private Iterator <MapMetadata> mapIterator = null;
   private MapMetadata currentMap = MapMetadata.NULL_MAP_METADATA;
+  private boolean isFirstTimeOnScreen = true;
 
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                          final ScreenChanger screenChanger,
@@ -329,10 +332,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       }
     });
 
-    addForwardButton ("CREATE GAME", new ClickListener (Input.Buttons.LEFT)
+    forwardButton = addForwardButton ("CREATE GAME", new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void changed (ChangeEvent event, Actor actor)
       {
         if (currentMap.equals (MapMetadata.NULL_MAP_METADATA))
         {
@@ -436,6 +439,12 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     winPercentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     initialCountryAssignmentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     // @formatter:on
+
+    if (isFirstTimeOnScreen && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
+    {
+      forwardButton.toggle ();
+      isFirstTimeOnScreen = false;
+    }
   }
 
   @Override

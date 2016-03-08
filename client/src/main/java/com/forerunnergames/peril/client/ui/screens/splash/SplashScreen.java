@@ -44,6 +44,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
@@ -53,6 +54,7 @@ import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
+import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
@@ -355,7 +357,31 @@ public final class SplashScreen extends InputAdapter implements Screen
   {
     try
     {
-      screenChanger.toScreen (ScreenSettings.START_SCREEN);
+      if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
+      {
+        throw new IllegalStateException (Strings.format (
+                                                         "Cannot auto-join & auto-create a multiplayer game simultaneously.\n\n"
+                                                                 + "Please disable either '{}', '{}', or both in:\n\n{}.",
+                                                         ClientApplicationProperties.AUTO_JOIN_MULTIPLAYER_GAME_KEY,
+                                                         ClientApplicationProperties.AUTO_CREATE_MULTIPLAYER_GAME_KEY,
+                                                         ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
+      }
+      else if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
+      {
+        log.info ("Auto-joining multiplayer game, skipping start screen.");
+
+        screenChanger.toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU);
+      }
+      else if (InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
+      {
+        log.info ("Auto-creating multiplayer game, skipping start screen.");
+
+        screenChanger.toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU);
+      }
+      else
+      {
+        screenChanger.toScreen (ScreenSettings.START_SCREEN);
+      }
     }
     catch (final GdxRuntimeException e)
     {
