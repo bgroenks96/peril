@@ -335,7 +335,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     forwardButton = addForwardButton ("CREATE GAME", new ChangeListener ()
     {
       @Override
-      public void changed (ChangeEvent event, Actor actor)
+      public void changed (final ChangeEvent event, final Actor actor)
       {
         if (currentMap.equals (MapMetadata.NULL_MAP_METADATA))
         {

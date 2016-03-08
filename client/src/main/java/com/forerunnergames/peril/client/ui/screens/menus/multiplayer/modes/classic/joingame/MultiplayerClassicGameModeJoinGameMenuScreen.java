@@ -164,7 +164,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     forwardButton = addForwardButton ("JOIN GAME", new ChangeListener ()
     {
       @Override
-      public void changed (ChangeEvent event, Actor actor)
+      public void changed (final ChangeEvent event, final Actor actor)
       {
         final String playerName = playerNameTextField.getText ();
 
