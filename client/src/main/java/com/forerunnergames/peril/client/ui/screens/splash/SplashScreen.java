@@ -324,15 +324,8 @@ public final class SplashScreen extends InputAdapter implements Screen
 
   private void setNextScreenDisplayMode ()
   {
-    try
-    {
-      System.setProperty ("org.lwjgl.opengl.Window.undecorated", "false");
-    }
-    catch (final SecurityException e)
-    {
-      log.warn ("Couldn't make window decorated upon leaving splash screen.\nCause:\n{}",
-                Throwables.getStackTraceAsString (e));
-    }
+    Gdx.graphics.setUndecorated (false);
+    Gdx.graphics.setResizable (GraphicsSettings.IS_WINDOW_RESIZABLE);
 
     // TODO Add multi-monitor support.
 
