@@ -35,6 +35,7 @@ public final class ScreenSettings
   public static final int SPLASH_SCREEN_WINDOW_WIDTH = SPLASH_SCREEN_REFERENCE_WIDTH;
   public static final int SPLASH_SCREEN_WINDOW_HEIGHT = SPLASH_SCREEN_REFERENCE_HEIGHT;
   public static final boolean SPLASH_SCREEN_WINDOW_IS_FULLSCREEN = false;
+  public static final boolean SPLASH_SCREEN_WINDOW_IS_RESIZABLE = false;
   public static final boolean SPLASH_SCREEN_WINDOW_IS_DECORATED = false;
   private static final EnumSet <ScreenId> FILTERED_SCREEN_IDS = EnumSet.allOf (ScreenId.class);
 

@@ -18,12 +18,12 @@
 
 package com.forerunnergames.peril.desktop;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.application.LibGdxGameFactory;
@@ -103,8 +103,8 @@ public final class DesktopLauncher
     config.width = ScreenSettings.SPLASH_SCREEN_WINDOW_WIDTH;
     config.height = ScreenSettings.SPLASH_SCREEN_WINDOW_HEIGHT;
     config.fullscreen = ScreenSettings.SPLASH_SCREEN_WINDOW_IS_FULLSCREEN;
+    config.resizable = ScreenSettings.SPLASH_SCREEN_WINDOW_IS_RESIZABLE;
     config.vSyncEnabled = GraphicsSettings.IS_VSYNC_ENABLED;
-    config.resizable = GraphicsSettings.IS_WINDOW_RESIZABLE;
     config.title = GraphicsSettings.WINDOW_TITLE;
     config.useGL30 = GraphicsSettings.USE_OPENGL_CORE_PROFILE;
 
