@@ -28,6 +28,10 @@ android:
     - build-tools-23.0.2
     - android-23
 
+before_install:
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
+
 script:
   - ./gradlew clean build integrationTest
 
@@ -69,3 +73,8 @@ notifications:
     template:
       - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
     format: html
+
+env:
+  global:
+    - secure: QTdaI4D+LqaMUhCTohJAZ7QGDI+pzI9LWvy+qdGFNY8VmayoMNZksKWjQomubu9KeC87bxUXFrJReRX/ACEcWzGX10MGiDHFMwZ3FwUyUH95k46oxlMaLsAlLEljaIeUnpWExG8gKjCQIcoQbOYYyvB774CUlJNyX5XWKX9O1lbKDaKsW0gWNFREyOZUJBNuwn/44DjPBISK8xPxk+ztzT6tRlbkllNgyVHQlAjxeH4TKkFlLN2sJfo3L8bfDbHhpKoukDacaueAa/wW88r+ttyDM00FKtV7U1kC6jmWjXlj3P2jEK2QorFdCsnuiyesLEg85YLECSSvLZQuVZKgt0jKFsaDkkoYcd8eD9T2dz4EyhIHfzdAj+tnJ1xJ+hWRxskQBOPPUtAE99bzR/cWgM7xeUfNdGRR+YNPbLa1KjXkb298zwgAjoMSMTl2Qkt00HhXL7Wi9+MVB1oYeALDWYwIQKueaXaDOt0VpfQlWHLipYBV06UYOTYvy8pwYOp4OjaYX10H/57rwc5ywySMShFYm72ovAyR3dl1Si1q2Fwn7bNzWtsxjSpA1zCt8u08e6ZLkgAsPWUVY2Fpf85TYlij8msox1MlTNCqOuXZ7Ikr/HGoRddULdZqECQIHFqcF6PyfAvK6cIog/0ZnXDq1Z5o08MX0sHVSgKDsGX7mOI=
+    - secure: XHp41JmSa4YUCUytJ+SKqAXTS1hiGbapvMVtOcEHsB1Q9yV/POKwsNCedY5ERd39fy1M35wKTjbHiZBqjOw9UhqAbu6ljf9b8ROhNirpkg1ASRIF1BSNtLEH1yyS0LDgla5urjEj56HCNOU6TeEdKP3ZywtwukSwiQR1+VN7sbab5cyJ/mmkXKwLvd9iApllH8747BIJ7TYj0nNab0xaPF2UqBmCSrpGrJrWsg4SSc1krZFBFk2ve44bwwNPi/QAT1nExxtj3juSy3B2upQVnAzJNNShlSpLZOh5c3I2WMiQYc7ffbR513FXIiAljPFq0diuWdUnfqCHQAfwKA2h2X12Ep+h3xV5XpHJ0hzpqNSe+Fyl9Nm2YbyijHPkGVlOja8Vhyrzj9HcSXwoCLxoroAvZjmkNUIryd1f1vY5T9zpOO68AKfh5kairFMumYLC5yBjgr3LdGOPBQfn7ofhZHSrb1a4wBK7CE/L+Uo48vX4EREhyHcwTxw9O252kNl6bbkVgmoAYAYKui+Dh2NriKuVqIYOddAXiEwlnqLRq4DFxwGUTc+H3AdPoS5QC1Bmq8OzwfQTUJaOariikmfB8AMSdeJcw+PJJlfbtZ+2gW1TjCM9oG9nLqepF2buZlfhJWLOJ+UEEeQEL0xhQlB9L43dATz6SGD7j96KE2r9WDY=
