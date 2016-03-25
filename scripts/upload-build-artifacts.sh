@@ -24,13 +24,13 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-SOURCE="$BUILD_ARTIFACTS_COLLECTION_DIR"
-DEST="s3://$BUILD_ARTIFACTS_S3_BUCKET_NAME/builds/$ROOT_PROJECT/$BRANCH/$BUILD_NUMBER"
+SOURCE="$BUILD_ARTIFACTS_COLLECTION_DIR/"
+DEST="s3://$BUILD_ARTIFACTS_S3_BUCKET_NAME/builds/$ROOT_PROJECT/$BRANCH/$BUILD_NUMBER/"
 
 printf "\nUploading build artifacts...\n\n"
 printf "Source:\n\n"
-printf "  %s\n\n" "`pwd`/$SOURCE/"
+printf "  %s\n\n" "`pwd`/$SOURCE"
 printf "Destination:\n\n"
 printf "  $DEST\n\n"
 
-aws s3 sync "$SOURCE" "$DEST" --delete
+s3cmd sync --recursive --delete-removed --guess-mime-type "$SOURCE" "$DEST"

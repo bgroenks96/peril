@@ -28,8 +28,8 @@ DEST="s3://$BUILD_ARTIFACTS_S3_BUCKET_NAME/builds/$ROOT_PROJECT/$BRANCH/"
 
 printf "\nUploading last successful build number file...\n\n"
 printf "Source:\n\n"
-printf "  %s\n\n" "`pwd`/$SOURCE/"
+printf "  %s\n\n" "`pwd`/$SOURCE"
 printf "Destination:\n\n"
 printf "  $DEST\n\n"
 
-aws s3 cp "$SOURCE" "$DEST"
+s3cmd put --guess-mime-type "$SOURCE" "$DEST"

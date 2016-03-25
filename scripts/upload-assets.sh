@@ -21,16 +21,16 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-SOURCE="$ASSETS_COLLECTION_DIR"
-DEST="s3://$ASSETS_S3_BUCKET_NAME"
+SOURCE="$ASSETS_COLLECTION_DIR/"
+DEST="s3://$ASSETS_S3_BUCKET_NAME/"
 
 printf "\nUploading assets...\n\n"
 printf "Note:\n\n"
 printf "  Assets will be synced based on existence, size, & timestamp.\n"
 printf "  Assets not present in source will be deleted in destination.\n\n"
 printf "Source:\n\n"
-printf "  %s\n\n" "`pwd`/$SOURCE/"
+printf "  %s\n\n" "`pwd`/$SOURCE"
 printf "Destination:\n\n"
 printf "  $DEST\n\n"
 
-aws s3 sync "$SOURCE" "$DEST" --delete
+s3cmd sync --recursive --delete-removed --guess-mime-type "$SOURCE" "$DEST"
