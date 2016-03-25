@@ -26,7 +26,7 @@ DEST="s3://$ASSETS_S3_BUCKET_NAME/"
 
 printf "\nUploading assets...\n\n"
 printf "Note:\n\n"
-printf "  Assets will be synced based on existence, size, & timestamp.\n"
+printf "  Assets will be synced based on existence, md5 checksum, & size. \n"
 printf "  Assets not present in source will be deleted in destination.\n\n"
 printf "Source:\n\n"
 printf "  %s\n\n" "`pwd`/$SOURCE"
