@@ -17,27 +17,29 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-OUTPUT_DIR="build/collected"
-ARTIFACTS=("build/libs" "build/reports" "build/outputs" "build/*.log")
-ROOT_PROJECT=$(sed -n -e 's/^projectName=//p' gradle.properties)
-SUBPROJECTS=($(sed -n -e 's/^include //p' settings.gradle | tr -d ",\"" | tr ' ' "\n"))
+THIS_DIR="${BASH_SOURCE%/*}"
+[[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
+[[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
 printf "\nCollecting build artifacts...\n\n"
 printf "Working directory:\n\n"
 printf "  %s\n\n" `pwd`
 printf "Output directory:\n\n"
-printf "  %s\n\n" `pwd`/${OUTPUT_DIR}
+printf "  %s\n\n" "`pwd`/$BUILD_ARTIFACTS_COLLECTION_DIR"
 printf "Projects to collect from:\n\n"
-for PROJECT in ${ROOT_PROJECT} ${SUBPROJECTS[@]}; do printf "  %s\n" ${PROJECT}; done
+for PROJECT in "$ROOT_PROJECT" "${SUBPROJECTS[@]}"; do printf "  $PROJECT\n"; done
 printf "\nArtifacts to collect from each project:\n\n"
-for ARTIFACT in ${ARTIFACTS[@]}; do printf "  %s\n" ${ARTIFACT}; done
+for ARTIFACT in "${BUILD_ARTIFACTS[@]}"; do printf "  $ARTIFACT\n"; done
 printf "\nCollecting:\n\n"
 
-mkdir -p ${OUTPUT_DIR}
+rm -rf "$BUILD_ARTIFACTS_COLLECTION_DIR"
+mkdir -p "$BUILD_ARTIFACTS_COLLECTION_DIR"
 
-for PROJECT in ${ROOT_PROJECT} ${SUBPROJECTS[@]}; do
-  for ARTIFACT in ${ARTIFACTS[@]}; do
-    [[ -z $(find . -path "*${PROJECT}/${ARTIFACT}" -print -quit) ]] && printf "  %s NOT FOUND - SKIPPING\n" ${PROJECT}/${ARTIFACT}
-    rsync -am --out-format="%f" ${PROJECT}/${ARTIFACT} ${OUTPUT_DIR}/${PROJECT}/ 2>/dev/null | awk '{ if ($1 > 0) { print "  " $1 } }'
+for PROJECT in "$ROOT_PROJECT" "${SUBPROJECTS[@]}"; do
+  for ARTIFACT in "${BUILD_ARTIFACTS[@]}"; do
+    SOURCE=$PROJECT/$ARTIFACT
+    DEST=$BUILD_ARTIFACTS_COLLECTION_DIR/$PROJECT
+    [[ -z $(find . -path "*$SOURCE" -print -quit) ]] && printf "  $SOURCE NOT FOUND - SKIPPING\n"
+    rsync -am --out-format="%f" $SOURCE "$DEST/" 2>/dev/null | awk -F'\t' '{ if ($1 > 0) print "  " $1 }'
   done
 done
