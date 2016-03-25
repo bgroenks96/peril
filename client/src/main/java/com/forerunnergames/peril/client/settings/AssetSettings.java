@@ -57,7 +57,7 @@ public final class AssetSettings
   }
 
   // Amazon S3
-  public static final String DEFAULT_S3_BUCKET_PATH = S3_BUCKET_PATH_PREFIX + "assets.peril.forerunnergames.com";
+  public static final String DEFAULT_S3_BUCKET_PATH = S3_BUCKET_PATH_PREFIX + "assets.perilgame.com";
   public static final String INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY = "";
   public static final String VALID_S3_BUCKET_PATH_DESCRIPTION =
           "1) Must begin with " + S3_BUCKET_PATH_PREFIX + "\n" +
