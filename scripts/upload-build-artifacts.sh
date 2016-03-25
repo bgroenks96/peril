@@ -33,4 +33,4 @@ printf "  %s\n\n" "`pwd`/$SOURCE"
 printf "Destination:\n\n"
 printf "  $DEST\n\n"
 
-s3cmd sync --recursive --delete-removed --guess-mime-type "$SOURCE" "$DEST"
+s3cmd sync --recursive --delete-removed --guess-mime-type --no-mime-magic --no-progress "$SOURCE" "$DEST"
