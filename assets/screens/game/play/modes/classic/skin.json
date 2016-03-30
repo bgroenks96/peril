@@ -115,7 +115,7 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
-    "default": { "background": "list-background", "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "fontColorSelected": "white", "font": "dejaVu-16" }
+    "default": { "background": "list-background", "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
@@ -142,7 +142,6 @@
     "popup-panel-title":                { "font": "dejaVu-22",    "fontColor": "white",      "background": null },
     "popup-message":                    { "font": "dejaVu-16",    "fontColor": "white",      "background": null },
     "popup-settings-title":             { "font": "dejaVu-18",    "fontColor": "white",      "background": null },
-    "popup-message":                    { "font": "dejaVu-16",    "fontColor": "light-gray", "background": null },
     "status-box-message":               { "font": "dejaVu-14",    "fontColor": "white",      "background": null },
     "chatbox-message":                  { "font": "dejaVu-14",    "fontColor": "white",      "background": null },
     "player-box-message":               { "font": "dejaVu-14",    "fontColor": "white",      "background": null },
