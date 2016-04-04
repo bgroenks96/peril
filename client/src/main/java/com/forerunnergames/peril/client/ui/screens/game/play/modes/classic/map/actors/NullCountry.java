@@ -28,12 +28,12 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.i
 import com.forerunnergames.peril.client.ui.widgets.NullDrawable;
 import com.forerunnergames.tools.common.Arguments;
 
-final class NullCountryActor implements CountryActor
+final class NullCountry implements Country
 {
   private final Group group = new Group ();
   private final Vector2 vector2 = new Vector2 ();
   private final Drawable drawable = new NullDrawable ();
-  private final CountryArmyTextActor countryArmyTextActor = CountryArmyTextActor.NULL_COUNTRY_ARMY_TEXT_ACTOR;
+  private final CountryArmyText countryArmyText = CountryArmyText.NULL_COUNTRY_ARMY_TEXT;
 
   @Override
   public CountryPrimaryImageState getCurrentPrimaryImageState ()
@@ -163,9 +163,9 @@ final class NullCountryActor implements CountryActor
   }
 
   @Override
-  public CountryArmyTextActor getArmyTextActor ()
+  public CountryArmyText getArmyText ()
   {
-    return countryArmyTextActor;
+    return countryArmyText;
   }
 
   @Override

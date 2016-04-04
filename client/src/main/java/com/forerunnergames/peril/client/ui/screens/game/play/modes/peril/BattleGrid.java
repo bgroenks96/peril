@@ -29,19 +29,19 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class BattleGrid extends Table implements InputProcessor
 {
-  private final UnitActor unitActor;
-  private final Table unitActorTable;
+  private final Unit unit;
+  private final Table unitTable;
 
-  public BattleGrid (final Image gridLinesImage, final UnitActor unitActor)
+  public BattleGrid (final Image gridLinesImage, final Unit unit)
   {
     Arguments.checkIsNotNull (gridLinesImage, "gridLinesImage");
-    Arguments.checkIsNotNull (unitActor, "unitActor");
+    Arguments.checkIsNotNull (unit, "unit");
 
-    this.unitActor = unitActor;
+    this.unit = unit;
 
     final Table gridLinesTable = new Table ();
 
-    unitActorTable = new Table ();
+    unitTable = new Table ();
 
     for (int row = 0; row < BattleGridSettings.BATTLE_GRID_ROW_COUNT; ++row)
     {
@@ -49,19 +49,19 @@ public final class BattleGrid extends Table implements InputProcessor
       {
         gridLinesTable.add (gridLinesImage).width (BattleGridSettings.BATTLE_GRID_CELL_WIDTH)
                 .height (BattleGridSettings.BATTLE_GRID_CELL_HEIGHT);
-        unitActorTable.add ().width (BattleGridSettings.BATTLE_GRID_CELL_WIDTH)
+        unitTable.add ().width (BattleGridSettings.BATTLE_GRID_CELL_WIDTH)
                 .height (BattleGridSettings.BATTLE_GRID_CELL_HEIGHT);
       }
 
       gridLinesTable.row ();
-      unitActorTable.row ();
+      unitTable.row ();
     }
 
-    stack (gridLinesTable, unitActorTable);
+    stack (gridLinesTable, unitTable);
 
     gridLinesTable.setVisible (BattleGridSettings.VISIBLE_GRID_LINES);
 
-    updateGridPositionOf (unitActor);
+    updateGridPositionOf (unit);
   }
 
   @Override
@@ -69,55 +69,55 @@ public final class BattleGrid extends Table implements InputProcessor
   {
     super.act (delta);
 
-    if (shouldUpdateGridPositionOf (unitActor)) updateGridPositionOf (unitActor);
+    if (shouldUpdateGridPositionOf (unit)) updateGridPositionOf (unit);
   }
 
   @Override
   public boolean keyDown (final int keycode)
   {
-    return unitActor.keyDown (keycode);
+    return unit.keyDown (keycode);
   }
 
   @Override
   public boolean keyUp (final int keycode)
   {
-    return unitActor.keyUp (keycode);
+    return unit.keyUp (keycode);
   }
 
   @Override
   public boolean keyTyped (final char character)
   {
-    return unitActor.keyTyped (character);
+    return unit.keyTyped (character);
   }
 
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    return unitActor.touchDown (screenX, screenY, pointer, button);
+    return unit.touchDown (screenX, screenY, pointer, button);
   }
 
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
-    return unitActor.touchUp (screenX, screenY, pointer, button);
+    return unit.touchUp (screenX, screenY, pointer, button);
   }
 
   @Override
   public boolean touchDragged (final int screenX, final int screenY, final int pointer)
   {
-    return unitActor.touchDragged (screenX, screenY, pointer);
+    return unit.touchDragged (screenX, screenY, pointer);
   }
 
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    return unitActor.mouseMoved (screenX, screenY);
+    return unit.mouseMoved (screenX, screenY);
   }
 
   @Override
   public boolean scrolled (final int amount)
   {
-    return unitActor.scrolled (amount);
+    return unit.scrolled (amount);
   }
 
   private static boolean areEqual (final Cell <?> cell1, final Cell <?> cell2)
@@ -126,7 +126,7 @@ public final class BattleGrid extends Table implements InputProcessor
             && cell1.getColumn () == cell2.getColumn ();
   }
 
-  private static void removeUnitActorFrom (final Cell <?> cell)
+  private static void removeUnitFrom (final Cell <?> cell)
   {
     setCellActor (cell, null);
   }
@@ -136,14 +136,14 @@ public final class BattleGrid extends Table implements InputProcessor
     return Math.round (gridPosition.y * BattleGridSettings.BATTLE_GRID_COLUMN_COUNT + gridPosition.x);
   }
 
-  private static Vector2 previousGridPositionOf (final UnitActor unitActor)
+  private static Vector2 previousGridPositionOf (final Unit unit)
   {
-    return unitActor.getPreviousPosition ();
+    return unit.getPreviousPosition ();
   }
 
-  private static void addUnitActorTo (final Cell <?> cell, final UnitActor unitActor)
+  private static void addUnitTo (final Cell <?> cell, final Unit unit)
   {
-    setCellActor (cell, unitActor.asActor ());
+    setCellActor (cell, unit.asActor ());
   }
 
   private static void setCellActor (final Cell <?> cell, final Actor actor)
@@ -151,34 +151,34 @@ public final class BattleGrid extends Table implements InputProcessor
     cell.setActor (actor);
   }
 
-  private static Vector2 currentGridPositionOf (final UnitActor unitActor)
+  private static Vector2 currentGridPositionOf (final Unit unit)
   {
-    return unitActor.getCurrentPosition ();
+    return unit.getCurrentPosition ();
   }
 
-  private boolean shouldUpdateGridPositionOf (final UnitActor unitActor)
+  private boolean shouldUpdateGridPositionOf (final Unit unit)
   {
-    return !areEqual (previousCellOf (unitActor), currentCellOf (unitActor));
+    return !areEqual (previousCellOf (unit), currentCellOf (unit));
   }
 
-  private void updateGridPositionOf (final UnitActor unitActor)
+  private void updateGridPositionOf (final Unit unit)
   {
-    removeUnitActorFrom (previousCellOf (unitActor));
-    addUnitActorTo (currentCellOf (unitActor), unitActor);
+    removeUnitFrom (previousCellOf (unit));
+    addUnitTo (currentCellOf (unit), unit);
   }
 
-  private Cell <?> previousCellOf (final UnitActor unitActor)
+  private Cell <?> previousCellOf (final Unit unit)
   {
-    return cellAt (gridPositionToCellIndex (previousGridPositionOf (unitActor)));
+    return cellAt (gridPositionToCellIndex (previousGridPositionOf (unit)));
   }
 
   private Cell <?> cellAt (final int cellIndex)
   {
-    return (Cell <?>) unitActorTable.getCells ().get (cellIndex);
+    return (Cell <?>) unitTable.getCells ().get (cellIndex);
   }
 
-  private Cell <?> currentCellOf (final UnitActor unitActor)
+  private Cell <?> currentCellOf (final Unit unit)
   {
-    return cellAt (gridPositionToCellIndex (currentGridPositionOf (unitActor)));
+    return cellAt (gridPositionToCellIndex (currentGridPositionOf (unit)));
   }
 }

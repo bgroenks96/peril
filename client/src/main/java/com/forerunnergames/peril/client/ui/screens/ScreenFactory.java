@@ -27,9 +27,9 @@ import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreen;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultPlayMapFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.countrycounter.CountryCounterFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultPlayMapActorFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.DefaultBattlePopupWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreen;
@@ -64,7 +64,7 @@ public final class ScreenFactory
   private final AssetUpdater assetUpdater;
   private final MBassador <Event> eventBus;
   private final MenuScreenWidgetFactory menuScreenWidgetFactory;
-  private final PlayMapActorFactory playMapActorFactory;
+  private final PlayMapFactory playMapFactory;
 
   public ScreenFactory (final ScreenChanger screenChanger,
                         final ScreenSize screenSize,
@@ -91,7 +91,7 @@ public final class ScreenFactory
     this.eventBus = eventBus;
 
     menuScreenWidgetFactory = new MenuScreenWidgetFactory (assetManager);
-    playMapActorFactory = new DefaultPlayMapActorFactory (assetManager, screenSize, mouseInput, eventBus);
+    playMapFactory = new DefaultPlayMapFactory (assetManager, screenSize, mouseInput, eventBus);
   }
 
   public Screen create (final ScreenId screenId)
@@ -139,13 +139,13 @@ public final class ScreenFactory
       }
       case MENU_TO_PLAY_LOADING:
       {
-        return new MenuToPlayLoadingScreen (new LoadingScreenWidgetFactory (assetManager), playMapActorFactory,
+        return new MenuToPlayLoadingScreen (new LoadingScreenWidgetFactory (assetManager), playMapFactory,
                 screenChanger, screenSize, mouseInput, batch, assetManager, eventBus);
       }
       case PLAY_CLASSIC:
       {
         return new ClassicModePlayScreen (
-                new ClassicModePlayScreenWidgetFactory (assetManager, playMapActorFactory,
+                new ClassicModePlayScreenWidgetFactory (assetManager, playMapFactory,
                         new DefaultBattlePopupWidgetFactory (assetManager)),
                 screenChanger, screenSize, mouseInput, batch, eventBus);
       }

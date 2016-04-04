@@ -38,7 +38,7 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
@@ -66,19 +66,19 @@ import net.engio.mbassy.bus.MBassador;
 public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFactory
 {
   private static final int ARMY_MOVEMENT_POPUP_SLIDER_STEP_SIZE = 1;
-  private final PlayMapActorFactory playMapActorFactory;
+  private final PlayMapFactory playMapFactory;
   private final BattlePopupWidgetFactory battlePopupWidgetFactory;
 
   public ClassicModePlayScreenWidgetFactory (final AssetManager assetManager,
-                                             final PlayMapActorFactory playMapActorFactory,
+                                             final PlayMapFactory playMapFactory,
                                              final BattlePopupWidgetFactory battlePopupWidgetFactory)
   {
     super (assetManager);
 
-    Arguments.checkIsNotNull (playMapActorFactory, "playMapActorFactory");
+    Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
     Arguments.checkIsNotNull (battlePopupWidgetFactory, "battlePopupWidgetFactory");
 
-    this.playMapActorFactory = playMapActorFactory;
+    this.playMapFactory = playMapFactory;
     this.battlePopupWidgetFactory = battlePopupWidgetFactory;
   }
 
@@ -250,11 +250,11 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return new DefendPopup (battlePopupWidgetFactory, stage, listener, eventBus);
   }
 
-  public void destroyPlayMapActor (final MapMetadata mapMetadata)
+  public void destroyPlayMap (final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    playMapActorFactory.destroy (mapMetadata);
+    playMapFactory.destroy (mapMetadata);
   }
 
   public OkPopup createBattleResultPopup (final Stage stage, final PopupListener listener)

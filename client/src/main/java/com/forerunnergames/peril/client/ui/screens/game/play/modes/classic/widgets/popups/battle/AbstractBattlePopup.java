@@ -29,8 +29,8 @@ import com.badlogic.gdx.utils.Timer;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.Country;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.Dice;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrows;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceFactory;
@@ -66,10 +66,10 @@ public abstract class AbstractBattlePopup extends OkPopup
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
-  private final CountryArmyTextActor attackingCountryArmyTextActor;
-  private final CountryArmyTextActor attackingCountryArmyTextEffectsActor;
-  private final CountryArmyTextActor defendingCountryArmyTextActor;
-  private final CountryArmyTextActor defendingCountryArmyTextEffectsActor;
+  private final CountryArmyText attackingCountryArmyText;
+  private final CountryArmyText attackingCountryArmyTextEffects;
+  private final CountryArmyText defendingCountryArmyText;
+  private final CountryArmyText defendingCountryArmyTextEffects;
   private final BattleOutcome outcome = new BattleOutcome ();
   private final Label attackingPlayerNameLabel;
   private final Label defendingPlayerNameLabel;
@@ -81,8 +81,8 @@ public abstract class AbstractBattlePopup extends OkPopup
   private final DiceArrows diceArrows;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
-  private CountryActor attackingCountryActor = CountryActor.NULL_COUNTRY_ACTOR;
-  private CountryActor defendingCountryActor = CountryActor.NULL_COUNTRY_ACTOR;
+  private Country attackingCountry = Country.NULL_COUNTRY;
+  private Country defendingCountry = Country.NULL_COUNTRY;
   // @formatter:on
   private Timer.Task battleTask = new Timer.Task ()
   {
@@ -144,10 +144,10 @@ public abstract class AbstractBattlePopup extends OkPopup
     attackerDice = diceFactory.createAttackerDice (gameRules);
     defenderDice = diceFactory.createDefenderDice (gameRules);
     diceArrows = widgetFactory.createBattlePopupDiceArrows (gameRules);
-    attackingCountryArmyTextActor = widgetFactory.createCountryArmyTextActor ();
-    attackingCountryArmyTextEffectsActor = widgetFactory.createAttackingCountryArmyTextEffectsActor ();
-    defendingCountryArmyTextActor = widgetFactory.createCountryArmyTextActor ();
-    defendingCountryArmyTextEffectsActor = widgetFactory.createDefendingCountryArmyTextEffectsActor ();
+    attackingCountryArmyText = widgetFactory.createCountryArmyText ();
+    attackingCountryArmyTextEffects = widgetFactory.createAttackingCountryArmyTextEffects ();
+    defendingCountryArmyText = widgetFactory.createCountryArmyText ();
+    defendingCountryArmyTextEffects = widgetFactory.createDefendingCountryArmyTextEffects ();
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -243,28 +243,28 @@ public abstract class AbstractBattlePopup extends OkPopup
     attackerDice.refreshAssets ();
     defenderDice.refreshAssets ();
     diceArrows.refreshAssets ();
-    attackingCountryArmyTextActor.setFont (widgetFactory.createCountryArmyTextActorFont ());
-    defendingCountryArmyTextActor.setFont (widgetFactory.createCountryArmyTextActorFont ());
-    attackingCountryArmyTextEffectsActor.setFont (widgetFactory.createCountryArmyTextEffectsActorFont ());
-    defendingCountryArmyTextEffectsActor.setFont (widgetFactory.createCountryArmyTextEffectsActorFont ());
+    attackingCountryArmyText.setFont (widgetFactory.createCountryArmyTextFont ());
+    defendingCountryArmyText.setFont (widgetFactory.createCountryArmyTextFont ());
+    attackingCountryArmyTextEffects.setFont (widgetFactory.createCountryArmyTextEffectsFont ());
+    defendingCountryArmyTextEffects.setFont (widgetFactory.createCountryArmyTextEffectsFont ());
   }
 
-  public final void show (final CountryActor attackingCountryActor,
-                          final CountryActor defendingCountryActor,
+  public final void show (final Country attackingCountry,
+                          final Country defendingCountry,
                           final String attackingPlayerName,
                           final String defendingPlayerName)
   {
-    Arguments.checkIsNotNull (attackingCountryActor, "attackingCountryActor");
-    Arguments.checkIsNotNull (defendingCountryActor, "defendingCountryActor");
+    Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
+    Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
     Arguments.checkIsNotNull (attackingPlayerName, "attackingPlayerName");
     Arguments.checkIsNotNull (defendingPlayerName, "defendingPlayerName");
 
     if (isShown ()) return;
 
-    final int attackingCountryArmies = attackingCountryActor.getArmies ();
-    final int defendingCountryArmies = defendingCountryActor.getArmies ();
+    final int attackingCountryArmies = attackingCountry.getArmies ();
+    final int defendingCountryArmies = defendingCountry.getArmies ();
 
-    setCountryActors (attackingCountryActor, defendingCountryActor);
+    setCountries (attackingCountry, defendingCountry);
     initializeCountryArmies (attackingCountryArmies, defendingCountryArmies);
     setPlayerNames (attackingPlayerName, defendingPlayerName);
     initializeDice (attackingCountryArmies, defendingCountryArmies);
@@ -342,22 +342,22 @@ public abstract class AbstractBattlePopup extends OkPopup
 
   public final int getAttackingCountryArmies ()
   {
-    return attackingCountryArmyTextActor.getArmies ();
+    return attackingCountryArmyText.getArmies ();
   }
 
   public final int getDefendingCountryArmies ()
   {
-    return defendingCountryArmyTextActor.getArmies ();
+    return defendingCountryArmyText.getArmies ();
   }
 
-  public final CountryActor getAttackingCountryActor ()
+  public final Country getAttackingCountry ()
   {
-    return attackingCountryActor;
+    return attackingCountry;
   }
 
-  public final CountryActor getDefendingCountryActor ()
+  public final Country getDefendingCountry ()
   {
-    return defendingCountryActor;
+    return defendingCountry;
   }
 
   public void startBattle ()
@@ -396,9 +396,9 @@ public abstract class AbstractBattlePopup extends OkPopup
     defenderDice.setTouchable (areTouchable);
   }
 
-  private static Image asImage (final CountryActor countryActor)
+  private static Image asImage (final Country country)
   {
-    return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
+    return new Image (country.getCurrentPrimaryDrawable (), Scaling.none);
   }
 
   private void resetBattle ()
@@ -489,106 +489,106 @@ public abstract class AbstractBattlePopup extends OkPopup
 
   private void changeCountryArmiesBy (final int attackingCountryArmiesDelta, final int defendingCountryArmiesDelta)
   {
-    attackingCountryArmyTextActor.changeArmiesBy (attackingCountryArmiesDelta);
-    defendingCountryArmyTextActor.changeArmiesBy (defendingCountryArmiesDelta);
+    attackingCountryArmyText.changeArmiesBy (attackingCountryArmiesDelta);
+    defendingCountryArmyText.changeArmiesBy (defendingCountryArmiesDelta);
 
-    attackingCountryArmyTextEffectsActor.changeArmiesBy (attackingCountryArmiesDelta);
-    defendingCountryArmyTextEffectsActor.changeArmiesBy (defendingCountryArmiesDelta);
+    attackingCountryArmyTextEffects.changeArmiesBy (attackingCountryArmiesDelta);
+    defendingCountryArmyTextEffects.changeArmiesBy (defendingCountryArmiesDelta);
   }
 
-  private void setCountryActors (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
+  private void setCountries (final Country attackingCountry, final Country defendingCountry)
   {
-    this.attackingCountryActor = attackingCountryActor;
-    this.defendingCountryActor = defendingCountryActor;
+    this.attackingCountry = attackingCountry;
+    this.defendingCountry = defendingCountry;
 
-    setCountryNames (attackingCountryActor, defendingCountryActor);
-    setCountryImages (attackingCountryActor, defendingCountryActor);
+    setCountryNames (attackingCountry, defendingCountry);
+    setCountryImages (attackingCountry, defendingCountry);
   }
 
   private void initializeCountryArmies (final int attackingCountryArmies, final int defendingCountryArmies)
   {
-    attackingCountryArmyTextEffectsActor.asActor ().setVisible (false);
-    defendingCountryArmyTextEffectsActor.asActor ().setVisible (false);
+    attackingCountryArmyTextEffects.asActor ().setVisible (false);
+    defendingCountryArmyTextEffects.asActor ().setVisible (false);
 
-    attackingCountryArmyTextActor.changeArmiesTo (attackingCountryArmies);
-    defendingCountryArmyTextActor.changeArmiesTo (defendingCountryArmies);
+    attackingCountryArmyText.changeArmiesTo (attackingCountryArmies);
+    defendingCountryArmyText.changeArmiesTo (defendingCountryArmies);
   }
 
-  private void setCountryNames (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
+  private void setCountryNames (final Country attackingCountry, final Country defendingCountry)
   {
-    setCountryNames (attackingCountryActor.asActor ().getName (), defendingCountryActor.asActor ().getName ());
+    setCountryNames (attackingCountry.asActor ().getName (), defendingCountry.asActor ().getName ());
   }
 
-  private void setCountryImages (final CountryActor attackingCountryActor, final CountryActor defendingCountryActor)
+  private void setCountryImages (final Country attackingCountry, final Country defendingCountry)
   {
-    setCountryImage (attackingCountryActor, attackingCountryArmyTextActor, attackingCountryArmyTextEffectsActor,
+    setCountryImage (attackingCountry, attackingCountryArmyText, attackingCountryArmyTextEffects,
                      attackingCountryStack);
-    setCountryImage (defendingCountryActor, defendingCountryArmyTextActor, defendingCountryArmyTextEffectsActor,
+    setCountryImage (defendingCountry, defendingCountryArmyText, defendingCountryArmyTextEffects,
                      defendingCountryStack);
   }
 
-  private void setCountryImage (final CountryActor countryActor,
-                                final CountryArmyTextActor countryArmyTextActor,
-                                final CountryArmyTextActor countryArmyTextEffectsActor,
+  private void setCountryImage (final Country country,
+                                final CountryArmyText countryArmyText,
+                                final CountryArmyText countryArmyTextEffects,
                                 final Stack countryStack)
   {
-    final Image countryImage = asImage (countryActor);
+    final Image countryImage = asImage (country);
 
     countryStack.clear ();
     countryStack.add (countryImage);
-    countryStack.add (countryArmyTextActor.asActor ());
-    countryStack.add (countryArmyTextEffectsActor.asActor ());
+    countryStack.add (countryArmyText.asActor ());
+    countryStack.add (countryArmyTextEffects.asActor ());
 
     getContentTable ().layout ();
 
-    updateCountryArmyCircle (countryArmyTextActor, countryActor, countryImage);
-    updateCountryArmyCircle (countryArmyTextEffectsActor, countryActor, countryImage);
+    updateCountryArmyCircle (countryArmyText, country, countryImage);
+    updateCountryArmyCircle (countryArmyTextEffects, country, countryImage);
   }
 
-  private void updateCountryArmyCircle (final CountryArmyTextActor countryArmyTextActor,
-                                        final CountryActor countryActor,
+  private void updateCountryArmyCircle (final CountryArmyText countryArmyText,
+                                        final Country country,
                                         final Image countryImage)
   {
-    setCountryArmyCircleSize (countryArmyTextActor, countryActor, countryImage);
-    setCountryArmyCirclePosition (countryArmyTextActor, countryActor, countryImage);
+    setCountryArmyCircleSize (countryArmyText, country, countryImage);
+    setCountryArmyCirclePosition (countryArmyText, country, countryImage);
   }
 
-  private void setCountryArmyCircleSize (final CountryArmyTextActor countryArmyTextActor,
-                                         final CountryActor countryActor,
+  private void setCountryArmyCircleSize (final CountryArmyText countryArmyText,
+                                         final Country country,
                                          final Image countryImage)
   {
-    countryArmyTextActor
-            .setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (countryActor, countryImage));
+    countryArmyText
+            .setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (country, countryImage));
   }
 
-  private void setCountryArmyCirclePosition (final CountryArmyTextActor countryArmyTextActor,
-                                             final CountryActor countryActor,
+  private void setCountryArmyCirclePosition (final CountryArmyText countryArmyText,
+                                             final Country country,
                                              final Image countryImage)
   {
-    countryArmyTextActor
-            .setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor, countryImage));
+    countryArmyText
+            .setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (country, countryImage));
   }
 
-  private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,
+  private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final Country country,
                                                                            final Image countryImagePostLayout)
   {
-    return tempPosition.set (countryActor.getReferenceTextUpperLeft ()).sub (countryActor.getReferenceDestination ())
+    return tempPosition.set (country.getReferenceTextUpperLeft ()).sub (country.getReferenceDestination ())
             .set (Math.abs (tempPosition.x), Math.abs (tempPosition.y))
-            .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout))
+            .scl (calculateCountryImageScaling (country, countryImagePostLayout))
             .add (countryImagePostLayout.getImageX (), countryImagePostLayout.getImageY ());
   }
 
-  private Vector2 calculateCountryArmyTextCircleSizeActualCountrySpace (final CountryActor countryActor,
+  private Vector2 calculateCountryArmyTextCircleSizeActualCountrySpace (final Country country,
                                                                         final Image countryImagePostLayout)
   {
     return tempSize.set (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE)
-            .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout));
+            .scl (calculateCountryImageScaling (country, countryImagePostLayout));
   }
 
-  private Vector2 calculateCountryImageScaling (final CountryActor countryActor, final Image countryImagePostLayout)
+  private Vector2 calculateCountryImageScaling (final Country country, final Image countryImagePostLayout)
   {
-    return tempScaling.set (countryImagePostLayout.getImageWidth () / countryActor.getReferenceWidth (),
-                            countryImagePostLayout.getImageHeight () / countryActor.getReferenceHeight ());
+    return tempScaling.set (countryImagePostLayout.getImageWidth () / country.getReferenceWidth (),
+                            countryImagePostLayout.getImageHeight () / country.getReferenceHeight ());
   }
 
   private void setCountryNames (final String attackingCountryName, final String defendingCountryName)

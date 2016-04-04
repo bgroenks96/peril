@@ -29,9 +29,9 @@ import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
 
-public interface PlayMapActor
+public interface PlayMap
 {
-  PlayMapActor NULL_PLAY_MAP_ACTOR = new NullPlayMapActor ();
+  PlayMap NULL_PLAY_MAP = new NullPlayMap ();
 
   boolean mouseMoved (final Vector2 mouseCoordinate);
 
@@ -59,9 +59,9 @@ public interface PlayMapActor
 
   void setCountryState (final String countryName, final CountryPrimaryImageState state);
 
-  boolean existsCountryActorWithName (final String countryName);
+  boolean existsCountryWithName (final String countryName);
 
-  CountryActor getCountryActorWithName (final String countryName);
+  Country getCountryWithName (final String countryName);
 
   ImmutableSet <String> getAllCountryNames ();
 

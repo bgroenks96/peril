@@ -22,19 +22,19 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyText;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.math.IntMath;
 
-public final class CountryArmyTextEffectsActor extends DefaultCountryArmyTextActor
+public final class CountryArmyTextEffects extends DefaultCountryArmyText
 {
   private static final float MOVE_BY_X = -80.0f;
   private static final float MOVE_BY_Y = 80.0f;
   private static final float MOVE_TIME_SECONDS = 1.5f;
   private final HorizontalMoveDirection direction;
 
-  public CountryArmyTextEffectsActor (final BitmapFont font, final HorizontalMoveDirection direction)
+  public CountryArmyTextEffects (final BitmapFont font, final HorizontalMoveDirection direction)
   {
     super (font);
 

@@ -25,11 +25,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.tools.common.Arguments;
 
-public final class TankTurretActor extends Actor
+public final class TankTurret extends Actor
 {
   private final TextureRegion tankTurret;
 
-  public TankTurretActor (final TextureRegion tankTurret)
+  public TankTurret (final TextureRegion tankTurret)
   {
     Arguments.checkIsNotNull (tankTurret, "tankTurret");
 

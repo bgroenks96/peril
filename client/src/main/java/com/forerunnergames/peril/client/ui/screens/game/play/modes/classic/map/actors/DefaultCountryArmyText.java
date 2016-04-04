@@ -30,7 +30,7 @@ import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.math.IntMath;
 
-public class DefaultCountryArmyTextActor implements CountryArmyTextActor
+public class DefaultCountryArmyText implements CountryArmyText
 {
   private static final int MIN_ARMIES = 0;
   private static final int MAX_ARMIES = 99;
@@ -42,7 +42,7 @@ public class DefaultCountryArmyTextActor implements CountryArmyTextActor
   private final BitmapFontActor textActor;
   private int armies = 0;
 
-  public DefaultCountryArmyTextActor (final BitmapFont font)
+  public DefaultCountryArmyText (final BitmapFont font)
   {
     Arguments.checkIsNotNull (font, "font");
 

@@ -73,8 +73,8 @@ import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugPackets;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.Country;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.AbstractBattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
@@ -144,11 +144,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
   private final BattleOutcome tempOutcome = new BattleOutcome ();
-  private final Cell <Actor> playMapActorCell;
+  private final Cell <Actor> playMapCell;
   private final ScreenShaker screenShaker;
   private final DebugInputProcessor debugInputProcessor;
   private Sound battleSingleExplosionSound;
-  private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
+  private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
 
   public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
@@ -181,7 +181,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     rootStack.add (backgroundImage);
 
     final Table playMapAndSideBarTable = new Table ();
-    playMapActorCell = playMapAndSideBarTable.add (playMapActor.asActor ())
+    playMapCell = playMapAndSideBarTable.add (playMap.asActor ())
             .size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT).padRight (16);
     playMapAndSideBarTable.add (sideBar).top ();
 
@@ -279,7 +279,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    debugInputProcessor = new DebugInputProcessor (mouseInput, playMapActor, statusBox, chatBox, playerBox,
+    debugInputProcessor = new DebugInputProcessor (mouseInput, playMap, statusBox, chatBox, playerBox,
             occupationPopup, reinforcementPopup, attackPopup, defendPopup, eventBus);
 
     inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
@@ -297,7 +297,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Gdx.input.setInputProcessor (inputProcessor);
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
-    playMapActor.mouseMoved (mouseInput.position ());
+    playMap.mouseMoved (mouseInput.position ());
 
     backgroundImage.setDrawable (widgetFactory.createBackgroundImageDrawable ());
     statusBox.refreshAssets ();
@@ -364,14 +364,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     statusBox.clear ();
     playerBox.clear ();
     debugInputProcessor.reset ();
-    clearPlayMapActor ();
+    clearPlayMap ();
     occupationPopup.hide ();
     reinforcementPopup.hide ();
     attackPopup.hide ();
     defendPopup.hide ();
     battleResultPopup.hide ();
     quitPopup.hide ();
-
     battleSingleExplosionSound.stop ();
   }
 
@@ -385,7 +384,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMapActor.touchDown (tempPosition.set (screenX, screenY), button);
+    playMap.touchDown (tempPosition.set (screenX, screenY), button);
 
     return false;
   }
@@ -393,7 +392,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMapActor.touchUp (tempPosition.set (screenX, screenY));
+    playMap.touchUp (tempPosition.set (screenX, screenY));
 
     return false;
   }
@@ -401,7 +400,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    playMapActor.mouseMoved (tempPosition.set (screenX, screenY));
+    playMap.mouseMoved (tempPosition.set (screenX, screenY));
 
     return false;
   }
@@ -418,7 +417,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        updatePlayMapActor (event.getPlayMapActor ());
+        updatePlayMap (event.getPlayMap ());
         playerBox.setPlayers (event.getPlayersInGame ());
       }
     });
@@ -510,7 +509,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMapActor.changeArmiesBy (deltaArmyCountFrom (event), withCountryNameFrom (event));
+        playMap.changeArmiesBy (deltaArmyCountFrom (event), withCountryNameFrom (event));
       }
     });
   }
@@ -544,7 +543,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMapActor.setCountryState (event.getCountryName (), CountryPrimaryImageState
+        playMap.setCountryState (event.getCountryName (), CountryPrimaryImageState
                 .valueOf (Strings.toCase (playerColorFrom (event), LetterCase.UPPER)));
       }
     });
@@ -567,9 +566,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
           final CountryPrimaryImageState state = CountryPrimaryImageState
                   .valueOf (Strings.toCase (event.getOwnerColor (country), LetterCase.UPPER));
 
-          if (playMapActor.currentPrimaryImageStateOfCountryIs (state, country.getName ())) continue;
+          if (playMap.currentPrimaryImageStateOfCountryIs (state, country.getName ())) continue;
 
-          playMapActor.setCountryState (country.getName (), state);
+          playMap.setCountryState (country.getName (), state);
         }
       }
     });
@@ -602,21 +601,21 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Gdx.graphics.setCursor (normalCursor);
   }
 
-  private void updatePlayMapActor (final PlayMapActor playMapActor)
+  private void updatePlayMap (final PlayMap playMap)
   {
-    this.playMapActor = playMapActor;
-    playMapActorCell.setActor (this.playMapActor.asActor ());
-    debugInputProcessor.setPlayMapActor (this.playMapActor);
+    this.playMap = playMap;
+    playMapCell.setActor (this.playMap.asActor ());
+    debugInputProcessor.setPlayMap (this.playMap);
   }
 
-  private void clearPlayMapActor ()
+  private void clearPlayMap ()
   {
-    playMapActor.reset ();
-    playMapActorCell.clearActor ();
-    widgetFactory.destroyPlayMapActor (playMapActor.getMapMetadata ());
-    playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
-    playMapActorCell.setActor (playMapActor.asActor ());
-    debugInputProcessor.setPlayMapActor (playMapActor);
+    playMap.reset ();
+    playMapCell.clearActor ();
+    widgetFactory.destroyPlayMap (playMap.getMapMetadata ());
+    playMap = PlayMap.NULL_PLAY_MAP;
+    playMapCell.setActor (playMap.asActor ());
+    debugInputProcessor.setPlayMap (playMap);
   }
 
   private void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies)
@@ -667,7 +666,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onShow ()
     {
-      playMapActor.disable ();
+      playMap.disable ();
     }
 
     @Override
@@ -675,7 +674,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       if (quitPopup.isShown ()) return;
 
-      playMapActor.enable (mouseInput.position ());
+      playMap.enable (mouseInput.position ());
     }
   }
 
@@ -706,7 +705,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onShow ()
     {
-      playMapActor.disable ();
+      playMap.disable ();
     }
 
     @Override
@@ -714,7 +713,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       if (quitPopup.isShown ()) return;
 
-      playMapActor.enable (mouseInput.position ());
+      playMap.enable (mouseInput.position ());
     }
   }
 
@@ -784,24 +783,24 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       // @formatter:off
       final String attackingCountryName = attackPopup.getAttackingCountryName ();
       final String defendingCountryName = attackPopup.getDefendingCountryName ();
-      final CountryPrimaryImageState attackingCountryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (attackingCountryName);
+      final CountryPrimaryImageState attackingCountryPrimaryImageState = playMap.getCurrentPrimaryImageStateOf (attackingCountryName);
       final int totalArmies = attackPopup.getAttackingCountryArmies ();
       final int minDestinationArmies = attackPopup.getActiveAttackerDieCount ();
       final int maxDestinationArmies = totalArmies - 1;
-      final CountryActor sourceCountryActor = attackPopup.getAttackingCountryActor ();
-      final CountryActor destinationCountryActor = attackPopup.getDefendingCountryActor ();
+      final Country sourceCountry = attackPopup.getAttackingCountry ();
+      final Country destinationCountry = attackPopup.getDefendingCountry ();
       // @formatter:on
 
       // TODO Production: Remove
       if (attackingCountryPrimaryImageState != null)
       {
-        attackPopup.getDefendingCountryActor ().changePrimaryStateTo (attackingCountryPrimaryImageState);
-        playMapActor.setCountryState (defendingCountryName, attackingCountryPrimaryImageState);
+        attackPopup.getDefendingCountry ().changePrimaryStateTo (attackingCountryPrimaryImageState);
+        playMap.setCountryState (defendingCountryName, attackingCountryPrimaryImageState);
       }
 
       attackPopup.hide ();
 
-      occupationPopup.show (minDestinationArmies, maxDestinationArmies, sourceCountryActor, destinationCountryActor,
+      occupationPopup.show (minDestinationArmies, maxDestinationArmies, sourceCountry, destinationCountry,
                             totalArmies);
 
       battleResultPopup.setTitle ("Victory");
@@ -846,7 +845,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onShow ()
     {
-      playMapActor.disable ();
+      playMap.disable ();
 
       eventBus.publish (StatusMessageEventFactory
               .create (Strings.format ("You are preparing to attack {} in {} from {}.",
@@ -955,7 +954,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onShow ()
     {
-      playMapActor.disable ();
+      playMap.disable ();
 
       eventBus.publish (StatusMessageEventFactory
               .create (Strings.format ("You are preparing to defend {} against {} in {}.",
@@ -984,7 +983,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onShow ()
     {
-      playMapActor.disable ();
+      playMap.disable ();
     }
 
     @Override
@@ -992,7 +991,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       if (defendPopup.isShown () || occupationPopup.isShown () || battleResultPopup.isShown ()) return;
 
-      playMapActor.enable (mouseInput.position ());
+      playMap.enable (mouseInput.position ());
     }
   }
 
@@ -1019,7 +1018,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         return;
       }
 
-      playMapActor.enable (mouseInput.position ());
+      playMap.enable (mouseInput.position ());
     }
   }
 }

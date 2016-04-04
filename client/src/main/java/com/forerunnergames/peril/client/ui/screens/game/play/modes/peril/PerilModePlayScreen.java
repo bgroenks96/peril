@@ -85,9 +85,9 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
       }
     };
 
-    final TankActor2 tankActor2 = widgetFactory.createTankActor2 ();
+    final Tank2 tank2 = widgetFactory.createTank2 ();
 
-    stage.addActor (tankActor2);
+    stage.addActor (tank2);
 
     stage.addListener (new ClickListener ()
     {
@@ -115,7 +115,7 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
       }
     };
 
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, tankActor2);
+    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, tank2);
   }
 
   @Override

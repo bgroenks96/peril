@@ -29,9 +29,9 @@ import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.CountryArmyTextEffectsActor.HorizontalMoveDirection;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyText;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyText;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.CountryArmyTextEffects.HorizontalMoveDirection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrow;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrows;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
@@ -115,31 +115,31 @@ public class DefaultBattlePopupWidgetFactory extends AbstractWidgetFactory imple
   }
 
   @Override
-  public CountryArmyTextActor createCountryArmyTextActor ()
+  public CountryArmyText createCountryArmyText ()
   {
-    return new DefaultCountryArmyTextActor (createCountryArmyTextActorFont ());
+    return new DefaultCountryArmyText (createCountryArmyTextFont ());
   }
 
   @Override
-  public BitmapFont createCountryArmyTextActorFont ()
+  public BitmapFont createCountryArmyTextFont ()
   {
     return new BitmapFont ();
   }
 
   @Override
-  public CountryArmyTextActor createAttackingCountryArmyTextEffectsActor ()
+  public CountryArmyText createAttackingCountryArmyTextEffects ()
   {
-    return new CountryArmyTextEffectsActor (createCountryArmyTextActorFont (), HorizontalMoveDirection.RIGHT);
+    return new CountryArmyTextEffects (createCountryArmyTextFont (), HorizontalMoveDirection.RIGHT);
   }
 
   @Override
-  public CountryArmyTextActor createDefendingCountryArmyTextEffectsActor ()
+  public CountryArmyText createDefendingCountryArmyTextEffects ()
   {
-    return new CountryArmyTextEffectsActor (createCountryArmyTextActorFont (), HorizontalMoveDirection.LEFT);
+    return new CountryArmyTextEffects (createCountryArmyTextFont (), HorizontalMoveDirection.LEFT);
   }
 
   @Override
-  public BitmapFont createCountryArmyTextEffectsActorFont ()
+  public BitmapFont createCountryArmyTextEffectsFont ()
   {
     return createBitmapFont ("dejaVu-22");
   }

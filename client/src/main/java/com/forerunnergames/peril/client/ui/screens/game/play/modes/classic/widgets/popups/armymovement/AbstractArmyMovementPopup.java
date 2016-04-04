@@ -38,9 +38,9 @@ import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.Country;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyText;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.DefaultCountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
@@ -73,8 +73,8 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
   private final Vector2 tempSize = new Vector2 ();
   // private final Color tempColor = new Color ();
   private final BitmapFont countryArmyTextFont = new BitmapFont ();
-  private final CountryArmyTextActor sourceCountryArmyTextActor = new DefaultCountryArmyTextActor (countryArmyTextFont);
-  private final CountryArmyTextActor destinationCountryArmyTextActor = new DefaultCountryArmyTextActor (
+  private final CountryArmyText sourceCountryArmyText = new DefaultCountryArmyText (countryArmyTextFont);
+  private final CountryArmyText destinationCountryArmyText = new DefaultCountryArmyText (
           countryArmyTextFont);
   private final Label sourceCountryNameLabel;
   private final Label destinationCountryNameLabel;
@@ -303,15 +303,15 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
   public void show (final int minDestinationArmies,
                     final int maxDestinationArmies,
-                    final CountryActor sourceCountryActor,
-                    final CountryActor destinationCountryActor,
+                    final Country sourceCountry,
+                    final Country destinationCountry,
                     final int totalArmies)
   {
     // @formatter:on
     Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
     Arguments.checkIsNotNegative (maxDestinationArmies, "maxDestinationArmies");
-    Arguments.checkIsNotNull (sourceCountryActor, "sourceCountryActor");
-    Arguments.checkIsNotNull (destinationCountryActor, "destinationCountryActor");
+    Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
+    Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
     Arguments.checkIsNotNegative (totalArmies, "totalArmies");
     Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies", "maxDestinationArmies");
     Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
@@ -324,7 +324,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
     setSliderRange (minDestinationArmies, maxDestinationArmies);
     setSliderToMinValue ();
-    setCountries (sourceCountryActor, destinationCountryActor);
+    setCountries (sourceCountry, destinationCountry);
     show ();
   }
 
@@ -370,9 +370,9 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
             - (COUNTRY_BOX_WIDTH - COUNTRY_BOX_INNER_PADDING * 2.0f - countryImagePostLayout.getImageWidth ())));
   }
 
-  private static Image asImage (final CountryActor countryActor)
+  private static Image asImage (final Country country)
   {
-    return new Image (countryActor.getCurrentPrimaryDrawable (), Scaling.none);
+    return new Image (country.getCurrentPrimaryDrawable (), Scaling.none);
   }
 
   private void updateCountryArmies ()
@@ -393,7 +393,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
   private void setSourceCountryArmies (final int armies)
   {
-    sourceCountryArmyTextActor.changeArmiesTo (armies);
+    sourceCountryArmyText.changeArmiesTo (armies);
   }
 
   private void updateDestinationCountryArmies ()
@@ -403,7 +403,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
   private void setDestinationCountryArmies (final int armies)
   {
-    destinationCountryArmyTextActor.changeArmiesTo (armies);
+    destinationCountryArmyText.changeArmiesTo (armies);
   }
 
   private void setSliderToMinValue ()
@@ -426,39 +426,39 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
     slider.setValue (slider.getValue () + slider.getStepSize ());
   }
 
-  private void setCountries (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
+  private void setCountries (final Country sourceCountry, final Country destinationCountry)
   {
-    setCountryNames (sourceCountryActor, destinationCountryActor);
-    setCountryImages (sourceCountryActor, destinationCountryActor);
+    setCountryNames (sourceCountry, destinationCountry);
+    setCountryImages (sourceCountry, destinationCountry);
     updateCountryArmies ();
   }
 
-  private void setCountryNames (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
+  private void setCountryNames (final Country sourceCountry, final Country destinationCountry)
   {
-    setCountryNames (sourceCountryActor.asActor ().getName (), destinationCountryActor.asActor ().getName ());
+    setCountryNames (sourceCountry.asActor ().getName (), destinationCountry.asActor ().getName ());
   }
 
-  private void setCountryImages (final CountryActor sourceCountryActor, final CountryActor destinationCountryActor)
+  private void setCountryImages (final Country sourceCountry, final Country destinationCountry)
   {
-    setCountryImage (sourceCountryActor, sourceCountryArmyTextActor, sourceCountryStack, sourceCountryStackCell,
+    setCountryImage (sourceCountry, sourceCountryArmyText, sourceCountryStack, sourceCountryStackCell,
                      SOURCE_COUNTRY_ARROW_WIDTH, CellPadding.LEFT);
 
-    setCountryImage (destinationCountryActor, destinationCountryArmyTextActor, destinationCountryStack,
+    setCountryImage (destinationCountry, destinationCountryArmyText, destinationCountryStack,
                      destinationCountryStackCell, DESTINATION_COUNTRY_ARROW_WIDTH, CellPadding.RIGHT);
   }
 
-  private void setCountryImage (final CountryActor countryActor,
-                                final CountryArmyTextActor countryArmyTextActor,
+  private void setCountryImage (final Country country,
+                                final CountryArmyText countryArmyText,
                                 final Stack countryStack,
                                 final Cell <Stack> countryStackCell,
                                 final float countryArrowWidth,
                                 final CellPadding paddingType)
   {
-    final Image countryImage = asImage (countryActor);
+    final Image countryImage = asImage (country);
 
     countryStack.clear ();
     countryStack.add (countryImage);
-    countryStack.add (countryArmyTextActor.asActor ());
+    countryStack.add (countryArmyText.asActor ());
 
     getContentTable ().layout ();
 
@@ -468,53 +468,53 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
     getContentTable ().layout ();
 
-    updateCountryArmyCircle (countryArmyTextActor, countryActor, countryImage);
+    updateCountryArmyCircle (countryArmyText, country, countryImage);
   }
 
-  private void updateCountryArmyCircle (final CountryArmyTextActor countryArmyTextActor,
-                                        final CountryActor countryActor,
+  private void updateCountryArmyCircle (final CountryArmyText countryArmyText,
+                                        final Country country,
                                         final Image countryImage)
   {
-    setCountryArmyCircleSize (countryArmyTextActor, countryActor, countryImage);
-    setCountryArmyCirclePosition (countryArmyTextActor, countryActor, countryImage);
+    setCountryArmyCircleSize (countryArmyText, country, countryImage);
+    setCountryArmyCirclePosition (countryArmyText, country, countryImage);
   }
 
-  private void setCountryArmyCircleSize (final CountryArmyTextActor countryArmyTextActor,
-                                         final CountryActor countryActor,
+  private void setCountryArmyCircleSize (final CountryArmyText countryArmyText,
+                                         final Country country,
                                          final Image countryImage)
   {
-    countryArmyTextActor
-            .setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (countryActor, countryImage));
+    countryArmyText
+            .setCircleSize (calculateCountryArmyTextCircleSizeActualCountrySpace (country, countryImage));
   }
 
-  private void setCountryArmyCirclePosition (final CountryArmyTextActor countryArmyTextActor,
-                                             final CountryActor countryActor,
+  private void setCountryArmyCirclePosition (final CountryArmyText countryArmyText,
+                                             final Country country,
                                              final Image countryImage)
   {
-    countryArmyTextActor
-            .setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (countryActor, countryImage));
+    countryArmyText
+            .setCircleTopLeft (calculateCountryArmyTextCircleTopLeftActualCountrySpace (country, countryImage));
   }
 
-  private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final CountryActor countryActor,
+  private Vector2 calculateCountryArmyTextCircleTopLeftActualCountrySpace (final Country country,
                                                                            final Image countryImagePostLayout)
   {
-    return tempPosition.set (countryActor.getReferenceTextUpperLeft ()).sub (countryActor.getReferenceDestination ())
+    return tempPosition.set (country.getReferenceTextUpperLeft ()).sub (country.getReferenceDestination ())
             .set (Math.abs (tempPosition.x), Math.abs (tempPosition.y))
-            .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout))
+            .scl (calculateCountryImageScaling (country, countryImagePostLayout))
             .add (countryImagePostLayout.getImageX (), countryImagePostLayout.getImageY ());
   }
 
-  private Vector2 calculateCountryArmyTextCircleSizeActualCountrySpace (final CountryActor countryActor,
+  private Vector2 calculateCountryArmyTextCircleSizeActualCountrySpace (final Country country,
                                                                         final Image countryImagePostLayout)
   {
     return tempSize.set (PlayMapSettings.COUNTRY_ARMY_CIRCLE_SIZE_REFERENCE_PLAY_MAP_SPACE)
-            .scl (calculateCountryImageScaling (countryActor, countryImagePostLayout));
+            .scl (calculateCountryImageScaling (country, countryImagePostLayout));
   }
 
-  private Vector2 calculateCountryImageScaling (final CountryActor countryActor, final Image countryImagePostLayout)
+  private Vector2 calculateCountryImageScaling (final Country country, final Image countryImagePostLayout)
   {
-    return tempScaling.set (countryImagePostLayout.getImageWidth () / countryActor.getReferenceWidth (),
-                            countryImagePostLayout.getImageHeight () / countryActor.getReferenceHeight ());
+    return tempScaling.set (countryImagePostLayout.getImageWidth () / country.getReferenceWidth (),
+                            countryImagePostLayout.getImageHeight () / country.getReferenceHeight ());
   }
 
   private void setSliderRange (final int minValue, final int maxValue)

@@ -51,38 +51,38 @@ import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class DefaultPlayMapActor implements PlayMapActor
+public final class DefaultPlayMap implements PlayMap
 {
   private final Group group = new Group ();
-  private final ImmutableMap <String, CountryActor> countryNamesToActors;
+  private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
-  private final HoveredTerritoryTextActor hoveredTerritoryTextActor;
+  private final HoveredTerritoryText hoveredTerritoryText;
   private final MapMetadata mapMetadata;
   private final MBassador <Event> eventBus;
   @Nullable
-  private CountryActor hoveredCountryActor = null;
+  private Country hoveredCountry = null;
   @Nullable
-  private CountryActor touchedCountryActor = null;
+  private Country touchedCountry = null;
   private boolean isEnabled = true;
 
-  public DefaultPlayMapActor (final ImmutableMap <String, CountryActor> countryNamesToActors,
-                              final PlayMapInputDetection inputDetection,
-                              final HoveredTerritoryTextActor hoveredTerritoryTextActor,
-                              final Image backgroundImage,
-                              final MapMetadata mapMetadata,
-                              final MBassador <Event> eventBus)
+  public DefaultPlayMap (final ImmutableMap <String, Country> countryNamesToCountries,
+                         final PlayMapInputDetection inputDetection,
+                         final HoveredTerritoryText hoveredTerritoryText,
+                         final Image backgroundImage,
+                         final MapMetadata mapMetadata,
+                         final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (countryNamesToActors, "countryNamesToActors");
-    Arguments.checkHasNoNullKeysOrValues (countryNamesToActors, "countryNamesToActors");
+    Arguments.checkIsNotNull (countryNamesToCountries, "countryNamesToCountries");
+    Arguments.checkHasNoNullKeysOrValues (countryNamesToCountries, "countryNamesToCountries");
     Arguments.checkIsNotNull (inputDetection, "inputDetection");
-    Arguments.checkIsNotNull (hoveredTerritoryTextActor, "hoveredTerritoryTextActor");
+    Arguments.checkIsNotNull (hoveredTerritoryText, "hoveredTerritoryText");
     Arguments.checkIsNotNull (backgroundImage, "backgroundImage");
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.countryNamesToActors = countryNamesToActors;
+    this.countryNamesToCountries = countryNamesToCountries;
     this.inputDetection = inputDetection;
-    this.hoveredTerritoryTextActor = hoveredTerritoryTextActor;
+    this.hoveredTerritoryText = hoveredTerritoryText;
     this.mapMetadata = mapMetadata;
     this.eventBus = eventBus;
 
@@ -92,12 +92,12 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
     group.addActor (backgroundImage);
 
-    final List <CountryActor> countryActorsSortedByAtlasIndex = new ArrayList <> (countryNamesToActors.values ());
+    final List <Country> countriesSortedByAtlasIndex = new ArrayList <> (countryNamesToCountries.values ());
 
-    Collections.sort (countryActorsSortedByAtlasIndex, new Comparator <CountryActor> ()
+    Collections.sort (countriesSortedByAtlasIndex, new Comparator <Country> ()
     {
       @Override
-      public int compare (final CountryActor o1, final CountryActor o2)
+      public int compare (final Country o1, final Country o2)
       {
         Arguments.checkIsNotNull (o1, "o1");
         Arguments.checkIsNotNull (o2, "o2");
@@ -106,17 +106,17 @@ public final class DefaultPlayMapActor implements PlayMapActor
       }
     });
 
-    for (final CountryActor countryActor : countryActorsSortedByAtlasIndex)
+    for (final Country country : countriesSortedByAtlasIndex)
     {
-      group.addActor (countryActor.asActor ());
+      group.addActor (country.asActor ());
     }
 
-    for (final CountryActor countryActor : countryActorsSortedByAtlasIndex)
+    for (final Country country : countriesSortedByAtlasIndex)
     {
-      group.addActor (countryActor.getArmyTextActor ().asActor ());
+      group.addActor (country.getArmyText ().asActor ());
     }
 
-    group.addActor (hoveredTerritoryTextActor);
+    group.addActor (hoveredTerritoryText);
   }
 
   @Override
@@ -126,33 +126,33 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
     if (!isEnabled) return false;
 
-    if (!existsCountryActorAt (mouseCoordinate))
+    if (!existsCountryAt (mouseCoordinate))
     {
-      if (touchedCountryActor != null)
+      if (touchedCountry != null)
       {
-        touchedCountryActor.onTouchUp ();
-        touchedCountryActor = null;
+        touchedCountry.onTouchUp ();
+        touchedCountry = null;
       }
 
-      if (hoveredCountryActor != null)
+      if (this.hoveredCountry != null)
       {
-        hoveredCountryActor.onHoverEnd ();
-        hoveredCountryActor = null;
+        this.hoveredCountry.onHoverEnd ();
+        this.hoveredCountry = null;
       }
 
       return false;
     }
 
-    final CountryActor hoveredCountryActor = getCountryActorAt (mouseCoordinate);
-    hoveredCountryActor.onHoverStart ();
+    final Country hoveredCountry = getCountryAt (mouseCoordinate);
+    hoveredCountry.onHoverStart ();
 
-    if (this.hoveredCountryActor != null
-            && !this.hoveredCountryActor.asActor ().getName ().equals (hoveredCountryActor.asActor ().getName ()))
+    if (this.hoveredCountry != null
+            && !this.hoveredCountry.asActor ().getName ().equals (hoveredCountry.asActor ().getName ()))
     {
-      this.hoveredCountryActor.onHoverEnd ();
+      this.hoveredCountry.onHoverEnd ();
     }
 
-    this.hoveredCountryActor = hoveredCountryActor;
+    this.hoveredCountry = hoveredCountry;
 
     return true;
   }
@@ -164,32 +164,32 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
     if (!isEnabled) return false;
 
-    if (!existsCountryActorAt (touchDownCoordinate))
+    if (!existsCountryAt (touchDownCoordinate))
     {
-      if (touchedCountryActor != null)
+      if (touchedCountry != null)
       {
-        touchedCountryActor.onTouchUp ();
-        touchedCountryActor = null;
+        touchedCountry.onTouchUp ();
+        touchedCountry = null;
       }
 
       return false;
     }
 
-    final CountryActor touchedDownCountryActor = getCountryActorAt (touchDownCoordinate);
+    final Country touchedDownCountry = getCountryAt (touchDownCoordinate);
 
     switch (button)
     {
       case Input.Buttons.LEFT:
       {
-        touchedDownCountryActor.onTouchDown ();
+        touchedDownCountry.onTouchDown ();
 
-        if (touchedCountryActor != null
-                && !touchedCountryActor.asActor ().getName ().equals (touchedDownCountryActor.asActor ().getName ()))
+        if (touchedCountry != null
+                && !touchedCountry.asActor ().getName ().equals (touchedDownCountry.asActor ().getName ()))
         {
-          touchedCountryActor.onTouchUp ();
+          touchedCountry.onTouchUp ();
         }
 
-        touchedCountryActor = touchedDownCountryActor;
+        touchedCountry = touchedDownCountry;
 
         return true;
       }
@@ -207,41 +207,41 @@ public final class DefaultPlayMapActor implements PlayMapActor
 
     if (!isEnabled) return false;
 
-    if (countryActorAtPointIsNot (touchUpCoordinate, touchedCountryActor))
+    if (countryAtPointIsNot (touchUpCoordinate, touchedCountry))
     {
-      if (touchedCountryActor != null)
+      if (touchedCountry != null)
       {
-        touchedCountryActor.onTouchUp ();
-        touchedCountryActor = null;
+        touchedCountry.onTouchUp ();
+        touchedCountry = null;
       }
 
-      if (hoveredCountryActor != null)
+      if (hoveredCountry != null)
       {
-        hoveredCountryActor.onHoverEnd ();
-        hoveredCountryActor = null;
+        hoveredCountry.onHoverEnd ();
+        hoveredCountry = null;
       }
     }
 
-    if (!existsCountryActorAt (touchUpCoordinate)) return false;
+    if (!existsCountryAt (touchUpCoordinate)) return false;
 
-    final CountryActor touchedUpCountryActor = getCountryActorAt (touchUpCoordinate);
-    touchedUpCountryActor.onTouchUp ();
+    final Country touchedUpCountry = getCountryAt (touchUpCoordinate);
+    touchedUpCountry.onTouchUp ();
 
-    hoveredCountryActor = touchedUpCountryActor;
-    hoveredCountryActor.onHoverStart ();
+    hoveredCountry = touchedUpCountry;
+    hoveredCountry.onHoverStart ();
 
-    if (touchedCountryActor == null) return true;
+    if (touchedCountry == null) return true;
 
-    if (!touchedCountryActor.asActor ().getName ().equals (touchedUpCountryActor.asActor ().getName ()))
+    if (!touchedCountry.asActor ().getName ().equals (touchedUpCountry.asActor ().getName ()))
     {
-      touchedCountryActor.onTouchUp ();
+      touchedCountry.onTouchUp ();
     }
     else
     {
-      eventBus.publish (new SelectCountryEvent (touchedUpCountryActor.asActor ().getName ()));
+      eventBus.publish (new SelectCountryEvent (touchedUpCountry.asActor ().getName ()));
     }
 
-    touchedCountryActor = null;
+    touchedCountry = null;
 
     return true;
   }
@@ -251,18 +251,18 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (state, "state");
 
-    for (final CountryActor countryActor : getCountryActors ())
+    for (final Country country : getCountries ())
     {
-      countryActor.changePrimaryStateTo (state);
+      country.changePrimaryStateTo (state);
     }
   }
 
   @Override
   public void randomizeCountryStates ()
   {
-    for (final CountryActor countryActor : getCountryActors ())
+    for (final Country country : getCountries ())
     {
-      countryActor.changePrimaryStateRandomly ();
+      country.changePrimaryStateRandomly ();
     }
   }
 
@@ -319,9 +319,9 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNegative (armies, "armies");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!existsCountryActorWithName (countryName)) return;
+    if (!existsCountryWithName (countryName)) return;
 
-    getCountryActorWithName (countryName).setArmies (armies);
+    getCountryWithName (countryName).setArmies (armies);
   }
 
   @Override
@@ -329,9 +329,9 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!existsCountryActorWithName (countryName)) return;
+    if (!existsCountryWithName (countryName)) return;
 
-    getCountryActorWithName (countryName).changeArmiesBy (deltaArmies);
+    getCountryWithName (countryName).changeArmiesBy (deltaArmies);
   }
 
   @Override
@@ -340,39 +340,39 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (state, "state");
 
-    if (!existsCountryActorWithName (countryName)) return;
+    if (!existsCountryWithName (countryName)) return;
 
-    getCountryActorWithName (countryName).changePrimaryStateTo (state);
+    getCountryWithName (countryName).changePrimaryStateTo (state);
   }
 
   @Override
-  public boolean existsCountryActorWithName (final String countryName)
+  public boolean existsCountryWithName (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return countryNamesToActors.containsKey (countryName);
+    return countryNamesToCountries.containsKey (countryName);
   }
 
   @Override
-  public CountryActor getCountryActorWithName (final String countryName)
+  public Country getCountryWithName (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    final CountryActor countryActor = countryNamesToActors.get (countryName);
+    final Country country = countryNamesToCountries.get (countryName);
 
-    if (countryActor == null)
+    if (country == null)
     {
       throw new IllegalStateException (
-              "Cannot find " + DefaultCountryActor.class.getSimpleName () + " with name [" + countryName + "].");
+              "Cannot find " + DefaultCountry.class.getSimpleName () + " with name [" + countryName + "].");
     }
 
-    return countryActor;
+    return country;
   }
 
   @Override
   public ImmutableSet <String> getAllCountryNames ()
   {
-    return countryNamesToActors.keySet ();
+    return countryNamesToCountries.keySet ();
   }
 
   @Override
@@ -381,7 +381,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return existsCountryActorWithName (countryName) && getCurrentPrimaryImageStateOf (countryName) == state;
+    return existsCountryWithName (countryName) && getCurrentPrimaryImageStateOf (countryName) == state;
   }
 
   @Override
@@ -397,7 +397,7 @@ public final class DefaultPlayMapActor implements PlayMapActor
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return existsCountryActorWithName (countryName) && getCurrentSecondaryImageStateOf (countryName) == state;
+    return existsCountryWithName (countryName) && getCurrentSecondaryImageStateOf (countryName) == state;
   }
 
   @Override
@@ -413,9 +413,9 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!existsCountryActorWithName (countryName)) return null;
+    if (!existsCountryWithName (countryName)) return null;
 
-    return getCountryActorWithName (countryName).getCurrentPrimaryImageState ();
+    return getCountryWithName (countryName).getCurrentPrimaryImageState ();
   }
 
   @Override
@@ -424,22 +424,22 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (!existsCountryActorWithName (countryName)) return null;
+    if (!existsCountryWithName (countryName)) return null;
 
-    return getCountryActorWithName (countryName).getCurrentSecondaryImageState ();
+    return getCountryWithName (countryName).getCurrentSecondaryImageState ();
   }
 
   @Override
   public void disable ()
   {
-    hoveredTerritoryTextActor.setVisible (false);
+    hoveredTerritoryText.setVisible (false);
 
-    if (hoveredCountryActor != null) hoveredCountryActor.onHoverEnd ();
-    if (touchedCountryActor != null) touchedCountryActor.onTouchUp ();
+    if (hoveredCountry != null) hoveredCountry.onHoverEnd ();
+    if (touchedCountry != null) touchedCountry.onTouchUp ();
 
-    for (final CountryActor countryActor : getCountryActors ())
+    for (final Country country : getCountries ())
     {
-      countryActor.disable ();
+      country.disable ();
     }
 
     isEnabled = false;
@@ -450,11 +450,11 @@ public final class DefaultPlayMapActor implements PlayMapActor
   {
     Arguments.checkIsNotNull (currentMouseLocation, "currentMouseLocation");
 
-    hoveredTerritoryTextActor.setVisible (true);
+    hoveredTerritoryText.setVisible (true);
 
-    for (final CountryActor countryActor : getCountryActors ())
+    for (final Country country : getCountries ())
     {
-      countryActor.enable ();
+      country.enable ();
     }
 
     isEnabled = true;
@@ -474,58 +474,58 @@ public final class DefaultPlayMapActor implements PlayMapActor
     return group;
   }
 
-  private CountryActor getCountryActorAt (final Vector2 inputCoordinate)
+  private Country getCountryAt (final Vector2 inputCoordinate)
   {
-    final CountryActor countryActor = countryNamesToActors.get (inputDetection.getCountryNameAt (inputCoordinate));
+    final Country country = countryNamesToCountries.get (inputDetection.getCountryNameAt (inputCoordinate));
 
-    if (countryActor == null)
+    if (country == null)
     {
       throw new IllegalStateException (
-              "Cannot find " + DefaultCountryActor.class.getSimpleName () + " at " + inputCoordinate + ".");
+              "Cannot find " + DefaultCountry.class.getSimpleName () + " at " + inputCoordinate + ".");
 
     }
 
-    return countryActor;
+    return country;
   }
 
   private void randomizeCountryStatesUsingOnly (final Collection <CountryPrimaryImageState> states)
   {
     CountryPrimaryImageState randomState;
 
-    for (final CountryActor countryActor : getCountryActors ())
+    for (final Country country : getCountries ())
     {
       randomState = Randomness.getRandomElementFrom (states);
 
-      countryActor.changePrimaryStateTo (randomState);
+      country.changePrimaryStateTo (randomState);
     }
   }
 
   private void setAllArmiesTo (final int armies)
   {
-    for (final CountryActor countryActor : getCountryActors ())
+    for (final Country country : getCountries ())
     {
-      countryActor.setArmies (armies);
+      country.setArmies (armies);
     }
   }
 
-  private boolean existsCountryActorAt (final Vector2 inputCoordinate)
+  private boolean existsCountryAt (final Vector2 inputCoordinate)
   {
-    return countryNamesToActors.containsKey (inputDetection.getCountryNameAt (inputCoordinate));
+    return countryNamesToCountries.containsKey (inputDetection.getCountryNameAt (inputCoordinate));
   }
 
-  private boolean countryActorAtPointIs (final Vector2 inputCoordinate, @Nullable final CountryActor countryActor)
+  private boolean countryAtPointIs (final Vector2 inputCoordinate, @Nullable final Country country)
   {
-    return countryActor != null && existsCountryActorAt (inputCoordinate)
-            && getCountryActorAt (inputCoordinate).asActor ().getName ().equals (countryActor.asActor ().getName ());
+    return country != null && existsCountryAt (inputCoordinate)
+            && getCountryAt (inputCoordinate).asActor ().getName ().equals (country.asActor ().getName ());
   }
 
-  private boolean countryActorAtPointIsNot (final Vector2 inputCoordinate, final CountryActor countryActor)
+  private boolean countryAtPointIsNot (final Vector2 inputCoordinate, final Country country)
   {
-    return !countryActorAtPointIs (inputCoordinate, countryActor);
+    return !countryAtPointIs (inputCoordinate, country);
   }
 
-  private ImmutableCollection <CountryActor> getCountryActors ()
+  private ImmutableCollection <Country> getCountries ()
   {
-    return countryNamesToActors.values ();
+    return countryNamesToCountries.values ();
   }
 }

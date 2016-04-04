@@ -23,8 +23,8 @@ import com.badlogic.gdx.InputAdapter;
 
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.Country;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
@@ -50,10 +50,10 @@ public final class DebugInputProcessor extends InputAdapter
   private final AttackPopup attackPopup;
   private final DefendPopup defendPopup;
   private final DebugEventGenerator eventGenerator;
-  private PlayMapActor playMapActor;
+  private PlayMap playMap;
 
   public DebugInputProcessor (final MouseInput mouseInput,
-                              final PlayMapActor playMapActor,
+                              final PlayMap playMap,
                               final MessageBox <StatusMessage> statusBox,
                               final MessageBox <ChatMessage> chatBox,
                               final PlayerBox playerBox,
@@ -64,7 +64,7 @@ public final class DebugInputProcessor extends InputAdapter
                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (playMap, "playMap");
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
     Arguments.checkIsNotNull (playerBox, "playerBox");
@@ -75,7 +75,7 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.mouseInput = mouseInput;
-    this.playMapActor = playMapActor;
+    this.playMap = playMap;
     this.statusBox = statusBox;
     this.chatBox = chatBox;
     this.playerBox = playerBox;
@@ -84,7 +84,7 @@ public final class DebugInputProcessor extends InputAdapter
     this.attackPopup = attackPopup;
     this.defendPopup = defendPopup;
 
-    eventGenerator = new DebugEventGenerator (playMapActor, eventBus);
+    eventGenerator = new DebugEventGenerator (playMap, eventBus);
   }
 
   @Override
@@ -94,212 +94,212 @@ public final class DebugInputProcessor extends InputAdapter
     {
       case Input.Keys.Z:
       {
-        playMapActor.disable ();
+        playMap.disable ();
 
         return true;
       }
       case Input.Keys.X:
       {
-        playMapActor.enable (mouseInput.position ());
+        playMap.enable (mouseInput.position ());
 
         return true;
       }
       case Input.Keys.NUM_1:
       {
-        playMapActor.resetCountryStates ();
+        playMap.resetCountryStates ();
 
         return true;
       }
       case Input.Keys.NUM_2:
       {
-        playMapActor.randomizeCountryStates ();
+        playMap.randomizeCountryStates ();
 
         return true;
       }
       case Input.Keys.NUM_3:
       {
-        playMapActor.randomizeCountryStatesUsingNRandomStates (Randomness.getRandomIntegerFrom (1, 10));
+        playMap.randomizeCountryStatesUsingNRandomStates (Randomness.getRandomIntegerFrom (1, 10));
 
         return true;
       }
       case Input.Keys.NUM_4:
       {
-        playMapActor.randomizeCountryStatesUsingNRandomStates (2);
+        playMap.randomizeCountryStatesUsingNRandomStates (2);
 
         return true;
       }
       case Input.Keys.NUM_5:
       {
-        playMapActor.randomizeCountryStatesUsingNRandomStates (3);
+        playMap.randomizeCountryStatesUsingNRandomStates (3);
 
         return true;
       }
       case Input.Keys.NUM_6:
       {
         // North America
-        playMapActor.setCountryState ("Alaska", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Northwest Territory", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Greenland", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Alberta", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Ontario", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Quebec", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Western United States", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Eastern United States", CountryPrimaryImageState.GOLD);
-        playMapActor.setCountryState ("Central America", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Alaska", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Northwest Territory", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Greenland", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Alberta", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Ontario", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Quebec", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Western United States", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Eastern United States", CountryPrimaryImageState.GOLD);
+        playMap.setCountryState ("Central America", CountryPrimaryImageState.GOLD);
 
         // South America
-        playMapActor.setCountryState ("Venezuela", CountryPrimaryImageState.RED);
-        playMapActor.setCountryState ("Peru", CountryPrimaryImageState.RED);
-        playMapActor.setCountryState ("Brazil", CountryPrimaryImageState.RED);
-        playMapActor.setCountryState ("Argentina", CountryPrimaryImageState.RED);
+        playMap.setCountryState ("Venezuela", CountryPrimaryImageState.RED);
+        playMap.setCountryState ("Peru", CountryPrimaryImageState.RED);
+        playMap.setCountryState ("Brazil", CountryPrimaryImageState.RED);
+        playMap.setCountryState ("Argentina", CountryPrimaryImageState.RED);
 
         // Europe
-        playMapActor.setCountryState ("Iceland", CountryPrimaryImageState.BLUE);
-        playMapActor.setCountryState ("Scandinavia", CountryPrimaryImageState.BLUE);
-        playMapActor.setCountryState ("Great Britain", CountryPrimaryImageState.BLUE);
-        playMapActor.setCountryState ("Northern Europe", CountryPrimaryImageState.BLUE);
-        playMapActor.setCountryState ("Ukraine", CountryPrimaryImageState.BLUE);
-        playMapActor.setCountryState ("Western Europe", CountryPrimaryImageState.BLUE);
-        playMapActor.setCountryState ("Southern Europe", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Iceland", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Scandinavia", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Great Britain", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Northern Europe", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Ukraine", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Western Europe", CountryPrimaryImageState.BLUE);
+        playMap.setCountryState ("Southern Europe", CountryPrimaryImageState.BLUE);
 
         // Asia
-        playMapActor.setCountryState ("Ural", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Siberia", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Yakutsk", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Kamchatka", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Afghanistan", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Irkutsk", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Mongolia", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Japan", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Middle East", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("India", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("China", CountryPrimaryImageState.GREEN);
-        playMapActor.setCountryState ("Siam", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Ural", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Siberia", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Yakutsk", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Kamchatka", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Afghanistan", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Irkutsk", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Mongolia", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Japan", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Middle East", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("India", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("China", CountryPrimaryImageState.GREEN);
+        playMap.setCountryState ("Siam", CountryPrimaryImageState.GREEN);
 
         // Africa
-        playMapActor.setCountryState ("North Africa", CountryPrimaryImageState.BROWN);
-        playMapActor.setCountryState ("Egypt", CountryPrimaryImageState.BROWN);
-        playMapActor.setCountryState ("Congo", CountryPrimaryImageState.BROWN);
-        playMapActor.setCountryState ("East Africa", CountryPrimaryImageState.BROWN);
-        playMapActor.setCountryState ("South Africa", CountryPrimaryImageState.BROWN);
-        playMapActor.setCountryState ("Madagascar", CountryPrimaryImageState.BROWN);
+        playMap.setCountryState ("North Africa", CountryPrimaryImageState.BROWN);
+        playMap.setCountryState ("Egypt", CountryPrimaryImageState.BROWN);
+        playMap.setCountryState ("Congo", CountryPrimaryImageState.BROWN);
+        playMap.setCountryState ("East Africa", CountryPrimaryImageState.BROWN);
+        playMap.setCountryState ("South Africa", CountryPrimaryImageState.BROWN);
+        playMap.setCountryState ("Madagascar", CountryPrimaryImageState.BROWN);
 
         // Australia
-        playMapActor.setCountryState ("Indonesia", CountryPrimaryImageState.PINK);
-        playMapActor.setCountryState ("New Guinea", CountryPrimaryImageState.PINK);
-        playMapActor.setCountryState ("Western Australia", CountryPrimaryImageState.PINK);
-        playMapActor.setCountryState ("Eastern Australia", CountryPrimaryImageState.PINK);
+        playMap.setCountryState ("Indonesia", CountryPrimaryImageState.PINK);
+        playMap.setCountryState ("New Guinea", CountryPrimaryImageState.PINK);
+        playMap.setCountryState ("Western Australia", CountryPrimaryImageState.PINK);
+        playMap.setCountryState ("Eastern Australia", CountryPrimaryImageState.PINK);
 
         // Not used in classic mode
-        playMapActor.setCountryState ("Hawaii", CountryPrimaryImageState.DISABLED);
-        playMapActor.setCountryState ("Caribbean Islands", CountryPrimaryImageState.DISABLED);
-        playMapActor.setCountryState ("Falkland Islands", CountryPrimaryImageState.DISABLED);
-        playMapActor.setCountryState ("Svalbard", CountryPrimaryImageState.DISABLED);
-        playMapActor.setCountryState ("Philippines", CountryPrimaryImageState.DISABLED);
-        playMapActor.setCountryState ("New Zealand", CountryPrimaryImageState.DISABLED);
-        playMapActor.setCountryState ("Antarctica", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("Hawaii", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("Caribbean Islands", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("Falkland Islands", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("Svalbard", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("Philippines", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("New Zealand", CountryPrimaryImageState.DISABLED);
+        playMap.setCountryState ("Antarctica", CountryPrimaryImageState.DISABLED);
 
         return true;
       }
       case Input.Keys.NUM_7:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.TEAL, CountryPrimaryImageState.CYAN);
+        playMap.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.TEAL, CountryPrimaryImageState.CYAN);
 
         return true;
       }
       case Input.Keys.NUM_8:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.BLUE, CountryPrimaryImageState.CYAN);
+        playMap.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.BLUE, CountryPrimaryImageState.CYAN);
 
         return true;
       }
       case Input.Keys.NUM_9:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.PINK, CountryPrimaryImageState.PURPLE);
+        playMap.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.PINK, CountryPrimaryImageState.PURPLE);
 
         return true;
       }
       case Input.Keys.NUM_0:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.RED, CountryPrimaryImageState.BROWN);
+        playMap.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.RED, CountryPrimaryImageState.BROWN);
 
         return true;
       }
       case Input.Keys.MINUS:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.CYAN, CountryPrimaryImageState.SILVER);
+        playMap.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.CYAN, CountryPrimaryImageState.SILVER);
 
         return true;
       }
       case Input.Keys.EQUALS:
       {
-        playMapActor.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.TEAL, CountryPrimaryImageState.GREEN);
+        playMap.randomizeCountryStatesUsingOnly (CountryPrimaryImageState.TEAL, CountryPrimaryImageState.GREEN);
 
         return true;
       }
       case Input.Keys.Q:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.BLUE);
+        playMap.setCountriesTo (CountryPrimaryImageState.BLUE);
 
         return true;
       }
       case Input.Keys.W:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.BROWN);
+        playMap.setCountriesTo (CountryPrimaryImageState.BROWN);
 
         return true;
       }
       case Input.Keys.E:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.CYAN);
+        playMap.setCountriesTo (CountryPrimaryImageState.CYAN);
 
         return true;
       }
       case Input.Keys.R:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.GOLD);
+        playMap.setCountriesTo (CountryPrimaryImageState.GOLD);
 
         return true;
       }
       case Input.Keys.T:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.GREEN);
+        playMap.setCountriesTo (CountryPrimaryImageState.GREEN);
 
         return true;
       }
       case Input.Keys.Y:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.PINK);
+        playMap.setCountriesTo (CountryPrimaryImageState.PINK);
 
         return true;
       }
       case Input.Keys.U:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.PURPLE);
+        playMap.setCountriesTo (CountryPrimaryImageState.PURPLE);
 
         return true;
       }
       case Input.Keys.I:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.RED);
+        playMap.setCountriesTo (CountryPrimaryImageState.RED);
 
         return true;
       }
       case Input.Keys.O:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.SILVER);
+        playMap.setCountriesTo (CountryPrimaryImageState.SILVER);
 
         return true;
       }
       case Input.Keys.LEFT_BRACKET:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.TEAL);
+        playMap.setCountriesTo (CountryPrimaryImageState.TEAL);
 
         return true;
       }
       case Input.Keys.RIGHT_BRACKET:
       {
-        playMapActor.setCountriesTo (CountryPrimaryImageState.DISABLED);
+        playMap.setCountriesTo (CountryPrimaryImageState.DISABLED);
 
         return true;
       }
@@ -360,7 +360,7 @@ public final class DebugInputProcessor extends InputAdapter
       }
       case 'A':
       {
-        playMapActor.resetArmies ();
+        playMap.resetArmies ();
 
         return true;
       }
@@ -381,7 +381,7 @@ public final class DebugInputProcessor extends InputAdapter
         {
           sourceCountryName = eventGenerator.getRandomCountryName ();
         }
-        while (!playMapActor.existsCountryActorWithName (sourceCountryName));
+        while (!playMap.existsCountryWithName (sourceCountryName));
 
         String destinationCountryName;
 
@@ -390,16 +390,16 @@ public final class DebugInputProcessor extends InputAdapter
           destinationCountryName = eventGenerator.getRandomCountryName ();
         }
         while (destinationCountryName.equals (sourceCountryName)
-                || !playMapActor.existsCountryActorWithName (destinationCountryName));
+                || !playMap.existsCountryWithName (destinationCountryName));
 
-        final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
-        final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
+        final Country sourceCountry = playMap.getCountryWithName (sourceCountryName);
+        final Country destinationCountry = playMap.getCountryWithName (destinationCountryName);
         final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        occupationPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
-        playMapActor.disable ();
+        occupationPopup.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        playMap.disable ();
 
         return true;
       }
@@ -414,7 +414,7 @@ public final class DebugInputProcessor extends InputAdapter
         {
           sourceCountryName = eventGenerator.getRandomCountryName ();
         }
-        while (!playMapActor.existsCountryActorWithName (sourceCountryName));
+        while (!playMap.existsCountryWithName (sourceCountryName));
 
         String destinationCountryName;
 
@@ -423,16 +423,16 @@ public final class DebugInputProcessor extends InputAdapter
           destinationCountryName = eventGenerator.getRandomCountryName ();
         }
         while (destinationCountryName.equals (sourceCountryName)
-                || !playMapActor.existsCountryActorWithName (destinationCountryName));
+                || !playMap.existsCountryWithName (destinationCountryName));
 
-        final CountryActor sourceCountryActor = playMapActor.getCountryActorWithName (sourceCountryName);
-        final CountryActor destinationCountryActor = playMapActor.getCountryActorWithName (destinationCountryName);
+        final Country sourceCountry = playMap.getCountryWithName (sourceCountryName);
+        final Country destinationCountry = playMap.getCountryWithName (destinationCountryName);
         final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        reinforcementPopup.show (minArmies, maxArmies, sourceCountryActor, destinationCountryActor, totalArmies);
-        playMapActor.disable ();
+        reinforcementPopup.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        playMap.disable ();
 
         return true;
       }
@@ -447,7 +447,7 @@ public final class DebugInputProcessor extends InputAdapter
         {
           attackingCountryName = eventGenerator.getRandomCountryName ();
         }
-        while (!playMapActor.existsCountryActorWithName (attackingCountryName));
+        while (!playMap.existsCountryWithName (attackingCountryName));
 
         String defendingCountryName;
 
@@ -456,7 +456,7 @@ public final class DebugInputProcessor extends InputAdapter
           defendingCountryName = eventGenerator.getRandomCountryName ();
         }
         while (defendingCountryName.equals (attackingCountryName)
-                || !playMapActor.existsCountryActorWithName (defendingCountryName));
+                || !playMap.existsCountryWithName (defendingCountryName));
 
         final String attackingPlayerName = eventGenerator.getRandomPlayerName ();
         String defendingPlayerName;
@@ -467,15 +467,15 @@ public final class DebugInputProcessor extends InputAdapter
         }
         while (defendingPlayerName.equals (attackingPlayerName));
 
-        final CountryActor attackingCountryActor = playMapActor.getCountryActorWithName (attackingCountryName);
-        final CountryActor defendingCountryActor = playMapActor.getCountryActorWithName (defendingCountryName);
+        final Country attackingCountry = playMap.getCountryWithName (attackingCountryName);
+        final Country defendingCountry = playMap.getCountryWithName (defendingCountryName);
 
-        attackingCountryActor.setArmies (Randomness.getRandomIntegerFrom (10, 10));
-        defendingCountryActor.setArmies (Randomness.getRandomIntegerFrom (10, 10));
+        attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
+        defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        attackPopup.show (attackingCountryActor, defendingCountryActor, attackingPlayerName, defendingPlayerName);
+        attackPopup.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
 
-        playMapActor.disable ();
+        playMap.disable ();
 
         return true;
       }
@@ -490,7 +490,7 @@ public final class DebugInputProcessor extends InputAdapter
         {
           attackingCountryName = eventGenerator.getRandomCountryName ();
         }
-        while (!playMapActor.existsCountryActorWithName (attackingCountryName));
+        while (!playMap.existsCountryWithName (attackingCountryName));
 
         String defendingCountryName;
 
@@ -499,7 +499,7 @@ public final class DebugInputProcessor extends InputAdapter
           defendingCountryName = eventGenerator.getRandomCountryName ();
         }
         while (defendingCountryName.equals (attackingCountryName)
-                || !playMapActor.existsCountryActorWithName (defendingCountryName));
+                || !playMap.existsCountryWithName (defendingCountryName));
 
         final String attackingPlayerName = eventGenerator.getRandomPlayerName ();
         String defendingPlayerName;
@@ -510,15 +510,15 @@ public final class DebugInputProcessor extends InputAdapter
         }
         while (defendingPlayerName.equals (attackingPlayerName));
 
-        final CountryActor attackingCountryActor = playMapActor.getCountryActorWithName (attackingCountryName);
-        final CountryActor defendingCountryActor = playMapActor.getCountryActorWithName (defendingCountryName);
+        final Country attackingCountry = playMap.getCountryWithName (attackingCountryName);
+        final Country defendingCountry = playMap.getCountryWithName (defendingCountryName);
 
-        attackingCountryActor.setArmies (Randomness.getRandomIntegerFrom (10, 10));
-        defendingCountryActor.setArmies (Randomness.getRandomIntegerFrom (10, 10));
+        attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
+        defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        defendPopup.show (attackingCountryActor, defendingCountryActor, attackingPlayerName, defendingPlayerName);
+        defendPopup.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
 
-        playMapActor.disable ();
+        playMap.disable ();
 
         return true;
       }
@@ -529,18 +529,18 @@ public final class DebugInputProcessor extends InputAdapter
     }
   }
 
-  public void setPlayMapActor (final PlayMapActor playMapActor)
+  public void setPlayMap (final PlayMap playMap)
   {
-    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (playMap, "playMap");
 
-    this.playMapActor = playMapActor;
+    this.playMap = playMap;
 
-    eventGenerator.setPlayMapActor (playMapActor);
+    eventGenerator.setPlayMap (playMap);
   }
 
   public void reset ()
   {
-    playMapActor.reset ();
+    playMap.reset ();
     statusBox.clear ();
     chatBox.clear ();
     playerBox.clear ();

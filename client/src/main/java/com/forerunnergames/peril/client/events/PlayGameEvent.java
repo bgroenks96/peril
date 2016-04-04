@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMap;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -34,24 +34,24 @@ public final class PlayGameEvent implements LocalEvent
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;
   private final ImmutableSet <PlayerPacket> playersInGame;
-  private final PlayMapActor playMapActor;
+  private final PlayMap playMap;
 
   public PlayGameEvent (final GameServerConfiguration gameServerConfig,
                         final ClientConfiguration clientConfig,
                         final ImmutableSet <PlayerPacket> playersInGame,
-                        final PlayMapActor playMapActor)
+                        final PlayMap playMap)
 
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConfig, "clientConfig");
     Arguments.checkIsNotNull (playersInGame, "playersInGame");
     Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
-    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (playMap, "playMap");
 
     this.gameServerConfig = gameServerConfig;
     this.clientConfig = clientConfig;
     this.playersInGame = playersInGame;
-    this.playMapActor = playMapActor;
+    this.playMap = playMap;
   }
 
   public GameServerConfiguration getGameServerConfiguration ()
@@ -74,9 +74,9 @@ public final class PlayGameEvent implements LocalEvent
     return gameServerConfig.getMapMetadata ();
   }
 
-  public PlayMapActor getPlayMapActor ()
+  public PlayMap getPlayMap ()
   {
-    return playMapActor;
+    return playMap;
   }
 
   @Override
@@ -84,6 +84,6 @@ public final class PlayGameEvent implements LocalEvent
   {
     return Strings.format (
                            "{}: Game Server Configuration: {} | Client Configuration: {} | Players In Game: {} | Play Map Actor: {}",
-                           getClass ().getSimpleName (), gameServerConfig, clientConfig, playersInGame, playMapActor);
+                           getClass ().getSimpleName (), gameServerConfig, clientConfig, playersInGame, playMap);
   }
 }

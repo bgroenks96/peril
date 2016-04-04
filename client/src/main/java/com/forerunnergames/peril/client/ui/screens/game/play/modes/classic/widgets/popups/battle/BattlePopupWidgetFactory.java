@@ -22,7 +22,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyTextActor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrows;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.common.game.DieOutcome;
@@ -49,13 +49,13 @@ public interface BattlePopupWidgetFactory extends WidgetFactory
   @Nullable
   Drawable createBattlePopupDiceArrowDrawable (final DieOutcome attackerDieOutcome);
 
-  CountryArmyTextActor createCountryArmyTextActor ();
+  CountryArmyText createCountryArmyText ();
 
-  BitmapFont createCountryArmyTextActorFont ();
+  BitmapFont createCountryArmyTextFont ();
 
-  CountryArmyTextActor createAttackingCountryArmyTextEffectsActor ();
+  CountryArmyText createAttackingCountryArmyTextEffects ();
 
-  CountryArmyTextActor createDefendingCountryArmyTextEffectsActor ();
+  CountryArmyText createDefendingCountryArmyTextEffects ();
 
-  BitmapFont createCountryArmyTextEffectsActorFont ();
+  BitmapFont createCountryArmyTextEffectsFont ();
 }

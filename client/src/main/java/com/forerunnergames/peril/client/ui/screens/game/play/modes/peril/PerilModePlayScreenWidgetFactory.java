@@ -40,10 +40,10 @@ public final class PerilModePlayScreenWidgetFactory extends AbstractWidgetFactor
     return AssetSettings.CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR;
   }
 
-  public TankActor2 createTankActor2 ()
+  public Tank2 createTank2 ()
   {
-    return new TankActor2 (new TankBodyActor (getTextureRegion ("tankBody")),
-            new TankTurretActor (getTextureRegion ("tankTurret")));
+    return new Tank2 (new TankBody (getTextureRegion ("tankBody")),
+            new TankTurret (getTextureRegion ("tankTurret")));
   }
 
   private TextureRegion getTextureRegion (final String regionName)

@@ -32,7 +32,7 @@ import com.forerunnergames.tools.common.Strings;
 
 import javax.annotation.Nullable;
 
-public final class HoveredTerritoryTextActor extends Actor
+public final class HoveredTerritoryText extends Actor
 {
   private static final Vector2 TEXT_OFFSET = new Vector2 (35, -17);
   private final PlayMapInputDetection playMapInputDetection;
@@ -41,13 +41,13 @@ public final class HoveredTerritoryTextActor extends Actor
   private final Vector2 mousePosition = new Vector2 ();
   private final Vector2 textPosition = new Vector2 ();
   private String text = "";
-  private PlayMapActor playMapActor = PlayMapActor.NULL_PLAY_MAP_ACTOR;
+  private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
   @Nullable
   private CountryPrimaryImageState countryPrimaryImageState;
 
-  public HoveredTerritoryTextActor (final PlayMapInputDetection playMapInputDetection,
-                                    final MouseInput mouseInput,
-                                    final BitmapFont font)
+  public HoveredTerritoryText (final PlayMapInputDetection playMapInputDetection,
+                               final MouseInput mouseInput,
+                               final BitmapFont font)
   {
     Arguments.checkIsNotNull (playMapInputDetection, "playMapInputDetection");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
@@ -74,7 +74,7 @@ public final class HoveredTerritoryTextActor extends Actor
     final String countryName = playMapInputDetection.getCountryNameAt (mousePosition);
     final String continentName = playMapInputDetection.getContinentNameAt (mousePosition);
 
-    countryPrimaryImageState = playMapActor.getCurrentPrimaryImageStateOf (countryName);
+    countryPrimaryImageState = playMap.getCurrentPrimaryImageStateOf (countryName);
 
     text = Strings.toStringList (", ", LetterCase.PROPER, false, countryName, continentName,
                                  countryPrimaryImageState != null ? countryPrimaryImageState.toString () : "");
@@ -84,10 +84,10 @@ public final class HoveredTerritoryTextActor extends Actor
     textPosition.set (mousePosition.x + TEXT_OFFSET.x, mousePosition.y + TEXT_OFFSET.y);
   }
 
-  public void setPlayMapActor (final PlayMapActor playMapActor)
+  public void setPlayMap (final PlayMap playMap)
   {
-    Arguments.checkIsNotNull (playMapActor, "playMapActor");
+    Arguments.checkIsNotNull (playMap, "playMap");
 
-    this.playMapActor = playMapActor;
+    this.playMap = playMap;
   }
 }

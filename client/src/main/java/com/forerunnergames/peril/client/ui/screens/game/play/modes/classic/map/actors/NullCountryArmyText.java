@@ -25,7 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryPrimaryImageState;
 import com.forerunnergames.tools.common.Arguments;
 
-final class NullCountryArmyTextActor implements CountryArmyTextActor
+final class NullCountryArmyText implements CountryArmyText
 {
   private final Actor actor = new Actor ();
 

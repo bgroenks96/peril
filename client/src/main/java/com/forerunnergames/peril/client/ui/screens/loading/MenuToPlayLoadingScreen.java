@@ -52,8 +52,8 @@ import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapActorFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.CreateGameServerHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.CreateGameServerListener;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.DefaultCreateGameServerHandler;
@@ -100,7 +100,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private static final float ONE_NINTH = 1.0f / 9.0f;
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
   private static final float PROGRESS_BAR_STEP_SIZE = 0.1f;
-  private final PlayMapActorFactory playMapActorFactory;
+  private final PlayMapFactory playMapFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
   private final AssetManager assetManager;
@@ -127,7 +127,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private boolean createdGameFirst = false;
 
   public MenuToPlayLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
-                                  final PlayMapActorFactory playMapActorFactory,
+                                  final PlayMapFactory playMapFactory,
                                   final ScreenChanger screenChanger,
                                   final ScreenSize screenSize,
                                   final MouseInput mouseInput,
@@ -136,7 +136,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
                                   final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (playMapActorFactory, "playMapActorFactory");
+    Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
@@ -144,7 +144,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.playMapActorFactory = playMapActorFactory;
+    this.playMapFactory = playMapFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
     this.assetManager = assetManager;
@@ -650,11 +650,11 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       throw new IllegalStateException (Strings.format ("Cannot go to play screen because playersInGame is null.",
                                                        ClientConfiguration.class.getSimpleName ()));
 
-    final PlayMapActor playMapActor;
+    final PlayMap playMap;
 
     try
     {
-      playMapActor = playMapActorFactory.create (gameServerConfiguration.getMapMetadata ());
+      playMap = playMapFactory.create (gameServerConfiguration.getMapMetadata ());
     }
     catch (final PlayMapLoadingException e)
     {
@@ -671,7 +671,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     }
 
     final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, playersInGame,
-            playMapActor);
+            playMap);
 
     resetLoadingProgress ();
     unloadMenuAssets ();
@@ -740,7 +740,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private void unloadPlayMapAssets (final MapMetadata mapMetadata)
   {
-    playMapActorFactory.destroy (mapMetadata);
+    playMapFactory.destroy (mapMetadata);
   }
 
   private void loadPlayScreenAssetsAsync ()
@@ -755,7 +755,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   {
     try
     {
-      playMapActorFactory.loadAssets (mapMetadata);
+      playMapFactory.loadAssets (mapMetadata);
     }
     catch (final PlayMapLoadingException e)
     {
@@ -781,7 +781,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
                                                        GameServerConfiguration.class.getSimpleName ()));
 
     return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f
-            && playMapActorFactory.isFinishedLoadingAssets (gameServerConfiguration.getMapMetadata ());
+            && playMapFactory.isFinishedLoadingAssets (gameServerConfiguration.getMapMetadata ());
   }
 
   private void updateLoadingProgress ()
@@ -795,7 +795,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentLoadingProgressPercent = (playMapActorFactory
+    currentLoadingProgressPercent = (playMapFactory
             .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
             + assetManager.getProgressLoading ()) / 2.0f;
   }

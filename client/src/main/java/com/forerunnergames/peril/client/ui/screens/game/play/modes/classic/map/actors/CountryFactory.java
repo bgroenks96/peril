@@ -26,15 +26,15 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.d
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.images.CountryImagesRepository;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class CountryActorFactory
+public final class CountryFactory
 {
   private final CountryImageDataRepository countryImageDataRepository;
   private final CountryImagesRepository countryImagesRepository;
   private final Vector2 playMapReferenceSize;
 
-  public CountryActorFactory (final CountryImageDataRepository countryImageDataRepository,
-                              final CountryImagesRepository countryImagesRepository,
-                              final Vector2 playMapReferenceSize)
+  public CountryFactory (final CountryImageDataRepository countryImageDataRepository,
+                         final CountryImagesRepository countryImagesRepository,
+                         final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (countryImageDataRepository, "countryImageDataRepository");
     Arguments.checkIsNotNull (countryImagesRepository, "countryImagesRepository");
@@ -45,16 +45,16 @@ public final class CountryActorFactory
     this.playMapReferenceSize = playMapReferenceSize;
   }
 
-  public CountryActor create (final String countryName, final BitmapFont countryArmyTextFont)
+  public Country create (final String countryName, final BitmapFont countryArmyTextFont)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNull (countryArmyTextFont, "countryArmyTextFont");
 
     final CountryImageData countryImageData = countryImageDataRepository.get (countryName);
 
-    return new DefaultCountryActor (countryImagesRepository.getPrimary (countryName),
+    return new DefaultCountry (countryImagesRepository.getPrimary (countryName),
             countryImagesRepository.getSecondary (countryName), countryImageData,
-            CountryArmyTextActorFactory.create (countryImageData, countryArmyTextFont, playMapReferenceSize),
+            CountryArmyTextFactory.create (countryImageData, countryArmyTextFont, playMapReferenceSize),
             playMapReferenceSize);
   }
 }

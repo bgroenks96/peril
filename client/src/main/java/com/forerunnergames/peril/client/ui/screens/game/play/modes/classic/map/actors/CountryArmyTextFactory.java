@@ -26,32 +26,32 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.d
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
-public final class CountryArmyTextActorFactory
+public final class CountryArmyTextFactory
 {
   private static final Vector2 tempPosition = new Vector2 ();
 
-  public static CountryArmyTextActor create (final CountryImageData countryImageData,
-                                             final BitmapFont font,
-                                             final Vector2 playMapReferenceSize)
+  public static CountryArmyText create (final CountryImageData countryImageData,
+                                        final BitmapFont font,
+                                        final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (countryImageData, "countryImageData");
     Arguments.checkIsNotNull (font, "font");
     Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
 
-    final CountryArmyTextActor countryArmyTextActor = new DefaultCountryArmyTextActor (font);
+    final CountryArmyText countryArmyText = new DefaultCountryArmyText (font);
 
     tempPosition.set (countryImageData.getReferenceTextUpperLeft ());
     tempPosition.y = playMapReferenceSize.y - tempPosition.y;
     tempPosition.scl (PlayMapSettings.referenceToActualPlayMapScaling (playMapReferenceSize));
 
-    countryArmyTextActor.setCircleTopLeft (tempPosition);
-    countryArmyTextActor.setCircleSize (PlayMapSettings.countryArmyCircleSizeActualPlayMapSpace (playMapReferenceSize));
-    countryArmyTextActor.asActor ().setName (countryImageData.getCountryName ());
+    countryArmyText.setCircleTopLeft (tempPosition);
+    countryArmyText.setCircleSize (PlayMapSettings.countryArmyCircleSizeActualPlayMapSpace (playMapReferenceSize));
+    countryArmyText.asActor ().setName (countryImageData.getCountryName ());
 
-    return countryArmyTextActor;
+    return countryArmyText;
   }
 
-  private CountryArmyTextActorFactory ()
+  private CountryArmyTextFactory ()
   {
     Classes.instantiationNotAllowed ();
   }

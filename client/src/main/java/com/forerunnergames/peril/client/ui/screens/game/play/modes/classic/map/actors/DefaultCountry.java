@@ -39,36 +39,36 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DefaultCountryActor implements CountryActor
+public final class DefaultCountry implements Country
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultCountryActor.class);
+  private static final Logger log = LoggerFactory.getLogger (DefaultCountry.class);
   private final Group group = new Group ();
   private final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages;
   private final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages;
   private final CountryImageData imageData;
-  private final CountryArmyTextActor armyTextActor;
+  private final CountryArmyText armyText;
   private CountryPrimaryImageState currentPrimaryImageState = CountryPrimaryImageState.UNOWNED;
   private CountrySecondaryImageState currentSecondaryImageState = CountrySecondaryImageState.NONE;
   private boolean isEnabled = true;
   private CountryImage <CountryPrimaryImageState> currentPrimaryImage;
   private CountryImage <CountrySecondaryImageState> currentSecondaryImage;
 
-  public DefaultCountryActor (final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages,
-                              final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages,
-                              final CountryImageData imageData,
-                              final CountryArmyTextActor armyTextActor,
-                              final Vector2 playMapReferenceSize)
+  public DefaultCountry (final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages,
+                         final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages,
+                         final CountryImageData imageData,
+                         final CountryArmyText armyText,
+                         final Vector2 playMapReferenceSize)
   {
     Arguments.checkIsNotNull (primaryImages, "primaryImages");
     Arguments.checkIsNotNull (secondaryImages, "secondaryImages");
     Arguments.checkIsNotNull (imageData, "imageData");
-    Arguments.checkIsNotNull (armyTextActor, "armyTextActor");
+    Arguments.checkIsNotNull (armyText, "armyText");
     Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
 
     this.primaryImages = primaryImages;
     this.secondaryImages = secondaryImages;
     this.imageData = imageData;
-    this.armyTextActor = armyTextActor;
+    this.armyText = armyText;
 
     final Vector2 referenceToActualPlayMapSpaceScaling = PlayMapSettings
             .referenceToActualPlayMapScaling (playMapReferenceSize);
@@ -142,7 +142,7 @@ public final class DefaultCountryActor implements CountryActor
     hide (currentPrimaryImageState);
     currentPrimaryImageState = state;
     currentPrimaryImage = primaryImages.get (state);
-    armyTextActor.onPrimaryStateChange (state);
+    armyText.onPrimaryStateChange (state);
     show (state);
   }
 
@@ -240,7 +240,7 @@ public final class DefaultCountryActor implements CountryActor
   @Override
   public int getArmies ()
   {
-    return armyTextActor.getArmies ();
+    return armyText.getArmies ();
   }
 
   @Override
@@ -248,25 +248,25 @@ public final class DefaultCountryActor implements CountryActor
   {
     Arguments.checkIsNotNegative (armies, "armies");
 
-    armyTextActor.changeArmiesTo (armies);
+    armyText.changeArmiesTo (armies);
   }
 
   @Override
   public void incrementArmies ()
   {
-    armyTextActor.incrementArmies ();
+    armyText.incrementArmies ();
   }
 
   @Override
   public void decrementArmies ()
   {
-    armyTextActor.decrementArmies ();
+    armyText.decrementArmies ();
   }
 
   @Override
   public void changeArmiesBy (final int deltaArmies)
   {
-    armyTextActor.changeArmiesBy (deltaArmies);
+    armyText.changeArmiesBy (deltaArmies);
   }
 
   @Override
@@ -288,9 +288,9 @@ public final class DefaultCountryActor implements CountryActor
   }
 
   @Override
-  public CountryArmyTextActor getArmyTextActor ()
+  public CountryArmyText getArmyText ()
   {
-    return armyTextActor;
+    return armyText;
   }
 
   @Override
@@ -325,10 +325,10 @@ public final class DefaultCountryActor implements CountryActor
     return String.format (
                           "%1$s | Name: %2$s | Current Primary Image State: %3$s | Current Secondary Image State: %4$s"
                                   + " | Current Primary Image: %5$s  | Current Secondary Image: %6$s | Enabled: %7$s | "
-                                  + "Image Data: %8$s | Army Text Actor: %9$s | Primary Images: %10$s "
+                                  + "Image Data: %8$s | Army Text: %9$s | Primary Images: %10$s "
                                   + "| Secondary Images: %11$s",
                           getClass ().getSimpleName (), group.getName (), currentPrimaryImageState,
                           currentSecondaryImageState, currentPrimaryImage, currentSecondaryImage, isEnabled, imageData,
-                          armyTextActor, primaryImages, secondaryImages);
+            armyText, primaryImages, secondaryImages);
   }
 }

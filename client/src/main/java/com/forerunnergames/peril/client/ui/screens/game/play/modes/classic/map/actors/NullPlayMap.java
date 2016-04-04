@@ -31,10 +31,10 @@ import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
 
-final class NullPlayMapActor implements PlayMapActor
+final class NullPlayMap implements PlayMap
 {
   private final Group group = new Group ();
-  private final CountryActor nullCountryActor = CountryActor.NULL_COUNTRY_ACTOR;
+  private final Country nullCountry = Country.NULL_COUNTRY;
 
   @Override
   public boolean mouseMoved (final Vector2 mouseCoordinate)
@@ -121,17 +121,17 @@ final class NullPlayMapActor implements PlayMapActor
   }
 
   @Override
-  public boolean existsCountryActorWithName (final String countryName)
+  public boolean existsCountryWithName (final String countryName)
   {
     return true;
   }
 
   @Override
-  public CountryActor getCountryActorWithName (final String countryName)
+  public Country getCountryWithName (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return nullCountryActor;
+    return nullCountry;
   }
 
   @Override

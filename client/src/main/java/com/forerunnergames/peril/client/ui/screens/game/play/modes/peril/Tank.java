@@ -26,7 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.tools.common.Arguments;
 
-public final class TankActor extends Actor implements UnitActor
+public final class Tank extends Actor implements Unit
 {
   private static final int SPEED_IN_GRID_SQUARES_PER_SECOND = 2;
   private static final float ACTION_THRESHOLD_SECONDS = 1.0f / SPEED_IN_GRID_SQUARES_PER_SECOND;
@@ -45,7 +45,7 @@ public final class TankActor extends Actor implements UnitActor
   private boolean completedTurningTurretAround = false;
   private boolean turretActive = false;
 
-  public TankActor (final Sprite bodySprite, final Sprite turretSprite)
+  public Tank (final Sprite bodySprite, final Sprite turretSprite)
   {
     Arguments.checkIsNotNull (bodySprite, "bodySprite");
     Arguments.checkIsNotNull (turretSprite, "turretSprite");
@@ -105,12 +105,12 @@ public final class TankActor extends Actor implements UnitActor
         {
         case RIGHT:
         {
-          setTurning (UnitActor.TurnDirection.NONE);
+          setTurning (Unit.TurnDirection.NONE);
           break;
         }
         case NONE:
         {
-          setTurning (UnitActor.TurnDirection.LEFT);
+          setTurning (Unit.TurnDirection.LEFT);
           break;
         }
         }
@@ -130,12 +130,12 @@ public final class TankActor extends Actor implements UnitActor
         {
         case LEFT:
         {
-          setTurning (UnitActor.TurnDirection.NONE);
+          setTurning (Unit.TurnDirection.NONE);
           break;
         }
         case NONE:
         {
-          setTurning (UnitActor.TurnDirection.RIGHT);
+          setTurning (Unit.TurnDirection.RIGHT);
           break;
         }
         }
@@ -151,7 +151,7 @@ public final class TankActor extends Actor implements UnitActor
     {
       if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
       {
-        if (! isTurning ()) setTurning (UnitActor.TurnDirection.U_TURN);
+        if (! isTurning ()) setTurning (Unit.TurnDirection.U_TURN);
       }
       else
       {
@@ -168,12 +168,12 @@ public final class TankActor extends Actor implements UnitActor
         {
         case REVERSE:
         {
-          setMoving (UnitActor.MovementDirection.NONE);
+          setMoving (Unit.MovementDirection.NONE);
           break;
         }
         case NONE:
         {
-          setMoving (UnitActor.MovementDirection.FORWARD);
+          setMoving (Unit.MovementDirection.FORWARD);
           break;
         }
         }
@@ -193,12 +193,12 @@ public final class TankActor extends Actor implements UnitActor
         {
         case FORWARD:
         {
-          setMoving (UnitActor.MovementDirection.NONE);
+          setMoving (Unit.MovementDirection.NONE);
           break;
         }
         case NONE:
         {
-          setMoving (UnitActor.MovementDirection.REVERSE);
+          setMoving (Unit.MovementDirection.REVERSE);
           break;
         }
         }

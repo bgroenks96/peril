@@ -52,7 +52,7 @@ import com.google.common.collect.ImmutableMap;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
+public final class DefaultPlayMapFactory implements PlayMapFactory
 {
   // @formatter:off
   private final AssetManager assetManager;
@@ -67,10 +67,10 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
   private final CountryImageDataRepositoryFactory countryImageDataRepositoryFactory = new DefaultCountryImageDataRepositoryFactory (countryImageDataLoader);
   // @formatter:on
 
-  public DefaultPlayMapActorFactory (final AssetManager assetManager,
-                                     final ScreenSize screenSize,
-                                     final MouseInput mouseInput,
-                                     final MBassador <Event> eventBus)
+  public DefaultPlayMapFactory (final AssetManager assetManager,
+                                final ScreenSize screenSize,
+                                final MouseInput mouseInput,
+                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (screenSize, "screenSize");
@@ -110,11 +110,11 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
   }
 
   @Override
-  public PlayMapActor create (final MapMetadata mapMetadata)
+  public PlayMap create (final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return PlayMapActor.NULL_PLAY_MAP_ACTOR;
+    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return PlayMap.NULL_PLAY_MAP;
 
     // @formatter:off
     final BitmapFont font = new BitmapFont ();
@@ -122,28 +122,28 @@ public final class DefaultPlayMapActorFactory implements PlayMapActorFactory
     final Image backgroundImage = playMapBackgroundImageLoader.get (mapMetadata);
     final Vector2 playMapReferenceSize = new Vector2 (backgroundImage.getWidth (), backgroundImage.getHeight ());
     final PlayMapInputDetection playMapInputDetection = playMapInputDetectionFactory.create (mapMetadata, playMapReferenceSize);
-    final HoveredTerritoryTextActor hoveredTerritoryTextActor = new HoveredTerritoryTextActor (playMapInputDetection, mouseInput, font);
-    final ImmutableMap.Builder <String, CountryActor> countryNamesToActorsBuilder = ImmutableMap.builder ();
+    final HoveredTerritoryText hoveredTerritoryText = new HoveredTerritoryText (playMapInputDetection, mouseInput, font);
+    final ImmutableMap.Builder <String, Country> countryNamesToActorsBuilder = ImmutableMap.builder ();
     countryImagesFactory.create (mapMetadata, countryAtlasesLoader.get (mapMetadata));
     // @formatter:on
 
     final CountryImagesRepository countryImagesRepository = new DefaultCountryImagesRepository (
             countryImagesFactory.getPrimary (mapMetadata), countryImagesFactory.getSecondary (mapMetadata));
 
-    final CountryActorFactory countryActorFactory = new CountryActorFactory (countryImageDataRepository,
+    final CountryFactory countryFactory = new CountryFactory (countryImageDataRepository,
             countryImagesRepository, playMapReferenceSize);
 
     for (final String countryName : countryImageDataRepository.getCountryNames ())
     {
-      countryNamesToActorsBuilder.put (countryName, countryActorFactory.create (countryName, font));
+      countryNamesToActorsBuilder.put (countryName, countryFactory.create (countryName, font));
     }
 
-    final PlayMapActor playMapActor = new DefaultPlayMapActor (countryNamesToActorsBuilder.build (),
-            playMapInputDetection, hoveredTerritoryTextActor, backgroundImage, mapMetadata, eventBus);
+    final PlayMap playMap = new DefaultPlayMap (countryNamesToActorsBuilder.build (),
+            playMapInputDetection, hoveredTerritoryText, backgroundImage, mapMetadata, eventBus);
 
-    hoveredTerritoryTextActor.setPlayMapActor (playMapActor);
+    hoveredTerritoryText.setPlayMap (playMap);
 
-    return playMapActor;
+    return playMap;
   }
 
   @Override

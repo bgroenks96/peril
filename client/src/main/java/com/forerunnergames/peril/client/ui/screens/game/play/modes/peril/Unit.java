@@ -18,31 +18,48 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.tools.common.Arguments;
+import javax.annotation.Nullable;
 
-public final class TankBodyActor extends Actor
+public interface Unit extends InputProcessor
 {
-  private final TextureRegion tankBody;
-
-  public TankBodyActor (final TextureRegion tankBody)
+  enum MovementDirection
   {
-    Arguments.checkIsNotNull (tankBody, "tankBody");
-
-    this.tankBody = tankBody;
-
-    setOrigin (12, 26);
+    FORWARD,
+    REVERSE,
+    NONE
   }
 
-  @Override
-  public void draw (final Batch batch, final float parentAlpha)
+  enum TurnDirection
   {
-    batch.draw (tankBody, getX (), Gdx.graphics.getHeight () - getY () - tankBody.getRegionHeight (), getOriginX (),
-                getOriginY (), tankBody.getRegionWidth (), tankBody.getRegionHeight (), getScaleX (), getScaleY (),
-                getRotation ());
+    RIGHT,
+    LEFT,
+    U_TURN,
+    NONE
   }
+
+  void turnRight ();
+
+  void turnLeft ();
+
+  void turnAround ();
+
+  void moveForward ();
+
+  void moveReverse ();
+
+  void setMoving (final MovementDirection movementDirection);
+
+  void setTurning (final TurnDirection turnDirection);
+
+  Vector2 getPreviousPosition ();
+
+  Vector2 getCurrentPosition ();
+
+  Actor asActor ();
+
+  boolean is (@Nullable final Actor actor);
 }
