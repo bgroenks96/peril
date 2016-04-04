@@ -22,13 +22,13 @@ import com.forerunnergames.peril.common.map.MapMetadata;
 
 public interface PlayMapFactory
 {
-  void loadAssets (MapMetadata mapMetadata);
+  void loadAssets (final MapMetadata mapMetadata);
 
-  boolean isFinishedLoadingAssets (MapMetadata mapMetadata);
+  boolean isFinishedLoadingAssets (final MapMetadata mapMetadata);
 
-  PlayMap create (MapMetadata mapMetadata);
+  PlayMap create (final MapMetadata mapMetadata);
 
-  void destroy (MapMetadata mapMetadata);
+  void destroy (final MapMetadata mapMetadata);
 
   float getAssetLoadingProgressPercent (final MapMetadata mapMetadata);
 }

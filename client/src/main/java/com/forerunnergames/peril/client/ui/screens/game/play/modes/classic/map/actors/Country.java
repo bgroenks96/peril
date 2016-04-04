@@ -37,9 +37,9 @@ public interface Country
 
   void changePrimaryStateRandomly ();
 
-  void changePrimaryStateTo (CountryPrimaryImageState state);
+  void changePrimaryStateTo (final CountryPrimaryImageState state);
 
-  void changeSecondaryStateTo (CountrySecondaryImageState state);
+  void changeSecondaryStateTo (final CountrySecondaryImageState state);
 
   void nextPrimaryState ();
 
@@ -64,13 +64,13 @@ public interface Country
 
   int getArmies ();
 
-  void setArmies (int armies);
+  void setArmies (final int armies);
 
   void incrementArmies ();
 
   void decrementArmies ();
 
-  void changeArmiesBy (int deltaArmies);
+  void changeArmiesBy (final int deltaArmies);
 
   void disable ();
 
