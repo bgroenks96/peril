@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
