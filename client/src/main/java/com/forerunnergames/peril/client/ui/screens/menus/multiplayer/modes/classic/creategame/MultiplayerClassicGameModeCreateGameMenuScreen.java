@@ -40,7 +40,7 @@ import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.CountryCounter;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.countrycounter.CountryCounter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.map.io.loaders.ClientMapMetadataLoaderFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
