@@ -294,6 +294,28 @@ public final class DefaultCountry implements Country
   }
 
   @Override
+  public String getName ()
+  {
+    return group.getName () != null ? group.getName () : "";
+  }
+
+  @Override
+  public void setName (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    group.setName (name);
+  }
+
+  @Override
+  public boolean hasName (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    return group.getName ().equals (name);
+  }
+
+  @Override
   public Actor asActor ()
   {
     return group;

@@ -435,7 +435,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
   private void setCountryNames (final Country sourceCountry, final Country destinationCountry)
   {
-    setCountryNames (sourceCountry.asActor ().getName (), destinationCountry.asActor ().getName ());
+    setCountryNames (sourceCountry.getName (), destinationCountry.getName ());
   }
 
   private void setCountryImages (final Country sourceCountry, final Country destinationCountry)

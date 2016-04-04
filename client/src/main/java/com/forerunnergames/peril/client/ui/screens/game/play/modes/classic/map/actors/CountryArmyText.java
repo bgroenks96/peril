@@ -46,5 +46,9 @@ public interface CountryArmyText
 
   void setFont (final BitmapFont font);
 
+  void setName (final String name);
+
+  void setVisible (final boolean isVisible);
+
   Actor asActor ();
 }

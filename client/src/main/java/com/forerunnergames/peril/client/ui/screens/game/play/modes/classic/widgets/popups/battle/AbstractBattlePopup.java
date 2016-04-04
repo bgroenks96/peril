@@ -507,8 +507,8 @@ public abstract class AbstractBattlePopup extends OkPopup
 
   private void initializeCountryArmies (final int attackingCountryArmies, final int defendingCountryArmies)
   {
-    attackingCountryArmyTextEffects.asActor ().setVisible (false);
-    defendingCountryArmyTextEffects.asActor ().setVisible (false);
+    attackingCountryArmyTextEffects.setVisible (false);
+    defendingCountryArmyTextEffects.setVisible (false);
 
     attackingCountryArmyText.changeArmiesTo (attackingCountryArmies);
     defendingCountryArmyText.changeArmiesTo (defendingCountryArmies);
@@ -516,7 +516,7 @@ public abstract class AbstractBattlePopup extends OkPopup
 
   private void setCountryNames (final Country attackingCountry, final Country defendingCountry)
   {
-    setCountryNames (attackingCountry.asActor ().getName (), defendingCountry.asActor ().getName ());
+    setCountryNames (attackingCountry.getName (), defendingCountry.getName ());
   }
 
   private void setCountryImages (final Country attackingCountry, final Country defendingCountry)

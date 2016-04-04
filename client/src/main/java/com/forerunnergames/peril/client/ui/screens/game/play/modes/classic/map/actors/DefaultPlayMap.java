@@ -146,8 +146,7 @@ public final class DefaultPlayMap implements PlayMap
     final Country hoveredCountry = getCountryAt (mouseCoordinate);
     hoveredCountry.onHoverStart ();
 
-    if (this.hoveredCountry != null
-            && !this.hoveredCountry.asActor ().getName ().equals (hoveredCountry.asActor ().getName ()))
+    if (this.hoveredCountry != null && !this.hoveredCountry.hasName (hoveredCountry.getName ()))
     {
       this.hoveredCountry.onHoverEnd ();
     }
@@ -183,8 +182,7 @@ public final class DefaultPlayMap implements PlayMap
       {
         touchedDownCountry.onTouchDown ();
 
-        if (touchedCountry != null
-                && !touchedCountry.asActor ().getName ().equals (touchedDownCountry.asActor ().getName ()))
+        if (touchedCountry != null && !touchedCountry.hasName (touchedDownCountry.getName ()))
         {
           touchedCountry.onTouchUp ();
         }
@@ -232,13 +230,13 @@ public final class DefaultPlayMap implements PlayMap
 
     if (touchedCountry == null) return true;
 
-    if (!touchedCountry.asActor ().getName ().equals (touchedUpCountry.asActor ().getName ()))
+    if (!touchedCountry.hasName (touchedUpCountry.getName ()))
     {
       touchedCountry.onTouchUp ();
     }
     else
     {
-      eventBus.publish (new SelectCountryEvent (touchedUpCountry.asActor ().getName ()));
+      eventBus.publish (new SelectCountryEvent (touchedUpCountry.getName ()));
     }
 
     touchedCountry = null;
@@ -516,7 +514,7 @@ public final class DefaultPlayMap implements PlayMap
   private boolean countryAtPointIs (final Vector2 inputCoordinate, @Nullable final Country country)
   {
     return country != null && existsCountryAt (inputCoordinate)
-            && getCountryAt (inputCoordinate).asActor ().getName ().equals (country.asActor ().getName ());
+            && getCountryAt (inputCoordinate).hasName (country.getName ());
   }
 
   private boolean countryAtPointIsNot (final Vector2 inputCoordinate, final Country country)

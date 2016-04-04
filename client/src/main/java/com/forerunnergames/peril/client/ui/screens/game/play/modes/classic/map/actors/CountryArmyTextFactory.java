@@ -46,7 +46,7 @@ public final class CountryArmyTextFactory
 
     countryArmyText.setCircleTopLeft (tempPosition);
     countryArmyText.setCircleSize (PlayMapSettings.countryArmyCircleSizeActualPlayMapSpace (playMapReferenceSize));
-    countryArmyText.asActor ().setName (countryImageData.getCountryName ());
+    countryArmyText.setName (countryImageData.getCountryName ());
 
     return countryArmyText;
   }

@@ -83,6 +83,20 @@ final class NullCountryArmyText implements CountryArmyText
   }
 
   @Override
+  public void setName (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    actor.setName (name);
+  }
+
+  @Override
+  public void setVisible (final boolean isVisible)
+  {
+    actor.setVisible (isVisible);
+  }
+
+  @Override
   public Actor asActor ()
   {
     return actor;

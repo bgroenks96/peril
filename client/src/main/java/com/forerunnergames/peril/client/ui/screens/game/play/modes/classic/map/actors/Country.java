@@ -80,5 +80,11 @@ public interface Country
 
   CountryArmyText getArmyText ();
 
+  String getName ();
+
+  void setName (final String name);
+
+  boolean hasName (final String name);
+
   Actor asActor ();
 }

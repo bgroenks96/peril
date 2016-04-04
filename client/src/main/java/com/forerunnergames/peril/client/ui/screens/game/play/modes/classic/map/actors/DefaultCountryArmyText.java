@@ -135,6 +135,20 @@ public class DefaultCountryArmyText implements CountryArmyText
   }
 
   @Override
+  public void setName (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    textActor.setName (name);
+  }
+
+  @Override
+  public void setVisible (final boolean isVisible)
+  {
+    textActor.setVisible (isVisible);
+  }
+
+  @Override
   public final Actor asActor ()
   {
     return textActor;
