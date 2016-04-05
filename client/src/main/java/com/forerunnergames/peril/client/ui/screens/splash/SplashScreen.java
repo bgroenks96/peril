@@ -329,16 +329,61 @@ public final class SplashScreen extends InputAdapter implements Screen
 
     // TODO Add multi-monitor support.
 
+    /* TODO Broken due to https://github.com/libgdx/libgdx/issues/3997
     final Graphics.DisplayMode currentMonitorMode = Gdx.graphics.getDisplayMode ();
 
-    // @formatter:off
-    if (GraphicsSettings.IS_FULLSCREEN && Gdx.graphics.setFullscreenMode (currentMonitorMode)) return;
-    if (Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT)) return;
-    if (Gdx.graphics.setWindowedMode (currentMonitorMode.width, currentMonitorMode.height)) return;
-    // @formatter:on
+    log.info ("Current monitor display mode: {}", currentMonitorMode);
+    */
+
+    // TODO Workaround for https://github.com/libgdx/libgdx/issues/3997
+    Graphics.DisplayMode bestMode = getBestDisplayMode ();
+
+    log.info ("Best display mode: {}", bestMode);
+
+    if (GraphicsSettings.IS_FULLSCREEN && Gdx.graphics.setFullscreenMode (bestMode))
+    {
+      log.info ("Successfully set fullscreen mode ({} x {}).", Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+      return;
+    }
+
+    if (Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT))
+    {
+      log.info ("Successfully set windowed mode ({} x {}).", Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+      return;
+    }
+
+    /* TODO Broken due to https://github.com/libgdx/libgdx/issues/3997
+    if (Gdx.graphics.setWindowedMode (currentMonitorMode.width, currentMonitorMode.height))
+    {
+      log.info ("Successfully set windowed mode ({} x {}).", Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+      return;
+    }
+    */
 
     throw new GdxRuntimeException (
             Strings.format ("Could not set any display mode upon leaving {}.", SplashScreen.class.getSimpleName ()));
+  }
+
+  // TODO Workaround for https://github.com/libgdx/libgdx/issues/3997
+  private Graphics.DisplayMode getBestDisplayMode ()
+  {
+    Graphics.DisplayMode bestMode = Gdx.graphics.getDisplayMode ();
+
+    for (final Graphics.DisplayMode availableMode : Gdx.graphics.getDisplayModes ())
+    {
+      log.debug ("Found available display mode for current monitor: {}", availableMode);
+
+      if (availableMode.width > bestMode.width && availableMode.height > bestMode.height
+              || (availableMode.width >= bestMode.width && availableMode.height >= bestMode.height
+              && (availableMode.bitsPerPixel > bestMode.bitsPerPixel
+              || availableMode.refreshRate > bestMode.refreshRate)))
+      {
+        bestMode = availableMode;
+        log.debug ("Best available display mode found so far for current monitor: {}", bestMode);
+      }
+    }
+
+    return bestMode;
   }
 
   private boolean loadingUpdatedAssets ()
