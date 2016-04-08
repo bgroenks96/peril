@@ -324,13 +324,32 @@ public final class SplashScreen extends InputAdapter implements Screen
 
   private void setNextScreenDisplayMode ()
   {
-    Gdx.graphics.setUndecorated (GraphicsSettings.IS_WINDOW_DECORATED);
+    configureWindowSettings ();
+    configureDisplayMode ();
+  }
+
+  private void configureWindowSettings ()
+  {
+    configureHighDpi ();
+
+    Gdx.graphics.setUndecorated (!GraphicsSettings.IS_WINDOW_DECORATED);
     Gdx.graphics.setResizable (GraphicsSettings.IS_WINDOW_RESIZABLE);
+  }
 
-    configureHighDpiForNextScreen ();
+  private void configureHighDpi ()
+  {
+    try
+    {
+      System.setProperty ("org.lwjgl.opengl.Display.enableHighDPI", String.valueOf (GraphicsSettings.USE_HIGH_DPI));
+    }
+    catch (final SecurityException e)
+    {
+      log.warn ("Couldn't enable high DPI.\nCause:\n{}", Throwables.getStackTraceAsString (e));
+    }
+  }
 
-    // TODO Add multi-monitor support.
-
+  private void configureDisplayMode ()
+  {
     /* TODO Broken due to https://github.com/libgdx/libgdx/issues/3997
     final Graphics.DisplayMode currentMonitorMode = Gdx.graphics.getDisplayMode ();
 
@@ -362,10 +381,10 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     */
 
-    throw new GdxRuntimeException (
-            Strings.format ("Could not set any display mode upon leaving {}.", SplashScreen.class.getSimpleName ()));
+    throw new GdxRuntimeException (Strings.format ("Could not set any display mode."));
   }
 
+  // TODO Add multi-monitor support.
   // TODO Workaround for https://github.com/libgdx/libgdx/issues/3997
   private Graphics.DisplayMode getBestDisplayMode ()
   {
@@ -386,18 +405,6 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
 
     return bestMode;
-  }
-
-  private void configureHighDpiForNextScreen ()
-  {
-    try
-    {
-      System.setProperty ("org.lwjgl.opengl.Display.enableHighDPI", String.valueOf (GraphicsSettings.USE_HIGH_DPI));
-    }
-    catch (final SecurityException e)
-    {
-      log.warn ("Couldn't enable high DPI for initial screen .\nCause:\n{}", Throwables.getStackTraceAsString (e));
-    }
   }
 
   private boolean loadingUpdatedAssets ()
