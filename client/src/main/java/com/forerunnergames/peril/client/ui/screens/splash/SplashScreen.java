@@ -324,7 +324,7 @@ public final class SplashScreen extends InputAdapter implements Screen
 
   private void setNextScreenDisplayMode ()
   {
-    Gdx.graphics.setUndecorated (false);
+    Gdx.graphics.setUndecorated (GraphicsSettings.IS_WINDOW_DECORATED);
     Gdx.graphics.setResizable (GraphicsSettings.IS_WINDOW_RESIZABLE);
 
     configureHighDpiForNextScreen ();

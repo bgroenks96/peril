@@ -42,6 +42,7 @@ public final class GraphicsSettings
   public static boolean USE_OPENGL_CORE_PROFILE = true;
   public static boolean USE_HIGH_DPI = true;
   public static boolean IS_WINDOW_RESIZABLE = true;
+  public static boolean IS_WINDOW_DECORATED = true;
   public static String WINDOW_TITLE = "Peril";
 
   private GraphicsSettings ()

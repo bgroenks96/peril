@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ClientApplicationProperties
 {
-  public static final int CURRENT_VERSION = 3;
+  public static final int CURRENT_VERSION = 4;
   public static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   public static final String PROPERTIES_FILE_NAME = "settings.txt";
   public static final String VERSION_FILE_NAME = ".version";
@@ -74,6 +74,7 @@ public final class ClientApplicationProperties
   public static final String WINDOW_WIDTH_PROPERTY_KEY = "window-width";
   public static final String WINDOW_HEIGHT_PROPERTY_KEY = "window-height";
   public static final String WINDOW_RESIZABLE_PROPERTY_KEY = "window-resizable";
+  public static final String WINDOW_DECORATED_PROPERTY_KEY = "window-decorated";
   public static final String WINDOW_TITLE_PROPERTY_KEY = "window-title";
   public static final String FULLSCREEN_PROPERTY_KEY = "fullscreen";
   public static final String VSYNC_PROPERTY_KEY = "vsync";
@@ -110,6 +111,8 @@ public final class ClientApplicationProperties
           + GraphicsSettings.MIN_INITIAL_WINDOW_HEIGHT
           + " and <= the max resolution height of your monitor(s)\n\n "
           + WINDOW_RESIZABLE_PROPERTY_KEY
+          + ": true, false\n\n "
+          + WINDOW_DECORATED_PROPERTY_KEY
           + ": true, false\n\n "
           + WINDOW_TITLE_PROPERTY_KEY
           + ": anything\n\n "
@@ -377,6 +380,7 @@ public final class ClientApplicationProperties
     properties.setProperty (WINDOW_WIDTH_PROPERTY_KEY, String.valueOf (GraphicsSettings.INITIAL_WINDOW_WIDTH));
     properties.setProperty (WINDOW_HEIGHT_PROPERTY_KEY, String.valueOf (GraphicsSettings.INITIAL_WINDOW_HEIGHT));
     properties.setProperty (WINDOW_RESIZABLE_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_WINDOW_RESIZABLE));
+    properties.setProperty (WINDOW_DECORATED_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_WINDOW_DECORATED));
     properties.setProperty (WINDOW_TITLE_PROPERTY_KEY, String.valueOf (GraphicsSettings.WINDOW_TITLE));
     properties.setProperty (FULLSCREEN_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_FULLSCREEN));
     properties.setProperty (VSYNC_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_VSYNC_ENABLED));
@@ -429,6 +433,7 @@ public final class ClientApplicationProperties
     GraphicsSettings.INITIAL_WINDOW_WIDTH = parseInteger (WINDOW_WIDTH_PROPERTY_KEY, GraphicsSettings.MIN_INITIAL_WINDOW_WIDTH, properties);
     GraphicsSettings.INITIAL_WINDOW_HEIGHT = parseInteger (WINDOW_HEIGHT_PROPERTY_KEY, GraphicsSettings.MIN_INITIAL_WINDOW_HEIGHT, properties);
     GraphicsSettings.IS_WINDOW_RESIZABLE = parseBoolean (WINDOW_RESIZABLE_PROPERTY_KEY, properties);
+    GraphicsSettings.IS_WINDOW_DECORATED = parseBoolean (WINDOW_DECORATED_PROPERTY_KEY, properties);
     GraphicsSettings.WINDOW_TITLE = properties.getProperty (WINDOW_TITLE_PROPERTY_KEY);
     GraphicsSettings.IS_FULLSCREEN = parseBoolean (FULLSCREEN_PROPERTY_KEY, properties);
     GraphicsSettings.IS_VSYNC_ENABLED = parseBoolean (VSYNC_PROPERTY_KEY, properties);
