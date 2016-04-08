@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ClientApplicationProperties
 {
-  public static final int CURRENT_VERSION = 2;
+  public static final int CURRENT_VERSION = 3;
   public static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   public static final String PROPERTIES_FILE_NAME = "settings.txt";
   public static final String VERSION_FILE_NAME = ".version";
@@ -77,6 +77,7 @@ public final class ClientApplicationProperties
   public static final String WINDOW_TITLE_PROPERTY_KEY = "window-title";
   public static final String FULLSCREEN_PROPERTY_KEY = "fullscreen";
   public static final String VSYNC_PROPERTY_KEY = "vsync";
+  public static final String HIGH_DPI_PROPERTY_KEY = "high-dpi";
   public static final String OPENGL_CORE_PROFILE_PROPERTY_KEY = "opengl-core-profile";
   public static final String MUSIC_ENABLED_PROPERTY_KEY = "music-enabled";
   public static final String MUSIC_VOLUME_PROPERTY_KEY = "music-volume";
@@ -116,6 +117,8 @@ public final class ClientApplicationProperties
           + ": true, false\n\n "
           + VSYNC_PROPERTY_KEY
           + ": true, false\n\n "
+          + HIGH_DPI_PROPERTY_KEY
+          + ": true, false ('true' enables high DPI mode for Mac OS X retina displays ONLY, 'false' disables it.)\n\n "
           + OPENGL_CORE_PROFILE_PROPERTY_KEY
           + ": true, false\n\n "
           + MUSIC_ENABLED_PROPERTY_KEY
@@ -377,6 +380,7 @@ public final class ClientApplicationProperties
     properties.setProperty (WINDOW_TITLE_PROPERTY_KEY, String.valueOf (GraphicsSettings.WINDOW_TITLE));
     properties.setProperty (FULLSCREEN_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_FULLSCREEN));
     properties.setProperty (VSYNC_PROPERTY_KEY, String.valueOf (GraphicsSettings.IS_VSYNC_ENABLED));
+    properties.setProperty (HIGH_DPI_PROPERTY_KEY, String.valueOf (GraphicsSettings.USE_HIGH_DPI));
     properties.setProperty (OPENGL_CORE_PROFILE_PROPERTY_KEY, String.valueOf (GraphicsSettings.USE_OPENGL_CORE_PROFILE));
     properties.setProperty (MUSIC_ENABLED_PROPERTY_KEY, String.valueOf (MusicSettings.IS_ENABLED));
     properties.setProperty (MUSIC_VOLUME_PROPERTY_KEY, String.valueOf (MusicSettings.INITIAL_VOLUME));
@@ -428,6 +432,7 @@ public final class ClientApplicationProperties
     GraphicsSettings.WINDOW_TITLE = properties.getProperty (WINDOW_TITLE_PROPERTY_KEY);
     GraphicsSettings.IS_FULLSCREEN = parseBoolean (FULLSCREEN_PROPERTY_KEY, properties);
     GraphicsSettings.IS_VSYNC_ENABLED = parseBoolean (VSYNC_PROPERTY_KEY, properties);
+    GraphicsSettings.USE_HIGH_DPI = parseBoolean (HIGH_DPI_PROPERTY_KEY, properties);
     GraphicsSettings.USE_OPENGL_CORE_PROFILE = parseBoolean (OPENGL_CORE_PROFILE_PROPERTY_KEY, properties);
     MusicSettings.IS_ENABLED = parseBoolean (MUSIC_ENABLED_PROPERTY_KEY, properties);
     MusicSettings.INITIAL_VOLUME = parseFloat (MUSIC_VOLUME_PROPERTY_KEY, MusicSettings.MIN_VOLUME, MusicSettings.MAX_VOLUME, properties);

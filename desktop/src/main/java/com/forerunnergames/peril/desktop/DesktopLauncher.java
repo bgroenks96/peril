@@ -107,6 +107,7 @@ public final class DesktopLauncher
     config.vSyncEnabled = GraphicsSettings.IS_VSYNC_ENABLED;
     config.title = GraphicsSettings.WINDOW_TITLE;
     config.useGL30 = GraphicsSettings.USE_OPENGL_CORE_PROFILE;
+    config.useHDPI = GraphicsSettings.USE_HIGH_DPI;
 
     final CommandLineArgs jArgs = new CommandLineArgs ();
     final JCommander jCommander = new JCommander (jArgs);

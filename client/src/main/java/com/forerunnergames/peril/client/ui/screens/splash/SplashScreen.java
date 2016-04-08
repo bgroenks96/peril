@@ -327,6 +327,8 @@ public final class SplashScreen extends InputAdapter implements Screen
     Gdx.graphics.setUndecorated (false);
     Gdx.graphics.setResizable (GraphicsSettings.IS_WINDOW_RESIZABLE);
 
+    configureHighDpiForNextScreen ();
+
     // TODO Add multi-monitor support.
 
     /* TODO Broken due to https://github.com/libgdx/libgdx/issues/3997
@@ -384,6 +386,18 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
 
     return bestMode;
+  }
+
+  private void configureHighDpiForNextScreen ()
+  {
+    try
+    {
+      System.setProperty ("org.lwjgl.opengl.Display.enableHighDPI", String.valueOf (GraphicsSettings.USE_HIGH_DPI));
+    }
+    catch (final SecurityException e)
+    {
+      log.warn ("Couldn't enable high DPI for initial screen .\nCause:\n{}", Throwables.getStackTraceAsString (e));
+    }
   }
 
   private boolean loadingUpdatedAssets ()
