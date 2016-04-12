@@ -54,6 +54,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import de.javakaffee.kryoserializers.UUIDSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
 
 import java.io.IOException;
@@ -184,6 +185,7 @@ public final class KryonetRegistration
     ImmutableSetSerializer.registerSerializers (kryo);
     ImmutableSortedSetSerializer.registerSerializers (kryo);
     ImmutableMapSerializer.registerSerializers (kryo);
+    ImmutableMultimapSerializer.registerSerializers (kryo);
 
     kryo.register (UUID.class, new UUIDSerializer ());
 
