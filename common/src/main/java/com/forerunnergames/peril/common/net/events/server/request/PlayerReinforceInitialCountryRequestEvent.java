@@ -51,14 +51,19 @@ public final class PlayerReinforceInitialCountryRequestEvent extends AbstractPla
     this.maxArmiesPerCountry = maxArmiesPerCountry;
   }
 
+  public int getPreSetReinforcementCount ()
+  {
+    return preSetReinforcementCount;
+  }
+
   public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
   {
     return playerOwnedCountries;
   }
 
-  public int getPreSetReinforcementCount ()
+  public int getMaxArmiesPerCountry ()
   {
-    return preSetReinforcementCount;
+    return maxArmiesPerCountry;
   }
 
   public boolean isPlayerOwnedCountry (final String countryName)
