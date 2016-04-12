@@ -33,18 +33,22 @@ public final class PlayerReinforceInitialCountryRequestEvent extends AbstractPla
 {
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
   private final int preSetReinforcementCount;
+  private final int maxArmiesPerCountry;
 
   public PlayerReinforceInitialCountryRequestEvent (final PlayerPacket player,
                                                     final ImmutableSet <CountryPacket> playerOwnedCountries,
-                                                    final int preSetReinforcementCount)
+                                                    final int preSetReinforcementCount,
+                                                    final int maxArmiesPerCountry)
   {
     super (player);
 
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
     Arguments.checkIsNotNegative (preSetReinforcementCount, "preSetReinforcementCount");
+    Arguments.checkIsNotNegative (maxArmiesPerCountry, "maxArmiesPerCountry");
 
     this.playerOwnedCountries = playerOwnedCountries;
     this.preSetReinforcementCount = preSetReinforcementCount;
+    this.maxArmiesPerCountry = maxArmiesPerCountry;
   }
 
   public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
@@ -57,6 +61,35 @@ public final class PlayerReinforceInitialCountryRequestEvent extends AbstractPla
     return preSetReinforcementCount;
   }
 
+  public boolean isPlayerOwnedCountry (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    for (final CountryPacket country : playerOwnedCountries)
+    {
+      if (country.hasName (countryName)) return true;
+    }
+
+    return false;
+  }
+
+  public boolean isNotPlayerOwnedCountry (final String countryName)
+  {
+    return !isPlayerOwnedCountry (countryName);
+  }
+
+  public boolean canAddArmiesToCountry (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    for (final CountryPacket country : playerOwnedCountries)
+    {
+      if (country.hasName (countryName)) return country.getArmyCount () < maxArmiesPerCountry;
+    }
+
+    return false;
+  }
+
   public int getTotalReinforcements ()
   {
     return getPlayer ().getArmiesInHand ();
@@ -65,7 +98,8 @@ public final class PlayerReinforceInitialCountryRequestEvent extends AbstractPla
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | OwnedCountries: [{}]", playerOwnedCountries);
+    return Strings.format ("{} | PresetReinforcementCount: {} | MaxArmiesPerCountry: {} | OwnedCountries: [{}]",
+                           super.toString (), preSetReinforcementCount, maxArmiesPerCountry, playerOwnedCountries);
   }
 
   @RequiredForNetworkSerialization
@@ -73,5 +107,6 @@ public final class PlayerReinforceInitialCountryRequestEvent extends AbstractPla
   {
     playerOwnedCountries = null;
     preSetReinforcementCount = 0;
+    maxArmiesPerCountry = 0;
   }
 }

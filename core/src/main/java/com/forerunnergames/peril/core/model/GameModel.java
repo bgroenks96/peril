@@ -602,7 +602,7 @@ public final class GameModel
     // add country reinforcements and publish event
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
     publish (new PlayerReinforceInitialCountryRequestEvent (player, playerOwnedCountries,
-            rules.getInitialReinforcementArmyCount ()));
+            rules.getInitialReinforcementArmyCount (), rules.getMaxArmiesOnCountry ()));
   }
 
   @StateMachineCondition
