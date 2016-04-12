@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
@@ -41,22 +42,32 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBox;
+import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.popup.ErrorPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
@@ -418,10 +429,10 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public MessageBox <Message> createPopupMessageBox (final String scrollPaneStyleName,
-                                                     final String rowLabelStyleName,
-                                                     final int rowLabelAlignment,
-                                                     final ScrollbarStyle scrollbarStyle)
+  public MessageBox <MessageBoxRow <Message>> createPopupMessageBox (final String scrollPaneStyleName,
+                                                                     final String rowLabelStyleName,
+                                                                     final int rowLabelAlignment,
+                                                                     final ScrollbarStyle scrollbarStyle)
   {
     Arguments.checkIsNotNull (scrollPaneStyleName, "scrollPaneStyleName");
     Arguments.checkIsNotNull (rowLabelStyleName, "rowLabelStyleName");
@@ -434,7 +445,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public MessageBox <StatusMessage> createStatusBox (final String scrollPaneStyle)
+  public MessageBox <StatusBoxRow> createStatusBox (final String scrollPaneStyle)
   {
     Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
 
@@ -442,9 +453,9 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public MessageBox <ChatMessage> createChatBox (final String scrollPaneStyle,
-                                                 final String textFieldStyle,
-                                                 final MBassador <Event> eventBus)
+  public MessageBox <ChatBoxRow> createChatBox (final String scrollPaneStyle,
+                                                final String textFieldStyle,
+                                                final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
     Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
@@ -459,8 +470,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
 
-    return new PlayerBox (new DefaultMessageBox <> (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE,
-            PLAYER_BOX_ROW_STYLE));
+    return new PlayerBox (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, PLAYER_BOX_ROW_STYLE);
   }
 
   @Override
@@ -547,6 +557,51 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (name, "name");
 
     return getSkin ().getRegion (name);
+  }
+
+  @Override
+  public ChatBoxRow createChatMessageBoxRow (final ChatMessage message)
+  {
+    Arguments.checkIsNotNull (message, "message");
+
+    return new ChatBoxRow (message, CHATBOX_ROW_STYLE, this);
+  }
+
+  @Override
+  public StatusBoxRow createStatusMessageBoxRow (final StatusMessage message)
+  {
+    Arguments.checkIsNotNull (message, "message");
+
+    return new StatusBoxRow (message, STATUS_BOX_ROW_STYLE, this);
+  }
+
+  @Override
+  public PlayerBoxRow createPlayerBoxRow (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    return new PlayerBoxRow (player, PLAYER_BOX_ROW_STYLE, this, createMessageBoxRowHighlighting ());
+  }
+
+  @Override
+  public MessageBoxRow <Message> createMessageBoxRow (final Message message, final MessageBoxRowStyle rowStyle)
+  {
+    Arguments.checkIsNotNull (message, "message");
+    Arguments.checkIsNotNull (rowStyle, "rowStyle");
+
+    return new DefaultMessageBoxRow <> (message, rowStyle, this);
+  }
+
+  @Override
+  public MessageBoxRowHighlighting createMessageBoxRowHighlighting ()
+  {
+    return new MessageBoxRowHighlighting (new Image (createMessageBoxRowHighlightingDrawable ()), this);
+  }
+
+  @Override
+  public Drawable createMessageBoxRowHighlightingDrawable ()
+  {
+    return new TextureRegionDrawable (createTextureRegion ("message-box-row-highlighting"));
   }
 
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)

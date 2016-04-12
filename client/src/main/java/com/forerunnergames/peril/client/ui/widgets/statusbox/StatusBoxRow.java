@@ -16,21 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.messages;
+package com.forerunnergames.peril.client.ui.widgets.statusbox;
 
-import com.forerunnergames.tools.common.Author;
-import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.peril.client.messages.StatusMessage;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 
-import javax.annotation.Nullable;
-
-public interface ChatMessage extends Message
+public final class StatusBoxRow extends DefaultMessageBoxRow <StatusMessage>
 {
-  @Nullable
-  Author getAuthor ();
-
-  boolean hasAuthor ();
-
-  String getAuthorName ();
-
-  String compose ();
+  public StatusBoxRow (final StatusMessage message,
+                       final MessageBoxRowStyle rowStyle,
+                       final WidgetFactory widgetFactory)
+  {
+    super (message, rowStyle, widgetFactory);
+  }
 }

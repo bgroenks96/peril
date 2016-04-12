@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +15,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.messages;
+package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
-import com.forerunnergames.tools.common.Author;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+
 import com.forerunnergames.tools.common.Message;
 
-import javax.annotation.Nullable;
-
-public interface ChatMessage extends Message
+public interface MessageBoxRow <T extends Message>
 {
-  @Nullable
-  Author getAuthor ();
+  T getMessage ();
 
-  boolean hasAuthor ();
+  void setMessage (final T message);
 
-  String getAuthorName ();
+  void refreshAssets ();
 
-  String compose ();
+  Actor asActor ();
 }

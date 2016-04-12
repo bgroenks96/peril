@@ -22,6 +22,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import javax.annotation.Nullable;
@@ -56,6 +57,18 @@ public final class DefaultChatMessage implements ChatMessage
   public boolean hasAuthor ()
   {
     return author != null;
+  }
+
+  @Override
+  public String getAuthorName ()
+  {
+    return author != null ? author.getName () : "";
+  }
+
+  @Override
+  public String compose ()
+  {
+    return Strings.isPrintable (author.getName ()) ? author.getName () + ": " + message.getText () : message.getText ();
   }
 
   @Override

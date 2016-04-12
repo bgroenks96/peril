@@ -35,11 +35,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
-import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattlePopupListener;
@@ -51,13 +50,14 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBarButton;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
 import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -99,12 +99,12 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
             new TextureRegion (getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR)));
   }
 
-  public MessageBox <StatusMessage> createStatusBox ()
+  public MessageBox <StatusBoxRow> createStatusBox ()
   {
     return createStatusBox ("default");
   }
 
-  public MessageBox <ChatMessage> createChatBox (final MBassador <Event> eventBus)
+  public MessageBox <ChatBoxRow> createChatBox (final MBassador <Event> eventBus)
   {
     return createChatBox ("default", "default", eventBus);
   }

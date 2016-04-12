@@ -22,15 +22,25 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.tools.common.Message;
 
-public interface MessageBox <T extends Message>
-{
-  void addMessage (final T message);
+import com.google.common.collect.ImmutableList;
 
-  void showLastMessage ();
+public interface MessageBox <T extends MessageBoxRow <? extends Message>>
+{
+  void addRow (final T row);
+
+  void showLastRow ();
 
   void clear ();
+
+  MessageBoxRowStyle getRowStyle ();
 
   Actor asActor ();
 
   void refreshAssets ();
+
+  boolean hasRowWithIndex (final int index);
+
+  T getRowByIndex (final int index);
+
+  ImmutableList <T> getRows ();
 }

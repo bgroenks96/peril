@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets;
+package com.forerunnergames.peril.client.ui.widgets.chatbox;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -25,11 +25,11 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -41,7 +41,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class ChatBox extends DefaultMessageBox <ChatMessage>
+public final class ChatBox extends DefaultMessageBox <ChatBoxRow>
 {
   private static final int SCROLLPANE_HEIGHT = 226 - 2 - 2;
   private static final int SCROLLPANE_TEXTFIELD_VERTICAL_PADDING = 2 + 2;
@@ -56,11 +56,11 @@ public final class ChatBox extends DefaultMessageBox <ChatMessage>
   public ChatBox (final WidgetFactory widgetFactory,
                   final String scrollPaneStyle,
                   final ScrollbarStyle scrollbarStyle,
-                  final MessageBoxRowStyle messageBoxRowStyle,
+                  final MessageBoxRowStyle rowStyle,
                   final String textFieldStyleName,
                   final MBassador <Event> eventBus)
   {
-    super (widgetFactory, scrollPaneStyle, scrollbarStyle, messageBoxRowStyle);
+    super (widgetFactory, scrollPaneStyle, scrollbarStyle, rowStyle);
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (textFieldStyleName, "textFieldStyleName");

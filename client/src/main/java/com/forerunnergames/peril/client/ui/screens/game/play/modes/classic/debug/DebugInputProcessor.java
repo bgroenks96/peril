@@ -22,17 +22,17 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
+import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -42,8 +42,8 @@ import net.engio.mbassy.bus.MBassador;
 public final class DebugInputProcessor extends InputAdapter
 {
   private final MouseInput mouseInput;
-  private final MessageBox <StatusMessage> statusBox;
-  private final MessageBox <ChatMessage> chatBox;
+  private final MessageBox <StatusBoxRow> statusBox;
+  private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
   private final OccupationPopup occupationPopup;
   private final ReinforcementPopup reinforcementPopup;
@@ -54,8 +54,8 @@ public final class DebugInputProcessor extends InputAdapter
 
   public DebugInputProcessor (final MouseInput mouseInput,
                               final PlayMap playMap,
-                              final MessageBox <StatusMessage> statusBox,
-                              final MessageBox <ChatMessage> chatBox,
+                              final MessageBox <StatusBoxRow> statusBox,
+                              final MessageBox <ChatBoxRow> chatBox,
                               final PlayerBox playerBox,
                               final OccupationPopup occupationPopup,
                               final ReinforcementPopup reinforcementPopup,

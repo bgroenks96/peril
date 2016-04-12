@@ -38,6 +38,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
@@ -222,7 +223,7 @@ public class OkPopup implements Popup
     private final PopupStyle popupStyle;
     private final Stage stage;
     private final PopupListener listener;
-    private final MessageBox <Message> messageBox;
+    private final MessageBox <MessageBoxRow <Message>> messageBox;
     private boolean isShown = false;
 
     DelegateDialog (final String title,
@@ -487,7 +488,7 @@ public class OkPopup implements Popup
       Arguments.checkIsNotNull (message, "message");
 
       messageBox.clear ();
-      messageBox.addMessage (message);
+      messageBox.addRow (widgetFactory.createMessageBoxRow (message, messageBox.getRowStyle ()));
     }
 
     public void show ()

@@ -35,14 +35,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
 
@@ -116,16 +124,16 @@ public interface WidgetFactory
 
   Popup createErrorPopup (final Stage stage, final String submitButtonText, final PopupListener listener);
 
-  MessageBox <Message> createPopupMessageBox (final String scrollPaneStyleName,
-                                              final String rowLabelStyleName,
-                                              final int rowLabelAlignment,
-                                              final ScrollbarStyle scrollbarStyle);
+  MessageBox <MessageBoxRow <Message>> createPopupMessageBox (final String scrollPaneStyleName,
+                                                              final String rowLabelStyleName,
+                                                              final int rowLabelAlignment,
+                                                              final ScrollbarStyle scrollbarStyle);
 
-  MessageBox <StatusMessage> createStatusBox (final String scrollPaneStyle);
+  MessageBox <StatusBoxRow> createStatusBox (final String scrollPaneStyle);
 
-  MessageBox <ChatMessage> createChatBox (final String scrollPaneStyle,
-                                          final String textFieldStyle,
-                                          final MBassador <Event> eventBus);
+  MessageBox <ChatBoxRow> createChatBox (final String scrollPaneStyle,
+                                         final String textFieldStyle,
+                                         final MBassador <Event> eventBus);
 
   PlayerBox createPlayerBox (final String scrollPaneStyle);
 
@@ -152,4 +160,16 @@ public interface WidgetFactory
   BitmapFont createBitmapFont (final String fontName);
 
   TextureRegion createTextureRegion (final String name);
+
+  ChatBoxRow createChatMessageBoxRow (final ChatMessage message);
+
+  StatusBoxRow createStatusMessageBoxRow (final StatusMessage message);
+
+  PlayerBoxRow createPlayerBoxRow (final PlayerPacket player);
+
+  MessageBoxRow <Message> createMessageBoxRow (final Message message, final MessageBoxRowStyle rowStyle);
+
+  MessageBoxRowHighlighting createMessageBoxRowHighlighting ();
+
+  Drawable createMessageBoxRowHighlightingDrawable ();
 }

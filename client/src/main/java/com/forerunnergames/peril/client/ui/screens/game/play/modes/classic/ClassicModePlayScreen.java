@@ -20,13 +20,9 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
 import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.hasAuthorFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withAuthorNameFrom;
 import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withMessageFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withMessageTextFrom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -63,7 +59,6 @@ import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
-import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
@@ -83,25 +78,27 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
+import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.messages.ChatMessage;
-import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -130,8 +127,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final MBassador <Event> eventBus;
   private final Stage stage;
   private final Image backgroundImage;
-  private final MessageBox <StatusMessage> statusBox;
-  private final MessageBox <ChatMessage> chatBox;
+  private final MessageBox <StatusBoxRow> statusBox;
+  private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
   private final SideBar sideBar;
   private final InputProcessor inputProcessor;
@@ -435,8 +432,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        statusBox.addMessage (withMessageFrom (event));
-        statusBox.showLastMessage ();
+        statusBox.addRow (widgetFactory.createStatusMessageBoxRow (event.getMessage ()));
+        statusBox.showLastRow ();
       }
     });
   }
@@ -455,10 +452,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.debug ("Event received [{}].", event);
 
-        if (!hasAuthorFrom (event)) return;
-
-        chatBox.addMessage (new DefaultChatMessage (withAuthorNameFrom (event) + ": " + withMessageTextFrom (event)));
-        chatBox.showLastMessage ();
+        chatBox.addRow (widgetFactory.createChatMessageBoxRow (event.getMessage ()));
+        chatBox.showLastRow ();
       }
     });
   }
@@ -492,7 +487,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.trace ("Event received [{}].", event);
 
-        playerBox.setPlayers (event.getPlayersLeftInGame ());
+        playerBox.removePlayer (event.getPlayer ());
       }
     });
   }
@@ -570,6 +565,41 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
           playMap.setCountryState (country.getName (), state);
         }
+      }
+    });
+  }
+
+  @Handler
+  void onEvent (final ActivePlayerChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playerBox.updateExisting (event.getPlayer ());
+        playerBox.highlightPlayer (event.getPlayer ());
+      }
+    });
+  }
+
+  @Handler
+  void onEvent (final PlayerArmiesChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playerBox.updateExisting (event.getPlayer ());
       }
     });
   }
