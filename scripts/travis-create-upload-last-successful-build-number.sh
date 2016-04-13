@@ -21,7 +21,7 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-if [[ $TRAVIS = true && $TRAVIS_BRANCH = "master" && $TRAVIS_PULL_REQUEST = false && $TRAVIS_REPO_SLUG = "$PROJECT_REPO_OWNER/$ROOT_PROJECT" ]]
+if [[ $TRAVIS = true && $TRAVIS_PULL_REQUEST = false && $TRAVIS_REPO_SLUG = "$PROJECT_REPO_OWNER/$ROOT_PROJECT" ]]
 then
   ./scripts/create-last-successful-build-number.sh "$TRAVIS_BUILD_NUMBER" &&
   ./scripts/upload-last-successful-build-number.sh "$TRAVIS_BRANCH"
@@ -37,4 +37,3 @@ else
   printf "\n"
   printf "See https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables for more information.\n\n"
 fi
-
