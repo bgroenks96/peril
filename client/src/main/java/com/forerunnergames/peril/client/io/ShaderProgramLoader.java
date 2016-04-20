@@ -26,11 +26,9 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.common.Strings;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,8 +75,10 @@ public final class ShaderProgramLoader
     final ShaderProgram shader = new ShaderProgram (file, fragmentShader);
 
     if (!shader.isCompiled ())
-      throw new GdxRuntimeException (Strings.format ("{} [{}] could not be compiled. Details:\n\n{}",
-                                                     ShaderProgram.class.getSimpleName (), shader, shader.getLog ()));
+    {
+      log.error ("{} [{}] could not be compiled. Details:\n\n{}", ShaderProgram.class.getSimpleName (), shader,
+                 shader.getLog ());
+    }
 
     return shader;
   }
