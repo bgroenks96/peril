@@ -47,6 +47,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
@@ -339,10 +340,12 @@ public class GameModelTest
     gameModel.waitForPlayersToClaimInitialCountries ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
 
     final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
-    assertTrue (eventHandler.lastEvent (PlayerClaimCountryRequestEvent.class).getPlayer ().is (expectedPlayer));
+    assertTrue (eventHandler.lastEventOfType (PlayerClaimCountryRequestEvent.class).getPlayer ().is (expectedPlayer));
+    assertTrue (eventHandler.lastEventOfType (ActivePlayerChangedEvent.class).getPlayer ().is (expectedPlayer));
   }
 
   @Test
@@ -356,6 +359,7 @@ public class GameModelTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (SkipPlayerTurnEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
 
     final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
@@ -377,7 +381,10 @@ public class GameModelTest
 
     gameModel.waitForPlayersToClaimInitialCountries ();
 
+    assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
+
     verifyPlayerCountryAssignmentCompleteEvent ();
   }
 

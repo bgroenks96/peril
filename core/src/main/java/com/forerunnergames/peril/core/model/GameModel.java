@@ -46,6 +46,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCou
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceInitialCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
@@ -252,7 +253,10 @@ public final class GameModel
     // clear state data cache
     turnDataCache.clearAll ();
 
-    publish (new BeginPlayerTurnEvent (getCurrentPlayerPacket ()));
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+
+    publish (new BeginPlayerTurnEvent (currentPlayer));
+    publish (new ActivePlayerChangedEvent (currentPlayer));
   }
 
   public void endPlayerTurn ()
@@ -514,6 +518,7 @@ public final class GameModel
 
     log.info ("Waiting for player [{}] to claim a country...", currentPlayer.getName ());
     publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+    publish (new ActivePlayerChangedEvent (currentPlayer));
   }
 
   @StateMachineCondition
@@ -603,6 +608,7 @@ public final class GameModel
     final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
     publish (new PlayerReinforceInitialCountryRequestEvent (player, playerOwnedCountries,
             rules.getInitialReinforcementArmyCount (), rules.getMaxArmiesOnCountry ()));
+    publish (new ActivePlayerChangedEvent (player));
   }
 
   @StateMachineCondition
