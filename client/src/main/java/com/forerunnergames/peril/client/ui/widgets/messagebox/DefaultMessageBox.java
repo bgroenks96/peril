@@ -38,8 +38,12 @@ import java.util.Map;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> implements MessageBox <T>
 {
+  private static final Logger log = LoggerFactory.getLogger (DefaultMessageBox.class);
   private static final int MAX_ROWS = 40;
   private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
   private final ScrollPane scrollPane;
@@ -151,9 +155,16 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 
     for (final Actor actor : table.getChildren ())
     {
-      if (!(actor instanceof MessageBoxRow)) continue;
+      final MessageBoxRow <?> row = actorsToRows.get (actor);
 
-      ((MessageBoxRow <?>) actor).refreshAssets ();
+      if (row == null)
+      {
+        log.warn ("Not refreshing assets of actor [{}] because {} not found in cache.", actor,
+                  MessageBoxRow.class.getSimpleName ());
+        continue;
+      }
+
+      row.refreshAssets ();
     }
   }
 
@@ -210,7 +221,14 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
       children.swap (i, i + 1);
     }
 
-    table.removeActor (children.get (children.size - 1));
+    final Actor actor = children.get (children.size - 1);
+
+    table.removeActor (actor);
     table.getCells ().removeIndex (0);
+
+    if (actorsToRows.remove (actor) == null)
+    {
+      log.warn ("Old actor [{}] removed from message box, but was not cached.", actor);
+    }
   }
 }
