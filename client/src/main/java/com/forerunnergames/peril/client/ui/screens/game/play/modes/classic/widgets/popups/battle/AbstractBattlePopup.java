@@ -60,6 +60,7 @@ public abstract class AbstractBattlePopup extends OkPopup
   private static final float COUNTRY_BOX_INNER_PADDING = 3;
   private static final float COUNTRY_BOX_WIDTH = 400 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING - 3;
+  private static final float BATTLING_ARROW_LABEL_TEXT_VERTICAL_INNER_PADDING = 4;
   private final BattlePopupWidgetFactory widgetFactory;
   private final BattlePopupListener listener;
   private final GameRules gameRules;
@@ -167,7 +168,7 @@ public abstract class AbstractBattlePopup extends OkPopup
     diceTable.add (defenderDice.asActor ()).spaceLeft (22).top ();
     diceTable.setDebug (DEBUG, true);
 
-    final Table diceArrowsTable = new Table ().top ().padTop (13);
+    final Table diceArrowsTable = new Table ().top ().padTop (10);
     diceArrowsTable.add (diceArrows.asActor ());
     diceArrowsTable.setDebug (DEBUG, true);
 
@@ -186,7 +187,8 @@ public abstract class AbstractBattlePopup extends OkPopup
     leftTable.setDebug (DEBUG, true);
 
     final Table centerTable = new Table ().top ().padTop (2).padBottom (2);
-    centerTable.add (battlingArrowLabel).padRight (8).padTop (15 - 4).padBottom (50 + 4);
+    centerTable.add (battlingArrowLabel).padRight (8).padTop (24 - BATTLING_ARROW_LABEL_TEXT_VERTICAL_INNER_PADDING)
+            .padBottom (51 + BATTLING_ARROW_LABEL_TEXT_VERTICAL_INNER_PADDING);
     centerTable.row ();
     centerTable.add (diceTableStack).size (94, 116);
     centerTable.setDebug (DEBUG, true);

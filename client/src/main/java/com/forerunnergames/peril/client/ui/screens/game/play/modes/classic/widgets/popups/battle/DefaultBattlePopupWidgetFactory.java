@@ -77,7 +77,7 @@ public class DefaultBattlePopupWidgetFactory extends AbstractWidgetFactory imple
   @Override
   public Label createBattlePopupBattlingArrowLabel ()
   {
-    return createLabel ("Attacking", Align.left, createBattlePopupBattlingArrowLabelStyle ());
+    return createLabel ("ATTACKING", Align.left, createBattlePopupBattlingArrowLabelStyle ());
   }
 
   @Override

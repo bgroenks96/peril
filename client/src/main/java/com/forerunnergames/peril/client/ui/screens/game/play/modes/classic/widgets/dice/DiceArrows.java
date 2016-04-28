@@ -32,7 +32,7 @@ import java.util.Iterator;
 
 public final class DiceArrows
 {
-  private static final int DICE_ARROW_VERTICAL_SPACING = 28;
+  private static final int DICE_ARROW_VERTICAL_SPACING = 30;
   private final ImmutableSet <DiceArrow> arrows;
   private final Table table;
 
