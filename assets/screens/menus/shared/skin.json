@@ -84,7 +84,7 @@
     "default"                     : { "font": "default-font",   "fontColor": "white",      "background": null },
     "menu-title"                  : { "font": "pirulen-28",     "fontColor": "white",      "background": null },
     "menu-subtitle"               : { "font": "pirulen-14",     "fontColor": "light-gray", "background": null },
-    "menu-settings-section-title" : { "font": "dejaVu-20-bold", "fontColor": "light-gray", "background": null },
+    "menu-settings-section-title" : { "font": "dejaVu-20-bold", "fontColor": "white",      "background": null },
     "menu-settings"               : { "font": "dejaVu-18",      "fontColor": "light-gray", "background": null },
     "option-box"                  : { "font": "dejaVu-16",      "fontColor": "white",      "background": "label-background" },
     "popup-title"                 : { "font": "pirulen-28",     "fontColor": "white",      "background": null },

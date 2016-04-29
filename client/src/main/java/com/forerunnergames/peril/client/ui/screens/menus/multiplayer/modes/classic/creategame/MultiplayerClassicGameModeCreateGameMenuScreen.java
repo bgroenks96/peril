@@ -136,7 +136,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     errorPopup = createErrorPopup (new PopupListenerAdapter ());
 
     addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
-    addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
+    addSubTitle ("CLASSIC MODE");
 
     playerNameTextField = widgetFactory.createPlayerNameTextField ();
     clanNameTextField = widgetFactory.createClanNameTextField ();
@@ -241,43 +241,43 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     final Table playerSettingsTable = new Table ().top ().left ();
     playerSettingsTable.add ().height (23);
     playerSettingsTable.row ();
-    playerSettingsTable.add (playerSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).left ();
+    playerSettingsTable.add (playerSettingsSectionTitleLabel).size (540, 40).fill ().padLeft (60).left ();
 
     playerSettingsTable.row ();
 
     final Table playerNameTable = new Table ();
     playerNameTable.add (playerNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playerNameTable.add (playerNameTextField).size (236, 28).fill ().left ().spaceLeft (10);
+    playerNameTable.add (playerNameTextField).size (270, 28).fill ().left ().spaceLeft (10);
     playerSettingsTable.add (playerNameTable).left ();
 
     playerSettingsTable.row ();
 
     final Table clanTable = new Table ();
     clanTable.add (clanTagSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    clanTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
-    clanTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
+    clanTable.add (clanNameCheckBox).size (20, 20).fill ().left ().spaceLeft (10).spaceRight (8);
+    clanTable.add (clanNameTextField).size (80, 28).fill ().left ().spaceLeft (8);
     playerSettingsTable.add (clanTable).left ();
 
     verticalGroup.addActor (playerSettingsTable);
 
     final Table gameSettingsTable = new Table ().top ().left ();
     gameSettingsTable.row ();
-    gameSettingsTable.add ().height (18);
+    gameSettingsTable.add ().height (20);
     gameSettingsTable.row ();
-    gameSettingsTable.add (gameSettingsSectionTitleLabel).size (538, 42).fill ().padLeft (60).left ();
+    gameSettingsTable.add (gameSettingsSectionTitleLabel).size (540, 40).fill ().padLeft (60).left ();
 
     gameSettingsTable.row ();
 
     final Table serverNameTable = new Table ();
     serverNameTable.add (serverNameSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    serverNameTable.add (serverNameTextField).size (236, 28).fill ().left ().spaceLeft (10);
+    serverNameTable.add (serverNameTextField).size (270, 28).fill ().left ().spaceLeft (10);
     gameSettingsTable.add (serverNameTable).left ();
 
     gameSettingsTable.row ();
 
     final Table mapTable = new Table ();
     mapTable.add (mapSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    mapTable.add (mapNameLabel).size (204, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    mapTable.add (mapNameLabel).size (238, 28).fill ().left ().spaceLeft (10).spaceRight (4);
     mapTable.add (customizeMapButton).size (28, 28).fill ().left ().spaceLeft (4);
     gameSettingsTable.add (mapTable).left ();
 
@@ -285,7 +285,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     final Table playersTable = new Table ();
     playersTable.add (playerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playersTable.add (playerLimitLabel).size (70, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    playersTable.add (playerLimitLabel).size (76, 28).fill ().left ().spaceLeft (10).spaceRight (4);
     playersTable.add (customizePlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
     gameSettingsTable.add (playersTable).left ();
 
@@ -293,14 +293,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     final Table spectatorsTable = new Table ();
     spectatorsTable.add (spectatorLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    spectatorsTable.add (spectatorLimitSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    spectatorsTable.add (spectatorLimitSelectBox).size (108, 28).fill ().left ().spaceLeft (10);
     gameSettingsTable.add (spectatorsTable).left ();
 
     gameSettingsTable.row ();
 
     final Table winPercentTable = new Table ();
     winPercentTable.add (winPercentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    winPercentTable.add (winPercentSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    winPercentTable.add (winPercentSelectBox).size (108, 28).fill ().left ().spaceLeft (10);
     gameSettingsTable.add (winPercentTable).left ();
 
     gameSettingsTable.row ();
@@ -308,7 +308,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     // @formatter:off
     final Table initialCountryAssignmentTable = new Table ();
     initialCountryAssignmentTable.add (initialCountryAssignmentSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    initialCountryAssignmentTable.add (initialCountryAssignmentSelectBox).size (102, 28).fill ().left ().spaceLeft (10);
+    initialCountryAssignmentTable.add (initialCountryAssignmentSelectBox).size (108, 28).fill ().left ().spaceLeft (10);
     gameSettingsTable.add (initialCountryAssignmentTable).left ();
     // @formatter:on
 

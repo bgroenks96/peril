@@ -358,18 +358,25 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
   }
 
-  protected final void addSubTitle (final String text, final int alignment, final int height)
+  protected final void addSubTitle (final String text)
   {
     Arguments.checkIsNotNull (text, "text");
-    Arguments.checkIsNotNegative (height, "height");
+
+    final int mainTitlePaddingTop = 5;
+    final int subtitleHeight = 30;
+    final int subtitlePaddingTop = 4;
+    final int subtitlePaddingBottom = 1;
+    final int subtitleAlignment = Align.topLeft;
 
     subTitleLabel.setText (text);
-    subTitleLabel.setAlignment (alignment);
+    subTitleLabel.setAlignment (subtitleAlignment);
 
+    // @formatter:off
     titleTable.row ();
-    titleTable.add (subTitleLabel).expandX ().height (height).fill ().align (alignment);
-    titlesTableCell.height (titlesTableCell.getPrefHeight () + height);
-    titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + height);
+    titleTable.add (subTitleLabel).expandX ().height (subtitleHeight).fill ().align (subtitleAlignment).padTop (subtitlePaddingTop).padBottom (subtitlePaddingBottom);
+    titlesTableCell.height (titlesTableCell.getPrefHeight () + subtitleHeight + subtitlePaddingTop + subtitlePaddingBottom).padTop (mainTitlePaddingTop);
+    titleBackgroundCell.height (titleBackgroundCell.getPrefHeight () + subtitleHeight + subtitlePaddingTop + subtitlePaddingBottom + mainTitlePaddingTop);
+    // @formatter:on
   }
 
   protected final void addContent (final Actor content)

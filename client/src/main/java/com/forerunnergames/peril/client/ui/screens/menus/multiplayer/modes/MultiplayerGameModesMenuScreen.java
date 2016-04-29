@@ -40,7 +40,7 @@ public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
     super (widgetFactory, screenChanger, screenSize, batch);
 
     addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
-    addSubTitle ("GAME MODES", Align.topLeft, 40);
+    addSubTitle ("GAME MODES");
 
     addMenuChoiceSpacer (22);
 

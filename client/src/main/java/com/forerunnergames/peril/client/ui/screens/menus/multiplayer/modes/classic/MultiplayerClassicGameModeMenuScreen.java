@@ -40,7 +40,7 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
     super (widgetFactory, screenChanger, screenSize, batch);
 
     addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
-    addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
+    addSubTitle ("CLASSIC MODE");
 
     addMenuChoiceSpacer (22);
 

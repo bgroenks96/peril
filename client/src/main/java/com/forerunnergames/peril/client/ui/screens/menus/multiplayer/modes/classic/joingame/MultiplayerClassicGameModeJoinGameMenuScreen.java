@@ -84,7 +84,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     errorPopup = createErrorPopup (new PopupListenerAdapter ());
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
-    addSubTitle ("CLASSIC MODE", Align.topLeft, 40);
+    addSubTitle ("CLASSIC MODE");
 
     playerNameTextField = widgetFactory.createPlayerNameTextField ();
     clanNameTextField = widgetFactory.createClanNameTextField ();
