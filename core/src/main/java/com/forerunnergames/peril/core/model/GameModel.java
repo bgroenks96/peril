@@ -425,7 +425,8 @@ public final class GameModel
       }
 
       log.info ("Assigned {} countries to [{}].", assignSuccessCount, nextPlayer.getName ());
-      publish (new DefaultPlayerArmiesChangedEvent (nextPlayer, -1 * assignSuccessCount));
+      final PlayerPacket updatedPlayerPacket = playerModel.playerPacketWith (nextPlayerId);
+      publish (new DefaultPlayerArmiesChangedEvent (updatedPlayerPacket, -1 * assignSuccessCount));
     }
 
     // create map of country -> player packets for
@@ -766,7 +767,7 @@ public final class GameModel
       final CountryPacket updatedCountryPacket = countryMapGraphModel.countryPacketWith (country.getName ());
       publish (new DefaultCountryArmiesChangedEvent (updatedCountryPacket, countriesToDeltaArmyCounts.get (country)));
     }
-    publish (new PlayerReinforceCountriesResponseSuccessEvent (player, -totalReinforcementCount));
+    publish (new PlayerReinforceCountriesResponseSuccessEvent (getCurrentPlayerPacket (), -totalReinforcementCount));
 
     return true;
   }
@@ -826,7 +827,8 @@ public final class GameModel
       return;
     }
 
-    publish (new PlayerTradeInCardsResponseSuccessEvent (player, event.getTradeIn (), cardTradeInBonus));
+    publish (new PlayerTradeInCardsResponseSuccessEvent (getCurrentPlayerPacket (), event.getTradeIn (),
+            cardTradeInBonus));
   }
 
   @StateMachineAction
@@ -943,8 +945,7 @@ public final class GameModel
     }
 
     // fail if cache values are not set; this would indicate a pretty serious
-    // bug in the state
-    // machine logic
+    // bug in the state machine logic
     checkCacheValues (CacheKey.BATTLE_PENDING_ATTACK_ORDER, CacheKey.BATTLE_ATTACKER_DATA);
 
     final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_PENDING_ATTACK_ORDER, AttackOrder.class);
@@ -1062,6 +1063,7 @@ public final class GameModel
     final CountryPacket sourceCountry = turnDataCache.get (CacheKey.OCCUPY_SOURCE_COUNTRY, CountryPacket.class);
     final CountryPacket destCountry = turnDataCache.get (CacheKey.OCCUPY_DEST_COUNTRY, CountryPacket.class);
     final PlayerPacket prevDestCountryOwner = turnDataCache.get (CacheKey.OCCUPY_PREV_OWNER, PlayerPacket.class);
+    final Id prevDestCountryOwnerId = playerModel.idOf (prevDestCountryOwner.getName ());
     final int minDeltaArmyCount = turnDataCache.get (CacheKey.OCCUPY_MIN_ARMY_COUNT, int.class);
     final int deltaArmyCount = event.getDeltaArmyCount ();
 
@@ -1099,12 +1101,14 @@ public final class GameModel
 
     MutatorResult.commitAllSuccessful (res1, res2, res3);
 
+    final PlayerPacket updatedPlayerPacket = getCurrentPlayerPacket ();
+    final PlayerPacket updatedPrevDestCountryOwner = playerModel.playerPacketWith (prevDestCountryOwnerId);
     final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
     final CountryPacket updatedDestCountry = countryMapGraphModel.countryPacketWith (destCountryId);
     publish (new DefaultCountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
     publish (new DefaultCountryArmiesChangedEvent (updatedDestCountry, deltaArmyCount));
-    publish (new PlayerOccupyCountryResponseSuccessEvent (player, prevDestCountryOwner, updatedSourceCountry,
-            updatedDestCountry, deltaArmyCount));
+    publish (new PlayerOccupyCountryResponseSuccessEvent (updatedPlayerPacket, updatedPrevDestCountryOwner,
+            updatedSourceCountry, updatedDestCountry, deltaArmyCount));
 
     clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
                       CacheKey.OCCUPY_MIN_ARMY_COUNT);
@@ -1138,7 +1142,7 @@ public final class GameModel
       }
     }
 
-    publish (new PlayerFortifyCountryRequestEvent (currentPlayerPacket, validFortifyVectors.build ()));
+    publish (new PlayerFortifyCountryRequestEvent (getCurrentPlayerPacket (), validFortifyVectors.build ()));
   }
 
   @StateMachineAction
@@ -1220,8 +1224,8 @@ public final class GameModel
       return false;
     }
 
-    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+    CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
+    CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
 
     final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res1, res2;
     res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, fortifyArmyCount);
@@ -1245,10 +1249,13 @@ public final class GameModel
 
     MutatorResult.commitAllSuccessful (res1, res2);
 
+    sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
+    targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+
     publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
     publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, fortifyArmyCount));
 
-    publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket, sourceCountryPacket,
+    publish (new PlayerFortifyCountryResponseSuccessEvent (getCurrentPlayerPacket (), sourceCountryPacket,
             targetCountryPacket, fortifyArmyCount));
 
     return true;
