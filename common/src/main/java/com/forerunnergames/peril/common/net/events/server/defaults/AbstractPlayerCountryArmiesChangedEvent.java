@@ -94,9 +94,9 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Player: [{}] | Country: [{}] | PlayerDeltaArmyCount: [{}] | CountryDeltaArmyCount: [{}]",
-                           player, country, playerDeltaArmyCount, countryDeltaArmyCount);
+    return Strings
+            .format ("{}: Player: [{}] | Country: [{}] | PlayerDeltaArmyCount: [{}] | CountryDeltaArmyCount: [{}]",
+                     this.getClass ().getSimpleName (), player, country, playerDeltaArmyCount, countryDeltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
