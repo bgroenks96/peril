@@ -43,6 +43,11 @@ public final class DefendPopup extends AbstractBattlePopup
   }
 
   @Override
+  protected void addKeys ()
+  {
+  }
+
+  @Override
   protected void setDiceTouchable (final boolean areTouchable)
   {
     setAttackerDiceTouchable (false);
