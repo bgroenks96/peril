@@ -54,6 +54,7 @@ import net.engio.mbassy.bus.MBassador;
 
 public abstract class AbstractArmyMovementPopup extends OkPopup
 {
+  private static final boolean DEBUG = false;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
   private static final float COUNTRY_NAME_BOX_HEIGHT = 28;
   private static final float COUNTRY_BOX_INNER_PADDING = 3;
@@ -113,6 +114,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
                    .messageBox (false)
                    .border (28)
                    .buttonSize (90, 32)
+                   .debug (DEBUG)
                    .build (),
            stage, listener);
     // @formatter:on
@@ -174,21 +176,27 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
 
     sourceCountryStack = new Stack ();
     destinationCountryStack = new Stack ();
+    sourceCountryStack.setDebug (DEBUG, true);
+    destinationCountryStack.setDebug (DEBUG, true);
 
     final Table sourceCountryStackTable = new Table ();
     sourceCountryStackCell = sourceCountryStackTable.add (sourceCountryStack).padRight (SOURCE_COUNTRY_ARROW_WIDTH);
+    sourceCountryStackTable.setDebug (DEBUG, true);
 
     final Table destinationCountryStackTable = new Table ();
     destinationCountryStackCell = destinationCountryStackTable.add (destinationCountryStack)
             .padLeft (DESTINATION_COUNTRY_ARROW_WIDTH);
+    destinationCountryStackTable.setDebug (DEBUG, true);
 
     final Table sourceCountryTable = new Table ();
     sourceCountryTable.add (sourceCountryStackTable);
     sourceCountryTable.setClip (true);
+    sourceCountryTable.setDebug (DEBUG, true);
 
     final Table destinationCountryTable = new Table ();
     destinationCountryTable.add (destinationCountryStackTable);
     destinationCountryTable.setClip (true);
+    destinationCountryTable.setDebug (DEBUG, true);
 
     final Table countryTable = new Table ().center ();
     countryTable.add (sourceCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
@@ -197,6 +205,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
     countryTable.add (destinationCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
             .spaceLeft (SOURCE_DESTINATION_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
             .padRight (COUNTRY_BOX_INNER_PADDING);
+    countryTable.setDebug (DEBUG, true);
 
     final Table sliderTable = new Table ();
     sliderTable.add (minButton).width (20).spaceRight (7);
@@ -204,6 +213,7 @@ public abstract class AbstractArmyMovementPopup extends OkPopup
     sliderTable.add (slider).width (382).height (12).spaceLeft (10).spaceRight (10);
     sliderTable.add (plusButton).width (30).spaceLeft (10).spaceRight (7);
     sliderTable.add (maxButton).width (20).spaceLeft (7);
+    sliderTable.setDebug (DEBUG, true);
 
     getContentTable ().defaults ().space (0).pad (0);
     getContentTable ().top ();
