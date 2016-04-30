@@ -137,7 +137,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final ReinforcementPopup reinforcementPopup;
   private final AttackPopup attackPopup;
   private final DefendPopup defendPopup;
-  private final OkPopup battleResultPopup;
+  private final Popup battleResultPopup;
   private final Popup quitPopup;
   private final Vector2 tempPosition = new Vector2 ();
   private final BattleOutcome tempOutcome = new BattleOutcome ();
