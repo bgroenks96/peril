@@ -38,25 +38,25 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattlePopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattlePopupWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.quit.PlayScreenQuitPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBarButton;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
+import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -263,16 +263,17 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
     return new OkPopup (this,
             PopupStyle.builder ().windowStyle ("popup-non-modal").modal (false).movable (true)
-                    .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).border (28).buttonSpacing (16)
-                    .buttonWidth (90).textPadding (16).textBoxPaddingBottom (20).build (),
+                    .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51)
+                    .border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
+                    .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (),
             stage, listener);
   }
 
   public Popup createQuitPopup (final Stage stage, final PopupListener listener)
   {
-    return new PlayScreenQuitPopup (this,
-            "Are you sure you want to quit?\nIf you are the host, quitting will end the game for everyone.", stage,
-            listener);
+    return new QuitPopup (this,
+            "Are you sure you want to quit?\nIf you are the host, quitting will end the game for everyone.", 587,
+            ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
   }
 
   public Sound createBattleSingleExplosionSound ()
