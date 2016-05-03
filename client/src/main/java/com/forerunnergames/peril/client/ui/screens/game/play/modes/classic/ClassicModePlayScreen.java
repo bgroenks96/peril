@@ -279,9 +279,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     debugInputProcessor = new DebugInputProcessor (mouseInput, playMap, statusBox, chatBox, playerBox,
             occupationPopup, reinforcementPopup, attackPopup, defendPopup, eventBus);
 
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
-
     battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
+
+    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
   }
 
   @Override
