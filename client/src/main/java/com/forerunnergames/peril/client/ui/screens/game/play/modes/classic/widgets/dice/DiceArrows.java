@@ -65,7 +65,7 @@ public final class DiceArrows
 
     for (final DiceArrow arrow : arrows)
     {
-      if (!attackerOutcomeIter.hasNext () || !defenderOutcomeIter.hasNext ()) break;
+      if (!attackerOutcomeIter.hasNext () || !defenderOutcomeIter.hasNext ()) return;
 
       arrow.setOutcome (attackerOutcomeIter.next (), defenderOutcomeIter.next ());
     }
