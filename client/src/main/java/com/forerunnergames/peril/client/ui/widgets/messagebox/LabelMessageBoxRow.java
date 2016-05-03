@@ -26,13 +26,15 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
 
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
 {
   private final MessageBoxRowStyle rowStyle;
   private final WidgetFactory widgetFactory;
-  private final Label label;
+  @Nullable
+  private Label label;
   private T message;
 
   public LabelMessageBoxRow (final T message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
@@ -42,25 +44,6 @@ public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
     this.message = message;
-    this.rowStyle = rowStyle;
-    this.widgetFactory = widgetFactory;
-
-    label = widgetFactory.createWrappingLabel (message.getText (), rowStyle.getLabelAlignment (),
-                                               rowStyle.getLabelStyleName ());
-  }
-
-  public LabelMessageBoxRow (final T message,
-                             final Label label,
-                             final MessageBoxRowStyle rowStyle,
-                             final WidgetFactory widgetFactory)
-  {
-    Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (label, "label");
-    Arguments.checkIsNotNull (rowStyle, "rowStyle");
-    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-
-    this.message = message;
-    this.label = label;
     this.rowStyle = rowStyle;
     this.widgetFactory = widgetFactory;
   }
@@ -81,13 +64,13 @@ public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
   @OverridingMethodsMustInvokeSuper
   public void refreshAssets ()
   {
-    label.setStyle (widgetFactory.createLabelStyle (rowStyle.getLabelStyleName ()));
+    getLabel ().setStyle (widgetFactory.createLabelStyle (rowStyle.getLabelStyleName ()));
   }
 
   @Override
   public Actor asActor ()
   {
-    return label;
+    return getLabel ();
   }
 
   protected String parse (final T message)
@@ -95,6 +78,17 @@ public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
     Arguments.checkIsNotNull (message, "message");
 
     return message.getText ();
+  }
+
+  private Label getLabel ()
+  {
+    if (label == null)
+    {
+      label = widgetFactory.createWrappingLabel (parse (message), rowStyle.getLabelAlignment (),
+                                                 rowStyle.getLabelStyleName ());
+    }
+
+    return label;
   }
 
   @Override

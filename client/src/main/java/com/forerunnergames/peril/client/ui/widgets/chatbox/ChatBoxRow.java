@@ -28,9 +28,7 @@ public final class ChatBoxRow extends LabelMessageBoxRow <ChatMessage>
 {
   public ChatBoxRow (final ChatMessage message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
   {
-    super (message, widgetFactory.createWrappingLabel (message.compose (), rowStyle.getLabelAlignment (),
-                                                       rowStyle.getLabelStyleName ()),
-           rowStyle, widgetFactory);
+    super (message, rowStyle, widgetFactory);
   }
 
   @Override

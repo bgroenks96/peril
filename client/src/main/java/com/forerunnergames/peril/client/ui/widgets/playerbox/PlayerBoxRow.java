@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.client.ui.widgets.playerbox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
@@ -44,6 +45,8 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   private final PlayerColorIcon playerColorIcon;
   private final Table table = new Table ();
   private final Stack stack = new Stack ();
+  private final Cell <Actor> messageRowLeftCell;
+  private final Cell <Actor> messageRowRightCell;
   private MessageBoxRow <Message> messageRowLeft;
   private MessageBoxRow <Message> messageRowRight;
   private Message message;
@@ -57,27 +60,21 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
-    this.player = player;
     this.rowStyle = rowStyle;
     this.widgetFactory = widgetFactory;
 
-    final String messageTextLeft = createMessageTextLeft (player);
-    final String messageTextRight = createMessageTextRight (player);
-
-    messageRowLeft = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextLeft), rowStyle);
-    messageRowRight = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextRight), rowStyle);
-    message = new DefaultMessage (messageRowLeft.getMessageText () + " " + messageRowRight.getMessageText ());
     highlighting = widgetFactory.createMessageBoxRowHighlighting ();
     playerColorIcon = widgetFactory.createPlayerColorIcon (player.getColor ());
 
     table.left ();
-    table.add (messageRowLeft.asActor ()).padLeft (10).width (40);
+    messageRowLeftCell = table.add ((Actor) null).padLeft (10).width (40);
     table.add (playerColorIcon.asActor ()).spaceRight (8);
-    table.add (messageRowRight.asActor ()).spaceLeft (8);
+    messageRowRightCell = table.add ((Actor) null).spaceLeft (8);
 
     stack.add (highlighting.asActor ());
     stack.add (table);
 
+    setPlayer (player);
     unhighlight ();
   }
 
@@ -138,6 +135,9 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     messageRowLeft = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextLeft), rowStyle);
     messageRowRight = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextRight), rowStyle);
     message = new DefaultMessage (messageRowLeft.getMessageText () + " " + messageRowRight.getMessageText ());
+
+    messageRowLeftCell.setActor (messageRowLeft.asActor ());
+    messageRowRightCell.setActor (messageRowRight.asActor ());
 
     playerColorIcon.setColor (player.getColor ());
 
