@@ -16,19 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.statusbox;
+package com.forerunnergames.peril.common.net.packets.person;
 
-import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
-
-public final class StatusBoxRow extends LabelMessageBoxRow <StatusMessage>
+public enum PersonSentience
 {
-  public StatusBoxRow (final StatusMessage message,
-                       final MessageBoxRowStyle rowStyle,
-                       final WidgetFactory widgetFactory)
-  {
-    super (message, rowStyle, widgetFactory);
-  }
+  HUMAN,
+  AI
 }

@@ -53,7 +53,7 @@ import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBox;
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
@@ -61,6 +61,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactoryCreator;
 import com.forerunnergames.peril.client.ui.widgets.popup.ErrorPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
@@ -96,8 +97,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
           DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
           DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
   private static final MessageBoxRowStyle PLAYER_BOX_ROW_STYLE = new MessageBoxRowStyle ("player-box-message",
-          DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
-          DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+          DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, 0, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
   private static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.REQUIRED, DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT,
           DEFAULT_MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
@@ -133,6 +133,12 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     button.addListener (listener);
 
     return button;
+  }
+
+  @Override
+  public Button createButton (final String styleName)
+  {
+    return createButton (createButtonStyle (styleName));
   }
 
   @Override
@@ -580,7 +586,8 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return new PlayerBoxRow (player, PLAYER_BOX_ROW_STYLE, this, createMessageBoxRowHighlighting ());
+    return new PlayerBoxRow (player, PLAYER_BOX_ROW_STYLE,
+            PlayerColorIconWidgetFactoryCreator.create (player, getSkinAssetDescriptor (), assetManager));
   }
 
   @Override
@@ -589,7 +596,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
 
-    return new DefaultMessageBoxRow <> (message, rowStyle, this);
+    return new LabelMessageBoxRow <> (message, rowStyle, this);
   }
 
   @Override

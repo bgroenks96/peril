@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.packets.person;
+package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 
-import com.forerunnergames.peril.common.net.packets.AssetPacket;
-import com.forerunnergames.tools.common.Author;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public interface PersonPacket extends AssetPacket, Author
+public interface PlayerColorIcon
 {
-  PersonIdentity getIdentity ();
+  void setColor (final String color);
 
-  void setIdentity (final PersonIdentity identity);
+  void refreshAssets ();
 
-  boolean has (final PersonIdentity identity);
-
-  PersonSentience getSentience ();
-
-  void setSentience (final PersonSentience sentience);
-
-  boolean has (final PersonSentience sentience);
+  Actor asActor ();
 }

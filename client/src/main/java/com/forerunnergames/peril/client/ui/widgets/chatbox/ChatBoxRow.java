@@ -19,12 +19,12 @@
 package com.forerunnergames.peril.client.ui.widgets.chatbox;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class ChatBoxRow extends DefaultMessageBoxRow <ChatMessage>
+public final class ChatBoxRow extends LabelMessageBoxRow <ChatMessage>
 {
   public ChatBoxRow (final ChatMessage message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
   {

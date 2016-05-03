@@ -106,7 +106,6 @@ public final class KryonetRegistration
           Optional.class,
           Optional.absent ().getClass (),
           Optional.of ("").getClass (),
-          PersonIdentity.class,
           PlayerJoinGameDeniedEvent.Reason.class,
           PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
           PlayerClaimCountryResponseDeniedEvent.Reason.class,

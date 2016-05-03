@@ -25,7 +25,7 @@ public interface MessageBoxRow <T extends Message>
 {
   T getMessage ();
 
-  void setMessage (final T message);
+  String getMessageText ();
 
   void refreshAssets ();
 

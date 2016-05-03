@@ -19,11 +19,13 @@ package com.forerunnergames.peril.client.ui.widgets.playerbox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
+import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactory;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -33,53 +35,79 @@ import com.forerunnergames.tools.common.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PlayerBoxRow extends DefaultMessageBoxRow <Message>
+public final class PlayerBoxRow implements MessageBoxRow <Message>
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerBoxRow.class);
+  private final PlayerColorIconWidgetFactory widgetFactory;
+  private final MessageBoxRowStyle rowStyle;
   private final MessageBoxRowHighlighting highlighting;
+  private final PlayerColorIcon playerColorIcon;
+  private final Table table = new Table ();
   private final Stack stack = new Stack ();
+  private MessageBoxRow <Message> messageRowLeft;
+  private MessageBoxRow <Message> messageRowRight;
+  private Message message;
   private PlayerPacket player;
 
   public PlayerBoxRow (final PlayerPacket player,
                        final MessageBoxRowStyle rowStyle,
-                       final WidgetFactory widgetFactory,
-                       final MessageBoxRowHighlighting highlighting)
+                       final PlayerColorIconWidgetFactory widgetFactory)
   {
-    super (new DefaultMessage (createMessageLabelText (player)), rowStyle, widgetFactory);
-
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (highlighting, "highlighting");
+    Arguments.checkIsNotNull (rowStyle, "rowStyle");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
     this.player = player;
-    this.highlighting = highlighting;
+    this.rowStyle = rowStyle;
+    this.widgetFactory = widgetFactory;
 
-    stack.add (super.asActor ());
+    final String messageTextLeft = createMessageTextLeft (player);
+    final String messageTextRight = createMessageTextRight (player);
+
+    messageRowLeft = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextLeft), rowStyle);
+    messageRowRight = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextRight), rowStyle);
+    message = new DefaultMessage (messageRowLeft.getMessageText () + " " + messageRowRight.getMessageText ());
+    highlighting = widgetFactory.createMessageBoxRowHighlighting ();
+    playerColorIcon = widgetFactory.createPlayerColorIcon (player.getColor ());
+
+    table.left ();
+    table.add (messageRowLeft.asActor ()).padLeft (10).width (40);
+    table.add (playerColorIcon.asActor ()).spaceRight (8);
+    table.add (messageRowRight.asActor ()).spaceLeft (8);
+
     stack.add (highlighting.asActor ());
+    stack.add (table);
 
     unhighlight ();
   }
 
   @Override
+  public Message getMessage ()
+  {
+    return message;
+  }
+
+  @Override
+  public String getMessageText ()
+  {
+    return message.getText ();
+  }
+
+  @Override
   public void refreshAssets ()
   {
-    super.refreshAssets ();
-
+    messageRowLeft.refreshAssets ();
+    messageRowRight.refreshAssets ();
     highlighting.refreshAssets ();
+    playerColorIcon.refreshAssets ();
 
-    stack.invalidate ();
+    table.invalidateHierarchy ();
   }
 
   @Override
   public Actor asActor ()
   {
     return stack;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | Player: {} | Highlighting: {} | Stack: {}", super.toString (), player, highlighting,
-                           stack);
   }
 
   public boolean playerIsNot (final PlayerPacket player)
@@ -102,9 +130,18 @@ public final class PlayerBoxRow extends DefaultMessageBoxRow <Message>
 
     log.trace ("Setting player: Old player: [{}] | New player: [{}]", this.player, player);
 
-    setMessage (new DefaultMessage (createMessageLabelText (player)));
-
     this.player = player;
+
+    final String messageTextLeft = createMessageTextLeft (player);
+    final String messageTextRight = createMessageTextRight (player);
+
+    messageRowLeft = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextLeft), rowStyle);
+    messageRowRight = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextRight), rowStyle);
+    message = new DefaultMessage (messageRowLeft.getMessageText () + " " + messageRowRight.getMessageText ());
+
+    playerColorIcon.setColor (player.getColor ());
+
+    table.invalidateHierarchy ();
   }
 
   public void highlight ()
@@ -117,11 +154,28 @@ public final class PlayerBoxRow extends DefaultMessageBoxRow <Message>
     highlighting.setVisible (false);
   }
 
-  private static String createMessageLabelText (final PlayerPacket player)
+  private static String createMessageTextLeft (final PlayerPacket player)
   {
     assert player != null;
 
-    return Strings.toMixedOrdinal (player.getTurnOrder ()) + ". " + player.getName () + " "
-            + Strings.pluralize (player.getArmiesInHand (), "army", "armies");
+    return Strings.toMixedOrdinal (player.getTurnOrder ());
+  }
+
+  private static String createMessageTextRight (final PlayerPacket player)
+  {
+    assert player != null;
+
+    return player.getName () + " " + Strings.pluralize (player.getArmiesInHand (), "army", "armies");
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format (
+                           "{} | Player: {} | Highlighting: {} | Player Color Icon: {} | Message: {} | "
+                                   + " Message Row Left: {} | Message Row Right: {} | Row Style: {} | Table: {} | "
+                                   + "Stack: {}",
+                           super.toString (), player, highlighting, playerColorIcon, message, messageRowLeft,
+                           messageRowRight, rowStyle, table, stack);
   }
 }

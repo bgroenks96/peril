@@ -28,14 +28,14 @@ import com.forerunnergames.tools.common.Strings;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
-public class DefaultMessageBoxRow <T extends Message> implements MessageBoxRow <T>
+public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
 {
   private final MessageBoxRowStyle rowStyle;
   private final WidgetFactory widgetFactory;
   private final Label label;
   private T message;
 
-  public DefaultMessageBoxRow (final T message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
+  public LabelMessageBoxRow (final T message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
@@ -49,10 +49,10 @@ public class DefaultMessageBoxRow <T extends Message> implements MessageBoxRow <
                                                rowStyle.getLabelStyleName ());
   }
 
-  public DefaultMessageBoxRow (final T message,
-                               final Label label,
-                               final MessageBoxRowStyle rowStyle,
-                               final WidgetFactory widgetFactory)
+  public LabelMessageBoxRow (final T message,
+                             final Label label,
+                             final MessageBoxRowStyle rowStyle,
+                             final WidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (label, "label");
@@ -72,15 +72,9 @@ public class DefaultMessageBoxRow <T extends Message> implements MessageBoxRow <
   }
 
   @Override
-  public void setMessage (final T message)
+  public String getMessageText ()
   {
-    Arguments.checkIsNotNull (message, "message");
-
-    this.message = message;
-
-    label.setText (parse (message));
-
-    refreshAssets ();
+    return message.getText ();
   }
 
   @Override

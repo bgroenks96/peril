@@ -16,19 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.statusbox;
+package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 
-import com.forerunnergames.peril.client.messages.StatusMessage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 
-public final class StatusBoxRow extends LabelMessageBoxRow <StatusMessage>
+import com.google.common.collect.ImmutableSet;
+
+public interface PlayerColorIconWidgetFactory extends WidgetFactory
 {
-  public StatusBoxRow (final StatusMessage message,
-                       final MessageBoxRowStyle rowStyle,
-                       final WidgetFactory widgetFactory)
-  {
-    super (message, rowStyle, widgetFactory);
-  }
+  ImmutableSet <String> PLAYER_COLORS_LOWERCASE = ImmutableSet.of ("blue", "brown", "cyan", "gold", "green", "pink",
+                                                                   "purple", "red", "silver", "teal");
+
+  PlayerColorIcon createPlayerColorIcon (final String activeColor);
+
+  Button createPlayerColorIconButton (final String color);
+
+  Button.ButtonStyle createPlayerColorIconStyle (final String color);
 }
