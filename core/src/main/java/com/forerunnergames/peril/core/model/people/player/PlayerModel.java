@@ -141,15 +141,15 @@ public interface PlayerModel
       this.result = result;
     }
 
-    public PlayerPacket getPlayer ()
-    {
-      return player;
-    }
-
     @Override
     public Result <PlayerJoinGameDeniedEvent.Reason> getResult ()
     {
       return result;
+    }
+
+    public PlayerPacket getPlayer ()
+    {
+      return player;
     }
 
     public PlayerJoinGameDeniedEvent.Reason getFailureReason ()

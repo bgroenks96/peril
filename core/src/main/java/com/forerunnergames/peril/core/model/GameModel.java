@@ -248,7 +248,7 @@ public final class GameModel
 
   public void beginPlayerTurn ()
   {
-    log.info ("Turn begins for player [{}].", getCurrentPlayerPacket ().getName ());
+    log.info ("Turn begins for player [{}].", getCurrentPlayerName ());
 
     // clear state data cache
     turnDataCache.clearAll ();
@@ -261,7 +261,7 @@ public final class GameModel
 
   public void endPlayerTurn ()
   {
-    log.info ("Turn ends for player [{}].", getCurrentPlayerPacket ().getName ());
+    log.info ("Turn ends for player [{}].", getCurrentPlayerName ());
 
     // verify win/lose status of all players
     for (final Id playerId : playerModel.getPlayerIds ())
@@ -278,7 +278,7 @@ public final class GameModel
     Preconditions.checkIsTrue (event.getPlayer ().is (getCurrentPlayerPacket ()), Strings
             .format ("[{}] is not in turn! Current player: [{}]", event.getPlayer (), getCurrentPlayerPacket ()));
 
-    log.info ("Skipping turn for player [{}].", getCurrentPlayerPacket ().getName ());
+    log.info ("Skipping turn for player [{}].", getCurrentPlayerName ());
   }
 
   @StateMachineAction
@@ -323,11 +323,11 @@ public final class GameModel
       final Id playerId = playerModel.idOf (player.getName ());
       playerModel.addArmiesToHandOf (playerId, armies);
 
-      publish (new DefaultPlayerArmiesChangedEvent (player, armies));
+      publish (new DefaultPlayerArmiesChangedEvent (playerModel.playerPacketWith (playerId), armies));
 
       // @formatter:off
       statusMessageBuilder
-              .append (player.getName ())
+              .append (playerModel.nameOf (playerId))
               .append (" received ")
               .append (armies)
               .append (" armies.\n");
@@ -683,11 +683,11 @@ public final class GameModel
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
-    publish (new DefaultPlayerArmiesChangedEvent (player, totalReinforcementBonus));
+    publish (new DefaultPlayerArmiesChangedEvent (getCurrentPlayerPacket (), totalReinforcementBonus));
     publish (eventFactory.createTradeInCardsRequestFor (playerId, TurnPhase.REINFORCE));
     // publish reinforcement request
     publish (eventFactory.createReinforcementRequestFor (playerId));
-    log.info ("Waiting for player [{}] to place reinforcements...", player);
+    log.info ("Waiting for player [{}] to place reinforcements...", getCurrentPlayerPacket ());
   }
 
   @StateMachineAction
@@ -698,8 +698,7 @@ public final class GameModel
 
     log.trace ("Event received [{}]", event);
 
-    final PlayerPacket player = getCurrentPlayerPacket ();
-    final Id playerId = playerModel.idOf (player.getName ());
+    final Id playerId = getCurrentPlayerId ();
 
     // failure result variable for storing first failed result
     Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> failureResult = Result.success ();
@@ -715,9 +714,9 @@ public final class GameModel
     {
       totalReinforcementCount += armyCount;
     }
-    if (totalReinforcementCount > player.getArmiesInHand ())
+    if (totalReinforcementCount > playerModel.getArmiesInHand (playerId))
     {
-      publish (new PlayerReinforceCountriesResponseDeniedEvent (player,
+      publish (new PlayerReinforceCountriesResponseDeniedEvent (getCurrentPlayerPacket (),
               PlayerReinforceCountriesResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
       publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
@@ -754,7 +753,8 @@ public final class GameModel
 
     if (failureResult.failed ())
     {
-      publish (new PlayerReinforceCountriesResponseDeniedEvent (player, failureResult.getFailureReason ()));
+      publish (new PlayerReinforceCountriesResponseDeniedEvent (getCurrentPlayerPacket (),
+              failureResult.getFailureReason ()));
       publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
@@ -789,8 +789,7 @@ public final class GameModel
 
     log.trace ("Event received [{}]", event);
 
-    final PlayerPacket player = getCurrentPlayerPacket ();
-    final Id playerId = playerModel.idOf (player.getName ());
+    final Id playerId = playerModel.idOf (getCurrentPlayerName ());
 
     Result <PlayerTradeInCardsResponseDeniedEvent.Reason> result = Result.success ();
 
@@ -816,14 +815,14 @@ public final class GameModel
     }
     else if (result.failed ())
     {
-      publish (new PlayerTradeInCardsResponseDeniedEvent (player, result.getFailureReason ()));
+      publish (new PlayerTradeInCardsResponseDeniedEvent (getCurrentPlayerPacket (), result.getFailureReason ()));
       // send new request event
       final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
       final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
       final boolean isTradeInRequired = cardModel.countCardsInHand (playerId) > rules
               .getMaxCardsInHand (TurnPhase.REINFORCE);
-      publish (new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
-              isTradeInRequired));
+      publish (new PlayerTradeInCardsRequestEvent (getCurrentPlayerPacket (), cardModel.getNextTradeInBonus (),
+              matchPackets, isTradeInRequired));
       return;
     }
 
@@ -835,16 +834,15 @@ public final class GameModel
   @StateEntryAction
   public void beginAttackPhase ()
   {
-    final Id player = getCurrentPlayerId ();
-
-    log.info ("Begin attack phase for player [{}].", player);
-
+    final Id playerId = getCurrentPlayerId ();
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+
+    log.info ("Begin attack phase for player [{}].", currentPlayer);
 
     publish (new BeginAttackPhaseEvent (currentPlayer));
 
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
-    for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (player))
+    for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (playerId))
     {
       final Id countryId = countryMapGraphModel.countryWith (country.getName ());
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
@@ -1120,11 +1118,11 @@ public final class GameModel
   @StateEntryAction
   public void beginFortifyPhase ()
   {
-    final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    log.info ("Begin fortify phase for player [{}].", currentPlayerPacket);
+    log.info ("Begin fortify phase for player [{}].", currentPlayer);
 
-    publish (new BeginFortifyPhaseEvent (currentPlayerPacket));
+    publish (new BeginFortifyPhaseEvent (currentPlayer));
 
     final Id currentPlayerId = getCurrentPlayerId ();
     final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
@@ -1161,25 +1159,25 @@ public final class GameModel
     Arguments.checkIsNotNull (event, "event");
 
     final Id currentPlayerId = getCurrentPlayerId ();
-    final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
     if (!event.isCountryDataPresent ())
     {
       // empty fortify actions do not need to be checked
-      publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayerPacket));
+      publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayer));
       return true;
     }
 
     if (!countryMapGraphModel.existsCountryWith (event.getSourceCountry ().get ()))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryMapGraphModel.existsCountryWith (event.getTargetCountry ().get ()))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
@@ -1189,21 +1187,21 @@ public final class GameModel
 
     if (!countryOwnerModel.isCountryOwnedBy (sourceCountryId, currentPlayerId))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
       return false;
     }
 
     if (!countryOwnerModel.isCountryOwnedBy (targetCountryId, currentPlayerId))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY));
       return false;
     }
 
     if (!countryMapGraphModel.areAdjacent (sourceCountryId, targetCountryId))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
       return false;
     }
@@ -1212,14 +1210,14 @@ public final class GameModel
 
     if (fortifyArmyCount == 0)
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_UNDERFLOW));
       return false;
     }
 
     if (fortifyArmyCount > rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId)))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
               PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW));
       return false;
     }
@@ -1239,7 +1237,7 @@ public final class GameModel
       switch (res2.getFailureReason ())
       {
         case COUNTRY_ARMY_COUNT_OVERFLOW:
-          publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayerPacket,
+          publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
                   PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_ARMY_COUNT_OVERFLOW));
           return false;
         default:
@@ -1345,6 +1343,11 @@ public final class GameModel
     return playerModel.playerPacketWith (playerTurnModel.getTurnOrder ());
   }
 
+  public String getCurrentPlayerName ()
+  {
+    return playerModel.nameOf (getCurrentPlayerId ());
+  }
+
   public Id getCurrentPlayerId ()
   {
     return playerModel.playerWith (playerTurnModel.getTurnOrder ());
@@ -1354,6 +1357,26 @@ public final class GameModel
   {
     log.debug ("Turn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getTurn (), getCurrentPlayerId (),
                turnDataCache);
+  }
+
+  private static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
+                                                                                  final PlayMapModel playMapModel)
+  {
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (playMapModel, "playMapModel");
+
+    final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
+
+    final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapView = ImmutableMap.builder ();
+    for (final Id countryId : countryMapGraphModel)
+    {
+      if (!countryOwnerModel.isCountryOwned (countryId)) continue;
+
+      final Id ownerId = countryOwnerModel.ownerOf (countryId);
+      playMapView.put (countryMapGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
+    }
+    return playMapView.build ();
   }
 
   private void publish (final Event event)
@@ -1413,26 +1436,6 @@ public final class GameModel
       }
       turnDataCache.clear (key);
     }
-  }
-
-  private static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
-                                                                                  final PlayMapModel playMapModel)
-  {
-    Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (playMapModel, "playMapModel");
-
-    final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
-    final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
-
-    final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapView = ImmutableMap.builder ();
-    for (final Id countryId : countryMapGraphModel)
-    {
-      if (!countryOwnerModel.isCountryOwned (countryId)) continue;
-
-      final Id ownerId = countryOwnerModel.ownerOf (countryId);
-      playMapView.put (countryMapGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
-    }
-    return playMapView.build ();
   }
 
   public static class Builder

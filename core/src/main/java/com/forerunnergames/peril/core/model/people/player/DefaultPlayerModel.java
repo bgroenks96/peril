@@ -241,13 +241,13 @@ public final class DefaultPlayerModel implements PlayerModel
   @Override
   public boolean isEmpty ()
   {
-    return players.size () == 0;
+    return players.isEmpty ();
   }
 
   @Override
   public boolean isFull ()
   {
-    return players.size () > 0 && players.size () >= rules.getPlayerLimit ();
+    return !players.isEmpty () && players.size () >= rules.getPlayerLimit ();
   }
 
   @Override
