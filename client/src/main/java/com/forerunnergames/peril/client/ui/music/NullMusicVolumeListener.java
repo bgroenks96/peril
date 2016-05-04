@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +17,10 @@
 
 package com.forerunnergames.peril.client.ui.music;
 
-import com.forerunnergames.peril.client.ui.screens.ScreenId;
-
-public interface MusicChanger
+public final class NullMusicVolumeListener implements MusicVolumeListener
 {
-  void changeMusic (final ScreenId screen);
+  @Override
+  public void onVolumeChanged (final float newVolume)
+  {
+  }
 }

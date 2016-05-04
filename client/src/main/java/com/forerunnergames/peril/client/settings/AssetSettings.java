@@ -221,13 +221,13 @@ public final class AssetSettings
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> ALWAYS_LOADED_ASSET_DESCRIPTORS = new ImmutableList.Builder <AssetDescriptor <?>> ()
           .add (SPRITE_BATCH_SHADER_PROGRAM_ASSET_DESCRIPTOR).add (NORMAL_CURSOR_ASSET_DESCRIPTOR)
-          .addAll (LOADING_SCREEN_ASSET_DESCRIPTORS).build ();
+          .addAll (LOADING_SCREEN_ASSET_DESCRIPTORS).add (MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR)
+          .add (PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR).build ();
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> MENU_SCREEN_ASSET_DESCRIPTORS = ImmutableList
           .<AssetDescriptor <?>> of (MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR,
-                                     MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR, MENU_SCREEN_SKIN_ASSET_DESCRIPTOR,
-                                     MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR);
+                                     MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR, MENU_SCREEN_SKIN_ASSET_DESCRIPTOR);
 
   public static final ImmutableList <AssetDescriptor <?>> INITIAL_ASSET_DESCRIPTORS = new ImmutableList.Builder <AssetDescriptor <?>> ()
           .addAll (ALWAYS_LOADED_ASSET_DESCRIPTORS).addAll (MENU_SCREEN_ASSET_DESCRIPTORS).build ();
@@ -237,8 +237,7 @@ public final class AssetSettings
           .<AssetDescriptor <?>> of (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR,
-                                     PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
+                                     CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> PERIL_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList

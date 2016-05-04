@@ -32,6 +32,7 @@ import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.peril.client.net.MultiplayerController;
 import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
+import com.forerunnergames.peril.client.ui.music.MusicVolumeController;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenFactoryCreator;
 import com.forerunnergames.peril.common.eventbus.DeadEventHandler;
@@ -75,9 +76,11 @@ public final class LibGdxGameFactory
             clientController, eventBus);
     final AssetManager assetManager = AssetManagerFactory.create (eventBus);
     final Controller assetController = new AssetController (assetManager);
-    final MusicController musicController = new MusicController (new MusicFactory (assetManager));
+    final MusicVolumeController musicVolumeController = new MusicVolumeController ();
+    final MusicController musicController = new MusicController (new MusicFactory (assetManager),
+            musicVolumeController);
     final Application application = new ClientApplication (mainThreadExecutor, assetController, clientController,
-            multiplayerController, musicController);
+            multiplayerController, musicController, musicVolumeController);
     final Game libGdxGame = new LibGdxGameWrapper (application);
     final AssetUpdater assetUpdater = AssetUpdaterFactory.create ();
     final ScreenFactoryCreator screenFactoryCreator = new ScreenFactoryCreator (assetManager, assetUpdater, eventBus);

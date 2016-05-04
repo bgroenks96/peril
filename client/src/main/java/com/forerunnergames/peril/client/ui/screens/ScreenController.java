@@ -129,7 +129,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
     final ScreenId previousScreenId = getCurrentScreenId ();
     screenIdHistory.add (previousScreenId);
     game.setScreen (screens.get (id));
-    musicChanger.changeMusic (previousScreenId, getCurrentScreenId ());
+    musicChanger.changeMusic (getCurrentScreenId ());
 
     log.info ("Changed from {} [{}] to {} [{}].", Screen.class.getSimpleName (), previousScreenId,
               Screen.class.getSimpleName (), id);

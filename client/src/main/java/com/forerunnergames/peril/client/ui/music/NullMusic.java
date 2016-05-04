@@ -64,7 +64,7 @@ public final class NullMusic implements Music
   @Override
   public float getVolume ()
   {
-    return 0;
+    return 0.0f;
   }
 
   @Override
@@ -80,7 +80,7 @@ public final class NullMusic implements Music
   @Override
   public float getPosition ()
   {
-    return 0;
+    return 0.0f;
   }
 
   @Override
