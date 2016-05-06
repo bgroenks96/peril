@@ -29,7 +29,6 @@ import com.forerunnergames.tools.common.Strings;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.TreeSet;
 
 import javax.annotation.Nullable;
@@ -41,8 +40,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerBox.class);
   private final WidgetFactory widgetFactory;
-  private final Collection <PlayerPacket> turnOrderedPlayers = Collections
-          .synchronizedSortedSet (new TreeSet <> (PlayerPacket.TURN_ORDER_COMPARATOR));
+  private final Collection <PlayerPacket> turnOrderedPlayers = new TreeSet <> (PlayerPacket.TURN_ORDER_COMPARATOR);
   @Nullable
   private PlayerPacket highlightedPlayer;
 
@@ -72,21 +70,44 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     Arguments.checkHasNoNullElements (players, "players");
 
     turnOrderedPlayers.clear ();
-    if (turnOrderedPlayers.addAll (players)) updateMessageBox ();
+
+    if (!turnOrderedPlayers.addAll (players))
+    {
+      log.warn ("Not adding any players [{}] to {}. (Players already added, or duplicate turn order conflict.)",
+                players, PlayerBox.class.getSimpleName ());
+      return;
+    }
+
+    updateMessageBox ();
   }
 
   public void addPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (turnOrderedPlayers.add (player)) updateMessageBox ();
+    if (!turnOrderedPlayers.add (player))
+    {
+      log.warn ("Not adding player [{}] to {}. (Player already added, or duplicate turn order conflict.)", player,
+                PlayerBox.class.getSimpleName ());
+      return;
+    }
+
+    updateMessageBox ();
   }
 
   public void removePlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (turnOrderedPlayers.remove (player)) updateMessageBox ();
+    if (!turnOrderedPlayers.remove (player))
+    {
+      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player, PlayerBox.class.getSimpleName (),
+                PlayerBox.class.getSimpleName ());
+      return;
+    }
+
+    updateMessageBox ();
+
     if (isHighlighted (player)) clearHighlighting ();
   }
 
@@ -168,14 +189,11 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   {
     super.clear ();
 
-    synchronized (turnOrderedPlayers)
+    for (final PlayerPacket player : turnOrderedPlayers)
     {
-      for (final PlayerPacket player : turnOrderedPlayers)
-      {
-        addRow (widgetFactory.createPlayerBoxRow (player));
+      addRow (widgetFactory.createPlayerBoxRow (player));
 
-        if (isHighlighted (player)) highlightPlayer (player);
-      }
+      if (isHighlighted (player)) highlightPlayer (player);
     }
   }
 }

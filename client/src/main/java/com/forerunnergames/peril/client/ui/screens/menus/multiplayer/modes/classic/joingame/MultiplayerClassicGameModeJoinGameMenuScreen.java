@@ -70,13 +70,11 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
                                                        final ScreenChanger screenChanger,
                                                        final ScreenSize screenSize,
                                                        final Batch batch,
-                                                       final JoinGameServerHandler joinGameServerHandler,
                                                        final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (joinGameServerHandler, "joinGameHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;

@@ -24,7 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.SnapshotArray;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
@@ -33,7 +32,8 @@ import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -44,15 +44,15 @@ import org.slf4j.LoggerFactory;
 public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> implements MessageBox <T>
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultMessageBox.class);
-  private static final int MAX_ROWS = 40;
+  private static final int MAX_ROWS = 100;
   private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
   private final ScrollPane scrollPane;
-  private final Table table;
   private final WidgetFactory widgetFactory;
   private final String scrollPaneStyleName;
   private final ScrollbarStyle scrollbarStyle;
   private final MessageBoxRowStyle rowStyle;
-  private final Map <Actor, T> actorsToRows = new HashMap <> ();
+  private final Map <Actor, T> actorsToRows = new LinkedHashMap <> ();
+  private final Table table;
 
   public DefaultMessageBox (final WidgetFactory widgetFactory,
                             final String scrollPaneStyleName,
@@ -150,7 +150,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   public void refreshAssets ()
   {
     final ScrollPane.ScrollPaneStyle scrollPaneStyle = widgetFactory.createScrollPaneStyle (scrollPaneStyleName,
-                                                                                            scrollbarStyle);
+            scrollbarStyle);
     scrollPane.setStyle (scrollPaneStyle);
 
     for (final Actor actor : table.getChildren ())
@@ -160,7 +160,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
       if (row == null)
       {
         log.warn ("Not refreshing assets of actor [{}] because {} not found in cache.", actor,
-                  MessageBoxRow.class.getSimpleName ());
+                MessageBoxRow.class.getSimpleName ());
         continue;
       }
 
@@ -211,24 +211,32 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 
   private void limitOldRows ()
   {
-    if (table.getRows () < MAX_ROWS) return;
+    if (actorsToRows.size () < MAX_ROWS) return;
 
-    final SnapshotArray <Actor> children = table.getChildren ();
-    children.ordered = false;
+    log.trace ("Limit old rows (before): Number of rows in cache: {}", getRows ().size ());
+    log.trace ("Limit old rows (before): Number of rows in table: {}", table.getRows ());
 
-    for (int i = 0; i < children.size - 1; ++i)
+    // Remove oldest row (safety is guaranteed as long as MAX_ROWS > 0).
+    final Iterator <Map.Entry <Actor, T>> iterator = actorsToRows.entrySet ().iterator ();
+    final Map.Entry <Actor, T> entryToRemove = iterator.next ();
+    iterator.remove ();
+    log.trace ("Removed old row [{}].", entryToRemove.getValue ());
+
+    // Reset table
+    table.clear ();
+    configureTable ();
+
+    // Re-add all rows (with the oldest one already removed).
+    for (final Map.Entry <Actor, T> entry : actorsToRows.entrySet ())
     {
-      children.swap (i, i + 1);
+      table.row ().expandX ().fillX ().prefHeight (rowStyle.getHeight ());
+      table.add (entry.getKey ());
     }
 
-    final Actor actor = children.get (children.size - 1);
+    table.layout ();
+    scrollPane.layout ();
 
-    table.removeActor (actor);
-    table.getCells ().removeIndex (0);
-
-    if (actorsToRows.remove (actor) == null)
-    {
-      log.warn ("Old actor [{}] removed from message box, but was not cached.", actor);
-    }
+    log.trace ("Limit old rows (after): Number of rows in cache: {}", getRows ().size ());
+    log.trace ("Limit old rows (after): Number of rows in table: {}", table.getRows ());
   }
 }

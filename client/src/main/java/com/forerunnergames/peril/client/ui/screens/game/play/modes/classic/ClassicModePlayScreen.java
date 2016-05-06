@@ -66,6 +66,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugPackets;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
@@ -83,7 +84,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
 import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
 import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
@@ -125,6 +125,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final MouseInput mouseInput;
   private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
+  private final DebugEventGenerator debugEventGenerator;
   private final Stage stage;
   private final Image backgroundImage;
   private final MessageBox <StatusBoxRow> statusBox;
@@ -152,7 +153,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                 final ScreenSize screenSize,
                                 final MouseInput mouseInput,
                                 final Batch batch,
-                                final MBassador <Event> eventBus)
+                                final MBassador <Event> eventBus,
+                                final DebugEventGenerator debugEventGenerator)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
@@ -160,11 +162,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (debugEventGenerator, "debugEventGenerator");
 
     this.widgetFactory = widgetFactory;
     this.screenChanger = screenChanger;
     this.mouseInput = mouseInput;
     this.eventBus = eventBus;
+    this.debugEventGenerator = debugEventGenerator;
 
     normalCursor = widgetFactory.createNormalCursor ();
     backgroundImage = widgetFactory.createBackgroundImage ();
@@ -276,8 +280,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
-    debugInputProcessor = new DebugInputProcessor (mouseInput, playMap, statusBox, chatBox, playerBox,
-            occupationPopup, reinforcementPopup, attackPopup, defendPopup, eventBus);
+    debugInputProcessor = new DebugInputProcessor (debugEventGenerator, mouseInput, playMap, statusBox, chatBox,
+            playerBox, occupationPopup, reinforcementPopup, attackPopup, defendPopup, eventBus);
 
     battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
 
@@ -416,6 +420,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         updatePlayMap (event.getPlayMap ());
         playerBox.setPlayers (event.getPlayersInGame ());
+        debugEventGenerator.makePlayersUnavailable (event.getPlayersInGame ());
       }
     });
   }
@@ -471,6 +476,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         playerBox.addPlayer (playerFrom (event));
+        debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
       }
     });
   }
@@ -488,6 +494,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         log.trace ("Event received [{}].", event);
 
         playerBox.removePlayer (event.getPlayer ());
+        debugEventGenerator.makePlayerAvailable (event.getPlayer ());
       }
     });
   }

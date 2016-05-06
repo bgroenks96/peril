@@ -25,14 +25,14 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -41,6 +41,7 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class DebugInputProcessor extends InputAdapter
 {
+  private final DebugEventGenerator eventGenerator;
   private final MouseInput mouseInput;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
@@ -49,10 +50,10 @@ public final class DebugInputProcessor extends InputAdapter
   private final ReinforcementPopup reinforcementPopup;
   private final AttackPopup attackPopup;
   private final DefendPopup defendPopup;
-  private final DebugEventGenerator eventGenerator;
   private PlayMap playMap;
 
-  public DebugInputProcessor (final MouseInput mouseInput,
+  public DebugInputProcessor (final DebugEventGenerator eventGenerator,
+                              final MouseInput mouseInput,
                               final PlayMap playMap,
                               final MessageBox <StatusBoxRow> statusBox,
                               final MessageBox <ChatBoxRow> chatBox,
@@ -63,6 +64,7 @@ public final class DebugInputProcessor extends InputAdapter
                               final DefendPopup defendPopup,
                               final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (eventGenerator, "eventGenerator");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (playMap, "playMap");
     Arguments.checkIsNotNull (statusBox, "statusBox");
@@ -74,6 +76,7 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (defendPopup, "defendPopup");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.eventGenerator = eventGenerator;
     this.mouseInput = mouseInput;
     this.playMap = playMap;
     this.statusBox = statusBox;
@@ -83,8 +86,6 @@ public final class DebugInputProcessor extends InputAdapter
     this.reinforcementPopup = reinforcementPopup;
     this.attackPopup = attackPopup;
     this.defendPopup = defendPopup;
-
-    eventGenerator = new DebugEventGenerator (playMap, eventBus);
   }
 
   @Override
@@ -458,12 +459,12 @@ public final class DebugInputProcessor extends InputAdapter
         while (defendingCountryName.equals (attackingCountryName)
                 || !playMap.existsCountryWithName (defendingCountryName));
 
-        final String attackingPlayerName = eventGenerator.getRandomPlayerName ();
+        final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
         String defendingPlayerName;
 
         do
         {
-          defendingPlayerName = eventGenerator.getRandomPlayerName ();
+          defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
         }
         while (defendingPlayerName.equals (attackingPlayerName));
 
@@ -501,12 +502,12 @@ public final class DebugInputProcessor extends InputAdapter
         while (defendingCountryName.equals (attackingCountryName)
                 || !playMap.existsCountryWithName (defendingCountryName));
 
-        final String attackingPlayerName = eventGenerator.getRandomPlayerName ();
+        final String attackingPlayerName = DebugEventGenerator.getRandomPlayerName ();
         String defendingPlayerName;
 
         do
         {
-          defendingPlayerName = eventGenerator.getRandomPlayerName ();
+          defendingPlayerName = DebugEventGenerator.getRandomPlayerName ();
         }
         while (defendingPlayerName.equals (attackingPlayerName));
 

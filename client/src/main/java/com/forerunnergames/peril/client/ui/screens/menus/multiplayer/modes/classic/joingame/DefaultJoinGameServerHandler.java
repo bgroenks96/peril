@@ -18,9 +18,6 @@
 
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
 
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerNameFrom;
-
 import com.forerunnergames.peril.client.events.ConnectToServerDeniedEvent;
 import com.forerunnergames.peril.client.events.ConnectToServerRequestEvent;
 import com.forerunnergames.peril.client.events.ConnectToServerSuccessEvent;
@@ -141,6 +138,7 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
     gameServerConfig = event.getGameServerConfiguration ();
     clientConfig = event.getClientConfiguration ();
 
+    assert playerName != null;
     final PlayerJoinGameRequestEvent playerJoinGameRequestEvent = new PlayerJoinGameRequestEvent (playerName);
 
     log.info ("Attempting to join game as a player... [{}]", playerJoinGameRequestEvent);
@@ -157,13 +155,13 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     log.trace ("Event received [{}]", event);
 
-    if (event.getPlayer ().has (PersonIdentity.NON_SELF))
+    assert playerName != null;
+    if (event.getPlayer ().has (PersonIdentity.NON_SELF) || !event.getPlayer ().hasName (playerName))
     {
-      log.warn ("Received {} with {} while expecting {}", event, PersonIdentity.NON_SELF, PersonIdentity.SELF);
+      log.debug ("Collecting [{}] for non-self player.", event);
+      players.add (event.getPlayer ());
       return;
     }
-
-    players.add (playerFrom (event));
 
     log.info ("Successfully joined game as a player: [{}]", event);
 
@@ -221,9 +219,10 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     log.trace ("Event received [{}]", event);
 
-    if (!playerNameFrom (event).equals (playerName))
+    assert playerName != null;
+    if (!event.getPlayerName ().equals (playerName))
     {
-      log.warn ("Received [{}] with player name [{}] while expecting player name [{}]", event, playerNameFrom (event),
+      log.warn ("Received [{}] with player name [{}] while expecting player name [{}]", event, event.getPlayerName (),
                 playerName);
       return;
     }

@@ -80,12 +80,14 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.common.DeadMessage;
+import net.engio.mbassy.bus.common.PublicationEvent;
 import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
@@ -119,8 +121,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private GameServerConfiguration gameServerConfiguration = null;
   @Nullable
   private ClientConfiguration clientConfiguration = null;
-  @Nullable
-  private ImmutableSet <PlayerPacket> playersInGame = null;
+  private Set <PlayerPacket> playersInGame = new HashSet <> ();
   private float overallLoadingProgressPercent = 0.0f;
   private float currentLoadingProgressPercent = 0.0f;
   private float previousLoadingProgressPercent = 0.0f;
@@ -399,7 +400,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
         MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
         MenuToPlayLoadingScreen.this.clientConfiguration = clientConfiguration;
-        MenuToPlayLoadingScreen.this.playersInGame = playersInGame;
+        MenuToPlayLoadingScreen.this.playersInGame.addAll (playersInGame);
 
         Gdx.app.postRunnable (new Runnable ()
         {
@@ -504,7 +505,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     isLoading = false;
     gameServerConfiguration = null;
     clientConfiguration = null;
-    playersInGame = null;
+    playersInGame.clear ();
   }
 
   @Override
@@ -580,19 +581,21 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   // while the play map is still loading on this screen (play screen not active yet - cannot receive events).
   // Collect unhandled server events, which will be published after the play screen is active.
   @Handler
-  void onEvent (final DeadMessage deadMessage)
+  void onEvent (final PublicationEvent unhandledEvent)
   {
-    Arguments.checkIsNotNull (deadMessage, "deadMessage");
+    Arguments.checkIsNotNull (unhandledEvent, "unhandledEvent");
 
-    if (!(deadMessage.getMessage () instanceof ServerEvent))
+    final Object message = unhandledEvent.getMessage ();
+
+    if (!(message instanceof ServerEvent))
     {
-      log.warn ("Not collecting dead event for play screen: [{}]", deadMessage.getMessage ());
+      log.warn ("Not collecting unhandled event for play screen: [{}]", message);
       return;
     }
 
-    final ServerEvent event = (ServerEvent) deadMessage.getMessage ();
+    final ServerEvent event = (ServerEvent) message;
 
-    log.debug ("Collecting dead event for play screen: [{}]", event);
+    log.debug ("Collecting unhandled event for play screen: [{}]", event);
 
     incomingServerEvents.add (event);
   }
@@ -646,10 +649,6 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     if (clientConfiguration == null) throw new IllegalStateException (Strings
             .format ("Cannot go to play screen because {} is null.", ClientConfiguration.class.getSimpleName ()));
 
-    if (playersInGame == null)
-      throw new IllegalStateException (Strings.format ("Cannot go to play screen because playersInGame is null.",
-                                                       ClientConfiguration.class.getSimpleName ()));
-
     final PlayMap playMap;
 
     try
@@ -670,8 +669,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       return;
     }
 
-    final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, playersInGame,
-            playMap);
+    final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration,
+            ImmutableSet.copyOf (playersInGame), playMap);
 
     resetLoadingProgress ();
     unloadMenuAssets ();

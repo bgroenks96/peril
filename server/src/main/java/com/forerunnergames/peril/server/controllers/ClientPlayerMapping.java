@@ -142,7 +142,7 @@ public final class ClientPlayerMapping
       final Optional <Remote> client = Optional.fromNullable (clientsToPlayers.inverse ().get (current));
       if (!client.isPresent ())
       {
-        log.warn ("Received player [{}] from core with no client mapping.");
+        log.warn ("Received player [{}] from core with no client mapping.", current);
         continue;
       }
       clientsToPlayers.forcePut (client.get (), current);

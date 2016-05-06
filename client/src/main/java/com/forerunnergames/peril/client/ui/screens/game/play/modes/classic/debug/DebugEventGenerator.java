@@ -37,17 +37,25 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.UnmodifiableIterator;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class DebugEventGenerator
 {
+  private static final Logger log = LoggerFactory.getLogger (DebugEventGenerator.class);
+
   private static final ImmutableSet <String> VALID_PLAYER_COLORS = ImmutableSet
           .of ("blue", "brown", "cyan", "gold", "green", "pink", "purple", "red", "silver", "teal");
 
@@ -81,9 +89,12 @@ public final class DebugEventGenerator
                "Antarctica");
 
   private final MBassador <Event> eventBus;
-  private final Set <String> availablePlayerNames = new HashSet <> (RANDOM_PLAYER_NAMES);
-  private UnmodifiableIterator <String> playerColorIterator = createPlayerColorIterator ();
-  private UnmodifiableIterator <Integer> playerTurnOrderIterator = createPlayerTurnOrderIterator ();
+  private final Set <String> availablePlayerNames = new HashSet <> ();
+  private final Set <String> availablePlayerColors = new HashSet <> ();
+  private final Set <Integer> availablePlayerTurnOrders = new HashSet <> ();
+  private final Collection <PlayerPacket> unavailablePlayers = new ArrayList <> ();
+  private Iterator <String> playerColorIterator;
+  private Iterator <Integer> playerTurnOrderIterator;
   private PlayMap playMap;
 
   public DebugEventGenerator (final PlayMap playMap, final MBassador <Event> eventBus)
@@ -93,56 +104,103 @@ public final class DebugEventGenerator
 
     this.playMap = playMap;
     this.eventBus = eventBus;
+
+    resetPlayers ();
   }
 
-  public String getRandomCountryName ()
-  {
-    return Randomness.getRandomElementFrom (playMap.getAllCountryNames ());
-  }
-
-  public String getRandomPlayerName ()
+  static String getRandomPlayerName ()
   {
     return Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES);
   }
 
-  public void generateStatusMessageEvent ()
+  public void makePlayersUnavailable (final Collection <PlayerPacket> players)
+  {
+    Arguments.checkIsNotNull (players, "players");
+    Arguments.checkHasNoNullElements (players, "players");
+
+    for (final PlayerPacket player : players)
+    {
+      makePlayerUnavailable (player);
+    }
+  }
+
+  public void makePlayerUnavailable (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    unavailablePlayers.add (player);
+
+    availablePlayerNames.remove (player.getName ());
+    availablePlayerColors.remove (player.getColor ());
+    availablePlayerTurnOrders.remove (player.getTurnOrder ());
+
+    resetAvailablePlayerAttributeIterators ();
+  }
+
+  public void makePlayerAvailable (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    unavailablePlayers.remove (player);
+
+    if (RANDOM_PLAYER_NAMES.contains (player.getName ())) availablePlayerNames.add (player.getName ());
+    availablePlayerColors.add (player.getColor ());
+    availablePlayerTurnOrders.add (player.getTurnOrder ());
+
+    resetAvailablePlayerAttributeIterators ();
+  }
+
+  String getRandomCountryName ()
+  {
+    return Randomness.getRandomElementFrom (playMap.getAllCountryNames ());
+  }
+
+  void generateStatusMessageEvent ()
   {
     // TODO Production: Remove
     eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage (), ImmutableSet.<PlayerPacket> of ()));
   }
 
-  public void generateChatMessageSuccessEvent ()
+  void generateChatMessageSuccessEvent ()
   {
     eventBus.publish (new ChatMessageSuccessEvent (createChatMessage ()));
   }
 
-  public void generatePlayerJoinGameSuccessEvent ()
+  void generatePlayerJoinGameSuccessEvent ()
   {
-    eventBus.publish (new PlayerJoinGameSuccessEvent (createPlayer ()));
+    final Optional <? extends PlayerPacket> player = createAvailablePlayer ();
+
+    if (!player.isPresent ())
+    {
+      log.warn ("Cannot generate {}: No more available players.", PlayerJoinGameSuccessEvent.class.getSimpleName ());
+      return;
+    }
+
+    eventBus.publish (new PlayerJoinGameSuccessEvent (player.get ()));
   }
 
-  public void generateCountryArmiesChangedEvent ()
+  void generateCountryArmiesChangedEvent ()
   {
     final int deltaArmyCount = getRandomCountryDeltaArmyCount ();
     final CountryPacket countryPacket = DebugPackets.from (getRandomCountryName (), deltaArmyCount);
     eventBus.publish (new DefaultCountryArmiesChangedEvent (countryPacket, deltaArmyCount));
   }
 
-  public void generatePlayerClaimCountryResponseSuccessEvent ()
+  void generatePlayerClaimCountryResponseSuccessEvent ()
   {
-    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createPlayer (),
+    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createRandomPlayer (),
             DebugPackets.from (getRandomCountryName ()), 1));
   }
 
-  public void resetPlayers ()
+  void resetPlayers ()
   {
-    playerColorIterator = createPlayerColorIterator ();
-    playerTurnOrderIterator = createPlayerTurnOrderIterator ();
-    availablePlayerNames.clear ();
-    availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
+    resetAvailablePlayerAttributes ();
+    resetAvailablePlayerAttributeIterators ();
+
+    unavailablePlayers.clear ();
   }
 
-  public void setPlayMap (final PlayMap playMap)
+  void setPlayMap (final PlayMap playMap)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
 
@@ -154,14 +212,54 @@ public final class DebugEventGenerator
     return Randomness.getRandomIntegerFrom (0, 99);
   }
 
-  private static UnmodifiableIterator <String> createPlayerColorIterator ()
+  private static String getRandomPlayerColor ()
   {
-    return VALID_PLAYER_COLORS.iterator ();
+    return Randomness.getRandomElementFrom (VALID_PLAYER_COLORS);
   }
 
-  private static UnmodifiableIterator <Integer> createPlayerTurnOrderIterator ()
+  private static int getRandomPlayerTurnOrder ()
   {
-    return VALID_SORTED_PLAYER_TURN_ORDERS.iterator ();
+    return Randomness.getRandomElementFrom (VALID_SORTED_PLAYER_TURN_ORDERS);
+  }
+
+  private static PlayerPacket createRandomPlayer ()
+  {
+    return new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), getRandomPlayerName (),
+            getRandomPlayerColor (), getRandomPlayerTurnOrder (), 0);
+  }
+
+  private void resetPlayersKeepUnavailable ()
+  {
+    resetAvailablePlayerAttributes ();
+    removeUnavailablePlayerAttributes ();
+    resetAvailablePlayerAttributeIterators ();
+  }
+
+  private void resetAvailablePlayerAttributes ()
+  {
+    availablePlayerNames.clear ();
+    availablePlayerColors.clear ();
+    availablePlayerTurnOrders.clear ();
+
+    availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
+    availablePlayerColors.addAll (VALID_PLAYER_COLORS);
+    availablePlayerTurnOrders.addAll (VALID_SORTED_PLAYER_TURN_ORDERS);
+  }
+
+  private void removeUnavailablePlayerAttributes ()
+  {
+    for (final PlayerPacket player : unavailablePlayers)
+    {
+      availablePlayerNames.remove (player.getName ());
+      availablePlayerColors.remove (player.getColor ());
+      availablePlayerTurnOrders.remove (player.getTurnOrder ());
+    }
+  }
+
+  private void resetAvailablePlayerAttributeIterators ()
+  {
+    playerColorIterator = availablePlayerColors.iterator ();
+    playerTurnOrderIterator = availablePlayerTurnOrders.iterator ();
   }
 
   private StatusMessage createStatusMessage ()
@@ -177,12 +275,13 @@ public final class DebugEventGenerator
     return new DefaultChatMessage (author, createMessageText ());
   }
 
-  private PlayerPacket createPlayer ()
+  private Optional <? extends PlayerPacket> createAvailablePlayer ()
   {
-    if (shouldResetPlayers ()) resetPlayers ();
+    if (shouldResetPlayers ()) resetPlayersKeepUnavailable ();
+    if (shouldResetPlayers ()) return Optional.absent ();
 
-    return new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), nextAvailablePlayerName (),
-            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0);
+    return Optional.of (new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), nextAvailablePlayerName (),
+            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0));
   }
 
   private boolean shouldResetPlayers ()
