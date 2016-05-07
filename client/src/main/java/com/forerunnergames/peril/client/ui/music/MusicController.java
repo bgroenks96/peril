@@ -81,8 +81,6 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
   private void stopMusicWithFadeOut (final Music music)
   {
-    final float originalVolume = music.getVolume ();
-
     Timer.schedule (new Timer.Task ()
     {
       @Override
@@ -96,7 +94,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
         }
 
         final float currentVolume = music.getVolume ();
-        final float delta = originalVolume / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
+        final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
         final float newVolume = currentVolume - delta;
 
         log.trace ("Fading out music [{}] from volume [{}] to volume [{}].", music, currentVolume, newVolume);
