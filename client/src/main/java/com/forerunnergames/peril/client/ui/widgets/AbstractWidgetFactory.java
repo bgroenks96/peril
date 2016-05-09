@@ -23,6 +23,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -563,6 +565,18 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (name, "name");
 
     return getSkin ().getRegion (name);
+  }
+
+  @Override
+  public Sprite createSpriteFromTextureRegion (final String regionName)
+  {
+    return getSkin ().getSprite (regionName);
+  }
+
+  @Override
+  public NinePatch createNinePatchFromTextureRegion (final String regionName)
+  {
+    return getSkin ().getPatch (regionName);
   }
 
   @Override

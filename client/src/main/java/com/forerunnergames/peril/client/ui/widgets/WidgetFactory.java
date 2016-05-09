@@ -20,6 +20,8 @@ package com.forerunnergames.peril.client.ui.widgets;
 
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -162,6 +164,10 @@ public interface WidgetFactory
   BitmapFont createBitmapFont (final String fontName);
 
   TextureRegion createTextureRegion (final String name);
+
+  Sprite createSpriteFromTextureRegion (final String regionName);
+
+  NinePatch createNinePatchFromTextureRegion (final String regionName);
 
   ChatBoxRow createChatMessageBoxRow (final ChatMessage message);
 

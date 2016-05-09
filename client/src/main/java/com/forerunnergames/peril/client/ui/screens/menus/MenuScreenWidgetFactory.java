@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.client.ui.screens.menus;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -423,15 +422,5 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     region.flip (true, false);
 
     return region;
-  }
-
-  private Sprite createSpriteFromTextureRegion (final String regionName)
-  {
-    return getSkin ().getSprite (regionName);
-  }
-
-  private NinePatch createNinePatchFromTextureRegion (final String regionName)
-  {
-    return getSkin ().getPatch (regionName);
   }
 }
