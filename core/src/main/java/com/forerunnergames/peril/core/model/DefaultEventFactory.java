@@ -24,7 +24,6 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforc
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.card.CardModel;
@@ -76,9 +75,9 @@ final class DefaultEventFactory implements EventFactory
   @Override
   public PlayerReinforceInitialCountryRequestEvent createInitialReinforcementRequestFor (final Id playerId)
   {
-    final PlayerPacket player = playerModel.playerPacketWith (playerId);
-    return new PlayerReinforceInitialCountryRequestEvent (player, countryOwnerModel.getCountriesOwnedBy (playerId),
-            rules.getInitialReinforcementArmyCount (), rules.getMaxArmiesOnCountry ());
+    return new PlayerReinforceInitialCountryRequestEvent (playerModel.playerPacketWith (playerId),
+            countryOwnerModel.getCountriesOwnedBy (playerId), rules.getInitialReinforcementArmyCount (),
+            rules.getMaxArmiesOnCountry ());
   }
 
   @Override
@@ -86,18 +85,14 @@ final class DefaultEventFactory implements EventFactory
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    final int countryReinforcementBonus = rules
-            .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
+    final int countryReinforcementBonus = rules.calculateCountryReinforcements (countryOwnerModel
+            .countCountriesOwnedBy (playerId));
     int continentReinforcementBonus = 0;
     final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
     for (final ContinentPacket cont : playerOwnedContinents)
     {
       continentReinforcementBonus += cont.getReinforcementBonus ();
     }
-    final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
-    playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
-
-    final PlayerPacket player = playerModel.playerPacketWith (playerId);
 
     final ImmutableSet <CountryPacket> validCountries;
     final Predicate <CountryPacket> filter = new Predicate <CountryPacket> ()
@@ -110,18 +105,18 @@ final class DefaultEventFactory implements EventFactory
     };
     validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountriesOwnedBy (playerId), filter));
 
-    return new PlayerReinforceCountriesRequestEvent (player, validCountries, playerOwnedContinents,
-            countryReinforcementBonus, continentReinforcementBonus, rules.getMaxArmiesOnCountry ());
+    return new PlayerReinforceCountriesRequestEvent (playerModel.playerPacketWith (playerId), validCountries,
+            playerOwnedContinents, countryReinforcementBonus, continentReinforcementBonus,
+            rules.getMaxArmiesOnCountry ());
   }
 
   @Override
   public PlayerTradeInCardsRequestEvent createTradeInCardsRequestFor (final Id playerId, final TurnPhase turnPhase)
   {
-    final PlayerPacket player = playerModel.playerPacketWith (playerId);
     final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
     final int cardCount = cardModel.countCardsInHand (playerId);
     final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
-    return new PlayerTradeInCardsRequestEvent (player, cardModel.getNextTradeInBonus (), matchPackets,
-            cardCount > rules.getMaxCardsInHand (turnPhase));
+    return new PlayerTradeInCardsRequestEvent (playerModel.playerPacketWith (playerId),
+            cardModel.getNextTradeInBonus (), matchPackets, cardCount > rules.getMaxCardsInHand (turnPhase));
   }
 }
