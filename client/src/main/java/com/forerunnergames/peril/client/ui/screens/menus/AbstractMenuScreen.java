@@ -102,6 +102,29 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private boolean menuBarTransitionInProgress = false;
   private MenuBarState currentMenuBarState = MenuBarState.CONTRACTED;
 
+  private enum MenuBarState
+  {
+    CONTRACTED (360),
+    EXPANDED (660);
+
+    private final int width;
+
+    public int getWidth ()
+    {
+      return width;
+    }
+
+    public boolean is (final MenuBarState menuBarState)
+    {
+      return this == menuBarState;
+    }
+
+    MenuBarState (final int width)
+    {
+      this.width = width;
+    }
+  }
+
   protected AbstractMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
@@ -145,8 +168,8 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 
     // Layer 1 - menu bar & right background shadow
     tableL1 = new Table ().top ().left ();
-    tableL1.add ().width (302);
-    tableL1.add (menuBar).width (MenuBarState.CONTRACTED.getWidth ()).expandY ().fillY ();
+    tableL1.add ().width (300);
+    tableL1.add (menuBar).width (currentMenuBarState.getWidth ()).fillX ().expandY ().fillY ();
     tableL1.add (rightBackgroundShadow).expandY ().fill ();
     rootStack.add (tableL1);
 
@@ -166,7 +189,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     tableL3.add ().width (301).height (400);
     tableL3.row ();
     tableL3.add ();
-    titleBackgroundCell = tableL3.add (titleBackground).width (currentMenuBarState.getWidth ()).height (0).fill ();
+    titleBackgroundCell = tableL3.add (titleBackground).width (currentMenuBarState.getWidth () - 2).height (0).fill ();
     rootStack.add (tableL3);
 
     // Layer 4 - title text, menu choices, & buttons
@@ -194,7 +217,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     tableL5 = new Table ().top ().left ();
     tableL5.add ().width (300);
     tableL5.add (leftMenuBarShadow).expandY ().fill ();
-    tableL5.add ().width (MenuBarState.CONTRACTED.getWidth () - 42);
+    tableL5.add ().width (currentMenuBarState.getWidth () - 44);
     tableL5.add (rightMenuBarShadow).expandY ().fill ();
     tableL5.setTouchable (Touchable.disabled);
     rootStack.add (tableL5);
@@ -238,29 +261,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
         }
       }
     });
-  }
-
-  private enum MenuBarState
-  {
-    CONTRACTED (358),
-    EXPANDED (658);
-
-    private final int width;
-
-    public int getWidth ()
-    {
-      return width;
-    }
-
-    public boolean is (final MenuBarState menuBarState)
-    {
-      return this == menuBarState;
-    }
-
-    MenuBarState (final int width)
-    {
-      this.width = width;
-    }
   }
 
   @Override
@@ -444,11 +444,11 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     interactionTable.setTouchable (Touchable.disabled);
     interactionTable.setVisible (false);
 
-    titlesTableCell.width (MenuBarState.EXPANDED.getWidth () - 30);
+    titlesTableCell.width (currentMenuBarState.getWidth () - 30);
 
     for (final Cell <ImageTextButton> menuChoiceCell : menuChoiceCells)
     {
-      menuChoiceCell.width (MenuBarState.EXPANDED.getWidth ());
+      menuChoiceCell.width (currentMenuBarState.getWidth () - 2);
     }
 
     rootStack.invalidate ();
