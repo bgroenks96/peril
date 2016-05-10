@@ -72,7 +72,7 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return this.color.equals (color);
+    return this.color.equalsIgnoreCase (color);
   }
 
   @Override
@@ -96,7 +96,7 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return !this.color.equals (color);
+    return !this.color.equalsIgnoreCase (color);
   }
 
   @Override
