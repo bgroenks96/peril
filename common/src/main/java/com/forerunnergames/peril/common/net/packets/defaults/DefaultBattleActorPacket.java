@@ -49,9 +49,27 @@ public final class DefaultBattleActorPacket implements BattleActorPacket
   }
 
   @Override
+  public String getPlayerName ()
+  {
+    return player.getName ();
+  }
+
+  @Override
   public CountryPacket getCountry ()
   {
     return country;
+  }
+
+  @Override
+  public int getCountryArmyCount ()
+  {
+    return country.getArmyCount ();
+  }
+
+  @Override
+  public String getCountryName ()
+  {
+    return country.getName ();
   }
 
   @Override

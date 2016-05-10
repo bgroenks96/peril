@@ -65,9 +65,29 @@ public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResp
     return result.getAttacker ().getPlayer ();
   }
 
+  public String getAttackingPlayerName ()
+  {
+    return result.getAttacker ().getPlayerName ();
+  }
+
+  public int getAttackerDieCount ()
+  {
+    return result.getAttacker ().getDieCount ();
+  }
+
   public PlayerPacket getDefendingPlayer ()
   {
     return result.getDefender ().getPlayer ();
+  }
+
+  public String getDefendingPlayerName ()
+  {
+    return result.getDefender ().getPlayerName ();
+  }
+
+  public int getDefenderDieCount ()
+  {
+    return result.getDefender ().getDieCount ();
   }
 
   public CountryPacket getAttackingCountry ()
@@ -75,9 +95,39 @@ public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResp
     return result.getAttacker ().getCountry ();
   }
 
+  public int getAttackingCountryArmyCount ()
+  {
+    return result.getAttacker ().getCountryArmyCount ();
+  }
+
+  public int getAttackingCountryArmyDelta ()
+  {
+    return result.getAttackingCountryArmyDelta ();
+  }
+
+  public String getAttackingCountryName ()
+  {
+    return result.getAttacker ().getCountryName ();
+  }
+
   public CountryPacket getDefendingCountry ()
   {
     return result.getDefender ().getCountry ();
+  }
+
+  public String getDefendingCountryName ()
+  {
+    return result.getDefender ().getCountryName ();
+  }
+
+  public int getDefendingCountryArmyCount ()
+  {
+    return result.getDefender ().getCountryArmyCount ();
+  }
+
+  public int getDefendingCountryArmyDelta ()
+  {
+    return result.getDefendingCountryArmyDelta ();
   }
 
   @Override

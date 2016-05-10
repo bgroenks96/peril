@@ -1042,7 +1042,8 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_PREV_OWNER, prevOwner);
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
 
-    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel);
+    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel,
+                                                                attackerArmyCountDelta, defenderArmyCountDelta);
     publish (new PlayerAttackCountryResponseSuccessEvent (resultPacket));
   }
 

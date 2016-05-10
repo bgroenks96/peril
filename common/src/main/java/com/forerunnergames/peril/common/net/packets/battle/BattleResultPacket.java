@@ -39,4 +39,8 @@ public interface BattleResultPacket
   ImmutableSet <DieRoll> getAttackerRollResults ();
 
   ImmutableSet <DieRoll> getDefenderRollResults ();
+
+  int getAttackingCountryArmyDelta ();
+
+  int getDefendingCountryArmyDelta ();
 }

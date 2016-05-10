@@ -47,6 +47,21 @@ public final class PlayerAttackCountryRequestEvent extends AbstractPlayerEvent i
     return validAttackVectors;
   }
 
+  public boolean isValidAttackFromCountry (final String countryName)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return validAttackVectors.containsKey (countryName);
+  }
+
+  public boolean isValidAttackVector (final String fromCountryName, final String toCountryName)
+  {
+    Arguments.checkIsNotNull (fromCountryName, "fromCountryName");
+    Arguments.checkIsNotNull (toCountryName, "toCountryName");
+
+    return validAttackVectors.containsEntry (fromCountryName, toCountryName);
+  }
+
   @Override
   public String toString ()
   {

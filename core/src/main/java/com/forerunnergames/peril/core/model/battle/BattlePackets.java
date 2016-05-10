@@ -36,18 +36,22 @@ public final class BattlePackets
   {
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
     final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
+
     return new DefaultBattleActorPacket (player, country, actor.getDieCount ());
   }
 
   public static BattleResultPacket from (final BattleResult result,
                                          final PlayerModel playerModel,
-                                         final CountryMapGraphModel mapGraphModel)
+                                         final CountryMapGraphModel mapGraphModel,
+                                         final int attackingCountryArmyDelta,
+                                         final int defendingCountryArmyDelta)
   {
     final BattleActorPacket attacker = from (result.getAttacker (), playerModel, mapGraphModel);
     final BattleActorPacket defender = from (result.getDefender (), playerModel, mapGraphModel);
-    return new DefaultBattleResultPacket (attacker, defender,
-            playerModel.playerPacketWith (result.getDefendingCountryOwner ()), result.getAttackerRollResults (),
-            result.getDefenderRollResults ());
+
+    return new DefaultBattleResultPacket (attacker, defender, playerModel.playerPacketWith (result
+            .getDefendingCountryOwner ()), result.getAttackerRollResults (), result.getDefenderRollResults (),
+            attackingCountryArmyDelta, defendingCountryArmyDelta);
   }
 
   private BattlePackets ()

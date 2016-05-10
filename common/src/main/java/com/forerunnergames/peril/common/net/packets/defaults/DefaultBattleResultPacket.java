@@ -35,12 +35,16 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   private final PlayerPacket defendingCountryOwner;
   private final ImmutableSet <DieRoll> attackerRollResults;
   private final ImmutableSet <DieRoll> defenderRollResults;
+  private final int attackingCountryArmyDelta;
+  private final int defendingCountryArmyDelta;
 
   public DefaultBattleResultPacket (final BattleActorPacket attacker,
                                     final BattleActorPacket defender,
                                     final PlayerPacket defendingCountryOwner,
                                     final ImmutableSet <DieRoll> attackerRollResults,
-                                    final ImmutableSet <DieRoll> defenderRollResults)
+                                    final ImmutableSet <DieRoll> defenderRollResults,
+                                    final int attackingCountryArmyDelta,
+                                    final int defendingCountryArmyDelta)
   {
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
@@ -53,6 +57,8 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
     this.defendingCountryOwner = defendingCountryOwner;
     this.attackerRollResults = attackerRollResults;
     this.defenderRollResults = defenderRollResults;
+    this.attackingCountryArmyDelta = attackingCountryArmyDelta;
+    this.defendingCountryArmyDelta = defendingCountryArmyDelta;
   }
 
   @Override
@@ -86,12 +92,26 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
+  public int getAttackingCountryArmyDelta ()
+  {
+    return attackingCountryArmyDelta;
+  }
+
+  @Override
+  public int getDefendingCountryArmyDelta ()
+  {
+    return defendingCountryArmyDelta;
+  }
+
+  @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | AttackerRollResults: [{}] | DefenderRollResults: [{}]",
-                           getClass ().getSimpleName (), attacker, defender, defendingCountryOwner, attackerRollResults,
-                           defenderRollResults);
+    return Strings.format ("{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
+                                   + "AttackerRollResults: [{}] | DefenderRollResults: [{}] | "
+                                   + "AttackingCountryArmyDelta: [{}] | DefendingCountryArmyDelta: [{}]", getClass ()
+                                   .getSimpleName (),
+                           attacker, defender, defendingCountryOwner, attackerRollResults, defenderRollResults,
+                           attackingCountryArmyDelta, defendingCountryArmyDelta);
   }
 
   @RequiredForNetworkSerialization
@@ -102,5 +122,7 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
     defendingCountryOwner = null;
     attackerRollResults = null;
     defenderRollResults = null;
+    attackingCountryArmyDelta = 0;
+    defendingCountryArmyDelta = 0;
   }
 }

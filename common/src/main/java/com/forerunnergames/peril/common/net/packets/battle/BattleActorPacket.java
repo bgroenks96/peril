@@ -25,7 +25,13 @@ public interface BattleActorPacket
 {
   PlayerPacket getPlayer ();
 
+  String getPlayerName ();
+
   CountryPacket getCountry ();
+
+  int getCountryArmyCount ();
+
+  String getCountryName ();
 
   int getDieCount ();
 }
