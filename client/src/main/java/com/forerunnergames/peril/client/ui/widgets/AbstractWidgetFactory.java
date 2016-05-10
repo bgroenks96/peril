@@ -46,7 +46,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
@@ -447,9 +449,9 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (rowLabelAlignment, "rowLabelAlignment");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollbarStyle");
 
-    return new DefaultMessageBox <> (this, scrollPaneStyleName, scrollbarStyle,
-            new MessageBoxRowStyle (rowLabelStyleName, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
-                    DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT));
+    return new DefaultMessageBox <> (this, scrollPaneStyleName, scrollbarStyle, new MessageBoxRowStyle (
+            rowLabelStyleName, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
+            DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT));
   }
 
   @Override
@@ -577,6 +579,12 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   public NinePatch createNinePatchFromTextureRegion (final String regionName)
   {
     return getSkin ().getPatch (regionName);
+  }
+
+  @Override
+  public TiledDrawable createTiledDrawableFromTextureRegion (final String regionName)
+  {
+    return getSkin ().getTiledDrawable (regionName);
   }
 
   @Override

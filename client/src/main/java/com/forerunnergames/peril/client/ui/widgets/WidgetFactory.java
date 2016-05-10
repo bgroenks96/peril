@@ -39,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
@@ -168,6 +169,8 @@ public interface WidgetFactory
   Sprite createSpriteFromTextureRegion (final String regionName);
 
   NinePatch createNinePatchFromTextureRegion (final String regionName);
+
+  TiledDrawable createTiledDrawableFromTextureRegion (final String regionName);
 
   ChatBoxRow createChatMessageBoxRow (final ChatMessage message);
 
