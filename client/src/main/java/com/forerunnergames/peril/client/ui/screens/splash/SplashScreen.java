@@ -32,6 +32,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -90,6 +91,7 @@ public final class SplashScreen extends InputAdapter implements Screen
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final ProgressBar progressBar;
+  private final Popup quitPopup;
   private final Popup errorPopup;
   private final int windowWidth;
   private final int windowHeight;
@@ -158,6 +160,17 @@ public final class SplashScreen extends InputAdapter implements Screen
 
     stage = new Stage (viewport, batch);
 
+    // @formatter:off
+    quitPopup = widgetFactory.createQuitPopup ("Are you sure you want to quit Peril?", stage, new PopupListenerAdapter ()
+    {
+      @Override
+      public void onSubmit ()
+      {
+        Gdx.app.exit ();
+      }
+    });
+    // @formatter:on
+
     errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
     {
       @Override
@@ -181,6 +194,27 @@ public final class SplashScreen extends InputAdapter implements Screen
         stage.setKeyboardFocus (event.getTarget ());
 
         return false;
+      }
+    });
+
+    stage.addCaptureListener (new InputListener ()
+    {
+      @Override
+      public boolean keyDown (final InputEvent event, final int keycode)
+      {
+        switch (keycode)
+        {
+          case Input.Keys.ESCAPE:
+          {
+            quitPopup.show ();
+
+            return false;
+          }
+          default:
+          {
+            return false;
+          }
+        }
       }
     });
 
@@ -211,6 +245,9 @@ public final class SplashScreen extends InputAdapter implements Screen
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
 
+    quitPopup.refreshAssets ();
+    errorPopup.refreshAssets ();
+
     startLoading ();
   }
 
@@ -220,13 +257,11 @@ public final class SplashScreen extends InputAdapter implements Screen
     Gdx.gl.glClearColor (0, 0, 0, 1);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
+    quitPopup.update (delta);
+    errorPopup.update (delta);
+
     stage.act (delta);
     stage.draw ();
-
-    if (Gdx.input.isKeyPressed (Input.Keys.ESCAPE))
-    {
-      Gdx.app.exit ();
-    }
 
     if (!isLoading || errorPopup.isShown ()) return;
 
@@ -276,6 +311,9 @@ public final class SplashScreen extends InputAdapter implements Screen
     {
       assetManager.unload (descriptor);
     }
+
+    quitPopup.hide (null);
+    errorPopup.hide (null);
 
     setNextScreenDisplayMode ();
   }
@@ -352,7 +390,7 @@ public final class SplashScreen extends InputAdapter implements Screen
   {
     /* TODO Broken due to https://github.com/libgdx/libgdx/issues/3997
     final Graphics.DisplayMode currentMonitorMode = Gdx.graphics.getDisplayMode ();
-
+    
     log.info ("Current monitor display mode: {}", currentMonitorMode);
     */
 
@@ -396,8 +434,8 @@ public final class SplashScreen extends InputAdapter implements Screen
 
       if (availableMode.width > bestMode.width && availableMode.height > bestMode.height
               || (availableMode.width >= bestMode.width && availableMode.height >= bestMode.height
-              && (availableMode.bitsPerPixel > bestMode.bitsPerPixel
-              || availableMode.refreshRate > bestMode.refreshRate)))
+                      && (availableMode.bitsPerPixel > bestMode.bitsPerPixel
+                              || availableMode.refreshRate > bestMode.refreshRate)))
       {
         bestMode = availableMode;
         log.debug ("Best available display mode found so far for current monitor: {}", bestMode);

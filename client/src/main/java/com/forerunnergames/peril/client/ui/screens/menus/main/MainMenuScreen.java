@@ -44,7 +44,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
-    quitPopup = createQuitPopup ("Are you sure you want to quit?", new PopupListenerAdapter ()
+    quitPopup = createQuitPopup ("Are you sure you want to quit Peril?", new PopupListenerAdapter ()
     {
       @Override
       public void onSubmit ()

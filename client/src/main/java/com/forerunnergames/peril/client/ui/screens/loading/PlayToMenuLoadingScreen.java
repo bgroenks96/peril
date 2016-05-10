@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.loading;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -30,6 +31,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -77,6 +79,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final ProgressBar progressBar;
+  private final Popup quitPopup;
   private final Popup errorPopup;
   private boolean isLoading = false;
   private float overallLoadingProgressPercent = 0.0f;
@@ -127,13 +130,33 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
     stage = new Stage (viewport, batch);
 
-    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    // @formatter:off
+    quitPopup = widgetFactory.createQuitPopup ("Are you sure you want to quit Peril?", stage, new PopupListenerAdapter ()
     {
       @Override
       public void onSubmit ()
       {
+        isLoading = false;
+        eventBus.publishAsync (new QuitGameEvent ());
         resetLoadingProgress ();
+        Gdx.app.exit ();
+      }
+    });
+    // @formatter:on
 
+    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    {
+      @Override
+      public void onShow ()
+      {
+        isLoading = false;
+        eventBus.publishAsync (new QuitGameEvent ());
+      }
+
+      @Override
+      public void onSubmit ()
+      {
+        resetLoadingProgress ();
         screenChanger.toPreviousScreenOrSkipping (ScreenId.MAIN_MENU, ScreenId.PLAY_CLASSIC, ScreenId.PLAY_PERIL,
                                                   ScreenId.MENU_TO_PLAY_LOADING, ScreenId.PLAY_TO_MENU_LOADING,
                                                   ScreenId.SPLASH);
@@ -154,6 +177,27 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
         stage.setKeyboardFocus (event.getTarget ());
 
         return false;
+      }
+    });
+
+    stage.addCaptureListener (new InputListener ()
+    {
+      @Override
+      public boolean keyDown (final InputEvent event, final int keycode)
+      {
+        switch (keycode)
+        {
+          case Input.Keys.ESCAPE:
+          {
+            quitPopup.show ();
+
+            return false;
+          }
+          default:
+          {
+            return false;
+          }
+        }
       }
     });
 
@@ -182,6 +226,9 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
 
+    quitPopup.refreshAssets ();
+    errorPopup.refreshAssets ();
+
     if (!loading ()) startLoading ();
   }
 
@@ -190,6 +237,9 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
   {
     Gdx.gl.glClearColor (0, 0, 0, 1);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
+
+    quitPopup.update (delta);
+    errorPopup.update (delta);
 
     stage.act (delta);
     stage.draw ();
@@ -231,6 +281,9 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
     hideCursor ();
 
+    quitPopup.hide (null);
+    errorPopup.hide (null);
+
     isLoading = false;
   }
 
@@ -254,7 +307,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
       public void run ()
       {
         // @formatter:off
-        handleErrorDuringLoading (Strings
+        handleError (Strings
                 .format ("There was a problem loading a game resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                          event.getFileName (), event.getFileType ().getSimpleName (),
                          Throwables.getRootCause (event.getThrowable ()).getMessage (),
@@ -292,16 +345,12 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
                                               ScreenId.SPLASH);
   }
 
-  private void handleErrorDuringLoading (final String message)
+  private void handleError (final String message)
   {
     log.error (message);
 
     errorPopup.setMessage (new DefaultMessage (message));
     errorPopup.show ();
-
-    isLoading = false;
-
-    eventBus.publish (new QuitGameEvent ());
   }
 
   private void unloadPlayScreenAssets ()
@@ -323,16 +372,16 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
   private boolean isFinishedLoading ()
   {
-    if (!isLoading) throw new IllegalStateException (
-            "Cannot check whether finished loading because assets are not being loaded.");
+    if (!isLoading)
+      throw new IllegalStateException ("Cannot check whether finished loading because assets are not being loaded.");
 
     return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f;
   }
 
   private void updateLoadingProgress ()
   {
-    if (!isLoading) throw new IllegalStateException (
-            "Cannot get loading progress percent because assets are not being loaded.");
+    if (!isLoading)
+      throw new IllegalStateException ("Cannot get loading progress percent because assets are not being loaded.");
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
     currentLoadingProgressPercent = assetManager.getProgressLoading ();

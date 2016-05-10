@@ -260,22 +260,35 @@ public class OkPopup implements Popup
     }
 
     @Override
-    public Dialog show (final Stage stage, final Action action)
+    public Dialog show (final Stage stage, @Nullable final Action action)
     {
       if (isShown) return this;
+
+      isShown = true;
 
       stage.cancelTouchFocus ();
 
       OkPopup.this.refreshAssets ();
 
-      super.show (stage, action);
-
       setSize ();
       setPosition ();
+      clearActions ();
 
-      isShown = true;
+      if (action == null)
+      {
+        super.show (stage, null);
+        listener.onShow ();
+        return this;
+      }
 
-      listener.onShow ();
+      super.show (stage, Actions.sequence (action, Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          listener.onShow ();
+        }
+      })));
 
       return this;
     }
@@ -285,18 +298,26 @@ public class OkPopup implements Popup
     {
       if (isShown) return this;
 
+      isShown = true;
+
       stage.cancelTouchFocus ();
 
       OkPopup.this.refreshAssets ();
 
-      super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade)));
-
       setSize ();
       setPosition ();
+      clearActions ();
 
-      isShown = true;
-
-      listener.onShow ();
+      // @formatter:off
+      super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          listener.onShow ();
+        }
+      })));
+      // @formatter:on
 
       return this;
     }
@@ -306,11 +327,25 @@ public class OkPopup implements Popup
     {
       if (!isShown) return;
 
-      super.hide (action);
-
-      listener.onHide ();
-
       isShown = false;
+
+      clearActions ();
+
+      if (action == null)
+      {
+        super.hide (null);
+        listener.onHide ();
+        return;
+      }
+
+      super.hide (Actions.sequence (action, Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          listener.onHide ();
+        }
+      })));
     }
 
     @Override
@@ -318,11 +353,18 @@ public class OkPopup implements Popup
     {
       if (!isShown) return;
 
-      super.hide (Actions.fadeOut (0.2f, Interpolation.fade));
-
-      listener.onHide ();
-
       isShown = false;
+
+      clearActions ();
+
+      super.hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          listener.onHide ();
+        }
+      })));
     }
 
     @Override
@@ -337,7 +379,16 @@ public class OkPopup implements Popup
       if (object == PopupAction.SUBMIT)
       {
         cancel ();
-        listener.onSubmit ();
+
+        addAction (Actions.run (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            listener.onSubmit ();
+          }
+        }));
+
         return;
       }
 

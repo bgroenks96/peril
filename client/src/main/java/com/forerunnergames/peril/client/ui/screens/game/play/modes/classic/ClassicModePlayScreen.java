@@ -18,12 +18,6 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
-import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -72,14 +66,14 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.AbstractBattlePopupListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattleOutcome;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.AbstractBattlePopupListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattleOutcome;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
 import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
@@ -97,8 +91,8 @@ import com.forerunnergames.peril.common.net.events.server.notification.Determine
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -108,6 +102,7 @@ import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -116,6 +111,12 @@ import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
 
 public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
@@ -145,6 +146,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Cell <Actor> playMapCell;
   private final ScreenShaker screenShaker;
   private final DebugInputProcessor debugInputProcessor;
+  private final ImmutableCollection <Popup> popups;
   private Sound battleSingleExplosionSound;
   private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
 
@@ -209,6 +211,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     defendPopup = widgetFactory.createDefendPopup (stage, eventBus, new DefendPopupListener ());
     battleResultPopup = widgetFactory.createBattleResultPopup (stage, new BattleResultPopupListener ());
     quitPopup = widgetFactory.createQuitPopup (stage, new QuitPopupListener ());
+
+    popups = ImmutableList.of (occupationPopup, reinforcementPopup, attackPopup, defendPopup, battleResultPopup,
+                               quitPopup);
 
     stage.addActor (rootStack);
 
@@ -301,16 +306,17 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     playMap.mouseMoved (mouseInput.position ());
 
     backgroundImage.setDrawable (widgetFactory.createBackgroundImageDrawable ());
+
     statusBox.refreshAssets ();
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
     sideBar.refreshAssets ();
-    occupationPopup.refreshAssets ();
-    reinforcementPopup.refreshAssets ();
-    attackPopup.refreshAssets ();
-    defendPopup.refreshAssets ();
-    battleResultPopup.refreshAssets ();
-    quitPopup.refreshAssets ();
+
+    for (final Popup popup : popups)
+    {
+      popup.refreshAssets ();
+    }
+
     battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
   }
 
@@ -322,12 +328,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     keyRepeat.update ();
     stage.act (delta);
-    occupationPopup.update (delta);
-    reinforcementPopup.update (delta);
-    attackPopup.update (delta);
-    defendPopup.update (delta);
-    battleResultPopup.update (delta);
-    quitPopup.update (delta);
+
+    for (final Popup popup : popups)
+    {
+      popup.update (delta);
+    }
+
     screenShaker.update (delta);
     stage.draw ();
   }
@@ -365,13 +371,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     statusBox.clear ();
     playerBox.clear ();
     debugInputProcessor.reset ();
+
     clearPlayMap ();
-    occupationPopup.hide ();
-    reinforcementPopup.hide ();
-    attackPopup.hide ();
-    defendPopup.hide ();
-    battleResultPopup.hide ();
-    quitPopup.hide ();
+
+    for (final Popup popup : popups)
+    {
+      popup.hide (null);
+    }
+
     battleSingleExplosionSound.stop ();
   }
 
@@ -815,6 +822,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     }
 
     @Override
+    public void onRetreat ()
+    {
+      // TODO Production: Remove
+      eventBus.publish (StatusMessageEventFactory
+              .create (Strings.format ("You stopped attacking {} in {} from {}.", attackPopup.getDefendingPlayerName (),
+                                       attackPopup.getDefendingCountryName (), attackPopup.getAttackingCountryName ()),
+                       ImmutableSet.<PlayerPacket> of ()));
+    }
+
+    @Override
     public void onAttackerWinFinal ()
     {
       // @formatter:off
@@ -837,8 +854,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
       attackPopup.hide ();
 
-      occupationPopup.show (minDestinationArmies, maxDestinationArmies, sourceCountry, destinationCountry,
-                            totalArmies);
+      occupationPopup.show (minDestinationArmies, maxDestinationArmies, sourceCountry, destinationCountry, totalArmies);
 
       battleResultPopup.setTitle ("Victory");
       battleResultPopup.setMessage (new DefaultMessage (
@@ -867,16 +883,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                                           Strings.format ("You failed to conquer {}.",
                                                                           attackPopup.getDefendingCountryName ()),
                                                           ImmutableSet.<PlayerPacket> of ()));
-    }
-
-    @Override
-    public void onRetreat ()
-    {
-      // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory
-              .create (Strings.format ("You stopped attacking {} in {} from {}.", attackPopup.getDefendingPlayerName (),
-                                       attackPopup.getDefendingCountryName (), attackPopup.getAttackingCountryName ()),
-                       ImmutableSet.<PlayerPacket> of ()));
     }
 
     @Override

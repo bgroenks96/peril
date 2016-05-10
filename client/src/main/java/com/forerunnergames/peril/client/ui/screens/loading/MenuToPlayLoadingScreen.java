@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.loading;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -30,6 +31,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -114,18 +116,22 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private final CreateGameServerHandler createGameServerHandler;
   private final CreateGameServerListener createGameServerListener;
   private final ProgressBar progressBar;
+  private final Popup quitPopup;
   private final Popup errorPopup;
   private final List <ServerEvent> incomingServerEvents = new ArrayList <> ();
+  private final Set <PlayerPacket> playersInGame = new HashSet <> ();
   private boolean isLoading = false;
   @Nullable
   private GameServerConfiguration gameServerConfiguration = null;
   @Nullable
   private ClientConfiguration clientConfiguration = null;
-  private Set <PlayerPacket> playersInGame = new HashSet <> ();
   private float overallLoadingProgressPercent = 0.0f;
   private float currentLoadingProgressPercent = 0.0f;
   private float previousLoadingProgressPercent = 0.0f;
   private boolean createdGameFirst = false;
+  private boolean isResettingLoadingProgress = false;
+  @Nullable
+  private Runnable resetLoadingProgressCompletionRunnable = null;
 
   public MenuToPlayLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
                                   final PlayMapFactory playMapFactory,
@@ -177,12 +183,49 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     stage = new Stage (viewport, batch);
 
-    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    // @formatter:off
+    quitPopup = widgetFactory.createQuitPopup ("Are you sure you want to quit the current game?", stage, new PopupListenerAdapter ()
     {
       @Override
       public void onSubmit ()
       {
-        screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+        isLoading = false;
+        eventBus.publishAsync (new QuitGameEvent ());
+        unloadPlayMapAssets ();
+        resetLoadingProgress (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            log.error ("Progress bar value: {}", progressBar.getValue ());
+            screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+          }
+        });
+      }
+    });
+    // @formatter:on
+
+    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    {
+      @Override
+      public void onShow ()
+      {
+        isLoading = false;
+        unloadPlayMapAssets ();
+        eventBus.publishAsync (new QuitGameEvent ());
+      }
+
+      @Override
+      public void onSubmit ()
+      {
+        resetLoadingProgress (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+          }
+        });
       }
     });
 
@@ -238,9 +281,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           @Override
           public void run ()
           {
-            errorPopup.setMessage (new DefaultMessage (Strings.format ("{}", reason)));
-            errorPopup.show ();
-            eventBus.publish (new QuitGameEvent ());
+            handleError (Strings.format ("{}", reason));
           }
         });
       }
@@ -337,9 +378,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           @Override
           public void run ()
           {
-            errorPopup.setMessage (new DefaultMessage (Strings.format ("{}", reason)));
-            errorPopup.show ();
-            eventBus.publish (new QuitGameEvent ());
+            handleError (Strings.format ("{}", reason));
           }
         });
       }
@@ -358,9 +397,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           @Override
           public void run ()
           {
-            errorPopup.setMessage (new DefaultMessage (Strings.format ("{}", reason)));
-            errorPopup.show ();
-            eventBus.publish (new QuitGameEvent ());
+            handleError (Strings.format ("{}", reason));
           }
         });
       }
@@ -378,9 +415,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           @Override
           public void run ()
           {
-            errorPopup.setMessage (new DefaultMessage (Strings.format ("{}", asText (reason, playerName))));
-            errorPopup.show ();
-            eventBus.publish (new QuitGameEvent ());
+            handleError (Strings.format ("{}", asText (reason, playerName)));
           }
         });
       }
@@ -430,6 +465,27 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       }
     });
 
+    stage.addCaptureListener (new InputListener ()
+    {
+      @Override
+      public boolean keyDown (final InputEvent event, final int keycode)
+      {
+        switch (keycode)
+        {
+          case Input.Keys.ESCAPE:
+          {
+            quitPopup.show ();
+
+            return false;
+          }
+          default:
+          {
+            return false;
+          }
+        }
+      }
+    });
+
     final InputProcessor preInputProcessor = new InputAdapter ()
     {
       @Override
@@ -454,6 +510,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Gdx.input.setInputProcessor (inputProcessor);
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
+
+    quitPopup.refreshAssets ();
+    errorPopup.refreshAssets ();
   }
 
   @Override
@@ -462,9 +521,13 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Gdx.gl.glClearColor (0, 0, 0, 1);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
+    quitPopup.update (delta);
+    errorPopup.update (delta);
+
     stage.act (delta);
     stage.draw ();
 
+    if (resettingLoadingProgress () && resetLoadingProgressCompleted ()) endResetLoadingProgress ();
     if (!loading ()) return;
 
     updateLoadingProgress ();
@@ -501,6 +564,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Gdx.input.setInputProcessor (null);
 
     hideCursor ();
+
+    quitPopup.hide (null);
+    errorPopup.hide (null);
 
     isLoading = false;
     gameServerConfiguration = null;
@@ -561,11 +627,14 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     Gdx.app.postRunnable (new Runnable ()
     {
+
+
+
       @Override
       public void run ()
       {
         // @formatter:off
-        handleErrorDuringLoading (
+        handleError (
                 Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading a game " +
                         "resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                         CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, event.getFileName (),
@@ -643,11 +712,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private void goToPlayScreen ()
   {
-    if (gameServerConfiguration == null) throw new IllegalStateException (Strings
-            .format ("Cannot go to play screen because {} is null.", GameServerConfiguration.class.getSimpleName ()));
-
-    if (clientConfiguration == null) throw new IllegalStateException (Strings
-            .format ("Cannot go to play screen because {} is null.", ClientConfiguration.class.getSimpleName ()));
+    assert gameServerConfiguration != null;
+    assert clientConfiguration != null;
 
     final PlayMap playMap;
 
@@ -658,7 +724,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     catch (final PlayMapLoadingException e)
     {
       // @formatter:off
-      handleErrorDuringLoading (
+      handleError (
               Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources " +
                       "for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                       CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
@@ -672,37 +738,47 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration,
             ImmutableSet.copyOf (playersInGame), playMap);
 
-    resetLoadingProgress ();
     unloadMenuAssets ();
 
-    switch (gameServerConfiguration.getGameMode ())
+    final GameMode mode = gameServerConfiguration.getGameMode ();
+
+    isLoading = false;
+
+    resetLoadingProgress (new Runnable ()
     {
-      case CLASSIC:
+      @Override
+      public void run ()
       {
-        screenChanger.toScreen (ScreenId.PLAY_CLASSIC);
-        break;
-      }
-      case PERIL:
-      {
-        screenChanger.toScreen (ScreenId.PLAY_PERIL);
-        break;
-      }
-      default:
-      {
-        throw new UnsupportedOperationException (
-                Strings.format ("Unsupported {}: [{}].", GameMode.class.getSimpleName (),
-                                gameServerConfiguration.getGameMode ()));
-      }
-    }
+        switch (mode)
+        {
+          case CLASSIC:
+          {
+            screenChanger.toScreen (ScreenId.PLAY_CLASSIC);
+            break;
+          }
+          case PERIL:
+          {
+            screenChanger.toScreen (ScreenId.PLAY_PERIL);
+            break;
+          }
+          default:
+          {
+            throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].",
+                                                                     GameMode.class.getSimpleName (),
+                                                                     gameServerConfiguration.getGameMode ()));
+          }
+        }
 
-    // The play screen is now active & can therefore receive events.
+        // The play screen is now active & can therefore receive events.
 
-    eventBus.publish (playGameEvent);
+        eventBus.publish (playGameEvent);
 
-    for (final ServerEvent event : incomingServerEvents)
-    {
-      eventBus.publish (event);
-    }
+        for (final ServerEvent event : incomingServerEvents)
+        {
+          eventBus.publish (event);
+        }
+      }
+    });
   }
 
   private void startLoading (final MapMetadata mapMetadata)
@@ -714,18 +790,12 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     loadPlayScreenAssetsAsync ();
   }
 
-  private void handleErrorDuringLoading (final String message)
+  private void handleError (final String message)
   {
     log.error (message);
 
     errorPopup.setMessage (new DefaultMessage (message));
     errorPopup.show ();
-
-    isLoading = false;
-
-    if (gameServerConfiguration != null) unloadPlayMapAssets (gameServerConfiguration.getMapMetadata ());
-
-    eventBus.publish (new QuitGameEvent ());
   }
 
   private void unloadMenuAssets ()
@@ -737,9 +807,16 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     }
   }
 
-  private void unloadPlayMapAssets (final MapMetadata mapMetadata)
+  private void unloadPlayMapAssets ()
   {
-    playMapFactory.destroy (mapMetadata);
+    if (gameServerConfiguration == null)
+    {
+      log.warn ("Not unloading {} assets (null {}).", PlayMap.class.getSimpleName (),
+                GameServerConfiguration.class.getSimpleName ());
+      return;
+    }
+
+    playMapFactory.destroy (gameServerConfiguration.getMapMetadata ());
   }
 
   private void loadPlayScreenAssetsAsync ()
@@ -759,7 +836,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     catch (final PlayMapLoadingException e)
     {
       // @formatter:off
-      handleErrorDuringLoading (
+      handleError (
               Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources " +
                       "for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                       CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
@@ -772,12 +849,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private boolean isFinishedLoading ()
   {
-    if (!isLoading)
-      throw new IllegalStateException ("Cannot check whether finished loading because assets are not being loaded.");
-
-    if (gameServerConfiguration == null)
-      throw new IllegalStateException (Strings.format ("Cannot check whether finished loading because {} is null.",
-                                                       GameServerConfiguration.class.getSimpleName ()));
+    assert isLoading;
+    assert gameServerConfiguration != null;
 
     return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f
             && playMapFactory.isFinishedLoadingAssets (gameServerConfiguration.getMapMetadata ());
@@ -785,18 +858,13 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private void updateLoadingProgress ()
   {
-    if (!isLoading)
-      throw new IllegalStateException ("Cannot get loading progress percent because assets are not being loaded.");
-
-    if (gameServerConfiguration == null)
-      throw new IllegalStateException (Strings.format ("Cannot get loading progress percent because {} is null.",
-                                                       GameServerConfiguration.class.getSimpleName ()));
+    assert isLoading;
+    assert gameServerConfiguration != null;
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentLoadingProgressPercent = (playMapFactory
-            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
-            + assetManager.getProgressLoading ()) / 2.0f;
+    currentLoadingProgressPercent = (playMapFactory.getAssetLoadingProgressPercent (gameServerConfiguration
+            .getMapMetadata ()) + assetManager.getProgressLoading ()) / 2.0f;
   }
 
   private boolean loadingProgressIncreased ()
@@ -811,7 +879,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private float convert (final float loadingProgressIncrease)
   {
-    return createdGameFirst ? loadingProgressIncrease * ONE_THIRD : loadingProgressIncrease * ONE_HALF;
+    return loadingProgressIncrease * (createdGameFirst ? ONE_THIRD : ONE_HALF);
   }
 
   private void increaseLoadingProgressBy (final float percent)
@@ -823,12 +891,39 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     log.debug ("Overall loading progress: {} (increased by {}).", overallLoadingProgressPercent, percent);
   }
 
+  private boolean resettingLoadingProgress ()
+  {
+    return isResettingLoadingProgress;
+  }
+
+  private boolean resetLoadingProgressCompleted ()
+  {
+    return progressBar.getVisualValue () <= 0.0f;
+  }
+
+  private void endResetLoadingProgress ()
+  {
+    isResettingLoadingProgress = false;
+    progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
+
+    if (resetLoadingProgressCompletionRunnable == null) return;
+
+    resetLoadingProgressCompletionRunnable.run ();
+    resetLoadingProgressCompletionRunnable = null;
+  }
+
   private void resetLoadingProgress ()
+  {
+    resetLoadingProgress (null);
+  }
+
+  private void resetLoadingProgress (@Nullable final Runnable completionRunnable)
   {
     overallLoadingProgressPercent = 0.0f;
     progressBar.setAnimateDuration (0.0f);
     progressBar.setValue (0.0f);
-    progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
+    isResettingLoadingProgress = true;
+    resetLoadingProgressCompletionRunnable = completionRunnable;
   }
 
   private void showCursor ()

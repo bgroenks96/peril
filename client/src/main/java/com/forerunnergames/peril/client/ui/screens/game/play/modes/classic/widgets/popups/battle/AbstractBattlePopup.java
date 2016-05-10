@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -45,6 +46,7 @@ import com.forerunnergames.tools.common.Event;
 
 import com.google.common.collect.ImmutableList;
 
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
@@ -213,10 +215,19 @@ public abstract class AbstractBattlePopup extends OkPopup
   @Override
   public final void hide ()
   {
-    super.hide ();
-
     battleTask.cancel ();
     resetBattleTask.cancel ();
+
+    super.hide ();
+  }
+
+  @Override
+  public void hide (@Nullable final Action action)
+  {
+    battleTask.cancel ();
+    resetBattleTask.cancel ();
+
+    super.hide (action);
   }
 
   @Override
