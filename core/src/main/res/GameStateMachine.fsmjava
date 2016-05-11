@@ -41,12 +41,12 @@
           type="com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent"
           name="event" />
       </event>
-      <event id="onRandomlyAssignPlayerCountriesEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent"
+      <event id="onRandomCountryAssignmentEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.RandomCountryAssignmentEvent"
           name="event" />
       </event>
-      <event id="onBeginManualCountryAssignmentEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent"
+      <event id="onManualCountryAssignmentEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.ManualCountryAssignmentEvent"
           name="event" />
       </event>
       <event id="onPlayerClaimCountryResponseRequestEvent">
@@ -62,6 +62,16 @@
       <event id="onPlayerCountryAssignmentCompleteEvent">
         <parameter
           type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
+          name="event" />
+      </event>
+      <event id="onManualInitialReinforcementEvent">
+        <parameter
+          type="com.forerunnergames.peril.core.model.state.events.ManualInitialReinforcementEvent"
+          name="event" />
+      </event>
+      <event id="onRandomInitialReinforcementEvent">
+        <parameter
+          type="com.forerunnergames.peril.core.model.state.events.RandomInitialReinforcementEvent"
           name="event" />
       </event>
       <event id="onPlayerReinforceInitialCountryResponseRequestEvent">
@@ -195,8 +205,8 @@
             <state name="AssignPlayerCountries">
               <state name="WaitForCountryAssignmentToBegin">
                 <onEntry action="gameModel.waitForCountryAssignmentToBegin()" />
-                <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries" />
-                <transition event="onBeginManualCountryAssignmentEvent" nextState="ManuallyAssignPlayerCountries" />
+                <transition event="onRandomCountryAssignmentEvent" nextState="RandomlyAssignPlayerCountries" />
+                <transition event="onManualCountryAssignmentEvent" nextState="ManuallyAssignPlayerCountries" />
               </state>
               <state name="RandomlyAssignPlayerCountries">
                 <onEntry action="gameModel.randomlyAssignPlayerCountries()" />
@@ -216,6 +226,15 @@
             <state name="InitialReinforcementPhase">
               <onEntry action="gameModel.beginInitialReinforcementPhase()" />
               <onExit  action="gameModel.resetTurn()" />
+              <state name="DetermineInitialReinforcementMode">
+                <onEntry action="gameModel.determineInitialReinforcementMode()" />
+                <transition event="onManualInitialReinforcementEvent" nextState="WaitForPlayersToReinforceInitialCountries" />
+                <transition event="onRandomInitialReinforcementEvent" nextState="RandomlyReinforcePlayerCountries" />
+              </state>
+              <state name="RandomlyReinforcePlayerCountries">
+                <onEntry action="gameMode.randomlyReinforcePlayerCountries()" />
+                <transition event="onEndInitialReinforcementPhaseEvent" nextState="TurnPhase" />
+              </state>
               <state name="WaitForPlayersToReinforceInitialCountries">
                 <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()" />
                 <onExit action="gameModel.advanceTurn()" />

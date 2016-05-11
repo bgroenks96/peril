@@ -119,9 +119,9 @@ import com.forerunnergames.peril.core.model.state.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
-import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
+import com.forerunnergames.peril.core.model.state.events.ManualCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
-import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
+import com.forerunnergames.peril.core.model.state.events.RandomCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
@@ -349,13 +349,13 @@ public final class GameModel
       case RANDOM:
       {
         log.info ("Initial country assignment = RANDOM");
-        publish (new RandomlyAssignPlayerCountriesEvent ());
+        publish (new RandomCountryAssignmentEvent ());
         break;
       }
       case MANUAL:
       {
         log.info ("Initial country assignment = MANUAL");
-        publish (new BeginManualCountryAssignmentEvent ());
+        publish (new ManualCountryAssignmentEvent ());
         break;
       }
       default:
@@ -485,15 +485,6 @@ public final class GameModel
     }
   }
 
-  public void beginInitialReinforcementPhase ()
-  {
-    log.info ("Begin initial reinforcement phase...");
-
-    resetTurn ();
-
-    publish (new BeginInitialReinforcementPhaseEvent (getCurrentPlayerPacket ()));
-  }
-
   @StateMachineAction
   @StateEntryAction
   public void waitForPlayersToClaimInitialCountries ()
@@ -582,6 +573,21 @@ public final class GameModel
             countryMapGraphModel.countryPacketWith (countryId), 1));
 
     return true;
+  }
+
+  public void beginInitialReinforcementPhase ()
+  {
+    log.info ("Begin initial reinforcement phase...");
+
+    resetTurn ();
+
+    publish (new BeginInitialReinforcementPhaseEvent ());
+  }
+
+  public void determineInitialReinforcementMode ()
+  {
+    log.info ("Determining initial reinforcement mode...");
+
   }
 
   @StateMachineAction

@@ -21,6 +21,7 @@ package com.forerunnergames.peril.common.game.rules;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.InitialArmyReinforcement;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.tools.common.Arguments;
@@ -50,6 +51,7 @@ public final class ClassicGameRules implements GameRules
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
   public static final InitialCountryAssignment DEFAULT_INITIAL_COUNTRY_ASSIGNMENT = InitialCountryAssignment.RANDOM;
+  public static final InitialArmyReinforcement DEFAULT_INITIAL_ARMY_REINFORCEMENT = InitialArmyReinforcement.MANUAL;
   public static final int MIN_TOTAL_ATTACKER_DIE_COUNT = 1;
   public static final int MAX_TOTAL_ATTACKER_DIE_COUNT = 3;
   public static final int MIN_TOTAL_DEFENDER_DIE_COUNT = 1;
@@ -71,6 +73,7 @@ public final class ClassicGameRules implements GameRules
   private final int initialArmies;
   private final int winningCountryCount;
   private final InitialCountryAssignment initialCountryAssignment;
+  private final InitialArmyReinforcement initialArmyReinforcement;
 
   @Override
   public int getInitialArmies ()
@@ -82,6 +85,12 @@ public final class ClassicGameRules implements GameRules
   public InitialCountryAssignment getInitialCountryAssignment ()
   {
     return initialCountryAssignment;
+  }
+
+  @Override
+  public InitialArmyReinforcement getInitialArmyReinforcement ()
+  {
+    return initialArmyReinforcement;
   }
 
   @Override
@@ -544,7 +553,8 @@ public final class ClassicGameRules implements GameRules
   private ClassicGameRules (final int playerLimit,
                             final int winPercentage,
                             final int totalCountryCount,
-                            final InitialCountryAssignment initialCountryAssignment)
+                            final InitialCountryAssignment initialCountryAssignment,
+                            final InitialArmyReinforcement initialArmyReinforcement)
   {
     // @formatter:off
     Arguments.checkLowerInclusiveBound (playerLimit, MIN_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MIN_PLAYER_LIMIT");
@@ -563,6 +573,7 @@ public final class ClassicGameRules implements GameRules
     this.winPercentage = winPercentage;
     this.totalCountryCount = totalCountryCount;
     this.initialCountryAssignment = initialCountryAssignment;
+    this.initialArmyReinforcement = initialArmyReinforcement;
     initialArmies = calculateInitialArmies (playerLimit);
     winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
   }
@@ -573,10 +584,12 @@ public final class ClassicGameRules implements GameRules
     private int winPercentage = DEFAULT_WIN_PERCENTAGE;
     private int totalCountryCount = DEFAULT_TOTAL_COUNTRY_COUNT;
     private InitialCountryAssignment initialCountryAssignment = DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
+    private InitialArmyReinforcement initialArmyReinforcement = DEFAULT_INITIAL_ARMY_REINFORCEMENT;
 
     public ClassicGameRules build ()
     {
-      return new ClassicGameRules (playerLimit, winPercentage, totalCountryCount, initialCountryAssignment);
+      return new ClassicGameRules (playerLimit, winPercentage, totalCountryCount, initialCountryAssignment,
+              initialArmyReinforcement);
     }
 
     public Builder initialCountryAssignment (@Nullable final InitialCountryAssignment initialCountryAssignment)
@@ -584,6 +597,15 @@ public final class ClassicGameRules implements GameRules
       if (initialCountryAssignment == null) return this;
 
       this.initialCountryAssignment = initialCountryAssignment;
+
+      return this;
+    }
+
+    public Builder initialArmyReinforcement (@Nullable final InitialArmyReinforcement initialArmyReinforcement)
+    {
+      if (initialArmyReinforcement == null) return this;
+
+      this.initialArmyReinforcement = initialArmyReinforcement;
 
       return this;
     }

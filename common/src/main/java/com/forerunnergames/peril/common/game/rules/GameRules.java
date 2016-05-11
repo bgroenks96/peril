@@ -21,6 +21,7 @@ package com.forerunnergames.peril.common.game.rules;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.InitialArmyReinforcement;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 
@@ -31,6 +32,8 @@ public interface GameRules
   int getInitialArmies ();
 
   InitialCountryAssignment getInitialCountryAssignment ();
+
+  InitialArmyReinforcement getInitialArmyReinforcement ();
 
   int getMinPlayerCountryCount ();
 

@@ -18,6 +18,6 @@
 
 package com.forerunnergames.peril.core.model.state.events;
 
-public final class BeginManualCountryAssignmentEvent implements StateEvent
+public final class ManualCountryAssignmentEvent implements StateEvent
 {
 }

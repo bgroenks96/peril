@@ -40,11 +40,11 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCo
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
-import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
+import com.forerunnergames.peril.core.model.state.events.ManualCountryAssignmentEvent;
+import com.forerunnergames.peril.core.model.state.events.RandomCountryAssignmentEvent;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.base.Optional;
@@ -191,23 +191,23 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final BeginManualCountryAssignmentEvent event)
+  public void onEvent (final ManualCountryAssignmentEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onBeginManualCountryAssignmentEvent (event);
+    // FIXME context.onBeginManualCountryAssignmentEvent (event);
   }
 
   @Handler
-  public void onEvent (final RandomlyAssignPlayerCountriesEvent event)
+  public void onEvent (final RandomCountryAssignmentEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onRandomlyAssignPlayerCountriesEvent (event);
+    // FIXME context.onRandomlyAssignPlayerCountriesEvent (event);
   }
 
   @Handler
