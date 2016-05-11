@@ -29,8 +29,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.base.Optional;
 
-public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerEvent
-        implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
+public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerEvent implements
+        PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
   private final PlayerPacket prevDestCountryOwner;
   private final CountryPacket sourceCountry;
@@ -54,21 +54,6 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
     this.sourceCountry = sourceCountry;
     this.destinationCountry = destinationCountry;
     this.deltaArmyCount = deltaArmyCount;
-  }
-
-  public CountryPacket getSourceCountry ()
-  {
-    return sourceCountry;
-  }
-
-  public CountryPacket getDestinationCountry ()
-  {
-    return destinationCountry;
-  }
-
-  public int getDeltaArmyCount ()
-  {
-    return deltaArmyCount;
   }
 
   /**
@@ -102,6 +87,31 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
   public PlayerPacket getNewOwner ()
   {
     return getPlayer ();
+  }
+
+  public CountryPacket getSourceCountry ()
+  {
+    return sourceCountry;
+  }
+
+  public CountryPacket getDestinationCountry ()
+  {
+    return destinationCountry;
+  }
+
+  public int getDeltaArmyCount ()
+  {
+    return deltaArmyCount;
+  }
+
+  public String getSourceCountryName ()
+  {
+    return sourceCountry.getName ();
+  }
+
+  public String getDestinationCountryName ()
+  {
+    return destinationCountry.getName ();
   }
 
   @Override

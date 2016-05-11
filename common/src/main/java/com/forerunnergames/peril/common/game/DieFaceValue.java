@@ -108,6 +108,11 @@ public enum DieFaceValue implements IterableEnum <DieFaceValue>
     return values ().length;
   }
 
+  public static DieFaceValue valueOf (final int value)
+  {
+    return IterableEnumHelper.getNthValue (value, values ());
+  }
+
   public int value ()
   {
     return value;

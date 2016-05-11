@@ -49,9 +49,29 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
     return sourceCountry;
   }
 
+  public String getSourceCountryName ()
+  {
+    return sourceCountry.getName ();
+  }
+
+  public int getSourceCountryArmyCount ()
+  {
+    return sourceCountry.getArmyCount ();
+  }
+
   public CountryPacket getDestinationCountry ()
   {
     return destinationCountry;
+  }
+
+  public String getDestinationCountryName ()
+  {
+    return destinationCountry.getName ();
+  }
+
+  public int getDestinationCountryArmyCount ()
+  {
+    return destinationCountry.getArmyCount ();
   }
 
   @Override

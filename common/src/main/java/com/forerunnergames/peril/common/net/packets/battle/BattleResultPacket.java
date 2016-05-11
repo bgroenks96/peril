@@ -36,9 +36,17 @@ public interface BattleResultPacket
    */
   PlayerPacket getDefendingCountryOwner ();
 
-  ImmutableSet <DieRoll> getAttackerRollResults ();
+  ImmutableSet <DieRoll> getAttackerRolls ();
 
-  ImmutableSet <DieRoll> getDefenderRollResults ();
+  ImmutableSet <DieRoll> getDefenderRolls ();
+
+  String getAttackingPlayerName ();
+
+  String getDefendingPlayerName ();
+
+  String getAttackingCountryName ();
+
+  String getDefendingCountryName ();
 
   int getAttackingCountryArmyDelta ();
 
