@@ -497,10 +497,9 @@ public final class StateMachineEventHandler
     }
 
     @Override
-    public void onActionException (final String context, final Throwable throwable)
+    public void onActionException (final String context, @Nullable final Throwable throwable)
     {
       Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (throwable, "throwable");
 
       for (final StateMachineListener listener : stateMachineListeners)
       {

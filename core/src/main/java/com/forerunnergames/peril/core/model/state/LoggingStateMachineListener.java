@@ -95,10 +95,9 @@ public class LoggingStateMachineListener implements StateMachineListener
   }
 
   @Override
-  public void onActionException (final String context, final Throwable throwable)
+  public void onActionException (final String context, @Nullable final Throwable throwable)
   {
     Arguments.checkIsNotNull (context, "context");
-    Arguments.checkIsNotNull (throwable, "throwable");
 
     log.trace ("{}: exception during action: {}", context, throwable.getMessage ());
   }
