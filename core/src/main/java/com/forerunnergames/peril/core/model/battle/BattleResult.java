@@ -35,7 +35,7 @@ public interface BattleResult
    */
   Id getDefendingCountryOwner ();
 
-  ImmutableSet <DieRoll> getAttackerRollResults ();
+  ImmutableSet <DieRoll> getAttackerRolls ();
 
-  ImmutableSet <DieRoll> getDefenderRollResults ();
+  ImmutableSet <DieRoll> getDefenderRolls ();
 }

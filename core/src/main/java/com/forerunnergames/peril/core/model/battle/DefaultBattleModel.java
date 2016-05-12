@@ -167,8 +167,8 @@ public final class DefaultBattleModel implements BattleModel
     final ImmutableList <DieFaceValue> attackerRoll = generatedSortedDieValues (attackOrder.getDieCount ());
     final ImmutableList <DieFaceValue> defenderRoll = generatedSortedDieValues (defenderDieCount);
 
-    final ImmutableSet.Builder <DieRoll> attackerRollResults = ImmutableSet.builder ();
-    final ImmutableSet.Builder <DieRoll> defenderRollResults = ImmutableSet.builder ();
+    final ImmutableSet.Builder <DieRoll> attackerRolls = ImmutableSet.builder ();
+    final ImmutableSet.Builder <DieRoll> defenderRolls = ImmutableSet.builder ();
     final int minDieCount = Math.min (attackerRoll.size (), defenderRoll.size ());
     boolean battleFinished = false;
     for (int i = 0; i < minDieCount; i++)
@@ -217,15 +217,15 @@ public final class DefaultBattleModel implements BattleModel
               || countryArmyModel.armyCountIs (rules.getMinArmiesOnCountry (), defenderCountry);
 
       // store die values and outcomes regardless of whether or not the battle has already finished
-      attackerRollResults.add (new DieRoll (attackerDieValue, attackerOutcome));
-      defenderRollResults.add (new DieRoll (defenderDieValue, defenderOutcome));
+      attackerRolls.add (new DieRoll (attackerDieValue, attackerOutcome));
+      defenderRolls.add (new DieRoll (defenderDieValue, defenderOutcome));
     }
 
     final BattleActor attacker = new DefaultBattleActor (attackOrder.getPlayerId (), attackerCountry,
             attackOrder.getDieCount ());
     final BattleActor defender = new DefaultBattleActor (defenderId, defenderCountry, defenderDieCount);
     final BattleResult result = new DefaultBattleResult (attacker, defender,
-            countryOwnerModel.ownerOf (defenderCountry), attackerRollResults.build (), defenderRollResults.build ());
+            countryOwnerModel.ownerOf (defenderCountry), attackerRolls.build (), defenderRolls.build ());
 
     battleResultArchive.add (result);
 

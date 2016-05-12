@@ -50,7 +50,7 @@ public final class BattlePackets
     final BattleActorPacket defender = from (result.getDefender (), playerModel, mapGraphModel);
 
     return new DefaultBattleResultPacket (attacker, defender, playerModel.playerPacketWith (result
-            .getDefendingCountryOwner ()), result.getAttackerRollResults (), result.getDefenderRollResults (),
+            .getDefendingCountryOwner ()), result.getAttackerRolls (), result.getDefenderRolls (),
             attackingCountryArmyDelta, defendingCountryArmyDelta);
   }
 

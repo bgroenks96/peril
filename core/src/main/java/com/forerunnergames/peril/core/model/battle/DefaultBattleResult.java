@@ -30,26 +30,26 @@ public final class DefaultBattleResult implements BattleResult
   private final BattleActor attacker;
   private final BattleActor defender;
   private final Id defendingCountryOwner;
-  private final ImmutableSet <DieRoll> attackerRollResults;
-  private final ImmutableSet <DieRoll> defenderRollResults;
+  private final ImmutableSet <DieRoll> attackerRolls;
+  private final ImmutableSet <DieRoll> defenderRolls;
 
   public DefaultBattleResult (final BattleActor attacker,
                               final BattleActor defender,
                               final Id defendingCountryOwner,
-                              final ImmutableSet <DieRoll> attackerRollResults,
-                              final ImmutableSet <DieRoll> defenderRollResults)
+                              final ImmutableSet <DieRoll> attackerRolls,
+                              final ImmutableSet <DieRoll> defenderRolls)
   {
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
     Arguments.checkIsNotNull (defendingCountryOwner, "defendingCountryOwner");
-    Arguments.checkIsNotNull (attackerRollResults, "attackerRollResults");
-    Arguments.checkIsNotNull (defenderRollResults, "defenderRollResults");
+    Arguments.checkIsNotNull (attackerRolls, "attackerRolls");
+    Arguments.checkIsNotNull (defenderRolls, "defenderRolls");
 
     this.attacker = attacker;
     this.defender = defender;
     this.defendingCountryOwner = defendingCountryOwner;
-    this.attackerRollResults = attackerRollResults;
-    this.defenderRollResults = defenderRollResults;
+    this.attackerRolls = attackerRolls;
+    this.defenderRolls = defenderRolls;
   }
 
   @Override
@@ -71,23 +71,24 @@ public final class DefaultBattleResult implements BattleResult
   }
 
   @Override
-  public ImmutableSet <DieRoll> getAttackerRollResults ()
+  public ImmutableSet <DieRoll> getAttackerRolls ()
   {
-    return attackerRollResults;
+    return attackerRolls;
   }
 
   @Override
-  public ImmutableSet <DieRoll> getDefenderRollResults ()
+  public ImmutableSet <DieRoll> getDefenderRolls ()
   {
-    return defenderRollResults;
+    return defenderRolls;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | AttackerRollResults: [{}] | DefenderRollResults: [{}]",
-                           getClass ().getSimpleName (), attacker, defender, defendingCountryOwner, attackerRollResults,
-                           defenderRollResults);
+    // @formatter:off
+    return Strings.format ("{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
+                                   + "AttackerRolls: [{}] | DefenderRollsults: [{}]", getClass ().getSimpleName (),
+                           attacker, defender, defendingCountryOwner, attackerRolls, defenderRolls);
+    // @formatter:on
   }
 }
