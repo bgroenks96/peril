@@ -195,6 +195,8 @@ public final class AssetSettings
           "screens/game/play/modes/classic/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
   public static final AssetDescriptor <Sound> CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/sounds/artillery_explosion07_48k.wav", Sound.class);
+  public static final AssetDescriptor <Music> CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/sounds/war_ambience_distant_01_120_48k_eq.wav", Music.class);
 
   // Peril Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -237,7 +239,8 @@ public final class AssetSettings
           .<AssetDescriptor <?>> of (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR);
+                                     CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR);
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> PERIL_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList

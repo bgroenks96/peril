@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -29,11 +30,12 @@ import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
+import com.forerunnergames.peril.client.ui.music.NullMusic;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultCountryArmyText;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.CountryArmyTextEffects.HorizontalMoveDirection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrow;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrows;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.CountryArmyTextEffects.HorizontalMoveDirection;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -110,8 +112,8 @@ public class DefaultBattlePopupWidgetFactory extends AbstractWidgetFactory imple
 
     if (attackerDieOutcome == DieOutcome.NONE) return null;
 
-    return new TextureRegionDrawable (
-            createTextureRegion ("dice-arrow-outcome-attacker-" + attackerDieOutcome.lowerCaseName ()));
+    return new TextureRegionDrawable (createTextureRegion ("dice-arrow-outcome-attacker-"
+            + attackerDieOutcome.lowerCaseName ()));
   }
 
   @Override
@@ -142,6 +144,17 @@ public class DefaultBattlePopupWidgetFactory extends AbstractWidgetFactory imple
   public BitmapFont createCountryArmyTextEffectsFont ()
   {
     return createBitmapFont ("dejaVu-22");
+  }
+
+  @Override
+  public Music createBattleAmbienceSoundEffect ()
+  {
+    if (!isAssetLoaded (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR))
+    {
+      return new NullMusic ();
+    }
+
+    return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR);
   }
 
   @Override
