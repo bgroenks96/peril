@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.AbstractBattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.KeyListener;
@@ -40,11 +41,12 @@ public final class AttackDialog extends AbstractBattleDialog
   private TextButton quitButton;
 
   public AttackDialog (final BattleDialogWidgetFactory widgetFactory,
-                       final Stage stage,
-                       final AttackDialogListener listener,
-                       final MBassador <Event> eventBus)
+                      final Stage stage,
+                      final ScreenShaker screenShaker,
+                      final AttackDialogListener listener,
+                      final MBassador <Event> eventBus)
   {
-    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, listener, eventBus);
+    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, listener, eventBus);
 
     Arguments.checkIsNotNull (listener, "listener");
 

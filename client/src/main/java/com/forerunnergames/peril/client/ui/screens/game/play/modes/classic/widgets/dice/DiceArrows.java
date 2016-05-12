@@ -21,7 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -52,22 +52,22 @@ public final class DiceArrows
     }
   }
 
-  public void setOutcomes (final ImmutableList <DieOutcome> attackerDieOutcomes,
-                           final ImmutableList <DieOutcome> defenderDieOutcomes)
+  public void setOutcomes (final ImmutableList <DieRoll> attackerDieRolls,
+                           final ImmutableList <DieRoll> defenderDieRolls)
   {
-    Arguments.checkIsNotNull (attackerDieOutcomes, "attackerDieOutcomes");
-    Arguments.checkHasNoNullElements (attackerDieOutcomes, "attackerDieOutcomes");
-    Arguments.checkIsNotNull (defenderDieOutcomes, "defenderDieOutcomes");
-    Arguments.checkHasNoNullElements (defenderDieOutcomes, "defenderDieOutcomes");
+    Arguments.checkIsNotNull (attackerDieRolls, "attackerDieRolls");
+    Arguments.checkHasNoNullElements (attackerDieRolls, "attackerDieRolls");
+    Arguments.checkIsNotNull (defenderDieRolls, "defenderDieRolls");
+    Arguments.checkHasNoNullElements (defenderDieRolls, "defenderDieRolls");
 
-    final Iterator <DieOutcome> attackerOutcomeIter = attackerDieOutcomes.iterator ();
-    final Iterator <DieOutcome> defenderOutcomeIter = defenderDieOutcomes.iterator ();
+    final Iterator <DieRoll> attackerOutcomeIter = attackerDieRolls.iterator ();
+    final Iterator <DieRoll> defenderOutcomeIter = defenderDieRolls.iterator ();
 
     for (final DiceArrow arrow : arrows)
     {
       if (!attackerOutcomeIter.hasNext () || !defenderOutcomeIter.hasNext ()) return;
 
-      arrow.setOutcome (attackerOutcomeIter.next (), defenderOutcomeIter.next ());
+      arrow.setOutcome (attackerOutcomeIter.next ().getOutcome (), defenderOutcomeIter.next ().getOutcome ());
     }
   }
 

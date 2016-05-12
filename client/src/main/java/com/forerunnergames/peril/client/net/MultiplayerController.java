@@ -29,11 +29,8 @@ import com.forerunnergames.peril.client.events.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
-import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerCreator;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -44,14 +41,9 @@ import com.forerunnergames.tools.net.events.local.ServerConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 import com.forerunnergames.tools.net.server.ServerCommunicator;
 import com.forerunnergames.tools.net.server.ServerConnector;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -75,7 +67,6 @@ import org.slf4j.LoggerFactory;
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
-  private final Collection <ServerRequestEvent> serverRequestEventCache = new ArrayList <> ();
   private final GameServerCreator gameServerCreator;
   private final ServerConnector serverConnector;
   private final ServerCommunicator serverCommunicator;
@@ -188,34 +179,6 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  public void onEvent (final ServerRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    serverRequestEventCache.add (event);
-  }
-
-  @Handler
-  public void onEvent (final SelectCountryEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    if (!waitingForResponseTo (PlayerClaimCountryRequestEvent.class))
-    {
-      log.warn ("Ignoring local event [{}] because no prior corresponding server request of type [{}] was received.",
-                event, PlayerClaimCountryRequestEvent.class);
-      return;
-    }
-
-    respondToServerRequest (PlayerClaimCountryRequestEvent.class,
-                            new PlayerClaimCountryResponseRequestEvent (event.getCountryName ()));
-  }
-
-  @Handler
   public void onEvent (final QuitGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -281,33 +244,6 @@ public final class MultiplayerController extends ControllerAdapter
     log.debug ("Sending request [{}] to the server.", event);
 
     serverCommunicator.send (event);
-  }
-
-  private boolean waitingForResponseTo (final Class <? extends ServerRequestEvent> serverRequestEventClass)
-  {
-    for (final ServerRequestEvent request : serverRequestEventCache)
-    {
-      if (serverRequestEventClass.isInstance (request)) return true;
-    }
-
-    return false;
-  }
-
-  private void respondToServerRequest (final Class <? extends ServerRequestEvent> serverRequestEventClass,
-                                       final ResponseRequestEvent response)
-  {
-    for (final ServerRequestEvent request : serverRequestEventCache)
-    {
-      if (serverRequestEventClass.isInstance (request))
-      {
-        sendToServer (response);
-        serverRequestEventCache.remove (request);
-        return;
-      }
-    }
-
-    log.warn ("Ignoring invalid client response [{}] because no prior corresponding server request of type [{}] was received.",
-              response, serverRequestEventClass);
   }
 
   private boolean connectedToServer ()

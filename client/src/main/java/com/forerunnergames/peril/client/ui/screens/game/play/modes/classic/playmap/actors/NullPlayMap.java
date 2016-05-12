@@ -121,8 +121,17 @@ final class NullPlayMap implements PlayMap
   }
 
   @Override
+  public void setCountryState (final String countryName, final CountrySecondaryImageState state)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNull (state, "state");
+  }
+
+  @Override
   public boolean existsCountryWithName (final String countryName)
   {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
     return true;
   }
 

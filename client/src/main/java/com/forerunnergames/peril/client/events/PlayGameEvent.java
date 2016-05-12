@@ -33,24 +33,28 @@ public final class PlayGameEvent implements LocalEvent
 {
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;
-  private final ImmutableSet <PlayerPacket> playersInGame;
+  private final PlayerPacket selfPlayer;
+  private final ImmutableSet <PlayerPacket> allPlayers;
   private final PlayMap playMap;
 
   public PlayGameEvent (final GameServerConfiguration gameServerConfig,
                         final ClientConfiguration clientConfig,
-                        final ImmutableSet <PlayerPacket> playersInGame,
+                        final PlayerPacket selfPlayer,
+                        final ImmutableSet <PlayerPacket> allPlayers,
                         final PlayMap playMap)
 
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConfig, "clientConfig");
-    Arguments.checkIsNotNull (playersInGame, "playersInGame");
-    Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
+    Arguments.checkIsNotNull (selfPlayer, "selfPlayer");
+    Arguments.checkIsNotNull (allPlayers, "allPlayers");
+    Arguments.checkHasNoNullElements (allPlayers, "allPlayers");
     Arguments.checkIsNotNull (playMap, "playMap");
 
     this.gameServerConfig = gameServerConfig;
     this.clientConfig = clientConfig;
-    this.playersInGame = playersInGame;
+    this.selfPlayer = selfPlayer;
+    this.allPlayers = allPlayers;
     this.playMap = playMap;
   }
 
@@ -64,9 +68,29 @@ public final class PlayGameEvent implements LocalEvent
     return clientConfig;
   }
 
-  public ImmutableSet <PlayerPacket> getPlayersInGame ()
+  public PlayerPacket getSelfPlayer ()
   {
-    return playersInGame;
+    return selfPlayer;
+  }
+
+  public String getSelfPlayerName ()
+  {
+    return selfPlayer.getName ();
+  }
+
+  public ImmutableSet <PlayerPacket> getAllPlayers ()
+  {
+    return allPlayers;
+  }
+
+  public int getPlayerCount ()
+  {
+    return allPlayers.size ();
+  }
+
+  public boolean isFirstPlayerInGame ()
+  {
+    return getPlayerCount () == 1;
   }
 
   public MapMetadata getMapMetadata ()
@@ -82,9 +106,9 @@ public final class PlayGameEvent implements LocalEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {} | Players In Game: {} "
-                                   + "| Play Map Actor: {}", getClass ().getSimpleName (), gameServerConfig,
-                           clientConfig, playersInGame,
-                           playMap);
+    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {} | Self Player: {} | "
+                                   + "Players: {} | Play Map Actor: {}", getClass ().getSimpleName (),
+                           gameServerConfig, clientConfig,
+                           selfPlayer, allPlayers, playMap);
   }
 }

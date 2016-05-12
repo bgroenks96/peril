@@ -31,19 +31,20 @@ public interface Die extends Comparable <Die>
   Touchable DEFAULT_TOUCHABLE = Touchable.disabled;
   Die NULL_DIE = new NullDie ();
 
+  @Override
+  int hashCode ();
+
+  @Override
+  boolean equals (final Object obj);
+
+  @Override
+  String toString ();
+
   int getIndex ();
 
   void roll (final DieFaceValue faceValue);
 
-  void setOutcomeAgainst (final DieFaceValue competingFaceValue);
-
   void setOutcome (final DieOutcome outcome);
-
-  DieOutcome getOutcome ();
-
-  boolean hasWinOutcome ();
-
-  boolean hasLoseOutcome ();
 
   void enable ();
 
@@ -72,13 +73,4 @@ public interface Die extends Comparable <Die>
   float getHeight ();
 
   Actor asActor ();
-
-  @Override
-  int hashCode ();
-
-  @Override
-  boolean equals (final Object obj);
-
-  @Override
-  String toString ();
 }

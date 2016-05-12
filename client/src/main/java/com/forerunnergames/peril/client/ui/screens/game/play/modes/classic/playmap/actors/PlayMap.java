@@ -59,6 +59,8 @@ public interface PlayMap
 
   void setCountryState (final String countryName, final CountryPrimaryImageState state);
 
+  void setCountryState (final String countryName, final CountrySecondaryImageState state);
+
   boolean existsCountryWithName (final String countryName);
 
   Country getCountryWithName (final String countryName);

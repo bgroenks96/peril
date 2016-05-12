@@ -20,8 +20,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.common.game.DieFaceValue;
-import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 
 import com.google.common.collect.ImmutableList;
 
@@ -31,15 +30,9 @@ public interface Dice
 
   int getActiveCount ();
 
-  int getWinningCount ();
+  void roll (final ImmutableList <DieRoll> dieRolls);
 
-  int getLosingCount ();
-
-  ImmutableList <DieOutcome> getOutcomes ();
-
-  void roll (final ImmutableList <DieFaceValue> dieFaceValues);
-
-  void setOutcomeAgainst (final ImmutableList <DieFaceValue> competingDieFaceValues);
+  void setOutcomes (final ImmutableList <DieRoll> rolls);
 
   // @formatter:off
   /**
@@ -64,6 +57,8 @@ public interface Dice
    */
    // @formatter:on
   void clamp (final int minDieCount, final int maxDieCount);
+
+  void clampToCount (final int desiredActiveDieCount, final int minDieCount, final int maxDieCount);
 
   void setTouchable (final boolean isTouchable);
 

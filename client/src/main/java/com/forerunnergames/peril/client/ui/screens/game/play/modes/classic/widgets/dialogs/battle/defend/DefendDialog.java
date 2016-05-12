@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.AbstractBattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogWidgetFactory;
@@ -33,10 +34,11 @@ public final class DefendDialog extends AbstractBattleDialog
 
   public DefendDialog (final BattleDialogWidgetFactory widgetFactory,
                        final Stage stage,
+                       final ScreenShaker screenShaker,
                        final BattleDialogListener listener,
                        final MBassador <Event> eventBus)
   {
-    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, listener, eventBus);
+    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, listener, eventBus);
   }
 
   @Override

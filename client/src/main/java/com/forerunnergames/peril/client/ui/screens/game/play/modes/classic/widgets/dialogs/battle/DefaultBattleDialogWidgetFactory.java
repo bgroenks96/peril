@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -37,6 +38,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.CountryArmyTextEffects.HorizontalMoveDirection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrow;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceArrows;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.CountryArmyTextEffects.HorizontalMoveDirection;
+import com.forerunnergames.peril.client.ui.sound.NullSound;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -160,6 +163,17 @@ public class DefaultBattleDialogWidgetFactory extends AbstractWidgetFactory impl
     }
 
     return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR);
+  }
+
+  @Override
+  public Sound createBattleSingleExplosionSoundEffect ()
+  {
+    if (!isAssetLoaded (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR))
+    {
+      return new NullSound ();
+    }
+
+    return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR);
   }
 
   @Override

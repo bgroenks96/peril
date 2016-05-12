@@ -54,7 +54,7 @@ public abstract class AbstractDiceFactory implements DiceFactory
     {
       dieBuilder.add (new AttackerDie (dieIndex, createAttackerDieImageButton (Die.DEFAULT_STATE,
                                                                                GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                                                               Die.DEFAULT_OUTCOME), rules)
+                                                                               Die.DEFAULT_OUTCOME))
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -85,7 +85,7 @@ public abstract class AbstractDiceFactory implements DiceFactory
     {
       dieBuilder.add (new DefenderDie (dieIndex, createDefenderDieImageButton (Die.DEFAULT_STATE,
                                                                                GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                                                               Die.DEFAULT_OUTCOME), rules)
+                                                                               Die.DEFAULT_OUTCOME))
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,

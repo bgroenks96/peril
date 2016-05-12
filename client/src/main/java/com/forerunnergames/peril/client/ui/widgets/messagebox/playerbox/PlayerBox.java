@@ -21,10 +21,12 @@ package com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
@@ -149,6 +151,18 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     }
 
     row.setPlayer (player);
+  }
+
+  public Optional <String> getNameOfPlayerWithColor (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+
+    for (final PlayerPacket player : turnOrderedPlayers)
+    {
+      if (player.has (color)) return Optional.of (player.getName ());
+    }
+
+    return Optional.absent ();
   }
 
   private boolean existsRowWith (final PlayerPacket player)

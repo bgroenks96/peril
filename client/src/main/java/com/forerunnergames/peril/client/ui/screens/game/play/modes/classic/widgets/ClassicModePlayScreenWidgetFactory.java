@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.Align;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
+import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.controlroombox.ControlRoomBox;
@@ -242,25 +243,29 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   }
 
   public AttackDialog createAttackDialog (final Stage stage,
+                                          final ScreenShaker screenShaker,
                                           final MBassador <Event> eventBus,
                                           final AttackDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new AttackDialog (battleDialogWidgetFactory, stage, listener, eventBus);
+    return new AttackDialog (battleDialogWidgetFactory, stage, screenShaker, listener, eventBus);
   }
 
   public DefendDialog createDefendDialog (final Stage stage,
+                                          final ScreenShaker screenShaker,
                                           final MBassador <Event> eventBus,
                                           final BattleDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new DefendDialog (battleDialogWidgetFactory, stage, listener, eventBus);
+    return new DefendDialog (battleDialogWidgetFactory, stage, screenShaker, listener, eventBus);
   }
 
   public void destroyPlayMap (final MapMetadata mapMetadata)
@@ -274,10 +279,10 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   {
     Arguments.checkIsNotNull (stage, "stage");
 
-    return new OkDialog (this, DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE)
-            .modal (false).movable (true).position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244)
-            .titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
-            .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
+    return new OkDialog (this, DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false).movable (true)
+            .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51).border (28)
+            .buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21)
+            .textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
   }
 
   public Dialog createQuitDialog (final Stage stage, final DialogListener listener)

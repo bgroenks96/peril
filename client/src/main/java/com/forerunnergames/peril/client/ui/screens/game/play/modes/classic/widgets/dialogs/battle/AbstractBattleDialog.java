@@ -18,6 +18,8 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle;
 
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -31,6 +33,8 @@ import com.badlogic.gdx.utils.Timer;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.NonPausingTimer;
+import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.Dice;
@@ -38,9 +42,10 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice.DiceFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
-import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -65,6 +70,7 @@ public abstract class AbstractBattleDialog extends OkDialog
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING - 3;
   private static final float BATTLING_ARROW_LABEL_TEXT_VERTICAL_INNER_PADDING = 4;
   private final BattleDialogWidgetFactory widgetFactory;
+  private final ScreenShaker screenShaker;
   private final BattleDialogListener listener;
   private final GameRules gameRules;
   private final Vector2 tempPosition = new Vector2 ();
@@ -74,7 +80,6 @@ public abstract class AbstractBattleDialog extends OkDialog
   private final CountryArmyText attackingCountryArmyTextEffects;
   private final CountryArmyText defendingCountryArmyText;
   private final CountryArmyText defendingCountryArmyTextEffects;
-  private final BattleOutcome outcome = new BattleOutcome ();
   private final Label attackingPlayerNameLabel;
   private final Label defendingPlayerNameLabel;
   private final Label attackingCountryNameLabel;
@@ -85,8 +90,9 @@ public abstract class AbstractBattleDialog extends OkDialog
   private final DiceArrows diceArrows;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
-  private Country attackingCountry = Country.NULL_COUNTRY;
-  private Country defendingCountry = Country.NULL_COUNTRY;
+  private final Timer timer = new NonPausingTimer ();
+  private Sound battleSingleExplosionSoundEffect;
+  private Music battleAmbienceSoundEffect;
   // @formatter:on
   private Timer.Task battleTask = new Timer.Task ()
   {
@@ -107,6 +113,7 @@ public abstract class AbstractBattleDialog extends OkDialog
                                   final DiceFactory diceFactory,
                                   final String title,
                                   final Stage stage,
+                                  final ScreenShaker screenShaker,
                                   final BattleDialogListener listener,
                                   final MBassador <Event> eventBus)
   {
@@ -132,10 +139,12 @@ public abstract class AbstractBattleDialog extends OkDialog
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (diceFactory, "diceFactory");
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (listener, "listener");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
+    this.screenShaker = screenShaker;
     this.listener = listener;
 
     gameRules = new ClassicGameRules.Builder ().build ();
@@ -152,6 +161,8 @@ public abstract class AbstractBattleDialog extends OkDialog
     attackingCountryArmyTextEffects = widgetFactory.createAttackingCountryArmyTextEffects ();
     defendingCountryArmyText = widgetFactory.createCountryArmyText ();
     defendingCountryArmyTextEffects = widgetFactory.createDefendingCountryArmyTextEffects ();
+    battleSingleExplosionSoundEffect = widgetFactory.createBattleSingleExplosionSoundEffect ();
+    battleAmbienceSoundEffect = widgetFactory.createBattleAmbienceSoundEffect ();
 
     attackingCountryStack = new Stack ();
     defendingCountryStack = new Stack ();
@@ -218,6 +229,8 @@ public abstract class AbstractBattleDialog extends OkDialog
   {
     battleTask.cancel ();
     resetBattleTask.cancel ();
+    battleSingleExplosionSoundEffect.stop ();
+    battleAmbienceSoundEffect.stop ();
 
     super.hide ();
   }
@@ -227,6 +240,8 @@ public abstract class AbstractBattleDialog extends OkDialog
   {
     battleTask.cancel ();
     resetBattleTask.cancel ();
+    battleSingleExplosionSoundEffect.stop ();
+    battleAmbienceSoundEffect.stop ();
 
     super.hide (action);
   }
@@ -241,6 +256,7 @@ public abstract class AbstractBattleDialog extends OkDialog
 
     attackerDice.update (delta);
     defenderDice.update (delta);
+    screenShaker.update (delta);
   }
 
   @Override
@@ -261,6 +277,8 @@ public abstract class AbstractBattleDialog extends OkDialog
     defendingCountryArmyText.setFont (widgetFactory.createCountryArmyTextFont ());
     attackingCountryArmyTextEffects.setFont (widgetFactory.createCountryArmyTextEffectsFont ());
     defendingCountryArmyTextEffects.setFont (widgetFactory.createCountryArmyTextEffectsFont ());
+    battleSingleExplosionSoundEffect = widgetFactory.createBattleSingleExplosionSoundEffect ();
+    battleAmbienceSoundEffect = widgetFactory.createBattleAmbienceSoundEffect ();
   }
 
   public final void show (final Country attackingCountry,
@@ -283,45 +301,61 @@ public abstract class AbstractBattleDialog extends OkDialog
     setPlayerNames (attackingPlayerName, defendingPlayerName);
     initializeDice (attackingCountryArmies, defendingCountryArmies);
     show ();
+    playBattleAmbienceSoundEffect ();
   }
 
-  public final void rollAttackerDice (final ImmutableList <DieFaceValue> dieFaceValues)
+  public void startBattle ()
   {
-    Arguments.checkIsNotNull (dieFaceValues, "dieFaceValues");
-    Arguments.checkHasNoNullElements (dieFaceValues, "dieFaceValues");
+    synchronized (battleTask)
+    {
+      if (battleTask.isScheduled ()) return;
+    }
 
-    attackerDice.roll (dieFaceValues);
+    enableInput ();
+    setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
+
+    battleTask = timer.scheduleTask (new Timer.Task ()
+    {
+      @Override
+      public void run ()
+      {
+        // setDiceTouchable (false);
+        disableInput ();
+        listener.onBattle ();
+      }
+    }, GameSettings.BATTLE_INTERACTION_TIME_SECONDS);
   }
 
-  public final void rollDefenderDice (final ImmutableList <DieFaceValue> dieFaceValues)
+  public final void showBattleResult (final BattleResultPacket result)
   {
-    Arguments.checkIsNotNull (dieFaceValues, "dieFaceValues");
-    Arguments.checkHasNoNullElements (dieFaceValues, "dieFaceValues");
+    Arguments.checkIsNotNull (result, "result");
 
-    defenderDice.roll (dieFaceValues);
-  }
-
-  public final BattleOutcome determineOutcome (final ImmutableList <DieFaceValue> attackerDieFaceValues,
-                                               final ImmutableList <DieFaceValue> defenderDieFaceValues)
-  {
-    Arguments.checkIsNotNull (attackerDieFaceValues, "attackerDieFaceValues");
-    Arguments.checkIsNotNull (defenderDieFaceValues, "defenderDieFaceValues");
-    Arguments.checkHasNoNullElements (attackerDieFaceValues, "attackerDieFaceValues");
-    Arguments.checkHasNoNullElements (defenderDieFaceValues, "defenderDieFaceValues");
-
-    attackerDice.setOutcomeAgainst (defenderDieFaceValues);
-    defenderDice.setOutcomeAgainst (attackerDieFaceValues);
-    diceArrows.setOutcomes (attackerDice.getOutcomes (), defenderDice.getOutcomes ());
-
-    final int attackingCountryArmiesDelta = -Math.min (attackerDice.getLosingCount (), defenderDice.getWinningCount ());
-    final int defendingCountryArmiesDelta = -Math.min (attackerDice.getWinningCount (), defenderDice.getLosingCount ());
-
-    changeCountryArmiesBy (attackingCountryArmiesDelta, defendingCountryArmiesDelta);
+    rollDice (result.getAttackerRolls (), result.getDefenderRolls ());
+    playBattleEffects (result.getAttackingCountryArmyDelta (), result.getDefendingCountryArmyDelta ());
+    changeCountryArmiesBy (result.getAttackingCountryArmyDelta (), result.getDefendingCountryArmyDelta ());
     setDiceTouchable (false);
     resetBattle ();
+  }
 
-    return outcome.set (getAttackingCountryName (), attackingCountryArmiesDelta, getAttackingPlayerName (),
-                        getDefendingCountryName (), defendingCountryArmiesDelta, getDefendingPlayerName ());
+  public final void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies)
+  {
+    if (attackingCountryDeltaArmies == 0 && defendingCountryDeltaArmies == 0) return;
+
+    battleSingleExplosionSoundEffect.play ();
+    screenShaker.shake ();
+
+    if (attackingCountryDeltaArmies == -2 || defendingCountryDeltaArmies == -2)
+    {
+      timer.scheduleTask (new Timer.Task ()
+      {
+        @Override
+        public void run ()
+        {
+          battleSingleExplosionSoundEffect.play ();
+          screenShaker.shake ();
+        }
+      }, 0.25f);
+    }
   }
 
   public final String getAttackingCountryName ()
@@ -364,38 +398,15 @@ public abstract class AbstractBattleDialog extends OkDialog
     return defendingCountryArmyText.getArmies ();
   }
 
-  public final Country getAttackingCountry ()
-  {
-    return attackingCountry;
-  }
-
-  public final Country getDefendingCountry ()
-  {
-    return defendingCountry;
-  }
-
-  public void startBattle ()
-  {
-    if (battleTask.isScheduled ()) return;
-
-    setDiceTouchable (false);
-
-    battleTask = Timer.schedule (new Timer.Task ()
-    {
-      @Override
-      public void run ()
-      {
-        listener.onBattle ();
-      }
-    }, GameSettings.INITIAL_BATTLE_DELAY_SECONDS, GameSettings.BATTLE_INTERVAL_SECONDS);
-  }
-
   public void stopBattle ()
   {
-    if (!battleTask.isScheduled ()) return;
+    synchronized (battleTask)
+    {
+      if (battleTask.isScheduled ()) return;
+    }
 
     battleTask.cancel ();
-    setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
+    setDiceTouchable (false);
   }
 
   protected abstract void setDiceTouchable (final boolean areTouchable);
@@ -415,11 +426,34 @@ public abstract class AbstractBattleDialog extends OkDialog
     return new Image (country.getPrimaryDrawable (), Scaling.none);
   }
 
+  private void rollDice (final ImmutableList <DieRoll> attackerRolls, final ImmutableList <DieRoll> defenderRolls)
+  {
+    clampAttackerDiceToCount (attackerRolls.size ());
+    clampDefenderDiceToCount (defenderRolls.size ());
+
+    attackerDice.roll (attackerRolls);
+    defenderDice.roll (defenderRolls);
+
+    attackerDice.setOutcomes (attackerRolls);
+    defenderDice.setOutcomes (defenderRolls);
+
+    diceArrows.setOutcomes (attackerRolls, defenderRolls);
+  }
+
+  private void playBattleAmbienceSoundEffect ()
+  {
+    battleAmbienceSoundEffect.setLooping (true);
+    battleAmbienceSoundEffect.play ();
+  }
+
   private void resetBattle ()
   {
-    if (resetBattleTask.isScheduled ()) return;
+    synchronized (resetBattleTask)
+    {
+      if (resetBattleTask.isScheduled ()) return;
+    }
 
-    resetBattleTask = Timer.schedule (new Timer.Task ()
+    resetBattleTask = timer.scheduleTask (new Timer.Task ()
     {
       @Override
       public void run ()
@@ -453,8 +487,8 @@ public abstract class AbstractBattleDialog extends OkDialog
   {
     resetDice ();
     clampDice (attackingCountryArmies, defendingCountryArmies);
-    updateDiceTouchability (attackingCountryArmies, defendingCountryArmies);
     resetDiceArrows ();
+    updateDiceTouchability (attackingCountryArmies, defendingCountryArmies);
   }
 
   private void resetDice ()
@@ -470,6 +504,26 @@ public abstract class AbstractBattleDialog extends OkDialog
 
     defenderDice.clamp (gameRules.getMinDefenderDieCount (defendingCountryArmies),
                         gameRules.getMaxDefenderDieCount (defendingCountryArmies));
+  }
+
+  private void clampAttackerDiceToCount (final int count)
+  {
+    if (attackerDice.getActiveCount () == count) return;
+
+    final int attackingCountryArmies = getAttackingCountryArmies ();
+
+    attackerDice.clampToCount (count, gameRules.getMinAttackerDieCount (attackingCountryArmies),
+                               gameRules.getMaxAttackerDieCount (attackingCountryArmies));
+  }
+
+  private void clampDefenderDiceToCount (final int count)
+  {
+    if (defenderDice.getActiveCount () == count) return;
+
+    final int defendingCountryArmies = getDefendingCountryArmies ();
+
+    defenderDice.clampToCount (count, gameRules.getMinDefenderDieCount (defendingCountryArmies),
+                               gameRules.getMaxDefenderDieCount (defendingCountryArmies));
   }
 
   private void updateDiceTouchability (final int attackingCountryArmies, final int defendingCountryArmies)
@@ -512,9 +566,6 @@ public abstract class AbstractBattleDialog extends OkDialog
 
   private void setCountries (final Country attackingCountry, final Country defendingCountry)
   {
-    this.attackingCountry = attackingCountry;
-    this.defendingCountry = defendingCountry;
-
     setCountryNames (attackingCountry, defendingCountry);
     setCountryImages (attackingCountry, defendingCountry);
   }

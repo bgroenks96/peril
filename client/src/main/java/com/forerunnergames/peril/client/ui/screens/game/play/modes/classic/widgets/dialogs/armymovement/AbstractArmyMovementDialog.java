@@ -318,14 +318,13 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
                     final Country destinationCountry,
                     final int totalArmies)
   {
-    // @formatter:on
+    // @formatter:off
     Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
     Arguments.checkIsNotNegative (maxDestinationArmies, "maxDestinationArmies");
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
     Arguments.checkIsNotNegative (totalArmies, "totalArmies");
-    Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies",
-                                        "maxDestinationArmies");
+    Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies", "maxDestinationArmies");
     Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
     Arguments.checkUpperInclusiveBound (maxDestinationArmies, totalArmies, "maxDestinationArmies", "totalArmies");
     // @formatter:on
@@ -371,7 +370,7 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     return destinationCountryNameLabel.getText ().toString ();
   }
 
-  public int getDeltaArmies ()
+  public int getDeltaArmyCount ()
   {
     return getSliderValue ();
   }

@@ -42,33 +42,9 @@ final class NullDie implements Die
   }
 
   @Override
-  public void setOutcomeAgainst (final DieFaceValue competingFaceValue)
-  {
-    Arguments.checkIsNotNull (competingFaceValue, "competingFaceValue");
-  }
-
-  @Override
   public void setOutcome (final DieOutcome outcome)
   {
     Arguments.checkIsNotNull (outcome, "outcome");
-  }
-
-  @Override
-  public DieOutcome getOutcome ()
-  {
-    return DieOutcome.NONE;
-  }
-
-  @Override
-  public boolean hasWinOutcome ()
-  {
-    return false;
-  }
-
-  @Override
-  public boolean hasLoseOutcome ()
-  {
-    return false;
   }
 
   @Override

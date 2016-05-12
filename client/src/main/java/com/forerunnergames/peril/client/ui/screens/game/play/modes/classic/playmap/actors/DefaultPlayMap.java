@@ -134,10 +134,10 @@ public final class DefaultPlayMap implements PlayMap
         touchedCountry = null;
       }
 
-      if (this.hoveredCountry != null)
+      if (hoveredCountry != null)
       {
-        this.hoveredCountry.onHoverEnd ();
-        this.hoveredCountry = null;
+        hoveredCountry.onHoverEnd ();
+        hoveredCountry = null;
       }
 
       return false;
@@ -344,6 +344,17 @@ public final class DefaultPlayMap implements PlayMap
   }
 
   @Override
+  public void setCountryState (final String countryName, final CountrySecondaryImageState state)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNull (state, "state");
+
+    if (!existsCountryWithName (countryName)) return;
+
+    getCountryWithName (countryName).changeSecondaryStateTo (state);
+  }
+
+  @Override
   public boolean existsCountryWithName (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
@@ -383,8 +394,7 @@ public final class DefaultPlayMap implements PlayMap
   }
 
   @Override
-  public boolean secondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
-                                                        final String countryName)
+  public boolean secondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");

@@ -83,8 +83,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -120,9 +120,11 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private final ProgressBar progressBar;
   private final Dialog quitDialog;
   private final Dialog errorDialog;
-  private final List <ServerEvent> incomingServerEvents = new ArrayList <> ();
-  private final Set <PlayerPacket> playersInGame = new HashSet <> ();
+  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList <> ();
+  private final Set <PlayerPacket> players = new HashSet <> ();
   private boolean isLoading = false;
+  @Nullable
+  private PlayerPacket selfPlayer;
   @Nullable
   private GameServerConfiguration gameServerConfiguration = null;
   @Nullable
@@ -332,12 +334,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       {
         Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
         Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
-        Arguments.checkIsNotNull (playersInGame, "playersInGame");
-        Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
 
-        log.trace ("onJoinGameServerSuccess: {} [{}], {} [{}], Player In Game [{}]",
-                   GameServerConfiguration.class.getSimpleName (), gameServerConfiguration,
-                   ClientConfiguration.class.getSimpleName (), clientConfiguration, playersInGame);
+        log.trace ("onJoinGameServerSuccess: {} [{}], {} [{}]", GameServerConfiguration.class.getSimpleName (),
+                   gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration);
 
         Gdx.app.postRunnable (new Runnable ()
         {
@@ -357,6 +356,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
         Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
 
         log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
+
+        selfPlayer = player;
 
         Gdx.app.postRunnable (new Runnable ()
         {
@@ -427,19 +428,18 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       @Override
       public void onJoinFinish (final GameServerConfiguration gameServerConfiguration,
                                 final ClientConfiguration clientConfiguration,
-                                final ImmutableSet <PlayerPacket> playersInGame)
+                                final ImmutableSet <PlayerPacket> players)
       {
         Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
         Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
-        Arguments.checkIsNotNull (playersInGame, "playersInGame");
+        Arguments.checkIsNotNull (players, "players");
 
-        log.trace ("onJoinFinish: {} [{}], {} [{}], Players In Game [{}]",
-                   GameServerConfiguration.class.getSimpleName (), gameServerConfiguration,
-                   ClientConfiguration.class.getSimpleName (), clientConfiguration, playersInGame);
+        log.trace ("onJoinFinish: {} [{}], {} [{}], Players [{}]", GameServerConfiguration.class.getSimpleName (),
+                   gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration, players);
 
         MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
         MenuToPlayLoadingScreen.this.clientConfiguration = clientConfiguration;
-        MenuToPlayLoadingScreen.this.playersInGame.addAll (playersInGame);
+        MenuToPlayLoadingScreen.this.players.addAll (players);
 
         Gdx.app.postRunnable (new Runnable ()
         {
@@ -575,7 +575,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     isLoading = false;
     gameServerConfiguration = null;
     clientConfiguration = null;
-    playersInGame.clear ();
+    players.clear ();
   }
 
   @Override
@@ -633,6 +633,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     {
 
 
+
       @Override
       public void run ()
       {
@@ -669,7 +670,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     log.debug ("Collecting unhandled event for play screen: [{}]", event);
 
-    incomingServerEvents.add (event);
+    unhandledServerEvents.add (event);
   }
 
   private static void hideCursor ()
@@ -715,6 +716,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
   private void goToPlayScreen ()
   {
+    assert selfPlayer != null;
     assert gameServerConfiguration != null;
     assert clientConfiguration != null;
 
@@ -738,8 +740,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       return;
     }
 
-    final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration,
-            ImmutableSet.copyOf (playersInGame), playMap);
+    final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, selfPlayer,
+            ImmutableSet.copyOf (players), playMap);
 
     unloadMenuAssets ();
 
@@ -776,7 +778,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
         eventBus.publish (playGameEvent);
 
-        for (final ServerEvent event : incomingServerEvents)
+        for (final ServerEvent event : unhandledServerEvents)
         {
           eventBus.publish (event);
         }

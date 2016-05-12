@@ -130,16 +130,16 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
     final CountryImagesRepository countryImagesRepository = new DefaultCountryImagesRepository (
             countryImagesFactory.getPrimary (mapMetadata), countryImagesFactory.getSecondary (mapMetadata));
 
-    final CountryFactory countryFactory = new CountryFactory (countryImageDataRepository,
-            countryImagesRepository, playMapReferenceSize);
+    final CountryFactory countryFactory = new CountryFactory (countryImageDataRepository, countryImagesRepository,
+            playMapReferenceSize);
 
     for (final String countryName : countryImageDataRepository.getCountryNames ())
     {
       countryNamesToActorsBuilder.put (countryName, countryFactory.create (countryName, font));
     }
 
-    final PlayMap playMap = new DefaultPlayMap (countryNamesToActorsBuilder.build (),
-            playMapInputDetection, hoveredTerritoryText, backgroundImage, mapMetadata, eventBus);
+    final PlayMap playMap = new DefaultPlayMap (countryNamesToActorsBuilder.build (), playMapInputDetection,
+            hoveredTerritoryText, backgroundImage, mapMetadata, eventBus);
 
     hoveredTerritoryText.setPlayMap (playMap);
 

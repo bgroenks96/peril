@@ -54,8 +54,8 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   private final Map <String, Integer> countryNamesToAtlasIndices = new HashMap <> ();
   private final Map <String, CountryPrimaryImages> countryNamesToPrimaryImages = new HashMap <> ();
   private final Map <String, CountrySecondaryImages> countryNamesToSecondaryImages = new HashMap <> ();
-  private final Table <String, CountryPrimaryImageState, CountryPrimaryImage> countryNamesAndPrimaryImageStatesToPrimaryImages = TreeBasedTable .create ();
-  private final Table <String, CountrySecondaryImageState, CountrySecondaryImage> countryNamesAndSecondaryImageStatesToSecondaryImages = TreeBasedTable .create ();
+  private final Table <String, CountryPrimaryImageState, CountryPrimaryImage> countryNamesAndPrimaryImageStatesToPrimaryImages = TreeBasedTable.create ();
+  private final Table <String, CountrySecondaryImageState, CountrySecondaryImage> countryNamesAndSecondaryImageStatesToSecondaryImages = TreeBasedTable.create ();
   private MapMetadata loadedMapMetadata = MapMetadata.NULL_MAP_METADATA;
   // @formatter:on
 

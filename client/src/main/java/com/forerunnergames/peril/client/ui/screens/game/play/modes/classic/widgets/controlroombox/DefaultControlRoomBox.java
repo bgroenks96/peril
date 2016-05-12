@@ -50,7 +50,7 @@ public final class DefaultControlRoomBox implements ControlRoomBox
     endTurnButton = widgetFactory.createControlRoomBoxEndTurnButton (endTurnButtonListener);
     mySettingsButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("My Settings");
     mySettingsButton = widgetFactory.createControlRoomBoxMySettingsButton (mySettingsButtonListener);
-    surrenderButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Surrender");
+    surrenderButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Surrender & Quit");
     surrenderButton = widgetFactory.createControlRoomBoxSurrenderButton (surrenderButtonListener);
 
     controlRoomBoxTable = new Table ().top ().left ().pad (4);

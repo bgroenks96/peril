@@ -22,6 +22,7 @@ import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
+import com.forerunnergames.tools.common.Strings;
 import com.google.common.collect.ImmutableSet;
 
 public final class StatusMessageEventFactory
@@ -44,5 +45,12 @@ public final class StatusMessageEventFactory
   public static StatusMessageEvent create (final String messageText)
   {
     return create (messageText, ImmutableSet.<PlayerPacket> of ());
+  }
+
+  public static StatusMessageEvent create (final String messageText, final Object... args)
+  {
+    Arguments.checkIsNotNull (args, "args");
+
+    return create (Strings.format (messageText, args), ImmutableSet.<PlayerPacket> of ());
   }
 }

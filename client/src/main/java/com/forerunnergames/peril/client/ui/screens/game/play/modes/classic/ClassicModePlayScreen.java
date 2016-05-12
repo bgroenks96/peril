@@ -24,7 +24,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
@@ -40,7 +39,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -63,7 +61,6 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugPackets;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
@@ -71,7 +68,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.AbstractBattleDialogListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleOutcome;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
@@ -83,28 +79,50 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
-import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndAttackPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackVictoryEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceInitialCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+
+import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -115,6 +133,11 @@ import org.slf4j.LoggerFactory;
 public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
+  private static final boolean DEBUG = false;
+  private static final Message QUIT_MESSAGE = new DefaultMessage (
+          "Are you sure you want to quit the current game?\nIf you are the host, quitting will end the game for everyone.");
+  private static final Message SURRENDER_AND_QUIT_MESSAGE = new DefaultMessage (
+          "Are you sure you want to surrender & quit the current game?\nIf you are the host, quitting will end the game for everyone.");
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
@@ -138,13 +161,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Dialog battleResultDialog;
   private final Dialog quitDialog;
   private final Vector2 tempPosition = new Vector2 ();
-  private final BattleOutcome tempOutcome = new BattleOutcome ();
   private final Cell <Actor> playMapCell;
-  private final ScreenShaker screenShaker;
+  private final ReinforcementPhaseHandler reinforcementPhaseHandler;
+  private final ManualCountryAssignmentPhaseHandler manualCountryAssignmentPhaseHandler;
+  private final AttackPhaseHandler attackPhaseHandler;
+  private final DefendPhaseHandler defendPhaseHandler;
   private final DebugInputProcessor debugInputProcessor;
   private final ImmutableCollection <Dialog> dialogs;
-  private Sound battleSingleExplosionSound;
   private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
+  @Nullable
+  private PlayerPacket selfPlayer;
 
   public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
@@ -181,61 +207,53 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         // TODO Implement detailed report button.
         // TODO Production: Remove.
-        eventBus.publish (StatusMessageEventFactory.create ("Detailed Report button clicked."));
+        status ("Detailed Report button clicked.");
       }
     });
 
-    controlRoomBox = widgetFactory.createControlRoomBox (
-            new ClickListener ()
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement trade-in button.
-                // TODO Production: Remove.
-                eventBus.publish (StatusMessageEventFactory.create ("Purchase Reinforcements button clicked."));
-              }
-            },
-            new ClickListener ()
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement fortify button.
-                // TODO Production: Remove.
-                eventBus.publish (StatusMessageEventFactory.create ("Post-Combat Maneuver button clicked."));
-              }
-            },
-            new ClickListener ()
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement end turn button.
-                // TODO Production: Remove.
-                eventBus.publish (StatusMessageEventFactory.create ("End Turn button clicked."));
-              }
-            },
-            new ClickListener ()
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement my settings button.
-                // TODO Production: Remove.
-                eventBus.publish (StatusMessageEventFactory.create ("My Settings button clicked."));
-              }
-            },
-            new ClickListener ()
-            {
-              @Override
-              public void clicked (final InputEvent event, final float x, final float y)
-              {
-                // TODO Implement surrender button.
-                // TODO Production: Remove.
-                eventBus.publish (StatusMessageEventFactory.create ("Surrender button clicked."));
-              }
-            });
+    controlRoomBox = widgetFactory.createControlRoomBox (new ClickListener ()
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Implement trade-in button.
+        // TODO Production: Remove.
+        status ("Purchase Reinforcements button clicked.");
+      }
+    }, new ClickListener ()
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        attackPhaseHandler.onEndAttackPhase ();
+      }
+    }, new ClickListener ()
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Implement FortificationPhaseHandler#onEndFortificationPhase.
+        attackPhaseHandler.onEndAttackPhase ();
+      }
+    }, new ClickListener ()
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Implement my settings button.
+        // TODO Production: Remove.
+        status ("My Settings button clicked.");
+      }
+    }, new ClickListener ()
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        quitDialog.setTitle ("Surrender & Quit?");
+        quitDialog.setMessage (SURRENDER_AND_QUIT_MESSAGE);
+        quitDialog.show ();
+      }
+    });
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
@@ -252,7 +270,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     sideBarTable.add (intelBox.asActor ()).size (296, 484).spaceBottom (6).fill ();
     sideBarTable.row ();
     sideBarTable.add (controlRoomBox.asActor ()).size (296, 318).spaceTop (6).fill ();
-    //sideBarTable.debugAll ();
+    // sideBarTable.debugAll ();
 
     // @formatter:off
     final Table topTable = new Table ().top ().left ();
@@ -265,7 +283,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     bottomTable.add (statusBox.asActor ()).size (700, 256).spaceRight (6).fill ();
     bottomTable.add (chatBox.asActor ()).size (700, 256).spaceLeft (6).spaceRight (6).fill ();
     bottomTable.add (playerBox.asActor ()).size (498, 256).spaceLeft (6).fill ();
-    //bottomTable.debugAll ();
+    // bottomTable.debugAll ();
 
     final Table screenTable = new Table ().top ().left ().pad (5);
     screenTable.add (topTable).height (808).left ().spaceBottom (6).fill ();
@@ -279,19 +297,25 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
             screenSize.referenceHeight (), camera);
 
-    screenShaker = new ScreenShaker (viewport, screenSize);
+    final ScreenShaker screenShaker = new ScreenShaker (viewport, screenSize);
 
     stage = new Stage (viewport, batch);
 
     occupationDialog = widgetFactory.createOccupationDialog (stage, eventBus, new OccupationDialogListener ());
     reinforcementDialog = widgetFactory.createReinforcementDialog (stage, eventBus, new ReinforcementDialogListener ());
-    attackDialog = widgetFactory.createAttackDialog (stage, eventBus, new DefaultAttackDialogListener ());
-    defendDialog = widgetFactory.createDefendDialog (stage, eventBus, new DefendDialogListener ());
+    attackDialog = widgetFactory.createAttackDialog (stage, screenShaker, eventBus, new DefaultAttackDialogListener ());
+    defendDialog = widgetFactory.createDefendDialog (stage, screenShaker, eventBus, new DefendDialogListener ());
     battleResultDialog = widgetFactory.createBattleResultDialog (stage, new BattleResultDialogListener ());
     quitDialog = widgetFactory.createQuitDialog (stage, new QuitDialogListener ());
 
     dialogs = ImmutableList.of (occupationDialog, reinforcementDialog, attackDialog, defendDialog, battleResultDialog,
                                 quitDialog);
+
+    reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, eventBus);
+    manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
+    attackPhaseHandler = new AttackPhaseHandler (playMap, playerBox, attackDialog, occupationDialog,
+            battleResultDialog, eventBus);
+    defendPhaseHandler = new DefendPhaseHandler (playMap, playerBox, defendDialog, battleResultDialog, eventBus);
 
     stage.addActor (rootStack);
 
@@ -304,7 +328,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         {
           case Input.Keys.ESCAPE:
           {
-            if (!attackDialog.isShown () && !reinforcementDialog.isShown ()) quitDialog.show ();
+            if (attackDialog.isShown () || reinforcementDialog.isShown ()) return false;
+
+            quitDialog.setTitle ("Quit?");
+            quitDialog.setMessage (QUIT_MESSAGE);
+            quitDialog.show ();
 
             return false;
           }
@@ -366,9 +394,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     debugInputProcessor = new DebugInputProcessor (debugEventGenerator, mouseInput, playMap, statusBox, chatBox,
             playerBox, occupationDialog, reinforcementDialog, attackDialog, defendDialog, eventBus);
 
-    battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
+    final InputMultiplexer inputMultiplexer = new InputMultiplexer (preInputProcessor, stage, this);
 
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, debugInputProcessor);
+    if (DEBUG) inputMultiplexer.addProcessor (debugInputProcessor);
+
+    inputProcessor = inputMultiplexer;
   }
 
   @Override
@@ -377,6 +407,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     showCursor ();
 
     eventBus.subscribe (this);
+    eventBus.subscribe (reinforcementPhaseHandler);
 
     Gdx.input.setInputProcessor (inputProcessor);
 
@@ -395,8 +426,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       dialog.refreshAssets ();
     }
-
-    battleSingleExplosionSound = widgetFactory.createBattleSingleExplosionSound ();
   }
 
   @Override
@@ -413,7 +442,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       dialog.update (delta);
     }
 
-    screenShaker.update (delta);
     stage.draw ();
   }
 
@@ -439,6 +467,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   public void hide ()
   {
     eventBus.unsubscribe (this);
+    eventBus.unsubscribe (reinforcementPhaseHandler);
+    eventBus.unsubscribe (manualCountryAssignmentPhaseHandler);
+    eventBus.unsubscribe (attackPhaseHandler);
+    eventBus.unsubscribe (defendPhaseHandler);
 
     stage.unfocusAll ();
 
@@ -450,6 +482,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox.clear ();
     statusBox.clear ();
     playerBox.clear ();
+    attackPhaseHandler.reset ();
+    defendPhaseHandler.reset ();
     debugInputProcessor.reset ();
 
     clearPlayMap ();
@@ -458,8 +492,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       dialog.hide (null);
     }
-
-    battleSingleExplosionSound.stop ();
   }
 
   @Override
@@ -498,7 +530,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
+
+    selfPlayer = event.getSelfPlayer ();
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -509,10 +543,23 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setMapMetadata (event.getMapMetadata ());
         intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
         intelBox.setClientConfiguration (event.getClientConfiguration ());
-        playerBox.setPlayers (event.getPlayersInGame ());
-        debugEventGenerator.makePlayersUnavailable (event.getPlayersInGame ());
+        intelBox.setPlayer (event.getSelfPlayer ());
+        playerBox.setPlayers (event.getAllPlayers ());
+        debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
       }
     });
+
+    final GameServerConfiguration config = event.getGameServerConfiguration ();
+    final int nMorePlayers = config.getPlayerLimit () - event.getPlayerCount ();
+
+    status ("Welcome, {}.", event.getSelfPlayerName ());
+    statusOn (event.isFirstPlayerInGame (), "It looks like you're the first one here.");
+    statusOn (nMorePlayers > 0, "The game will begin when {}.",
+              Strings.pluralize (nMorePlayers, "more player joins", "more players join"));
+    statusOn (nMorePlayers > 0,
+              "This is a {} player {} Mode game. You must conquer {}% of the map to achieve victory.",
+              config.getPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
+              config.getWinPercentage ());
   }
 
   @Handler
@@ -520,7 +567,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -538,15 +585,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.debug ("Event received [{}].", event);
-
         chatBox.addRow (widgetFactory.createChatMessageBoxRow (event.getMessage ()));
         chatBox.showLastRow ();
       }
@@ -558,7 +603,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -566,66 +611,33 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         playerBox.addPlayer (event.getPlayer ());
-        intelBox.setPlayer (event.getPlayer ());
         debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
       }
     });
+
+    statusOn (!isSelf (event.getPlayer ()), "{} joined the game.", event.getPlayerName ());
   }
 
   @Handler
-  void onEvent (final PlayerLeaveGameEvent event)
+  void onEvent (final ActivePlayerChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        log.trace ("Event received [{}].", event);
-
-        playerBox.removePlayer (event.getPlayer ());
-        debugEventGenerator.makePlayerAvailable (event.getPlayer ());
+        playerBox.updateExisting (event.getPlayer ());
+        playerBox.highlightPlayer (event.getPlayer ());
       }
     });
   }
 
   @Handler
-  void onEvent (final CountryArmiesChangedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        playMap.changeArmiesBy (event.getCountryDeltaArmyCount (), event.getCountryName ());
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final DeterminePlayerTurnOrderCompleteEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        playerBox.setPlayers (event.getPlayersSortedByTurnOrder ());
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final PlayerClaimCountryResponseSuccessEvent event)
+  void onEvent (final CountryOwnerChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -637,50 +649,29 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         playMap.setCountryState (event.getCountryName (),
-                                 CountryPrimaryImageState.fromPlayerColor (event.getPlayerColor ()));
+                                 CountryPrimaryImageState.fromPlayerColor (event.getNewOwner ().getColor ()));
       }
     });
+
+    statusOn (!isSelf (event.getNewOwner ()), "{} now owns {}.", event.getNewOwnerName (), event.getCountryName ());
+    statusOn (isSelf (event.getNewOwner ()), "You now own {}.", event.getCountryName ());
   }
 
   @Handler
-  void onEvent (final PlayerCountryAssignmentCompleteEvent event)
+  void onEvent (final CountryArmiesChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}].", event);
+
+    final String countryName = event.getCountryName ();
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        for (final CountryPacket country : event.getCountries ())
-        {
-          final CountryPrimaryImageState state = CountryPrimaryImageState.fromPlayerColor (event
-                  .getOwnerColor (country));
-
-          if (playMap.primaryImageStateOfCountryIs (state, country.getName ())) continue;
-
-          playMap.setCountryState (country.getName (), state);
-        }
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final ActivePlayerChangedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        playerBox.updateExisting (event.getPlayer ());
-        playerBox.highlightPlayer (event.getPlayer ());
+        playMap.setArmies (event.getCountryArmyCount (), countryName);
       }
     });
   }
@@ -703,11 +694,410 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
+  void onEvent (final DeterminePlayerTurnOrderCompleteEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName ("Turn Order");
+        playerBox.setPlayers (event.getPlayersSortedByTurnOrder ());
+      }
+    });
+
+    status ("The order of turns has been decided.");
+
+    for (final PlayerPacket player : event.getPlayersSortedByTurnOrder ())
+    {
+      final String turn = Strings.toMixedOrdinal (player.getTurnOrder ());
+      statusOn (!isSelf (player), "{} is going {}.", player.getName (), turn);
+      statusOn (isSelf (player), "You are going {}.", turn);
+    }
+  }
+
+  @Handler
+  void onEvent (final BeginPlayerCountryAssignmentEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (event.getAssignmentMode ().is (InitialCountryAssignment.MANUAL))
+    {
+      eventBus.subscribe (manualCountryAssignmentPhaseHandler);
+    }
+
+    final String mode = Strings.toProperCase (String.valueOf (event.getAssignmentMode ()));
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName (Strings.format ("{} Country Assignment", mode));
+      }
+    });
+
+    status ("{} country assignment phase.", mode);
+  }
+
+  @Handler
+  void onEvent (final PlayerCountryAssignmentCompleteEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (event.getAssignmentMode ().is (InitialCountryAssignment.MANUAL))
+    {
+      eventBus.unsubscribe (manualCountryAssignmentPhaseHandler);
+    }
+  }
+
+  @Handler
+  void onEvent (final BeginInitialReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    eventBus.subscribe (reinforcementPhaseHandler);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName ("Initial Reinforcement");
+      }
+    });
+
+    statusOn (isSelf (event.getPlayer ()), "Initial Reinforcement phase.");
+    statusOn (!isSelf (event.getPlayer ()), "{} is placing initial reinforcements...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerReinforceInitialCountryResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playerBox.updateExisting (event.getPlayer ());
+      }
+    });
+
+    final String playerName = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
+
+    status ("{} placed {} on {}.", playerName,
+            Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"), event.getCountryName ());
+  }
+
+  @Handler
+  void onEvent (final EndInitialReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    eventBus.unsubscribe (reinforcementPhaseHandler);
+  }
+
+  @Handler
+  void onEvent (final BeginPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (isSelf (event.getPlayer ()), "It is your turn.");
+    statusOn (!isSelf (event.getPlayer ()), "It is {}'s turn.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final BeginReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    eventBus.subscribe (reinforcementPhaseHandler);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName ("Reinforcement");
+      }
+    });
+
+    statusOn (isSelf (event.getPlayer ()), "Reinforcement phase.");
+    statusOn (!isSelf (event.getPlayer ()), "{} is placing reinforcements...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerReinforceCountriesResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    // TODO Fix PlayerReinforceCountriesResponseSuccessEvent to be PlayerReinforceCountryResponseSuccessEvent,
+    // TODO that only reinforces a single country & army at a time, just like
+    // TODO PlayerReinforceInitialCountryResponseSuccessEvent
+//
+//    final String playerName = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
+//
+//    status ("{} placed {} on {}.", playerName,
+//            Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"), event.getCountryName ());
+  }
+
+  @Handler
+  void onEvent (final EndReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    eventBus.unsubscribe (reinforcementPhaseHandler);
+
+    statusOn (!isSelf (event.getPlayer ()), "{} is finished reinforcing.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final BeginAttackPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (isSelf (event.getPlayer ()))
+    {
+      attackPhaseHandler.reset ();
+      eventBus.subscribe (attackPhaseHandler);
+    }
+    else
+    {
+      defendPhaseHandler.reset ();
+      eventBus.subscribe (defendPhaseHandler);
+    }
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName ("Attack");
+      }
+    });
+
+    statusOn (isSelf (event.getPlayer ()), "Attack phase.");
+    statusOn (!isSelf (event.getPlayer ()), "{} is deciding where to attack...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerAttackCountryResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (isSelf (event.getDefendingPlayer ())) return;
+
+    final int defenderLoss = Math.abs (event.getDefendingCountryArmyDelta ());
+    final int attackerLoss = Math.abs (event.getAttackingCountryArmyDelta ());
+    final boolean defenderLostArmies = defenderLoss > 0;
+    final boolean attackerLostArmies = attackerLoss > 0;
+    final boolean defenderOnlyLostArmies = defenderLostArmies && !attackerLostArmies;
+    final boolean attackerOnlyLostArmies = !defenderLostArmies && attackerLostArmies;
+    final boolean bothLostArmies = attackerLostArmies && defenderLostArmies;
+    final String attacker = isSelf (event.getAttackingPlayer ()) ? "You" : event.getAttackingPlayerName ();
+    final String defender = event.getDefendingPlayerName ();
+    final String attackerCountry = event.getAttackingCountryName ();
+    final String defenderCountry = event.getDefendingCountryName ();
+    final String defenderLossInWords = Strings.pluralize (defenderLoss, "no armies", "an army", defenderLoss + " armies");
+    final String attackerLossInWords = Strings.pluralize (attackerLoss, "no armies", "an army", defenderLoss + " armies");
+
+    statusOn (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
+              defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
+
+    statusOn (attackerOnlyLostArmies, "{} attacked {} in {} from {} & lost {}!", attacker, defender, defenderCountry,
+              attackerCountry, attackerLossInWords);
+
+    statusOn (defenderOnlyLostArmies, "{} attacked {} in {} from {} & destroyed {}!", attacker, defender,
+              defenderCountry, attackerCountry, defenderLossInWords);
+  }
+
+  @Handler
+  void onEvent (final PlayerAttackVictoryEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (isSelf (event.getPlayer ()), "General, we have conquered {}!", event.getBattleResult ()
+            .getDefendingCountryName ());
+
+    statusOn (!isSelf (event.getPlayer ()), "{} conquered {}, defeating {} in battle.", event.getPlayerName (), event
+            .getBattleResult ().getDefendingCountryName (), event.getBattleResult ().getDefendingPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerLoseGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (isSelf (event.getPlayer ()), "General, we lost the war.");
+    statusOn (!isSelf (event.getPlayer ()), "{} was annihilated.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerWinGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName ("Game Over");
+      }
+    });
+
+    statusOn (isSelf (event.getPlayer ()), "General, we won the war!");
+    statusOn (!isSelf (event.getPlayer ()), "{} won the game.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerOccupyCountryResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    final String player = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
+    final String country = event.getDestinationCountryName ();
+    final int armies = Math.abs (event.getDeltaArmyCount ());
+
+    status ("{} occupied {} with {}.", player, country, Strings.pluralize (armies, "army", "armies"));
+    statusOn (armies == 1, "Looks like an easy target.");
+  }
+
+  @Handler
+  void onEvent (final EndAttackPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (isSelf (event.getPlayer ()))
+    {
+      attackPhaseHandler.reset ();
+      eventBus.unsubscribe (attackPhaseHandler);
+    }
+    else
+    {
+      defendPhaseHandler.reset ();
+      eventBus.unsubscribe (defendPhaseHandler);
+    }
+
+    statusOn (!isSelf (event.getPlayer ()), "{} is finished attacking.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final BeginFortifyPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhaseName ("Post-Combat Maneuver");
+      }
+    });
+
+    statusOn (isSelf (event.getPlayer ()), "Post-Combat Maneuver phase.");
+    statusOn (!isSelf (event.getPlayer ()), "{} is deciding where to maneuver...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerFortifyCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    // TODO Implement FortififcationPhaseHandler.
+    eventBus.publish (new PlayerFortifyCountryResponseRequestEvent ());
+  }
+
+  @Handler
+  void onEvent (final EndFortifyPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (!isSelf (event.getPlayer ()), "{} is finished maneuvering.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final EndPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (isSelf (event.getPlayer ()), "Your turn is over.");
+    statusOn (!isSelf (event.getPlayer ()), "{}'s turn is over.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerLeaveGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playerBox.removePlayer (event.getPlayer ());
+        debugEventGenerator.makePlayerAvailable (event.getPlayer ());
+      }
+    });
+
+    statusOn (!isSelf (event.getPlayer ()), "{} left the game.", event.getPlayerName ());
+  }
+
+  @Handler
   void onEvent (final QuitGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -724,6 +1114,33 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
   }
 
+  private void status (final String statusMessage)
+  {
+    eventBus.publish (StatusMessageEventFactory.create (statusMessage));
+  }
+
+  private void status (final String statusMessage, final Object... args)
+  {
+    eventBus.publish (StatusMessageEventFactory.create (statusMessage, args));
+  }
+
+  private void statusOn (final boolean condition, final String statusMessage)
+  {
+    if (!condition) return;
+    status (statusMessage);
+  }
+
+  private void statusOn (final boolean condition, final String statusMessage, final Object... args)
+  {
+    if (!condition) return;
+    status (statusMessage, args);
+  }
+
+  private boolean isSelf (final PlayerPacket player)
+  {
+    return selfPlayer != null && player.is (selfPlayer);
+  }
+
   private void showCursor ()
   {
     Gdx.graphics.setCursor (normalCursor);
@@ -734,6 +1151,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     this.playMap = playMap;
     playMapCell.setActor (this.playMap.asActor ());
     intelBox.setMapMetadata (playMap.getMapMetadata ());
+    reinforcementPhaseHandler.setPlayMap (playMap);
+    manualCountryAssignmentPhaseHandler.setPlayMap (playMap);
+    attackPhaseHandler.setPlayMap (playMap);
+    defendPhaseHandler.setPlayMap (playMap);
     debugInputProcessor.setPlayMap (this.playMap);
   }
 
@@ -742,31 +1163,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     playMap.reset ();
     playMapCell.clearActor ();
     widgetFactory.destroyPlayMap (playMap.getMapMetadata ());
-    playMap = PlayMap.NULL_PLAY_MAP;
-    playMapCell.setActor (playMap.asActor ());
-    intelBox.setMapMetadata (playMap.getMapMetadata ());
-    debugInputProcessor.setPlayMap (playMap);
-  }
-
-  private void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies)
-  {
-    if (attackingCountryDeltaArmies == 0 && defendingCountryDeltaArmies == 0) return;
-
-    battleSingleExplosionSound.play ();
-    screenShaker.shake ();
-
-    if (attackingCountryDeltaArmies == -2 || defendingCountryDeltaArmies == -2)
-    {
-      Timer.schedule (new Timer.Task ()
-      {
-        @Override
-        public void run ()
-        {
-          battleSingleExplosionSound.play ();
-          screenShaker.shake ();
-        }
-      }, 0.25f);
-    }
+    updatePlayMap (PlayMap.NULL_PLAY_MAP);
   }
 
   private final class OccupationDialogListener implements DialogListener
@@ -774,22 +1171,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onSubmit ()
     {
-      final int deltaArmies = occupationDialog.getDeltaArmies ();
-      final String sourceCountryName = occupationDialog.getSourceCountryName ();
-      final String destinationCountryName = occupationDialog.getDestinationCountryName ();
-
-      // TODO Production: Remove
-      eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage ("You occupied "
-              + destinationCountryName + " with " + Strings.pluralize (deltaArmies, "army", "armies") + " from "
-              + sourceCountryName + "."), ImmutableSet.<PlayerPacket> of ()));
-
-      // TODO Production: Remove
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (sourceCountryName), -deltaArmies));
-
-      // TODO Production: Remove
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
-
-      // TODO: Production: Publish event (OccupyCountryRequestEvent?)
+      attackPhaseHandler.onOccupy ();
     }
 
     @Override
@@ -812,7 +1194,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onSubmit ()
     {
-      final int deltaArmies = reinforcementDialog.getDeltaArmies ();
+      final int deltaArmies = reinforcementDialog.getDeltaArmyCount ();
       final String sourceCountryName = reinforcementDialog.getSourceCountryName ();
       final String destinationCountryName = reinforcementDialog.getDestinationCountryName ();
 
@@ -850,107 +1232,18 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onBattle ()
     {
-      final ImmutableList.Builder <DieFaceValue> attackerDieFaceValuesBuilder = ImmutableList.builder ();
-
-      for (int i = 0; i < attackDialog.getActiveAttackerDieCount (); ++i)
-      {
-        attackerDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
-      }
-
-      final ImmutableList <DieFaceValue> attackerDieFaceValues = attackerDieFaceValuesBuilder.build ();
-
-      attackDialog.rollAttackerDice (attackerDieFaceValues);
-
-      final ImmutableList.Builder <DieFaceValue> defenderDieFaceValuesBuilder = ImmutableList.builder ();
-
-      for (int i = 0; i < attackDialog.getActiveDefenderDieCount (); ++i)
-      {
-        defenderDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
-      }
-
-      final ImmutableList <DieFaceValue> defenderDieFaceValues = defenderDieFaceValuesBuilder.build ();
-
-      attackDialog.rollDefenderDice (defenderDieFaceValues);
-
-      tempOutcome.set (attackDialog.determineOutcome (attackerDieFaceValues, defenderDieFaceValues));
-
-      final String attackingCountryName = tempOutcome.getAttackingCountryName ();
-      final String defendingCountryName = tempOutcome.getDefendingCountryName ();
-      final String defendingPlayerName = tempOutcome.getDefendingPlayerName ();
-      final int attackingCountryDeltaArmies = tempOutcome.getAttackingCountryDeltaArmies ();
-      final int defendingCountryDeltaArmies = tempOutcome.getDefendingCountryDeltaArmies ();
-
-      playBattleEffects (attackingCountryDeltaArmies, defendingCountryDeltaArmies);
-
-      // TODO Production: Remove
-      if (attackingCountryDeltaArmies != 0)
-      {
-        final CountryPacket attackingCountry = DebugPackets.from (attackingCountryName);
-        eventBus.publish (new DefaultCountryArmiesChangedEvent (attackingCountry, attackingCountryDeltaArmies));
-      }
-
-      // TODO Production: Remove
-      if (defendingCountryDeltaArmies != 0)
-      {
-        final CountryPacket defendingCountry = DebugPackets.from (defendingCountryName);
-        eventBus.publish (new DefaultCountryArmiesChangedEvent (defendingCountry, defendingCountryDeltaArmies));
-      }
-
-      // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings
-              .format ("You attacked {} in {} from {}, destroying {} & losing {}!", defendingPlayerName,
-                       defendingCountryName, attackingCountryName,
-                       Strings.pluralize (Math.abs (defendingCountryDeltaArmies), "army", "armies"),
-                       Strings.pluralize (Math.abs (attackingCountryDeltaArmies), "army", "armies")), ImmutableSet
-              .<PlayerPacket> of ()));
+      attackPhaseHandler.onBattle ();
     }
 
     @Override
     public void onRetreat ()
     {
-      // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings.format ("You stopped attacking {} in {} from {}.",
-                                                                          attackDialog.getDefendingPlayerName (),
-                                                                          attackDialog.getDefendingCountryName (),
-                                                                          attackDialog.getAttackingCountryName ()),
-                                                          ImmutableSet.<PlayerPacket> of ()));
+      attackPhaseHandler.onRetreat ();
     }
 
     @Override
     public void onAttackerWinFinal ()
     {
-      // @formatter:off
-      final String attackingCountryName = attackDialog.getAttackingCountryName ();
-      final String defendingCountryName = attackDialog.getDefendingCountryName ();
-      final CountryPrimaryImageState attackingCountryPrimaryImageState = playMap.getPrimaryImageStateOf (attackingCountryName);
-      final int totalArmies = attackDialog.getAttackingCountryArmies ();
-      final int minDestinationArmies = attackDialog.getActiveAttackerDieCount ();
-      final int maxDestinationArmies = totalArmies - 1;
-      final Country sourceCountry = attackDialog.getAttackingCountry ();
-      final Country destinationCountry = attackDialog.getDefendingCountry ();
-      // @formatter:on
-
-      // TODO Production: Remove
-      if (attackingCountryPrimaryImageState != null)
-      {
-        attackDialog.getDefendingCountry ().changePrimaryStateTo (attackingCountryPrimaryImageState);
-        playMap.setCountryState (defendingCountryName, attackingCountryPrimaryImageState);
-      }
-
-      attackDialog.hide ();
-
-      occupationDialog
-              .show (minDestinationArmies, maxDestinationArmies, sourceCountry, destinationCountry, totalArmies);
-
-      battleResultDialog.setTitle ("Victory");
-      battleResultDialog.setMessage (new DefaultMessage ("General, you conquered " + defendingCountryName
-              + "!\nWe must now occupy it quickly."));
-      battleResultDialog.show ();
-
-      // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings.format ("You conquered {}!",
-                                                                          attackDialog.getDefendingCountryName ()),
-                                                          ImmutableSet.<PlayerPacket> of ()));
     }
 
     @Override
@@ -964,27 +1257,23 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       battleResultDialog.show ();
 
       // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings.format ("You failed to conquer {}.",
-                                                                          attackDialog.getDefendingCountryName ()),
-                                                          ImmutableSet.<PlayerPacket> of ()));
+      status ("You failed to conquer {}.", attackDialog.getDefendingCountryName ());
+
+      attackPhaseHandler.softReset ();
     }
 
     @Override
     public void onShow ()
     {
       playMap.disable ();
-
-      eventBus.publish (StatusMessageEventFactory.create (Strings
-              .format ("You are preparing to attack {} in {} from {}.", attackDialog.getDefendingPlayerName (),
-                       attackDialog.getDefendingCountryName (), attackDialog.getAttackingCountryName ()), ImmutableSet
-              .<PlayerPacket> of ()));
-
-      attackDialog.startBattle ();
     }
 
     @Override
     public void onHide ()
     {
+      if (occupationDialog.isShown () || battleResultDialog.isShown () || quitDialog.isShown ()) return;
+
+      playMap.enable (mouseInput.position ());
     }
   }
 
@@ -993,53 +1282,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onBattle ()
     {
-      final ImmutableList.Builder <DieFaceValue> defenderDieFaceValuesBuilder = ImmutableList.builder ();
-
-      for (int i = 0; i < defendDialog.getActiveDefenderDieCount (); ++i)
-      {
-        defenderDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
-      }
-
-      final ImmutableList <DieFaceValue> defenderDieFaceValues = defenderDieFaceValuesBuilder.build ();
-
-      defendDialog.rollDefenderDice (defenderDieFaceValues);
-
-      final ImmutableList.Builder <DieFaceValue> attackerDieFaceValuesBuilder = ImmutableList.builder ();
-
-      for (int i = 0; i < defendDialog.getActiveAttackerDieCount (); ++i)
-      {
-        attackerDieFaceValuesBuilder.add (Randomness.getRandomElementFrom (DieFaceValue.values ()));
-      }
-
-      final ImmutableList <DieFaceValue> attackerDieFaceValues = attackerDieFaceValuesBuilder.build ();
-
-      defendDialog.rollAttackerDice (attackerDieFaceValues);
-
-      tempOutcome.set (defendDialog.determineOutcome (attackerDieFaceValues, defenderDieFaceValues));
-
-      final String attackingCountryName = tempOutcome.getAttackingCountryName ();
-      final String defendingCountryName = tempOutcome.getDefendingCountryName ();
-      final String attackingPlayerName = tempOutcome.getAttackingPlayerName ();
-      final int attackingCountryDeltaArmies = tempOutcome.getAttackingCountryDeltaArmies ();
-      final int defendingCountryDeltaArmies = tempOutcome.getDefendingCountryDeltaArmies ();
-
-      playBattleEffects (attackingCountryDeltaArmies, defendingCountryDeltaArmies);
-
-      // TODO Production: Remove
-      final CountryPacket attackingCountryPacket = DebugPackets.from (attackingCountryName);
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (attackingCountryPacket, attackingCountryDeltaArmies));
-
-      // TODO Production: Remove
-      final CountryPacket defendingCountryPacket = DebugPackets.from (defendingCountryName);
-      eventBus.publish (new DefaultCountryArmiesChangedEvent (defendingCountryPacket, defendingCountryDeltaArmies));
-
-      // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings
-              .format ("You defended {} against {} in {}, destroying {} & losing {}!", defendingCountryName,
-                       attackingPlayerName, attackingCountryName,
-                       Strings.pluralize (Math.abs (attackingCountryDeltaArmies), "army", "armies"),
-                       Strings.pluralize (Math.abs (defendingCountryDeltaArmies), "army", "armies")), ImmutableSet
-              .<PlayerPacket> of ()));
+      defendPhaseHandler.onBattle ();
     }
 
     @Override
@@ -1047,16 +1290,17 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       defendDialog.hide ();
 
+      playMap.setCountryState (defendDialog.getDefendingCountryName (),
+              playMap.getPrimaryImageStateOf (defendDialog.getAttackingCountryName ()));
+
       battleResultDialog.setTitle ("Defeat");
       battleResultDialog.setMessage (new DefaultMessage ("General, we have failed to defend "
               + defendDialog.getDefendingCountryName () + ".\nThe enemy has taken it."));
       battleResultDialog.show ();
 
       // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings
-              .format ("You were defeated in {} & it has been conquered by {}!",
-                       defendDialog.getDefendingCountryName (), defendDialog.getAttackingPlayerName ()), ImmutableSet
-              .<PlayerPacket> of ()));
+      status ("You were defeated in {} & it has been conquered by {}!", defendDialog.getDefendingCountryName (),
+              defendDialog.getAttackingPlayerName ());
     }
 
     @Override
@@ -1070,28 +1314,21 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       battleResultDialog.show ();
 
       // TODO Production: Remove
-      eventBus.publish (StatusMessageEventFactory.create (Strings.format ("You defeated {} in {}!",
-                                                                          defendDialog.getAttackingPlayerName (),
-                                                                          defendDialog.getAttackingCountryName ()),
-                                                          ImmutableSet.<PlayerPacket> of ()));
+      status ("You defeated {} in {}!", defendDialog.getAttackingPlayerName (), defendDialog.getAttackingCountryName ());
     }
 
     @Override
     public void onShow ()
     {
       playMap.disable ();
-
-      eventBus.publish (StatusMessageEventFactory.create (Strings
-              .format ("You are preparing to defend {} against {} in {}.", defendDialog.getDefendingCountryName (),
-                       defendDialog.getAttackingPlayerName (), defendDialog.getAttackingCountryName ()), ImmutableSet
-              .<PlayerPacket> of ()));
-
-      defendDialog.startBattle ();
     }
 
     @Override
     public void onHide ()
     {
+      if (battleResultDialog.isShown () || quitDialog.isShown ()) return;
+
+      playMap.enable (mouseInput.position ());
     }
   }
 

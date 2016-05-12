@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,17 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+package com.forerunnergames.peril.client.ui;
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dice;
+import com.badlogic.gdx.utils.Timer;
 
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-
-import com.forerunnergames.peril.common.settings.GameSettings;
-
-abstract class AttackerDie extends AbstractDie
+public final class NonPausingTimer extends Timer
 {
-  protected AttackerDie (final int index, final ImageButton button)
+  @Override
+  public void delay (final long delayMillis)
   {
-    super (index, GameSettings.DEFAULT_DIE_FACE_VALUE, button);
+    // Do nothing. We don't want to delay when the application resumes from a paused state.
   }
 }

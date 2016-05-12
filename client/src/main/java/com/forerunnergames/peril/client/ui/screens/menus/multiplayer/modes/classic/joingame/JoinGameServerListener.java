@@ -45,5 +45,5 @@ public interface JoinGameServerListener
 
   void onJoinFinish (final GameServerConfiguration gameServerConfiguration,
                      final ClientConfiguration clientConfiguration,
-                     final ImmutableSet <PlayerPacket> playersInGame);
+                     final ImmutableSet <PlayerPacket> players);
 }

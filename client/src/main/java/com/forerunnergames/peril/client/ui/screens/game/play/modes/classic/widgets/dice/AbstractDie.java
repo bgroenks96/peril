@@ -49,12 +49,12 @@ abstract class AbstractDie implements Die
   private final int index;
   private final Table <DieState, DieStateTransition, DieStateTransitionAction> transitionActionsTable = HashBasedTable.create ();
   private final Collection <DieListener> listeners = new ArrayList <> ();
+  private final float spinThresholdTimeSeconds = GameSettings.DICE_SPINNING_INTERVAL_SECONDS;
   private DieFaceValue currentFaceValue = GameSettings.DEFAULT_DIE_FACE_VALUE;
   private DieFaceValue spinningFaceValue = GameSettings.DEFAULT_DIE_FACE_VALUE;
   private DieState currentState = DEFAULT_STATE;
   private DieOutcome currentOutcome = DEFAULT_OUTCOME;
   private boolean isSpinning = true;
-  private final float spinThresholdTimeSeconds = GameSettings.DICE_SPINNING_INTERVAL_SECONDS;
   private float currentSpinTimeSeconds = 0.0f;
   // @formatter:on
 
@@ -180,22 +180,6 @@ abstract class AbstractDie implements Die
   }
 
   @Override
-  public final void setOutcomeAgainst (final DieFaceValue competingFaceValue)
-  {
-    Arguments.checkIsNotNull (competingFaceValue, "competingFaceValue");
-
-    if (!currentState.isOutcomeable ()) return;
-
-    currentOutcome = determineOutcome (currentFaceValue, competingFaceValue);
-
-    stopSpinning ();
-    refreshAssets ();
-
-    log.trace ("Set outcome of die with face value [{}] to [{}] against die with face value [{}].", currentFaceValue,
-               currentOutcome, competingFaceValue);
-  }
-
-  @Override
   public void setOutcome (final DieOutcome outcome)
   {
     Arguments.checkIsNotNull (outcome, "outcome");
@@ -208,24 +192,6 @@ abstract class AbstractDie implements Die
     refreshAssets ();
 
     log.trace ("Set outcome of die with face value [{}] to [{}].", currentFaceValue, currentOutcome);
-  }
-
-  @Override
-  public final DieOutcome getOutcome ()
-  {
-    return currentOutcome;
-  }
-
-  @Override
-  public final boolean hasWinOutcome ()
-  {
-    return currentOutcome == DieOutcome.WIN;
-  }
-
-  @Override
-  public final boolean hasLoseOutcome ()
-  {
-    return currentOutcome == DieOutcome.LOSE;
   }
 
   @Override
@@ -359,7 +325,38 @@ abstract class AbstractDie implements Die
     return button;
   }
 
-  protected abstract DieOutcome determineOutcome (final DieFaceValue thisFaceValue, final DieFaceValue thatFaceValue);
+  @Override
+  public final int compareTo (final Die o)
+  {
+    if (index == o.getIndex ()) return 0;
+
+    return index < o.getIndex () ? -1 : 1;
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return index;
+  }
+
+  @Override
+  public final boolean equals (final Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null || getClass () != obj.getClass ()) return false;
+
+    return index == ((AbstractDie) obj).index;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings
+            .format ("{}: Index: {} | Current Face Value: {} | Current State: {}"
+                             + " | Current Outcome: {} | Touchable: {} | Spinning: {} | Default Face Value: {} | Default State: {}",
+                     getClass ().getSimpleName (), index, currentFaceValue, currentState, currentOutcome,
+                     button.isTouchable (), isSpinning, defaultFaceValue, DEFAULT_STATE);
+  }
 
   protected abstract ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
                                                                              final DieFaceValue faceValue,
@@ -390,45 +387,12 @@ abstract class AbstractDie implements Die
   {
     if (transitionActionsTable.contains (fromState, transition))
     {
-      throw new IllegalStateException (
-              Strings.format ("Already registered a {} from {}: [{}] on {}: [{}].",
-                              DieStateTransitionAction.class.getSimpleName (), DieState.class.getSimpleName (),
-                              fromState, DieStateTransition.class.getSimpleName (), transition));
+      throw new IllegalStateException (Strings.format ("Already registered a {} from {}: [{}] on {}: [{}].",
+                                                       DieStateTransitionAction.class.getSimpleName (),
+                                                       DieState.class.getSimpleName (), fromState,
+                                                       DieStateTransition.class.getSimpleName (), transition));
     }
 
     transitionActionsTable.put (fromState, transition, actionOnFromStateTransition);
-  }
-
-  @Override
-  public final int compareTo (final Die o)
-  {
-    if (index == o.getIndex ()) return 0;
-
-    return index < o.getIndex () ? -1 : 1;
-  }
-
-  @Override
-  public int hashCode ()
-  {
-    return index;
-  }
-
-  @Override
-  public final boolean equals (final Object obj)
-  {
-    if (this == obj) return true;
-    if (obj == null || getClass () != obj.getClass ()) return false;
-
-    return index == ((AbstractDie) obj).index;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format (
-                           "{}: Index: {} | Current Face Value: {} | Current State: {}"
-                                   + " | Current Outcome: {} | Touchable: {} | Spinning: {} | Default Face Value: {} | Default State: {}",
-                           getClass ().getSimpleName (), index, currentFaceValue, currentState, currentOutcome,
-                           button.isTouchable (), isSpinning, defaultFaceValue, DEFAULT_STATE);
   }
 }

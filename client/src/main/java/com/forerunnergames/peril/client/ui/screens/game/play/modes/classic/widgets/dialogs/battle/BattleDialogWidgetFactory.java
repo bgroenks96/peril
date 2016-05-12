@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -61,4 +62,6 @@ public interface BattleDialogWidgetFactory extends WidgetFactory
   BitmapFont createCountryArmyTextEffectsFont ();
 
   Music createBattleAmbienceSoundEffect ();
+
+  Sound createBattleSingleExplosionSoundEffect ();
 }
