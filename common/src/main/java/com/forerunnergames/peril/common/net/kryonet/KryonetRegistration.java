@@ -29,9 +29,14 @@ import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.map.DefaultMapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.peril.common.net.GameServerType;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
@@ -86,6 +91,7 @@ public final class KryonetRegistration
   // @formatter:off
   @SuppressWarnings ("RedundantTypeArguments")
   private static final ImmutableSet <Class <?>> OTHER = ImmutableSet.<Class <?>> of (
+          AbstractCountryStateChangeDeniedEvent.Reason.class,
           ArrayList.class,
           Classes.class,
           DefaultClientConfiguration.class,
@@ -106,9 +112,13 @@ public final class KryonetRegistration
           Optional.class,
           Optional.absent ().getClass (),
           Optional.of ("").getClass (),
+          PlayerAttackCountryResponseDeniedEvent.Reason.class,
+          PlayerDefendCountryResponseDeniedEvent.Reason.class,
+          PlayerFortifyCountryResponseDeniedEvent.Reason.class,
           PlayerJoinGameDeniedEvent.Reason.class,
+          PlayerTradeInCardsResponseDeniedEvent.class,
           PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
-          PlayerClaimCountryResponseDeniedEvent.Reason.class,
+          SpectatorJoinGameDeniedEvent.class,
           UnknownClientConfiguration.class,
           UnknownServerConfiguration.class);
   // @formatter:on
