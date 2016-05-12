@@ -411,7 +411,7 @@ public abstract class AbstractBattlePopup extends OkPopup
 
   private static Image asImage (final Country country)
   {
-    return new Image (country.getCurrentPrimaryDrawable (), Scaling.none);
+    return new Image (country.getPrimaryDrawable (), Scaling.none);
   }
 
   private void resetBattle ()

@@ -36,13 +36,13 @@ final class NullCountry implements Country
   private final CountryArmyText countryArmyText = CountryArmyText.NULL_COUNTRY_ARMY_TEXT;
 
   @Override
-  public CountryPrimaryImageState getCurrentPrimaryImageState ()
+  public CountryPrimaryImageState getPrimaryImageState ()
   {
     return CountryPrimaryImageState.DISABLED;
   }
 
   @Override
-  public CountrySecondaryImageState getCurrentSecondaryImageState ()
+  public CountrySecondaryImageState getSecondaryImageState ()
   {
     return CountrySecondaryImageState.NONE;
   }
@@ -90,7 +90,7 @@ final class NullCountry implements Country
   }
 
   @Override
-  public Drawable getCurrentPrimaryDrawable ()
+  public Drawable getPrimaryDrawable ()
   {
     return drawable;
   }

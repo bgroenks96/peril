@@ -141,7 +141,7 @@ final class NullPlayMap implements PlayMap
   }
 
   @Override
-  public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName)
+  public boolean primaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
@@ -150,31 +150,17 @@ final class NullPlayMap implements PlayMap
   }
 
   @Override
-  public boolean currentPrimaryImageStateOfCountryIsNot (final CountryPrimaryImageState state, final String countryName)
-  {
-    return !currentPrimaryImageStateOfCountryIs (state, countryName);
-  }
-
-  @Override
-  public boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
-                                                        final String countryName)
+  public boolean secondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
     return false;
-  }
-
-  @Override
-  public boolean currentSecondaryImageStateOfCountryIsNot (final CountrySecondaryImageState state,
-                                                           final String countryName)
-  {
-    return !currentSecondaryImageStateOfCountryIs (state, countryName);
   }
 
   @Nullable
   @Override
-  public CountryPrimaryImageState getCurrentPrimaryImageStateOf (final String countryName)
+  public CountryPrimaryImageState getPrimaryImageStateOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
@@ -183,7 +169,7 @@ final class NullPlayMap implements PlayMap
 
   @Nullable
   @Override
-  public CountrySecondaryImageState getCurrentSecondaryImageStateOf (final String countryName)
+  public CountrySecondaryImageState getSecondaryImageStateOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 

@@ -74,7 +74,7 @@ public final class HoveredTerritoryText extends Actor
     final String countryName = playMapInputDetection.getCountryNameAt (mousePosition);
     final String continentName = playMapInputDetection.getContinentNameAt (mousePosition);
 
-    countryPrimaryImageState = playMap.getCurrentPrimaryImageStateOf (countryName);
+    countryPrimaryImageState = playMap.getPrimaryImageStateOf (countryName);
 
     text = Strings.toStringList (", ", LetterCase.PROPER, false, countryName, continentName,
                                  countryPrimaryImageState != null ? countryPrimaryImageState.toString () : "");

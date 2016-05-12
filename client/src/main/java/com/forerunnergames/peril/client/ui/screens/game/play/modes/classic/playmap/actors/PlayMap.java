@@ -65,19 +65,15 @@ public interface PlayMap
 
   ImmutableSet <String> getAllCountryNames ();
 
-  boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName);
+  boolean primaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName);
 
-  boolean currentPrimaryImageStateOfCountryIsNot (final CountryPrimaryImageState state, final String countryName);
-
-  boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName);
-
-  boolean currentSecondaryImageStateOfCountryIsNot (final CountrySecondaryImageState state, final String countryName);
+  boolean secondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName);
 
   @Nullable
-  CountryPrimaryImageState getCurrentPrimaryImageStateOf (final String countryName);
+  CountryPrimaryImageState getPrimaryImageStateOf (final String countryName);
 
   @Nullable
-  CountrySecondaryImageState getCurrentSecondaryImageStateOf (final String countryName);
+  CountrySecondaryImageState getSecondaryImageStateOf (final String countryName);
 
   void disable ();
 

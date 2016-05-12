@@ -47,11 +47,11 @@ public final class DefaultCountry implements Country
   private final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages;
   private final CountryImageData imageData;
   private final CountryArmyText armyText;
-  private CountryPrimaryImageState currentPrimaryImageState = CountryPrimaryImageState.UNOWNED;
-  private CountrySecondaryImageState currentSecondaryImageState = CountrySecondaryImageState.NONE;
+  private CountryPrimaryImageState primaryImageState = CountryPrimaryImageState.UNOWNED;
+  private CountrySecondaryImageState secondaryImageState = CountrySecondaryImageState.NONE;
   private boolean isEnabled = true;
-  private CountryImage <CountryPrimaryImageState> currentPrimaryImage;
-  private CountryImage <CountrySecondaryImageState> currentSecondaryImage;
+  private CountryImage <CountryPrimaryImageState> primaryImage;
+  private CountryImage <CountrySecondaryImageState> secondaryImage;
 
   public DefaultCountry (final CountryImages <CountryPrimaryImageState, CountryPrimaryImage> primaryImages,
                          final CountryImages <CountrySecondaryImageState, CountrySecondaryImage> secondaryImages,
@@ -96,20 +96,20 @@ public final class DefaultCountry implements Country
       group.addActor (countrySecondaryImage.asActor ());
     }
 
-    changePrimaryStateTo (currentPrimaryImageState);
-    changeSecondaryStateTo (currentSecondaryImageState);
+    changePrimaryStateTo (primaryImageState);
+    changeSecondaryStateTo (secondaryImageState);
   }
 
   @Override
-  public CountryPrimaryImageState getCurrentPrimaryImageState ()
+  public CountryPrimaryImageState getPrimaryImageState ()
   {
-    return currentPrimaryImageState;
+    return primaryImageState;
   }
 
   @Override
-  public CountrySecondaryImageState getCurrentSecondaryImageState ()
+  public CountrySecondaryImageState getSecondaryImageState ()
   {
-    return currentSecondaryImageState;
+    return secondaryImageState;
   }
 
   @Override
@@ -121,7 +121,7 @@ public final class DefaultCountry implements Country
     {
       randomState = Randomness.getRandomElementFrom (CountryPrimaryImageState.values ());
     }
-    while (randomState.is (currentPrimaryImageState));
+    while (randomState.is (primaryImageState));
 
     changePrimaryStateTo (randomState);
   }
@@ -139,9 +139,9 @@ public final class DefaultCountry implements Country
       return;
     }
 
-    hide (currentPrimaryImageState);
-    currentPrimaryImageState = state;
-    currentPrimaryImage = primaryImages.get (state);
+    hide (primaryImageState);
+    primaryImageState = state;
+    primaryImage = primaryImages.get (state);
     armyText.onPrimaryStateChange (state);
     show (state);
   }
@@ -159,24 +159,23 @@ public final class DefaultCountry implements Country
       return;
     }
 
-    hide (currentSecondaryImageState);
-    currentSecondaryImageState = state;
-    currentSecondaryImage = secondaryImages.get (state);
+    hide (secondaryImageState);
+    secondaryImageState = state;
+    secondaryImage = secondaryImages.get (state);
     show (state);
   }
 
   @Override
   public void nextPrimaryState ()
   {
-    changePrimaryStateTo (currentPrimaryImageState.hasNext () ? currentPrimaryImageState.next ()
-            : currentPrimaryImageState.first ());
+    changePrimaryStateTo (primaryImageState.hasNext () ? primaryImageState.next () : primaryImageState.first ());
   }
 
   @Override
   public void onHoverStart ()
   {
     if (!isEnabled || !PlayMapSettings.ENABLE_HOVER_EFFECTS) return;
-    if (currentPrimaryImageState == CountryPrimaryImageState.DISABLED) return;
+    if (primaryImageState == CountryPrimaryImageState.DISABLED) return;
 
     changeSecondaryStateTo (CountrySecondaryImageState.HOVERED);
   }
@@ -193,7 +192,7 @@ public final class DefaultCountry implements Country
   public void onTouchDown ()
   {
     if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
-    if (currentPrimaryImageState == CountryPrimaryImageState.DISABLED) return;
+    if (primaryImageState == CountryPrimaryImageState.DISABLED) return;
 
     changeSecondaryStateTo (CountrySecondaryImageState.CLICKED);
   }
@@ -208,9 +207,9 @@ public final class DefaultCountry implements Country
 
   @Nullable
   @Override
-  public Drawable getCurrentPrimaryDrawable ()
+  public Drawable getPrimaryDrawable ()
   {
-    return currentPrimaryImage.getDrawable ();
+    return primaryImage.getDrawable ();
   }
 
   @Override
@@ -344,13 +343,11 @@ public final class DefaultCountry implements Country
   @Override
   public String toString ()
   {
-    return String.format (
-                          "%1$s | Name: %2$s | Current Primary Image State: %3$s | Current Secondary Image State: %4$s"
-                                  + " | Current Primary Image: %5$s  | Current Secondary Image: %6$s | Enabled: %7$s | "
+    return String.format ("%1$s | Name: %2$s | Primary Image State: %3$s | Secondary Image State: %4$s"
+                                  + " | Primary Image: %5$s  | Secondary Image: %6$s | Enabled: %7$s | "
                                   + "Image Data: %8$s | Army Text: %9$s | Primary Images: %10$s "
-                                  + "| Secondary Images: %11$s",
-                          getClass ().getSimpleName (), group.getName (), currentPrimaryImageState,
-                          currentSecondaryImageState, currentPrimaryImage, currentSecondaryImage, isEnabled, imageData,
-            armyText, primaryImages, secondaryImages);
+                                  + "| Secondary Images: %11$s", getClass ().getSimpleName (), group.getName (),
+                          primaryImageState, secondaryImageState, primaryImage, secondaryImage,
+                          isEnabled, imageData, armyText, primaryImages, secondaryImages);
   }
 }

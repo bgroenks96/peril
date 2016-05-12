@@ -31,9 +31,9 @@ public interface Country
 {
   Country NULL_COUNTRY = new NullCountry ();
 
-  CountryPrimaryImageState getCurrentPrimaryImageState ();
+  CountryPrimaryImageState getPrimaryImageState ();
 
-  CountrySecondaryImageState getCurrentSecondaryImageState ();
+  CountrySecondaryImageState getSecondaryImageState ();
 
   void changePrimaryStateRandomly ();
 
@@ -52,7 +52,7 @@ public interface Country
   void onTouchUp ();
 
   @Nullable
-  Drawable getCurrentPrimaryDrawable ();
+  Drawable getPrimaryDrawable ();
 
   Vector2 getReferenceDestination ();
 

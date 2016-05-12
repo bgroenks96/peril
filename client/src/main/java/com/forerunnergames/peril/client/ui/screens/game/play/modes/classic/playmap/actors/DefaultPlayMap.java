@@ -360,8 +360,8 @@ public final class DefaultPlayMap implements PlayMap
 
     if (country == null)
     {
-      throw new IllegalStateException (
-              "Cannot find " + DefaultCountry.class.getSimpleName () + " with name [" + countryName + "].");
+      throw new IllegalStateException ("Cannot find " + DefaultCountry.class.getSimpleName () + " with name ["
+              + countryName + "].");
     }
 
     return country;
@@ -374,57 +374,44 @@ public final class DefaultPlayMap implements PlayMap
   }
 
   @Override
-  public boolean currentPrimaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName)
+  public boolean primaryImageStateOfCountryIs (final CountryPrimaryImageState state, final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return existsCountryWithName (countryName) && getCurrentPrimaryImageStateOf (countryName) == state;
+    return existsCountryWithName (countryName) && getPrimaryImageStateOf (countryName) == state;
   }
 
   @Override
-  public boolean currentPrimaryImageStateOfCountryIsNot (final CountryPrimaryImageState state, final String countryName)
-  {
-    return !currentPrimaryImageStateOfCountryIs (state, countryName);
-  }
-
-  @Override
-  public boolean currentSecondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
+  public boolean secondaryImageStateOfCountryIs (final CountrySecondaryImageState state,
                                                         final String countryName)
   {
     Arguments.checkIsNotNull (state, "state");
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return existsCountryWithName (countryName) && getCurrentSecondaryImageStateOf (countryName) == state;
-  }
-
-  @Override
-  public boolean currentSecondaryImageStateOfCountryIsNot (final CountrySecondaryImageState state,
-                                                           final String countryName)
-  {
-    return !currentSecondaryImageStateOfCountryIs (state, countryName);
+    return existsCountryWithName (countryName) && getSecondaryImageStateOf (countryName) == state;
   }
 
   @Override
   @Nullable
-  public CountryPrimaryImageState getCurrentPrimaryImageStateOf (final String countryName)
+  public CountryPrimaryImageState getPrimaryImageStateOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
     if (!existsCountryWithName (countryName)) return null;
 
-    return getCountryWithName (countryName).getCurrentPrimaryImageState ();
+    return getCountryWithName (countryName).getPrimaryImageState ();
   }
 
   @Override
   @Nullable
-  public CountrySecondaryImageState getCurrentSecondaryImageStateOf (final String countryName)
+  public CountrySecondaryImageState getSecondaryImageStateOf (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
     if (!existsCountryWithName (countryName)) return null;
 
-    return getCountryWithName (countryName).getCurrentSecondaryImageState ();
+    return getCountryWithName (countryName).getSecondaryImageState ();
   }
 
   @Override
@@ -478,8 +465,8 @@ public final class DefaultPlayMap implements PlayMap
 
     if (country == null)
     {
-      throw new IllegalStateException (
-              "Cannot find " + DefaultCountry.class.getSimpleName () + " at " + inputCoordinate + ".");
+      throw new IllegalStateException ("Cannot find " + DefaultCountry.class.getSimpleName () + " at "
+              + inputCoordinate + ".");
 
     }
 

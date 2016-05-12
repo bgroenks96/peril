@@ -575,7 +575,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
           final CountryPrimaryImageState state = CountryPrimaryImageState
                   .valueOf (Strings.toCase (event.getOwnerColor (country), LetterCase.UPPER));
 
-          if (playMap.currentPrimaryImageStateOfCountryIs (state, country.getName ())) continue;
+          if (playMap.primaryImageStateOfCountryIs (state, country.getName ())) continue;
 
           playMap.setCountryState (country.getName (), state);
         }
@@ -837,7 +837,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       // @formatter:off
       final String attackingCountryName = attackPopup.getAttackingCountryName ();
       final String defendingCountryName = attackPopup.getDefendingCountryName ();
-      final CountryPrimaryImageState attackingCountryPrimaryImageState = playMap.getCurrentPrimaryImageStateOf (attackingCountryName);
+      final CountryPrimaryImageState attackingCountryPrimaryImageState = playMap.getPrimaryImageStateOf (attackingCountryName);
       final int totalArmies = attackPopup.getAttackingCountryArmies ();
       final int minDestinationArmies = attackPopup.getActiveAttackerDieCount ();
       final int maxDestinationArmies = totalArmies - 1;
