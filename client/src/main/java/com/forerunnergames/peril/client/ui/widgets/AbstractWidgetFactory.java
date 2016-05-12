@@ -48,7 +48,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Scaling;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
@@ -638,6 +637,13 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (assetDescriptor, "assetDescriptor");
 
     return assetManager.get (assetDescriptor);
+  }
+
+  protected final <T> boolean isAssetLoaded (final AssetDescriptor <T> assetDescriptor)
+  {
+    Arguments.checkIsNotNull (assetDescriptor, "assetDescriptor");
+
+    return assetManager.isLoaded (assetDescriptor);
   }
 
   protected final <T> T getSkinResource (final String name, final Class <T> type)
