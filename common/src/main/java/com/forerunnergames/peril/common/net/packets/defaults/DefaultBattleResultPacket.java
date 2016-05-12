@@ -130,12 +130,12 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   @Override
   public String toString ()
   {
+    // @formatter:off
     return Strings.format ("{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
-                                   + "AttackerRolls: [{}] | DefenderRolls: [{}] | AttackingCountryArmyDelta: [{}]"
-                                   + " | DefendingCountryArmyDelta: [{}]", getClass ().getSimpleName (), attacker,
-                           defender,
-                           defendingCountryOwner, attackerRolls, defenderRolls, attackingCountryArmyDelta,
-                           defendingCountryArmyDelta);
+            + "AttackerRolls: [{}] | DefenderRolls: [{}] | AttackingCountryArmyDelta: [{}]"
+            + " | DefendingCountryArmyDelta: [{}]", getClass ().getSimpleName (), attacker, defender,
+            defendingCountryOwner, attackerRolls, defenderRolls, attackingCountryArmyDelta, defendingCountryArmyDelta);
+    // @formatter:on
   }
 
   @RequiredForNetworkSerialization
