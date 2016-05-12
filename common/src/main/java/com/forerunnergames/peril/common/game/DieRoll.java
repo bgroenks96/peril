@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.base.Function;
@@ -65,5 +66,11 @@ public final class DieRoll
   public DieOutcome getOutcome ()
   {
     return dieOutcome;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Value: [{}] | Outcome: [{}]", getClass ().getSimpleName (), dieFaceValue, dieOutcome);
   }
 }
