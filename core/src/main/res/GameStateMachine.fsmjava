@@ -255,6 +255,7 @@
                   <onEntry action="gameModel.beginAttackPhase()" />
                   <onExit action="gameModel.endAttackPhase()" />
                   <state name="WaitForPlayerAttackOrders">
+                    <onEntry action="gameModel.waitForPlayerAttackOrders()" />
                     <transition event="onPlayerAttackCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerAttackOrder(event)"
                                 nextState="WaitForDefenderResponse"/>

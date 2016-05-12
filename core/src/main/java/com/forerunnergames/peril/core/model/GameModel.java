@@ -834,30 +834,30 @@ public final class GameModel
   @StateEntryAction
   public void beginAttackPhase ()
   {
-    final Id playerId = getCurrentPlayerId ();
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
-
     log.info ("Begin attack phase for player [{}].", currentPlayer);
-
     publish (new BeginAttackPhaseEvent (currentPlayer));
+  }
 
+  @StateMachineAction
+  @StateEntryAction
+  public void waitForPlayerAttackOrders ()
+  {
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
-    for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (playerId))
+    for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (getCurrentPlayerId ()))
     {
       final Id countryId = countryMapGraphModel.countryWith (country.getName ());
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
     }
 
-    publish (new PlayerAttackCountryRequestEvent (currentPlayer, builder.build ()));
+    publish (new PlayerAttackCountryRequestEvent (getCurrentPlayerPacket (), builder.build ()));
   }
 
   @StateMachineAction
   public void endAttackPhase ()
   {
     final PlayerPacket player = getCurrentPlayerPacket ();
-
     log.info ("End attack phase for player [{}].", player);
-
     publish (new EndAttackPhaseEvent (player));
   }
 
@@ -960,8 +960,8 @@ public final class GameModel
     }
 
     final int dieCount = event.getDefenderDieCount ();
-    if (dieCount < rules.getMinAttackerDieCount (defendingCountry.getArmyCount ())
-            || dieCount > rules.getMaxAttackerDieCount (defendingCountry.getArmyCount ()))
+    if (dieCount < rules.getMinDefenderDieCount (defendingCountry.getArmyCount ())
+            || dieCount > rules.getMaxDefenderDieCount (defendingCountry.getArmyCount ()))
     {
       publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
               PlayerDefendCountryResponseDeniedEvent.Reason.INVALID_DIE_COUNT));
@@ -970,9 +970,6 @@ public final class GameModel
               BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
       return false;
     }
-
-    publish (new PlayerDefendCountryResponseSuccessEvent (defendingPlayer, defendingCountry, dieCount,
-            BattlePackets.from (attacker, playerModel, countryMapGraphModel)));
 
     final BattleActor defender = new DefaultBattleActor (defendingPlayerId, attackOrder.getTargetCountry (), dieCount);
     turnDataCache.put (CacheKey.BATTLE_DEFENDER_DATA, defender);
@@ -1044,6 +1041,7 @@ public final class GameModel
 
     final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel,
                                                                 attackerArmyCountDelta, defenderArmyCountDelta);
+    publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket));
     publish (new PlayerAttackCountryResponseSuccessEvent (resultPacket));
   }
 
