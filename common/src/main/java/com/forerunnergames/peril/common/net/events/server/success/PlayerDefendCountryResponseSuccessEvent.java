@@ -18,44 +18,140 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDefendCountryEvent;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
-import com.forerunnergames.peril.common.net.packets.defaults.DefaultBattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryResponseSuccessEvent extends AbstractPlayerDefendCountryEvent
-        implements PlayerResponseSuccessEvent
+import com.google.common.collect.ImmutableSet;
+
+public final class PlayerDefendCountryResponseSuccessEvent implements PlayerResponseSuccessEvent
 {
-  private final BattleActorPacket defenderData;
+  private final BattleResultPacket result;
 
-  public PlayerDefendCountryResponseSuccessEvent (final PlayerPacket defendingPlayer,
-                                                  final CountryPacket defendingCountry,
-                                                  final int defenderDieCount,
-                                                  final BattleActorPacket attackerData)
+  public PlayerDefendCountryResponseSuccessEvent (final BattleResultPacket result)
   {
-    super (defendingPlayer, defendingCountry, attackerData);
+    Arguments.checkIsNotNull (result, "result");
 
-    defenderData = new DefaultBattleActorPacket (defendingPlayer, defendingCountry, defenderDieCount);
+    this.result = result;
   }
 
-  public BattleActorPacket getDefenderData ()
+  @Override
+  public PlayerPacket getPlayer ()
   {
-    return defenderData;
+    return getDefendingPlayer ();
+  }
+
+  @Override
+  public String getPlayerName ()
+  {
+    return getPlayer ().getName ();
+  }
+
+  @Override
+  public String getPlayerColor ()
+  {
+    return getPlayer ().getColor ();
+  }
+
+  public BattleResultPacket getBattleResult ()
+  {
+    return result;
+  }
+
+  public PlayerPacket getAttackingPlayer ()
+  {
+    return result.getAttacker ().getPlayer ();
+  }
+
+  public String getAttackingPlayerName ()
+  {
+    return result.getAttacker ().getPlayerName ();
+  }
+
+  public int getAttackerDieCount ()
+  {
+    return result.getAttacker ().getDieCount ();
+  }
+
+  public PlayerPacket getDefendingPlayer ()
+  {
+    return result.getDefender ().getPlayer ();
+  }
+
+  public String getDefendingPlayerName ()
+  {
+    return result.getDefender ().getPlayerName ();
+  }
+
+  public int getDefenderDieCount ()
+  {
+    return result.getDefender ().getDieCount ();
+  }
+
+  public CountryPacket getAttackingCountry ()
+  {
+    return result.getAttacker ().getCountry ();
+  }
+
+  public int getAttackingCountryArmyCount ()
+  {
+    return result.getAttacker ().getCountryArmyCount ();
+  }
+
+  public int getAttackingCountryArmyDelta ()
+  {
+    return result.getAttackingCountryArmyDelta ();
+  }
+
+  public String getAttackingCountryName ()
+  {
+    return result.getAttacker ().getCountryName ();
+  }
+
+  public CountryPacket getDefendingCountry ()
+  {
+    return result.getDefender ().getCountry ();
+  }
+
+  public String getDefendingCountryName ()
+  {
+    return result.getDefender ().getCountryName ();
+  }
+
+  public int getDefendingCountryArmyCount ()
+  {
+    return result.getDefender ().getCountryArmyCount ();
+  }
+
+  public int getDefendingCountryArmyDelta ()
+  {
+    return result.getDefendingCountryArmyDelta ();
+  }
+
+  public ImmutableSet <DieRoll> getAttackerRolls ()
+  {
+    return result.getAttackerRolls ();
+  }
+
+  public ImmutableSet <DieRoll> getDefenderRolls ()
+  {
+    return result.getDefenderRolls ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: DefenderData: [{}]", getClass ().getSimpleName (), defenderData);
+    return Strings.format ("{}: Result: [{}]", getClass ().getSimpleName (), result);
   }
 
   @RequiredForNetworkSerialization
   private PlayerDefendCountryResponseSuccessEvent ()
   {
-    defenderData = null;
+    result = null;
   }
 }

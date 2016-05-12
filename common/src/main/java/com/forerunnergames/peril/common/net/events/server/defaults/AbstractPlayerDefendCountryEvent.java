@@ -44,27 +44,47 @@ public abstract class AbstractPlayerDefendCountryEvent extends AbstractPlayerEve
     this.attackerData = attackerData;
   }
 
-  public CountryPacket getCountry ()
-  {
-    return defendingCountry;
-  }
-
-  public BattleActorPacket getAttackerData ()
-  {
-    return attackerData;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: DefendingPlayer: [{}] | DefendingCountry: [{}] | AttackerData: [{}]", getPlayer (),
-                           defendingCountry, attackerData);
-  }
-
   @RequiredForNetworkSerialization
   protected AbstractPlayerDefendCountryEvent ()
   {
     defendingCountry = null;
     attackerData = null;
+  }
+
+  public CountryPacket getDefendingCountry ()
+  {
+    return defendingCountry;
+  }
+
+  public CountryPacket getAttackingCountry ()
+  {
+    return attackerData.getCountry ();
+  }
+
+  public String getAttackingCountryName ()
+  {
+    return attackerData.getCountryName ();
+  }
+
+  public String getDefendingCountryName ()
+  {
+    return defendingCountry.getName ();
+  }
+
+  public String getAttackingPlayerName ()
+  {
+    return attackerData.getPlayerName ();
+  }
+
+  public String getDefendingPlayerName ()
+  {
+    return getPlayerName ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: DefendingPlayer: [{}] | DefendingCountry: [{}] | AttackerData: [{}]", getClass ()
+            .getSimpleName (), getPlayer (), defendingCountry, attackerData);
   }
 }

@@ -26,7 +26,11 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMultimap;
+
+import java.util.Map;
 
 public final class PlayerAttackCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
@@ -51,7 +55,13 @@ public final class PlayerAttackCountryRequestEvent extends AbstractPlayerEvent i
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return validAttackVectors.containsKey (countryName);
+    return FluentIterable.from (validAttackVectors.keySet ()).firstMatch (new Predicate <CountryPacket> ()
+    {
+      public boolean apply (final CountryPacket input)
+      {
+        return input.hasName (countryName);
+      }
+    }).isPresent ();
   }
 
   public boolean isValidAttackVector (final String fromCountryName, final String toCountryName)
@@ -59,7 +69,15 @@ public final class PlayerAttackCountryRequestEvent extends AbstractPlayerEvent i
     Arguments.checkIsNotNull (fromCountryName, "fromCountryName");
     Arguments.checkIsNotNull (toCountryName, "toCountryName");
 
-    return validAttackVectors.containsEntry (fromCountryName, toCountryName);
+    return FluentIterable.from (validAttackVectors.entries ())
+            .firstMatch (new Predicate <Map.Entry <CountryPacket, CountryPacket>> ()
+            {
+              @Override
+              public boolean apply (Map.Entry <CountryPacket, CountryPacket> input)
+              {
+                return input.getKey ().hasName (fromCountryName) && input.getValue ().hasName (toCountryName);
+              }
+            }).isPresent ();
   }
 
   @Override
