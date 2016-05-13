@@ -23,21 +23,21 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 public final class DefaultBattleResult implements BattleResult
 {
   private final BattleActor attacker;
   private final BattleActor defender;
   private final Id defendingCountryOwner;
-  private final ImmutableSet <DieRoll> attackerRolls;
-  private final ImmutableSet <DieRoll> defenderRolls;
+  private final ImmutableList <DieRoll> attackerRolls;
+  private final ImmutableList <DieRoll> defenderRolls;
 
   public DefaultBattleResult (final BattleActor attacker,
                               final BattleActor defender,
                               final Id defendingCountryOwner,
-                              final ImmutableSet <DieRoll> attackerRolls,
-                              final ImmutableSet <DieRoll> defenderRolls)
+                              final ImmutableList <DieRoll> attackerRolls,
+                              final ImmutableList <DieRoll> defenderRolls)
   {
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
@@ -71,13 +71,13 @@ public final class DefaultBattleResult implements BattleResult
   }
 
   @Override
-  public ImmutableSet <DieRoll> getAttackerRolls ()
+  public ImmutableList <DieRoll> getAttackerRolls ()
   {
     return attackerRolls;
   }
 
   @Override
-  public ImmutableSet <DieRoll> getDefenderRolls ()
+  public ImmutableList <DieRoll> getDefenderRolls ()
   {
     return defenderRolls;
   }

@@ -21,7 +21,7 @@ package com.forerunnergames.peril.core.model.battle;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.id.Id;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 public interface BattleResult
 {
@@ -35,7 +35,7 @@ public interface BattleResult
    */
   Id getDefendingCountryOwner ();
 
-  ImmutableSet <DieRoll> getAttackerRolls ();
+  ImmutableList <DieRoll> getAttackerRolls ();
 
-  ImmutableSet <DieRoll> getDefenderRolls ();
+  ImmutableList <DieRoll> getDefenderRolls ();
 }

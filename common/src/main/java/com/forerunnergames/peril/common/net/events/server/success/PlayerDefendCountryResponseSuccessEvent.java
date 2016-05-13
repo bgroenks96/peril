@@ -27,7 +27,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 public final class PlayerDefendCountryResponseSuccessEvent implements PlayerResponseSuccessEvent
 {
@@ -133,12 +133,12 @@ public final class PlayerDefendCountryResponseSuccessEvent implements PlayerResp
     return result.getDefendingCountryArmyDelta ();
   }
 
-  public ImmutableSet <DieRoll> getAttackerRolls ()
+  public ImmutableList <DieRoll> getAttackerRolls ()
   {
     return result.getAttackerRolls ();
   }
 
-  public ImmutableSet <DieRoll> getDefenderRolls ()
+  public ImmutableList <DieRoll> getDefenderRolls ()
   {
     return result.getDefenderRolls ();
   }

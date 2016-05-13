@@ -164,17 +164,17 @@ public final class DefaultBattleModel implements BattleModel
     // assertion sanity checks
     assert countryArmyModel.armyCountIsAtLeast (rules.getMinArmiesOnCountryForAttack (), attackerCountry);
 
-    final ImmutableList <DieFaceValue> attackerRoll = generatedSortedDieValues (attackOrder.getDieCount ());
-    final ImmutableList <DieFaceValue> defenderRoll = generatedSortedDieValues (defenderDieCount);
+    final ImmutableList <DieFaceValue> attackerRoll = generateSortedDieValues (attackOrder.getDieCount ());
+    final ImmutableList <DieFaceValue> defenderRoll = generateSortedDieValues (defenderDieCount);
 
-    final ImmutableSet.Builder <DieRoll> attackerRolls = ImmutableSet.builder ();
-    final ImmutableSet.Builder <DieRoll> defenderRolls = ImmutableSet.builder ();
-    final int minDieCount = Math.min (attackerRoll.size (), defenderRoll.size ());
+    final ImmutableList.Builder <DieRoll> attackerRolls = ImmutableList.builder ();
+    final ImmutableList.Builder <DieRoll> defenderRolls = ImmutableList.builder ();
+    final int maxDieCount = Math.max (attackerRoll.size (), defenderRoll.size ());
     boolean battleFinished = false;
-    for (int i = 0; i < minDieCount; i++)
+    for (int i = 0; i < maxDieCount; i++)
     {
-      final DieFaceValue attackerDieValue = attackerRoll.get (i);
-      final DieFaceValue defenderDieValue = defenderRoll.get (i);
+      final DieFaceValue attackerDieValue = i < attackerRoll.size () ? attackerRoll.get (i) : DieFaceValue.NIL;
+      final DieFaceValue defenderDieValue = i < defenderRoll.size () ? defenderRoll.get (i) : DieFaceValue.NIL;
       final DieOutcome attackerOutcome = rules.determineAttackerOutcome (attackerDieValue, defenderDieValue);
       final DieOutcome defenderOutcome = rules.determineDefenderOutcome (attackerDieValue, defenderDieValue);
 
@@ -238,7 +238,7 @@ public final class DefaultBattleModel implements BattleModel
     return Optional.fromNullable (battleResultArchive.peekLast ());
   }
 
-  private ImmutableList <DieFaceValue> generatedSortedDieValues (final int dieCount)
+  private ImmutableList <DieFaceValue> generateSortedDieValues (final int dieCount)
   {
     final List <DieFaceValue> results = Lists.newArrayList ();
     for (int i = 0; i < dieCount; i++)

@@ -25,6 +25,7 @@ import java.util.Comparator;
 
 public enum DieFaceValue implements IterableEnum <DieFaceValue>
 {
+  NIL (0),
   ONE (1),
   TWO (2),
   THREE (3),

@@ -21,7 +21,7 @@ package com.forerunnergames.peril.common.net.packets.battle;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 public interface BattleResultPacket
 {
@@ -36,9 +36,9 @@ public interface BattleResultPacket
    */
   PlayerPacket getDefendingCountryOwner ();
 
-  ImmutableSet <DieRoll> getAttackerRolls ();
+  ImmutableList <DieRoll> getAttackerRolls ();
 
-  ImmutableSet <DieRoll> getDefenderRolls ();
+  ImmutableList <DieRoll> getDefenderRolls ();
 
   String getAttackingPlayerName ();
 

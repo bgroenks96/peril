@@ -26,7 +26,9 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 
 public final class BattlePackets
 {
@@ -34,6 +36,10 @@ public final class BattlePackets
                                         final PlayerModel playerModel,
                                         final CountryMapGraphModel mapGraphModel)
   {
+    Arguments.checkIsNotNull (actor, "actor");
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (mapGraphModel, "mapGraphModel");
+
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
     final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
 
@@ -43,15 +49,19 @@ public final class BattlePackets
   public static BattleResultPacket from (final BattleResult result,
                                          final PlayerModel playerModel,
                                          final CountryMapGraphModel mapGraphModel,
-                                         final int attackingCountryArmyDelta,
-                                         final int defendingCountryArmyDelta)
+                                         @AllowNegative final int attackingCountryArmyDelta,
+                                         @AllowNegative final int defendingCountryArmyDelta)
   {
+    Arguments.checkIsNotNull (result, "result");
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (mapGraphModel, "mapGraphModel");
+
     final BattleActorPacket attacker = from (result.getAttacker (), playerModel, mapGraphModel);
     final BattleActorPacket defender = from (result.getDefender (), playerModel, mapGraphModel);
 
-    return new DefaultBattleResultPacket (attacker, defender, playerModel.playerPacketWith (result
-            .getDefendingCountryOwner ()), result.getAttackerRolls (), result.getDefenderRolls (),
-            attackingCountryArmyDelta, defendingCountryArmyDelta);
+    return new DefaultBattleResultPacket (attacker, defender,
+            playerModel.playerPacketWith (result.getDefendingCountryOwner ()), result.getAttackerRolls (),
+            result.getDefenderRolls (), attackingCountryArmyDelta, defendingCountryArmyDelta);
   }
 
   private BattlePackets ()

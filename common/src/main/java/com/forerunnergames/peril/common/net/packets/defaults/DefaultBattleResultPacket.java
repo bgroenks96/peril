@@ -26,23 +26,23 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 public final class DefaultBattleResultPacket implements BattleResultPacket
 {
   private final BattleActorPacket attacker;
   private final BattleActorPacket defender;
   private final PlayerPacket defendingCountryOwner;
-  private final ImmutableSet <DieRoll> attackerRolls;
-  private final ImmutableSet <DieRoll> defenderRolls;
+  private final ImmutableList <DieRoll> attackerRolls;
+  private final ImmutableList <DieRoll> defenderRolls;
   private final int attackingCountryArmyDelta;
   private final int defendingCountryArmyDelta;
 
   public DefaultBattleResultPacket (final BattleActorPacket attacker,
                                     final BattleActorPacket defender,
                                     final PlayerPacket defendingCountryOwner,
-                                    final ImmutableSet <DieRoll> attackerRolls,
-                                    final ImmutableSet <DieRoll> defenderRolls,
+                                    final ImmutableList <DieRoll> attackerRolls,
+                                    final ImmutableList <DieRoll> defenderRolls,
                                     final int attackingCountryArmyDelta,
                                     final int defendingCountryArmyDelta)
   {
@@ -80,13 +80,13 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
-  public ImmutableSet <DieRoll> getAttackerRolls ()
+  public ImmutableList <DieRoll> getAttackerRolls ()
   {
     return attackerRolls;
   }
 
   @Override
-  public ImmutableSet <DieRoll> getDefenderRolls ()
+  public ImmutableList <DieRoll> getDefenderRolls ()
   {
     return defenderRolls;
   }
