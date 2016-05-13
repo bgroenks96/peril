@@ -224,6 +224,7 @@ public class OkPopup implements Popup
     private final Stage stage;
     private final PopupListener listener;
     private final MessageBox <MessageBoxRow <Message>> messageBox;
+    private Cell <Actor> messageBoxCell;
     private boolean isShown = false;
 
     DelegateDialog (final String title,
@@ -423,7 +424,7 @@ public class OkPopup implements Popup
     {
       if (!popupStyle.isMessageBox ()) return;
 
-      getContentTable ().add (messageBox.asActor ()).expand ().fill ().top ().left ()
+      messageBoxCell = getContentTable ().add (messageBox.asActor ()).expand ().fill ().top ().left ()
               .padLeft (popupStyle.getTextPaddingLeft ()).padRight (popupStyle.getTextPaddingRight ())
               .padTop (popupStyle.getTextPaddingTop ()).padBottom (popupStyle.getTextPaddingBottom ());
 
@@ -540,6 +541,7 @@ public class OkPopup implements Popup
 
       messageBox.clear ();
       messageBox.addRow (widgetFactory.createMessageBoxRow (message, messageBox.getRowStyle ()));
+      messageBoxCell.maxHeight (messageBox.asActor ().getHeight ());
     }
 
     public void show ()
