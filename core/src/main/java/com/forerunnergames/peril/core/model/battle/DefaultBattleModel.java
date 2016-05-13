@@ -173,8 +173,29 @@ public final class DefaultBattleModel implements BattleModel
     boolean battleFinished = false;
     for (int i = 0; i < maxDieCount; i++)
     {
-      final DieFaceValue attackerDieValue = i < attackerRoll.size () ? attackerRoll.get (i) : DieFaceValue.NIL;
-      final DieFaceValue defenderDieValue = i < defenderRoll.size () ? defenderRoll.get (i) : DieFaceValue.NIL;
+      // Guard:
+      //   We ran out of attacker dice, but there is an extra defender die.
+      //   Keep its value, but make it lose; the dice are sorted lowest to highest, so this is a loser / bottom feeder.
+      //   The battle state is unaffected by such die rolls, so we can skip the rest of the loop iteration.
+      if (i >= attackerRoll.size ())
+      {
+        defenderRolls.add (new DieRoll (defenderRoll.get (i), DieOutcome.LOSE));
+        continue;
+      }
+
+      // Guard:
+      //   We ran out of defender dice, but there is an extra attacker die.
+      //   Keep its value, but make it lose; the dice are sorted lowest to highest, so this is a loser / bottom feeder.
+      //   The battle state is unaffected by such die rolls, so we can skip the rest of the loop iteration.
+      if (i >= defenderRoll.size ())
+      {
+        attackerRolls.add (new DieRoll (attackerRoll.get (i), DieOutcome.LOSE));
+        continue;
+      }
+
+      // We now have an attacker & defender die to face off in battle!
+      final DieFaceValue attackerDieValue = attackerRoll.get (i);
+      final DieFaceValue defenderDieValue = defenderRoll.get (i);
       final DieOutcome attackerOutcome = rules.determineAttackerOutcome (attackerDieValue, defenderDieValue);
       final DieOutcome defenderOutcome = rules.determineDefenderOutcome (attackerDieValue, defenderDieValue);
 
