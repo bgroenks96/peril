@@ -750,9 +750,9 @@ public final class MultiplayerController extends ControllerAdapter
     {
       if (requestClass.isInstance (request))
       {
-        coreCommunicator.publishPlayerResponseRequestEvent (player, responseRequest, request);
         final boolean wasRemoved = playerInputRequestEventCache.remove (player, request);
         assert wasRemoved;
+        coreCommunicator.publishPlayerResponseRequestEvent (player, responseRequest, request);
         return;
       }
     }
