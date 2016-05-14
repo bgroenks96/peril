@@ -120,8 +120,6 @@ final class InternalCommunicationHandler
     Arguments.checkIsNotNull (event, "event");
 
     responseRequests.put (event.getRequestEvent (), event.getInputRequestEvent ());
-
-    eventBus.publish (event.getRequestEvent ());
   }
 
   @Handler
