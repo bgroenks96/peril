@@ -61,6 +61,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.EndFortif
 import com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackVictoryEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
@@ -1011,6 +1012,8 @@ public final class GameModel
     final Id prevOwnerId = countryOwnerModel.ownerOf (defender.getCountryId ());
     final PlayerPacket prevOwner = playerModel.playerPacketWith (prevOwnerId);
     final PlayerPacket newOwner = playerModel.playerPacketWith (newOwnerId);
+    final boolean attackerOccupationSuccessful = result.getDefendingCountryOwner ().isNot (defender.getPlayerId ());
+
     // publish notification events
     if (attackerArmyCountDelta != 0)
     {
@@ -1020,16 +1023,23 @@ public final class GameModel
     {
       publish (new DefaultCountryArmiesChangedEvent (defenderCountry, defenderArmyCountDelta));
     }
-    if (result.getDefendingCountryOwner ().isNot (defender.getPlayerId ()))
+
+    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel,
+                                                                attackerArmyCountDelta, defenderArmyCountDelta);
+
+    if (attackerOccupationSuccessful)
     {
-      // publish (new DefaultCountryOwnerChangedEvent (updatedDefenderCountry,
-      // prevOwner, newOwner));
+      final int minOccupationArmyCount = rules.getMinOccupyArmyCount (attackOrder.getDieCount ());
+      final int maxOccupationArmyCount = rules
+              .getMaxOccupyArmyCount (countryArmyModel.getArmyCountFor (attacker.getCountryId ()));
 
       // publish occupation request event (this must occur before attack success
-      // event in order for the
-      // correct state transition to occur)
+      // event in order for the correct state transition to occur)
       publish (new PlayerOccupyCountryRequestEvent (newOwner,
-              countryMapGraphModel.countryPacketWith (attacker.getCountryId ()), defenderCountry));
+              countryMapGraphModel.countryPacketWith (attacker.getCountryId ()), defenderCountry,
+              minOccupationArmyCount, maxOccupationArmyCount));
+
+      publish (new PlayerAttackVictoryEvent (resultPacket));
     }
 
     clearCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
@@ -1040,8 +1050,6 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_PREV_OWNER, prevOwner);
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
 
-    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel,
-                                                                attackerArmyCountDelta, defenderArmyCountDelta);
     publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket));
     publish (new PlayerAttackCountryResponseSuccessEvent (resultPacket));
   }
@@ -1069,7 +1077,7 @@ public final class GameModel
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW));
-      publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      republishRequestFor (event);
       return false;
     }
 
@@ -1077,7 +1085,7 @@ public final class GameModel
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
-      publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      republishRequestFor (event);
       return false;
     }
 
@@ -1093,7 +1101,7 @@ public final class GameModel
     if (failure.isPresent ())
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason ()));
-      publish (new PlayerOccupyCountryRequestEvent (player, sourceCountry, destCountry));
+      republishRequestFor (event);
       return false;
     }
 

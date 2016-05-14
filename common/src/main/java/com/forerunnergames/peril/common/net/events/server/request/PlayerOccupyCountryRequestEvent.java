@@ -30,18 +30,26 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
 {
   private final CountryPacket sourceCountry;
   private final CountryPacket destinationCountry;
+  private final int minOccupationArmyCount;
+  private final int maxOccupationArmyCount;
 
   public PlayerOccupyCountryRequestEvent (final PlayerPacket player,
                                           final CountryPacket sourceCountry,
-                                          final CountryPacket destinationCountry)
+                                          final CountryPacket destinationCountry,
+                                          final int minOccupationArmyCount,
+                                          final int maxOccupationArmyCount)
   {
     super (player);
 
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
+    Arguments.checkIsNotNegative (minOccupationArmyCount, "minOccupationArmyCount");
+    Arguments.checkIsNotNegative (maxOccupationArmyCount, "maxOccupationArmyCount");
 
     this.sourceCountry = sourceCountry;
     this.destinationCountry = destinationCountry;
+    this.minOccupationArmyCount = minOccupationArmyCount;
+    this.maxOccupationArmyCount = maxOccupationArmyCount;
   }
 
   public CountryPacket getSourceCountry ()
@@ -54,11 +62,6 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
     return sourceCountry.getName ();
   }
 
-  public int getSourceCountryArmyCount ()
-  {
-    return sourceCountry.getArmyCount ();
-  }
-
   public CountryPacket getDestinationCountry ()
   {
     return destinationCountry;
@@ -69,9 +72,19 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
     return destinationCountry.getName ();
   }
 
-  public int getDestinationCountryArmyCount ()
+  public int getTotalArmyCount ()
   {
-    return destinationCountry.getArmyCount ();
+    return sourceCountry.getArmyCount ();
+  }
+
+  public int getMinOccupationArmyCount ()
+  {
+    return minOccupationArmyCount;
+  }
+
+  public int getMaxOccupationArmyCount ()
+  {
+    return maxOccupationArmyCount;
   }
 
   @Override
@@ -86,5 +99,7 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
   {
     sourceCountry = null;
     destinationCountry = null;
+    minOccupationArmyCount = 0;
+    maxOccupationArmyCount = 0;
   }
 }
