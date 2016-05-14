@@ -58,6 +58,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -890,7 +891,8 @@ public class MultiplayerControllerTest
         return null;
       }
     }).when (mockCoreCommunicator).publishPlayerResponseRequestEvent (any (PlayerPacket.class),
-                                                                      any (ResponseRequestEvent.class));
+                                                                      any (ResponseRequestEvent.class),
+                                                                      any (PlayerInputRequestEvent.class));
     doAnswer (new Answer <InvocationOnMock> ()
     {
       @Override
