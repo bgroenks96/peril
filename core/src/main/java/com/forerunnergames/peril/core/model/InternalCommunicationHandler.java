@@ -18,10 +18,12 @@
 
 package com.forerunnergames.peril.core.model;
 
-import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.events.player.InboundPlayerRequestEvent;
+import com.forerunnergames.peril.common.events.player.InboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
@@ -32,6 +34,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -54,6 +57,7 @@ final class InternalCommunicationHandler
   private final PlayerTurnModel playerTurnModel;
   private final MBassador <Event> eventBus;
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
+  private final Map <ResponseRequestEvent, PlayerInputRequestEvent> responseRequests = Maps.newHashMap ();
 
   InternalCommunicationHandler (final PlayerModel playerModel,
                                 final PlayMapModel playMapModel,
@@ -72,14 +76,32 @@ final class InternalCommunicationHandler
   }
 
   /**
-   * Fetches the PlayerPacket representing the player from whom this client request event was received. This method can
-   * only be called once per registered event since the entry is cleared after being fetched.
+   * Fetches the PlayerPacket representing the player from whom this client request event was received.
    */
   Optional <PlayerPacket> senderOf (final RequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return Optional.fromNullable (requestEvents.remove (event));
+    return Optional.fromNullable (requestEvents.get (event));
+  }
+
+  /**
+   * Fetches the PlayerInputRequestEvent corresponding to this ResponseRequestEvent.
+   */
+  Optional <PlayerInputRequestEvent> requestFor (final ResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Optional.fromNullable (responseRequests.get (event));
+  }
+
+  /**
+   * This method should be called periodically to avoid stale request events from polluting the map caches.
+   */
+  public void clearEventCache ()
+  {
+    this.requestEvents.clear ();
+    this.responseRequests.clear ();
   }
 
   @Handler
@@ -88,6 +110,16 @@ final class InternalCommunicationHandler
     Arguments.checkIsNotNull (event, "event");
 
     requestEvents.put (event.getRequestEvent (), event.getPlayer ());
+
+    eventBus.publish (event.getRequestEvent ());
+  }
+
+  @Handler
+  void onEvent (final InboundPlayerResponseRequestEvent <? extends ResponseRequestEvent, ? extends PlayerInputRequestEvent> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    responseRequests.put (event.getRequestEvent (), event.getInputRequestEvent ());
 
     eventBus.publish (event.getRequestEvent ());
   }

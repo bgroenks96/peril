@@ -29,8 +29,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.mockito.Mockito.mock;
+
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.EventBusHandler;
+import com.forerunnergames.peril.common.events.player.DefaultInboundPlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
@@ -47,6 +50,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginPlayerCountryAssignmentEvent;
@@ -94,7 +98,9 @@ import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.graph.DefaultGraphModel;
 import com.forerunnergames.tools.common.graph.GraphModel;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -102,6 +108,8 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
 import net.engio.mbassy.bus.MBassador;
@@ -131,6 +139,7 @@ public class GameModelTest
   private CountryArmyModel countryArmyModel;
   private CountryMapGraphModel countryMapGraphModel;
   private CardModel cardModel;
+  private InternalCommunicationHandler mockCommHandler;
   private ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
   private GameRules gameRules;
 
@@ -415,6 +424,7 @@ public class GameModelTest
 
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             "Transylvania");
+    publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseDeniedEvent.class));
@@ -436,6 +446,7 @@ public class GameModelTest
     final Id country = randomCountry ();
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             countryMapGraphModel.nameOf (country));
+    publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // should be successful for first player
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
@@ -443,6 +454,7 @@ public class GameModelTest
 
     gameModel.advanceTurn (); // state machine does this as state exit action
 
+    publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // unsuccessful for second player
     assertTrue (eventHandler.secondToLastEventWasType (PlayerClaimCountryResponseDeniedEvent.class));
@@ -1037,6 +1049,27 @@ public class GameModelTest
     {
       final DeniedEvent <?> event = eventHandler.lastEvent (DeniedEvent.class);
       fail (event.getReason ().toString ());
+    }
+  }
+
+  /**
+   * Publish the internal response request event so that it gets registered with InternalCommunicationHandler.
+   */
+  private <T extends ResponseRequestEvent> void publishInternalResponseRequestEvent (final T event)
+  {
+    // this is so nasty... but it works for some reason O_o
+    try
+    {
+      final Class <? extends ServerRequestEvent> requestType = event.getRequestType ();
+      final Constructor <? extends ServerRequestEvent> ctor = requestType.getDeclaredConstructor ();
+      ctor.setAccessible (true);
+      eventBus.publish (new DefaultInboundPlayerResponseRequestEvent <T, PlayerInputRequestEvent> (
+              mock (PlayerPacket.class), event, (PlayerInputRequestEvent) ctor.newInstance ()));
+    }
+    catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
+            | IllegalArgumentException | InvocationTargetException e)
+    {
+      fail (e.toString ());
     }
   }
 

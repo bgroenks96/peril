@@ -21,10 +21,12 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.events.InternalRequestEvent;
 import com.forerunnergames.peril.common.events.InternalResponseEvent;
 import com.forerunnergames.peril.common.events.player.DefaultInboundPlayerRequestEvent;
+import com.forerunnergames.peril.common.events.player.DefaultInboundPlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.common.events.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -82,10 +84,12 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   }
 
   @Override
-  public <T extends ResponseRequestEvent> void publishPlayerResponseRequestEvent (final PlayerPacket player,
-                                                                                  final T responseRequestEvent)
+  public <T extends ResponseRequestEvent, R extends PlayerInputRequestEvent> void publishPlayerResponseRequestEvent (final PlayerPacket player,
+                                                                                                                     final T responseRequestEvent,
+                                                                                                                     final R inputRequestEvent)
   {
-    eventBus.publish (new DefaultInboundPlayerRequestEvent <> (player, responseRequestEvent));
+    eventBus.publish (new DefaultInboundPlayerResponseRequestEvent <> (player, responseRequestEvent,
+            inputRequestEvent));
   }
 
   // --- response handlers --- //

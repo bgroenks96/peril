@@ -46,6 +46,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCou
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceInitialCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginFortifyPhaseEvent;
@@ -134,6 +135,7 @@ import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -252,6 +254,9 @@ public final class GameModel
 
     // clear state data cache
     turnDataCache.clearAll ();
+
+    // clear inbound event cache
+    internalCommHandler.clearEventCache ();
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
@@ -538,8 +543,7 @@ public final class GameModel
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
-      // send a new request
-      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      republishRequestFor (event);
       return false;
     }
 
@@ -547,8 +551,7 @@ public final class GameModel
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      // send a new request
-      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      republishRequestFor (event);
       return false;
     }
 
@@ -559,8 +562,7 @@ public final class GameModel
     if (res1.failed ())
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res1.getFailureReason ()));
-      // send a new request
-      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      republishRequestFor (event);
       return false;
     }
 
@@ -569,8 +571,7 @@ public final class GameModel
     if (res2.failed ())
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res2.getFailureReason ()));
-      // send a new request
-      publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+      republishRequestFor (event);
       return false;
     }
 
@@ -1382,6 +1383,16 @@ public final class GameModel
   {
     log.trace ("Publishing event [{}]", event);
     eventBus.publish (event);
+  }
+
+  private void republishRequestFor (final ResponseRequestEvent event)
+  {
+    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.requestFor (event);
+    if (!originalRequest.isPresent ())
+    {
+      Exceptions.throwRuntime ("Unable to find request event matching response [{}].", event);
+    }
+    publish (originalRequest.get ());
   }
 
   // checks whether or not a player has won or lost the game in the current game
