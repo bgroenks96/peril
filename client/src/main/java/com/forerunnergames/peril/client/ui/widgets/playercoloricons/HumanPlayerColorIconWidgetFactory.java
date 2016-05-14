@@ -20,10 +20,11 @@ package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class HumanPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory
-        implements PlayerColorIconWidgetFactory
+public abstract class HumanPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory implements
+        PlayerColorIconWidgetFactory
 {
   public HumanPlayerColorIconWidgetFactory (final AssetManager assetManager)
   {
@@ -31,18 +32,10 @@ public abstract class HumanPlayerColorIconWidgetFactory extends AbstractPlayerCo
   }
 
   @Override
-  public Button createPlayerColorIconButton (String color)
+  public Button.ButtonStyle createPlayerColorIconStyle (final String color)
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return createButton ("color-icon-human-player-" + color.toLowerCase ());
-  }
-
-  @Override
-  public Button.ButtonStyle createPlayerColorIconStyle (String color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    return createButtonStyle ("color-icon-human-player-" + color.toLowerCase ());
+    return createButtonStyle (StyleSettings.HUMAN_PLAYER_COLOR_ICON_STYLE_PREFIX + color.toLowerCase ());
   }
 }

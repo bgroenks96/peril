@@ -38,20 +38,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+
 import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Event;
@@ -89,7 +89,7 @@ public interface WidgetFactory
 
   ImageButton.ImageButtonStyle createImageButtonStyle (final String styleName);
 
-  Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener);
+  Dialog createQuitDialog (final String message, final Stage stage, final DialogListener listener);
 
   Label createLabel (final String text, final int alignment, final String labelStyle);
 
@@ -125,14 +125,14 @@ public interface WidgetFactory
 
   Cursor createNormalCursor ();
 
-  Popup createErrorPopup (final Stage stage, final PopupListener listener);
+  Dialog createErrorDialog (final Stage stage, final DialogListener listener);
 
-  Popup createErrorPopup (final Stage stage, final String submitButtonText, final PopupListener listener);
+  Dialog createErrorDialog (final Stage stage, final String submitButtonText, final DialogListener listener);
 
-  MessageBox <MessageBoxRow <Message>> createPopupMessageBox (final String scrollPaneStyleName,
-                                                              final String rowLabelStyleName,
-                                                              final int rowLabelAlignment,
-                                                              final ScrollbarStyle scrollbarStyle);
+  MessageBox <MessageBoxRow <Message>> createDialogMessageBox (final String scrollPaneStyleName,
+                                                               final String rowLabelStyleName,
+                                                               final int rowLabelAlignment,
+                                                               final ScrollbarStyle scrollbarStyle);
 
   MessageBox <StatusBoxRow> createStatusBox (final String scrollPaneStyle);
 
@@ -152,10 +152,22 @@ public interface WidgetFactory
                                  final String style,
                                  final EventListener listener);
 
+  Slider createHorizontalSlider (final int min,
+                                 final int max,
+                                 final int sliderStepSize,
+                                 final Slider.SliderStyle style,
+                                 final EventListener listener);
+
   Slider createVerticalSlider (final int min,
                                final int max,
                                final int sliderStepSize,
                                final String style,
+                               final EventListener listener);
+
+  Slider createVerticalSlider (final int min,
+                               final int max,
+                               final int sliderStepSize,
+                               final Slider.SliderStyle style,
                                final EventListener listener);
 
   Slider.SliderStyle createSliderStyle (final String styleName);

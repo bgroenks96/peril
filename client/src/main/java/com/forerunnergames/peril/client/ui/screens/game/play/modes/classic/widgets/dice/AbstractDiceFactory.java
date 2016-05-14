@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
@@ -51,10 +52,9 @@ public abstract class AbstractDiceFactory implements DiceFactory
 
     for (int dieIndex = 0; dieIndex < absoluteMaxDieCount; ++dieIndex)
     {
-      dieBuilder.add (new AttackerDie (dieIndex,
-              createAttackerDieImageButton (Die.DEFAULT_STATE, GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                            Die.DEFAULT_OUTCOME),
-              rules)
+      dieBuilder.add (new AttackerDie (dieIndex, createAttackerDieImageButton (Die.DEFAULT_STATE,
+                                                                               GameSettings.DEFAULT_DIE_FACE_VALUE,
+                                                                               Die.DEFAULT_OUTCOME), rules)
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -83,10 +83,9 @@ public abstract class AbstractDiceFactory implements DiceFactory
 
     for (int dieIndex = 0; dieIndex < absoluteMaxDieCount; ++dieIndex)
     {
-      dieBuilder.add (new DefenderDie (dieIndex,
-              createDefenderDieImageButton (Die.DEFAULT_STATE, GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                            Die.DEFAULT_OUTCOME),
-              rules)
+      dieBuilder.add (new DefenderDie (dieIndex, createDefenderDieImageButton (Die.DEFAULT_STATE,
+                                                                               GameSettings.DEFAULT_DIE_FACE_VALUE,
+                                                                               Die.DEFAULT_OUTCOME), rules)
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -113,8 +112,11 @@ public abstract class AbstractDiceFactory implements DiceFactory
                                             final DieFaceValue faceValue,
                                             final DieOutcome outcome)
   {
-    return "die-" + dieTypeStyleNameSection + "-" + (state == DieState.ENABLED
-            ? faceValue.lowerCaseName () + "-outcome-" + outcome.lowerCaseName () : state.lowerCaseName ());
+    // @formatter:off
+    return StyleSettings.BATTLE_DIALOG_DIE_STYLE_PREFIX + dieTypeStyleNameSection + (state == DieState.ENABLED ?
+            faceValue.lowerCaseName () + StyleSettings.BATTLE_DIALOG_DIE_OUTCOME_STYLE_SEGMENT + outcome.lowerCaseName () :
+            state.lowerCaseName ());
+    // @formatter:on
   }
 
   private ImageButton createAttackerDieImageButton (final DieState state,
@@ -147,7 +149,9 @@ public abstract class AbstractDiceFactory implements DiceFactory
     Arguments.checkIsNotNull (faceValue, "faceValue");
     Arguments.checkIsNotNull (outcome, "outcome");
 
-    return widgetFactory.createImageButtonStyle (createDieStyleName ("attack", state, faceValue, outcome));
+    return widgetFactory
+            .createImageButtonStyle (createDieStyleName (StyleSettings.BATTLE_DIALOG_DIE_ATTACK_STYLE_SEGMENT, state,
+                                                         faceValue, outcome));
   }
 
   private ImageButton.ImageButtonStyle createDefenderDieImageButtonStyle (final DieState state,
@@ -158,6 +162,8 @@ public abstract class AbstractDiceFactory implements DiceFactory
     Arguments.checkIsNotNull (faceValue, "faceValue");
     Arguments.checkIsNotNull (outcome, "outcome");
 
-    return widgetFactory.createImageButtonStyle (createDieStyleName ("defend", state, faceValue, outcome));
+    return widgetFactory
+            .createImageButtonStyle (createDieStyleName (StyleSettings.BATTLE_DIALOG_DIE_DEFEND_STYLE_SEGMENT, state,
+                                                         faceValue, outcome));
   }
 }

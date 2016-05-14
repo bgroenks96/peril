@@ -37,26 +37,27 @@ import com.badlogic.gdx.utils.Align;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattlePopupListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattlePopupWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopupListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBarButton;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.popup.OkPopup;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupStyle;
-import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
-import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -65,21 +66,21 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFactory
 {
-  private static final int ARMY_MOVEMENT_POPUP_SLIDER_STEP_SIZE = 1;
+  private static final int ARMY_MOVEMENT_DIALOG_SLIDER_STEP_SIZE = 1;
   private final PlayMapFactory playMapFactory;
-  private final BattlePopupWidgetFactory battlePopupWidgetFactory;
+  private final BattleDialogWidgetFactory battleDialogWidgetFactory;
 
   public ClassicModePlayScreenWidgetFactory (final AssetManager assetManager,
                                              final PlayMapFactory playMapFactory,
-                                             final BattlePopupWidgetFactory battlePopupWidgetFactory)
+                                             final BattleDialogWidgetFactory battleDialogWidgetFactory)
   {
     super (assetManager);
 
     Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
-    Arguments.checkIsNotNull (battlePopupWidgetFactory, "battlePopupWidgetFactory");
+    Arguments.checkIsNotNull (battleDialogWidgetFactory, "battleDialogWidgetFactory");
 
     this.playMapFactory = playMapFactory;
-    this.battlePopupWidgetFactory = battlePopupWidgetFactory;
+    this.battleDialogWidgetFactory = battleDialogWidgetFactory;
   }
 
   @Override
@@ -95,23 +96,23 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public Drawable createBackgroundImageDrawable ()
   {
-    return new TextureRegionDrawable (
-            new TextureRegion (getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR)));
+    return new TextureRegionDrawable (new TextureRegion (
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR)));
   }
 
   public MessageBox <StatusBoxRow> createStatusBox ()
   {
-    return createStatusBox ("default");
+    return createStatusBox (StyleSettings.STATUS_BOX_SCROLLPANE_STYLE);
   }
 
   public MessageBox <ChatBoxRow> createChatBox (final MBassador <Event> eventBus)
   {
-    return createChatBox ("default", "default", eventBus);
+    return createChatBox (StyleSettings.CHAT_BOX_SCROLLPANE_STYLE, StyleSettings.CHAT_BOX_TEXTFIELD_STYLE, eventBus);
   }
 
   public PlayerBox createPlayerBox ()
   {
-    return createPlayerBox ("default");
+    return createPlayerBox (StyleSettings.PLAYER_BOX_SCROLLPANE_STYLE);
   }
 
   public SideBar createSideBar (final MBassador <Event> eventBus)
@@ -133,121 +134,126 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   {
     Arguments.checkIsNotNull (buttonType, "buttonType");
 
-    return getSkinResource (buttonType.getStyleName (), ImageButton.ImageButtonStyle.class);
+    return getSkinResource (buttonType.getImageButtonStyleName (), ImageButton.ImageButtonStyle.class);
   }
 
-  public ReinforcementPopup createReinforcementPopup (final Stage stage,
-                                                      final MBassador <Event> eventBus,
-                                                      final PopupListener listener)
+  public ReinforcementDialog createReinforcementDialog (final Stage stage,
+                                                        final MBassador <Event> eventBus,
+                                                        final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new ReinforcementPopup (this, stage, listener, eventBus);
+    return new ReinforcementDialog (this, stage, listener, eventBus);
   }
 
-  public OccupationPopup createOccupationPopup (final Stage stage,
-                                                final MBassador <Event> eventBus,
-                                                final PopupListener listener)
+  public OccupationDialog createOccupationDialog (final Stage stage,
+                                                  final MBassador <Event> eventBus,
+                                                  final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new OccupationPopup (this, stage, listener, eventBus);
+    return new OccupationDialog (this, stage, listener, eventBus);
   }
 
-  public Slider createArmyMovementPopupSlider (final ChangeListener changeListener)
+  public Slider createArmyMovementDialogSlider (final ChangeListener changeListener)
   {
     Arguments.checkIsNotNull (changeListener, "changeListener");
 
-    return createHorizontalSlider (0, 0, ARMY_MOVEMENT_POPUP_SLIDER_STEP_SIZE, "default-horizontal", changeListener);
+    return createHorizontalSlider (0, 0, ARMY_MOVEMENT_DIALOG_SLIDER_STEP_SIZE, createArmyMovementDialogSliderStyle (),
+                                   changeListener);
   }
 
-  public Slider.SliderStyle createArmyMovementPopupSliderStyle ()
+  public Slider.SliderStyle createArmyMovementDialogSliderStyle ()
   {
-    return createSliderStyle ("default-horizontal");
+    return createSliderStyle (StyleSettings.ARMY_MOVEMENT_DIALOG_SLIDER_STYLE);
   }
 
-  public ImageButton createArmyMovementPopupMinButton (final ClickListener listener)
-  {
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return createImageButton (createArmyMovementPopupMinButtonStyle (), listener);
-  }
-
-  public Label createArmyMovementPopupCountryNameLabel ()
-  {
-    return createLabel ("", Align.center, createArmyMovementPopupCountryNameLabelStyle ());
-  }
-
-  public Label.LabelStyle createArmyMovementPopupCountryNameLabelStyle ()
-  {
-    return createLabelStyle ("army-movement-popup-country-name");
-  }
-
-  public ImageButton.ImageButtonStyle createArmyMovementPopupMinButtonStyle ()
-  {
-    return getSkinResource ("min", ImageButton.ImageButtonStyle.class);
-  }
-
-  public ImageButton createArmyMovementPopupMinusButton (final ClickListener listener)
+  public ImageButton createArmyMovementDialogMinButton (final ClickListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createImageButton (createArmyMovementPopupMinusButtonStyle (), listener);
+    return createImageButton (createArmyMovementDialogMinButtonStyle (), listener);
   }
 
-  public ImageButton.ImageButtonStyle createArmyMovementPopupMinusButtonStyle ()
+  public Label createArmyMovementDialogCountryNameLabel ()
   {
-    return getSkinResource ("minus", ImageButton.ImageButtonStyle.class);
+    return createLabel ("", Align.center, createArmyMovementDialogCountryNameLabelStyle ());
   }
 
-  public ImageButton createArmyMovementPopupPlusButton (final ClickListener listener)
+  public Label.LabelStyle createArmyMovementDialogCountryNameLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.ARMY_MOVEMENT_DIALOG_COUNTRY_NAME_LABEL_STYLE);
+  }
+
+  public ImageButton.ImageButtonStyle createArmyMovementDialogMinButtonStyle ()
+  {
+    return getSkinResource (StyleSettings.ARMY_MOVEMENT_DIALOG_MIN_IMAGE_BUTTON_STYLE,
+                            ImageButton.ImageButtonStyle.class);
+  }
+
+  public ImageButton createArmyMovementDialogMinusButton (final ClickListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createImageButton (createArmyMovementPopupPlusButtonStyle (), listener);
+    return createImageButton (createArmyMovementDialogMinusButtonStyle (), listener);
   }
 
-  public ImageButton.ImageButtonStyle createArmyMovementPopupPlusButtonStyle ()
+  public ImageButton.ImageButtonStyle createArmyMovementDialogMinusButtonStyle ()
   {
-    return getSkinResource ("plus", ImageButton.ImageButtonStyle.class);
+    return getSkinResource (StyleSettings.ARMY_MOVEMENT_DIALOG_MINUS_IMAGE_BUTTON_STYLE,
+                            ImageButton.ImageButtonStyle.class);
   }
 
-  public ImageButton createArmyMovementPopupMaxButton (final ClickListener listener)
+  public ImageButton createArmyMovementDialogPlusButton (final ClickListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createImageButton (createArmyMovementPopupMaxButtonStyle (), listener);
+    return createImageButton (createArmyMovementDialogPlusButtonStyle (), listener);
   }
 
-  public ImageButton.ImageButtonStyle createArmyMovementPopupMaxButtonStyle ()
+  public ImageButton.ImageButtonStyle createArmyMovementDialogPlusButtonStyle ()
   {
-    return getSkinResource ("max", ImageButton.ImageButtonStyle.class);
+    return getSkinResource (StyleSettings.ARMY_MOVEMENT_DIALOG_PLUS_IMAGE_BUTTON_STYLE,
+                            ImageButton.ImageButtonStyle.class);
   }
 
-  public AttackPopup createAttackPopup (final Stage stage,
-                                        final MBassador <Event> eventBus,
-                                        final AttackPopupListener listener)
+  public ImageButton createArmyMovementDialogMaxButton (final ClickListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createArmyMovementDialogMaxButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createArmyMovementDialogMaxButtonStyle ()
+  {
+    return getSkinResource (StyleSettings.ARMY_MOVEMENT_DIALOG_MAX_IMAGE_BUTTON_STYLE,
+                            ImageButton.ImageButtonStyle.class);
+  }
+
+  public AttackDialog createAttackDialog (final Stage stage,
+                                          final MBassador <Event> eventBus,
+                                          final AttackDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new AttackPopup (battlePopupWidgetFactory, stage, listener, eventBus);
+    return new AttackDialog (battleDialogWidgetFactory, stage, listener, eventBus);
   }
 
-  public DefendPopup createDefendPopup (final Stage stage,
-                                        final MBassador <Event> eventBus,
-                                        final BattlePopupListener listener)
+  public DefendDialog createDefendDialog (final Stage stage,
+                                          final MBassador <Event> eventBus,
+                                          final BattleDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new DefendPopup (battlePopupWidgetFactory, stage, listener, eventBus);
+    return new DefendDialog (battleDialogWidgetFactory, stage, listener, eventBus);
   }
 
   public void destroyPlayMap (final MapMetadata mapMetadata)
@@ -257,21 +263,19 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     playMapFactory.destroy (mapMetadata);
   }
 
-  public OkPopup createBattleResultPopup (final Stage stage, final PopupListener listener)
+  public OkDialog createBattleResultDialog (final Stage stage, final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
 
-    return new OkPopup (this,
-            PopupStyle.builder ().windowStyle ("popup-non-modal").modal (false).movable (true)
-                    .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51)
-                    .border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
-                    .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (),
-            stage, listener);
+    return new OkDialog (this, DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE)
+            .modal (false).movable (true).position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244)
+            .titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
+            .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
   }
 
-  public Popup createQuitPopup (final Stage stage, final PopupListener listener)
+  public Dialog createQuitDialog (final Stage stage, final DialogListener listener)
   {
-    return new QuitPopup (this,
+    return new QuitDialog (this,
             "Are you sure you want to quit?\nIf you are the host, quitting will end the game for everyone.", 587,
             ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
   }

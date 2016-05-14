@@ -37,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -44,6 +45,7 @@ import com.badlogic.gdx.utils.Align;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
@@ -52,6 +54,18 @@ import com.forerunnergames.tools.net.NetworkConstants;
 
 public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 {
+  private static final String MENU_BAR_DRAWABLE_NAME = "menu-bar";
+  private static final String RIGHT_BACKGROUND_SHADOW_DRAWABLE_NAME = "right-background-shadow";
+  private static final String TITLE_BACKGROUND_DRAWABLE_NAME = "menu-title-background";
+  private static final String SCREEN_BACKGROUND_LEFT_DRAWABLE_NAME = "background-left";
+  private static final String SCREEN_BACKGROUND_RIGHT_DRAWABLE_NAME = "background-right";
+  private static final String PLAYER_SETTINGS_SECTION_TITLE_LABEL_NAME = "Your Player";
+  private static final String PLAYER_NAME_SETTING_LABEL_NAME = "Name";
+  private static final String CLAN_TAG_SETTING_LABEL_NAME = "Clan Tag";
+  private static final String GAME_SETTINGS_SECTION_TITLE_LABEL_NAME = "Game Settings";
+  private static final String TOP_BACKGROUND_SHADOW_SPRITE_NAME = "top-and-bottom-shadow";
+  private static final String LEFT_MENU_BAR_SHADOW_TEXTURE_REGION_NAME = "left-and-right-menu-bar-shadow";
+
   public MenuScreenWidgetFactory (final AssetManager assetManager)
   {
     super (assetManager);
@@ -70,7 +84,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createMenuBarDrawable ()
   {
-    return new TiledDrawable (createTextureRegion ("menu-bar"));
+    return new TiledDrawable (createTextureRegion (MENU_BAR_DRAWABLE_NAME));
   }
 
   public Image createRightBackgroundShadow ()
@@ -80,7 +94,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createRightBackgroundShadowDrawable ()
   {
-    return new TextureRegionDrawable (createTextureRegion ("right-background-shadow"));
+    return new TextureRegionDrawable (createTextureRegion (RIGHT_BACKGROUND_SHADOW_DRAWABLE_NAME));
   }
 
   public Image createTopBackgroundShadow ()
@@ -90,7 +104,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createTopBackgroundShadowDrawable ()
   {
-    return new TiledDrawable (createTopBackgroundShadowSprite ());
+    return new SpriteDrawable (createTopBackgroundShadowSprite ());
   }
 
   public Image createBottomBackgroundShadow ()
@@ -100,7 +114,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createBottomBackgroundShadowDrawable ()
   {
-    return new TiledDrawable (createBottomBackgroundShadowSprite ());
+    return new SpriteDrawable (createBottomBackgroundShadowSprite ());
   }
 
   public Image createTitleBackground ()
@@ -110,7 +124,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createTitleBackgroundDrawable ()
   {
-    return new NinePatchDrawable (createNinePatchFromTextureRegion ("menu-title-background"));
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (TITLE_BACKGROUND_DRAWABLE_NAME));
   }
 
   public Image createScreenBackgroundLeft ()
@@ -120,7 +134,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createScreenBackgroundLeftDrawable ()
   {
-    return new TextureRegionDrawable (createTextureRegion ("background-left"));
+    return new TextureRegionDrawable (createTextureRegion (SCREEN_BACKGROUND_LEFT_DRAWABLE_NAME));
   }
 
   public Image createScreenBackgroundRight ()
@@ -130,7 +144,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Drawable createScreenBackgroundRightDrawable ()
   {
-    return new TextureRegionDrawable (createTextureRegion ("background-right"));
+    return new TextureRegionDrawable (createTextureRegion (SCREEN_BACKGROUND_RIGHT_DRAWABLE_NAME));
   }
 
   public Image createLeftMenuBarShadow ()
@@ -161,9 +175,8 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
   }
 
   public Label.LabelStyle createTitleStyle ()
-
   {
-    return getSkinResource ("menu-title", Label.LabelStyle.class);
+    return getSkinResource (StyleSettings.MENU_TITLE_LABEL_STYLE, Label.LabelStyle.class);
   }
 
   public Label createSubTitle (final String titleText, final int alignment)
@@ -175,7 +188,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label.LabelStyle createSubTitleStyle ()
   {
-    return getSkinResource ("menu-subtitle", Label.LabelStyle.class);
+    return getSkinResource (StyleSettings.MENU_SUB_TITLE_LABEL_STYLE, Label.LabelStyle.class);
   }
 
   public ImageTextButton createMenuChoice (final String choiceText, final EventListener listener)
@@ -197,7 +210,8 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public ImageTextButton.ImageTextButtonStyle createMenuChoiceStyle ()
   {
-    return new ImageTextButton.ImageTextButtonStyle (getSkinResource ("menu-choice", TextButton.TextButtonStyle.class));
+    return new ImageTextButton.ImageTextButtonStyle (
+            getSkinResource (StyleSettings.MENU_CHOICE_IMAGE_TEXT_BUTTON_STYLE, TextButton.TextButtonStyle.class));
   }
 
   public Label createMenuSettingSectionTitleLabel (final String text)
@@ -209,7 +223,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label.LabelStyle createMenuSettingSectionTitleLabelStyle ()
   {
-    return createLabelStyle ("menu-settings-section-title");
+    return createLabelStyle (StyleSettings.MENU_SETTING_SECTION_TITLE_LABEL_STYLE);
   }
 
   public Label createMenuSettingLabel (final String text)
@@ -221,7 +235,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label.LabelStyle createMenuSettingLabelStyle ()
   {
-    return createLabelStyle ("menu-settings");
+    return createLabelStyle (StyleSettings.MENU_SETTING_LABEL_STYLE);
   }
 
   public TextField createPlayerNameTextField ()
@@ -232,7 +246,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public TextField.TextFieldStyle createPlayerNameTextFieldStyle ()
   {
-    return createTextFieldStyle ("default");
+    return createTextFieldStyle (StyleSettings.MENU_PLAYER_NAME_TEXTFIELD_STYLE);
   }
 
   public TextField createClanNameTextField ()
@@ -243,7 +257,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public TextField.TextFieldStyle createClanNameTextFieldStyle ()
   {
-    return createTextFieldStyle ("default");
+    return createTextFieldStyle (StyleSettings.MENU_CLAN_NAME_TEXTFIELD_STYLE);
   }
 
   public TextField createServerNameTextField ()
@@ -254,7 +268,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public TextField.TextFieldStyle createServerNameTextFieldStyle ()
   {
-    return createTextFieldStyle ("default");
+    return createTextFieldStyle (StyleSettings.MENU_SERVER_NAME_TEXTFIELD_STYLE);
   }
 
   public CheckBox createClanNameCheckBox (final ChangeListener listener)
@@ -266,7 +280,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public CheckBox.CheckBoxStyle createClanNameCheckBoxStyle ()
   {
-    return getSkinResource ("default", CheckBox.CheckBoxStyle.class);
+    return getSkinResource (StyleSettings.MENU_CLAN_NAME_CHECK_BOX_STYLE, CheckBox.CheckBoxStyle.class);
   }
 
   public Label createPlayerLimitLabel (final String text)
@@ -278,7 +292,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label.LabelStyle createPlayerLimitLabelStyle ()
   {
-    return createLabelStyle ("option-box");
+    return createLabelStyle (StyleSettings.MENU_PLAYER_LIMIT_LABEL_STYLE);
   }
 
   public Label createMapNameLabel (final String text)
@@ -290,7 +304,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label.LabelStyle createMapNameLabelStyle ()
   {
-    return createLabelStyle ("option-box");
+    return createLabelStyle (StyleSettings.MENU_MAP_NAME_LABEL_STYLE);
   }
 
   public ImageButton createCustomizePlayersButton (final ClickListener listener)
@@ -302,7 +316,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public ImageButton.ImageButtonStyle createCustomizePlayersButtonStyle ()
   {
-    return createImageButtonStyle ("options");
+    return createImageButtonStyle (StyleSettings.MENU_CUSTOMIZE_PLAYERS_IMAGE_BUTTON_STYLE);
   }
 
   public ImageButton createCustomizeMapButton (final ClickListener listener)
@@ -314,7 +328,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public ImageButton.ImageButtonStyle createCustomizeMapButtonStyle ()
   {
-    return createImageButtonStyle ("options");
+    return createImageButtonStyle (StyleSettings.MENU_CUSTOMIZE_MAP_IMAGE_BUTTON_STYLE);
   }
 
   public SelectBox <Integer> createWinPercentSelectBox ()
@@ -324,7 +338,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public SelectBox.SelectBoxStyle createWinPercentSelectBoxStyle ()
   {
-    return createSelectBoxStyle ("default");
+    return createSelectBoxStyle (StyleSettings.MENU_WIN_PERCENT_SELECT_BOX_STYLE);
   }
 
   public SelectBox <String> createInitialCountryAssignmentSelectBox ()
@@ -334,7 +348,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public SelectBox.SelectBoxStyle createInitialCountryAssignmentSelectBoxStyle ()
   {
-    return createSelectBoxStyle ("default");
+    return createSelectBoxStyle (StyleSettings.MENU_INITIAL_COUNTRY_ASSIGNMENT_SELECT_BOX_STYLE);
   }
 
   public SelectBox <Integer> createSpectatorsSelectBox ()
@@ -344,7 +358,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public SelectBox.SelectBoxStyle createSpectatorLimitSelectBoxStyle ()
   {
-    return createSelectBoxStyle ("default");
+    return createSelectBoxStyle (StyleSettings.MENU_SPECTATOR_LIMIT_SELECT_BOX_STYLE);
   }
 
   public TextField createServerAddressTextField ()
@@ -355,12 +369,12 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public TextField.TextFieldStyle createServerAddressTextFieldStyle ()
   {
-    return createTextFieldStyle ("default");
+    return createTextFieldStyle (StyleSettings.MENU_SERVER_ADDRESS_TEXTFIELD_STYLE);
   }
 
   public Label createPlayerSettingsSectionTitleLabel ()
   {
-    return createMenuSettingSectionTitleLabel ("Your Player");
+    return createMenuSettingSectionTitleLabel (PLAYER_SETTINGS_SECTION_TITLE_LABEL_NAME);
   }
 
   public Label.LabelStyle createPlayerSettingsSectionTitleLabelStyle ()
@@ -370,7 +384,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label createPlayerNameSettingLabel ()
   {
-    return createMenuSettingLabel ("Name");
+    return createMenuSettingLabel (PLAYER_NAME_SETTING_LABEL_NAME);
   }
 
   public Label.LabelStyle createPlayerNameSettingLabelStyle ()
@@ -380,7 +394,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label createClanTagSettingLabel ()
   {
-    return createMenuSettingLabel ("Clan Tag");
+    return createMenuSettingLabel (CLAN_TAG_SETTING_LABEL_NAME);
   }
 
   public Label.LabelStyle createClanTagSettingLabelStyle ()
@@ -390,7 +404,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   public Label createGameSettingsSectionTitleLabel ()
   {
-    return createMenuSettingSectionTitleLabel ("Game Settings");
+    return createMenuSettingSectionTitleLabel (GAME_SETTINGS_SECTION_TITLE_LABEL_NAME);
   }
 
   public Label.LabelStyle createGameSettingsSectionTitleLabelStyle ()
@@ -400,7 +414,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   private Sprite createTopBackgroundShadowSprite ()
   {
-    return createSpriteFromTextureRegion ("top-and-bottom-shadow");
+    return createSpriteFromTextureRegion (TOP_BACKGROUND_SHADOW_SPRITE_NAME);
   }
 
   private Sprite createBottomBackgroundShadowSprite ()
@@ -413,7 +427,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
 
   private TextureRegion createLeftMenuBarShadowTextureRegion ()
   {
-    return createTextureRegion ("left-and-right-menu-bar-shadow");
+    return createTextureRegion (LEFT_MENU_BAR_SHADOW_TEXTURE_REGION_NAME);
   }
 
   private TextureRegion createRightMenuBarShadowTextureRegion ()

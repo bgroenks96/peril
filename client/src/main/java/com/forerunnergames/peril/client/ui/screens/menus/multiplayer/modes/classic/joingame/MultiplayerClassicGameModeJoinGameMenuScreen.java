@@ -39,8 +39,8 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -53,7 +53,7 @@ import net.engio.mbassy.bus.MBassador;
 public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
   private final MenuScreenWidgetFactory widgetFactory;
-  private final Popup errorPopup;
+  private final Dialog errorDialog;
   private final TextField playerNameTextField;
   private final TextField clanNameTextField;
   private final TextField serverAddressTextField;
@@ -79,7 +79,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
     this.widgetFactory = widgetFactory;
 
-    errorPopup = createErrorPopup (new PopupListenerAdapter ());
+    errorDialog = createErrorDialog (new DialogListenerAdapter ());
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE");
@@ -168,10 +168,10 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
         {
-          errorPopup.setMessage (new DefaultMessage (
+          errorDialog.setMessage (new DefaultMessage (
                   Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
                                   GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
-          errorPopup.show ();
+          errorDialog.show ();
           return;
         }
 
@@ -179,10 +179,10 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
         {
-          errorPopup.setMessage (new DefaultMessage (
+          errorDialog.setMessage (new DefaultMessage (
                   Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
                                   GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
-          errorPopup.show ();
+          errorDialog.show ();
           return;
         }
 
@@ -192,10 +192,10 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         if (!NetworkSettings.isValidServerAddress (serverAddress))
         {
-          errorPopup.setMessage (new DefaultMessage (
+          errorDialog.setMessage (new DefaultMessage (
                   Strings.format ("Invalid server address: \'{}\'\n\nValid server address rules:\n\n{}", serverAddress,
                                   NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION)));
-          errorPopup.show ();
+          errorDialog.show ();
           return;
         }
 

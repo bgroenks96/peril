@@ -48,11 +48,12 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
@@ -69,6 +70,7 @@ import org.slf4j.LoggerFactory;
 public final class PlayToMenuLoadingScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (PlayToMenuLoadingScreen.class);
+  private static final String LOADING_LABEL_TEXT = "LOADING";
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
   private static final float PROGRESS_BAR_STEP_SIZE = 0.1f;
   private final ScreenChanger screenChanger;
@@ -79,8 +81,8 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final ProgressBar progressBar;
-  private final Popup quitPopup;
-  private final Popup errorPopup;
+  private final Dialog quitDialog;
+  private final Dialog errorDialog;
   private boolean isLoading = false;
   private float overallLoadingProgressPercent = 0.0f;
   private float currentLoadingProgressPercent = 0.0f;
@@ -118,7 +120,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
     final Table foregroundTable = new Table ().top ();
     foregroundTable.add ().height (870);
     foregroundTable.row ();
-    foregroundTable.add (widgetFactory.createLabel ("LOADING", Align.center, "loading-text")).size (700, 62);
+    foregroundTable.add (widgetFactory.createLabel (LOADING_LABEL_TEXT, Align.center, StyleSettings.LOADING_SCREEN_LOADING_TEXT_LABEL_STYLE)).size (700, 62);
     foregroundTable.row ().bottom ();
     foregroundTable.add (progressBar).size (700, 20).padBottom (128);
 
@@ -131,7 +133,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
     stage = new Stage (viewport, batch);
 
     // @formatter:off
-    quitPopup = widgetFactory.createQuitPopup ("Are you sure you want to quit Peril?", stage, new PopupListenerAdapter ()
+    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit Peril?", stage, new DialogListenerAdapter ()
     {
       @Override
       public void onSubmit ()
@@ -144,7 +146,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
     });
     // @formatter:on
 
-    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    errorDialog = widgetFactory.createErrorDialog (stage, new DialogListenerAdapter ()
     {
       @Override
       public void onShow ()
@@ -189,7 +191,7 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
         {
           case Input.Keys.ESCAPE:
           {
-            quitPopup.show ();
+            quitDialog.show ();
 
             return false;
           }
@@ -226,8 +228,8 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
 
-    quitPopup.refreshAssets ();
-    errorPopup.refreshAssets ();
+    quitDialog.refreshAssets ();
+    errorDialog.refreshAssets ();
 
     if (!loading ()) startLoading ();
   }
@@ -238,8 +240,8 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
     Gdx.gl.glClearColor (0, 0, 0, 1);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
-    quitPopup.update (delta);
-    errorPopup.update (delta);
+    quitDialog.update (delta);
+    errorDialog.update (delta);
 
     stage.act (delta);
     stage.draw ();
@@ -281,8 +283,8 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
 
     hideCursor ();
 
-    quitPopup.hide (null);
-    errorPopup.hide (null);
+    quitDialog.hide (null);
+    errorDialog.hide (null);
 
     isLoading = false;
   }
@@ -349,8 +351,8 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
   {
     log.error (message);
 
-    errorPopup.setMessage (new DefaultMessage (message));
-    errorPopup.show ();
+    errorDialog.setMessage (new DefaultMessage (message));
+    errorDialog.show ();
   }
 
   private void unloadPlayScreenAssets ()

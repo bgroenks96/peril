@@ -3,9 +3,9 @@ size: 2048, 1024
 format: RGBA8888
 filter: MipMapLinearLinear,Linear
 repeat: none
-my-settings-popup-background
+my-settings-dialog-background
   rotate: false
-  xy: 2, 2
+  xy: 0, 0
   size: 1032, 516
   orig: 1032, 516
   offset: 0, 0

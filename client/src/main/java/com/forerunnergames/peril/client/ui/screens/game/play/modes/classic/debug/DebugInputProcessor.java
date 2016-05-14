@@ -25,14 +25,14 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.occupation.OccupationPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.armymovement.reinforcement.ReinforcementPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.attack.AttackPopup;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.defend.DefendPopup;
-import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -46,10 +46,10 @@ public final class DebugInputProcessor extends InputAdapter
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
-  private final OccupationPopup occupationPopup;
-  private final ReinforcementPopup reinforcementPopup;
-  private final AttackPopup attackPopup;
-  private final DefendPopup defendPopup;
+  private final OccupationDialog occupationDialog;
+  private final ReinforcementDialog reinforcementDialog;
+  private final AttackDialog attackDialog;
+  private final DefendDialog defendDialog;
   private PlayMap playMap;
 
   public DebugInputProcessor (final DebugEventGenerator eventGenerator,
@@ -58,10 +58,10 @@ public final class DebugInputProcessor extends InputAdapter
                               final MessageBox <StatusBoxRow> statusBox,
                               final MessageBox <ChatBoxRow> chatBox,
                               final PlayerBox playerBox,
-                              final OccupationPopup occupationPopup,
-                              final ReinforcementPopup reinforcementPopup,
-                              final AttackPopup attackPopup,
-                              final DefendPopup defendPopup,
+                              final OccupationDialog occupationDialog,
+                              final ReinforcementDialog reinforcementDialog,
+                              final AttackDialog attackDialog,
+                              final DefendDialog defendDialog,
                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (eventGenerator, "eventGenerator");
@@ -70,10 +70,10 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
     Arguments.checkIsNotNull (playerBox, "playerBox");
-    Arguments.checkIsNotNull (occupationPopup, "occupationPopup");
-    Arguments.checkIsNotNull (reinforcementPopup, "reinforcementPopup");
-    Arguments.checkIsNotNull (attackPopup, "attackPopup");
-    Arguments.checkIsNotNull (defendPopup, "defendPopup");
+    Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
+    Arguments.checkIsNotNull (reinforcementDialog, "reinforcementDialog");
+    Arguments.checkIsNotNull (attackDialog, "attackDialog");
+    Arguments.checkIsNotNull (defendDialog, "defendDialog");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.eventGenerator = eventGenerator;
@@ -82,10 +82,10 @@ public final class DebugInputProcessor extends InputAdapter
     this.statusBox = statusBox;
     this.chatBox = chatBox;
     this.playerBox = playerBox;
-    this.occupationPopup = occupationPopup;
-    this.reinforcementPopup = reinforcementPopup;
-    this.attackPopup = attackPopup;
-    this.defendPopup = defendPopup;
+    this.occupationDialog = occupationDialog;
+    this.reinforcementDialog = reinforcementDialog;
+    this.attackDialog = attackDialog;
+    this.defendDialog = defendDialog;
   }
 
   @Override
@@ -399,7 +399,7 @@ public final class DebugInputProcessor extends InputAdapter
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        occupationPopup.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        occupationDialog.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
         playMap.disable ();
 
         return true;
@@ -432,7 +432,7 @@ public final class DebugInputProcessor extends InputAdapter
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        reinforcementPopup.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        reinforcementDialog.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
         playMap.disable ();
 
         return true;
@@ -474,7 +474,7 @@ public final class DebugInputProcessor extends InputAdapter
         attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
         defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        attackPopup.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
+        attackDialog.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
 
         playMap.disable ();
 
@@ -517,7 +517,7 @@ public final class DebugInputProcessor extends InputAdapter
         attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
         defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        defendPopup.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
+        defendDialog.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
 
         playMap.disable ();
 

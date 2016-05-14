@@ -1,0 +1,91 @@
+skin.png
+size: 2048, 2048
+format: RGBA8888
+filter: MipMapLinearLinear,Linear
+repeat: none
+tankBody
+  rotate: false
+  xy: 1, 19
+  size: 25, 65
+  orig: 25, 65
+  offset: 0, 0
+  index: -1
+tankTurret
+  rotate: false
+  xy: 28, 19
+  size: 25, 65
+  orig: 25, 65
+  offset: 0, 0
+  index: -1
+gridBottom
+  rotate: false
+  xy: 1, 13
+  size: 4, 4
+  split: 1, 1, 1, 2
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridBottomLeftCorner
+  rotate: false
+  xy: 55, 80
+  size: 4, 4
+  split: 2, 1, 1, 2
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridBottomRightCorner
+  rotate: false
+  xy: 1, 7
+  size: 4, 4
+  split: 1, 2, 1, 2
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridLeft
+  rotate: false
+  xy: 7, 13
+  size: 4, 4
+  split: 2, 1, 1, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridMiddle
+  rotate: false
+  xy: 55, 74
+  size: 4, 4
+  split: 1, 1, 1, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridRight
+  rotate: false
+  xy: 1, 1
+  size: 4, 4
+  split: 1, 2, 1, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridTop
+  rotate: false
+  xy: 7, 7
+  size: 4, 4
+  split: 1, 1, 2, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridTopLeftCorner
+  rotate: false
+  xy: 13, 13
+  size: 4, 4
+  split: 2, 1, 2, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+gridTopRightCorner
+  rotate: false
+  xy: 55, 68
+  size: 4, 4
+  split: 1, 2, 2, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1

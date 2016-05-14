@@ -54,26 +54,26 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
-    "popup":      { "up": "popup-button-up", "down": "popup-button-down", "over": "popup-button-over", "disabled": "popup-button-disabled", "checked": null,         "font": "pirulen-12", "fontColor": "light-gray" },
-    "tab-button": { "up": null,              "down": null,                "over": "tab-button",        "disabled": null,                    "checked": "tab-button", "font": "pirulen-16", "fontColor": "white"      }
+    "dialog":      { "up": "dialog-button-up", "down": "dialog-button-down", "over": "dialog-button-over", "disabled": "dialog-button-disabled", "checked": null,         "font": "pirulen-12", "fontColor": "light-gray" },
+    "tab-button": { "up": null,               "down": null,                 "over": "tab-button",         "disabled": null,                     "checked": "tab-button", "font": "pirulen-16", "fontColor": "white"      }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
     "default":                       { "up": "button-up",             "imageUp": null,                           "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "my-settings":                   { "up": "button-up",             "imageUp": "icon-settings",                "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "end-turn":                      { "up": "button-up",             "imageUp": "icon-end-turn",                "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "reinforce":                     { "up": "button-up",             "imageUp": "icon-free-move",               "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "trade-in":                      { "up": "button-up",             "imageUp": "icon-trade-in",                "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
+    "my-settings-old":               { "up": "button-up",             "imageUp": "my-settings-icon-old",         "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
+    "end-turn-old":                  { "up": "button-up",             "imageUp": "end-turn-icon-old",            "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
+    "reinforce-old":                 { "up": "button-up",             "imageUp": "reinforce-icon-old",           "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
+    "trade-in-old":                  { "up": "button-up",             "imageUp": "trade-in-icon-old",            "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
     "detailed-report":               { "up": "sidebar-button-up",     "imageUp": "detailed-report-icon",         "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
-    "purchase-reinforcements":       { "up": "sidebar-button-up",     "imageUp": "purchase-reinforcements-icon", "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
+    "trade-in-new":                  { "up": "sidebar-button-up",     "imageUp": "trade-in-icon-new",            "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
     "post-combat-maneuver":          { "up": "sidebar-button-up",     "imageUp": "post-combat-maneuver-icon",    "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
-    "end-turn-new":                  { "up": "sidebar-button-up",     "imageUp": "end-turn-icon",                "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
-    "my-settings-new":               { "up": "sidebar-button-up",     "imageUp": "my-settings-icon",             "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
-    "surrender":                     { "up": "sidebar-button-up",     "imageUp": "surrender-icon",               "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },               
-    "min":                           { "up": "popup-button-up",       "imageUp": "icon-min",                     "over": "popup-button-over",   "imageOver": null, "down": "popup-button-down",    "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "popup-button-disabled",   "imageDisabled": null },
-    "max":                           { "up": "popup-button-up",       "imageUp": "icon-max",                     "over": "popup-button-over",   "imageOver": null, "down": "popup-button-down",    "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "popup-button-disabled",   "imageDisabled": null },
-    "minus":                         { "up": "popup-button-up",       "imageUp": "icon-minus",                   "over": "popup-button-over",   "imageOver": null, "down": "popup-button-down",    "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "popup-button-disabled",   "imageDisabled": null },
-    "plus":                          { "up": "popup-button-up",       "imageUp": "icon-plus",                    "over": "popup-button-over",   "imageOver": null, "down": "popup-button-down",    "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "popup-button-disabled",   "imageDisabled": null },
+    "end-turn-new":                  { "up": "sidebar-button-up",     "imageUp": "end-turn-icon-new",            "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
+    "my-settings-new":               { "up": "sidebar-button-up",     "imageUp": "my-settings-icon-new",         "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
+    "surrender":                     { "up": "sidebar-button-up",     "imageUp": "surrender-icon",               "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
+    "min":                           { "up": "dialog-button-up",      "imageUp": "icon-min",                     "over": "dialog-button-over",  "imageOver": null, "down": "dialog-button-down",   "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "dialog-button-disabled",  "imageDisabled": null },
+    "max":                           { "up": "dialog-button-up",      "imageUp": "icon-max",                     "over": "dialog-button-over",  "imageOver": null, "down": "dialog-button-down",   "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "dialog-button-disabled",  "imageDisabled": null },
+    "minus":                         { "up": "dialog-button-up",      "imageUp": "icon-minus",                   "over": "dialog-button-over",  "imageOver": null, "down": "dialog-button-down",   "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "dialog-button-disabled",  "imageDisabled": null },
+    "plus":                          { "up": "dialog-button-up",      "imageUp": "icon-plus",                    "over": "dialog-button-over",  "imageOver": null, "down": "dialog-button-down",   "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "dialog-button-disabled",  "imageDisabled": null },
     "toggle-disabled-off":           { "up": "toggle-off-background", "imageUp": "toggle-off",                   "over": null,                  "imageOver": null, "down": "toggle-on-background", "imageDown": "toggle-on", "checked": "toggle-on-background", "imageChecked": "toggle-on", "checkedOver": null, "imageCheckedOver": null, "disabled": "toggle-off-background",   "imageDisabled": "toggle-off-disabled" },
     "toggle-disabled-on":            { "up": "toggle-off-background", "imageUp": "toggle-off",                   "over": null,                  "imageOver": null, "down": "toggle-on-background", "imageDown": "toggle-on", "checked": "toggle-on-background", "imageChecked": "toggle-on", "checkedOver": null, "imageCheckedOver": null, "disabled": "toggle-on-background",    "imageDisabled": "toggle-on-disabled" },
     "die-attack-enabling":           { "up": "die-attack-add",        "imageUp": null,                           "over": null,                  "imageOver": null, "down": null,                   "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": null,                      "imageDisabled": null },
@@ -135,16 +135,16 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
-    "default-popup": { "font": "dejaVu-16", "fontColor": "white", "background": "select-box-popup-background", "backgroundOver": "select-box-popup-background-over", "backgroundOpen": "select-box-popup-background-open", "backgroundDisabled": "select-box-popup-background-disabled", "scrollStyle": "default", "listStyle": "default" }
+    "default-dialog": { "font": "dejaVu-16", "fontColor": "white", "background": "select-box-dialog-background", "backgroundOver": "select-box-dialog-background-over", "backgroundOpen": "select-box-dialog-background-open", "backgroundDisabled": "select-box-dialog-background-disabled", "scrollStyle": "default", "listStyle": "default" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
-    "popup-modal":          { "titleFont": "pirulen-28", "background": "popup-background",                "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "popup-non-modal":      { "titleFont": "pirulen-28", "background": "popup-background",                "titleFontColor": "white", "stageBackground": null },
-    "battle-popup":         { "titleFont": "pirulen-28", "background": "battle-popup-background",         "titleFontColor": "white", "stageBackground": null },
-    "army-movement-popup":  { "titleFont": "pirulen-28", "background": "army-movement-popup-background",  "titleFontColor": "white", "stageBackground": null },
-    "reinforcements-popup": { "titleFont": "pirulen-28", "background": "reinforcements-popup-background", "titleFontColor": "white", "stageBackground": null },
-    "my-settings-popup":    { "titleFont": "pirulen-28", "background": "my-settings-popup-background",    "titleFontColor": "white", "stageBackground": null }
+    "dialog-modal":          { "titleFont": "pirulen-28", "background": "dialog-background",                "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "dialog-non-modal":      { "titleFont": "pirulen-28", "background": "dialog-background",                "titleFontColor": "white", "stageBackground": null },
+    "battle-dialog":         { "titleFont": "pirulen-28", "background": "battle-dialog-background",         "titleFontColor": "white", "stageBackground": null },
+    "army-movement-dialog":  { "titleFont": "pirulen-28", "background": "army-movement-dialog-background",  "titleFontColor": "white", "stageBackground": null },
+    "trade-in-dialog":       { "titleFont": "pirulen-28", "background": "trade-in-dialog-background",       "titleFontColor": "white", "stageBackground": null },
+    "my-settings-dialog":    { "titleFont": "pirulen-28", "background": "my-settings-dialog-background",    "titleFontColor": "white", "stageBackground": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
@@ -152,25 +152,25 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
-    "default":                          { "font": "default-font",  "fontColor": "white",      "background": null },
-    "popup-title":                      { "font": "pirulen-28",    "fontColor": "white",      "background": null },
-    "popup-sub-title":                  { "font": "pirulen-14",    "fontColor": "light-gray", "background": null },
-    "popup-panel-title":                { "font": "dejaVu-22",     "fontColor": "white",      "background": null },
-    "popup-message":                    { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
-    "popup-settings-title":             { "font": "dejaVu-18",     "fontColor": "white",      "background": null },
-    "status-box-message":               { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
-    "chatbox-message":                  { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
-    "player-box-message":               { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
-    "army-movement-popup-country-name": { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
-    "army-movement-popup-arrow":        { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
-    "battle-popup-player-name":         { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
-    "battle-popup-country-name":        { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
-    "battle-popup-arrow":               { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
-    "battle-popup-auto-battle":         { "font": "pirulen-12",    "fontColor": "white",      "background": null },
-    "sidebar-title":                    { "font": "pirulen-18",    "fontColor": "white",      "background": null },
-    "sidebar-settings-title":           { "font": "roboto-med-16", "fontColor": "white",      "background": null },
-    "sidebar-setting":                  { "font": "roboto-med-14", "fontColor": "dark-gray",  "background": null },
-    "sidebar-button":                   { "font": "roboto-med-16", "fontColor": "light-gray", "background": null }
+    "default":                           { "font": "default-font",  "fontColor": "white",      "background": null },
+    "dialog-title":                      { "font": "pirulen-28",    "fontColor": "white",      "background": null },
+    "dialog-sub-title":                  { "font": "pirulen-14",    "fontColor": "light-gray", "background": null },
+    "dialog-panel-title":                { "font": "dejaVu-22",     "fontColor": "white",      "background": null },
+    "dialog-message":                    { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
+    "dialog-settings-title":             { "font": "dejaVu-18",     "fontColor": "white",      "background": null },
+    "status-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
+    "chatbox-message":                   { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
+    "player-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
+    "army-movement-dialog-country-name": { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
+    "army-movement-dialog-arrow":        { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
+    "battle-dialog-player-name":         { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
+    "battle-dialog-country-name":        { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
+    "battle-dialog-arrow":               { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
+    "battle-dialog-auto-battle":         { "font": "pirulen-12",    "fontColor": "white",      "background": null },
+    "sidebar-title":                     { "font": "pirulen-18",    "fontColor": "white",      "background": null },
+    "sidebar-settings-title":            { "font": "roboto-med-16", "fontColor": "white",      "background": null },
+    "sidebar-setting":                   { "font": "roboto-med-14", "fontColor": "dark-gray",  "background": null },
+    "sidebar-button":                    { "font": "roboto-med-16", "fontColor": "light-gray", "background": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {

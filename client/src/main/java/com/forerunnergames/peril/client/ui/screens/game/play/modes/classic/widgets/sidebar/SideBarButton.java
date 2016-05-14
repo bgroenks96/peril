@@ -21,12 +21,33 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class SideBarButton
 {
   private final ImageButton button;
   private final ButtonType type;
+
+  public enum ButtonType
+  {
+    TRADE_IN (StyleSettings.PLAY_SCREEN_SIDE_BAR_TRADE_IN_IMAGE_BUTTON_STYLE),
+    REINFORCE (StyleSettings.PLAY_SCREEN_SIDE_BAR_REINFORCE_IMAGE_BUTTON_STYLE),
+    END_TURN (StyleSettings.PLAY_SCREEN_SIDE_BAR_END_TURN_IMAGE_BUTTON_STYLE),
+    MY_SETTINGS (StyleSettings.PLAY_SCREEN_SIDE_BAR_MY_SETTINGS_IMAGE_BUTTON_STYLE);
+
+    private final String styleName;
+
+    public String getImageButtonStyleName ()
+    {
+      return styleName;
+    }
+
+    ButtonType (final String styleName)
+    {
+      this.styleName = styleName;
+    }
+  }
 
   public SideBarButton (final ImageButton button, final ButtonType type)
   {
@@ -35,26 +56,6 @@ public final class SideBarButton
 
     this.button = button;
     this.type = type;
-  }
-
-  public enum ButtonType
-  {
-    TRADE_IN ("trade-in"),
-    REINFORCE ("reinforce"),
-    END_TURN ("end-turn"),
-    MY_SETTINGS ("my-settings");
-
-    private final String styleName;
-
-    ButtonType (final String styleName)
-    {
-      this.styleName = styleName;
-    }
-
-    public String getStyleName ()
-    {
-      return styleName;
-    }
   }
 
   public Actor asActor ()

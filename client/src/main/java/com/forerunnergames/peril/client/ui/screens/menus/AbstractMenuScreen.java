@@ -51,24 +51,31 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.tools.common.Arguments;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public abstract class AbstractMenuScreen extends InputAdapter implements Screen
 {
-  private static final Interpolation menuBarTransitionInterpolation = Interpolation.pow2;
-  private static final float menuBarTransitionTimeSeconds = 0.5f;
+  private static final Interpolation MENU_BAR_TRANSITION_INTERPOLATION = Interpolation.pow2;
+  private static final float MENU_BAR_TRANSITION_TIME_SECONDS = 0.5f;
+  private static final String BACK_BUTTON_TEXT = "BACK";
   private final Collection <Cell <ImageTextButton>> menuChoiceCells = new ArrayList <> ();
   private final Collection <ImageTextButton> menuChoices = new ArrayList <> ();
+  private final Multimap <String, TextButton> textButtonStyleNameToTextButtons = HashMultimap.create ();
   private final MenuScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final Cursor normalCursor;
@@ -287,10 +294,9 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     {
       menuChoice.setStyle (widgetFactory.createMenuChoiceStyle ());
     }
-    for (final Actor actor : buttonTable.getChildren ())
+    for (final Map.Entry <String, TextButton> entry : textButtonStyleNameToTextButtons.entries ())
     {
-      if (!(actor instanceof TextButton)) continue;
-      ((TextButton) actor).setStyle (widgetFactory.createTextButtonStyle ("default"));
+      entry.getValue ().setStyle (widgetFactory.createTextButtonStyle (entry.getKey ()));
     }
   }
 
@@ -465,23 +471,23 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     menuBar.addAction (
             Actions.sizeBy (
                     MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
-                    menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
+                    MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION));
 
     titleBackground.addAction (
             Actions.sizeBy (
                     MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
-                    menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
+                    MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION));
 
     rightMenuBarShadow.addAction (
             Actions.moveBy (
                     MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
-                    menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
+                    MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION));
 
     rightBackgroundShadow.addAction (
             Actions.sequence (
                     Actions.moveBy (
                             MenuBarState.EXPANDED.getWidth () - MenuBarState.CONTRACTED.getWidth (), 0.0f,
-                            menuBarTransitionTimeSeconds, menuBarTransitionInterpolation),
+                            MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION),
                     Actions.run (new Runnable ()
                     {
                       @Override
@@ -523,23 +529,23 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     menuBar.addAction (
             Actions.sizeBy (
                     MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
-                    menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
+                    MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION));
 
     titleBackground.addAction (
             Actions.sizeBy (
                     MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
-                    menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
+                    MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION));
 
     rightMenuBarShadow.addAction (
             Actions.moveBy (
                     MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
-                    menuBarTransitionTimeSeconds, menuBarTransitionInterpolation));
+                    MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION));
 
     rightBackgroundShadow.addAction (
             Actions.sequence (
                     Actions.moveBy (
                             MenuBarState.CONTRACTED.getWidth () - MenuBarState.EXPANDED.getWidth (), 0.0f,
-                            menuBarTransitionTimeSeconds, menuBarTransitionInterpolation),
+                            MENU_BAR_TRANSITION_TIME_SECONDS, MENU_BAR_TRANSITION_INTERPOLATION),
                     Actions.run (new Runnable ()
                     {
                       @Override
@@ -552,28 +558,30 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   }
   // @formatter:on
 
-  protected final Popup createQuitPopup (final String message, final PopupListener listener)
+  protected final Dialog createQuitDialog (final String message, final DialogListener listener)
   {
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return widgetFactory.createQuitPopup (message, stage, listener);
+    return widgetFactory.createQuitDialog (message, stage, listener);
   }
 
-  protected final Popup createErrorPopup (final PopupListener listener)
+  protected final Dialog createErrorDialog (final DialogListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return widgetFactory.createErrorPopup (stage, listener);
+    return widgetFactory.createErrorDialog (stage, listener);
   }
 
   protected final Button addBackButton (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Button button = widgetFactory.createTextButton ("BACK", "default", listener);
+    final String buttonStyleName = StyleSettings.MENU_BACK_TEXT_BUTTON_STYLE;
+    final TextButton button = widgetFactory.createTextButton (BACK_BUTTON_TEXT, buttonStyleName, listener);
     buttonTable.add (button).width (110);
     buttonTable.add ().expandX ();
+    textButtonStyleNameToTextButtons.put (buttonStyleName, button);
 
     return button;
   }
@@ -583,8 +591,10 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNullOrEmptyOrBlank (text, "text");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Button button = widgetFactory.createTextButton (text, "default", listener);
+    final String buttonStyleName = StyleSettings.MENU_FORWARD_TEXT_BUTTON_STYLE;
+    final TextButton button = widgetFactory.createTextButton (text, buttonStyleName, listener);
     buttonTable.add (button).width (220);
+    textButtonStyleNameToTextButtons.put (buttonStyleName, button);
 
     return button;
   }

@@ -33,7 +33,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter.CountryCounterFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.DefaultBattlePopupWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.DefaultBattleDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreen;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.loading.LoadingScreenWidgetFactory;
@@ -109,10 +109,9 @@ public final class ScreenFactory
       }
       case SPLASH:
       {
-        return new SplashScreen (new SplashScreenWidgetFactory (assetManager), screenChanger,
-                new LibGdxScreenSize (Gdx.graphics, ScreenSettings.SPLASH_SCREEN_REFERENCE_WIDTH,
-                        ScreenSettings.SPLASH_SCREEN_REFERENCE_HEIGHT),
-                mouseInput, batch, assetUpdater, assetManager, eventBus);
+        return new SplashScreen (new SplashScreenWidgetFactory (assetManager), screenChanger, new LibGdxScreenSize (
+                Gdx.graphics, ScreenSettings.SPLASH_SCREEN_REFERENCE_WIDTH,
+                ScreenSettings.SPLASH_SCREEN_REFERENCE_HEIGHT), mouseInput, batch, assetUpdater, assetManager, eventBus);
       }
       case MAIN_MENU:
       {
@@ -147,10 +146,9 @@ public final class ScreenFactory
       }
       case PLAY_CLASSIC:
       {
-        return new ClassicModePlayScreen (
-                new ClassicModePlayScreenWidgetFactory (assetManager, playMapFactory,
-                        new DefaultBattlePopupWidgetFactory (assetManager)),
-                screenChanger, screenSize, mouseInput, batch, eventBus, debugEventGenerator);
+        return new ClassicModePlayScreen (new ClassicModePlayScreenWidgetFactory (assetManager, playMapFactory,
+                new DefaultBattleDialogWidgetFactory (assetManager)), screenChanger, screenSize, mouseInput, batch,
+                eventBus, debugEventGenerator);
       }
       case PLAY_PERIL:
       {

@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableSet;
 
 public interface PlayerColorIconWidgetFactory extends WidgetFactory
 {
+  // TODO Move PlayerColor to common module & use PlayerColor#validValues.
   ImmutableSet <String> PLAYER_COLORS_LOWERCASE = ImmutableSet.of ("blue", "brown", "cyan", "gold", "green", "pink",
                                                                    "purple", "red", "silver", "teal");
 

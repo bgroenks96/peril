@@ -30,12 +30,12 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 
 public final class MainMenuScreen extends AbstractMenuScreen
 {
-  private final Popup quitPopup;
+  private final Dialog quitDialog;
 
   public MainMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                          final ScreenChanger screenChanger,
@@ -44,7 +44,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
-    quitPopup = createQuitPopup ("Are you sure you want to quit Peril?", new PopupListenerAdapter ()
+    quitDialog = createQuitDialog ("Are you sure you want to quit Peril?", new DialogListenerAdapter ()
     {
       @Override
       public void onSubmit ()
@@ -95,7 +95,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        quitPopup.show ();
+        quitDialog.show ();
       }
     });
   }
@@ -105,12 +105,12 @@ public final class MainMenuScreen extends AbstractMenuScreen
   {
     super.update (delta);
 
-    quitPopup.update (delta);
+    quitDialog.update (delta);
   }
 
   @Override
   protected void onEscape ()
   {
-    quitPopup.show ();
+    quitDialog.show ();
   }
 }

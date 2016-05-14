@@ -17,12 +17,14 @@
 
 package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class AbstractPlayerColorIconWidgetFactory extends AbstractWidgetFactory
-        implements PlayerColorIconWidgetFactory
+public abstract class AbstractPlayerColorIconWidgetFactory extends AbstractWidgetFactory implements
+        PlayerColorIconWidgetFactory
 {
   public AbstractPlayerColorIconWidgetFactory (final AssetManager assetManager)
   {
@@ -35,5 +37,11 @@ public abstract class AbstractPlayerColorIconWidgetFactory extends AbstractWidge
     Arguments.checkIsNotNull (activeColor, "activeColor");
 
     return new DefaultPlayerColorIcon (activeColor, PlayerColorIconWidgetFactory.PLAYER_COLORS_LOWERCASE, this);
+  }
+
+  @Override
+  public Button createPlayerColorIconButton (final String color)
+  {
+    return createButton (createPlayerColorIconStyle (color));
   }
 }

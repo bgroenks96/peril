@@ -10,7 +10,7 @@ background
   orig: 1920, 1080
   offset: 0, 0
   index: -1
-popup-background
+dialog-background
   rotate: false
   xy: 1, 408
   size: 650, 244
@@ -46,7 +46,7 @@ pirulen-12
   orig: 128, 128
   offset: 0, 0
   index: -1
-popup-button-down
+dialog-button-down
   rotate: false
   xy: 1922, 1701
   size: 32, 32
@@ -54,7 +54,7 @@ popup-button-down
   orig: 32, 32
   offset: 0, 0
   index: -1
-popup-button-over
+dialog-button-over
   rotate: false
   xy: 652, 491
   size: 32, 32
@@ -62,7 +62,7 @@ popup-button-over
   orig: 32, 32
   offset: 0, 0
   index: -1
-popup-button-up
+dialog-button-up
   rotate: false
   xy: 909, 620
   size: 32, 32

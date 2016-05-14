@@ -22,7 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.popups.battle.BattlePopupWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogWidgetFactory;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -35,11 +35,11 @@ public final class DiceArrow implements Comparable <DiceArrow>
   public static final DieOutcome DEFAULT_ATTACKER_OUTCOME = DieOutcome.NONE;
   private final int index;
   private final Image image;
-  private final BattlePopupWidgetFactory widgetFactory;
+  private final BattleDialogWidgetFactory widgetFactory;
   private final Map <DieOutcome, Drawable> attackerOutcomesToDrawables = new EnumMap <> (DieOutcome.class);
   private DieOutcome attackerOutcome = DEFAULT_ATTACKER_OUTCOME;
 
-  public DiceArrow (final int index, final Image image, final BattlePopupWidgetFactory widgetFactory)
+  public DiceArrow (final int index, final Image image, final BattleDialogWidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (image, "image");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
@@ -49,6 +49,35 @@ public final class DiceArrow implements Comparable <DiceArrow>
     this.widgetFactory = widgetFactory;
 
     refreshDrawablesCache ();
+  }
+
+  @Override
+  public int compareTo (final DiceArrow o)
+  {
+    if (index == o.index) return 0;
+
+    return index < o.index ? -1 : 1;
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return index;
+  }
+
+  @Override
+  public boolean equals (final Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null || getClass () != obj.getClass ()) return false;
+
+    return index == ((DiceArrow) obj).index;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Index: {} | Outcome: {}", getClass ().getSimpleName (), index, attackerOutcome);
   }
 
   public void setOutcome (final DieOutcome attackerOutcome, final DieOutcome defenderOutcome)
@@ -84,36 +113,7 @@ public final class DiceArrow implements Comparable <DiceArrow>
   {
     for (final DieOutcome outcome : DieOutcome.values ())
     {
-      attackerOutcomesToDrawables.put (outcome, widgetFactory.createBattlePopupDiceArrowDrawable (outcome));
+      attackerOutcomesToDrawables.put (outcome, widgetFactory.createBattleDialogDiceArrowDrawable (outcome));
     }
-  }
-
-  @Override
-  public int compareTo (final DiceArrow o)
-  {
-    if (index == o.index) return 0;
-
-    return index < o.index ? -1 : 1;
-  }
-
-  @Override
-  public int hashCode ()
-  {
-    return index;
-  }
-
-  @Override
-  public boolean equals (final Object obj)
-  {
-    if (this == obj) return true;
-    if (obj == null || getClass () != obj.getClass ()) return false;
-
-    return index == ((DiceArrow) obj).index;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Index: {} | Outcome: {}", getClass ().getSimpleName (), index, attackerOutcome);
   }
 }

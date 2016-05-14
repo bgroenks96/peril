@@ -44,8 +44,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.ClientMapMetadataLoaderFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
@@ -80,12 +80,21 @@ import org.slf4j.LoggerFactory;
 
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
+  private static final String TITLE_TEXT = "CREATE MULTIPLAYER GAME";
+  private static final String SUBTITLE_TEXT = "CLASSIC MODE";
+  private static final String FORWARD_BUTTON_TEXT = "CREATE GAME";
+  private static final String SERVER_NAME_SETTING_LABEL_TEXT = "Title";
+  private static final String PLAYERS_SETTING_LABEL_TEXT = "Players";
+  private static final String SPECTATORS_SETTING_SETTING_LABEL_TEXT = "Spectators";
+  private static final String MAP_SETTING_LABEL_TEXT = "Map";
+  private static final String WIN_PERCENT_SETTING_LABEL_TEXT = "Win Percent";
+  private static final String INITIAL_COUNTRY_ASSIGNMENT_SETTING_LABEL_TEXT = "Initial Countries";
   private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
   private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC)
           .create (MapType.STOCK, MapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
   private final MenuScreenWidgetFactory widgetFactory;
-  private final Popup errorPopup;
+  private final Dialog errorDialog;
   private final TextField playerNameTextField;
   private final TextField clanNameTextField;
   private final TextField serverNameTextField;
@@ -133,10 +142,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     this.widgetFactory = widgetFactory;
     this.countryCounter = countryCounter;
 
-    errorPopup = createErrorPopup (new PopupListenerAdapter ());
+    errorDialog = createErrorDialog (new DialogListenerAdapter ());
 
-    addTitle ("CREATE MULTIPLAYER GAME", Align.bottomLeft, 40);
-    addSubTitle ("CLASSIC MODE");
+    addTitle (TITLE_TEXT, Align.bottomLeft, 40);
+    addSubTitle (SUBTITLE_TEXT);
 
     playerNameTextField = widgetFactory.createPlayerNameTextField ();
     clanNameTextField = widgetFactory.createClanNameTextField ();
@@ -168,7 +177,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // TODO Implement CustomizePlayersPopup.
+        // TODO Show Players Dialog.
 
         if (Integer.valueOf (playerLimitLabel.getText ().toString ()) < ClassicGameRules.MAX_PLAYERS)
         {
@@ -188,7 +197,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // TODO Implement CustomizeMapPopup.
+        // TODO Show Map Dialog.
 
         currentMap = nextMap ();
         mapNameLabel.setText (asMapNameLabelText (currentMap));
@@ -216,24 +225,26 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       initialCountryAssignments.add (Strings.toProperCase (initialCountryAssignment.name ()));
     }
     initialCountryAssignmentSelectBox.setItems (initialCountryAssignments);
-    initialCountryAssignmentSelectBox
-            .setSelected (Strings.toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
+    initialCountryAssignmentSelectBox.setSelected (Strings
+            .toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
     // @formatter:on
 
     winPercentSelectBox = widgetFactory.createWinPercentSelectBox ();
     updateWinPercentSelectBoxItems ();
     selectInitialWinPercentItem ();
 
+    // @formatter:off
     playerSettingsSectionTitleLabel = widgetFactory.createPlayerSettingsSectionTitleLabel ();
     playerNameSettingLabel = widgetFactory.createPlayerNameSettingLabel ();
     clanTagSettingLabel = widgetFactory.createClanTagSettingLabel ();
     gameSettingsSectionTitleLabel = widgetFactory.createGameSettingsSectionTitleLabel ();
-    serverNameSettingLabel = widgetFactory.createMenuSettingLabel ("Title");
-    playerLimitSettingLabel = widgetFactory.createMenuSettingLabel ("Players");
-    spectatorLimitSettingLabel = widgetFactory.createMenuSettingLabel ("Spectators");
-    mapSettingLabel = widgetFactory.createMenuSettingLabel ("Map");
-    winPercentSettingLabel = widgetFactory.createMenuSettingLabel ("Win Percent");
-    initialCountryAssignmentSettingLabel = widgetFactory.createMenuSettingLabel ("Initial Countries");
+    serverNameSettingLabel = widgetFactory.createMenuSettingLabel (SERVER_NAME_SETTING_LABEL_TEXT);
+    playerLimitSettingLabel = widgetFactory.createMenuSettingLabel (PLAYERS_SETTING_LABEL_TEXT);
+    spectatorLimitSettingLabel = widgetFactory.createMenuSettingLabel (SPECTATORS_SETTING_SETTING_LABEL_TEXT);
+    mapSettingLabel = widgetFactory.createMenuSettingLabel (MAP_SETTING_LABEL_TEXT);
+    winPercentSettingLabel = widgetFactory.createMenuSettingLabel (WIN_PERCENT_SETTING_LABEL_TEXT);
+    initialCountryAssignmentSettingLabel = widgetFactory.createMenuSettingLabel (INITIAL_COUNTRY_ASSIGNMENT_SETTING_LABEL_TEXT);
+    // @formatter:on
 
     final VerticalGroup verticalGroup = new VerticalGroup ();
     verticalGroup.align (Align.topLeft);
@@ -332,15 +343,15 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       }
     });
 
-    forwardButton = addForwardButton ("CREATE GAME", new ChangeListener ()
+    forwardButton = addForwardButton (FORWARD_BUTTON_TEXT, new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
         if (currentMap.equals (MapMetadata.NULL_MAP_METADATA))
         {
-          errorPopup.setMessage (new DefaultMessage ("Please select a valid map before continuing."));
-          errorPopup.show ();
+          errorDialog.setMessage (new DefaultMessage ("Please select a valid map before continuing."));
+          errorDialog.show ();
           return;
         }
 
@@ -348,10 +359,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
         if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
         {
-          errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
-                                  GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
-          errorPopup.show ();
+          errorDialog.setMessage (new DefaultMessage (Strings
+                  .format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
+                           GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
+          errorDialog.show ();
           return;
         }
 
@@ -359,10 +370,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
         if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
         {
-          errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
-                                  GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
-          errorPopup.show ();
+          errorDialog.setMessage (new DefaultMessage (Strings
+                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
+                           GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
+          errorDialog.show ();
           return;
         }
 
@@ -371,18 +382,18 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final int playerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
         final int spectatorLimit = spectatorLimitSelectBox.getSelected ();
         final int winPercent = winPercentSelectBox.getSelected ();
-        final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment
-                .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
+        final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.valueOf (Strings
+                .toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
         final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit,
                 spectatorLimit, winPercent, initialCountryAssignment, currentMap);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))
         {
-          errorPopup.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}", serverName,
-                                  NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
-          errorPopup.show ();
+          errorDialog.setMessage (new DefaultMessage (Strings
+                  .format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}", serverName,
+                           NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
+          errorDialog.show ();
           return;
         }
 
@@ -473,14 +484,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     }
     catch (final PlayMapLoadingException e)
     {
-      final String errorMessage = Strings.format (
-                                                  "There was a problem loading map data.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
-                                                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
+      final String errorMessage = Strings
+              .format ("There was a problem loading map data.\n\nProblem:\n\n{}\n\nDetails\n\n{}", Throwables
+                      .getRootCause (e).getMessage (), Strings.toString (e));
 
       log.error (errorMessage);
 
-      errorPopup.setMessage (new DefaultMessage (errorMessage));
-      errorPopup.show ();
+      errorDialog.setMessage (new DefaultMessage (errorMessage));
+      errorDialog.show ();
 
       return ImmutableSet.of (MapMetadata.NULL_MAP_METADATA);
     }
@@ -495,14 +506,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     catch (final PlayMapLoadingException e)
     {
       final String errorMessage = Strings
-              .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
-                       currentMap.getType ().name ().toLowerCase (), Strings.toProperCase (currentMap.getName ()),
-                       Throwables.getRootCause (e).getMessage (), Strings.toString (e));
+              .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}", currentMap
+                      .getType ().name ().toLowerCase (), Strings.toProperCase (currentMap.getName ()), Throwables
+                      .getRootCause (e).getMessage (), Strings.toString (e));
 
       log.error (errorMessage);
 
-      errorPopup.setMessage (new DefaultMessage (errorMessage));
-      errorPopup.show ();
+      errorDialog.setMessage (new DefaultMessage (errorMessage));
+      errorDialog.show ();
 
       return ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
     }
@@ -543,12 +554,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     if (winPercentSelectBox.getItems ().contains (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, true)) return;
 
-    errorPopup.setMessage (new DefaultMessage (Strings
-            .format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\nPlease check your settings file.",
-                     InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, playerLimitLabel.getText ().toString (),
-                     currentMap.getType ().name ().toLowerCase (), Strings.toProperCase (currentMap.getName ()))));
+    errorDialog
+            .setMessage (new DefaultMessage (
+                    Strings.format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\nPlease check your settings file.",
+                                    InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, playerLimitLabel.getText ()
+                                            .toString (), currentMap.getType ().name ().toLowerCase (), Strings
+                                            .toProperCase (currentMap.getName ()))));
 
-    errorPopup.show ();
+    errorDialog.show ();
   }
 
   private MapMetadata nextMap ()
@@ -557,8 +570,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     if (!mapIterator.hasNext ())
     {
-      errorPopup.setMessage (new DefaultMessage (Strings.format ("No maps could be found.")));
-      errorPopup.show ();
+      errorDialog.setMessage (new DefaultMessage (Strings.format ("No maps could be found.")));
+      errorDialog.show ();
       return MapMetadata.NULL_MAP_METADATA;
     }
 
@@ -576,9 +589,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
       if (map.equals (firstMap))
       {
-        errorPopup.setMessage (new DefaultMessage (
-                Strings.format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", mapName)));
-        errorPopup.show ();
+        errorDialog.setMessage (new DefaultMessage (Strings
+                .format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", mapName)));
+        errorDialog.show ();
 
         mapIterator = null;
 

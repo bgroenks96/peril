@@ -200,12 +200,12 @@ public final class AssetSettings
 
   // Peril Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/peril/atlases/perilMode.atlas", TextureAtlas.class);
+          "screens/game/play/modes/peril/atlases/skin.atlas", TextureAtlas.class);
   public static final String PERIL_MODE_GRIDLINES_ATLAS_NINEPATCH_NAME = "gridMiddle";
 
   // Distance Field Font Shaders
-  public static final String DISTANCE_FIELD_FONT_VERTEX_SHADER_FILENAME = "skins/fonts/distancefield/shaders/font.vert";
-  public static final String DISTANCE_FIELD_FONT_FRAGMENT_SHADER_FILENAME = "skins/fonts/distancefield/shaders/font.frag";
+  public static final String DISTANCE_FIELD_FONT_FRAGMENT_SHADER_FILENAME = "fonts/distancefield/shaders/font.frag";
+  public static final String DISTANCE_FIELD_FONT_VERTEX_SHADER_FILENAME = "fonts/distancefield/shaders/font.vert";
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> LOAD_BEFORE_SPLASH_SCREEN_ASSET_DESCRIPTORS = ImmutableList

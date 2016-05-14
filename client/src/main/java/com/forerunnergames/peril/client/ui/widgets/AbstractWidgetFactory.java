@@ -53,23 +53,24 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBox;
-import com.forerunnergames.peril.client.ui.widgets.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.ErrorDialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.LabelMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactoryCreator;
-import com.forerunnergames.peril.client.ui.widgets.popup.ErrorPopup;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListener;
-import com.forerunnergames.peril.client.ui.widgets.popup.QuitPopup;
-import com.forerunnergames.peril.client.ui.widgets.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -85,6 +86,7 @@ import net.engio.mbassy.bus.MBassador;
 
 public abstract class AbstractWidgetFactory implements WidgetFactory
 {
+  private static final String MESSAGE_BOX_ROW_HIGHLIGHTING_DRAWABLE_NAME = "message-box-row-highlighting";
   private static final int DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT = Align.left;
   private static final int DEFAULT_MESSAGE_BOX_ROW_HEIGHT = 24;
   private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT = 12;
@@ -93,14 +95,15 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   private static final int DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
-  private static final MessageBoxRowStyle STATUS_BOX_ROW_STYLE = new MessageBoxRowStyle ("status-box-message",
-          DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
-          DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
-  private static final MessageBoxRowStyle CHATBOX_ROW_STYLE = new MessageBoxRowStyle ("chatbox-message",
-          DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
-          DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
-  private static final MessageBoxRowStyle PLAYER_BOX_ROW_STYLE = new MessageBoxRowStyle ("player-box-message",
-          DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, 0, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+  private static final MessageBoxRowStyle STATUS_BOX_ROW_STYLE = new MessageBoxRowStyle (
+          StyleSettings.STATUS_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
+          DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+  private static final MessageBoxRowStyle CHATBOX_ROW_STYLE = new MessageBoxRowStyle (
+          StyleSettings.CHAT_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
+          DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+  private static final MessageBoxRowStyle PLAYER_BOX_ROW_STYLE = new MessageBoxRowStyle (
+          StyleSettings.PLAYER_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
+          0, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
   private static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.REQUIRED, DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT,
           DEFAULT_MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
@@ -232,9 +235,9 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public Popup createQuitPopup (final String message, final Stage stage, final PopupListener listener)
+  public Dialog createQuitDialog (final String message, final Stage stage, final DialogListener listener)
   {
-    return new QuitPopup (this, message, stage, listener);
+    return new QuitDialog (this, message, stage, listener);
   }
 
   @Override
@@ -279,7 +282,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   @Override
   public Label.LabelStyle createLabelStyle (final String styleName)
   {
-    Arguments.checkIsNotNull (styleName, "labelStyle");
+    Arguments.checkIsNotNull (styleName, "styleName");
 
     return getSkinResource (styleName, Label.LabelStyle.class);
   }
@@ -419,29 +422,29 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public Popup createErrorPopup (final Stage stage, final PopupListener listener)
+  public Dialog createErrorDialog (final Stage stage, final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new ErrorPopup (this, stage, listener);
+    return new ErrorDialog (this, stage, listener);
   }
 
   @Override
-  public Popup createErrorPopup (final Stage stage, final String submitButtonText, final PopupListener listener)
+  public Dialog createErrorDialog (final Stage stage, final String submitButtonText, final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (submitButtonText, "submitButtonText");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new ErrorPopup (this, stage, submitButtonText, listener);
+    return new ErrorDialog (this, stage, submitButtonText, listener);
   }
 
   @Override
-  public MessageBox <MessageBoxRow <Message>> createPopupMessageBox (final String scrollPaneStyleName,
-                                                                     final String rowLabelStyleName,
-                                                                     final int rowLabelAlignment,
-                                                                     final ScrollbarStyle scrollbarStyle)
+  public MessageBox <MessageBoxRow <Message>> createDialogMessageBox (final String scrollPaneStyleName,
+                                                                      final String rowLabelStyleName,
+                                                                      final int rowLabelAlignment,
+                                                                      final ScrollbarStyle scrollbarStyle)
   {
     Arguments.checkIsNotNull (scrollPaneStyleName, "scrollPaneStyleName");
     Arguments.checkIsNotNull (rowLabelStyleName, "rowLabelStyleName");
@@ -511,10 +514,20 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
                                         final String style,
                                         final EventListener listener)
   {
+    return createHorizontalSlider (min, max, sliderStepSize, createSliderStyle (style), listener);
+  }
+
+  @Override
+  public Slider createHorizontalSlider (final int min,
+                                        final int max,
+                                        final int sliderStepSize,
+                                        final Slider.SliderStyle style,
+                                        final EventListener listener)
+  {
     Arguments.checkIsNotNull (style, "style");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Slider slider = new Slider (min, max, sliderStepSize, false, createSliderStyle (style));
+    final Slider slider = new Slider (min, max, sliderStepSize, false, style);
     slider.addListener (listener);
 
     return slider;
@@ -527,10 +540,20 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
                                       final String style,
                                       final EventListener listener)
   {
+    return createVerticalSlider (min, max, sliderStepSize, createSliderStyle (style), listener);
+  }
+
+  @Override
+  public Slider createVerticalSlider (final int min,
+                                      final int max,
+                                      final int sliderStepSize,
+                                      final Slider.SliderStyle style,
+                                      final EventListener listener)
+  {
     Arguments.checkIsNotNull (style, "style");
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Slider slider = new Slider (min, max, sliderStepSize, true, createSliderStyle (style));
+    final Slider slider = new Slider (min, max, sliderStepSize, true, style);
     slider.addListener (listener);
 
     return slider;
@@ -629,7 +652,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   @Override
   public Drawable createMessageBoxRowHighlightingDrawable ()
   {
-    return new TextureRegionDrawable (createTextureRegion ("message-box-row-highlighting"));
+    return new TextureRegionDrawable (createTextureRegion (MESSAGE_BOX_ROW_HIGHLIGHTING_DRAWABLE_NAME));
   }
 
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)

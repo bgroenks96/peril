@@ -54,11 +54,12 @@ import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
+import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.popup.Popup;
-import com.forerunnergames.peril.client.ui.widgets.popup.PopupListenerAdapter;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.settings.CrashSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -76,6 +77,7 @@ import org.slf4j.LoggerFactory;
 public final class SplashScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (SplashScreen.class);
+  private static final String LOADING_LABEL_TEXT = "LOADING";
   private static final float ONE_THIRD = 1.0f / 3.0f;
   private static final float TWO_THIRDS = 2.0f / 3.0f;
   private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
@@ -91,8 +93,8 @@ public final class SplashScreen extends InputAdapter implements Screen
   private final Stage stage;
   private final InputProcessor inputProcessor;
   private final ProgressBar progressBar;
-  private final Popup quitPopup;
-  private final Popup errorPopup;
+  private final Dialog quitDialog;
+  private final Dialog errorDialog;
   private final int windowWidth;
   private final int windowHeight;
   private final Label loadingStatusTextLabel;
@@ -141,16 +143,19 @@ public final class SplashScreen extends InputAdapter implements Screen
     rootStack.setFillParent (true);
     rootStack.add (background);
 
-    loadingStatusTextLabel = widgetFactory.createLabel ("", Align.left, "loading-status-text");
+    loadingStatusTextLabel = widgetFactory.createLabel ("", Align.left,
+                                                        StyleSettings.LOADING_SCREEN_LOADING_STATUS_TEXT_LABEL_STYLE);
 
+    // @formatter:off
     final Table foregroundTable = new Table ().top ();
     foregroundTable.add ().height (394);
     foregroundTable.row ();
-    foregroundTable.add (widgetFactory.createLabel ("LOADING", Align.center, "loading-text")).size (560, 62);
+    foregroundTable.add (widgetFactory.createLabel (LOADING_LABEL_TEXT, Align.center, StyleSettings.LOADING_SCREEN_LOADING_TEXT_LABEL_STYLE)).size (560, 62);
     foregroundTable.row ().bottom ();
     foregroundTable.add (progressBar).size (560, 20).padBottom (10);
     foregroundTable.row ();
     foregroundTable.add (loadingStatusTextLabel);
+    // @formatter:on
 
     rootStack.add (foregroundTable);
 
@@ -161,7 +166,7 @@ public final class SplashScreen extends InputAdapter implements Screen
     stage = new Stage (viewport, batch);
 
     // @formatter:off
-    quitPopup = widgetFactory.createQuitPopup ("Are you sure you want to quit Peril?", stage, new PopupListenerAdapter ()
+    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit Peril?", stage, new DialogListenerAdapter ()
     {
       @Override
       public void onSubmit ()
@@ -171,7 +176,7 @@ public final class SplashScreen extends InputAdapter implements Screen
     });
     // @formatter:on
 
-    errorPopup = widgetFactory.createErrorPopup (stage, new PopupListenerAdapter ()
+    errorDialog = widgetFactory.createErrorDialog (stage, new DialogListenerAdapter ()
     {
       @Override
       public void onSubmit ()
@@ -206,7 +211,7 @@ public final class SplashScreen extends InputAdapter implements Screen
         {
           case Input.Keys.ESCAPE:
           {
-            quitPopup.show ();
+            quitDialog.show ();
 
             return false;
           }
@@ -245,8 +250,8 @@ public final class SplashScreen extends InputAdapter implements Screen
 
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
 
-    quitPopup.refreshAssets ();
-    errorPopup.refreshAssets ();
+    quitDialog.refreshAssets ();
+    errorDialog.refreshAssets ();
 
     startLoading ();
   }
@@ -257,13 +262,13 @@ public final class SplashScreen extends InputAdapter implements Screen
     Gdx.gl.glClearColor (0, 0, 0, 1);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
-    quitPopup.update (delta);
-    errorPopup.update (delta);
+    quitDialog.update (delta);
+    errorDialog.update (delta);
 
     stage.act (delta);
     stage.draw ();
 
-    if (!isLoading || errorPopup.isShown ()) return;
+    if (!isLoading || errorDialog.isShown ()) return;
 
     updateLoadingProgress ();
 
@@ -312,8 +317,8 @@ public final class SplashScreen extends InputAdapter implements Screen
       assetManager.unload (descriptor);
     }
 
-    quitPopup.hide (null);
-    errorPopup.hide (null);
+    quitDialog.hide (null);
+    errorDialog.hide (null);
 
     setNextScreenDisplayMode ();
   }
@@ -338,8 +343,7 @@ public final class SplashScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        handleErrorDuringLoading (Strings.format (
-                                                  "A crash file has been created in \"{}\".\n\nThere was a problem "
+        handleErrorDuringLoading (Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem "
                                                           + "loading a game resource.\n\nResource Name: {}\n"
                                                           + "Resource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                                                   CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
@@ -432,10 +436,9 @@ public final class SplashScreen extends InputAdapter implements Screen
     {
       log.debug ("Found available display mode for current monitor: {}", availableMode);
 
-      if (availableMode.width > bestMode.width && availableMode.height > bestMode.height
-              || (availableMode.width >= bestMode.width && availableMode.height >= bestMode.height
-                      && (availableMode.bitsPerPixel > bestMode.bitsPerPixel
-                              || availableMode.refreshRate > bestMode.refreshRate)))
+      if (availableMode.width > bestMode.width
+              && availableMode.height > bestMode.height
+              || (availableMode.width >= bestMode.width && availableMode.height >= bestMode.height && (availableMode.bitsPerPixel > bestMode.bitsPerPixel || availableMode.refreshRate > bestMode.refreshRate)))
       {
         bestMode = availableMode;
         log.debug ("Best available display mode found so far for current monitor: {}", bestMode);
@@ -456,12 +459,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     {
       if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
       {
-        throw new IllegalStateException (Strings.format (
-                                                         "Cannot auto-join & auto-create a multiplayer game simultaneously.\n\n"
-                                                                 + "Please disable either '{}', '{}', or both in:\n\n{}.",
-                                                         ClientApplicationProperties.AUTO_JOIN_MULTIPLAYER_GAME_KEY,
-                                                         ClientApplicationProperties.AUTO_CREATE_MULTIPLAYER_GAME_KEY,
-                                                         ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
+        throw new IllegalStateException (
+                Strings.format ("Cannot auto-join & auto-create a multiplayer game simultaneously.\n\n"
+                                        + "Please disable either '{}', '{}', or both in:\n\n{}.",
+                                ClientApplicationProperties.AUTO_JOIN_MULTIPLAYER_GAME_KEY,
+                                ClientApplicationProperties.AUTO_CREATE_MULTIPLAYER_GAME_KEY,
+                                ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
       }
       else if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
       {
@@ -482,12 +485,11 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final GdxRuntimeException e)
     {
-      handleErrorDuringLoading (Strings.format (
-                                                "A crash file has been created in \"{}\".\n\nThe application "
+      handleErrorDuringLoading (Strings.format ("A crash file has been created in \"{}\".\n\nThe application "
                                                         + "encountered a problem.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                                                Throwables.getRootCause (e).getMessage (),
-                                                Throwables.getStackTraceAsString (e)));
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
+                                                        .getRootCause (e).getMessage (), Throwables
+                                                        .getStackTraceAsString (e)));
     }
   }
 
@@ -501,8 +503,8 @@ public final class SplashScreen extends InputAdapter implements Screen
   {
     log.error (message);
 
-    errorPopup.setMessage (new DefaultMessage (message));
-    errorPopup.show ();
+    errorDialog.setMessage (new DefaultMessage (message));
+    errorDialog.show ();
 
     shutDownAllLoading ();
   }
@@ -527,12 +529,11 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final RuntimeException e)
     {
-      handleErrorDuringLoading (Strings.format (
-                                                "A crash file has been created in \"{}\".\n\nThere was a problem "
-                                                        + "updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                                                Throwables.getRootCause (e).getMessage (),
-                                                Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings
+              .format ("A crash file has been created in \"{}\".\n\nThere was a problem "
+                               + "updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                       CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -552,12 +553,11 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final RuntimeException e)
     {
-      handleErrorDuringLoading (Strings.format (
-                                                "A crash file has been created in \"{}\".\n\nThere was a problem "
-                                                        + "loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                                                Throwables.getRootCause (e).getMessage (),
-                                                Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings
+              .format ("A crash file has been created in \"{}\".\n\nThere was a problem "
+                               + "loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                       CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -578,7 +578,7 @@ public final class SplashScreen extends InputAdapter implements Screen
 
   private boolean isFinishedLoading ()
   {
-    if (errorPopup.isShown ()) return false;
+    if (errorDialog.isShown ()) return false;
 
     if (!isLoading)
     {
@@ -596,7 +596,8 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
-    currentLoadingProgressPercent = assetUpdater.getProgressPercent () * ASSET_UPDATING_PROGRESS_WEIGHT
+    currentLoadingProgressPercent = assetUpdater.getProgressPercent ()
+            * ASSET_UPDATING_PROGRESS_WEIGHT
             + (isLoadingUpdatedAssets ? assetManager.getProgressLoading () * UPDATED_ASSET_LOADING_PROGRESS_WEIGHT
                     : 0.0f);
 
