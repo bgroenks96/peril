@@ -193,7 +193,7 @@ public final class MultiplayerController extends ControllerAdapter
     return clientsInServer.contains (client);
   }
 
-  // <<<<< inbound events from core module >>>>> //
+  // ---------- inbound events from core module ---------- //
 
   @Handler
   public void onEvent (final PlayerJoinGameSuccessEvent event)
@@ -331,7 +331,7 @@ public final class MultiplayerController extends ControllerAdapter
     sendToPlayer (event.getPlayer (), event);
   }
 
-  // <<<<< remote inbound/outbound event communication >>>>> //
+  // ---------- remote inbound/outbound event communication ---------- //
 
   @Handler
   public void onEvent (final ClientConnectionEvent event)
@@ -627,7 +627,7 @@ public final class MultiplayerController extends ControllerAdapter
     handlePlayerResponseTo (event.getRequestType (), event, player);
   }
 
-  // <<<<< internal event utility methods and types >>>>>> //
+  // ---------- internal event utility methods and types ---------- //
 
   private static boolean isLocalHost (final Remote client)
   {
