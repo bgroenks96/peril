@@ -32,9 +32,9 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Exceptions;
+import com.forerunnergames.tools.common.MutatorResult;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Randomness;
-import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -174,9 +174,9 @@ public final class DefaultBattleModel implements BattleModel
     for (int i = 0; i < maxDieCount; i++)
     {
       // Guard:
-      //   We ran out of attacker dice, but there is an extra defender die.
-      //   Keep its value, but make it lose; the dice are sorted lowest to highest, so this is a loser / bottom feeder.
-      //   The battle state is unaffected by such die rolls, so we can skip the rest of the loop iteration.
+      // We ran out of attacker dice, but there is an extra defender die.
+      // Keep its value, but make it lose; the dice are sorted lowest to highest, so this is a loser / bottom feeder.
+      // The battle state is unaffected by such die rolls, so we can skip the rest of the loop iteration.
       if (i >= attackerRoll.size ())
       {
         defenderRolls.add (new DieRoll (defenderRoll.get (i), DieOutcome.LOSE));
@@ -184,9 +184,9 @@ public final class DefaultBattleModel implements BattleModel
       }
 
       // Guard:
-      //   We ran out of defender dice, but there is an extra attacker die.
-      //   Keep its value, but make it lose; the dice are sorted lowest to highest, so this is a loser / bottom feeder.
-      //   The battle state is unaffected by such die rolls, so we can skip the rest of the loop iteration.
+      // We ran out of defender dice, but there is an extra attacker die.
+      // Keep its value, but make it lose; the dice are sorted lowest to highest, so this is a loser / bottom feeder.
+      // The battle state is unaffected by such die rolls, so we can skip the rest of the loop iteration.
       if (i >= defenderRoll.size ())
       {
         attackerRolls.add (new DieRoll (attackerRoll.get (i), DieOutcome.LOSE));
@@ -197,31 +197,36 @@ public final class DefaultBattleModel implements BattleModel
       final DieFaceValue attackerDieValue = attackerRoll.get (i);
       final DieFaceValue defenderDieValue = defenderRoll.get (i);
       final DieOutcome attackerOutcome = rules.determineAttackerOutcome (attackerDieValue, defenderDieValue);
-      final DieOutcome defenderOutcome = rules.determineDefenderOutcome (attackerDieValue, defenderDieValue);
+      final DieOutcome defenderOutcome = rules.determineDefenderOutcome (defenderDieValue, attackerDieValue);
 
       // remove armies from losing battles if the battle has not already been finished
       // i.e. if both parties have not yet depleted all available armies
       if (attackerOutcome == DieOutcome.LOSE && !battleFinished)
       {
-        final Result <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (attackerCountry, 1);
+        final MutatorResult <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (attackerCountry, 1);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to remove army from attacking country [id={}] | Reason: {}",
                                         attackerCountry, result.getFailureReason ());
         }
+
+        result.commitIfSuccessful ();
       }
 
       if (defenderOutcome == DieOutcome.LOSE && !battleFinished)
       {
-        final Result <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (defenderCountry, 1);
+        final MutatorResult <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (defenderCountry, 1);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to remove army from defending country [id={}] | Reason: {}",
                                         attackerCountry, result.getFailureReason ());
         }
+
+        result.commitIfSuccessful ();
+
         if (countryArmyModel.armyCountIs (0, defenderCountry))
         {
-          final Result <?> reassignmentResult;
+          final MutatorResult <?> reassignmentResult;
           reassignmentResult = countryOwnerModel.requestToAssignCountryOwner (defenderCountry,
                                                                               attackOrder.getPlayerId ());
           if (reassignmentResult.failed ())
@@ -229,6 +234,8 @@ public final class DefaultBattleModel implements BattleModel
             Exceptions.throwIllegalState ("Failed to re-assign owner of defending country | Reason: {}",
                                           reassignmentResult.getFailureReason ());
           }
+
+          reassignmentResult.commitIfSuccessful ();
         }
       }
 

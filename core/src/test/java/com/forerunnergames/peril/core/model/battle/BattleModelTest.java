@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent.Reason;
@@ -265,6 +267,29 @@ public class BattleModelTest
     final BattleResult battleResult = battleModel.generateResultFor (mockOrder, defenderDieCount, playerModel,
                                                                      playMapModel);
     assertNotNull (battleResult);
+
+    final ImmutableList <DieRoll> attackerRolls = battleResult.getAttackerRolls ();
+    final ImmutableList <DieRoll> defenderRolls = battleResult.getDefenderRolls ();
+    final int maxRollCount = Math.max (attackerRolls.size (), defenderRolls.size ());
+    for (int i = 0; i < maxRollCount; i++)
+    {
+      if (i >= attackerRolls.size ())
+      {
+        assertEquals (DieOutcome.LOSE, defenderRolls.get (i).getOutcome ());
+        continue;
+      }
+      if (i >= defenderRolls.size ())
+      {
+        assertEquals (DieOutcome.LOSE, attackerRolls.get (i).getOutcome ());
+        continue;
+      }
+      final DieRoll attackerRoll = attackerRolls.get (i);
+      final DieRoll defenderRoll = defenderRolls.get (i);
+      final boolean attackerWin = attackerRoll.getDieValue ().compareTo (defenderRoll.getDieValue ()) > 0;
+      assertEquals (attackerWin, attackerRoll.getOutcome () == DieOutcome.WIN);
+      assertEquals (attackerWin, defenderRoll.getOutcome () == DieOutcome.LOSE);
+    }
+
     assertEquals (player0, battleResult.getAttacker ().getPlayerId ());
     assertEquals (sourceCountry, battleResult.getAttacker ().getCountryId ());
     assertEquals (player1, battleResult.getDefender ().getPlayerId ());
@@ -303,6 +328,89 @@ public class BattleModelTest
     final BattleResult battleResult = battleModel.generateResultFor (mockOrder, defenderDieCount, playerModel,
                                                                      playMapModel);
     assertNotNull (battleResult);
+
+    final ImmutableList <DieRoll> attackerRolls = battleResult.getAttackerRolls ();
+    final ImmutableList <DieRoll> defenderRolls = battleResult.getDefenderRolls ();
+    final int maxRollCount = Math.max (attackerRolls.size (), defenderRolls.size ());
+    for (int i = 0; i < maxRollCount; i++)
+    {
+      if (i >= attackerRolls.size ())
+      {
+        assertEquals (DieOutcome.LOSE, defenderRolls.get (i).getOutcome ());
+        continue;
+      }
+      if (i >= defenderRolls.size ())
+      {
+        assertEquals (DieOutcome.LOSE, attackerRolls.get (i).getOutcome ());
+        continue;
+      }
+      final DieRoll attackerRoll = attackerRolls.get (i);
+      final DieRoll defenderRoll = defenderRolls.get (i);
+      final boolean attackerWin = attackerRoll.getDieValue ().compareTo (defenderRoll.getDieValue ()) > 0;
+      assertEquals (attackerWin, attackerRoll.getOutcome () == DieOutcome.WIN);
+      assertEquals (attackerWin, defenderRoll.getOutcome () == DieOutcome.LOSE);
+    }
+
+    assertEquals (player0, battleResult.getAttacker ().getPlayerId ());
+    assertEquals (sourceCountry, battleResult.getAttacker ().getCountryId ());
+    assertEquals (player1, battleResult.getDefender ().getPlayerId ());
+    assertEquals (targetCountry, battleResult.getDefender ().getCountryId ());
+  }
+
+  @Test
+  public void testGenerateResultForBattleAttackerFewerDice ()
+  {
+    final PlayMapModel playMapModel = mockPlayMapModel ();
+    final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
+    final PlayerFactory factory = new PlayerFactory ();
+    factory.newPlayerWith ("TestPlayer0");
+    factory.newPlayerWith ("TestPlayer1");
+    assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
+    final Id player0 = playerModel.playerWith ("TestPlayer0");
+    final Id player1 = playerModel.playerWith ("TestPlayer1");
+    final ImmutableList <Id> countries = getTestCountryIds ();
+
+    // prepare owner/army state; source country is 0
+    final int countryArmyCount = 5 * gameRules.getMinArmiesOnCountryForAttack ();
+    final PlayMapStateBuilder playMapBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapBuilder.forCountries (countries.subList (0, 2)).setOwner (player0).addArmies (countryArmyCount);
+    playMapBuilder.forCountries (countries.subList (2, countries.size ())).setOwner (player1)
+            .addArmies (countryArmyCount);
+
+    final Id sourceCountry = countries.get (0);
+    final Id targetCountry = countries.get (2);
+    final int attackerDieCount = gameRules.getMinAttackerDieCount (countryArmyCount);
+    final int defenderDieCount = gameRules.getMaxDefenderDieCount (countryArmyCount);
+    final AttackOrder mockOrder = battleModel
+            .newPlayerAttackOrder (player0, sourceCountry, targetCountry, attackerDieCount, playMapModel)
+            .getReturnValue ();
+
+    final BattleResult battleResult = battleModel.generateResultFor (mockOrder, defenderDieCount, playerModel,
+                                                                     playMapModel);
+    assertNotNull (battleResult);
+
+    final ImmutableList <DieRoll> attackerRolls = battleResult.getAttackerRolls ();
+    final ImmutableList <DieRoll> defenderRolls = battleResult.getDefenderRolls ();
+    final int maxRollCount = Math.max (attackerRolls.size (), defenderRolls.size ());
+    for (int i = 0; i < maxRollCount; i++)
+    {
+      if (i >= attackerRolls.size ())
+      {
+        assertEquals (DieOutcome.LOSE, defenderRolls.get (i).getOutcome ());
+        continue;
+      }
+      if (i >= defenderRolls.size ())
+      {
+        assertEquals (DieOutcome.LOSE, attackerRolls.get (i).getOutcome ());
+        continue;
+      }
+      final DieRoll attackerRoll = attackerRolls.get (i);
+      final DieRoll defenderRoll = defenderRolls.get (i);
+      final boolean attackerWin = attackerRoll.getDieValue ().compareTo (defenderRoll.getDieValue ()) > 0;
+      assertEquals (attackerWin, attackerRoll.getOutcome () == DieOutcome.WIN);
+      assertEquals (attackerWin, defenderRoll.getOutcome () == DieOutcome.LOSE);
+    }
+
     assertEquals (player0, battleResult.getAttacker ().getPlayerId ());
     assertEquals (sourceCountry, battleResult.getAttacker ().getCountryId ());
     assertEquals (player1, battleResult.getDefender ().getPlayerId ());
