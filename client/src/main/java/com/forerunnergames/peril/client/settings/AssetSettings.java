@@ -183,7 +183,7 @@ public final class AssetSettings
 
   // Play Screen
   public static final AssetDescriptor <Music> PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/shared/music/escalation.mp3", Music.class);
+          "screens/game/play/modes/shared/music/escalation.ogg", Music.class);
 
   // Classic Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -196,7 +196,7 @@ public final class AssetSettings
   public static final AssetDescriptor <Sound> CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/sounds/artillery_explosion07_48k.wav", Sound.class);
   public static final AssetDescriptor <Music> CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/sounds/war_ambience_distant_01_120_48k_eq.wav", Music.class);
+          "screens/game/play/modes/classic/sounds/war_ambience_distant_01_120_48k_eq.ogg", Music.class);
 
   // Peril Mode Play Screen
   public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
