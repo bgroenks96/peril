@@ -62,6 +62,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.SkipPlaye
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
@@ -461,6 +462,27 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (PlayerClaimCountryRequestEvent.class));
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
+  }
+
+  @Test
+  public void testWaitForInitialReinforcementSkipsPlayersWithZeroArmies ()
+  {
+    addMaxPlayers ();
+
+    // add armies to player hands
+    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+
+    gameModel.waitForPlayersToReinforceInitialCountries ();
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerReinforceInitialCountryRequestEvent.class));
+    assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
+
+    eventHandler.clearEvents ();
+    gameModel.advanceTurn ();
+
+    gameModel.waitForPlayersToReinforceInitialCountries ();
+    assertTrue (eventHandler.wasNeverFired (PlayerReinforceInitialCountryRequestEvent.class));
+    assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
+    assertTrue (eventHandler.lastEventWasType (SkipPlayerTurnEvent.class));
   }
 
   @Test
@@ -1024,7 +1046,7 @@ public class GameModelTest
   {
     assertTrue (gameModel.playerLimitIs (maxPlayers));
 
-    for (int i = 1; i <= playerLimit; ++i)
+    for (int i = 1; i <= playerLimit; i++)
     {
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
     }

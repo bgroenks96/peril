@@ -605,6 +605,14 @@ public final class GameModel
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
 
+    if (playerModel.getArmiesInHand (playerId) == 0)
+    {
+      log.trace ("Player [{}] has no armies remaining in hand. Skipping...");
+
+      publish (new SkipPlayerTurnEvent (player));
+      return;
+    }
+
     log.trace ("Waiting for [{}] to place initial reinforcements...", player);
 
     // add country reinforcements and publish event
