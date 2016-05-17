@@ -1,5 +1,22 @@
+/*
+ * Copyright © 2011 - 2013 Aaron Mahan.
+ * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 android {
-  buildToolsVersion "23.0.2"
+  buildToolsVersion '23.0.3'
   compileSdkVersion 23
 
   defaultConfig {
@@ -40,36 +57,22 @@ android {
   }
 }
 
-/*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
 // so they get packed with the APK.
 task copyAndroidNatives () {
   file ("libs/armeabi/").mkdirs ();
   file ("libs/armeabi-v7a/").mkdirs ();
+  file ("libs/arm64-v8a/").mkdirs ();
+  file ("libs/x86_64/").mkdirs ();
   file ("libs/x86/").mkdirs ();
 
   configurations.natives.files.each { jar ->
     def outputDir = null
-    if (jar.name.endsWith ("natives-armeabi-v7a.jar")) outputDir = file ("libs/armeabi-v7a")
     if (jar.name.endsWith ("natives-armeabi.jar")) outputDir = file ("libs/armeabi")
+    if (jar.name.endsWith ("natives-armeabi-v7a.jar")) outputDir = file ("libs/armeabi-v7a")
+    if (jar.name.endsWith ("natives-arm64-v8a.jar")) outputDir = file ("libs/arm64-v8a")
+    if (jar.name.endsWith ("natives-x86_64.jar")) outputDir = file ("libs/x86_64")
     if (jar.name.endsWith ("natives-x86.jar")) outputDir = file ("libs/x86")
     if (outputDir != null) {
       copy {
