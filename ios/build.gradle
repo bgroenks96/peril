@@ -25,10 +25,11 @@ ext {
   mainClassName = "com.forerunnergames.peril.ios.IOSLauncher"
 }
 
-launchIPhoneSimulator.dependsOn build
-launchIPadSimulator.dependsOn build
-launchIOSDevice.dependsOn build
-createIPA.dependsOn build
+// TODO iOS build broken due to https://github.com/MobiDevelop/robovm/issues/13
+//launchIPhoneSimulator.dependsOn build
+//launchIPadSimulator.dependsOn build
+//launchIOSDevice.dependsOn build
+//createIPA.dependsOn build
 
 eclipse.project {
   name = appName + "-ios"
