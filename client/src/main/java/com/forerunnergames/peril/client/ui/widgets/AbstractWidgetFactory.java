@@ -45,6 +45,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -89,10 +90,11 @@ import net.engio.mbassy.bus.MBassador;
 public abstract class AbstractWidgetFactory implements WidgetFactory
 {
   private static final String MESSAGE_BOX_ROW_HIGHLIGHTING_DRAWABLE_NAME = "message-box-row-highlighting";
+  private static final String CHATBOX_BACKGROUND_DRAWABLE_NAME = "chat-box-borders";
   private static final int DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT = Align.left;
   private static final int DEFAULT_MESSAGE_BOX_ROW_HEIGHT = 24;
-  private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT = 12;
-  private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT = 12;
+  private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT = 14;
+  private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT = 14;
   private static final int DEFAULT_MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
   private static final int DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
@@ -455,7 +457,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
 
     return new DefaultMessageBox <> (this, scrollPaneStyleName, scrollbarStyle, new MessageBoxRowStyle (
             rowLabelStyleName, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
-            DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT));
+            DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT), new Padding (0, 0, 2, 2), new Padding (0, 0, 6, 6));
   }
 
   @Override
@@ -463,7 +465,8 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
 
-    return new DefaultMessageBox <> (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, STATUS_BOX_ROW_STYLE);
+    return new DefaultMessageBox <> (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, STATUS_BOX_ROW_STYLE,
+            new Padding (0, 0, 2, 2), new Padding (0, 0, 6, 6));
   }
 
   @Override
@@ -660,6 +663,12 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   public Drawable createMessageBoxRowHighlightingDrawable ()
   {
     return new TextureRegionDrawable (createTextureRegion (MESSAGE_BOX_ROW_HIGHLIGHTING_DRAWABLE_NAME));
+  }
+
+  @Override
+  public Drawable createChatBoxBackgroundDrawable ()
+  {
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (CHATBOX_BACKGROUND_DRAWABLE_NAME));
   }
 
   protected final <T> T getAsset (final AssetDescriptor <T> assetDescriptor)

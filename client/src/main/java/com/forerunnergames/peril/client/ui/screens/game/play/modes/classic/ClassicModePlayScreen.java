@@ -18,12 +18,6 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
-import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -73,6 +67,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.controlroombox.ControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.AbstractBattleDialogListener;
@@ -80,7 +75,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
@@ -118,6 +113,12 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
+import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
+
 public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
@@ -128,11 +129,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final MBassador <Event> eventBus;
   private final DebugEventGenerator debugEventGenerator;
   private final Stage stage;
-  private final Image backgroundImage;
+  private final Image playMapTableForegroundImage;
+  private final Table playMapTable;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
-  private final SideBar sideBar;
+  private final IntelBox intelBox;
+  private final ControlRoomBox controlRoomBox;
   private final InputProcessor inputProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
   private final OccupationDialog occupationDialog;
@@ -173,29 +176,111 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     this.debugEventGenerator = debugEventGenerator;
 
     normalCursor = widgetFactory.createNormalCursor ();
-    backgroundImage = widgetFactory.createBackgroundImage ();
+    playMapTableForegroundImage = widgetFactory.createPlayMapTableForegroundImage ();
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
-    sideBar = widgetFactory.createSideBar (eventBus);
+
+    intelBox = widgetFactory.createIntelBox (new ClickListener ()
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Implement detailed report button.
+        // TODO Production: Remove.
+        eventBus.publish (StatusMessageEventFactory.create ("Detailed Report button clicked."));
+      }
+    });
+
+    controlRoomBox = widgetFactory.createControlRoomBox (
+            new ClickListener ()
+            {
+              @Override
+              public void clicked (final InputEvent event, final float x, final float y)
+              {
+                // TODO Implement trade-in button.
+                // TODO Production: Remove.
+                eventBus.publish (StatusMessageEventFactory.create ("Purchase Reinforcements button clicked."));
+              }
+            },
+            new ClickListener ()
+            {
+              @Override
+              public void clicked (final InputEvent event, final float x, final float y)
+              {
+                // TODO Implement fortify button.
+                // TODO Production: Remove.
+                eventBus.publish (StatusMessageEventFactory.create ("Post-Combat Maneuver button clicked."));
+              }
+            },
+            new ClickListener ()
+            {
+              @Override
+              public void clicked (final InputEvent event, final float x, final float y)
+              {
+                // TODO Implement end turn button.
+                // TODO Production: Remove.
+                eventBus.publish (StatusMessageEventFactory.create ("End Turn button clicked."));
+              }
+            },
+            new ClickListener ()
+            {
+              @Override
+              public void clicked (final InputEvent event, final float x, final float y)
+              {
+                // TODO Implement my settings button.
+                // TODO Production: Remove.
+                eventBus.publish (StatusMessageEventFactory.create ("My Settings button clicked."));
+              }
+            },
+            new ClickListener ()
+            {
+              @Override
+              public void clicked (final InputEvent event, final float x, final float y)
+              {
+                // TODO Implement surrender button.
+                // TODO Production: Remove.
+                eventBus.publish (StatusMessageEventFactory.create ("Surrender button clicked."));
+              }
+            });
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
-    rootStack.add (backgroundImage);
 
-    final Table playMapAndSideBarTable = new Table ();
-    playMapCell = playMapAndSideBarTable.add (playMap.asActor ())
-            .size (PlayMapSettings.ACTUAL_WIDTH, PlayMapSettings.ACTUAL_HEIGHT).padRight (16);
-    playMapAndSideBarTable.add (sideBar).top ();
+    // @formatter:off
+    final Stack playMapTableStack = new Stack ();
+    playMapTable = new Table ().top ().left ().pad (4);
+    playMapCell = playMapTable.add (playMap.asActor ()).expand ().fill ();
+    playMapTableStack.add (playMapTable);
+    playMapTableStack.add (playMapTableForegroundImage);
+    // @formatter:on
 
-    final Table foregroundTable = new Table ().pad (12);
-    foregroundTable.add (playMapAndSideBarTable).colspan (3).left ();
-    foregroundTable.row ().expandY ().padTop (16 + 2);
-    foregroundTable.add (statusBox.asActor ()).width (714).height (252 - 2 - 2).padRight (16).padBottom (2);
-    foregroundTable.add (chatBox.asActor ()).width (714).height (252 - 2).padRight (16);
-    foregroundTable.add (playerBox.asActor ()).width (436).height (252 - 2 - 2).padBottom (2);
+    final Table sideBarTable = new Table ().top ().left ();
+    sideBarTable.add (intelBox.asActor ()).size (296, 484).spaceBottom (6).fill ();
+    sideBarTable.row ();
+    sideBarTable.add (controlRoomBox.asActor ()).size (296, 318).spaceTop (6).fill ();
+    //sideBarTable.debugAll ();
 
-    rootStack.add (foregroundTable);
+    // @formatter:off
+    final Table topTable = new Table ().top ().left ();
+    topTable.add (playMapTableStack).size (PlayMapSettings.ACTUAL_WIDTH + 8, PlayMapSettings.ACTUAL_HEIGHT + 8).spaceRight (6).fill ();
+    topTable.add (sideBarTable).spaceLeft (6).size (296, PlayMapSettings.ACTUAL_HEIGHT + 8).fill ();
+    //topTable.debugAll ();
+    // @formatter:on
+
+    final Table bottomTable = new Table ().top ().left ();
+    bottomTable.add (statusBox.asActor ()).size (700, 256).spaceRight (6).fill ();
+    bottomTable.add (chatBox.asActor ()).size (700, 256).spaceLeft (6).spaceRight (6).fill ();
+    bottomTable.add (playerBox.asActor ()).size (498, 256).spaceLeft (6).fill ();
+    //bottomTable.debugAll ();
+
+    final Table screenTable = new Table ().top ().left ().pad (5);
+    screenTable.add (topTable).height (808).left ().spaceBottom (6).fill ();
+    screenTable.row ().spaceTop (6);
+    screenTable.add (bottomTable).height (256).fill ();
+    // screenTable.debugAll ();
+
+    rootStack.add (screenTable);
 
     final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
     final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
@@ -305,12 +390,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     stage.mouseMoved (mouseInput.x (), mouseInput.y ());
     playMap.mouseMoved (mouseInput.position ());
 
-    backgroundImage.setDrawable (widgetFactory.createBackgroundImageDrawable ());
+    playMapTableForegroundImage.setDrawable (widgetFactory.createPlayMapTableForegroundImageDrawable ());
 
+    intelBox.refreshAssets ();
+    controlRoomBox.refreshAssets ();
     statusBox.refreshAssets ();
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
-    sideBar.refreshAssets ();
 
     for (final Dialog dialog : dialogs)
     {
@@ -323,7 +409,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   @Override
   public void render (final float delta)
   {
-    Gdx.gl.glClearColor (0, 0, 0, 1);
+    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
     keyRepeat.update ();
@@ -367,6 +453,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     hideCursor ();
 
+    intelBox.clear ();
     chatBox.clear ();
     statusBox.clear ();
     playerBox.clear ();
@@ -426,6 +513,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         updatePlayMap (event.getPlayMap ());
+        intelBox.setMapMetadata (event.getMapMetadata ());
+        intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
+        intelBox.setClientConfiguration (event.getClientConfiguration ());
         playerBox.setPlayers (event.getPlayersInGame ());
         debugEventGenerator.makePlayersUnavailable (event.getPlayersInGame ());
       }
@@ -483,6 +573,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         playerBox.addPlayer (playerFrom (event));
+        intelBox.setPlayer (event.getPlayer ());
         debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
       }
     });
@@ -649,6 +740,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   {
     this.playMap = playMap;
     playMapCell.setActor (this.playMap.asActor ());
+    intelBox.setMapMetadata (playMap.getMapMetadata ());
     debugInputProcessor.setPlayMap (this.playMap);
   }
 
@@ -659,6 +751,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     widgetFactory.destroyPlayMap (playMap.getMapMetadata ());
     playMap = PlayMap.NULL_PLAY_MAP;
     playMapCell.setActor (playMap.asActor ());
+    intelBox.setMapMetadata (playMap.getMapMetadata ());
     debugInputProcessor.setPlayMap (playMap);
   }
 

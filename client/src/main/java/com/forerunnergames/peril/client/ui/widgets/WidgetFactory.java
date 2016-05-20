@@ -198,4 +198,6 @@ public interface WidgetFactory
   MessageBoxRowHighlighting createMessageBoxRowHighlighting ();
 
   Drawable createMessageBoxRowHighlightingDrawable ();
+
+  Drawable createChatBoxBackgroundDrawable ();
 }

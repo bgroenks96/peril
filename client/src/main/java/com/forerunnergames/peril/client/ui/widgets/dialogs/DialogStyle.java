@@ -27,7 +27,6 @@ import com.forerunnergames.tools.common.Arguments;
 public final class DialogStyle
 {
   public static final int DEFAULT_MESSAGE_BOX_ROW_LABEL_ALIGNMENT = Align.topLeft;
-  public static final String DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE_NAME = "default";
   public static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.OPTIONAL, 14, 14);
   public static final String DEFAULT_TITLE = "";
@@ -372,7 +371,7 @@ public final class DialogStyle
     private String textButtonStyleName = StyleSettings.DEFAULT_DIALOG_TEXT_BUTTON_STYLE;
     private String messageBoxRowLabelStyleName = StyleSettings.DEFAULT_DIALOG_MESSAGE_BOX_ROW_LABEL_STYLE;
     private int messageBoxRowLabelAlignment = DEFAULT_MESSAGE_BOX_ROW_LABEL_ALIGNMENT;
-    private String messageBoxScrollPaneStyleName = DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE_NAME;
+    private String messageBoxScrollPaneStyleName = StyleSettings.DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE;
     private ScrollbarStyle messageBoxScrollbarStyle = DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE;
     private String title = DEFAULT_TITLE;
     private int titleHeight = DEFAULT_TITLE_HEIGHT;

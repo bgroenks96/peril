@@ -20,7 +20,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widg
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -31,7 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
@@ -39,6 +38,8 @@ import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.controlroombox.ControlRoomBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.controlroombox.DefaultControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.BattleDialogListener;
@@ -46,8 +47,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBar;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.sidebar.SideBarButton;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.intelbox.DefaultIntelBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
@@ -67,6 +68,11 @@ import net.engio.mbassy.bus.MBassador;
 public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFactory
 {
   private static final int ARMY_MOVEMENT_DIALOG_SLIDER_STEP_SIZE = 1;
+  private static final String PLAY_MAP_TABLE_FOREGROUND_DRAWABLE_NAME = "play-map-borders";
+  private static final String INTEL_BOX_BACKGROUND_DRAWABLE_NAME = "side-bar-borders";
+  private static final String INTEL_BOX_TITLE_BACKGROUND_DRAWABLE_NAME = "side-bar-title-background";
+  private static final String CONTROL_ROOM_BOX_BACKGROUND_DRAWABLE_NAME = "side-bar-borders";
+  private static final String CONTROL_ROOM_BOX_TITLE_BACKGROUND_DRAWABLE_NAME = "side-bar-title-background";
   private final PlayMapFactory playMapFactory;
   private final BattleDialogWidgetFactory battleDialogWidgetFactory;
 
@@ -89,15 +95,34 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return AssetSettings.CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR;
   }
 
-  public Image createBackgroundImage ()
+  public Image createPlayMapTableForegroundImage ()
   {
-    return new Image (createBackgroundImageDrawable ());
+    return new Image (createPlayMapTableForegroundImageDrawable ());
   }
 
-  public Drawable createBackgroundImageDrawable ()
+  public Drawable createPlayMapTableForegroundImageDrawable ()
   {
-    return new TextureRegionDrawable (new TextureRegion (
-            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR)));
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (PLAY_MAP_TABLE_FOREGROUND_DRAWABLE_NAME));
+  }
+
+  public Drawable createIntelBoxBackgroundDrawable ()
+  {
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (INTEL_BOX_BACKGROUND_DRAWABLE_NAME));
+  }
+
+  public Drawable createIntelBoxTitleBackgroundDrawable ()
+  {
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (INTEL_BOX_TITLE_BACKGROUND_DRAWABLE_NAME));
+  }
+
+  public Drawable createControlRoomBoxBackgroundDrawable ()
+  {
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (CONTROL_ROOM_BOX_BACKGROUND_DRAWABLE_NAME));
+  }
+
+  public Drawable createControlRoomBoxTitleBackgroundDrawable ()
+  {
+    return new NinePatchDrawable (createNinePatchFromTextureRegion (CONTROL_ROOM_BOX_TITLE_BACKGROUND_DRAWABLE_NAME));
   }
 
   public MessageBox <StatusBoxRow> createStatusBox ()
@@ -115,26 +140,27 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createPlayerBox (StyleSettings.PLAYER_BOX_SCROLLPANE_STYLE);
   }
 
-  public SideBar createSideBar (final MBassador <Event> eventBus)
+  public IntelBox createIntelBox (final EventListener detailedReportButtonListener)
   {
-    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (detailedReportButtonListener, "detailedReportButtonListener");
 
-    return new SideBar (this, eventBus);
+    return new DefaultIntelBox (this, detailedReportButtonListener);
   }
 
-  public SideBarButton createSideBarButton (final SideBarButton.ButtonType buttonType, final EventListener listener)
+  public ControlRoomBox createControlRoomBox (final EventListener tradeInButtonListener,
+                                              final EventListener fortifyButtonListener,
+                                              final EventListener endTurnButtonListener,
+                                              final EventListener mySettingsButtonListener,
+                                              final EventListener surrenderButtonListener)
   {
-    Arguments.checkIsNotNull (buttonType, "buttonType");
-    Arguments.checkIsNotNull (listener, "listener");
+    Arguments.checkIsNotNull (tradeInButtonListener, "tradeInButtonListener");
+    Arguments.checkIsNotNull (fortifyButtonListener, "fortifyButtonListener");
+    Arguments.checkIsNotNull (endTurnButtonListener, "endTurnButtonListener");
+    Arguments.checkIsNotNull (mySettingsButtonListener, "mySettingsButtonListener");
+    Arguments.checkIsNotNull (surrenderButtonListener, "surrenderButtonListener");
 
-    return new SideBarButton (createImageButton (createSideBarButtonStyle (buttonType), listener), buttonType);
-  }
-
-  public ImageButton.ImageButtonStyle createSideBarButtonStyle (final SideBarButton.ButtonType buttonType)
-  {
-    Arguments.checkIsNotNull (buttonType, "buttonType");
-
-    return getSkinResource (buttonType.getImageButtonStyleName (), ImageButton.ImageButtonStyle.class);
+    return new DefaultControlRoomBox (this, tradeInButtonListener, fortifyButtonListener, endTurnButtonListener,
+            mySettingsButtonListener, surrenderButtonListener);
   }
 
   public ReinforcementDialog createReinforcementDialog (final Stage stage,
@@ -283,5 +309,175 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public Sound createBattleSingleExplosionSound ()
   {
     return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR);
+  }
+
+  public Label createIntelBoxTitleLabel (final String titleText)
+  {
+    Arguments.checkIsNotNull (titleText, "titleText");
+
+    return createLabel (titleText, Align.left, createIntelBoxTitleLabelStyle ());
+  }
+
+  public Label.LabelStyle createIntelBoxTitleLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.INTEL_BOX_TITLE_LABEL_STYLE);
+  }
+
+  public Label createIntelBoxSettingNameLabel (final String settingNameText)
+  {
+    Arguments.checkIsNotNull (settingNameText, "settingNameText");
+
+    return createLabel (settingNameText, Align.left, createIntelBoxSettingNameLabelStyle ());
+  }
+
+  public Label createIntelBoxSettingNameLabel (final String settingNameText, final int alignment)
+  {
+    Arguments.checkIsNotNull (settingNameText, "settingNameText");
+
+    return createLabel (settingNameText, alignment, createIntelBoxSettingNameLabelStyle ());
+  }
+
+  public Label.LabelStyle createIntelBoxSettingNameLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.INTEL_BOX_SETTING_NAME_LABEL_STYLE);
+  }
+
+  public Label createIntelBoxSettingTextLabel (final String settingText)
+  {
+    Arguments.checkIsNotNull (settingText, "settingText");
+
+    return createLabel (settingText, Align.left, createIntelBoxSettingTextLabelStyle ());
+  }
+
+  public Label createIntelBoxSettingTextLabel (final String settingText, final int alignment)
+  {
+    Arguments.checkIsNotNull (settingText, "settingText");
+
+    return createLabel (settingText, alignment, createIntelBoxSettingTextLabelStyle ());
+  }
+
+  public Label.LabelStyle createIntelBoxSettingTextLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.INTEL_BOX_SETTING_TEXT_LABEL_STYLE);
+  }
+
+  public Label createIntelBoxSettingTextWrappingLabel (final String settingText)
+  {
+    Arguments.checkIsNotNull (settingText, "settingText");
+
+    return createWrappingLabel (settingText, Align.left, createIntelBoxSettingTextWrappingLabelStyle ());
+  }
+
+  public Label.LabelStyle createIntelBoxSettingTextWrappingLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.INTEL_BOX_SETTING_TEXT_LABEL_STYLE);
+  }
+
+  public Label createIntelBoxButtonTextLabel (final String buttonText)
+  {
+    Arguments.checkIsNotNull (buttonText, "buttonText");
+
+    return createLabel (buttonText, Align.left, createIntelBoxButtonTextLabelStyle ());
+  }
+
+  public Label.LabelStyle createIntelBoxButtonTextLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.INTEL_BOX_BUTTON_TEXT_LABEL_STYLE);
+  }
+
+  public ImageButton createIntelBoxDetailedReportButton (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createIntelBoxDetailedReportButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createIntelBoxDetailedReportButtonStyle ()
+  {
+    return createImageButtonStyle (StyleSettings.INTEL_BOX_DETAILED_REPORT_IMAGE_BUTTON_STYLE);
+  }
+
+  public Label createControlRoomBoxTitleLabel (final String titleText)
+  {
+    Arguments.checkIsNotNull (titleText, "titleText");
+
+    return createLabel (titleText, Align.left, createControlRoomBoxTitleLabelStyle ());
+  }
+
+  public Label.LabelStyle createControlRoomBoxTitleLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.CONTROL_ROOM_BOX_TITLE_LABEL_STYLE);
+  }
+
+  public Label createControlRoomBoxButtonTextLabel (final String buttonText)
+  {
+    Arguments.checkIsNotNull (buttonText, "buttonText");
+
+    return createLabel (buttonText, Align.left, createControlRoomBoxButtonTextLabelStyle ());
+  }
+
+  public Label.LabelStyle createControlRoomBoxButtonTextLabelStyle ()
+  {
+    return createLabelStyle (StyleSettings.CONTROL_ROOM_BOX_BUTTON_TEXT_LABEL_STYLE);
+  }
+
+  public ImageButton createControlRoomBoxTradeInButton (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createControlRoomBoxTradeInButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createControlRoomBoxTradeInButtonStyle ()
+  {
+    return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_TRADE_IN_IMAGE_BUTTON_STYLE);
+  }
+
+  public ImageButton createControlRoomBoxFortifyButton (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createControlRoomBoxFortifyButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createControlRoomBoxFortifyButtonStyle ()
+  {
+    return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_FORTIFY_IMAGE_BUTTON_STYLE);
+  }
+
+  public ImageButton createControlRoomBoxEndTurnButton (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createControlRoomBoxEndTurnButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createControlRoomBoxEndTurnButtonStyle ()
+  {
+    return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_END_TURN_IMAGE_BUTTON_STYLE);
+  }
+
+  public ImageButton createControlRoomBoxMySettingsButton (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createControlRoomBoxMySettingsButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createControlRoomBoxMySettingsButtonStyle ()
+  {
+    return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_MY_SETTINGS_IMAGE_BUTTON_STYLE);
+  }
+
+  public ImageButton createControlRoomBoxSurrenderButton (final EventListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return createImageButton (createControlRoomBoxSurrenderButtonStyle (), listener);
+  }
+
+  public ImageButton.ImageButtonStyle createControlRoomBoxSurrenderButtonStyle ()
+  {
+    return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_SURRENDER_IMAGE_BUTTON_STYLE);
   }
 }

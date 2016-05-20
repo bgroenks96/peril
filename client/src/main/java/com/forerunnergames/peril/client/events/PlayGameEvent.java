@@ -79,6 +79,11 @@ public final class PlayGameEvent implements LocalEvent
     return playMap;
   }
 
+  public MapMetadata getPlayMapMetadata ()
+  {
+    return playMap.getMapMetadata ();
+  }
+
   @Override
   public String toString ()
   {

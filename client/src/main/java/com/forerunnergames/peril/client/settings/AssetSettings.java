@@ -186,13 +186,13 @@ public final class AssetSettings
           "screens/game/play/modes/shared/music/escalation.ogg", Music.class);
 
   // Classic Mode Play Screen
-  public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+  public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/skin.atlas", TextureAtlas.class);
+  public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/skin2.atlas", TextureAtlas.class);
   public static final AssetDescriptor <Skin> CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/skin.json", Skin.class,
-          new MultiAtlasSkinLoader.SkinParameter (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
-  public static final AssetDescriptor <Texture> CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
-          "screens/game/play/modes/classic/background.png", Texture.class, GENERAL_TEXTURE_PARAMETER);
+          "screens/game/play/modes/classic/skin.json", Skin.class, new MultiAtlasSkinLoader.SkinParameter (
+                  CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR, CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR));
   public static final AssetDescriptor <Sound> CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/sounds/artillery_explosion07_48k.wav", Sound.class);
   public static final AssetDescriptor <Music> CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR = new AssetDescriptor <> (
@@ -236,9 +236,9 @@ public final class AssetSettings
 
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
   public static final ImmutableList <AssetDescriptor <?>> CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList
-          .<AssetDescriptor <?>> of (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR,
+          .<AssetDescriptor <?>> of (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR,
+                                     CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR,
-                                     CLASSIC_MODE_PLAY_SCREEN_BACKGROUND_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR,
                                      CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR);
 

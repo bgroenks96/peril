@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import com.forerunnergames.peril.client.ui.widgets.Padding;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
@@ -44,7 +45,7 @@ import net.engio.mbassy.bus.MBassador;
 public final class ChatBox extends DefaultMessageBox <ChatBoxRow>
 {
   private static final int SCROLLPANE_HEIGHT = 226 - 2 - 2;
-  private static final int SCROLLPANE_TEXTFIELD_VERTICAL_PADDING = 2 + 2;
+  private static final int SCROLLPANE_TEXTFIELD_VERTICAL_PADDING = 2;
   private static final int TEXTFIELD_MAX_CHARACTERS = 80;
   private static final int TEXTFIELD_HEIGHT = 24;
   private static final Pattern TEXTFIELD_FILTER = Pattern.compile (".*");
@@ -60,7 +61,7 @@ public final class ChatBox extends DefaultMessageBox <ChatBoxRow>
                   final String textFieldStyleName,
                   final MBassador <Event> eventBus)
   {
-    super (widgetFactory, scrollPaneStyle, scrollbarStyle, rowStyle);
+    super (widgetFactory, scrollPaneStyle, scrollbarStyle, rowStyle, new Padding (0, 0, 2, 3), new Padding (0, 0, 6, 6));
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (textFieldStyleName, "textFieldStyleName");
@@ -72,11 +73,13 @@ public final class ChatBox extends DefaultMessageBox <ChatBoxRow>
     textField = widgetFactory.createTextField (TEXTFIELD_MAX_CHARACTERS, TEXTFIELD_FILTER, textFieldStyleName);
     textField.addListener (new TextFieldInputListener (eventBus));
 
+    // @formatter:off
     table = new Table ().top ();
-    table.add (super.asActor ()).expandX ().fillX ().height (SCROLLPANE_HEIGHT)
-            .padBottom (SCROLLPANE_TEXTFIELD_VERTICAL_PADDING);
+    table.setBackground (widgetFactory.createChatBoxBackgroundDrawable ());
+    table.add (super.asActor ()).expandX ().fillX ().height (SCROLLPANE_HEIGHT).padBottom (SCROLLPANE_TEXTFIELD_VERTICAL_PADDING);
     table.row ();
     table.add (textField).expandX ().fillX ().height (TEXTFIELD_HEIGHT);
+    // @formatter:on
   }
 
   @Override
@@ -99,6 +102,7 @@ public final class ChatBox extends DefaultMessageBox <ChatBoxRow>
   {
     super.refreshAssets ();
 
+    table.setBackground (widgetFactory.createChatBoxBackgroundDrawable ());
     textField.setStyle (widgetFactory.createTextFieldStyle (textFieldStyleName));
   }
 

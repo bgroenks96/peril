@@ -60,13 +60,9 @@
 
   "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
     "default":                       { "up": "button-up",             "imageUp": null,                           "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "my-settings-old":               { "up": "button-up",             "imageUp": "my-settings-icon-old",         "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "end-turn-old":                  { "up": "button-up",             "imageUp": "end-turn-icon-old",            "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "reinforce-old":                 { "up": "button-up",             "imageUp": "reinforce-icon-old",           "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
-    "trade-in-old":                  { "up": "button-up",             "imageUp": "trade-in-icon-old",            "over": "button-over",         "imageOver": null, "down": "button-down",          "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "button-disabled",         "imageDisabled": null },
     "detailed-report":               { "up": "sidebar-button-up",     "imageUp": "detailed-report-icon",         "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
     "trade-in-new":                  { "up": "sidebar-button-up",     "imageUp": "trade-in-icon-new",            "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
-    "post-combat-maneuver":          { "up": "sidebar-button-up",     "imageUp": "post-combat-maneuver-icon",    "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
+    "fortify-new":                   { "up": "sidebar-button-up",     "imageUp": "fortify-icon-new",             "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
     "end-turn-new":                  { "up": "sidebar-button-up",     "imageUp": "end-turn-icon-new",            "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
     "my-settings-new":               { "up": "sidebar-button-up",     "imageUp": "my-settings-icon-new",         "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
     "surrender":                     { "up": "sidebar-button-up",     "imageUp": "surrender-icon",               "over": "sidebar-button-over", "imageOver": null, "down": "sidebar-button-down",  "imageDown": null,        "checked": null,                   "imageChecked": null,        "checkedOver": null, "imageCheckedOver": null, "disabled": "sidebar-button-disabled", "imageDisabled": null },
@@ -121,17 +117,17 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
-    "default": { "background": null,           "hScroll": null, "hScrollKnob": "scroll-knob", "vScroll": null, "vScrollKnob": "scroll-knob" },
-    "status":  { "background": "gray-borders", "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" },
-    "chat":    { "background": "gray-borders", "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "scroll-knob" },
-    "players": { "background": "gray-borders", "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" }
+    "default":    { "background": null,                  "hScroll": null, "hScrollKnob": "scroll-knob", "vScroll": null, "vScrollKnob": "scroll-knob" },
+    "status-box": { "background": "message-box-borders", "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" },
+    "chat-box":   { "background": null,                  "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "scroll-knob" },
+    "player-box": { "background": "player-box-borders",  "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
-    "default": { "background": "list-background", "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
-    "status":  { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
-    "chat":    { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
-    "players": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
+    "default":    { "background": "list-background", "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
+    "status-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
+    "chat-box":   { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
+    "player-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
@@ -159,7 +155,7 @@
     "dialog-message":                    { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
     "dialog-settings-title":             { "font": "dejaVu-18",     "fontColor": "white",      "background": null },
     "status-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
-    "chatbox-message":                   { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
+    "chat-box-message":                  { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
     "player-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
     "army-movement-dialog-country-name": { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
     "army-movement-dialog-arrow":        { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
@@ -168,8 +164,8 @@
     "battle-dialog-arrow":               { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
     "battle-dialog-auto-battle":         { "font": "pirulen-12",    "fontColor": "white",      "background": null },
     "sidebar-title":                     { "font": "pirulen-18",    "fontColor": "white",      "background": null },
-    "sidebar-settings-title":            { "font": "roboto-med-16", "fontColor": "white",      "background": null },
-    "sidebar-setting":                   { "font": "roboto-med-14", "fontColor": "dark-gray",  "background": null },
+    "sidebar-setting-name":              { "font": "roboto-med-16", "fontColor": "white",      "background": null },
+    "sidebar-setting-text":              { "font": "roboto-med-14", "fontColor": "dark-gray",  "background": null },
     "sidebar-button":                    { "font": "roboto-med-16", "fontColor": "light-gray", "background": null }
   },
 

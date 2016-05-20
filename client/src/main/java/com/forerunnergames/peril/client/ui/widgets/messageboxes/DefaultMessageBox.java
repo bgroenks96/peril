@@ -18,13 +18,17 @@
 
 package com.forerunnergames.peril.client.ui.widgets.messageboxes;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 
+import com.forerunnergames.peril.client.ui.widgets.Padding;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
@@ -45,34 +49,54 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultMessageBox.class);
   private static final int MAX_ROWS = 100;
-  private static final int SCROLLPANE_INNER_PADDING_TOP = 6;
   private final ScrollPane scrollPane;
   private final WidgetFactory widgetFactory;
   private final String scrollPaneStyleName;
   private final ScrollbarStyle scrollbarStyle;
   private final MessageBoxRowStyle rowStyle;
+  private final Padding absolutePaddingTopBottom;
   private final Map <Actor, T> actorsToRows = new LinkedHashMap <> ();
   private final Table table;
 
   public DefaultMessageBox (final WidgetFactory widgetFactory,
                             final String scrollPaneStyleName,
                             final ScrollbarStyle scrollbarStyle,
-                            final MessageBoxRowStyle rowStyle)
+                            final MessageBoxRowStyle rowStyle,
+                            final Padding scrollPaddingTopBottom,
+                            final Padding absolutePaddingTopBottom)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (scrollPaneStyleName, "scrollPaneStyleName");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollBarStyle");
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
+    Arguments.checkIsNotNull (scrollPaddingTopBottom, "scrollPaddingTopBottom");
+    Arguments.checkIsNotNull (absolutePaddingTopBottom, "absolutePaddingTopBottom");
 
     this.widgetFactory = widgetFactory;
     this.scrollPaneStyleName = scrollPaneStyleName;
     this.scrollbarStyle = scrollbarStyle;
     this.rowStyle = rowStyle;
+    this.absolutePaddingTopBottom = absolutePaddingTopBottom;
 
     table = new Table ();
+
     configureTable ();
 
-    scrollPane = new ScrollPane (table, widgetFactory.createScrollPaneStyle (scrollPaneStyleName, scrollbarStyle));
+    scrollPane = new ScrollPane (table, widgetFactory.createScrollPaneStyle (scrollPaneStyleName, scrollbarStyle))
+    {
+      @Override
+      protected void drawChildren (final Batch batch, final float parentAlpha)
+      {
+        // @formatter:off
+        final Rectangle scissors = ScissorStack.popScissors ();
+        scissors.setY (scissors.getY () + 2 + scrollPaddingTopBottom.getBottom ());
+        scissors.setHeight (scissors.getHeight () + 1 - scrollPaddingTopBottom.getTop () - scrollPaddingTopBottom.getBottom ());
+        ScissorStack.pushScissors (scissors);
+        super.drawChildren (batch, parentAlpha);
+        // @formatter:on
+      }
+    };
+
     scrollPane.setOverscroll (false, false);
     scrollPane.setFlickScroll (true);
     scrollPane.setForceScroll (false, scrollbarStyle.areScrollbarsRequired ());
@@ -149,9 +173,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @OverridingMethodsMustInvokeSuper
   public void refreshAssets ()
   {
-    final ScrollPane.ScrollPaneStyle scrollPaneStyle = widgetFactory.createScrollPaneStyle (scrollPaneStyleName,
-            scrollbarStyle);
-    scrollPane.setStyle (scrollPaneStyle);
+    scrollPane.setStyle (widgetFactory.createScrollPaneStyle (scrollPaneStyleName, scrollbarStyle));
 
     for (final Actor actor : table.getChildren ())
     {
@@ -160,7 +182,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
       if (row == null)
       {
         log.warn ("Not refreshing assets of actor [{}] because {} not found in cache.", actor,
-                MessageBoxRow.class.getSimpleName ());
+                  MessageBoxRow.class.getSimpleName ());
         continue;
       }
 
@@ -206,7 +228,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   private void configureTable ()
   {
     table.top ().padLeft (rowStyle.getPaddingLeft ()).padRight (rowStyle.getPaddingRight ())
-            .padTop (SCROLLPANE_INNER_PADDING_TOP);
+            .padTop (absolutePaddingTopBottom.getTop ()).padBottom (absolutePaddingTopBottom.getBottom ());
   }
 
   private void limitOldRows ()

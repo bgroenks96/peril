@@ -200,14 +200,6 @@ toggle-on
   orig: 90, 32
   offset: 0, 0
   index: -1
-gray-borders
-  rotate: false
-  xy: 909, 402
-  size: 52, 38
-  split: 18, 18, 18, 18
-  orig: 52, 38
-  offset: 0, 0
-  index: -1
 button-disabled
   rotate: false
   xy: 1997, 2007
@@ -483,14 +475,14 @@ die-outcome-win
   orig: 26, 26
   offset: 0, 0
   index: -1
-post-combat-maneuver-icon
+fortify-icon-new
   rotate: false
   xy: 962, 414
   size: 26, 26
   orig: 26, 26
   offset: 0, 0
   index: -1
-reinforce-icon-old
+fortify-icon-old
   rotate: false
   xy: 1611, 1507
   size: 22, 22
@@ -770,14 +762,6 @@ icon-max
   orig: 12, 18
   offset: 0, 0
   index: -1
-v-scroll-knob
-  rotate: false
-  xy: 2033, 1869
-  size: 14, 16
-  split: 0, 14, 1, 13
-  orig: 14, 16
-  offset: 0, 0
-  index: -1
 icon-min
   rotate: false
   xy: 1013, 564
@@ -813,14 +797,6 @@ list-background
   size: 4, 4
   split: 1, 1, 1, 1
   orig: 4, 4
-  offset: 0, 0
-  index: -1
-scroll-knob
-  rotate: false
-  xy: 113, 1
-  size: 5, 5
-  split: 2, 2, 2, 2
-  orig: 5, 5
   offset: 0, 0
   index: -1
 list-selection

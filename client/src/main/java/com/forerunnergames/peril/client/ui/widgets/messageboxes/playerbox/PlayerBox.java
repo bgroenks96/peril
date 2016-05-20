@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox;
 
+import com.forerunnergames.peril.client.ui.widgets.Padding;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
@@ -49,7 +50,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
                     final ScrollbarStyle scrollbarStyle,
                     final MessageBoxRowStyle rowStyle)
   {
-    super (widgetFactory, scrollPaneStyle, scrollbarStyle, rowStyle);
+    super (widgetFactory, scrollPaneStyle, scrollbarStyle, rowStyle, new Padding (0, 0, 2, 2), new Padding (0, 0, 3, 3));
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
@@ -101,8 +102,8 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 
     if (!turnOrderedPlayers.remove (player))
     {
-      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player, PlayerBox.class.getSimpleName (),
-                PlayerBox.class.getSimpleName ());
+      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player,
+                PlayerBox.class.getSimpleName (), PlayerBox.class.getSimpleName ());
       return;
     }
 
