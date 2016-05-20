@@ -47,9 +47,6 @@ buildscript {
 
   dependencies {
     classpath "com.android.tools.build:gradle:$androidGradleToolsVersion"
-
-    // TODO iOS build broken due to https://github.com/MobiDevelop/robovm/issues/13
-    //classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradleVersion"
   }
 }
 
@@ -157,9 +154,6 @@ project (":android") {
 }
 
 project (":ios") {
-  // TODO iOS build broken due to https://github.com/MobiDevelop/robovm/issues/13
-  //apply plugin: "robovm"
-
   dependencies {
     compile project (":client")
     compile "com.mobidevelop.robovm:robovm-rt:${roboVMVersion}"
