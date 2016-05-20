@@ -21,6 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public interface PlayerColorIcon
 {
+  PlayerColorIcon NULL_PLAYER_COLOR_ICON = new NullPlayerColorIcon ();
+
   void setColor (final String color);
 
   void refreshAssets ();

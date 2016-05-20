@@ -52,6 +52,7 @@ import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxR
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Event;
@@ -189,6 +190,8 @@ public interface WidgetFactory
   StatusBoxRow createStatusMessageBoxRow (final StatusMessage message);
 
   PlayerBoxRow createPlayerBoxRow (final PlayerPacket player);
+
+  PlayerColorIcon createPlayerColorIcon (final PlayerPacket player);
 
   MessageBoxRow <Message> createMessageBoxRow (final Message message, final MessageBoxRowStyle rowStyle);
 

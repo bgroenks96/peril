@@ -25,10 +25,14 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
-import com.forerunnergames.tools.common.Strings;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class PlayerColorIconWidgetFactoryCreator
 {
+  private static final Logger log = LoggerFactory.getLogger (PlayerColorIconWidgetFactoryCreator.class);
+
   public static PlayerColorIconWidgetFactory create (final PlayerPacket player,
                                                      final AssetDescriptor <Skin> skinAssetDescriptor,
                                                      final AssetManager assetManager)
@@ -63,7 +67,16 @@ public final class PlayerColorIconWidgetFactoryCreator
       }
       default:
       {
-        throw new IllegalStateException (Strings.format ("Unrecognized sentience for player [{}].", player));
+        log.warn ("Unrecognized sentience for player [{}].", player);
+
+        return new NullPlayerColorIconWidgetFactory (assetManager)
+        {
+          @Override
+          protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
+          {
+            return skinAssetDescriptor;
+          }
+        };
       }
     }
   }

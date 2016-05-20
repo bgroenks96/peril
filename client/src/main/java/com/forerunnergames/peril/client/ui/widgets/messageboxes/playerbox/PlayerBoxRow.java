@@ -22,11 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowHighlighting;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
-import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactory;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -39,22 +39,21 @@ import org.slf4j.LoggerFactory;
 public final class PlayerBoxRow implements MessageBoxRow <Message>
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerBoxRow.class);
-  private final PlayerColorIconWidgetFactory widgetFactory;
+  private final WidgetFactory widgetFactory;
   private final MessageBoxRowStyle rowStyle;
   private final MessageBoxRowHighlighting highlighting;
-  private final PlayerColorIcon playerColorIcon;
   private final Table table = new Table ();
   private final Stack stack = new Stack ();
   private final Cell <Actor> messageRowLeftCell;
   private final Cell <Actor> messageRowRightCell;
+  private final Cell <Actor> playerColorIconCell;
+  private PlayerColorIcon playerColorIcon;
   private MessageBoxRow <Message> messageRowLeft;
   private MessageBoxRow <Message> messageRowRight;
   private Message message;
   private PlayerPacket player;
 
-  public PlayerBoxRow (final PlayerPacket player,
-                       final MessageBoxRowStyle rowStyle,
-                       final PlayerColorIconWidgetFactory widgetFactory)
+  public PlayerBoxRow (final PlayerPacket player, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
@@ -64,11 +63,11 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     this.widgetFactory = widgetFactory;
 
     highlighting = widgetFactory.createMessageBoxRowHighlighting ();
-    playerColorIcon = widgetFactory.createPlayerColorIcon (player.getColor ());
+    playerColorIcon = widgetFactory.createPlayerColorIcon (player);
 
     table.left ();
     messageRowLeftCell = table.add ((Actor) null).padLeft (10).width (40);
-    table.add (playerColorIcon.asActor ()).spaceRight (8);
+    playerColorIconCell = table.add (playerColorIcon.asActor ()).spaceRight (8);
     messageRowRightCell = table.add ((Actor) null).spaceLeft (8);
 
     stack.add (highlighting.asActor ());
@@ -139,7 +138,8 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     messageRowLeftCell.setActor (messageRowLeft.asActor ());
     messageRowRightCell.setActor (messageRowRight.asActor ());
 
-    playerColorIcon.setColor (player.getColor ());
+    playerColorIcon = widgetFactory.createPlayerColorIcon (player);
+    playerColorIconCell.setActor (playerColorIcon.asActor ());
 
     table.invalidateHierarchy ();
   }
@@ -171,8 +171,7 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{} | Player: {} | Highlighting: {} | Player Color Icon: {} | Message: {} | "
+    return Strings.format ("{} | Player: {} | Highlighting: {} | Player Color Icon: {} | Message: {} | "
                                    + " Message Row Left: {} | Message Row Right: {} | Row Style: {} | Table: {} | "
                                    + "Stack: {}",
                            super.toString (), player, highlighting, playerColorIcon, message, messageRowLeft,

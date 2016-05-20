@@ -70,6 +70,8 @@ import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxR
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
+import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactoryCreator;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -630,8 +632,13 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return new PlayerBoxRow (player, PLAYER_BOX_ROW_STYLE,
-            PlayerColorIconWidgetFactoryCreator.create (player, getSkinAssetDescriptor (), assetManager));
+    return new PlayerBoxRow (player, PLAYER_BOX_ROW_STYLE, createPlayerColorIconWidgetFactory (player));
+  }
+
+  @Override
+  public PlayerColorIcon createPlayerColorIcon (final PlayerPacket player)
+  {
+    return createPlayerColorIconWidgetFactory (player).createPlayerColorIcon (player.getColor ());
   }
 
   @Override
@@ -682,5 +689,12 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   protected final Skin getSkin ()
   {
     return getAsset (getSkinAssetDescriptor ());
+  }
+
+  private PlayerColorIconWidgetFactory createPlayerColorIconWidgetFactory (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    return PlayerColorIconWidgetFactoryCreator.create (player, getSkinAssetDescriptor (), assetManager);
   }
 }

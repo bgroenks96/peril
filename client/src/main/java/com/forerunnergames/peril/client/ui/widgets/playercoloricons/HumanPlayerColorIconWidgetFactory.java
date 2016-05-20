@@ -23,10 +23,10 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class HumanPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory implements
+abstract class HumanPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory implements
         PlayerColorIconWidgetFactory
 {
-  public HumanPlayerColorIconWidgetFactory (final AssetManager assetManager)
+  HumanPlayerColorIconWidgetFactory (final AssetManager assetManager)
   {
     super (assetManager);
   }
