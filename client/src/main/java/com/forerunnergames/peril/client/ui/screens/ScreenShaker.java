@@ -21,6 +21,7 @@ package com.forerunnergames.peril.client.ui.screens;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -56,6 +57,8 @@ public final class ScreenShaker
   public void stop ()
   {
     viewport.update (screenSize.actualWidth (), screenSize.actualHeight (), RECENTER_CAMERA);
+    viewport.setScreenPosition (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
+                                InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
     isShaking = false;
   }
 
