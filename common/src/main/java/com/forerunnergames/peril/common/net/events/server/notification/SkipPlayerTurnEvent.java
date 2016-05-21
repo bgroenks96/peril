@@ -3,6 +3,7 @@ package com.forerunnergames.peril.common.net.events.server.notification;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 
 public final class SkipPlayerTurnEvent implements PlayerNotificationEvent
 {
@@ -31,5 +32,11 @@ public final class SkipPlayerTurnEvent implements PlayerNotificationEvent
   public String getPlayerColor ()
   {
     return player.getColor ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Player: [{}]", this.getClass ().getSimpleName (), this.player);
   }
 }

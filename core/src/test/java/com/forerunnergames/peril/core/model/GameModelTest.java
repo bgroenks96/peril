@@ -471,6 +471,7 @@ public class GameModelTest
 
     // add armies to player hands
     playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.THIRD), 1);
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.secondToLastEventWasType (PlayerReinforceInitialCountryRequestEvent.class));
@@ -483,6 +484,13 @@ public class GameModelTest
     assertTrue (eventHandler.wasNeverFired (PlayerReinforceInitialCountryRequestEvent.class));
     assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.lastEventWasType (SkipPlayerTurnEvent.class));
+
+    eventHandler.clearEvents ();
+    gameModel.advanceTurn ();
+    gameModel.waitForPlayersToReinforceInitialCountries ();
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerReinforceInitialCountryRequestEvent.class));
+    assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
+
   }
 
   @Test

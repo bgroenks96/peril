@@ -607,7 +607,7 @@ public final class GameModel
 
     if (playerModel.getArmiesInHand (playerId) == 0)
     {
-      log.trace ("Player [{}] has no armies remaining in hand. Skipping...");
+      log.trace ("Player [{}] has no armies remaining in hand. Skipping...", player);
 
       publish (new SkipPlayerTurnEvent (player));
       return;
