@@ -38,6 +38,8 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 /**
@@ -68,7 +70,6 @@ public final class StateMachineTest
    */
   public void checkCurrentStateIs (final String stateName)
   {
-    Arguments.checkIsNotNull (stateMachine, "gameStateMachine");
     Arguments.checkIsNotNull (stateName, "stateName");
 
     assertFalse (stateMachine.checkError ().isPresent ());
@@ -107,6 +108,8 @@ public final class StateMachineTest
 
   public OngoingStateCheck entered (final String stateName)
   {
+    Arguments.checkIsNotNull (stateName, "stateName");
+
     final OngoingStateCheck stub = new OngoingStateCheck ();
     for (final String nextState : monitor.stateChangeQueue)
     {
@@ -222,16 +225,14 @@ public final class StateMachineTest
     }
 
     @Override
-    public void onActionException (final String context, final Throwable throwable)
+    public void onActionException (final String context, @Nullable final Throwable throwable)
     {
       Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (throwable, "throwable");
     }
 
     @Override
-    public void end (final Throwable throwable)
+    public void end (@Nullable final Throwable throwable)
     {
-      Arguments.checkIsNotNull (throwable, "throwable");
     }
   }
 
@@ -242,6 +243,8 @@ public final class StateMachineTest
 
     public void after (final String stateName)
     {
+      Arguments.checkIsNotNull (stateName, "stateName");
+
       assertTrue (state.isPresent ());
       log.debug (">>>>>>>> STATES BEFORE: {}", priorStates);
       assertTrue (priorStates.contains (stateName));
