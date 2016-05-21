@@ -131,10 +131,8 @@ import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.MutatorResult;
-import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Result;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
@@ -281,10 +279,8 @@ public final class GameModel
   public void skipPlayerTurn (final SkipPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (event.getPlayer ().is (getCurrentPlayerPacket ()), Strings
-            .format ("[{}] is not in turn! Current player: [{}]", event.getPlayer (), getCurrentPlayerPacket ()));
 
-    log.info ("Skipping turn for player [{}].", getCurrentPlayerName ());
+    log.info ("Skipping turn for player [{}].", event.getPlayerName ());
   }
 
   @StateMachineAction
