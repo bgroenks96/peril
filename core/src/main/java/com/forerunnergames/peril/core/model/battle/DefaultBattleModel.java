@@ -227,8 +227,8 @@ public final class DefaultBattleModel implements BattleModel
         if (countryArmyModel.armyCountIs (0, defenderCountry))
         {
           final MutatorResult <?> reassignmentResult;
-          reassignmentResult = countryOwnerModel.requestToAssignCountryOwner (defenderCountry,
-                                                                              attackOrder.getPlayerId ());
+          reassignmentResult = countryOwnerModel.requestToReassignCountryOwner (defenderCountry,
+                                                                                attackOrder.getPlayerId ());
           if (reassignmentResult.failed ())
           {
             Exceptions.throwIllegalState ("Failed to re-assign owner of defending country | Reason: {}",
