@@ -1074,7 +1074,7 @@ public final class GameModel
     final CountryPacket destCountry = turnDataCache.get (CacheKey.OCCUPY_DEST_COUNTRY, CountryPacket.class);
     final PlayerPacket prevDestCountryOwner = turnDataCache.get (CacheKey.OCCUPY_PREV_OWNER, PlayerPacket.class);
     final Id prevDestCountryOwnerId = playerModel.idOf (prevDestCountryOwner.getName ());
-    final int minDeltaArmyCount = turnDataCache.get (CacheKey.OCCUPY_MIN_ARMY_COUNT, int.class);
+    final int minDeltaArmyCount = turnDataCache.get (CacheKey.OCCUPY_MIN_ARMY_COUNT, Integer.class);
     final int deltaArmyCount = event.getDeltaArmyCount ();
 
     if (deltaArmyCount < minDeltaArmyCount)
