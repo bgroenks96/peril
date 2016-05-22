@@ -24,15 +24,22 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
 public final class PlayerJoinGameSuccessEvent implements SuccessEvent
 {
   private final PlayerPacket player;
+  private final ImmutableSet <PlayerPacket> playersInGame;
 
-  public PlayerJoinGameSuccessEvent (final PlayerPacket player)
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
   {
     Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playersInGame, "playersInGame");
 
     this.player = player;
+    this.playersInGame = playersInGame;
   }
 
   public PlayerPacket getPlayer ()
@@ -55,6 +62,23 @@ public final class PlayerJoinGameSuccessEvent implements SuccessEvent
     return player.getTurnOrder ();
   }
 
+  public ImmutableSet <PlayerPacket> getPlayersInGame ()
+  {
+    return playersInGame;
+  }
+
+  public ImmutableSet <PlayerPacket> getOtherPlayersInGame ()
+  {
+    return ImmutableSet.copyOf (Sets.filter (playersInGame, new Predicate <PlayerPacket> ()
+    {
+      @Override
+      public boolean apply (final PlayerPacket input)
+      {
+        return input.isNot (player);
+      }
+    }));
+  }
+
   @Override
   public String toString ()
   {
@@ -65,5 +89,6 @@ public final class PlayerJoinGameSuccessEvent implements SuccessEvent
   private PlayerJoinGameSuccessEvent ()
   {
     player = null;
+    playersInGame = null;
   }
 }

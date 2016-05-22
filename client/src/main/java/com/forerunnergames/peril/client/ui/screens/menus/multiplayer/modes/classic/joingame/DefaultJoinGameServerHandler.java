@@ -131,10 +131,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
     log.info ("Successfully joined game server [{}]", event);
 
     assert listener != null;
-    listener.onJoinGameServerSuccess (event.getGameServerConfiguration (), event.getClientConfiguration (),
-                                      event.getPlayersInGame ());
+    listener.onJoinGameServerSuccess (event.getGameServerConfiguration (), event.getClientConfiguration ());
 
-    players.addAll (event.getPlayersInGame ());
     gameServerConfig = event.getGameServerConfiguration ();
     clientConfig = event.getClientConfiguration ();
 
@@ -170,7 +168,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
     joinGameIsInProgress = false;
 
     assert listener != null;
-    listener.onPlayerJoinGameSuccess (event.getPlayer ());
+    players.addAll (event.getPlayersInGame ());
+    listener.onPlayerJoinGameSuccess (event.getPlayer (), event.getPlayersInGame ());
     listener.onJoinFinish (gameServerConfig, clientConfig, ImmutableSet.copyOf (players));
   }
 

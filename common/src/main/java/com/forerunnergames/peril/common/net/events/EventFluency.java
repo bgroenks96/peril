@@ -30,8 +30,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -108,13 +108,6 @@ public final class EventFluency
     Arguments.checkIsNotNull (event, "event");
 
     return event.getPlayerName ();
-  }
-
-  public static ImmutableSet <PlayerPacket> playersInGameFrom (final JoinGameServerSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return event.getPlayersInGame ();
   }
 
   public static String reasonForKickFrom (final KickEvent event)

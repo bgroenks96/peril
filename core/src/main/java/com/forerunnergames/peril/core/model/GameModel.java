@@ -462,7 +462,7 @@ public final class GameModel
         continue;
       }
 
-      publish (new PlayerJoinGameSuccessEvent (player));
+      publish (new PlayerJoinGameSuccessEvent (player, playerModel.getPlayerPackets ()));
     }
   }
 

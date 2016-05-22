@@ -33,10 +33,9 @@ public interface JoinGameServerListener
   void onConnectToServerSuccess (final ServerConfiguration configuration);
 
   void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfiguration,
-                                final ClientConfiguration clientConfiguration,
-                                final ImmutableSet <PlayerPacket> playersInGame);
+                                final ClientConfiguration clientConfiguration);
 
-  void onPlayerJoinGameSuccess (final PlayerPacket player);
+  void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame);
 
   void onConnectToServerFailure (final ServerConfiguration configuration, final String reason);
 

@@ -24,6 +24,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -77,6 +78,8 @@ import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.concurrent.DelayedCyclicBarrier;
+import com.forerunnergames.tools.common.concurrent.DelayedCyclicBarrier.DelayMode;
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
@@ -90,9 +93,14 @@ import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -209,6 +217,64 @@ public class MultiplayerControllerTest
       }
     };
     verify (mockClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
+  }
+
+  public void testTwoClientsJoinGameServerSimultaneously ()
+  {
+    mpcBuilder.build (eventBus);
+
+    final Remote client1 = createClient ();
+    final Remote client2 = createClient ();
+
+    final AtomicInteger connectCount = new AtomicInteger (0);
+    final ExecutorService threadPool = Executors.newFixedThreadPool (2);
+    final ServerConfiguration serverConfig = createDefaultServerConfig ();
+    final DelayedCyclicBarrier delayGate = new DelayedCyclicBarrier (2, 10, DelayMode.LINEAR);
+    final Function <Remote, Integer> clientJoinFunc = new Function <Remote, Integer> ()
+    {
+      @Override
+      public Integer apply (final Remote client)
+      {
+        try
+        {
+          connect (client);
+
+          delayGate.await ();
+          if (delayGate.isBroken ()) delayGate.reset ();
+
+          final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
+          {
+            @Override
+            public boolean matches (final Object arg0)
+            {
+              assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
+              final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
+              final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
+              final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
+              return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+                      && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+                      && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+                      && matchClientConfig.getClientTcpPort () == client.getPort ();
+            }
+
+            @Override
+            public void describeTo (final Description arg0)
+            {
+            }
+          };
+          verify (mockClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
+
+          return connectCount.getAndIncrement ();
+
+        }
+        catch (InterruptedException | BrokenBarrierException e)
+        {
+          fail (e.toString ());
+          return -1;
+        }
+      }
+    };
+
   }
 
   @Test
@@ -812,7 +878,7 @@ public class MultiplayerControllerTest
     // disconnect client
     eventBus.publish (new ClientDisconnectionEvent (client));
     assertFalse (mpc.isClientInServer (client));
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket)));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (mockPlayerPacket));
   }
 
@@ -857,7 +923,7 @@ public class MultiplayerControllerTest
     when (mockPlayerPacket.hasName (eq (playerName))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName), client);
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket)));
     verify (mockClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
 

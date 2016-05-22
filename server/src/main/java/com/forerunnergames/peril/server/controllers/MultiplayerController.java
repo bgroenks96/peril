@@ -71,7 +71,6 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEv
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 
 import java.util.Collections;
@@ -454,7 +453,7 @@ public final class MultiplayerController extends ControllerAdapter
     // local host has joined the host-and-play server
     if (isHostAndPlay () && !isHostConnected () && isLocalHost (client)) host = client;
 
-    sendJoinGameServerSuccess (client, clientsToPlayers.players ());
+    sendJoinGameServerSuccess (client);
   }
 
   void handleEvent (final PlayerJoinGameRequestEvent event, final Remote client)
@@ -672,10 +671,10 @@ public final class MultiplayerController extends ControllerAdapter
     clientsToSpectators.remove (client); // remove from spectators, if client is an spectator
   }
 
-  private void sendJoinGameServerSuccess (final Remote client, final ImmutableSet <PlayerPacket> players)
+  private void sendJoinGameServerSuccess (final Remote client)
   {
     final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig,
-            createClientConfig (client.getAddress (), client.getPort ()), players);
+            createClientConfig (client.getAddress (), client.getPort ()));
 
     playerCommunicator.sendTo (client, successEvent);
     clientsInServer.add (client);

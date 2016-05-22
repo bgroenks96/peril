@@ -176,7 +176,7 @@ public final class DebugEventGenerator
       return;
     }
 
-    eventBus.publish (new PlayerJoinGameSuccessEvent (player.get ()));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (player.get (), ImmutableSet.copyOf (unavailablePlayers)));
   }
 
   void generateCountryArmiesChangedEvent ()

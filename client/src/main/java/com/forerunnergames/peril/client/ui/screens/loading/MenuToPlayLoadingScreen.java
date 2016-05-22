@@ -329,8 +329,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
       @Override
       public void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfiguration,
-                                           final ClientConfiguration clientConfiguration,
-                                           final ImmutableSet <PlayerPacket> playersInGame)
+                                           final ClientConfiguration clientConfiguration)
       {
         Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
         Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
@@ -352,9 +351,10 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       }
 
       @Override
-      public void onPlayerJoinGameSuccess (final PlayerPacket player)
+      public void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
       {
         Arguments.checkIsNotNull (player, "player");
+        Arguments.checkIsNotNull (playersInGame, "playersInGame");
 
         log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
 
@@ -632,10 +632,6 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Gdx.app.postRunnable (new Runnable ()
     {
 
-
-
-
-
       @Override
       public void run ()
       {
@@ -769,9 +765,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           }
           default:
           {
-            throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].",
-                                                                     GameMode.class.getSimpleName (),
-                                                                     gameServerConfiguration.getGameMode ()));
+            throw new UnsupportedOperationException (
+                    Strings.format ("Unsupported {}: [{}].", GameMode.class.getSimpleName (),
+                                    gameServerConfiguration.getGameMode ()));
           }
         }
 
@@ -869,8 +865,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentLoadingProgressPercent = (playMapFactory.getAssetLoadingProgressPercent (gameServerConfiguration
-            .getMapMetadata ()) + assetManager.getProgressLoading ()) / 2.0f;
+    currentLoadingProgressPercent = (playMapFactory
+            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
+            + assetManager.getProgressLoading ()) / 2.0f;
   }
 
   private boolean loadingProgressIncreased ()
