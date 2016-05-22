@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes;
+package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
@@ -28,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 
-import com.forerunnergames.peril.client.ui.widgets.Padding;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
@@ -45,61 +44,49 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> implements MessageBox <T>
+public class DefaultMessageBox <T extends MessageBoxRow<? extends Message>> implements MessageBox <T>
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultMessageBox.class);
   private static final int MAX_ROWS = 100;
-  private final ScrollPane scrollPane;
+  private final Map <Actor, T> rowCache = new LinkedHashMap <> ();
+  private final MessageBoxStyle style;
   private final WidgetFactory widgetFactory;
-  private final String scrollPaneStyleName;
-  private final ScrollbarStyle scrollbarStyle;
-  private final MessageBoxRowStyle rowStyle;
-  private final Padding absolutePaddingTopBottom;
-  private final Map <Actor, T> actorsToRows = new LinkedHashMap <> ();
+  private final ScrollPane scrollPane;
   private final Table table;
 
-  public DefaultMessageBox (final WidgetFactory widgetFactory,
-                            final String scrollPaneStyleName,
-                            final ScrollbarStyle scrollbarStyle,
-                            final MessageBoxRowStyle rowStyle,
-                            final Padding scrollPaddingTopBottom,
-                            final Padding absolutePaddingTopBottom)
+  public DefaultMessageBox (final MessageBoxStyle style, final WidgetFactory widgetFactory)
   {
+    Arguments.checkIsNotNull (style, "style");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (scrollPaneStyleName, "scrollPaneStyleName");
-    Arguments.checkIsNotNull (scrollbarStyle, "scrollBarStyle");
-    Arguments.checkIsNotNull (rowStyle, "rowStyle");
-    Arguments.checkIsNotNull (scrollPaddingTopBottom, "scrollPaddingTopBottom");
-    Arguments.checkIsNotNull (absolutePaddingTopBottom, "absolutePaddingTopBottom");
 
+    this.style = style;
     this.widgetFactory = widgetFactory;
-    this.scrollPaneStyleName = scrollPaneStyleName;
-    this.scrollbarStyle = scrollbarStyle;
-    this.rowStyle = rowStyle;
-    this.absolutePaddingTopBottom = absolutePaddingTopBottom;
 
     table = new Table ();
 
     configureTable ();
 
-    scrollPane = new ScrollPane (table, widgetFactory.createScrollPaneStyle (scrollPaneStyleName, scrollbarStyle))
+    scrollPane = new ScrollPane (table, widgetFactory.createScrollPaneStyle (style.getScrollPaneStyle (),
+                                                                             style.getScrollbarStyle ()))
     {
+      private final int scissorsDeltaY = 2 + DefaultMessageBox.this.style.getScrollPaddingBottom ();
+      private final int scissorsDeltaHeight = 1 - DefaultMessageBox.this.style.getScrollPaddingTop ()
+              - DefaultMessageBox.this.style.getScrollPaddingBottom ();
+
       @Override
       protected void drawChildren (final Batch batch, final float parentAlpha)
       {
-        // @formatter:off
         final Rectangle scissors = ScissorStack.popScissors ();
-        scissors.setY (scissors.getY () + 2 + scrollPaddingTopBottom.getBottom ());
-        scissors.setHeight (scissors.getHeight () + 1 - scrollPaddingTopBottom.getTop () - scrollPaddingTopBottom.getBottom ());
+        scissors.setY (scissors.getY () + scissorsDeltaY);
+        scissors.setHeight (scissors.getHeight () + scissorsDeltaHeight);
         ScissorStack.pushScissors (scissors);
         super.drawChildren (batch, parentAlpha);
-        // @formatter:on
       }
     };
 
     scrollPane.setOverscroll (false, false);
     scrollPane.setFlickScroll (true);
-    scrollPane.setForceScroll (false, scrollbarStyle.areScrollbarsRequired ());
+    scrollPane.setForceScroll (false, style.areScrollbarsRequired ());
     scrollPane.setFadeScrollBars (false);
     scrollPane.setScrollingDisabled (true, false);
     scrollPane.setScrollBarPositions (true, true);
@@ -134,13 +121,13 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 
     limitOldRows ();
 
-    table.row ().expandX ().fillX ().prefHeight (rowStyle.getHeight ());
+    table.row ().expandX ().fillX ().prefHeight (style.getRowHeight ());
     table.add (row.asActor ());
 
     table.layout ();
     scrollPane.layout ();
 
-    actorsToRows.put (row.asActor (), row);
+    rowCache.put (row.asActor (), row);
   }
 
   @Override
@@ -152,7 +139,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public void clear ()
   {
-    actorsToRows.clear ();
+    rowCache.clear ();
     table.reset ();
     configureTable ();
   }
@@ -160,7 +147,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public MessageBoxRowStyle getRowStyle ()
   {
-    return rowStyle;
+    return style.getRowStyle ();
   }
 
   @Override
@@ -173,11 +160,11 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @OverridingMethodsMustInvokeSuper
   public void refreshAssets ()
   {
-    scrollPane.setStyle (widgetFactory.createScrollPaneStyle (scrollPaneStyleName, scrollbarStyle));
+    scrollPane.setStyle (widgetFactory.createScrollPaneStyle (style.getScrollPaneStyle (), style.getScrollbarStyle ()));
 
     for (final Actor actor : table.getChildren ())
     {
-      final MessageBoxRow <?> row = actorsToRows.get (actor);
+      final MessageBoxRow <?> row = rowCache.get (actor);
 
       if (row == null)
       {
@@ -209,7 +196,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
       throw new IllegalStateException (Strings.format ("Row with index [{}] is invalid (actor is null).", index));
     }
 
-    final T row = actorsToRows.get (actor);
+    final T row = rowCache.get (actor);
 
     if (row == null)
     {
@@ -222,24 +209,24 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public ImmutableList <T> getRows ()
   {
-    return ImmutableList.copyOf (actorsToRows.values ());
+    return ImmutableList.copyOf (rowCache.values ());
   }
 
   private void configureTable ()
   {
-    table.top ().padLeft (rowStyle.getPaddingLeft ()).padRight (rowStyle.getPaddingRight ())
-            .padTop (absolutePaddingTopBottom.getTop ()).padBottom (absolutePaddingTopBottom.getBottom ());
+    table.top ().padLeft (style.getRowPaddingLeft ()).padRight (style.getRowPaddingRight ())
+            .padTop (style.getAbsolutePaddingTop ()).padBottom (style.getAbsolutePaddingBottom ());
   }
 
   private void limitOldRows ()
   {
-    if (actorsToRows.size () < MAX_ROWS) return;
+    if (rowCache.size () < MAX_ROWS) return;
 
     log.trace ("Limit old rows (before): Number of rows in cache: {}", getRows ().size ());
     log.trace ("Limit old rows (before): Number of rows in table: {}", table.getRows ());
 
     // Remove oldest row (safety is guaranteed as long as MAX_ROWS > 0).
-    final Iterator <Map.Entry <Actor, T>> iterator = actorsToRows.entrySet ().iterator ();
+    final Iterator <Map.Entry <Actor, T>> iterator = rowCache.entrySet ().iterator ();
     final Map.Entry <Actor, T> entryToRemove = iterator.next ();
     iterator.remove ();
     log.trace ("Removed old row [{}].", entryToRemove.getValue ());
@@ -249,9 +236,9 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
     configureTable ();
 
     // Re-add all rows (with the oldest one already removed).
-    for (final Map.Entry <Actor, T> entry : actorsToRows.entrySet ())
+    for (final Map.Entry <Actor, T> entry : rowCache.entrySet ())
     {
-      table.row ().expandX ().fillX ().prefHeight (rowStyle.getHeight ());
+      table.row ().expandX ().fillX ().prefHeight (style.getRowHeight ());
       table.add (entry.getKey ());
     }
 
@@ -260,5 +247,14 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 
     log.trace ("Limit old rows (after): Number of rows in cache: {}", getRows ().size ());
     log.trace ("Limit old rows (after): Number of rows in table: {}", table.getRows ());
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Style: [{}] | ScrollPane: [{}] | ScrollPane Child Widget: [{}] | Row Cache: [{}] | "
+                                   + "Max Rows: [{}] | WidgetFactory: [{}]", getClass ().getSimpleName (), style,
+                           scrollPane, table, rowCache,
+                           MAX_ROWS, widgetFactory);
   }
 }

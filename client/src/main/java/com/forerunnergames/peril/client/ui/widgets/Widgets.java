@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.ui.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 
+import com.forerunnergames.peril.client.ui.widgets.padding.CellPadding;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 

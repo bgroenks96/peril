@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets;
+package com.forerunnergames.peril.client.ui.widgets.padding;
 
 public enum CellPadding
 {

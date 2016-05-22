@@ -36,8 +36,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;

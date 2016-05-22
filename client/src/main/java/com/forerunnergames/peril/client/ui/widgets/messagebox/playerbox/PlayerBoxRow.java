@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox;
+package com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -23,9 +23,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;

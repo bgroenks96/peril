@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes;
+package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -64,7 +64,7 @@ public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
   @OverridingMethodsMustInvokeSuper
   public void refreshAssets ()
   {
-    getLabel ().setStyle (widgetFactory.createLabelStyle (rowStyle.getLabelStyleName ()));
+    getLabel ().setStyle (widgetFactory.createLabelStyle (rowStyle.getLabelStyle ()));
   }
 
   @Override
@@ -85,7 +85,7 @@ public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
     if (label == null)
     {
       label = widgetFactory.createWrappingLabel (parse (message), rowStyle.getLabelAlignment (),
-                                                 rowStyle.getLabelStyleName ());
+                                                 rowStyle.getLabelStyle ());
     }
 
     return label;

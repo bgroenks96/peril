@@ -43,7 +43,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultCountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.CellPadding;
+import com.forerunnergames.peril.client.ui.widgets.padding.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;

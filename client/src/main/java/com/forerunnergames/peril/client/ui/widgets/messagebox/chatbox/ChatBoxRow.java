@@ -16,11 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox;
+package com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.LabelMessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 

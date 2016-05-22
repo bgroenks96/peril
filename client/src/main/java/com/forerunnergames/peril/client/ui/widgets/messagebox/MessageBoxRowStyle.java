@@ -16,39 +16,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes;
+package com.forerunnergames.peril.client.ui.widgets.messagebox;
 
+import com.forerunnergames.peril.client.ui.widgets.padding.HorizontalPadding;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 
 public final class MessageBoxRowStyle
 {
-  private final String labelStyleName;
+  private final String labelStyle;
   private final int labelAlignment;
-  private final float height;
-  private final float paddingLeft;
-  private final float paddingRight;
+  private final int height;
+  private final HorizontalPadding hPadding = new HorizontalPadding ();
 
-  public MessageBoxRowStyle (final String labelStyleName,
+  public MessageBoxRowStyle (final String labelStyle,
                              final int labelAlignment,
-                             final float height,
-                             final float paddingLeft,
-                             final float paddingRight)
+                             final int height,
+                             final HorizontalPadding hPadding)
   {
-    Arguments.checkIsNotNull (labelStyleName, "labelStyleName");
+    Arguments.checkIsNotNull (labelStyle, "labelStyle");
     Arguments.checkIsNotNegative (height, "height");
-    Arguments.checkIsNotNegative (paddingLeft, "paddingLeft");
-    Arguments.checkIsNotNegative (paddingRight, "paddingRight");
+    Arguments.checkIsNotNull (hPadding, "hPadding");
 
-    this.labelStyleName = labelStyleName;
+    this.labelStyle = labelStyle;
     this.labelAlignment = labelAlignment;
     this.height = height;
-    this.paddingLeft = paddingLeft;
-    this.paddingRight = paddingRight;
+    this.hPadding.set (hPadding);
   }
 
-  public String getLabelStyleName ()
+  public String getLabelStyle ()
   {
-    return labelStyleName;
+    return labelStyle;
   }
 
   public int getLabelAlignment ()
@@ -56,18 +54,25 @@ public final class MessageBoxRowStyle
     return labelAlignment;
   }
 
-  public float getHeight ()
+  public int getHeight ()
   {
     return height;
   }
 
-  public float getPaddingLeft ()
+  public int getPaddingLeft ()
   {
-    return paddingLeft;
+    return hPadding.getLeft ();
   }
 
-  public float getPaddingRight ()
+  public int getPaddingRight ()
   {
-    return paddingRight;
+    return hPadding.getRight ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Label Style: [{}] | Label Alignment: [{}] | Row Height: [{}] | H-Padding: [{}]",
+                           getClass ().getSimpleName (), labelStyle, labelAlignment, height, hPadding);
   }
 }

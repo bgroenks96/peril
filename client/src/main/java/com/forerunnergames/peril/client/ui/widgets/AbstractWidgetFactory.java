@@ -59,18 +59,23 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.ErrorDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.DefaultMessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.LabelMessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.ScrollbarStyle;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.TextFieldStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.padding.HorizontalPadding;
+import com.forerunnergames.peril.client.ui.widgets.padding.VerticalPadding;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactoryCreator;
@@ -91,26 +96,65 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
 {
   private static final String MESSAGE_BOX_ROW_HIGHLIGHTING_DRAWABLE_NAME = "message-box-row-highlighting";
   private static final String CHATBOX_BACKGROUND_DRAWABLE_NAME = "chat-box-borders";
+  private static final int CHAT_BOX_SCROLL_PADDING_BOTTOM = 3;
+  private static final int CHAT_BOX_SCROLLPANE_HEIGHT = 222;
+  private static final int CHAT_BOX_SCROLLPANE_TEXTFIELD_SPACING = 2;
+  private static final int PLAYER_BOX_ROW_PADDING_LEFT = 0;
+  private static final int PLAYER_BOX_ABSOLUTE_PADDING_TOP = 3;
+  private static final int PLAYER_BOX_ABSOLUTE_PADDING_BOTTOM = 3;
   private static final int DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT = Align.left;
   private static final int DEFAULT_MESSAGE_BOX_ROW_HEIGHT = 24;
   private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT = 14;
   private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT = 14;
+  private static final int DEFAULT_MESSAGE_BOX_SCROLL_PADDING_TOP = 2;
+  private static final int DEFAULT_MESSAGE_BOX_SCROLL_PADDING_BOTTOM = 2;
+  private static final int DEFAULT_MESSAGE_BOX_ABSOLUTE_PADDING_TOP = 6;
+  private static final int DEFAULT_MESSAGE_BOX_ABSOLUTE_PADDING_BOTTOM = 6;
   private static final int DEFAULT_MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
   private static final int DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
+  private static final int DEFAULT_TEXTFIELD_MAX_CHARS = 80;
+  private static final int DEFAULT_TEXTFIELD_HEIGHT = 24;
+  private static final int DEFAULT_TEXTFIELD_PADDING_LEFT = 0;
+  private static final int DEFAULT_TEXTFIELD_PADDING_RIGHT = 0;
+  private static final Pattern DEFAULT_TEXTFIELD_FILTER_ALLOW_EVERYTHING = Pattern.compile (".*");
+  private static final HorizontalPadding DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING = new HorizontalPadding (
+          DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+  private static final VerticalPadding DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING = new VerticalPadding (
+          DEFAULT_MESSAGE_BOX_SCROLL_PADDING_TOP, DEFAULT_MESSAGE_BOX_SCROLL_PADDING_BOTTOM);
+  private static final VerticalPadding DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING = new VerticalPadding (
+          DEFAULT_MESSAGE_BOX_ABSOLUTE_PADDING_TOP, DEFAULT_MESSAGE_BOX_ABSOLUTE_PADDING_BOTTOM);
+  private static final VerticalPadding CHAT_BOX_SCROLL_V_PADDING = new VerticalPadding (
+          DEFAULT_MESSAGE_BOX_SCROLL_PADDING_TOP, CHAT_BOX_SCROLL_PADDING_BOTTOM);
+  private static final HorizontalPadding DEFAULT_TEXTFIELD_H_PADDING = new HorizontalPadding (
+          DEFAULT_TEXTFIELD_PADDING_LEFT, DEFAULT_TEXTFIELD_PADDING_RIGHT);
   private static final MessageBoxRowStyle STATUS_BOX_ROW_STYLE = new MessageBoxRowStyle (
           StyleSettings.STATUS_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
-          DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+          DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING);
   private static final MessageBoxRowStyle CHATBOX_ROW_STYLE = new MessageBoxRowStyle (
           StyleSettings.CHAT_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
-          DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+          DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING);
   private static final MessageBoxRowStyle PLAYER_BOX_ROW_STYLE = new MessageBoxRowStyle (
           StyleSettings.PLAYER_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
-          0, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT);
+          new HorizontalPadding (PLAYER_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT));
   private static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.REQUIRED, DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT,
           DEFAULT_MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
+  private static final MessageBoxStyle STATUS_BOX_STYLE = new MessageBoxStyle (
+          StyleSettings.STATUS_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, STATUS_BOX_ROW_STYLE,
+          DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING);
+  private static final ChatBoxStyle CHAT_BOX_STYLE = new ChatBoxStyle (new MessageBoxStyle (
+          StyleSettings.CHAT_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, CHATBOX_ROW_STYLE,
+          CHAT_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING), CHAT_BOX_SCROLLPANE_HEIGHT,
+          CHAT_BOX_SCROLLPANE_TEXTFIELD_SPACING, new TextFieldStyle (StyleSettings.CHAT_BOX_TEXTFIELD_STYLE,
+                  DEFAULT_TEXTFIELD_HEIGHT, DEFAULT_TEXTFIELD_H_PADDING, DEFAULT_TEXTFIELD_MAX_CHARS,
+                  DEFAULT_TEXTFIELD_FILTER_ALLOW_EVERYTHING));
+  private static final VerticalPadding PLAYER_BOX_ABSOLUTE_V_PADDING = new VerticalPadding (
+          PLAYER_BOX_ABSOLUTE_PADDING_TOP, PLAYER_BOX_ABSOLUTE_PADDING_BOTTOM);
+  private static final MessageBoxStyle PLAYER_BOX_STYLE = new MessageBoxStyle (
+          StyleSettings.PLAYER_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, PLAYER_BOX_ROW_STYLE,
+          DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, PLAYER_BOX_ABSOLUTE_V_PADDING);
   private static final ScrollbarStyle DEFAULT_SELECT_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.OPTIONAL, DEFAULT_SELECT_BOX_HORIZONTAL_SCROLLBAR_HEIGHT,
           DEFAULT_SELECT_BOX_VERTICAL_SCROLLBAR_WIDTH);
@@ -445,49 +489,40 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public MessageBox <MessageBoxRow <Message>> createDialogMessageBox (final String scrollPaneStyleName,
-                                                                      final String rowLabelStyleName,
+  public MessageBox <MessageBoxRow <Message>> createDialogMessageBox (final String scrollPaneStyle,
+                                                                      final String rowLabelStyle,
                                                                       final int rowLabelAlignment,
                                                                       final ScrollbarStyle scrollbarStyle)
   {
-    Arguments.checkIsNotNull (scrollPaneStyleName, "scrollPaneStyleName");
-    Arguments.checkIsNotNull (rowLabelStyleName, "rowLabelStyleName");
+    Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyleName");
+    Arguments.checkIsNotNull (rowLabelStyle, "rowLabelStyleName");
     Arguments.checkIsNotNull (rowLabelAlignment, "rowLabelAlignment");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollbarStyle");
 
-    return new DefaultMessageBox <> (this, scrollPaneStyleName, scrollbarStyle, new MessageBoxRowStyle (
-            rowLabelStyleName, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT, DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT,
-            DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT), new Padding (0, 0, 2, 2), new Padding (0, 0, 6, 6));
+    return new DefaultMessageBox <> (new MessageBoxStyle (scrollPaneStyle, scrollbarStyle, new MessageBoxRowStyle (
+            rowLabelStyle, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
+            DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING), DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING,
+            DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING), this);
   }
 
   @Override
-  public MessageBox <StatusBoxRow> createStatusBox (final String scrollPaneStyle)
+  public MessageBox <StatusBoxRow> createStatusBox ()
   {
-    Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
-
-    return new DefaultMessageBox <> (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, STATUS_BOX_ROW_STYLE,
-            new Padding (0, 0, 2, 2), new Padding (0, 0, 6, 6));
+    return new DefaultMessageBox <> (STATUS_BOX_STYLE, this);
   }
 
   @Override
-  public MessageBox <ChatBoxRow> createChatBox (final String scrollPaneStyle,
-                                                final String textFieldStyle,
-                                                final MBassador <Event> eventBus)
+  public MessageBox <ChatBoxRow> createChatBox (final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
-    Arguments.checkIsNotNull (textFieldStyle, "textFieldStyle");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    return new ChatBox (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, CHATBOX_ROW_STYLE, textFieldStyle,
-            eventBus);
+    return new ChatBox (CHAT_BOX_STYLE, this, eventBus);
   }
 
   @Override
-  public PlayerBox createPlayerBox (final String scrollPaneStyle)
+  public PlayerBox createPlayerBox ()
   {
-    Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyle");
-
-    return new PlayerBox (this, scrollPaneStyle, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, PLAYER_BOX_ROW_STYLE);
+    return new PlayerBox (PLAYER_BOX_STYLE, this);
   }
 
   @Override

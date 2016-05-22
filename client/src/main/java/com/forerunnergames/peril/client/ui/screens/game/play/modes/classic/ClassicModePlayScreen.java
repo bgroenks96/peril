@@ -79,10 +79,10 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;

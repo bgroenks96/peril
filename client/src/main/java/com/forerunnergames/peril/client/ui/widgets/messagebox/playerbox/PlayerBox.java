@@ -16,13 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox;
+package com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox;
 
-import com.forerunnergames.peril.client.ui.widgets.Padding;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.DefaultMessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -45,12 +43,9 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   @Nullable
   private PlayerPacket highlightedPlayer;
 
-  public PlayerBox (final WidgetFactory widgetFactory,
-                    final String scrollPaneStyle,
-                    final ScrollbarStyle scrollbarStyle,
-                    final MessageBoxRowStyle rowStyle)
+  public PlayerBox (final MessageBoxStyle style, final WidgetFactory widgetFactory)
   {
-    super (widgetFactory, scrollPaneStyle, scrollbarStyle, rowStyle, new Padding (0, 0, 2, 2), new Padding (0, 0, 3, 3));
+    super (style, widgetFactory);
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 

@@ -16,31 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messageboxes;
+package com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.forerunnergames.peril.client.messages.StatusMessage;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 
-import com.forerunnergames.tools.common.Message;
-
-import com.google.common.collect.ImmutableList;
-
-public interface MessageBox <T extends MessageBoxRow <? extends Message>>
+public final class StatusBoxRow extends LabelMessageBoxRow <StatusMessage>
 {
-  void addRow (final T row);
-
-  void showLastRow ();
-
-  void clear ();
-
-  MessageBoxRowStyle getRowStyle ();
-
-  Actor asActor ();
-
-  void refreshAssets ();
-
-  boolean hasRowWithIndex (final int index);
-
-  T getRowByIndex (final int index);
-
-  ImmutableList <T> getRows ();
+  public StatusBoxRow (final StatusMessage message,
+                       final MessageBoxRowStyle rowStyle,
+                       final WidgetFactory widgetFactory)
+  {
+    super (message, rowStyle, widgetFactory);
+  }
 }

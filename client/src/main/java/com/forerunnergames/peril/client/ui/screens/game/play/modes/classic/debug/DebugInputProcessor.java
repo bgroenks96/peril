@@ -29,10 +29,10 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widge
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;

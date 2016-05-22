@@ -43,15 +43,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBoxRowStyle;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.ScrollbarStyle;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -130,18 +130,16 @@ public interface WidgetFactory
 
   Dialog createErrorDialog (final Stage stage, final String submitButtonText, final DialogListener listener);
 
-  MessageBox <MessageBoxRow <Message>> createDialogMessageBox (final String scrollPaneStyleName,
-                                                               final String rowLabelStyleName,
+  MessageBox <MessageBoxRow <Message>> createDialogMessageBox (final String scrollPaneStyle,
+                                                               final String rowLabelStyle,
                                                                final int rowLabelAlignment,
                                                                final ScrollbarStyle scrollbarStyle);
 
-  MessageBox <StatusBoxRow> createStatusBox (final String scrollPaneStyle);
+  MessageBox <StatusBoxRow> createStatusBox ();
 
-  MessageBox <ChatBoxRow> createChatBox (final String scrollPaneStyle,
-                                         final String textFieldStyle,
-                                         final MBassador <Event> eventBus);
+  MessageBox <ChatBoxRow> createChatBox (final MBassador <Event> eventBus);
 
-  PlayerBox createPlayerBox (final String scrollPaneStyle);
+  PlayerBox createPlayerBox ();
 
   ProgressBar createHorizontalProgressBar (final float min, final float max, final float stepSize, final String style);
 

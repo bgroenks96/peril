@@ -21,7 +21,7 @@ package com.forerunnergames.peril.client.ui.widgets.dialogs;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.settings.StyleSettings;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.ScrollbarStyle;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class DialogStyle

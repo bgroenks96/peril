@@ -55,10 +55,6 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.MessageBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messageboxes.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -123,21 +119,6 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public Drawable createControlRoomBoxTitleBackgroundDrawable ()
   {
     return new NinePatchDrawable (createNinePatchFromTextureRegion (CONTROL_ROOM_BOX_TITLE_BACKGROUND_DRAWABLE_NAME));
-  }
-
-  public MessageBox <StatusBoxRow> createStatusBox ()
-  {
-    return createStatusBox (StyleSettings.STATUS_BOX_SCROLLPANE_STYLE);
-  }
-
-  public MessageBox <ChatBoxRow> createChatBox (final MBassador <Event> eventBus)
-  {
-    return createChatBox (StyleSettings.CHAT_BOX_SCROLLPANE_STYLE, StyleSettings.CHAT_BOX_TEXTFIELD_STYLE, eventBus);
-  }
-
-  public PlayerBox createPlayerBox ()
-  {
-    return createPlayerBox (StyleSettings.PLAYER_BOX_SCROLLPANE_STYLE);
   }
 
   public IntelBox createIntelBox (final EventListener detailedReportButtonListener)
