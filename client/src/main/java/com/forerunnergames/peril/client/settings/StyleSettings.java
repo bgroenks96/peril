@@ -73,19 +73,19 @@ public final class StyleSettings
   public static final String PLAYER_BOX_ROW_LABEL_STYLE = "player-box-message";
 
   // Play Screen Intel Box
-  public static final String INTEL_BOX_TITLE_LABEL_STYLE = "sidebar-title";
-  public static final String INTEL_BOX_SETTING_NAME_LABEL_STYLE = "sidebar-setting-name";
-  public static final String INTEL_BOX_SETTING_TEXT_LABEL_STYLE = "sidebar-setting-text";
-  public static final String INTEL_BOX_BUTTON_TEXT_LABEL_STYLE = "sidebar-button";
+  public static final String INTEL_BOX_TITLE_LABEL_STYLE = "side-bar-title";
+  public static final String INTEL_BOX_SETTING_NAME_LABEL_STYLE = "side-bar-setting-name";
+  public static final String INTEL_BOX_SETTING_TEXT_LABEL_STYLE = "side-bar-setting-text";
+  public static final String INTEL_BOX_BUTTON_TEXT_LABEL_STYLE = "side-bar-button";
   public static final String INTEL_BOX_DETAILED_REPORT_IMAGE_BUTTON_STYLE = "detailed-report";
 
   // Play Screen Control Room Box
-  public static final String CONTROL_ROOM_BOX_TITLE_LABEL_STYLE = "sidebar-title";
-  public static final String CONTROL_ROOM_BOX_BUTTON_TEXT_LABEL_STYLE = "sidebar-button";
-  public static final String CONTROL_ROOM_BOX_TRADE_IN_IMAGE_BUTTON_STYLE = "trade-in-new";
-  public static final String CONTROL_ROOM_BOX_FORTIFY_IMAGE_BUTTON_STYLE = "fortify-new";
-  public static final String CONTROL_ROOM_BOX_END_TURN_IMAGE_BUTTON_STYLE = "end-turn-new";
-  public static final String CONTROL_ROOM_BOX_MY_SETTINGS_IMAGE_BUTTON_STYLE = "my-settings-new";
+  public static final String CONTROL_ROOM_BOX_TITLE_LABEL_STYLE = "side-bar-title";
+  public static final String CONTROL_ROOM_BOX_BUTTON_TEXT_LABEL_STYLE = "side-bar-button";
+  public static final String CONTROL_ROOM_BOX_TRADE_IN_IMAGE_BUTTON_STYLE = "trade-in";
+  public static final String CONTROL_ROOM_BOX_FORTIFY_IMAGE_BUTTON_STYLE = "fortify";
+  public static final String CONTROL_ROOM_BOX_END_TURN_IMAGE_BUTTON_STYLE = "end-turn";
+  public static final String CONTROL_ROOM_BOX_MY_SETTINGS_IMAGE_BUTTON_STYLE = "my-settings";
   public static final String CONTROL_ROOM_BOX_SURRENDER_IMAGE_BUTTON_STYLE = "surrender";
 
   // Play Screen Army Movement Dialogs (Occupy & Reinforce)
