@@ -1043,7 +1043,7 @@ public final class GameModel
               countryMapGraphModel.countryPacketWith (attacker.getCountryId ()), defenderCountry,
               minOccupationArmyCount, maxOccupationArmyCount));
 
-      publish (new PlayerAttackVictoryEvent (resultPacket));
+      publish (new PlayerAttackVictoryEvent (newOwner, resultPacket));
     }
 
     clearCacheValues (CacheKey.BATTLE_ATTACKER_DATA, CacheKey.BATTLE_DEFENDER_DATA,
