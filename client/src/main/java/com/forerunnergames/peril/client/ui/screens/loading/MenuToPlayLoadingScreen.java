@@ -201,7 +201,6 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           @Override
           public void run ()
           {
-            log.error ("Progress bar value: {}", progressBar.getValue ());
             screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
           }
         });
