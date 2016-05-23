@@ -50,7 +50,7 @@ public final class PlayerFortifyCountryRequestEvent extends AbstractPlayerEvent 
   @Override
   public String toString ()
   {
-    return Strings.format (" | FortifyVectors: [{}]", super.toString (), fortifyVectors);
+    return Strings.format ("{} | FortifyVectors: [{}]", super.toString (), fortifyVectors);
   }
 
   @RequiredForNetworkSerialization
