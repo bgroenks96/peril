@@ -354,6 +354,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       {
         Arguments.checkIsNotNull (player, "player");
         Arguments.checkIsNotNull (playersInGame, "playersInGame");
+        Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
 
         log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
 
