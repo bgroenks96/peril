@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 /**
  * Utility type for state machine integration tests.
  */
-public final class StateMachineTest
+public final class StateMachineTester
 {
   public static final int DEFAULT_TEST_TIMEOUT = 5000;
   public static final int DEFAULT_STATE_CHANGE_TIMOUT = 3000;
@@ -53,7 +53,7 @@ public final class StateMachineTest
   private final StateChangeMonitor monitor = new StateChangeMonitor ();
   private final Logger log;
 
-  public StateMachineTest (final StateMachineEventHandler stateMachine, final Logger log)
+  public StateMachineTester (final StateMachineEventHandler stateMachine, final Logger log)
   {
     Arguments.checkIsNotNull (stateMachine, "stateMachine");
     Arguments.checkIsNotNull (log, "log");
@@ -77,7 +77,7 @@ public final class StateMachineTest
   }
 
   /**
-   * StateMachineTest keeps an internal queue of all states transitioned into by the state machine. This method
+   * StateMachineTester keeps an internal queue of all states transitioned into by the state machine. This method
    * essentially polls that queue, so the returned value may or may not be the current state the state machine is in,
    * but it allows for verification that the state machine reached the expected state in sequence. Subsequent calls to
    * this method after polling the state machine's current state will continue to return the name of that state.

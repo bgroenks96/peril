@@ -20,14 +20,21 @@ package com.forerunnergames.peril.integration.server.smoke;
 
 import static org.testng.Assert.assertTrue;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.server.ServerConfiguration;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -47,6 +54,7 @@ public class ServerMultiplayerControllerSmokeTest
   private final TestClient client;
   private final String serverAddr;
   private final int serverPort;
+  private final Kryo kryo;
 
   @Factory (dataProvider = "environmentProvider", dataProviderClass = Providers.class)
   public ServerMultiplayerControllerSmokeTest (final MBassador <Event> eventBus,
@@ -63,6 +71,7 @@ public class ServerMultiplayerControllerSmokeTest
     this.client = client;
     serverAddr = serverConfig.getServerAddress ();
     serverPort = serverConfig.getServerTcpPort ();
+    kryo = server.getKryo ();
 
     client.initialize ();
     server.start ();
@@ -80,6 +89,43 @@ public class ServerMultiplayerControllerSmokeTest
   {
     client.sendEvent (new JoinGameServerRequestEvent ());
     client.waitForEventCommunication (JoinGameServerSuccessEvent.class, true);
+  }
+
+  @Test (dependsOnMethods = "testJoinServer")
+  public void testJoinGame ()
+  {
+    client.sendEvent (new PlayerJoinGameRequestEvent ("TestPlayer1"));
+    client.waitForEventCommunication (PlayerJoinGameSuccessEvent.class, true);
+  }
+
+  @Test (dependsOnMethods = "testJoinGame")
+  public void testSendingNetworkSerializableClasses ()
+  {
+    final Collection <Class <?>> failedClasses = new HashSet <> ();
+
+    for (final Class <?> registeredClass : KryonetRegistration.CLASSES)
+    {
+      if (! registeredClass.isAssignableFrom (Event.class)) continue;
+
+      try
+      {
+        final Object object = kryo.newInstance (registeredClass);
+
+        if (object == null)
+        {
+          failedClasses.add (registeredClass);
+          continue;
+        }
+
+        server.sendEventToAllClients ((Event) object);
+      }
+      catch (final InstantiationError e)
+      {
+        failedClasses.add (registeredClass);
+      }
+    }
+
+    if (!failedClasses.isEmpty ()) log.warn ("\nFailed to instantiate the following classes: \n\n{}", failedClasses);
   }
 
   @AfterClass

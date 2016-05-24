@@ -36,5 +36,4 @@ public abstract class AbstractActionResult implements ActionResult
   {
     return verified;
   }
-
 }

@@ -34,7 +34,7 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.integration.TestSessions;
 import com.forerunnergames.peril.integration.TestUtil;
-import com.forerunnergames.peril.integration.core.StateMachineTest;
+import com.forerunnergames.peril.integration.core.StateMachineTester;
 import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
 import com.forerunnergames.peril.integration.server.TestClient;
@@ -58,7 +58,7 @@ public final class InitialGamePhaseTest
   private final String sessionName;
   private DedicatedGameSession session;
   private InitialGamePhaseController controller;
-  private StateMachineTest stateMachineTest;
+  private StateMachineTester stateMachineTester;
 
   InitialGamePhaseTest (final String sessionName)
   {
@@ -72,7 +72,7 @@ public final class InitialGamePhaseTest
   {
     session = (DedicatedGameSession) TestSessions.get (sessionName);
     controller = new InitialGamePhaseController (session);
-    stateMachineTest = new StateMachineTest (session.getStateMachine (), log);
+    stateMachineTester = new StateMachineTester (session.getStateMachine (), log);
   }
 
   /*
@@ -85,7 +85,7 @@ public final class InitialGamePhaseTest
   {
     final InitialGamePhaseController controller = new InitialGamePhaseController (session);
     assertTrue (controller.connectAllClientsToGameServer ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testAllClientsJoinServer", groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
@@ -100,7 +100,7 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testAllClientsJoinGame", groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
@@ -113,7 +113,7 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testDeterminePlayerTurnOrder", groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
@@ -126,7 +126,7 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
@@ -195,7 +195,7 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
@@ -208,7 +208,7 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testRandomCountryAssignment", groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
@@ -216,7 +216,7 @@ public final class InitialGamePhaseTest
   {
     // this controller method performs assertions so we don't need to do anything
     controller.randomlyPlaceInitialReinforcements ();
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 
   @Test (dependsOnMethods = "testManualCountryAssignmentForAllClientsInOrder",
@@ -225,6 +225,6 @@ public final class InitialGamePhaseTest
   {
     // this controller method performs assertions so we don't need to do anything
     controller.randomlyPlaceInitialReinforcements ();
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 }

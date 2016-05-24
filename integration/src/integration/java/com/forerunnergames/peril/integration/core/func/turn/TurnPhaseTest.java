@@ -4,7 +4,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
 import com.forerunnergames.peril.integration.TestSessions;
-import com.forerunnergames.peril.integration.core.StateMachineTest;
+import com.forerunnergames.peril.integration.core.StateMachineTester;
 import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
 import com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTest;
@@ -22,7 +22,7 @@ public final class TurnPhaseTest
   private final String sessionName;
   private DedicatedGameSession session;
   private TurnPhaseController controller;
-  private StateMachineTest stateMachineTest;
+  private StateMachineTester stateMachineTester;
 
   TurnPhaseTest (final String sessionName)
   {
@@ -37,7 +37,7 @@ public final class TurnPhaseTest
     session = (DedicatedGameSession) TestSessions.get (sessionName);
     controller = new TurnPhaseController (session);
     controller.setUpInitialGamePhase (); // fast forward game state
-    stateMachineTest = new StateMachineTest (session.getStateMachine (), log);
+    stateMachineTester = new StateMachineTester (session.getStateMachine (), log);
   }
 
   @Test (enabled = false)
@@ -46,6 +46,6 @@ public final class TurnPhaseTest
     final ActionResult result = controller.waitForReinforcementPhaseToBegin ();
     assertFalse (result.hasAnyFailed ());
     assertEquals (session.getTestClientCount (), result.verified ());
-    assertFalse (stateMachineTest.checkError ().isPresent ());
+    assertFalse (stateMachineTester.checkError ().isPresent ());
   }
 }

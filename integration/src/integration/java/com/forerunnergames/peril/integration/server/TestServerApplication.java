@@ -18,9 +18,14 @@
 
 package com.forerunnergames.peril.integration.server;
 
+import com.esotericsoftware.kryo.Kryo;
+
 import com.forerunnergames.peril.server.application.ServerApplication;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
+import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.server.ServerController;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,21 +35,29 @@ public class TestServerApplication
   private final int CLIENT_CONNECTION_TIMEOUT_MS = 300000;
   private final MultiplayerController mpc;
   private final ServerApplication serverApplication;
+  private final ServerController serverController;
+  private final KryonetServer server;
   private final AtomicBoolean shouldShutDown = new AtomicBoolean ();
 
-  public TestServerApplication (final ServerApplication serverApplication, final MultiplayerController mpc)
+  public TestServerApplication (final ServerApplication serverApplication,
+                                final ServerController serverController,
+                                final KryonetServer server,
+                                final MultiplayerController mpc)
   {
     Arguments.checkIsNotNull (serverApplication, "serverApplication");
+    Arguments.checkIsNotNull (serverController, "serverController");
+    Arguments.checkIsNotNull (server, "server");
     Arguments.checkIsNotNull (mpc, "mpc");
 
     this.serverApplication = serverApplication;
+    this.serverController = serverController;
+    this.server = server;
     this.mpc = mpc;
   }
 
   public void start ()
   {
     serverApplication.initialize ();
-    mpc.initialize ();
     mpc.setClientConnectTimeout (CLIENT_CONNECTION_TIMEOUT_MS);
     Executors.newSingleThreadExecutor ().execute (new ServerUpdateLoop ());
   }
@@ -59,6 +72,18 @@ public class TestServerApplication
     return mpc;
   }
 
+  public void sendEventToAllClients (final Event event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    serverController.sendToAll (event);
+  }
+
+  public Kryo getKryo ()
+  {
+    return server.getKryo ();
+  }
+
   private class ServerUpdateLoop implements Runnable
   {
     @Override
@@ -70,7 +95,6 @@ public class TestServerApplication
         Thread.yield ();
       }
       serverApplication.shutDown ();
-      mpc.shutDown ();
     }
   }
 }

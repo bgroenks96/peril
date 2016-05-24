@@ -130,7 +130,7 @@ public class ServerFactory
     final String gameServerName = "TestGameServer-" + testGameServerId++;
     final int gameServerPort = serverPort;
 
-    final Server server = new KryonetServer ();
+    final KryonetServer server = new KryonetServer ();
 
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
 
@@ -151,6 +151,6 @@ public class ServerFactory
 
     final ServerApplication serverApplication = new ServerApplication (stateMachine, eventBus, mainThreadExecutor,
             serverController, multiplayerController);
-    return new TestServerApplication (serverApplication, multiplayerController);
+    return new TestServerApplication (serverApplication, serverController, server, multiplayerController);
   }
 }
