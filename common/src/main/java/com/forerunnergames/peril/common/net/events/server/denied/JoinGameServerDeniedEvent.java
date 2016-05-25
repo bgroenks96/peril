@@ -22,7 +22,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultDenied
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
@@ -53,8 +53,8 @@ public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig,
-                           deniedEvent);
+    return Strings
+            .format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig, deniedEvent);
   }
 
   @RequiredForNetworkSerialization

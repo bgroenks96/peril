@@ -21,7 +21,6 @@ package com.forerunnergames.peril.server.controllers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -83,15 +82,15 @@ import com.forerunnergames.tools.common.concurrent.DelayedCyclicBarrier.DelayMod
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
 import com.forerunnergames.tools.net.client.ClientConnector;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -124,8 +123,7 @@ public class MultiplayerControllerTest
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
   private final EventBusHandler eventHandler = new EventBusHandler ();
   private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
-  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
-                                                                  Mockito.RETURNS_SMART_NULLS);
+  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class, Mockito.RETURNS_SMART_NULLS);
   private final PlayerCommunicator defaultPlayerCommunicator = new DefaultPlayerCommunicator (mockClientCommunicator);
   private final SpectatorCommunicator defaultSpectatorCommunicator = new DefaultSpectatorCommunicator (
           mockClientCommunicator);
@@ -134,6 +132,19 @@ public class MultiplayerControllerTest
                                                                    defaultSpectatorCommunicator, mockCoreCommunicator);
   private int clientCount = 0;
   private MBassador <Event> eventBus;
+
+  // convenience method for fetching a new MultiplayerControllerBuilder
+  // Note: package private visibility is intended; other test classes in package should have access.
+  static MultiplayerControllerBuilder builder (final ClientConnector connector,
+                                               final PlayerCommunicator communicator,
+                                               final SpectatorCommunicator spectatorCommunicator,
+                                               final CoreCommunicator coreCommunicator)
+  {
+    Arguments.checkIsNotNull (connector, "connector");
+    Arguments.checkIsNotNull (communicator, "communicator");
+
+    return new MultiplayerControllerBuilder (connector, communicator, spectatorCommunicator, coreCommunicator);
+  }
 
   @Before
   public void setup ()
@@ -863,6 +874,8 @@ public class MultiplayerControllerTest
     // TODO ... need some mechanism for polling player data from core/server
   }
 
+  // <<<<<<<<<<<< Test helper facilities >>>>>>>>>>>>>> //
+
   // unit test for bug detailed in PERIL-100: https://forerunnergames.atlassian.net/browse/PERIL-100
   @Test
   public void testClientDisconnectAfterSendingPlayerJoinGameRequest ()
@@ -881,23 +894,7 @@ public class MultiplayerControllerTest
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (mockPlayerPacket));
   }
 
-  // <<<<<<<<<<<< Test helper facilities >>>>>>>>>>>>>> //
-
-  // convenience method for fetching a new MultiplayerControllerBuilder
-  // Note: package private visibility is intended; other test classes in package should have access.
-  static MultiplayerControllerBuilder builder (final ClientConnector connector,
-                                               final PlayerCommunicator communicator,
-                                               final SpectatorCommunicator spectatorCommunicator,
-                                               final CoreCommunicator coreCommunicator)
-  {
-    Arguments.checkIsNotNull (connector, "connector");
-    Arguments.checkIsNotNull (communicator, "communicator");
-
-    return new MultiplayerControllerBuilder (connector, communicator, spectatorCommunicator, coreCommunicator);
-  }
-
-  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
-                                                                final MultiplayerController mpc)
+  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName, final MultiplayerController mpc)
   {
     final Remote client = joinClientToGameServer ();
     final PlayerPacket player = addMockPlayerToGameWithName (playerName, client, mpc);
@@ -973,29 +970,29 @@ public class MultiplayerControllerTest
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
-            + eventHandler.lastEventType () + "] All events (newest to oldest): [" + eventHandler.getAllEvents ()
-            + "].", eventHandler.lastEventWasType (eventType));
+                        + eventHandler.lastEventType () + "] All events (newest to oldest): ["
+                        + eventHandler.getAllEvents () + "].", eventHandler.lastEventWasType (eventType));
   }
 
   private void assertLastEventWas (final Event event)
   {
     assertEquals ("Expected last event was [" + event + "], but was [" + eventHandler.lastEvent ()
-            + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
+                          + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
                   eventHandler.lastEvent ());
   }
 
   private void assertEventFiredExactlyOnce (final Class <?> eventType)
   {
     assertTrue ("Expected event type [" + eventType.getSimpleName () + "] was fired exactly once, but was fired ["
-            + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
-            + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
+                        + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
+                        + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
   }
 
   private void assertEventFiredExactlyOnce (final Event event)
   {
     assertTrue ("Expected event type [" + event.getClass ().getSimpleName ()
-            + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
-            + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
+                        + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
+                        + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
                 eventHandler.wasFiredExactlyOnce (event));
   }
 
@@ -1189,16 +1186,6 @@ public class MultiplayerControllerTest
       this.player = player;
     }
 
-    public Remote client ()
-    {
-      return client;
-    }
-
-    public PlayerPacket player ()
-    {
-      return player;
-    }
-
     @Override
     public int hashCode ()
     {
@@ -1220,6 +1207,16 @@ public class MultiplayerControllerTest
     public String toString ()
     {
       return Strings.format ("{}: Client: {} | Player: {}", getClass ().getSimpleName (), client, player);
+    }
+
+    public Remote client ()
+    {
+      return client;
+    }
+
+    public PlayerPacket player ()
+    {
+      return player;
     }
   }
 }

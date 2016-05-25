@@ -47,8 +47,8 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEv
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 import com.forerunnergames.tools.net.server.ServerCommunicator;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerConnector;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;

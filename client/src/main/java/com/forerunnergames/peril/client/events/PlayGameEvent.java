@@ -24,7 +24,7 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 import com.google.common.collect.ImmutableSet;
@@ -79,16 +79,12 @@ public final class PlayGameEvent implements LocalEvent
     return playMap;
   }
 
-  public MapMetadata getPlayMapMetadata ()
-  {
-    return playMap.getMapMetadata ();
-  }
-
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Game Server Configuration: {} | Client Configuration: {} | Players In Game: {} | Play Map Actor: {}",
-                           getClass ().getSimpleName (), gameServerConfig, clientConfig, playersInGame, playMap);
+    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {} | Players In Game: {} "
+                                   + "| Play Map Actor: {}", getClass ().getSimpleName (), gameServerConfig,
+                           clientConfig, playersInGame,
+                           playMap);
   }
 }

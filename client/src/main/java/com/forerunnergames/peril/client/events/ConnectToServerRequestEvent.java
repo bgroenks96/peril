@@ -21,7 +21,7 @@ package com.forerunnergames.peril.client.events;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 public final class ConnectToServerRequestEvent implements LocalEvent
 {

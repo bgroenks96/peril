@@ -21,6 +21,7 @@ package com.forerunnergames.peril.integration.server.smoke;
 import static org.testng.Assert.assertTrue;
 
 import com.esotericsoftware.kryo.Kryo;
+
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -31,7 +32,7 @@ import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -105,7 +106,7 @@ public class ServerMultiplayerControllerSmokeTest
 
     for (final Class <?> registeredClass : KryonetRegistration.CLASSES)
     {
-      if (! registeredClass.isAssignableFrom (Event.class)) continue;
+      if (!registeredClass.isAssignableFrom (Event.class)) continue;
 
       try
       {

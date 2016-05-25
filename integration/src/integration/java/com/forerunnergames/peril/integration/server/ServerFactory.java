@@ -47,17 +47,16 @@ import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.server.application.ServerApplication;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
-import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
-import com.forerunnergames.tools.net.server.Server;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerController;
+import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import de.matthiasmann.AsyncExecution;
 

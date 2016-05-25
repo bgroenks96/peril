@@ -21,8 +21,8 @@ package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.clas
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 

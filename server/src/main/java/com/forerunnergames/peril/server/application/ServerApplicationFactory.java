@@ -51,8 +51,8 @@ import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
-import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
+import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
@@ -64,10 +64,10 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;
 import com.forerunnergames.tools.net.DefaultExternalAddressResolver;
 import com.forerunnergames.tools.net.ExternalAddressResolver;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.Server;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
 import com.forerunnergames.tools.net.server.ServerController;
+import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -97,8 +97,8 @@ public final class ServerApplicationFactory
 
     final CountryFactory countryFactory = dataFactory.createCountries (mapMetadata);
 
-    final ContinentFactory continentFactory = dataFactory
-            .createContinents (mapMetadata, new DefaultCountryIdResolver (countryFactory));
+    final ContinentFactory continentFactory = dataFactory.createContinents (mapMetadata, new DefaultCountryIdResolver (
+            countryFactory));
 
     final CountryMapGraphModel countryMapGraphModel = dataFactory.createCountryMapGraphModel (mapMetadata,
                                                                                               countryFactory);

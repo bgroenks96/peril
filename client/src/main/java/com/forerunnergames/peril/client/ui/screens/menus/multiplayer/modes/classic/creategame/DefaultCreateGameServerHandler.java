@@ -31,7 +31,7 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkConstants;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
 
 import javax.annotation.Nullable;
 
@@ -82,8 +82,8 @@ public final class DefaultCreateGameServerHandler implements CreateGameServerHan
     eventBus.subscribe (this);
 
     final CreateGameServerRequestEvent event = new CreateGameServerRequestEvent (new DefaultGameServerConfiguration (
-            serverName, GameServerType.HOST_AND_PLAY, gameConfig,
-            new DefaultServerConfiguration (NetworkConstants.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT)));
+            serverName, GameServerType.HOST_AND_PLAY, gameConfig, new DefaultServerConfiguration (
+                    NetworkConstants.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT)));
 
     log.info ("Attempting to create game server... [{}]", event);
 
@@ -99,8 +99,9 @@ public final class DefaultCreateGameServerHandler implements CreateGameServerHan
   void onEvent (final CreateGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (createGameIsInProgress, Strings.format ("{}#create has not been called first.",
-                                                                       CreateGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (createGameIsInProgress,
+                               Strings.format ("{}#create has not been called first.",
+                                               CreateGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}].", event);
     log.info ("Successfully created game server: [{}]", event);
@@ -122,8 +123,9 @@ public final class DefaultCreateGameServerHandler implements CreateGameServerHan
   void onEvent (final CreateGameServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (createGameIsInProgress, Strings.format ("{}#create has not been called first.",
-                                                                       CreateGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (createGameIsInProgress,
+                               Strings.format ("{}#create has not been called first.",
+                                               CreateGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}].", event);
     log.error ("Could not create game server: [{}]", event);

@@ -16,7 +16,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 
 import com.google.common.collect.ImmutableSet;
 

@@ -20,8 +20,9 @@ package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
 public final class JoinGameServerSuccessEvent implements SuccessEvent
@@ -53,8 +54,8 @@ public final class JoinGameServerSuccessEvent implements SuccessEvent
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Game Server Configuration: %2$s | Client Configuration: %3$s",
-                          getClass ().getSimpleName (), gameServerConfig, clientConfig);
+    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}",
+                           getClass ().getSimpleName (), gameServerConfig, clientConfig);
   }
 
   @RequiredForNetworkSerialization

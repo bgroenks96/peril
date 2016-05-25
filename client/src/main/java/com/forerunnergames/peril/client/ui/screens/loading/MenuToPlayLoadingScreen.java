@@ -75,9 +75,9 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
-import com.forerunnergames.tools.net.server.ServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
@@ -632,6 +632,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Gdx.app.postRunnable (new Runnable ()
     {
 
+
       @Override
       public void run ()
       {
@@ -765,9 +766,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           }
           default:
           {
-            throw new UnsupportedOperationException (
-                    Strings.format ("Unsupported {}: [{}].", GameMode.class.getSimpleName (),
-                                    gameServerConfiguration.getGameMode ()));
+            throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].",
+                                                                     GameMode.class.getSimpleName (),
+                                                                     gameServerConfiguration.getGameMode ()));
           }
         }
 
@@ -865,9 +866,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentLoadingProgressPercent = (playMapFactory
-            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
-            + assetManager.getProgressLoading ()) / 2.0f;
+    currentLoadingProgressPercent = (playMapFactory.getAssetLoadingProgressPercent (gameServerConfiguration
+            .getMapMetadata ()) + assetManager.getProgressLoading ()) / 2.0f;
   }
 
   private boolean loadingProgressIncreased ()
