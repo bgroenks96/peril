@@ -20,19 +20,15 @@ package com.forerunnergames.peril.common.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
 
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.net.LocalGameServerCreator;
+import com.forerunnergames.peril.common.net.events.EventFluency;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
-import com.forerunnergames.tools.common.DefaultMessage;
-import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.net.client.DefaultClientConfiguration;
-import com.forerunnergames.tools.net.client.UnknownClientConfiguration;
-import com.forerunnergames.tools.net.server.DefaultServerConfiguration;
-import com.forerunnergames.tools.net.server.UnknownServerConfiguration;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -48,9 +44,6 @@ import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -62,48 +55,84 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+@SuppressWarnings ("UnnecessaryFullyQualifiedName")
 public final class KryonetRegistration
 {
-  // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (KryonetRegistration.class);
-  private static final String COMMON_PACKAGE_NAME = "com.forerunnergames.peril.common";
-  private static final ImmutableSet <String> INCLUDED_COMMON_PACKAGE_NAMES = ImmutableSet.of ("game", "map", "net");
-  private static final ImmutableSet <String> EXCLUDED_COMMON_PACKAGE_NAMES = ImmutableSet.of ("game.rules", "map.io", "net.kryonet");
+
+  // @formatter:off
 
   /**
-   * Additional classes to be registered, that exist outside the common package,
+   * Packages whose classes (and inner classes wherever possible) should be (recursively) auto-registered.
+   */
+  private static final ImmutableSet <String> INCLUDED_PACKAGES = ImmutableSet.of (
+          "com.forerunnergames.peril.common.game",
+          "com.forerunnergames.peril.common.map",
+          "com.forerunnergames.peril.common.net",
+          "com.forerunnergames.tools.net.client.configuration",
+          "com.forerunnergames.tools.net.server.configuration");
+
+  /**
+   * Additional classes to be registered, that either exist outside the set of included packages,
    * or cannot be collected automatically, for whatever reason.
+   *
+   * Note: Only concrete (non-abstract, non-interface) classes need to be registered.
+   *       Non-concrete classes will be filtered out.
+   *       Inner classes will be auto-registered wherever possible.
    */
   // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
   // TODO Java 8: Remove @SuppressWarnings ("RedundantTypeArguments")
-  @SuppressWarnings ("RedundantTypeArguments")
-  private static final ImmutableSet <Class <?>> OTHER_CLASSES = ImmutableSet.<Class <?>> of (
-          ArrayList.class,
-          Classes.class,
-          DefaultClientConfiguration.class,
-          DefaultMessage.class,
-          DefaultServerConfiguration.class,
-          HashMap.class,
-          Id.class,
-          InetSocketAddress.class,
-          Optional.class,
-          Optional.absent ().getClass (),
-          Optional.of ("").getClass (),
-          PlayerPacket.TURN_ORDER_COMPARATOR.getClass (), // TODO Still can't get this one via reflection?! ;'(
-          UnknownClientConfiguration.class,
-          UnknownServerConfiguration.class);
+  @SuppressWarnings("RedundantTypeArguments")
+  private static final ImmutableSet <Class <?>> INCLUDED_CLASSES = ImmutableSet.<Class <?>> of (
+          // TODO Still can't get this one via reflection?! :'(
+          com.forerunnergames.peril.common.net.packets.person.PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
+          com.forerunnergames.tools.common.Classes.class,
+          com.forerunnergames.tools.common.DefaultMessage.class,
+          com.forerunnergames.tools.common.id.Id.class,
+          java.util.ArrayList.class,
+          java.util.HashMap.class,
+          java.net.InetSocketAddress.class,
+            // Notes on Guava's Optional:
+            // Optional itself does not need to be registered because it is abstract.
+            // Absent & Present are non-inner, package-private classes used by Optional,
+            // and as such can only be included indirectly.
+          com.google.common.base.Optional.absent ().getClass (), // Absent
+          com.google.common.base.Optional.of ("").getClass ()); // Present
 
   /**
-   * Kryonet registration class set
+   * Packages whose classes should be excluded non-recursively from auto-registration.
+   */
+  private static final ImmutableSet <String> EXCLUDED_PACKAGES = ImmutableSet.of (
+          "com.forerunnergames.peril.common.game.rules",
+          "com.forerunnergames.peril.common.map.io",
+          "com.forerunnergames.peril.common.net.kryonet");
+
+  /**
+   * Individual classes to be excluded from auto-registration,
+   * that would otherwise be registered as part of one of the included package names.
+   *
+   * Note: Only need to exclude concrete (non-abstract, non-interface) classes.
+   *       Non-concrete classes will be filtered out.
+   */
+  private static final ImmutableSet <Class <?>> EXCLUDED_CLASSES = ImmutableSet.of (
+          EventFluency.class,
+          LocalGameServerCreator.class,
+          PlayMapLoadingException.class);
+
+  /**
+   * The final Kryonet registration class set.
    */
   public static final ImmutableSet <Class <?>> CLASSES = FluentIterable
-          .from (INCLUDED_COMMON_PACKAGE_NAMES)
-          .transformAndConcat (new PackageNamesToClassInfosFunction ())
-          .filter (new RemoveExcludedClassInfosPredicate (EXCLUDED_COMMON_PACKAGE_NAMES))
-          .transformAndConcat (new ClassInfosToClassesFunction ())
-          .filter (new RemoveNonConcreteClassesPredicate ())
-          .append (OTHER_CLASSES)
-          .toSet ();
+            .from (INCLUDED_PACKAGES)
+            .transformAndConcat (new PackageToClassInfosFunction ())
+            .filter (new RemoveExcludedClassInfosPredicate (EXCLUDED_PACKAGES))
+            .transform (new ClassInfoToClassFunction ())
+            .filter (Predicates.notNull ())
+            .filter (new RemoveExcludedClassesPredicate (EXCLUDED_CLASSES))
+            .append (INCLUDED_CLASSES)
+            .transformAndConcat (new AddInnerClassesFunction ())
+            .filter (new RemoveNonConcreteClassesPredicate ())
+            .toSet ();
 
   // @formatter:on
 
@@ -155,7 +184,7 @@ public final class KryonetRegistration
     Classes.instantiationNotAllowed ();
   }
 
-  private static final class PackageNamesToClassInfosFunction implements
+  private static final class PackageToClassInfosFunction implements
           Function <String, ImmutableSet <ClassPath.ClassInfo>>
   {
     @Override
@@ -163,13 +192,11 @@ public final class KryonetRegistration
     {
       try
       {
-        // @formatter:off
-        return ClassPath.from (ClassLoader.getSystemClassLoader ()).getTopLevelClassesRecursive (COMMON_PACKAGE_NAME + "." + input);
-        // @formatter:on
+        return ClassPath.from (ClassLoader.getSystemClassLoader ()).getTopLevelClassesRecursive (input);
       }
       catch (final IOException e)
       {
-        log.error ("Failed to read class for Kryonet registration.", e);
+        log.error ("Failed to read package [{}] for Kryonet registration.\n\nStack trace:\n\n", input, e);
         return ImmutableSet.of ();
       }
     }
@@ -177,37 +204,61 @@ public final class KryonetRegistration
 
   private static final class RemoveExcludedClassInfosPredicate implements Predicate <ClassPath.ClassInfo>
   {
-    private final ImmutableSet <String> excludedCommonPackageNames;
+    private final ImmutableSet <String> excludedPackages;
 
-    RemoveExcludedClassInfosPredicate (final ImmutableSet <String> excludedCommonPackageNames)
+    RemoveExcludedClassInfosPredicate (final ImmutableSet <String> excludedPackages)
     {
-      this.excludedCommonPackageNames = excludedCommonPackageNames;
+      this.excludedPackages = excludedPackages;
     }
 
     @Override
     public boolean apply (final ClassPath.ClassInfo input)
     {
-      return !StringUtils.endsWithAny (input.getPackageName (), excludedCommonPackageNames
-              .toArray (new CharSequence [excludedCommonPackageNames.size ()]));
+      return !StringUtils.endsWithAny (input.getPackageName (),
+                                       excludedPackages.toArray (new CharSequence [excludedPackages.size ()]));
     }
   }
 
-  private static final class ClassInfosToClassesFunction implements
-          Function <ClassPath.ClassInfo, ImmutableSet <Class <?>>>
+  private static final class ClassInfoToClassFunction implements Function <ClassPath.ClassInfo, Class <?>>
   {
     @Override
-    public ImmutableSet <Class <?>> apply (final ClassPath.ClassInfo input)
+    public Class <?> apply (final ClassPath.ClassInfo input)
     {
       try
       {
-        final Class <?> nextClass = Class.forName (input.getName ());
-        return ImmutableSet.<Class <?>> builder ().add (nextClass).add (nextClass.getDeclaredClasses ()).build ();
+        return Class.forName (input.getName ());
       }
       catch (final ClassNotFoundException e)
       {
         log.error ("Failed to read class for Kryonet registration.", e);
-        return ImmutableSet.of ();
+        return null;
       }
+    }
+  }
+
+  private static final class AddInnerClassesFunction implements Function <Class <?>, ImmutableSet <Class <?>>>
+  {
+    @Override
+    public ImmutableSet <Class <?>> apply (final Class <?> input)
+    {
+      // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
+      return ImmutableSet.<Class <?>> builder ().add (input).add (input.getDeclaredClasses ()).build ();
+    }
+  }
+
+  private static final class RemoveExcludedClassesPredicate implements Predicate <Class <?>>
+  {
+    private final ImmutableSet <Class <?>> excludedClasses;
+
+    RemoveExcludedClassesPredicate (final ImmutableSet <Class <?>> excludedClasses)
+    {
+      this.excludedClasses = excludedClasses;
+    }
+
+    @Override
+    public boolean apply (final Class <?> input)
+    {
+      return !excludedClasses.contains (input);
     }
   }
 
