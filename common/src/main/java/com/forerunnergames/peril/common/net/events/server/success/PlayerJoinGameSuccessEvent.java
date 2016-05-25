@@ -18,17 +18,17 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class PlayerJoinGameSuccessEvent implements SuccessEvent
+public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
 {
   private final PlayerPacket player;
   private final ImmutableSet <PlayerPacket> playersInGame;
@@ -42,16 +42,19 @@ public final class PlayerJoinGameSuccessEvent implements SuccessEvent
     this.playersInGame = playersInGame;
   }
 
+  @Override
   public PlayerPacket getPlayer ()
   {
     return player;
   }
 
+  @Override
   public String getPlayerName ()
   {
     return player.getName ();
   }
 
+  @Override
   public String getPlayerColor ()
   {
     return player.getColor ();

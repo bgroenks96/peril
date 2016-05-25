@@ -113,12 +113,6 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.forerunnergames.peril.common.net.events.EventFluency.countriesFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.deltaArmyCountFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerColorFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.withCountryNameFrom;
-
 public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
@@ -572,7 +566,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playerBox.addPlayer (playerFrom (event));
+        playerBox.addPlayer (event.getPlayer ());
         intelBox.setPlayer (event.getPlayer ());
         debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
       }
@@ -609,7 +603,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMap.changeArmiesBy (deltaArmyCountFrom (event), withCountryNameFrom (event));
+        playMap.changeArmiesBy (event.getCountryDeltaArmyCount (), event.getCountryName ());
       }
     });
   }
@@ -643,8 +637,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMap.setCountryState (event.getCountryName (), CountryPrimaryImageState.valueOf (Strings
-                .toCase (playerColorFrom (event), LetterCase.UPPER)));
+        playMap.setCountryState (event.getCountryName (), CountryPrimaryImageState.valueOf (Strings.toCase (event
+                .getPlayerColor (), LetterCase.UPPER)));
       }
     });
   }
@@ -661,7 +655,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        for (final CountryPacket country : countriesFrom (event))
+        for (final CountryPacket country : event.getCountries ())
         {
           final CountryPrimaryImageState state = CountryPrimaryImageState.valueOf (Strings.toCase (event
                   .getOwnerColor (country), LetterCase.UPPER));
