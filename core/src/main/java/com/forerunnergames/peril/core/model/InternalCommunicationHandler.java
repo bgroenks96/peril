@@ -107,7 +107,15 @@ final class InternalCommunicationHandler
     this.responseRequests.clear ();
   }
 
-  @Handler
+  @Handler (priority = 1)
+  void onEvent (final InboundPlayerResponseRequestEvent <? extends ResponseRequestEvent, ? extends PlayerInputRequestEvent> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    responseRequests.put (event.getRequestEvent (), event.getOriginalRequestEvent ());
+  }
+
+  @Handler (priority = 0)
   void onEvent (final InboundPlayerRequestEvent <? extends RequestEvent> event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -117,16 +125,6 @@ final class InternalCommunicationHandler
     requestEvents.put (event.getRequestEvent (), event.getPlayer ());
 
     eventBus.publish (event.getRequestEvent ());
-  }
-
-  @Handler
-  void onEvent (final InboundPlayerResponseRequestEvent <? extends ResponseRequestEvent, ? extends PlayerInputRequestEvent> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}]", event);
-
-    responseRequests.put (event.getRequestEvent (), event.getOriginalRequestEvent ());
   }
 
   @Handler
