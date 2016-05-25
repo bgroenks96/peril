@@ -69,6 +69,12 @@ public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent 
   }
 
   @Override
+  public String getNewOwnerName ()
+  {
+    return newOwner.getName ();
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{} | NewOwner: [{}] | PreviousOwner: [{}]", super.toString (), newOwner, previousOwner);

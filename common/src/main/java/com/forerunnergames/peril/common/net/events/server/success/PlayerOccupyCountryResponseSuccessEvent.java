@@ -95,6 +95,12 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
     return getPlayer ();
   }
 
+  @Override
+  public String getNewOwnerName ()
+  {
+    return getPlayerName ();
+  }
+
   public CountryPacket getSourceCountry ()
   {
     return sourceCountry;

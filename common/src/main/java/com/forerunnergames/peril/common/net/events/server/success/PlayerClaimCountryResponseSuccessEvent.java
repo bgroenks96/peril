@@ -27,8 +27,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.base.Optional;
 
-public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayerCountryArmiesChangedEvent
-        implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
+public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayerCountryArmiesChangedEvent implements
+        PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
   public PlayerClaimCountryResponseSuccessEvent (final PlayerPacket player,
                                                  final CountryPacket claimedCountry,
@@ -47,6 +47,12 @@ public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayer
   public PlayerPacket getNewOwner ()
   {
     return getPlayer ();
+  }
+
+  @Override
+  public String getNewOwnerName ()
+  {
+    return getPlayerName ();
   }
 
   @RequiredForNetworkSerialization

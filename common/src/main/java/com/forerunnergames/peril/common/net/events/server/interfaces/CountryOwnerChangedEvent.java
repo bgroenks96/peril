@@ -27,4 +27,6 @@ public interface CountryOwnerChangedEvent extends CountryNotificationEvent
   Optional <PlayerPacket> getPreviousOwner ();
 
   PlayerPacket getNewOwner ();
+
+  String getNewOwnerName ();
 }
