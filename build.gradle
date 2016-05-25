@@ -55,7 +55,7 @@ plugins {
 }
 
 task wrapper (type: Wrapper) {
-  gradleVersion = "2.10"
+  gradleVersion = "2.13"
 }
 
 // Apply to parent project & all subprojects
