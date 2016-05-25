@@ -190,7 +190,8 @@ project (":core") {
     compile ("com.stateforge:statemachine:3.6") {
       exclude module: "commons-io"
     }
-    testCompile project (path: ":common", configuration: "testRuntime")
+    testCompile project(":common").sourceSets.test.output
+    testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
 }
 
@@ -200,7 +201,8 @@ project (":client") {
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile "com.amazonaws:aws-java-sdk:1.10.44"
-    testCompile project (path: ":common", configuration: "testRuntime")
+    testCompile project(":common").sourceSets.test.output
+    testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
 }
 
@@ -208,7 +210,8 @@ project (":server") {
   dependencies {
     compile project (":core")
     compile "com.beust:jcommander:$jcommanderVersion"
-    testCompile project (path: ":common", configuration: "testRuntime")
+    testCompile project(":common").sourceSets.test.output
+    testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
     runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
