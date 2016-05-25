@@ -27,8 +27,8 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractPlayerCountryArmiesChangedEvent
-        implements PlayerArmiesChangedEvent, CountryArmiesChangedEvent
+public abstract class AbstractPlayerCountryArmiesChangedEvent implements PlayerArmiesChangedEvent,
+        CountryArmiesChangedEvent
 {
   private final PlayerPacket player;
   private final CountryPacket country;
@@ -47,6 +47,15 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
     this.country = country;
     this.playerDeltaArmyCount = playerDeltaArmyCount;
     this.countryDeltaArmyCount = countryDeltaArmyCount;
+  }
+
+  @RequiredForNetworkSerialization
+  protected AbstractPlayerCountryArmiesChangedEvent ()
+  {
+    player = null;
+    country = null;
+    playerDeltaArmyCount = 0;
+    countryDeltaArmyCount = 0;
   }
 
   @Override
@@ -74,6 +83,12 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
   }
 
   @Override
+  public int getCountryArmyCount ()
+  {
+    return country.getArmyCount ();
+  }
+
+  @Override
   public String getCountryName ()
   {
     return country.getName ();
@@ -96,15 +111,6 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent
   {
     return Strings
             .format ("{}: Player: [{}] | Country: [{}] | PlayerDeltaArmyCount: [{}] | CountryDeltaArmyCount: [{}]",
-                     this.getClass ().getSimpleName (), player, country, playerDeltaArmyCount, countryDeltaArmyCount);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractPlayerCountryArmiesChangedEvent ()
-  {
-    player = null;
-    country = null;
-    playerDeltaArmyCount = 0;
-    countryDeltaArmyCount = 0;
+                     getClass ().getSimpleName (), player, country, playerDeltaArmyCount, countryDeltaArmyCount);
   }
 }

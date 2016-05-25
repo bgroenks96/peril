@@ -65,6 +65,12 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
     return destinationCountry;
   }
 
+  @Override
+  public int getCountryArmyCount ()
+  {
+    return destinationCountry.getArmyCount ();
+  }
+
   /**
    * @return name of the country whose ownership changed; i.e. the destination country
    */
