@@ -25,5 +25,7 @@ public interface CountryEvent extends ServerEvent
 {
   CountryPacket getCountry ();
 
+  int getCountryArmyCount ();
+
   String getCountryName ();
 }

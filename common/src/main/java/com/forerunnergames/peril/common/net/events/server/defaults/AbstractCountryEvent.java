@@ -42,6 +42,12 @@ public abstract class AbstractCountryEvent implements CountryEvent
   }
 
   @Override
+  public int getCountryArmyCount ()
+  {
+    return country.getArmyCount ();
+  }
+
+  @Override
   public String getCountryName ()
   {
     return country.getName ();
