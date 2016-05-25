@@ -100,6 +100,9 @@ final class InternalCommunicationHandler
    */
   public void clearEventCache ()
   {
+    log.debug ("Clearing internal event caches [{} RequestEvents] [{} ResponseRequestEvents].", requestEvents.size (),
+               responseRequests.size ());
+
     this.requestEvents.clear ();
     this.responseRequests.clear ();
   }
@@ -108,6 +111,8 @@ final class InternalCommunicationHandler
   void onEvent (final InboundPlayerRequestEvent <? extends RequestEvent> event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
 
     requestEvents.put (event.getRequestEvent (), event.getPlayer ());
 
@@ -119,13 +124,17 @@ final class InternalCommunicationHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    responseRequests.put (event.getRequestEvent (), event.getInputRequestEvent ());
+    log.debug ("Event received [{}]", event);
+
+    responseRequests.put (event.getRequestEvent (), event.getOriginalRequestEvent ());
   }
 
   @Handler
   void onEvent (final UpdatePlayerDataRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
 
     final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
     eventBus.publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));

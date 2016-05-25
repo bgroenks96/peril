@@ -6,5 +6,5 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
 public interface InboundPlayerResponseRequestEvent <T extends ResponseRequestEvent, R extends PlayerInputRequestEvent>
         extends InboundPlayerRequestEvent <T>
 {
-  R getInputRequestEvent ();
+  R getOriginalRequestEvent ();
 }

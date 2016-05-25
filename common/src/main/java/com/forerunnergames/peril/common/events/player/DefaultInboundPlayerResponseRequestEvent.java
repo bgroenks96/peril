@@ -39,7 +39,7 @@ public class DefaultInboundPlayerResponseRequestEvent <T extends ResponseRequest
   }
 
   @Override
-  public R getInputRequestEvent ()
+  public R getOriginalRequestEvent ()
   {
     return inputRequestEvent;
   }
