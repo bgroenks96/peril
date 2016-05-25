@@ -19,12 +19,14 @@
 package com.forerunnergames.peril.server.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -78,8 +81,6 @@ import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.concurrent.DelayedCyclicBarrier;
-import com.forerunnergames.tools.common.concurrent.DelayedCyclicBarrier.DelayMode;
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
@@ -95,12 +96,10 @@ import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -231,61 +230,48 @@ public class MultiplayerControllerTest
     verify (mockClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
   }
 
+  @Test
   public void testTwoClientsJoinGameServerSimultaneously ()
   {
-    mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
 
-    final Remote client1 = createClient ();
-    final Remote client2 = createClient ();
+    final Remote client1 = joinClientToGameServer ();
+    final Remote client2 = joinClientToGameServer ();
 
-    final AtomicInteger connectCount = new AtomicInteger (0);
-    final ExecutorService threadPool = Executors.newFixedThreadPool (2);
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
-    final DelayedCyclicBarrier delayGate = new DelayedCyclicBarrier (2, 10, DelayMode.LINEAR);
-    final Function <Remote, Integer> clientJoinFunc = new Function <Remote, Integer> ()
+    final Set <PlayerPacket> players = Sets.newConcurrentHashSet ();
+    final Function <Remote, PlayerJoinGameSuccessEvent> clientJoinAsPlayer = new Function <Remote, PlayerJoinGameSuccessEvent> ()
     {
       @Override
-      public Integer apply (final Remote client)
+      public PlayerJoinGameSuccessEvent apply (final Remote client)
       {
-        try
-        {
-          connect (client);
 
-          delayGate.await ();
-          if (delayGate.isBroken ()) delayGate.reset ();
+        final String playerName = "Test" + client.getConnectionId ();
+        final PlayerPacket player = mock (PlayerPacket.class);
+        when (player.getName ()).thenReturn (playerName);
+        when (player.hasName (eq (playerName))).thenReturn (true);
+        when (player.is (eq (player))).thenReturn (true);
+        when (player.isNot (argThat (not (equalTo (player))))).thenReturn (true);
+        when (player.toString ()).thenReturn (playerName);
+        final PlayerJoinGameRequestEvent requestEvent = new PlayerJoinGameRequestEvent (playerName);
+        communicateEventFromClient (requestEvent, client);
+        eventHandler.wasFiredExactlyOnce (requestEvent);
+        players.add (player);
+        final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
+                ImmutableSet.copyOf (players));
+        eventBus.publish (successEvent);
+        verify (mockClientCommunicator, times (players.size ())).sendTo (any (Remote.class), eq (successEvent));
+        assertTrue (mpc.isPlayerInGame (player));
 
-          final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-          {
-            @Override
-            public boolean matches (final Object arg0)
-            {
-              assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-              final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-              final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-              final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-              return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                      && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                      && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                      && matchClientConfig.getClientTcpPort () == client.getPort ();
-            }
-
-            @Override
-            public void describeTo (final Description arg0)
-            {
-            }
-          };
-          verify (mockClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
-
-          return connectCount.getAndIncrement ();
-
-        }
-        catch (InterruptedException | BrokenBarrierException e)
-        {
-          fail (e.toString ());
-          return -1;
-        }
+        return successEvent;
       }
     };
+
+    final PlayerJoinGameSuccessEvent clientResult1 = clientJoinAsPlayer.apply (client1);
+    assertNotNull (clientResult1);
+    final PlayerJoinGameSuccessEvent clientResult2 = clientJoinAsPlayer.apply (client2);
+    assertNotNull (clientResult2);
+    assertTrue (clientResult1.getOtherPlayersInGame ().isEmpty ());
+    assertEquals (ImmutableSet.of (clientResult1.getPlayer ()), clientResult2.getOtherPlayersInGame ());
   }
 
   @Test
