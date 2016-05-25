@@ -16,25 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO Workaround for https://github.com/MobiDevelop/robovm/issues/13
-// TODO This classpath plugin should be in the root build.gradle buildscript block.
-buildscript {
-  repositories {
-    jcenter ()
-    mavenCentral ()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-  }
-
-  dependencies {
-    classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradleVersion"
-  }
-}
-
-// TODO Workaround for https://github.com/MobiDevelop/robovm/issues/13
-// TODO This classpath plugin should be in the root build.gradle, in the ":ios" sub-project block.
-apply plugin: "robovm"
-
 sourceSets.main.java.srcDirs = ["src/main/java/"]
 sourceSets.main.resources.srcDirs = ["src/main/res/"]
 sourceSets.test.java.srcDirs = ["src/test/java/"]

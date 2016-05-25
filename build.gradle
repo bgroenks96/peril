@@ -28,8 +28,8 @@ buildscript {
 
   ext {
     gdxVersion = json.libgdxSnapshot
-    roboVMVersion = json.robovmVersion
-    roboVMGradleVersion = json.robovmPluginVersion
+    roboVMVersion = "2.2.0-SNAPSHOT"; //json.robovmVersion
+    roboVMGradleVersion = "2.2.0-SNAPSHOT"; //json.robovmPluginVersion
     androidToolsVersion = json.androidBuildtoolsVersion
     androidSDKVersion = json.androidSDKVersion
     androidGradleToolsVersion = json.androidGradleToolVersion
@@ -47,6 +47,7 @@ buildscript {
 
   dependencies {
     classpath "com.android.tools.build:gradle:$androidGradleToolsVersion"
+    classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradleVersion"
   }
 }
 
@@ -154,6 +155,8 @@ project (":android") {
 }
 
 project (":ios") {
+  apply plugin: "robovm"
+
   dependencies {
     compile project (":client")
     compile "com.mobidevelop.robovm:robovm-rt:${roboVMVersion}"
