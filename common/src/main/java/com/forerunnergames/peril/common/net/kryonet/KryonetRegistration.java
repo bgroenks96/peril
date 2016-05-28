@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.UUID;
 
+import de.javakaffee.kryoserializers.guava.ImmutableSortedSetSerializer;
 import org.objenesis.instantiator.ObjectInstantiator;
 import org.objenesis.strategy.InstantiatorStrategy;
 import org.objenesis.strategy.StdInstantiatorStrategy;

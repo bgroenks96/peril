@@ -177,7 +177,7 @@ project (":common") {
     compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
       exclude module: "kryo"
     }
-    compile "de.javakaffee:kryo-serializers:0.37"
+    compile "de.javakaffee:kryo-serializers:0.38"
     compile "net.engio:mbassador:1.2.4"
     compile "com.google.guava:guava:19.0"
     compile "com.google.code.findbugs:jsr305:3.0.1"
