@@ -379,7 +379,7 @@ public final class GameModel
       return;
     }
 
-    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryMapGraphModel.getCountryIds ()));
+    final List <Id> countries = Randomness.shuffle (new HashSet<> (countryMapGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules
             .getInitialPlayerCountryDistribution (players.size ());
@@ -1099,9 +1099,8 @@ public final class GameModel
     final MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason> res1, res2, res3;
     res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
     res2 = countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
-    res3 = countryOwnerModel.requestToReassignCountryOwner (destCountryId, getCurrentPlayerId ());
     final Optional <MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason>> failure;
-    failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2, res3));
+    failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2));
     if (failure.isPresent ())
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason ()));
@@ -1109,7 +1108,7 @@ public final class GameModel
       return false;
     }
 
-    MutatorResult.commitAllSuccessful (res1, res2, res3);
+    MutatorResult.commitAllSuccessful (res1, res2);
 
     final PlayerPacket updatedPlayerPacket = getCurrentPlayerPacket ();
     final PlayerPacket updatedPrevDestCountryOwner = playerModel.playerPacketWith (prevDestCountryOwnerId);
