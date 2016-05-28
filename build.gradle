@@ -192,6 +192,7 @@ project (":core") {
     compile project (":common")
     compile ("com.stateforge:statemachine:3.6") {
       exclude module: "commons-io"
+      exclude module: "junit"
     }
     testCompile project(":common").sourceSets.test.output
     testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
