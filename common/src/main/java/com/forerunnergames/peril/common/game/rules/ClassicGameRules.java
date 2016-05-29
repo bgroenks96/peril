@@ -335,7 +335,7 @@ public final class ClassicGameRules implements GameRules
   {
     Arguments.checkIsNotNegative (attackingPlayerDieCount, "attackingPlayerDieCount");
 
-    return attackingPlayerDieCount + 1;
+    return attackingPlayerDieCount;
   }
 
   @Override

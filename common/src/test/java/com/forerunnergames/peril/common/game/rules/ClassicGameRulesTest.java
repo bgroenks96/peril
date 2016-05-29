@@ -576,6 +576,39 @@ public class ClassicGameRulesTest
   }
 
   @Test
+  public void testGetMinOccupyArmyCountForAllPossibleDieCounts ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    final int attackingArmyCount = rules.getMaxArmiesOnCountry ();
+
+    for (int i = rules.getMinTotalAttackerDieCount (); i <= rules.getMaxAttackerDieCount (attackingArmyCount); i++)
+    {
+      assertEquals (i, rules.getMinOccupyArmyCount (i));
+    }
+  }
+
+  @Test
+  public void testGetMaxOccupyArmyCountForMaxArmies ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    final int attackingArmyCount = rules.getMaxArmiesOnCountry ();
+
+    assertEquals (attackingArmyCount - 1, rules.getMaxOccupyArmyCount (attackingArmyCount));
+  }
+
+  @Test
+  public void testGetMaxOccupyArmyCountForMinArmies ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    final int attackingArmyCount = rules.getMinArmiesOnCountryForAttack ();
+
+    assertEquals (attackingArmyCount - 1, rules.getMaxOccupyArmyCount (attackingArmyCount));
+  }
+
+  @Test
   public void testDetermineAttackerOutcomeWin ()
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
