@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 /**
  * Utility type for state machine integration tests.
  */
-public final class StateMachineTester
+public final class StateMachineMonitor
 {
   public static final int DEFAULT_TEST_TIMEOUT = 5000;
   public static final int DEFAULT_STATE_CHANGE_TIMOUT = 3000;
@@ -53,7 +53,7 @@ public final class StateMachineTester
   private final StateChangeMonitor monitor = new StateChangeMonitor ();
   private final Logger log;
 
-  public StateMachineTester (final StateMachineEventHandler stateMachine, final Logger log)
+  public StateMachineMonitor (final StateMachineEventHandler stateMachine, final Logger log)
   {
     Arguments.checkIsNotNull (stateMachine, "stateMachine");
     Arguments.checkIsNotNull (log, "log");

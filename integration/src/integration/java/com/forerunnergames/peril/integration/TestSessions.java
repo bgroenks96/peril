@@ -20,6 +20,7 @@ package com.forerunnergames.peril.integration;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.BiMap;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TestSessions
 {
   private static final BiMap <String, TestSession> sessionMap = Maps
-          .synchronizedBiMap (HashBiMap.<String, TestSession> create ());
+          .synchronizedBiMap (HashBiMap. <String, TestSession> create ());
   private static final AtomicInteger counter = new AtomicInteger ();
 
   public static synchronized void start (final String name, final TestSession testSession)
@@ -50,8 +51,8 @@ public class TestSessions
   public static synchronized TestSession get (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
+    Preconditions.checkIsTrue (existsSessionWith (name), Strings.format ("No session with name [{}] exists.", name));
 
-    if (!sessionMap.containsKey (name)) Exceptions.throwIllegalState ("No session with name [{}] exists.", name);
     return sessionMap.get (name);
   }
 
@@ -62,16 +63,33 @@ public class TestSessions
     return sessionMap.containsKey (name);
   }
 
+  public static synchronized boolean exists (final TestSession session)
+  {
+    Arguments.checkIsNotNull (session, "session");
+
+    return sessionMap.inverse ().containsKey (session);
+  }
+
   public static synchronized void end (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
+    Preconditions.checkIsTrue (existsSessionWith (name), Strings.format ("No session with name [{}] exists.", name));
 
     final TestSession session = sessionMap.get (name);
     if (!session.isShutDown ()) session.shutDown ();
     sessionMap.remove (name);
   }
 
-  public static String createUniqueNameFrom (final String name)
+  public static synchronized void end (final TestSession session)
+  {
+    Arguments.checkIsNotNull (session, "session");
+    Preconditions.checkIsTrue (exists (session), Strings.format ("Session [{}] is not registered.", session));
+
+    if (!session.isShutDown ()) session.shutDown ();
+    sessionMap.inverse ().remove (session);
+  }
+
+  public static synchronized String createUniqueNameFrom (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 

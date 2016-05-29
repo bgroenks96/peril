@@ -1,12 +1,9 @@
 package com.forerunnergames.peril.integration.core.func.turn;
 
-import static org.junit.Assert.assertFalse;
-
-import static org.testng.Assert.assertTrue;
-
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.integration.TestUtil;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
+import com.forerunnergames.peril.integration.core.func.TestPhaseController;
 import com.forerunnergames.peril.integration.core.func.WaitForCommunicationActionResult;
 import com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseController;
 import com.forerunnergames.peril.integration.server.TestClient;
@@ -23,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class TurnPhaseController
+public final class TurnPhaseController implements TestPhaseController
 {
   private static final Logger log = LoggerFactory.getLogger (TurnPhaseController.class);
   private final DedicatedGameSession session;
@@ -37,19 +34,20 @@ public final class TurnPhaseController
     this.session = session;
   }
 
+  @Override
+  public void fastForwardGameState ()
+  {
+    setUpInitialGamePhase ();
+    // TODO
+  }
+
   // advances the game state to turn phase with only minimal error checking
   // see InitialGamePhaseTest for more rigorous testing of the initial game phase
   public void setUpInitialGamePhase ()
   {
     log.trace ("Setting up initial game phase for session {}", session.getName ());
     final InitialGamePhaseController initialPhase = new InitialGamePhaseController (session);
-    assertTrue (initialPhase.connectAllClientsToGameServer ());
-    initialPhase.sendForAllClientsJoinGameRequest ();
-    assertFalse (initialPhase.waitForAllClientsToJoinGame ().hasAnyFailed ());
-    assertFalse (initialPhase.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
-    assertFalse (initialPhase.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
-    assertFalse (initialPhase.waitForAllClientsToReceiveCountryAssignment ().hasAnyFailed ());
-    initialPhase.randomlyPlaceInitialReinforcements ();
+    initialPhase.fastForwardGameState ();
     clients = TestUtil.sortClientsByPlayerTurnOrder (session.getTestClientPool ());
     current = clients.first ();
   }

@@ -19,34 +19,15 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Peril Classic Mode Core Functionality Tests">
-  <test name="Initial Game Phase Test (Random Country Assignment)" time-out="45000">
-    <parameter name="countryAssignmentMode" value="random" />
-    <groups>
-      <run>
-        <include name="func.init" />
-        <include name="func.init.random" />
-      </run>
-    </groups>
+<suite name="Peril Classic Mode Core Functionality Tests" parallel="methods">
+  <test name="Initial Game Phase Test" time-out="45000">
     <classes>
-      <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestFactory" />
-    </classes>
-  </test>
-  <test name="Initial Game Phase Test (Manual Country Assignment)" time-out="45000">
-    <parameter name="countryAssignmentMode" value="manual" />
-    <groups>
-      <run>
-        <include name="func.init" />
-        <include name="func.init.manual" />
-      </run>
-    </groups>
-    <classes>
-      <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTestFactory" />
+      <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTest" />
     </classes>
   </test>
   <test name="Turn Phase Test" time-out="45000">
     <classes>
-      <class name="com.forerunnergames.peril.integration.core.func.turn.TurnPhaseTestFactory" />
+      <class name="com.forerunnergames.peril.integration.core.func.turn.TurnPhaseTest" />
     </classes>
   </test>
 </suite>

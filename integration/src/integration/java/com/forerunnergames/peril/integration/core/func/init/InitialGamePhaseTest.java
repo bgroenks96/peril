@@ -26,6 +26,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
@@ -33,66 +36,74 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCou
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.integration.TestSessions;
+import com.forerunnergames.peril.integration.TestSessions.TestSession;
 import com.forerunnergames.peril.integration.TestUtil;
-import com.forerunnergames.peril.integration.core.StateMachineTester;
+import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestClientPool;
-import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
+
+import java.lang.reflect.Method;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+@Test (groups = "func")
 public final class InitialGamePhaseTest
 {
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseTest.class);
-  private final String sessionName;
-  private DedicatedGameSession session;
-  private InitialGamePhaseController controller;
-  private StateMachineTester stateMachineTester;
+  private static final String SINGLETON_PROVIDER = "SingletonDataProvider";
+  private final Set <TestSession> sessions = Sets.newConcurrentHashSet ();
 
-  InitialGamePhaseTest (final String sessionName)
+  @DataProvider (name = SINGLETON_PROVIDER)
+  public Object[][] generateSessionName (final Method method)
   {
-    Arguments.checkIsNotNull (sessionName, "sessionName");
-
-    this.sessionName = sessionName;
+    final String fullMethodName = Strings.format ("{}_{}", getClass ().getSimpleName (), method.getName ());
+    return new Object [] [] {
+            { TestSessions.createUniqueNameFrom (fullMethodName), LoggerFactory.getLogger (fullMethodName) } };
   }
 
-  @BeforeClass (alwaysRun = true)
-  public void initialize ()
+  @AfterClass
+  public void tearDown ()
   {
-    session = (DedicatedGameSession) TestSessions.get (sessionName);
-    controller = new InitialGamePhaseController (session);
-    stateMachineTester = new StateMachineTester (session.getStateMachine (), log);
+    for (final TestSession session : sessions)
+    {
+      TestSessions.end (session);
+    }
+
+    sessions.clear ();
   }
 
-  /*
-   * NOTE: Declared dependent method names in test annotations must be updated if any test method names
-   * are refactored.
-   */
-
-  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
-  public void testAllClientsJoinServer ()
+  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testAllClientsJoinServer (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
     final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
     assertTrue (controller.connectAllClientsToGameServer ());
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testAllClientsJoinServer", groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
-  public void testAllClientsJoinGame ()
+  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testAllClientsJoinGame (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
     final InitialGamePhaseController controller = new InitialGamePhaseController (session);
-    controller.sendForAllClientsJoinGameRequest ();
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
     final ActionResult result = controller.waitForAllClientsToJoinGame ();
     for (final TestClient client : result.failed ())
     {
@@ -100,12 +111,17 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testAllClientsJoinGame", groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
-  public void testDeterminePlayerTurnOrder ()
+  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testDeterminePlayerTurnOrder (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
     final ActionResult result = controller.waitForAllClientsToReceivePlayerTurnOrder ();
     for (final TestClient client : result.failed ())
     {
@@ -113,12 +129,18 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testDeterminePlayerTurnOrder", groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME })
-  public void testDistributeInitialArmies ()
+  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testDistributeInitialArmies (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
     final ActionResult result = controller.waitForAllClientsToReceiveInitialArmies ();
     for (final TestClient client : result.failed ())
     {
@@ -126,12 +148,20 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
-  public void testManualCountryAssignmentNoServerResponseToIllegalClientRequest ()
+  @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testManualCountryAssignmentNoServerResponseToIllegalClientRequest (final String sessionName,
+                                                                                 final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.MANUAL);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
     final TestClientPool clientPool = session.getTestClientPool ();
     Optional <TestClient> clientNotInTurn = Optional.absent ();
     for (final TestClient client : clientPool)
@@ -146,12 +176,20 @@ public final class InitialGamePhaseTest
     final TestClient client = clientNotInTurn.get ();
     client.sendEvent (new PlayerClaimCountryResponseRequestEvent (""));
     client.assertNoEventsReceived (5000); // wait for five seconds
-
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
-  public void testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest ()
+  @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest (final String sessionName,
+                                                                              final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.MANUAL);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
     final TestClientPool clientPool = session.getTestClientPool ();
     final ImmutableSortedSet <TestClient> sortedClients = TestUtil.sortClientsByPlayerTurnOrder (clientPool);
     final TestClient firstClient = sortedClients.first ();
@@ -163,13 +201,19 @@ public final class InitialGamePhaseTest
             .waitForEventCommunication (PlayerClaimCountryResponseDeniedEvent.class);
     assertTrue (deniedEvent.isPresent ());
     assertEquals (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, deniedEvent.get ().getReason ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = { "testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest",
-                              "testManualCountryAssignmentNoServerResponseToIllegalClientRequest" },
-         groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
-  public void testManualCountryAssignmentForAllClientsInOrder ()
+  @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testManualCountryAssignmentForAllClientsInOrder (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.MANUAL);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
     final TestClientPool clientPool = session.getTestClientPool ();
     final ImmutableSortedSet <TestClient> sortedClients = TestUtil.sortClientsByPlayerTurnOrder (clientPool);
     int remainingCountryCount = Integer.MAX_VALUE;
@@ -195,12 +239,19 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testDistributeInitialArmies", groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
-  public void testRandomCountryAssignment ()
+  @Test (groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testRandomCountryAssignment (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
     final ActionResult result = controller.waitForAllClientsToReceiveCountryAssignment ();
     for (final TestClient client : result.failed ())
     {
@@ -208,23 +259,39 @@ public final class InitialGamePhaseTest
     }
     assertFalse (result.hasAnyFailed ());
     assertEquals (result.verified (), session.getTestClientCount ());
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testRandomCountryAssignment", groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME })
-  public void testInitialReinforcementPhase_RandomAssignmentMode ()
+  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  public void testInitialReinforcementPhase (final String sessionName, final Logger log)
   {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveCountryAssignment ().hasAnyFailed ());
     // this controller method performs assertions so we don't need to do anything
     controller.randomlyPlaceInitialReinforcements ();
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (dependsOnMethods = "testManualCountryAssignmentForAllClientsInOrder",
-         groups = MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME)
-  public void testInitialReinforcementPhase_ManualAssignmentMode ()
+  private DedicatedGameSession createNewTestSession (final String sessionName,
+                                                     final InitialCountryAssignment assignmentMode)
   {
-    // this controller method performs assertions so we don't need to do anything
-    controller.randomlyPlaceInitialReinforcements ();
-    assertFalse (stateMachineTester.checkError ().isPresent ());
+    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT)
+            .initialCountryAssignment (assignmentMode).build ();
+
+    final DedicatedGameSession testSession = new DedicatedGameSession (sessionName,
+            DedicatedGameSession.FAKE_EXTERNAL_SERVER_ADDRESS, rules);
+
+    sessions.add (testSession);
+
+    log.trace ("Initializing test session {}", sessionName);
+    TestSessions.start (sessionName, testSession);
+
+    return testSession;
   }
 }

@@ -18,8 +18,9 @@
 
 package com.forerunnergames.peril.integration.core.func.init;
 
+import static org.junit.Assert.assertFalse;
+
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
@@ -37,6 +38,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.integration.TestUtil;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
+import com.forerunnergames.peril.integration.core.func.TestPhaseController;
 import com.forerunnergames.peril.integration.core.func.WaitForCommunicationActionResult;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestClientPool;
@@ -54,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class InitialGamePhaseController
+public final class InitialGamePhaseController implements TestPhaseController
 {
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseController.class);
   private static final String PLAYER_NAME_BASE = "TestPlayer";
@@ -63,6 +65,17 @@ public final class InitialGamePhaseController
   public InitialGamePhaseController (final DedicatedGameSession session)
   {
     this.session = session;
+  }
+
+  @Override
+  public void fastForwardGameState ()
+  {
+    assertTrue (connectAllClientsToGameServer ());
+    assertFalse (waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
+    assertFalse (waitForAllClientsToReceiveCountryAssignment ().hasAnyFailed ());
+    randomlyPlaceInitialReinforcements ();
   }
 
   /**
@@ -78,7 +91,7 @@ public final class InitialGamePhaseController
     return clientPool.waitForAllClientsToReceive (JoinGameServerSuccessEvent.class).isEmpty ();
   }
 
-  public void sendForAllClientsJoinGameRequest ()
+  private void sendForAllClientsJoinGameRequest ()
   {
     final TestClientPool clientPool = session.getTestClientPool ();
     for (int i = 0; i < clientPool.count (); i++)
@@ -91,6 +104,7 @@ public final class InitialGamePhaseController
 
   public WaitForCommunicationActionResult waitForAllClientsToJoinGame ()
   {
+    sendForAllClientsJoinGameRequest ();
     final TestClientPool clientPool = session.getTestClientPool ();
     final AtomicInteger verifyCount = new AtomicInteger ();
     final ClientEventCallback <PlayerJoinGameSuccessEvent> playerJoinGameCallback = new ClientEventCallback <PlayerJoinGameSuccessEvent> ()
@@ -192,6 +206,10 @@ public final class InitialGamePhaseController
     return new WaitForCommunicationActionResult (failed, verifyCount.get ());
   }
 
+  /**
+   * Randomly places armies on behalf of each connected client. This performs in-line assertions checks for
+   * client/server communication and will throw an AssertionError upon failure.
+   */
   public void randomlyPlaceInitialReinforcements ()
   {
     final TestClientPool clientPool = session.getTestClientPool ();

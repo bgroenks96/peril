@@ -27,7 +27,7 @@ import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
-import com.forerunnergames.peril.integration.core.StateMachineTester;
+import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -65,22 +65,22 @@ public class GameStateMachineSmokeTest
   @Test
   public void testCreateGame ()
   {
-    final StateMachineTester stateTest = new StateMachineTester (gameStateMachine, log);
+    final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
     eventBus.publish (new CreateGameEvent ());
     stateTest.checkCurrentStateIs ("WaitForGameToBegin");
   }
 
-  @Test (dependsOnMethods = "testCreateGame", timeOut = StateMachineTester.DEFAULT_TEST_TIMEOUT)
+  @Test (dependsOnMethods = "testCreateGame", timeOut = StateMachineMonitor.DEFAULT_TEST_TIMEOUT)
   public void testPlayersJoinGame ()
   {
-    final StateMachineTester stateTest = new StateMachineTester (gameStateMachine, log);
+    final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
     // Simulate many players attempting to join the game.
     for (int i = 0; i < 50; ++i)
     {
       log.trace ("Adding player {}", i);
       eventBus.publish (new PlayerJoinGameRequestEvent (getRandomPlayerName ()));
     }
-    stateTest.waitForStateChange ("PlayingGame", StateMachineTester.DEFAULT_STATE_CHANGE_TIMOUT);
+    stateTest.waitForStateChange ("PlayingGame", StateMachineMonitor.DEFAULT_STATE_CHANGE_TIMOUT);
   }
 
   private static String getRandomPlayerName ()
