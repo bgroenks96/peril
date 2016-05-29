@@ -318,24 +318,13 @@ public final class GameModel
 
     log.info ("Distributing {} armies each to {} players...", armies, playerModel.getPlayerCount ());
 
-    // Create a status message listing which player received how many armies.
-    final StringBuilder statusMessageBuilder = new StringBuilder ();
     for (final PlayerPacket player : playerModel.getTurnOrderedPlayers ())
     {
       final Id playerId = playerModel.idOf (player.getName ());
       playerModel.addArmiesToHandOf (playerId, armies);
 
       publish (new DefaultPlayerArmiesChangedEvent (playerModel.playerPacketWith (playerId), armies));
-
-      // @formatter:off
-      statusMessageBuilder
-              .append (playerModel.nameOf (playerId))
-              .append (" received ")
-              .append (armies)
-              .append (" armies.\n");
-      // @formatter:on
     }
-    if (statusMessageBuilder.length () > 0) statusMessageBuilder.deleteCharAt (statusMessageBuilder.length () - 1);
 
     publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayerPackets ()));
   }
@@ -379,7 +368,7 @@ public final class GameModel
       return;
     }
 
-    final List <Id> countries = Randomness.shuffle (new HashSet<> (countryMapGraphModel.getCountryIds ()));
+    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryMapGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules
             .getInitialPlayerCountryDistribution (players.size ());
@@ -1549,7 +1538,7 @@ public final class GameModel
               .create (disjointCountryGraph,
                        ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
-      cardModel = new DefaultCardModel (gameRules, ImmutableSet.<Card> of ());
+      cardModel = new DefaultCardModel (gameRules, ImmutableSet. <Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
       battleModel = new DefaultBattleModel (gameRules);
       turnDataCache = new PlayerTurnDataCache ();
