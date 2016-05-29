@@ -90,8 +90,10 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | SourceCountry: [{}] | DestinationCountry: [{}]", super.toString (), sourceCountry,
-                           destinationCountry);
+    return Strings.format (
+                           "{} | SourceCountry: [{}] | DestinationCountry: [{}] | MinOccupationArmyCount: [{}] | MaxOccupationArmyCount: [{}] | TotalArmyCount: [{}]",
+                           super.toString (), sourceCountry, destinationCountry, minOccupationArmyCount,
+                           maxOccupationArmyCount, getTotalArmyCount ());
   }
 
   @RequiredForNetworkSerialization
