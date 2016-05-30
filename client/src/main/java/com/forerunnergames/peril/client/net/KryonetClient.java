@@ -29,8 +29,6 @@ import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.Time;
-import com.forerunnergames.tools.common.Utils;
 import com.forerunnergames.tools.net.NetworkListener;
 import com.forerunnergames.tools.net.client.Client;
 
@@ -139,8 +137,6 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 
     while (!isConnected () && connectionAttempts < maxAttempts)
     {
-      Utils.sleep (Time.Seconds (1));
-
       ++connectionAttempts;
 
       log.info ("[{}] connection attempt...", Strings.toMixedOrdinal (connectionAttempts));
