@@ -49,6 +49,10 @@ buildscript {
     classpath "com.android.tools.build:gradle:$androidGradleToolsVersion"
     classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradleVersion"
   }
+
+  configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+  }
 }
 
 plugins {
@@ -79,10 +83,6 @@ allprojects {
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     maven { url "http://oss.jfrog.org/artifactory/oss-snapshot-local/" }
     maven { url  "http://dl.bintray.com/forerunnergames/repository" }
-  }
-
-  configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, "seconds"
   }
 }
 
