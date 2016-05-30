@@ -35,6 +35,10 @@ import com.forerunnergames.tools.net.client.Client;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
   private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
+  private final ExecutorService executorService = Executors.newSingleThreadExecutor ();
   private final Kryo kryo;
   private boolean isRunning = false;
 
@@ -116,35 +121,51 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
   }
 
   @Override
-  public Result <String> connect (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
+  public Result <String> connectNow (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
   {
     Arguments.checkIsNotNull (address, "address");
     Arguments.checkIsNotNegative (tcpPort, "tcpPort");
     Arguments.checkIsNotNegative (timeoutMs, "timeoutMs");
-    Arguments.checkIsNotNegative (maxAttempts, "maxAttempts");
+    Arguments.checkLowerInclusiveBound (maxAttempts, 0, "maxAttempts");
 
     if (isConnected ())
     {
       log.warn ("Cannot connect to the server because you are already connected.");
-
       return Result.failure ("You are already connected to the server.");
     }
 
     log.info ("Connecting to server at address [{}] & port [{}] (TCP)...", address, tcpPort);
 
     int connectionAttempts = 0;
-    Result <String> result = Result.failure ("No connection attempt was made.");
+    Result <String> result;
 
-    while (!isConnected () && connectionAttempts < maxAttempts)
+    do
     {
       ++connectionAttempts;
 
       log.info ("[{}] connection attempt...", Strings.toMixedOrdinal (connectionAttempts));
 
-      result = connect (address, tcpPort, timeoutMs);
+      result = connectNow (address, tcpPort, timeoutMs);
     }
+    while (result.failed () && connectionAttempts < maxAttempts);
 
     return result;
+  }
+
+  @Override
+  public Future <Result <String>> connectLater (final String address,
+                                                final int tcpPort,
+                                                final int timeoutMs,
+                                                final int maxAttempts)
+  {
+    return executorService.submit (new Callable <Result <String>> ()
+    {
+      @Override
+      public Result <String> call ()
+      {
+        return connectNow (address, tcpPort, timeoutMs, maxAttempts);
+      }
+    });
   }
 
   @Override
@@ -201,7 +222,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
     log.info ("Stopped the client");
   }
 
-  private Result <String> connect (final String address, final int tcpPort, final int timeoutMs)
+  private Result <String> connectNow (final String address, final int tcpPort, final int timeoutMs)
   {
     log.info ("Attempting to connect to server with address [{}] on port [{}] (TCP).", address, tcpPort);
 

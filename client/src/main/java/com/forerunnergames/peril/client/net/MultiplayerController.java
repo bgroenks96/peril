@@ -238,7 +238,7 @@ public final class MultiplayerController extends ControllerAdapter
                                            final int timeoutMs,
                                            final int maxAttempts)
   {
-    return serverConnector.connect (address, tcpPort, timeoutMs, maxAttempts);
+    return serverConnector.connectNow (address, tcpPort, timeoutMs, maxAttempts);
   }
 
   private Result <String> createGameServer (final GameServerConfiguration config)

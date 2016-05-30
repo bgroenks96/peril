@@ -65,7 +65,7 @@ public class TestClient extends AbstractClientController
     Arguments.checkIsNotNull (addr, "addr");
     Arguments.checkIsNotNegative (tcpPort, "tcpPort");
 
-    return connect (addr, tcpPort, DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_MAX_ATTEMPTS);
+    return connectNow (addr, tcpPort, DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_MAX_ATTEMPTS);
   }
 
   public void sendEvent (final Event event)
