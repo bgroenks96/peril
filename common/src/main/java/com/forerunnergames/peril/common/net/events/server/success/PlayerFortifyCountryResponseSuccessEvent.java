@@ -85,8 +85,8 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {} | FortifyArmyCount: {}", sourceCountry,
-                           targetCountry, fortifyArmyCount);
+    return Strings.format ("{} | SourceCountry: {} | TargetCountry: {} | FortifyArmyCount: {}", super.toString (),
+                           sourceCountry, targetCountry, fortifyArmyCount);
   }
 
   @RequiredForNetworkSerialization
