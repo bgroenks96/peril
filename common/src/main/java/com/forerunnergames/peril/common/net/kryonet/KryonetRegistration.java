@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
 
+import com.esotericsoftware.kryo.Serializer;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
 import com.forerunnergames.peril.common.net.events.EventFluency;
@@ -33,6 +34,7 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.reflect.ClassPath;
 
@@ -172,6 +174,11 @@ public final class KryonetRegistration
     ImmutableSortedSetSerializer.registerSerializers (kryo);
     ImmutableMapSerializer.registerSerializers (kryo);
     ImmutableMultimapSerializer.registerSerializers (kryo);
+
+    // TODO Remove these 3 lines after submitting ImmutableMultimapSerializer fix to kryo-serializers library.
+    final Serializer serializer = new ImmutableMultimapSerializer ();
+    kryo.register (ImmutableSetMultimap.of ().getClass (), serializer);
+    kryo.register (ImmutableSetMultimap.of ("A", "B").getClass (), serializer);
 
     kryo.register (UUID.class, new UUIDSerializer ());
 
