@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.integration.server;
 
+import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import com.forerunnergames.peril.client.net.KryonetClient;
@@ -60,7 +61,7 @@ public class TestClientPool implements Iterable <TestClient>
       {
         final TestClient newClient = new TestClient (new KryonetClient ());
         newClient.initialize ();
-        newClient.connect (serverAddress, serverPort);
+        assertTrue (newClient.connect (serverAddress, serverPort).isSuccessful ());
         log.debug ("Successfully connected client [{}]", newClient.getClientId ());
         clients.add (newClient);
         pendingOperationCount.decrementAndGet ();
