@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -54,7 +55,7 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   }
 
   @Override
-  public String getPlayerColor ()
+  public PlayerColor getPlayerColor ()
   {
     return player.getColor ();
   }

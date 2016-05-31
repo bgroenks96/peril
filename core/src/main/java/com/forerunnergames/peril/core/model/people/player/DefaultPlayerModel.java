@@ -21,6 +21,7 @@ package com.forerunnergames.peril.core.model.people.player;
 import static com.google.common.base.Predicates.equalTo;
 import static com.google.common.base.Predicates.not;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;

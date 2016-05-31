@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 
 abstract class AiPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory implements
@@ -32,7 +33,7 @@ abstract class AiPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWid
   }
 
   @Override
-  public Button.ButtonStyle createPlayerColorIconStyle (final String color)
+  public Button.ButtonStyle createPlayerColorIconStyle (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
 

@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.net.events.server.notification;
 
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -62,7 +63,7 @@ public final class PlayerCountryAssignmentCompleteEvent implements ServerNotific
     return countryToPlayerPackets.get (country);
   }
 
-  public String getOwnerColor (final CountryPacket country)
+  public PlayerColor getOwnerColor (final CountryPacket country)
   {
     Arguments.checkIsNotNull (country, "country");
 

@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.game.DieRoll;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -53,7 +54,7 @@ public final class PlayerDefendCountryResponseSuccessEvent implements PlayerResp
   }
 
   @Override
-  public String getPlayerColor ()
+  public PlayerColor getPlayerColor ()
   {
     return getPlayer ().getColor ();
   }

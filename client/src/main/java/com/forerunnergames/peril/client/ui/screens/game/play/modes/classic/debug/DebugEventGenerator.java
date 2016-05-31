@@ -22,6 +22,7 @@ import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -56,11 +57,10 @@ public final class DebugEventGenerator
 {
   private static final Logger log = LoggerFactory.getLogger (DebugEventGenerator.class);
 
-  private static final ImmutableSet <String> VALID_PLAYER_COLORS = ImmutableSet
-          .of ("blue", "brown", "cyan", "gold", "green", "pink", "purple", "red", "silver", "teal");
+  // @formatter:off
 
-  private static final ImmutableSet <Integer> VALID_SORTED_PLAYER_TURN_ORDERS = ImmutableSet.of (1, 2, 3, 4, 5, 6, 7, 8,
-                                                                                                 9, 10);
+  private static final ImmutableSet <Integer> VALID_SORTED_PLAYER_TURN_ORDERS =
+          ImmutableSet.of (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
   private static final ImmutableList <String> RANDOM_WORDS = ImmutableList
           .of ("Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit.", "Mauris", "elementum",
@@ -88,12 +88,14 @@ public final class DebugEventGenerator
                "Philippines", "Indonesia", "New Guinea", "Western Australia", "Eastern Australia", "New Zealand",
                "Antarctica");
 
+  // @formatter:on
+
   private final MBassador <Event> eventBus;
   private final Set <String> availablePlayerNames = new HashSet <> ();
-  private final Set <String> availablePlayerColors = new HashSet <> ();
+  private final Set <PlayerColor> availablePlayerColors = new HashSet <> ();
   private final Set <Integer> availablePlayerTurnOrders = new HashSet <> ();
   private final Collection <PlayerPacket> unavailablePlayers = new ArrayList <> ();
-  private Iterator <String> playerColorIterator;
+  private Iterator <PlayerColor> playerColorIterator;
   private Iterator <Integer> playerTurnOrderIterator;
   private PlayMap playMap;
 
@@ -188,8 +190,8 @@ public final class DebugEventGenerator
 
   void generatePlayerClaimCountryResponseSuccessEvent ()
   {
-    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createRandomPlayer (),
-            DebugPackets.from (getRandomCountryName ()), 1));
+    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createRandomPlayer (), DebugPackets
+            .from (getRandomCountryName ()), 1));
   }
 
   void resetPlayers ()
@@ -212,9 +214,9 @@ public final class DebugEventGenerator
     return Randomness.getRandomIntegerFrom (0, 99);
   }
 
-  private static String getRandomPlayerColor ()
+  private static PlayerColor getRandomPlayerColor ()
   {
-    return Randomness.getRandomElementFrom (VALID_PLAYER_COLORS);
+    return Randomness.getRandomElementFrom (PlayerColor.validValues ());
   }
 
   private static int getRandomPlayerTurnOrder ()
@@ -242,7 +244,7 @@ public final class DebugEventGenerator
     availablePlayerTurnOrders.clear ();
 
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
-    availablePlayerColors.addAll (VALID_PLAYER_COLORS);
+    availablePlayerColors.addAll (PlayerColor.validValues ());
     availablePlayerTurnOrders.addAll (VALID_SORTED_PLAYER_TURN_ORDERS);
   }
 
@@ -270,7 +272,8 @@ public final class DebugEventGenerator
   private ChatMessage createChatMessage ()
   {
     final Author author = new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (),
-            Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES), "", 0, 0);
+            Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES), Randomness.getRandomElementFrom (PlayerColor
+                    .validValues ()), 0, 0);
 
     return new DefaultChatMessage (author, createMessageText ());
   }
@@ -298,7 +301,7 @@ public final class DebugEventGenerator
     return playerName;
   }
 
-  private String nextAvailablePlayerColor ()
+  private PlayerColor nextAvailablePlayerColor ()
   {
     return playerColorIterator.next ();
   }

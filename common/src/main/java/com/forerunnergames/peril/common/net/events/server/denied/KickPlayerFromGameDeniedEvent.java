@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerDeniedEvent;
@@ -54,7 +55,7 @@ public final class KickPlayerFromGameDeniedEvent implements PlayerDeniedEvent <S
   }
 
   @Override
-  public String getPlayerColor ()
+  public PlayerColor getPlayerColor ()
   {
     return getPlayer ().getColor ();
   }

@@ -22,11 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 import java.util.Map;
 
@@ -38,28 +38,23 @@ import org.slf4j.LoggerFactory;
 public final class DefaultPlayerColorIcon implements PlayerColorIcon
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultPlayerColorIcon.class);
-  private final ImmutableSet <String> lowercaseColors;
   private final PlayerColorIconWidgetFactory widgetFactory;
-  private final ImmutableMap <String, Button> colorsToIcons;
+  private final ImmutableMap <PlayerColor, Button> colorsToIcons;
   private final Table table = new Table ();
   private final Cell <Button> iconCell;
-  private String activeColor;
+  private PlayerColor activeColor;
 
-  public DefaultPlayerColorIcon (final String activeColor,
-                                 final ImmutableSet <String> lowercaseColors,
+  public DefaultPlayerColorIcon (final PlayerColor activeColor,
                                  final PlayerColorIconWidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (activeColor, "activeColor");
-    Arguments.checkIsNotNull (lowercaseColors, "lowercaseColors");
-    Arguments.checkHasNoNullOrEmptyOrBlankElements (lowercaseColors, "lowercaseColors");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
-    this.lowercaseColors = lowercaseColors;
     this.widgetFactory = widgetFactory;
 
-    final ImmutableMap.Builder <String, Button> colorsToIconsBuilder = ImmutableMap.builder ();
+    final ImmutableMap.Builder <PlayerColor, Button> colorsToIconsBuilder = ImmutableMap.builder ();
 
-    for (final String color : lowercaseColors)
+    for (final PlayerColor color : PlayerColor.validValues ())
     {
       colorsToIconsBuilder.put (color, widgetFactory.createPlayerColorIconButton (color));
     }
@@ -72,17 +67,17 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
   }
 
   @Override
-  public void setColor (final String color)
+  public void setColor (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
 
-    if (!lowercaseColors.contains (color.toLowerCase ()))
+    if (color == PlayerColor.UNKNOWN)
     {
-      log.warn ("Not setting unrecognized color [{}]", color);
+      log.warn ("Not setting invalid color [{}]", color);
       return;
     }
 
-    activeColor = color.toLowerCase ();
+    activeColor = color;
 
     final Button playerColorIcon = colorsToIcons.get (activeColor);
 
@@ -94,7 +89,7 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
   @OverridingMethodsMustInvokeSuper
   public void refreshAssets ()
   {
-    for (final Map.Entry <String, Button> entry : colorsToIcons.entrySet ())
+    for (final Map.Entry <PlayerColor, Button> entry : colorsToIcons.entrySet ())
     {
       entry.getValue ().setStyle (widgetFactory.createPlayerColorIconStyle (entry.getKey ()));
     }

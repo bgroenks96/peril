@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
@@ -53,7 +54,7 @@ public final class PlayerReinforceCountriesResponseDeniedEvent extends AbstractC
   }
 
   @Override
-  public String getPlayerColor ()
+  public PlayerColor getPlayerColor ()
   {
     return player.getColor ();
   }

@@ -99,7 +99,6 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 
@@ -637,8 +636,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        playMap.setCountryState (event.getCountryName (), CountryPrimaryImageState.valueOf (Strings.toCase (event
-                .getPlayerColor (), LetterCase.UPPER)));
+        playMap.setCountryState (event.getCountryName (),
+                                 CountryPrimaryImageState.fromPlayerColor (event.getPlayerColor ()));
       }
     });
   }
@@ -657,8 +656,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         for (final CountryPacket country : event.getCountries ())
         {
-          final CountryPrimaryImageState state = CountryPrimaryImageState.valueOf (Strings.toCase (event
-                  .getOwnerColor (country), LetterCase.UPPER));
+          final CountryPrimaryImageState state = CountryPrimaryImageState.fromPlayerColor (event
+                  .getOwnerColor (country));
 
           if (playMap.primaryImageStateOfCountryIs (state, country.getName ())) continue;
 

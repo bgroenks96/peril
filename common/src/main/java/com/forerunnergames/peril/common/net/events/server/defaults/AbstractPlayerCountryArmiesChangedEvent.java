@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -71,7 +72,7 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent implements PlayerA
   }
 
   @Override
-  public String getPlayerColor ()
+  public PlayerColor getPlayerColor ()
   {
     return player.getColor ();
   }

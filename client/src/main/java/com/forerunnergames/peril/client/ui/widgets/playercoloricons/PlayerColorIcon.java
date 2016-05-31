@@ -18,12 +18,13 @@
 package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.forerunnergames.peril.common.game.PlayerColor;
 
 public interface PlayerColorIcon
 {
   PlayerColorIcon NULL_PLAYER_COLOR_ICON = new NullPlayerColorIcon ();
 
-  void setColor (final String color);
+  void setColor (final PlayerColor color);
 
   void refreshAssets ();
 

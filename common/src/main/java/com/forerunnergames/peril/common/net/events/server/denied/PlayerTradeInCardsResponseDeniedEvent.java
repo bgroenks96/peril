@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
@@ -61,7 +62,7 @@ public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractDeniedE
   }
 
   @Override
-  public String getPlayerColor ()
+  public PlayerColor getPlayerColor ()
   {
     return player.getColor ();
   }

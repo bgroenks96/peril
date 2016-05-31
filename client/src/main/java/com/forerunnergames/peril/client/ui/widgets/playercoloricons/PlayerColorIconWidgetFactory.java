@@ -21,18 +21,13 @@ package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-
-import com.google.common.collect.ImmutableSet;
+import com.forerunnergames.peril.common.game.PlayerColor;
 
 public interface PlayerColorIconWidgetFactory extends WidgetFactory
 {
-  // TODO Move PlayerColor to common module & use PlayerColor#validValues.
-  ImmutableSet <String> PLAYER_COLORS_LOWERCASE = ImmutableSet.of ("blue", "brown", "cyan", "gold", "green", "pink",
-                                                                   "purple", "red", "silver", "teal");
+  PlayerColorIcon createPlayerColorIcon (final PlayerColor activeColor);
 
-  PlayerColorIcon createPlayerColorIcon (final String activeColor);
+  Button createPlayerColorIconButton (final PlayerColor color);
 
-  Button createPlayerColorIconButton (final String color);
-
-  Button.ButtonStyle createPlayerColorIconStyle (final String color);
+  Button.ButtonStyle createPlayerColorIconStyle (final PlayerColor color);
 }

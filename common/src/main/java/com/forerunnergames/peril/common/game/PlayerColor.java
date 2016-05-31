@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model.people.player;
+package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.tools.common.enums.IterableEnum;
 import com.forerunnergames.tools.common.enums.IterableEnumHelper;

@@ -27,12 +27,6 @@ public enum CountrySecondaryImageState implements CountryImageState <CountrySeco
   CLICKED;
 
   @Override
-  public CountrySecondaryImageState asEnum ()
-  {
-    return this;
-  }
-
-  @Override
   public String getEnumName ()
   {
     return name ();

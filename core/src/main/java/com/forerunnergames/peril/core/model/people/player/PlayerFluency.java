@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.people.player;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 

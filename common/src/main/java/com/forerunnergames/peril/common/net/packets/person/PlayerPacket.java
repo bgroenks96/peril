@@ -18,6 +18,8 @@
 
 package com.forerunnergames.peril.common.net.packets.person;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
+
 import java.util.Comparator;
 
 public interface PlayerPacket extends PersonPacket
@@ -42,19 +44,19 @@ public interface PlayerPacket extends PersonPacket
     }
   };
 
-  String getColor ();
+  PlayerColor getColor ();
 
   int getTurnOrder ();
 
   int getArmiesInHand ();
 
-  boolean has (final String color);
+  boolean has (final PlayerColor color);
 
   boolean has (final int turnOrder);
 
   boolean hasArmiesInHand (final int armies);
 
-  boolean doesNotHave (final String color);
+  boolean doesNotHave (final PlayerColor color);
 
   boolean doesNotHave (final int turnOrder);
 }

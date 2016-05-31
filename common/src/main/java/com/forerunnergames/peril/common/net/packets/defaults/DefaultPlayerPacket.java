@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.AbstractPersonPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -28,13 +29,13 @@ import java.util.UUID;
 
 public final class DefaultPlayerPacket extends AbstractPersonPacket implements PlayerPacket
 {
-  private final String color;
+  private final PlayerColor color;
   private final int turnOrder;
   private final int armiesInHand;
 
   public DefaultPlayerPacket (final UUID playerId,
                               final String name,
-                              final String color,
+                              final PlayerColor color,
                               final int turnOrder,
                               final int armiesInHand)
   {
@@ -50,7 +51,7 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   }
 
   @Override
-  public String getColor ()
+  public PlayerColor getColor ()
   {
     return color;
   }
@@ -68,11 +69,11 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   }
 
   @Override
-  public boolean has (final String color)
+  public boolean has (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return this.color.equalsIgnoreCase (color);
+    return this.color == color;
   }
 
   @Override
@@ -92,11 +93,11 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   }
 
   @Override
-  public boolean doesNotHave (final String color)
+  public boolean doesNotHave (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return !this.color.equalsIgnoreCase (color);
+    return this.color != color;
   }
 
   @Override

@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 
 public abstract class AbstractPlayerColorIconWidgetFactory extends AbstractWidgetFactory implements
@@ -32,15 +33,15 @@ public abstract class AbstractPlayerColorIconWidgetFactory extends AbstractWidge
   }
 
   @Override
-  public PlayerColorIcon createPlayerColorIcon (final String activeColor)
+  public PlayerColorIcon createPlayerColorIcon (final PlayerColor activeColor)
   {
     Arguments.checkIsNotNull (activeColor, "activeColor");
 
-    return new DefaultPlayerColorIcon (activeColor, PlayerColorIconWidgetFactory.PLAYER_COLORS_LOWERCASE, this);
+    return new DefaultPlayerColorIcon (activeColor, this);
   }
 
   @Override
-  public Button createPlayerColorIconButton (final String color)
+  public Button createPlayerColorIconButton (final PlayerColor color)
   {
     return createButton (createPlayerColorIconStyle (color));
   }

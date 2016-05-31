@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
 public interface PlayerEvent
@@ -26,5 +27,5 @@ public interface PlayerEvent
 
   String getPlayerName ();
 
-  String getPlayerColor ();
+  PlayerColor getPlayerColor ();
 }

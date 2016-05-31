@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.enums.IterableEnumHelper;
 
@@ -35,12 +36,6 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
   TEAL,
   UNOWNED,
   DISABLED;
-
-  @Override
-  public CountryPrimaryImageState asEnum ()
-  {
-    return this;
-  }
 
   @Override
   public String getEnumName ()
@@ -113,9 +108,9 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
     return IterableEnumHelper.count (values ());
   }
 
-  public static CountryPrimaryImageState fromPlayerColor (final String playerColor)
+  public static CountryPrimaryImageState fromPlayerColor (final PlayerColor playerColor)
   {
-    Arguments.checkIsNotNullOrEmptyOrBlank (playerColor, "playerColor");
+    Arguments.checkIsNotNull (playerColor, "playerColor");
 
     return valueOf (playerColor.toUpperCase ());
   }

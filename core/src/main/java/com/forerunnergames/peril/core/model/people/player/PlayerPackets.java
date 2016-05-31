@@ -18,9 +18,6 @@
 
 package com.forerunnergames.peril.core.model.people.player;
 
-import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
-import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
-
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -31,14 +28,17 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 import java.util.Collection;
 
+import static com.forerunnergames.tools.common.assets.AssetFluency.idOf;
+import static com.forerunnergames.tools.common.assets.AssetFluency.nameOf;
+
 final class PlayerPackets
 {
   static PlayerPacket from (final Player player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return new DefaultPlayerPacket (idOf (player).value (), nameOf (player), player.getColor ().toString (),
-            player.getTurnOrder ().asInt (), player.getArmiesInHand ());
+    return new DefaultPlayerPacket (idOf (player).value (), nameOf (player), player.getColor (), player.getTurnOrder ()
+            .asInt (), player.getArmiesInHand ());
   }
 
   static ImmutableSet <PlayerPacket> fromPlayers (final Collection <Player> players)

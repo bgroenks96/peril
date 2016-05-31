@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.people.player;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
