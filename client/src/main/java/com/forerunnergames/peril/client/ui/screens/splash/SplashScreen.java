@@ -259,7 +259,7 @@ public final class SplashScreen extends InputAdapter implements Screen
   @Override
   public void render (final float delta)
   {
-    Gdx.gl.glClearColor (0, 0, 0, 1);
+    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
     Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
 
     quitDialog.update (delta);
