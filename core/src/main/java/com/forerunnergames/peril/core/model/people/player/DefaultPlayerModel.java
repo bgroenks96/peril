@@ -618,7 +618,7 @@ public final class DefaultPlayerModel implements PlayerModel
 
   private PlayerColor nextAvailableColor ()
   {
-    for (final PlayerColor color : PlayerColor.validValues ())
+    for (final PlayerColor color : PlayerColor.VALID_VALUES)
     {
       if (!existsPlayerWith (color)) return color;
     }

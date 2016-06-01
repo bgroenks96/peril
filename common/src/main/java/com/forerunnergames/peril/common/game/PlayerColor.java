@@ -18,11 +18,13 @@
 
 package com.forerunnergames.peril.common.game;
 
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.enums.IterableEnum;
 import com.forerunnergames.tools.common.enums.IterableEnumHelper;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.EnumSet;
@@ -41,15 +43,25 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   TEAL,
   UNKNOWN;
 
-  private static final ImmutableSet <PlayerColor> validValues = ImmutableSet.copyOf (Collections2.filter (EnumSet
-          .allOf (PlayerColor.class), new Predicate <PlayerColor> ()
-  {
-    @Override
-    public boolean apply (final PlayerColor input)
-    {
-      return input.isNot (UNKNOWN);
-    }
-  }));
+  public static final ImmutableSet <PlayerColor> VALID_VALUES = FluentIterable.from (EnumSet.allOf (PlayerColor.class))
+          .filter (new Predicate <PlayerColor> ()
+          {
+            @Override
+            public boolean apply (final PlayerColor input)
+            {
+              return input.isNot (UNKNOWN);
+            }
+          }).toSet ();
+
+  public static final ImmutableSet <String> VALID_VALUE_NAMES = FluentIterable.from (VALID_VALUES)
+          .transform (new Function <PlayerColor, String> ()
+          {
+            @Override
+            public String apply (final PlayerColor input)
+            {
+              return input.name ();
+            }
+          }).toSet ();
 
   @Override
   public boolean hasNext ()
@@ -116,19 +128,28 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
     return IterableEnumHelper.count (values ());
   }
 
-  public static ImmutableSet <PlayerColor> validValues ()
+  public static boolean isValidValue (final PlayerColor color)
   {
-    return validValues;
+    Arguments.checkIsNotNull (color, "color");
+
+    return VALID_VALUES.contains (color);
+  }
+
+  public static boolean isValidValue (final String color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+
+    return VALID_VALUE_NAMES.contains (color.toUpperCase ());
   }
 
   public boolean hasNextValid ()
   {
-    return IterableEnumHelper.hasNextValid (this, values (), validValues);
+    return IterableEnumHelper.hasNextValid (this, values (), VALID_VALUES);
   }
 
   public PlayerColor nextValid ()
   {
-    return IterableEnumHelper.nextValid (this, values (), validValues);
+    return IterableEnumHelper.nextValid (this, values (), VALID_VALUES);
   }
 
   public String toLowerCase ()
@@ -144,11 +165,5 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   public String toProperCase ()
   {
     return IterableEnumHelper.toProperCase (this);
-  }
-
-  @Override
-  public String toString ()
-  {
-    return name ();
   }
 }

@@ -54,7 +54,7 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
 
     final ImmutableMap.Builder <PlayerColor, Button> colorsToIconsBuilder = ImmutableMap.builder ();
 
-    for (final PlayerColor color : PlayerColor.validValues ())
+    for (final PlayerColor color : PlayerColor.VALID_VALUES)
     {
       colorsToIconsBuilder.put (color, widgetFactory.createPlayerColorIconButton (color));
     }

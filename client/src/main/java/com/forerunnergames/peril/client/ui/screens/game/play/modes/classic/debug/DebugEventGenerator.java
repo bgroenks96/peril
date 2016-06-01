@@ -216,7 +216,7 @@ public final class DebugEventGenerator
 
   private static PlayerColor getRandomPlayerColor ()
   {
-    return Randomness.getRandomElementFrom (PlayerColor.validValues ());
+    return Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES);
   }
 
   private static int getRandomPlayerTurnOrder ()
@@ -244,7 +244,7 @@ public final class DebugEventGenerator
     availablePlayerTurnOrders.clear ();
 
     availablePlayerNames.addAll (RANDOM_PLAYER_NAMES);
-    availablePlayerColors.addAll (PlayerColor.validValues ());
+    availablePlayerColors.addAll (PlayerColor.VALID_VALUES);
     availablePlayerTurnOrders.addAll (VALID_SORTED_PLAYER_TURN_ORDERS);
   }
 
@@ -272,8 +272,8 @@ public final class DebugEventGenerator
   private ChatMessage createChatMessage ()
   {
     final Author author = new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (),
-            Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES), Randomness.getRandomElementFrom (PlayerColor
-                    .validValues ()), 0, 0);
+            Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES),
+            Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES), 0, 0);
 
     return new DefaultChatMessage (author, createMessageText ());
   }
