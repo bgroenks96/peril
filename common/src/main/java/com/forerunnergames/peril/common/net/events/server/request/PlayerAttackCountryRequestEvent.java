@@ -57,6 +57,7 @@ public final class PlayerAttackCountryRequestEvent extends AbstractPlayerEvent i
 
     return FluentIterable.from (validAttackVectors.keySet ()).firstMatch (new Predicate <CountryPacket> ()
     {
+      @Override
       public boolean apply (final CountryPacket input)
       {
         return input.hasName (countryName);
