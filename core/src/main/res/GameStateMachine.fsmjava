@@ -285,7 +285,14 @@
                 </state>
                 <state name="FortifyPhase">
                   <onEntry action="gameModel.beginFortifyPhase()" />
-                  <onExit action="gameModel.endFortifyPhase()" />
+                  <onExit>
+                    <action>gameModel.endFortifyPhase()</action>
+                    <!-- Workaround for grandparent state TurnPhase refusing to re-execute onEntry / onExit -->
+                    <action>gameModel.endPlayerTurn()</action>
+                    <action>gameModel.advanceTurn()</action>
+                    <action>gameModel.beginPlayerTurn()</action>
+                    <!-- End workaround -->
+                  </onExit>
                   <state name="WaitForPlayerToFortifyCountry">
                     <transition event="onPlayerFortifyCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerFortifyCountryResponseRequest(event)"
