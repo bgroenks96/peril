@@ -85,6 +85,9 @@ allprojects {
     maven { url "http://oss.jfrog.org/artifactory/oss-snapshot-local/" }
     maven { url "http://dl.bintray.com/forerunnergames/repository" }
   }
+
+  // Show recursive dependency tree.
+  task allDeps (type: DependencyReportTask) {}
 }
 
 // Apply to all subprojects.
