@@ -16,11 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-sourceSets.main.java.srcDirs = ["src/main/java/"]
-sourceSets.main.resources.srcDirs = ["src/main/res/"]
-sourceSets.test.java.srcDirs = ["src/test/java/"]
-sourceSets.test.resources.srcDirs = ["src/test/res/"]
-
 project.ext.mainClassName = "com.forerunnergames.peril.server.main.Main"
 
 task run (dependsOn: classes, type: JavaExec) {
@@ -34,7 +29,7 @@ task run (dependsOn: classes, type: JavaExec) {
 }
 
 task dist (type: Jar, dependsOn: classes) {
-  baseName = appName + "-" + project.name
+  baseName = rootProject.name + "-" + project.name
 
   from files (sourceSets.main.output.classesDir)
   from files (sourceSets.main.output.resourcesDir)
@@ -43,11 +38,5 @@ task dist (type: Jar, dependsOn: classes) {
 
   manifest {
     attributes "Main-Class": project.mainClassName
-  }
-}
-
-eclipse {
-  project {
-    name = appName + "-server"
   }
 }

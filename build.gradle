@@ -63,16 +63,17 @@ task wrapper (type: Wrapper) {
   gradleVersion = "2.13"
 }
 
-// Apply to parent project & all subprojects
+// Apply to parent project & all subprojects.
 allprojects {
   apply plugin: "eclipse"
   apply plugin: "idea"
+  apply plugin: "jacoco"
 
   group = projectGroup
   version = projectVersion
 
   ext {
-    appName = projectName
+    jacocoInstrumentedProjects = subprojects - project (":android") - project (":integration")
   }
 
   repositories {
@@ -82,8 +83,24 @@ allprojects {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     maven { url "http://oss.jfrog.org/artifactory/oss-snapshot-local/" }
-    maven { url  "http://dl.bintray.com/forerunnergames/repository" }
+    maven { url "http://dl.bintray.com/forerunnergames/repository" }
   }
+}
+
+// Apply to all subprojects.
+subprojects {
+  // Allows disabling Android pre-dexing with -PdisablePreDex flag.
+  // Can significantly speed up CI server builds.
+  // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.
+  project.plugins.whenPluginAdded { plugin ->
+    if ("com.android.build.gradle.AppPlugin".equals (plugin.class.name)) {
+      project.android.dexOptions.preDexLibraries = !project.hasProperty ("disablePreDex")
+    } else if ("com.android.build.gradle.LibraryPlugin".equals (plugin.class.name)) {
+      project.android.dexOptions.preDexLibraries = !project.hasProperty ("disablePreDex")
+    }
+  }
+
+  eclipse.project.name = rootProject.name + "-" + project.name
 }
 
 // Apply to all subprojects except android.
@@ -118,6 +135,14 @@ configure (subprojects - project (":android")) {
 
     testLogging.showStandardStreams = true;
   }
+}
+
+// Apply to all subprojects except android & integration.
+configure (subprojects - project (":android") - project (":integration")) {
+  sourceSets.main.java.srcDirs = ["src/main/java/"]
+  sourceSets.main.resources.srcDirs = ["src/main/res/"]
+  sourceSets.test.java.srcDirs = ["src/test/java/"]
+  sourceSets.test.resources.srcDirs = ["src/test/res/"]
 }
 
 project (":desktop") {
@@ -194,8 +219,8 @@ project (":core") {
       exclude module: "commons-io"
       exclude module: "junit"
     }
-    testCompile project(":common").sourceSets.test.output
-    testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
+    testCompile project (":common").sourceSets.test.output
+    testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
 }
 
@@ -205,8 +230,8 @@ project (":client") {
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile "com.amazonaws:aws-java-sdk:1.10.44"
-    testCompile project(":common").sourceSets.test.output
-    testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
+    testCompile project (":common").sourceSets.test.output
+    testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
 }
 
@@ -214,8 +239,8 @@ project (":server") {
   dependencies {
     compile project (":core")
     compile "com.beust:jcommander:$jcommanderVersion"
-    testCompile project(":common").sourceSets.test.output
-    testCompileOnly files { project(":common").sourceSets.test.java.srcDirs } // IDEA workaround
+    testCompile project (":common").sourceSets.test.output
+    testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
     runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
   }
 }
@@ -236,6 +261,26 @@ project (":integration") {
   test {
     useTestNG ()
   }
+}
+
+task coverageReport (type: JacocoReport) {
+  executionData fileTree (project.rootDir.absolutePath).include ("**/build/jacoco/*.exec")
+
+  reports {
+    xml.enabled true
+    xml.destination "${buildDir}/reports/jacoco/jacoco.xml"
+    html.enabled true
+    html.destination "${buildDir}/reports/jacoco"
+    csv.enabled false
+  }
+
+  jacocoInstrumentedProjects.each {
+    sourceSets it.sourceSets.main
+  }
+}
+
+coverageReport.dependsOn {
+  jacocoInstrumentedProjects*.test
 }
 
 idea {

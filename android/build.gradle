@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 android {
   buildToolsVersion '23.0.3'
   compileSdkVersion 23
@@ -57,8 +58,8 @@ android {
   }
 }
 
-// called every time gradle gets executed, takes the native dependencies of
-// the natives configuration, and extracts them to the proper libs/ folders
+// Called every time gradle gets executed, taking the native dependencies of
+// the natives configuration, and extracting them to the proper libs / folders
 // so they get packed with the APK.
 task copyAndroidNatives () {
   file ("libs/armeabi/").mkdirs ();
@@ -106,10 +107,10 @@ task run (type: Exec) {
   commandLine "$adb", "shell", "am", "start", "-n", "com.forerunnergames.peril.android/com.forerunnergames.peril.android.AndroidLauncher"
 }
 
-// sets up the Android Eclipse project, using the old Ant based build.
+// Sets up the Android Eclipse project, using the old Ant-based build.
 eclipse {
-  // need to specify Java source sets explicitly, SpringSource Gradle Eclipse plugin
-  // ignores any nodes added in classpath.file.withXml
+  // Need to specify Java source sets explicitly (SpringSource Gradle Eclipse plugin).
+  // Ignores any nodes added in classpath.file.withXml.
   sourceSets {
     main {
       java.srcDirs "src", "gen"
@@ -127,7 +128,6 @@ eclipse {
   }
 
   project {
-    name = appName + "-android"
     natures "com.android.ide.eclipse.adt.AndroidNature"
     buildCommands.clear ();
     buildCommand "com.android.ide.eclipse.adt.ResourceManagerBuilder"
@@ -137,7 +137,7 @@ eclipse {
   }
 }
 
-// sets up the Android Idea project, using the old Ant based build.
+// Sets up the Android Idea project, using the old Ant-based build.
 idea {
   module {
     sourceDirs += file ("src");

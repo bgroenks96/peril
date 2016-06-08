@@ -24,14 +24,15 @@ sourceSets {
 }
 
 task integrationTest (type: Test) {
-  description "Run integration tests"
   include "**/*Test*.*"
+
   testClassesDir = sourceSets.integrationTest.output.classesDir
   classpath = sourceSets.integrationTest.runtimeClasspath
+
   useTestNG () {
     parallel "tests"
   }
-  // configure testng suites
+
   options.suites (getSuitesToRun ())
 }
 
@@ -40,17 +41,16 @@ def getSuitesToRun () {
   if (!project.hasProperty ("tests")) {
     return allTests
   }
+
   if (project.property ("tests") == "func.all") {
     return funcTestsAll
   }
+
   if (project.property ("tests") == "smoke.standalone") {
     return smokeTestsStandalone
   }
+
   if (project.property ("tests") == "smoke.all") {
     return smokeTestsAll
   }
-}
-
-eclipse.project {
-  name = appName + "-integration"
 }

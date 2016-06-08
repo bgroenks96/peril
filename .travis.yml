@@ -33,13 +33,14 @@ before_install:
   - export PATH=$PATH:$HOME/.local/bin
 
 script:
-  - ./gradlew clean build integrationTest
+  - ./gradlew clean build integrationTest codeCoverage -PdisablePreDex
 
 after_success:
   - ./gradlew desktop:dist server:dist
   - ./scripts/travis-collect-upload-build-artifacts.sh
   - ./scripts/travis-create-upload-last-successful-build-number.sh
   - ./scripts/travis-collect-upload-assets.sh
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports."
 
 after_failure:
   - ./scripts/travis-collect-upload-build-artifacts.sh
