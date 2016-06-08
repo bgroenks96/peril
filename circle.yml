@@ -19,8 +19,6 @@ dependencies:
   override:
     - export TERM="dumb"
     - ./gradlew compileTestJava
-  cache_directories:
-    - ~/.gradle
 
 test:
   override:
