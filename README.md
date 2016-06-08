@@ -15,12 +15,19 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
+[![Travis CI Build Status](https://img.shields.io/travis/forerunnergames/peril/master.svg)][travis]
+[![CircleCI Build Status](https://img.shields.io/circleci/token/b79fc71664c59d894a142aead9ffe480dfdcc4c2/project/forerunnergames/peril/master.svg)][circle]
+[![Code Coverage](https://img.shields.io/codecov/c/github/forerunnergames/peril/master.svg)][codecov]
+[![Code Quality](https://img.shields.io/codacy/grade/bf2b210c63de4349827e7aadaf019825/master.svg)][codacy]
+[![License (code): GPLv3](https://img.shields.io/badge/license%20[code]-GPLv3-blue.svg)][gpl-v3]
+[![License (assets): CC BY-SA 4.0](https://img.shields.io/badge/license%20[assets]-CC%20BY--SA%204.0-blue.svg)][cc-by-sa-4]
 
-[![Build Status](https://travis-ci.org/forerunnergames/peril.svg?branch=master)](https://travis-ci.org/forerunnergames/peril)
-[![Code Coverage](https://img.shields.io/codecov/c/github/forerunnergames/peril/master.svg)](https://codecov.io/github/forerunnergames/peril?branch=master)
-[![Code Quality](https://img.shields.io/codacy/bf2b210c63de4349827e7aadaf019825/master.svg)](https://www.codacy.com/app/forerunnergames/peril)
-[![License (code): GPLv3](https://img.shields.io/badge/license%20[code]-GPLv3-blue.svg)](/legal/GPLv3.txt)
-[![License (assets): CC BY-SA 4.0](https://img.shields.io/badge/license%20[assets]-CC%20BY--SA%204.0-blue.svg)](/legal/CC-BY-SA-4.txt)
+[travis]: https://travis-ci.org/forerunnergames/peril.svg?branch=master
+[circle]: https://circleci.com/gh/forerunnergames/peril/tree/master
+[codecov]: https://codecov.io/github/forerunnergames/peril?branch=master
+[codacy]: https://www.codacy.com/app/forerunnergames/peril
+[gpl-v3]: /legal/GPLv3.txt
+[cc-by-sa-4]: /legal/CC-BY-SA-4.txt
 
 ```
 peril [per-uhl] (noun)

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Copyright © 2016 Forerunner Games, LLC.
 #
@@ -15,11 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-test:
-  override:
-    - ./scripts/ci-build-command.sh
-  post:
-    - ./scripts/create-executables.sh
-    - ./scripts/circle-collect-copy-test-results.sh
-    - ./scripts/circle-collect-copy-build-artifacts.sh
-    - ./scripts/upload-coverage-reports.sh
+THIS_DIR="${BASH_SOURCE%/*}"
+[[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
+[[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
+
+./gradlew clean build integrationTest coverageReport -PdisablePreDex
