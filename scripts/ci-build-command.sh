@@ -20,4 +20,4 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-./gradlew clean build integrationTest coverageReport -PdisablePreDex
+./gradlew build integrationTest coverageReport -PdisablePreDex
