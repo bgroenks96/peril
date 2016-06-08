@@ -37,7 +37,7 @@ mkdir -p "$BUILD_ARTIFACTS_COLLECTION_DIR"
 
 for PROJECT in "$ROOT_PROJECT" "${SUBPROJECTS[@]}"; do
   for ARTIFACT in "${BUILD_ARTIFACTS[@]}"; do
-    SOURCE=$PROJECT/$ARTIFACT
+    SOURCE=$([ "$PROJECT" == "$ROOT_PROJECT" ] && echo "$ARTIFACT" || echo "$PROJECT/$ARTIFACT")
     DEST=$BUILD_ARTIFACTS_COLLECTION_DIR/$PROJECT
     [[ -z $(find . -path "*$SOURCE" -print -quit) ]] && printf "  $SOURCE NOT FOUND - SKIPPING\n"
     rsync -am --out-format="%f" $SOURCE "$DEST/" 2>/dev/null | awk -F'\t' '{ if ($1 > 0) print "  " $1 }'
