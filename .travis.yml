@@ -33,7 +33,7 @@ before_install:
   - export PATH=$PATH:$HOME/.local/bin
 
 script:
-  - ./gradlew clean build integrationTest codeCoverage -PdisablePreDex
+  - ./gradlew clean build integrationTest coverageReport -PdisablePreDex
 
 after_success:
   - ./gradlew desktop:dist server:dist
