@@ -22,7 +22,7 @@
 [![License (code): GPLv3](https://img.shields.io/badge/license%20[code]-GPLv3-blue.svg)][gpl-v3]
 [![License (assets): CC BY-SA 4.0](https://img.shields.io/badge/license%20[assets]-CC%20BY--SA%204.0-blue.svg)][cc-by-sa-4]
 
-[travis]: https://travis-ci.org/forerunnergames/peril.svg?branch=master
+[travis]: https://travis-ci.org/forerunnergames/peril
 [circle]: https://circleci.com/gh/forerunnergames/peril/tree/master
 [codecov]: https://codecov.io/github/forerunnergames/peril?branch=master
 [codacy]: https://www.codacy.com/app/forerunnergames/peril
