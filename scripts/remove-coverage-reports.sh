@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright © 2011 - 2013 Aaron Mahan.
-# Copyright © 2013 - 2016 Forerunner Games, LLC.
+# Copyright © 2016 Forerunner Games, LLC.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,10 +20,10 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-printf "\nRemoving collected build artifacts...\n\n"
+printf "\nRemoving coverage reports...\n\n"
 printf "Directory:\n\n"
-printf "  %s\n\n" "`pwd`/$BUILD_ARTIFACTS_COLLECTION_DIR"
+printf "  %s\n\n" "`pwd`/$COVERAGE_REPORTS_DIR"
 
-rm -rf "$BUILD_ARTIFACTS_COLLECTION_DIR"/* >/dev/null 2>&1
-rm -rf "$BUILD_ARTIFACTS_COLLECTION_DIR"/.* >/dev/null 2>&1
-rmdir -p "$BUILD_ARTIFACTS_COLLECTION_DIR" >/dev/null 2>&1
+rm -rf "$COVERAGE_REPORTS_DIR"/* >/dev/null 2>&1
+rm -rf "$COVERAGE_REPORTS_DIR"/.* >/dev/null 2>&1
+rmdir -p "$COVERAGE_REPORTS_DIR" >/dev/null 2>&1

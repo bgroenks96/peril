@@ -20,6 +20,6 @@ test:
     - ./scripts/ci-build-command.sh
   post:
     - ./scripts/create-executables.sh
+    - ./scripts/upload-coverage-reports.sh
     - ./scripts/circle-collect-copy-test-results.sh
     - ./scripts/circle-collect-copy-build-artifacts.sh
-    - ./scripts/upload-coverage-reports.sh

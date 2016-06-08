@@ -25,6 +25,7 @@ ASSETS_COLLECTION_DIR="tmp/uploads/assets"
 ASSETS_S3_BUCKET_NAME="assets.perilgame.com"
 LAST_SUCCESSFUL_BUILD_FILE="last-successful-build-number.txt"
 LAST_SUCCESSFUL_BUILD_FILE_DIR="tmp/uploads"
+COVERAGE_REPORTS_DIR="build/reports/jacoco"
 PROJECT_REPO_OWNER="forerunnergames"
 ROOT_PROJECT=$(sed -n -e 's/^projectName=//p' gradle.properties)
 SUBPROJECTS=($(sed -n -e 's/^include //p' settings.gradle | tr -d ",\"" | tr ' ' "\n"))

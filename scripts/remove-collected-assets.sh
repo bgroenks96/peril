@@ -26,4 +26,5 @@ printf "Directory:\n\n"
 printf "  %s\n\n" "`pwd`/$ASSETS_COLLECTION_DIR"
 
 rm -rf "$ASSETS_COLLECTION_DIR"/* >/dev/null 2>&1
+rm -rf "$ASSETS_COLLECTION_DIR"/.* >/dev/null 2>&1
 rmdir -p "$ASSETS_COLLECTION_DIR" >/dev/null 2>&1

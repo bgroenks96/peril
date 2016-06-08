@@ -36,10 +36,10 @@ script:
 
 after_success:
   - ./scripts/create-executables.sh
+  - ./scripts/upload-coverage-reports.sh
   - ./scripts/travis-collect-upload-build-artifacts.sh
   - ./scripts/travis-create-upload-last-successful-build-number.sh
   - ./scripts/travis-collect-upload-assets.sh
-  - ./scripts/upload-coverage-reports.sh
 
 after_failure:
   - ./scripts/travis-collect-upload-build-artifacts.sh

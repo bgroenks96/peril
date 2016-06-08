@@ -23,3 +23,5 @@ THIS_DIR="${BASH_SOURCE%/*}"
 printf "\nUploading coverage reports to codecov.io...\n\n"
 
 bash <(curl -s https://codecov.io/bash) || echo "Failed to upload coverage reports to codecov.io."
+
+./scripts/remove-coverage-reports.sh
