@@ -15,6 +15,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
+  
 [![Travis CI Build Status](https://img.shields.io/travis/forerunnergames/peril/master.svg)][travis]
 [![CircleCI Build Status](https://img.shields.io/circleci/token/b79fc71664c59d894a142aead9ffe480dfdcc4c2/project/forerunnergames/peril/master.svg)][circle]
 [![Code Coverage](https://img.shields.io/codecov/c/github/forerunnergames/peril/master.svg)][codecov]
@@ -38,6 +39,7 @@ See also: Risk
 
 [from Old French peril, from Latin perīculum]
 ```
+
 # Licenses
 
 #### Code
