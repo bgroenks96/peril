@@ -1,0 +1,6 @@
+test:
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - ./scripts/collect-build-artifacts.sh
+    - cp -R "$BUILD_ARTIFACTS_COLLECTION_DIR/" $CIRCLE_ARTIFACTS/
