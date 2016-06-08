@@ -24,6 +24,5 @@ printf "\nRemoving coverage reports...\n\n"
 printf "Directory:\n\n"
 printf "  %s\n\n" "`pwd`/$COVERAGE_REPORTS_DIR"
 
-rm -rf "$COVERAGE_REPORTS_DIR"/* >/dev/null 2>&1
-rm -rf "$COVERAGE_REPORTS_DIR"/.* >/dev/null 2>&1
+find "$COVERAGE_REPORTS_DIR" -mindepth 1 -delete
 rmdir -p "$COVERAGE_REPORTS_DIR" >/dev/null 2>&1

@@ -25,6 +25,5 @@ printf "\nRemoving collected build artifacts...\n\n"
 printf "Directory:\n\n"
 printf "  %s\n\n" "`pwd`/$BUILD_ARTIFACTS_COLLECTION_DIR"
 
-rm -rf "$BUILD_ARTIFACTS_COLLECTION_DIR"/* >/dev/null 2>&1
-rm -rf "$BUILD_ARTIFACTS_COLLECTION_DIR"/.* >/dev/null 2>&1
+find "$BUILD_ARTIFACTS_COLLECTION_DIR" -mindepth 1 -delete
 rmdir -p "$BUILD_ARTIFACTS_COLLECTION_DIR" >/dev/null 2>&1

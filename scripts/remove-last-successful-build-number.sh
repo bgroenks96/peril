@@ -25,5 +25,5 @@ printf "\nRemoving last successful build number file...\n\n"
 printf "File:\n\n"
 printf "  %s\n\n" "`pwd`/$LAST_SUCCESSFUL_BUILD_FILE_DIR/$LAST_SUCCESSFUL_BUILD_FILE"
 
-rm -f "$LAST_SUCCESSFUL_BUILD_FILE_DIR/$LAST_SUCCESSFUL_BUILD_FILE" >/dev/null 2>&1
+find "$LAST_SUCCESSFUL_BUILD_FILE_DIR" -mindepth 1 -delete
 rmdir -p "$LAST_SUCCESSFUL_BUILD_FILE_DIR" >/dev/null 2>&1
