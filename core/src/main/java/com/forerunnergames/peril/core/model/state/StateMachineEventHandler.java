@@ -32,6 +32,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.SkipPlayerTurnEvent;
@@ -158,16 +159,6 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onEndGameEvent (event);
-  }
-
-  @Handler
-  public void onEvent (final SkipPlayerTurnEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Received event {}", event);
-
-    context.onSkipPlayerTurnEvent (event);
   }
 
   @Handler
@@ -351,16 +342,6 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerJoinGameDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Received event {}", event);
-
-    context.onPlayerJoinGameDeniedEvent (event);
-  }
-
-  @Handler
   public void onEvent (final PlayerJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -378,6 +359,36 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerJoinGameSuccessEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerJoinGameDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerJoinGameDeniedEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final EndPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onEndPlayerTurnEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final SkipPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onSkipPlayerTurnEvent (event);
   }
 
   @Handler

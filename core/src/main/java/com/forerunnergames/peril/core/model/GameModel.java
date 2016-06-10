@@ -1260,7 +1260,7 @@ public final class GameModel
   }
 
   @StateMachineAction
-  public void advanceTurn ()
+  public void advancePlayerTurn ()
   {
     playerTurnModel.advance ();
   }

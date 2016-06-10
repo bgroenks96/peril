@@ -453,7 +453,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
 
-    gameModel.advanceTurn (); // state machine does this as state exit action
+    gameModel.advancePlayerTurn (); // state machine does this as state exit action
 
     publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
@@ -478,7 +478,7 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
 
     eventHandler.clearEvents ();
-    gameModel.advanceTurn ();
+    gameModel.advancePlayerTurn ();
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.wasNeverFired (PlayerReinforceInitialCountryRequestEvent.class));
@@ -486,7 +486,7 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventWasType (SkipPlayerTurnEvent.class));
 
     eventHandler.clearEvents ();
-    gameModel.advanceTurn ();
+    gameModel.advancePlayerTurn ();
     gameModel.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.secondToLastEventWasType (PlayerReinforceInitialCountryRequestEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
