@@ -16,33 +16,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.events;
+package com.forerunnergames.peril.core.events.internal.player;
 
+import com.forerunnergames.peril.core.events.internal.defaults.AbstractInternalCommunicationEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.id.Id;
 
-public abstract class AbstractInternalResponseEvent extends AbstractInternalCommunicationEvent
-        implements InternalResponseEvent
+public final class InternalPlayerLeaveGameEvent extends AbstractInternalCommunicationEvent
 {
-  private final Id requestEventId;
+  private final PlayerPacket player;
 
-  public AbstractInternalResponseEvent (final Id requestEventId)
+  public InternalPlayerLeaveGameEvent (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (requestEventId, "requestEventId");
+    Arguments.checkIsNotNull (player, "player");
 
-    this.requestEventId = requestEventId;
+    this.player = player;
   }
 
-  @Override
-  public Id getRequestEventId ()
+  public PlayerPacket getPlayer ()
   {
-    return requestEventId;
+    return player;
   }
 
-  @Override
-  public String toString ()
+  public String getPlayerName ()
   {
-    return Strings.format ("{} | Reply to: {}", super.toString (), requestEventId);
+    return player.getName ();
   }
 }

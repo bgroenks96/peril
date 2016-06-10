@@ -16,31 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.events.player;
+package com.forerunnergames.peril.core.events.internal.defaults;
 
-import com.forerunnergames.peril.common.events.AbstractInternalResponseEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.events.internal.interfaces.InternalResponseEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
-import com.google.common.collect.ImmutableSet;
-
-public class UpdatePlayerDataResponseEvent extends AbstractInternalResponseEvent
+public abstract class AbstractInternalResponseEvent extends AbstractInternalCommunicationEvent
+        implements InternalResponseEvent
 {
-  final ImmutableSet <PlayerPacket> updatedPlayers;
+  private final Id requestEventId;
 
-  public UpdatePlayerDataResponseEvent (final ImmutableSet <PlayerPacket> updatedPlayers, final Id requestEventId)
+  public AbstractInternalResponseEvent (final Id requestEventId)
   {
-    super (requestEventId);
-
-    Arguments.checkIsNotNull (updatedPlayers, "updatedPlayers");
     Arguments.checkIsNotNull (requestEventId, "requestEventId");
 
-    this.updatedPlayers = updatedPlayers;
+    this.requestEventId = requestEventId;
   }
 
-  public ImmutableSet <PlayerPacket> getUpdatedPlayers ()
+  @Override
+  public Id getRequestEventId ()
   {
-    return updatedPlayers;
+    return requestEventId;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Reply to: {}", super.toString (), requestEventId);
   }
 }

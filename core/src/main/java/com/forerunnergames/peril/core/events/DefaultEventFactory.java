@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model;
+package com.forerunnergames.peril.core.events;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -42,7 +42,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-final class DefaultEventFactory implements EventFactory
+public final class DefaultEventFactory implements EventFactory
 {
   private final PlayerModel playerModel;
   private final CountryMapGraphModel countryMapGraphModel;
@@ -52,10 +52,10 @@ final class DefaultEventFactory implements EventFactory
   private final CardModel cardModel;
   private final GameRules rules;
 
-  DefaultEventFactory (final PlayerModel playerModel,
-                       final PlayMapModel playMapModel,
-                       final CardModel cardModel,
-                       final GameRules rules)
+  public DefaultEventFactory (final PlayerModel playerModel,
+                              final PlayMapModel playMapModel,
+                              final CardModel cardModel,
+                              final GameRules rules)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");

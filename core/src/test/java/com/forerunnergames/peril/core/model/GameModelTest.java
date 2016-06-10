@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.EventBusHandler;
-import com.forerunnergames.peril.common.events.player.DefaultInboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;

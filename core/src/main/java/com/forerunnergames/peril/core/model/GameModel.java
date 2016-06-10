@@ -19,7 +19,9 @@
 package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
-import com.forerunnergames.peril.common.events.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.events.DefaultEventFactory;
+import com.forerunnergames.peril.core.events.EventFactory;
+import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;

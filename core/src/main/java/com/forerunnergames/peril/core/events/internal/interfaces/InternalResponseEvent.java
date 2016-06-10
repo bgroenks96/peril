@@ -16,12 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.events.player;
+package com.forerunnergames.peril.core.events.internal.interfaces;
 
-import com.forerunnergames.peril.common.events.AbstractInternalCommunicationEvent;
-import com.forerunnergames.peril.common.events.InternalRequestEvent;
+import com.forerunnergames.tools.common.id.Id;
 
-public final class UpdatePlayerDataRequestEvent extends AbstractInternalCommunicationEvent
-        implements InternalRequestEvent
+public interface InternalResponseEvent
 {
+  Id getRequestEventId ();
 }

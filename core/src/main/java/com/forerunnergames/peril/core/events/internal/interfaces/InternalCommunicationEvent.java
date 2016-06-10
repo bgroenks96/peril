@@ -16,19 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model;
+package com.forerunnergames.peril.core.events.internal.interfaces;
 
-import com.forerunnergames.peril.common.game.TurnPhase;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.net.events.local.LocalEvent;
 
-public interface EventFactory
+public interface InternalCommunicationEvent extends LocalEvent
 {
-  PlayerReinforceInitialCountryRequestEvent createInitialReinforcementRequestFor (final Id playerId);
-
-  PlayerReinforceCountriesRequestEvent createReinforcementRequestFor (final Id playerId);
-
-  PlayerTradeInCardsRequestEvent createTradeInCardsRequestFor (final Id playerId, final TurnPhase turnPhase);
+  Id getEventId ();
 }

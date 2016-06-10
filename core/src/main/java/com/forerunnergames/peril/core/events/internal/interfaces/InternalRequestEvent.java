@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.events;
+package com.forerunnergames.peril.core.events.internal.interfaces;
 
 public interface InternalRequestEvent extends InternalCommunicationEvent
 {

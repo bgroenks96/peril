@@ -16,30 +16,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.events.player;
+package com.forerunnergames.peril.core.events.internal.player;
 
-import com.forerunnergames.peril.common.events.AbstractInternalCommunicationEvent;
+import com.forerunnergames.peril.core.events.internal.defaults.AbstractInternalCommunicationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
-public final class InternalPlayerLeaveGameEvent extends AbstractInternalCommunicationEvent
+public class DefaultInboundPlayerRequestEvent <T extends RequestEvent> extends AbstractInternalCommunicationEvent
+        implements InboundPlayerRequestEvent <T>
 {
   private final PlayerPacket player;
+  private final T event;
 
-  public InternalPlayerLeaveGameEvent (final PlayerPacket player)
+  public DefaultInboundPlayerRequestEvent (final PlayerPacket player, final T event)
   {
     Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (event, "event");
 
     this.player = player;
+    this.event = event;
   }
 
+  @Override
   public PlayerPacket getPlayer ()
   {
     return player;
   }
 
-  public String getPlayerName ()
+  @Override
+  public T getRequestEvent ()
   {
-    return player.getName ();
+    return event;
+  }
+
+  @RequiredForNetworkSerialization
+  private DefaultInboundPlayerRequestEvent ()
+  {
+    player = null;
+    event = null;
   }
 }
