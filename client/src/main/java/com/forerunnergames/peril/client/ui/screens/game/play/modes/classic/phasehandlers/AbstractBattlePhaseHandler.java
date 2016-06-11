@@ -29,7 +29,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleResultEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerBeginAttackRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -120,7 +120,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
     if (request == null)
     {
       log.warn ("Ignoring ending attack phase because no prior {} was received.",
-                PlayerAttackCountryRequestEvent.class.getSimpleName ());
+                PlayerBeginAttackRequestEvent.class.getSimpleName ());
       status ("Whoops, it looks like you aren't authorized to end Attack Phase.");
       return;
     }
@@ -299,7 +299,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
     }
 
     // TODO This is a hack until the core battle API redesign is complete.
-    if (request instanceof PlayerAttackCountryRequestEvent && !attackingPlayerName.equals (request.getPlayerName ()))
+    if (request instanceof PlayerBeginAttackRequestEvent && !attackingPlayerName.equals (request.getPlayerName ()))
     {
       log.warn ("Not showing {} for request [{}] because resolved owner [{}] of attacking country [{}] is not the same "
               + "player [{}] from the original request.", battleDialog.getClass ().getSimpleName (), request,

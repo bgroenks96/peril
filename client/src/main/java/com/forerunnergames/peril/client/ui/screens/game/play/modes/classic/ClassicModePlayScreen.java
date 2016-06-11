@@ -112,7 +112,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.PlayerLos
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackOrderResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
@@ -556,8 +556,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     statusOn (event.isFirstPlayerInGame (), "It looks like you're the first one here.");
     statusOn (nMorePlayers > 0, "The game will begin when {}.",
               Strings.pluralize (nMorePlayers, "more player joins", "more players join"));
-    statusOn (nMorePlayers > 0,
-              "This is a {} player {} Mode game. You must conquer {}% of the map to achieve victory.",
+    statusOn (nMorePlayers > 0, "This is a {} player {} Mode game. You must conquer {}% of the map to achieve victory.",
               config.getPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
               config.getWinPercentage ());
   }
@@ -919,7 +918,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final PlayerAttackCountryResponseSuccessEvent event)
+  void onEvent (final PlayerAttackOrderResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -938,8 +937,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final String defender = event.getDefendingPlayerName ();
     final String attackerCountry = event.getAttackingCountryName ();
     final String defenderCountry = event.getDefendingCountryName ();
-    final String defenderLossInWords = Strings.pluralize (defenderLoss, "no armies", "an army", defenderLoss + " armies");
-    final String attackerLossInWords = Strings.pluralize (attackerLoss, "no armies", "an army", defenderLoss + " armies");
+    final String defenderLossInWords = Strings.pluralize (defenderLoss, "no armies", "an army",
+                                                          defenderLoss + " armies");
+    final String attackerLossInWords = Strings.pluralize (attackerLoss, "no armies", "an army",
+                                                          defenderLoss + " armies");
 
     statusOn (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
               defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
@@ -958,11 +959,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    statusOn (isSelf (event.getPlayer ()), "General, we have conquered {}!", event.getBattleResult ()
-            .getDefendingCountryName ());
+    statusOn (isSelf (event.getPlayer ()), "General, we have conquered {}!",
+              event.getBattleResult ().getDefendingCountryName ());
 
-    statusOn (!isSelf (event.getPlayer ()), "{} conquered {}, defeating {} in battle.", event.getPlayerName (), event
-            .getBattleResult ().getDefendingCountryName (), event.getBattleResult ().getDefendingPlayerName ());
+    statusOn (!isSelf (event.getPlayer ()), "{} conquered {}, defeating {} in battle.", event.getPlayerName (),
+              event.getBattleResult ().getDefendingCountryName (), event.getBattleResult ().getDefendingPlayerName ());
   }
 
   @Handler
@@ -1292,8 +1293,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     public void onAttackerLoseFinal ()
     {
       battleResultDialog.setTitle ("Defeat");
-      battleResultDialog.setMessage (new DefaultMessage ("General, we have failed to conquer "
-              + attackDialog.getDefendingCountryName () + "."));
+      battleResultDialog.setMessage (new DefaultMessage (
+              "General, we have failed to conquer " + attackDialog.getDefendingCountryName () + "."));
       battleResultDialog.show ();
 
       status ("You failed to conquer {}.", attackDialog.getDefendingCountryName ());
@@ -1331,7 +1332,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       defendDialog.hide ();
 
       playMap.setCountryState (defendDialog.getDefendingCountryName (),
-              playMap.getPrimaryImageStateOf (defendDialog.getAttackingCountryName ()));
+                               playMap.getPrimaryImageStateOf (defendDialog.getAttackingCountryName ()));
 
       battleResultDialog.setTitle ("Defeat");
       battleResultDialog.setMessage (new DefaultMessage ("General, we have failed to defend "
@@ -1353,7 +1354,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               + defendDialog.getDefendingCountryName () + " from the enemy!"));
       battleResultDialog.show ();
 
-      status ("You defeated {} in {}!", defendDialog.getAttackingPlayerName (), defendDialog.getAttackingCountryName ());
+      status ("You defeated {} in {}!", defendDialog.getAttackingPlayerName (),
+              defendDialog.getAttackingCountryName ());
     }
 
     @Override

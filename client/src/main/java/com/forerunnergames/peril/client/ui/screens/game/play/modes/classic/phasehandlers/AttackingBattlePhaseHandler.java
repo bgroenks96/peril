@@ -20,19 +20,13 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerBeginAttackResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
-import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerBeginAttackRequestEvent;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.LetterCase;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.listener.Handler;
 
 public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandler
 {
@@ -88,22 +82,22 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   @Override
   protected String getBattleRequestClassName ()
   {
-    return PlayerAttackCountryRequestEvent.class.getSimpleName ();
+    return PlayerBeginAttackRequestEvent.class.getSimpleName ();
   }
 
   @Override
   protected String getBattleResponseRequestClassName ()
   {
-    return PlayerAttackCountryResponseRequestEvent.class.getSimpleName ();
+    return PlayerBeginAttackResponseRequestEvent.class.getSimpleName ();
   }
 
-  @Override
-  protected ResponseRequestEvent createResponse (final String attackingCountry,
-                                                 final String defendingCountry,
-                                                 final int dieCount)
-  {
-    return new PlayerAttackCountryResponseRequestEvent (attackingCountry, defendingCountry, dieCount);
-  }
+  // @Override
+  // protected ResponseRequestEvent createResponse (final String attackingCountry,
+  // final String defendingCountry,
+  // final int dieCount)
+  // {
+  // return new PlayerBeginAttackResponseRequestEvent (attackingCountry, defendingCountry, dieCount);
+  // }
 
   @Override
   protected void onNewBattleRequest ()
@@ -126,30 +120,44 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
             getBattleDialogDefendingCountryName (), getBattleDialogAttackingCountryName ());
   }
 
-  @Handler
-  void onEvent (final PlayerAttackCountryRequestEvent event)
+  // @Handler
+  // void onEvent (final PlayerAttackCountryRequestEvent event)
+  // {
+  // super.onEvent (event);
+  // }
+  //
+  // @Handler
+  // void onEvent (final PlayerAttackCountryResponseSuccessEvent event)
+  // {
+  // super.onEvent (event);
+  // }
+  //
+  // @Handler
+  // void onEvent (final PlayerAttackCountryResponseDeniedEvent event)
+  // {
+  // Arguments.checkIsNotNull (event, "event");
+  //
+  // log.debug ("Event received [{}].", event);
+  //
+  // status ("Whoops, it looks like you aren't authorized to attack {} in {} from {}. Reason: {}",
+  // getBattleDialogDefenderName (), getBattleDialogDefendingCountryName (),
+  // getBattleDialogAttackingCountryName (),
+  // Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER));
+  //
+  // super.onEvent (event);
+  // }
+
+  // --------------------------------------------- //
+  // ---------------- TEMPORARY ------------------ //
+  // changed "just to make it build" >:)
+  // delete later!
+
+  @Override
+  protected ResponseRequestEvent createResponse (final String attackingCountry,
+                                                 final String defendingCountry,
+                                                 final int dieCount)
   {
-    super.onEvent (event);
-  }
-
-  @Handler
-  void onEvent (final PlayerAttackCountryResponseSuccessEvent event)
-  {
-    super.onEvent (event);
-  }
-
-  @Handler
-  void onEvent (final PlayerAttackCountryResponseDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    status ("Whoops, it looks like you aren't authorized to attack {} in {} from {}. Reason: {}",
-            getBattleDialogDefenderName (), getBattleDialogDefendingCountryName (),
-            getBattleDialogAttackingCountryName (),
-            Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER));
-
-    super.onEvent (event);
+    // TODO Auto-generated method stub
+    return null;
   }
 }
