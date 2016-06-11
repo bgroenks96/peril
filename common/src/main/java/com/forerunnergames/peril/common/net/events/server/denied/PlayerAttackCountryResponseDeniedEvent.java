@@ -26,17 +26,10 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason>
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDeniedEvent <Reason> implements
+        PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerPacket player;
-
-  public PlayerAttackCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
-  {
-    super (reason);
-
-    this.player = player;
-  }
 
   public enum Reason
   {
@@ -46,7 +39,14 @@ public final class PlayerAttackCountryResponseDeniedEvent extends AbstractDenied
     ALREADY_OWNER_OF_TARGET_COUNTRY,
     INSUFFICIENT_ARMY_COUNT,
     INVALID_DIE_COUNT,
-    COUNTRIES_NOT_ADJACENT;
+    COUNTRIES_NOT_ADJACENT
+  }
+
+  public PlayerAttackCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  {
+    super (reason);
+
+    this.player = player;
   }
 
   @Override

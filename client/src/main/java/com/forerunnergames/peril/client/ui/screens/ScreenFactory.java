@@ -32,8 +32,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter.CountryCounterFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.DefaultBattleDialogWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.DefaultBattleDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreen;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.peril.PerilModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.loading.LoadingScreenWidgetFactory;

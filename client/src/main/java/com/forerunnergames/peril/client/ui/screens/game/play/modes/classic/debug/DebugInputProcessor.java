@@ -25,10 +25,10 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.reinforcement.FortificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
@@ -47,7 +47,7 @@ public final class DebugInputProcessor extends InputAdapter
   private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
   private final OccupationDialog occupationDialog;
-  private final ReinforcementDialog reinforcementDialog;
+  private final FortificationDialog fortificationDialog;
   private final AttackDialog attackDialog;
   private final DefendDialog defendDialog;
   private PlayMap playMap;
@@ -59,7 +59,7 @@ public final class DebugInputProcessor extends InputAdapter
                               final MessageBox <ChatBoxRow> chatBox,
                               final PlayerBox playerBox,
                               final OccupationDialog occupationDialog,
-                              final ReinforcementDialog reinforcementDialog,
+                              final FortificationDialog fortificationDialog,
                               final AttackDialog attackDialog,
                               final DefendDialog defendDialog,
                               final MBassador <Event> eventBus)
@@ -71,7 +71,7 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (chatBox, "chatBox");
     Arguments.checkIsNotNull (playerBox, "playerBox");
     Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
-    Arguments.checkIsNotNull (reinforcementDialog, "reinforcementDialog");
+    Arguments.checkIsNotNull (fortificationDialog, "fortificationDialog");
     Arguments.checkIsNotNull (attackDialog, "attackDialog");
     Arguments.checkIsNotNull (defendDialog, "defendDialog");
     Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -83,7 +83,7 @@ public final class DebugInputProcessor extends InputAdapter
     this.chatBox = chatBox;
     this.playerBox = playerBox;
     this.occupationDialog = occupationDialog;
-    this.reinforcementDialog = reinforcementDialog;
+    this.fortificationDialog = fortificationDialog;
     this.attackDialog = attackDialog;
     this.defendDialog = defendDialog;
   }
@@ -432,7 +432,7 @@ public final class DebugInputProcessor extends InputAdapter
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        reinforcementDialog.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        fortificationDialog.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
         playMap.disable ();
 
         return true;

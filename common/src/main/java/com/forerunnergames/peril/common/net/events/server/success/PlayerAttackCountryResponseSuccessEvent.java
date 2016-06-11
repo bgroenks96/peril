@@ -18,27 +18,20 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleResultEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableList;
-
-public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResponseSuccessEvent
+public final class PlayerAttackCountryResponseSuccessEvent extends AbstractBattleResultEvent implements
+        PlayerResponseSuccessEvent
 {
-  private final BattleResultPacket result;
-
   public PlayerAttackCountryResponseSuccessEvent (final BattleResultPacket result)
   {
-    Arguments.checkIsNotNull (result, "result");
-
-    this.result = result;
+    super (result);
   }
 
   @Override
@@ -59,100 +52,14 @@ public final class PlayerAttackCountryResponseSuccessEvent implements PlayerResp
     return getPlayer ().getColor ();
   }
 
-  public BattleResultPacket getBattleResult ()
-  {
-    return result;
-  }
-
-  public PlayerPacket getAttackingPlayer ()
-  {
-    return result.getAttacker ().getPlayer ();
-  }
-
-  public String getAttackingPlayerName ()
-  {
-    return result.getAttacker ().getPlayerName ();
-  }
-
-  public int getAttackerDieCount ()
-  {
-    return result.getAttacker ().getDieCount ();
-  }
-
-  public PlayerPacket getDefendingPlayer ()
-  {
-    return result.getDefender ().getPlayer ();
-  }
-
-  public String getDefendingPlayerName ()
-  {
-    return result.getDefender ().getPlayerName ();
-  }
-
-  public int getDefenderDieCount ()
-  {
-    return result.getDefender ().getDieCount ();
-  }
-
-  public CountryPacket getAttackingCountry ()
-  {
-    return result.getAttacker ().getCountry ();
-  }
-
-  public int getAttackingCountryArmyCount ()
-  {
-    return result.getAttacker ().getCountryArmyCount ();
-  }
-
-  public int getAttackingCountryArmyDelta ()
-  {
-    return result.getAttackingCountryArmyDelta ();
-  }
-
-  public String getAttackingCountryName ()
-  {
-    return result.getAttacker ().getCountryName ();
-  }
-
-  public CountryPacket getDefendingCountry ()
-  {
-    return result.getDefender ().getCountry ();
-  }
-
-  public String getDefendingCountryName ()
-  {
-    return result.getDefender ().getCountryName ();
-  }
-
-  public int getDefendingCountryArmyCount ()
-  {
-    return result.getDefender ().getCountryArmyCount ();
-  }
-
-  public int getDefendingCountryArmyDelta ()
-  {
-    return result.getDefendingCountryArmyDelta ();
-  }
-
-  public ImmutableList <DieRoll> getAttackerRolls ()
-  {
-    return result.getAttackerRolls ();
-  }
-
-  public ImmutableList <DieRoll> getDefenderRolls ()
-  {
-    return result.getDefenderRolls ();
-  }
-
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Result: [{}]", getClass ().getSimpleName (), result);
+    return Strings.format ("{} | Player: [{}]", super.toString (), getPlayer ());
   }
 
   @RequiredForNetworkSerialization
   private PlayerAttackCountryResponseSuccessEvent ()
   {
-    result = null;
   }
 }

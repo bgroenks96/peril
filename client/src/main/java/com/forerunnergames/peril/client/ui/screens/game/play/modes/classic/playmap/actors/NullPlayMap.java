@@ -34,7 +34,6 @@ import javax.annotation.Nullable;
 final class NullPlayMap implements PlayMap
 {
   private final Group group = new Group ();
-  private final Country nullCountry = Country.NULL_COUNTRY;
 
   @Override
   public boolean mouseMoved (final Vector2 mouseCoordinate)
@@ -132,7 +131,7 @@ final class NullPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return true;
+    return false;
   }
 
   @Override
@@ -140,7 +139,7 @@ final class NullPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return nullCountry;
+    return Country.NULL_COUNTRY;
   }
 
   @Override

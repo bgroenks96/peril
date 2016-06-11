@@ -58,20 +58,27 @@ import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.ControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugPackets;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.reinforcement.FortificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.OccupationPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.AttackPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattlePhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattleResetState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.DefendPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ManualCountryAssignmentPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.controlroombox.ControlRoomBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.occupation.OccupationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.armymovement.reinforcement.ReinforcementDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.AbstractBattleDialogListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.attack.AttackDialogListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.dialogs.battle.defend.DefendDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.widgets.intelbox.IntelBox;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
@@ -109,7 +116,6 @@ import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuc
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceInitialCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -118,8 +124,6 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
@@ -155,7 +159,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final InputProcessor inputProcessor;
   private final GdxKeyRepeatSystem keyRepeat;
   private final OccupationDialog occupationDialog;
-  private final ReinforcementDialog reinforcementDialog;
+  private final FortificationDialog fortificationDialog;
   private final AttackDialog attackDialog;
   private final DefendDialog defendDialog;
   private final Dialog battleResultDialog;
@@ -164,10 +168,11 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Cell <Actor> playMapCell;
   private final ReinforcementPhaseHandler reinforcementPhaseHandler;
   private final ManualCountryAssignmentPhaseHandler manualCountryAssignmentPhaseHandler;
-  private final AttackPhaseHandler attackPhaseHandler;
-  private final DefendPhaseHandler defendPhaseHandler;
+  private final BattlePhaseHandler attackPhaseHandler;
+  private final BattlePhaseHandler defendPhaseHandler;
+  private final OccupationPhaseHandler occupationPhaseHandler;
   private final DebugInputProcessor debugInputProcessor;
-  private final ImmutableCollection <Dialog> dialogs;
+  private final CompositeDialog allDialogs;
   private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
   @Nullable
   private PlayerPacket selfPlayer;
@@ -214,7 +219,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     controlRoomBox = widgetFactory.createControlRoomBox (new ClickListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void clicked (final InputEvent event, final float x, final float y) // Trade In Button
       {
         // TODO Implement trade-in button.
         // TODO Production: Remove.
@@ -223,22 +228,22 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     }, new ClickListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void clicked (final InputEvent event, final float x, final float y) // Fortify Button
       {
-        attackPhaseHandler.onEndAttackPhase ();
+        attackPhaseHandler.onEndBattlePhase ();
       }
     }, new ClickListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void clicked (final InputEvent event, final float x, final float y) // End Turn Button
       {
         // TODO Implement FortificationPhaseHandler#onEndFortificationPhase.
-        attackPhaseHandler.onEndAttackPhase ();
+        attackPhaseHandler.onEndBattlePhase ();
       }
     }, new ClickListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void clicked (final InputEvent event, final float x, final float y) // My Settings Button
       {
         // TODO Implement my settings button.
         // TODO Production: Remove.
@@ -247,7 +252,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     }, new ClickListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y)
+      public void clicked (final InputEvent event, final float x, final float y) // Surrender Button
       {
         quitDialog.setTitle ("Surrender & Quit?");
         quitDialog.setMessage (SURRENDER_AND_QUIT_MESSAGE);
@@ -301,21 +306,22 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     stage = new Stage (viewport, batch);
 
-    occupationDialog = widgetFactory.createOccupationDialog (stage, eventBus, new OccupationDialogListener ());
-    reinforcementDialog = widgetFactory.createReinforcementDialog (stage, eventBus, new ReinforcementDialogListener ());
-    attackDialog = widgetFactory.createAttackDialog (stage, screenShaker, eventBus, new DefaultAttackDialogListener ());
-    defendDialog = widgetFactory.createDefendDialog (stage, screenShaker, eventBus, new DefendDialogListener ());
+    // @formatter:off
+    final BattleResetState resetState = new BattleResetState ();
+    attackDialog = widgetFactory.createAttackDialog (stage, resetState, screenShaker, eventBus, new DefaultAttackDialogListener ());
+    defendDialog = widgetFactory.createDefendDialog (stage, resetState, screenShaker, eventBus, new DefendDialogListener ());
     battleResultDialog = widgetFactory.createBattleResultDialog (stage, new BattleResultDialogListener ());
+    occupationDialog = widgetFactory.createOccupationDialog (stage, eventBus, new OccupationDialogListener ());
+    fortificationDialog = widgetFactory.createFortificationDialog (stage, eventBus, new FortificationDialogListener ());
     quitDialog = widgetFactory.createQuitDialog (stage, new QuitDialogListener ());
-
-    dialogs = ImmutableList.of (occupationDialog, reinforcementDialog, attackDialog, defendDialog, battleResultDialog,
-                                quitDialog);
+    allDialogs = new CompositeDialog (attackDialog, defendDialog, battleResultDialog, occupationDialog, fortificationDialog, quitDialog);
+    // @formatter:on
 
     reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
-    attackPhaseHandler = new AttackPhaseHandler (playMap, playerBox, attackDialog, occupationDialog,
-            battleResultDialog, eventBus);
-    defendPhaseHandler = new DefendPhaseHandler (playMap, playerBox, defendDialog, battleResultDialog, eventBus);
+    attackPhaseHandler = new AttackPhaseHandler (playMap, playerBox, attackDialog, resetState, eventBus);
+    defendPhaseHandler = new DefendPhaseHandler (playMap, playerBox, defendDialog, resetState, eventBus);
+    occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, battleResultDialog, eventBus);
 
     stage.addActor (rootStack);
 
@@ -328,7 +334,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         {
           case Input.Keys.ESCAPE:
           {
-            if (attackDialog.isShown () || reinforcementDialog.isShown ()) return false;
+            if (attackDialog.isShown () || fortificationDialog.isShown ()) return false;
 
             quitDialog.setTitle ("Quit?");
             quitDialog.setMessage (QUIT_MESSAGE);
@@ -376,7 +382,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void keyDownRepeating (final int keyCode)
       {
         occupationDialog.keyDownRepeating (keyCode);
-        reinforcementDialog.keyDownRepeating (keyCode);
+        fortificationDialog.keyDownRepeating (keyCode);
       }
     });
 
@@ -392,7 +398,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
     debugInputProcessor = new DebugInputProcessor (debugEventGenerator, mouseInput, playMap, statusBox, chatBox,
-            playerBox, occupationDialog, reinforcementDialog, attackDialog, defendDialog, eventBus);
+            playerBox, occupationDialog, fortificationDialog, attackDialog, defendDialog, eventBus);
 
     final InputMultiplexer inputMultiplexer = new InputMultiplexer (preInputProcessor, stage, this);
 
@@ -421,11 +427,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     statusBox.refreshAssets ();
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
-
-    for (final Dialog dialog : dialogs)
-    {
-      dialog.refreshAssets ();
-    }
+    allDialogs.refreshAssets ();
   }
 
   @Override
@@ -436,12 +438,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     keyRepeat.update ();
     stage.act (delta);
-
-    for (final Dialog dialog : dialogs)
-    {
-      dialog.update (delta);
-    }
-
+    allDialogs.update (delta);
     stage.draw ();
   }
 
@@ -471,6 +468,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     eventBus.unsubscribe (manualCountryAssignmentPhaseHandler);
     eventBus.unsubscribe (attackPhaseHandler);
     eventBus.unsubscribe (defendPhaseHandler);
+    eventBus.unsubscribe (occupationPhaseHandler);
 
     stage.unfocusAll ();
 
@@ -488,10 +486,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     clearPlayMap ();
 
-    for (final Dialog dialog : dialogs)
-    {
-      dialog.hide (null);
-    }
+    allDialogs.hide (null);
   }
 
   @Override
@@ -847,23 +842,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final PlayerReinforceCountriesResponseSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    // TODO Fix PlayerReinforceCountriesResponseSuccessEvent to be PlayerReinforceCountryResponseSuccessEvent,
-    // TODO that only reinforces a single country & army at a time, just like
-    // TODO PlayerReinforceInitialCountryResponseSuccessEvent
-//
-//    final String playerName = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
-//
-//    status ("{} placed {} on {}.", playerName,
-//            Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"), event.getCountryName ());
-  }
-
-  @Handler
   void onEvent (final EndReinforcementPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -885,7 +863,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     if (isSelf (event.getPlayer ()))
     {
       attackPhaseHandler.reset ();
+      occupationPhaseHandler.reset ();
       eventBus.subscribe (attackPhaseHandler);
+      eventBus.subscribe (occupationPhaseHandler);
     }
     else
     {
@@ -1009,7 +989,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     if (isSelf (event.getPlayer ()))
     {
       attackPhaseHandler.reset ();
+      occupationPhaseHandler.reset ();
       eventBus.unsubscribe (attackPhaseHandler);
+      eventBus.unsubscribe (occupationPhaseHandler);
     }
     else
     {
@@ -1155,6 +1137,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     manualCountryAssignmentPhaseHandler.setPlayMap (playMap);
     attackPhaseHandler.setPlayMap (playMap);
     defendPhaseHandler.setPlayMap (playMap);
+    occupationPhaseHandler.setPlayMap (playMap);
     debugInputProcessor.setPlayMap (this.playMap);
   }
 
@@ -1171,7 +1154,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onSubmit ()
     {
-      attackPhaseHandler.onOccupy ();
+      occupationPhaseHandler.onOccupy ();
     }
 
     @Override
@@ -1189,17 +1172,17 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     }
   }
 
-  private final class ReinforcementDialogListener implements DialogListener
+  private final class FortificationDialogListener implements DialogListener
   {
     @Override
     public void onSubmit ()
     {
-      final int deltaArmies = reinforcementDialog.getDeltaArmyCount ();
-      final String sourceCountryName = reinforcementDialog.getSourceCountryName ();
-      final String destinationCountryName = reinforcementDialog.getDestinationCountryName ();
+      final int deltaArmies = fortificationDialog.getDeltaArmyCount ();
+      final String sourceCountryName = fortificationDialog.getSourceCountryName ();
+      final String destinationCountryName = fortificationDialog.getDestinationCountryName ();
 
       // TODO Production: Remove
-      eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage ("You reinforced "
+      eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage ("You fortified "
               + destinationCountryName + " with " + Strings.pluralize (deltaArmies, "army", "armies") + " from "
               + sourceCountryName + "."), ImmutableSet.<PlayerPacket> of ()));
 
@@ -1208,8 +1191,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
       // TODO Production: Remove
       eventBus.publish (new DefaultCountryArmiesChangedEvent (DebugPackets.from (destinationCountryName), deltaArmies));
-
-      // TODO: Production: Publish event (OccupyCountryRequestEvent?)
     }
 
     @Override
