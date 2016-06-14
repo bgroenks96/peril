@@ -27,7 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattleResetState;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.KeyListener;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -36,20 +35,19 @@ import net.engio.mbassy.bus.MBassador;
 
 public final class AttackDialog extends AbstractBattleDialog
 {
-  private static final String TITLE_TEXT = "Attack";
-  private static final String RETREAT_BUTTON_TEXT = "Retreat";
+  private static final String TITLE_TEXT = "ATTACK";
+  private static final String RETREAT_BUTTON_TEXT = "RETREAT";
   private final AttackDialogListener listener;
-  private TextButton quitButton;
+  private TextButton retreatButton;
 
   public AttackDialog (final BattleDialogWidgetFactory widgetFactory,
                        final Stage stage,
-                       final BattleResetState resetState,
                        final ScreenShaker screenShaker,
-                       final AttackDialogListener listener,
-                       final MBassador <Event> eventBus)
+                       final MBassador <Event> eventBus,
+                       final AttackDialogListener listener)
   {
-    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, resetState, screenShaker,
-           listener, eventBus);
+    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, eventBus,
+           listener);
 
     Arguments.checkIsNotNull (listener, "listener");
 
@@ -59,13 +57,13 @@ public final class AttackDialog extends AbstractBattleDialog
   @Override
   protected void addButtons ()
   {
-    quitButton = addTextButton (RETREAT_BUTTON_TEXT, DialogAction.HIDE, new ChangeListener ()
+    retreatButton = addTextButton (RETREAT_BUTTON_TEXT, DialogAction.HIDE, new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        listener.onRetreat ();
         stopBattle ();
+        listener.onRetreat ();
       }
     });
   }
@@ -78,7 +76,7 @@ public final class AttackDialog extends AbstractBattleDialog
       @Override
       public void keyDown ()
       {
-        quitButton.toggle ();
+        retreatButton.toggle ();
       }
     });
   }

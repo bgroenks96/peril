@@ -17,6 +17,8 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
+import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountriesRequestEvent;
+
 /**
  * API for selection of a validated source country followed by selection of a validated destination country.
  *
@@ -28,8 +30,11 @@ public interface CountrySelectionHandler
   /**
    * Start requesting a country selection. Should not be called more than once in a row - {@link #reset()} should be
    * called in between each invocation.
+   *
+   * @param requestEvent
+   *          The original server request authorizing this country selection, used to validate the source & destination.
    */
-  void start ();
+  void start (final PlayerSelectCountriesRequestEvent requestEvent);
 
   /**
    * Should be called after country selection is finished, i.e., after {@link #onEnd(String, String)}.
@@ -37,21 +42,12 @@ public interface CountrySelectionHandler
   void reset ();
 
   /**
-   * Callback for when a country selection has been requested.
-   */
-  void onStart ();
-
-  /**
-   * Callback for when a valid source country has been selected according to {@link #isValidSourceCountry(String)}.
-   */
-  void onSelectValidSourceCountry (final String countryName);
-
-  /**
    * Callback for when country selection has ended, i.e., when a valid source country & a valid destination country have
    * been selected according to {@link #isValidSourceCountry(String)} & {@link #isValidDestCountry(String, String)}.
    *
-   * {@link #reset()} should be called after this callback, so that {@link #start()} must be called again in order to
-   * initiate another country selection, and so that otherwise country selection will remain disabled.
+   * {@link #reset()} should be called after this callback, so that {@link #start(PlayerSelectCountriesRequestEvent)}
+   * must be called again in order to initiate another country selection, and so that otherwise country selection will
+   * remain disabled.
    */
   void onEnd (final String sourceCountryName, final String destCountryName);
 

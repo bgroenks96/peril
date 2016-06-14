@@ -138,6 +138,97 @@ public final class CompositeDialog implements Dialog
   }
 
   @Override
+  public boolean isInputDisabled ()
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      if (!dialog.isInputDisabled ()) return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public void enableSubmission ()
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.enableSubmission ();
+    }
+  }
+
+  @Override
+  public void disableSubmission ()
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.disableSubmission ();
+    }
+  }
+
+  @Override
+  public void setSubmissionDisabled (final boolean isDisabled)
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.setSubmissionDisabled (isDisabled);
+    }
+  }
+
+  @Override
+  public boolean isSubmissionDisabled ()
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      if (!dialog.isSubmissionDisabled ()) return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public void enableTextButton (final String buttonText)
+  {
+    Arguments.checkIsNotNull (buttonText, "buttonText");
+
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.enableTextButton (buttonText);
+    }
+  }
+
+  @Override
+  public void disableTextButton (final String buttonText)
+  {
+    Arguments.checkIsNotNull (buttonText, "buttonText");
+
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.disableTextButton (buttonText);
+    }
+  }
+
+  @Override
+  public void setTextButtonDisabled (final String buttonText, final boolean isDisabled)
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.setTextButtonDisabled (buttonText, isDisabled);
+    }
+  }
+
+  @Override
+  public boolean isDisabledTextButton (final String buttonText)
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      if (!dialog.isDisabledTextButton (buttonText)) return false;
+    }
+
+    return true;
+  }
+
+  @Override
   public void update (final float delta)
   {
     for (final Dialog dialog : dialogs)

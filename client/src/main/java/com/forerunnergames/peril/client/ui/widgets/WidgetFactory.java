@@ -41,6 +41,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 import com.forerunnergames.peril.client.messages.StatusMessage;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
@@ -90,7 +91,7 @@ public interface WidgetFactory
 
   ImageButton.ImageButtonStyle createImageButtonStyle (final String styleName);
 
-  Dialog createQuitDialog (final String message, final Stage stage, final DialogListener listener);
+  Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener);
 
   Label createLabel (final String text, final int alignment, final String labelStyle);
 

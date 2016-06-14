@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +15,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
+package com.forerunnergames.peril.common.net.events.interfaces;
 
-import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
-public abstract class AbstractBattleDialogListener implements BattleDialogListener
+import com.google.common.collect.ImmutableMultimap;
+
+public interface PlayerSelectCountriesRequestEvent extends PlayerInputRequestEvent
 {
-  @Override
-  public final void onSubmit ()
-  {
-    throw new UnsupportedOperationException (
-            Strings.format ("The behavior of this method is intentionally undefined for {} because it is ambiguous.",
-                            BattleDialog.class.getSimpleName ()));
-  }
+  ImmutableMultimap <CountryPacket, CountryPacket> getValidVectors ();
+
+  boolean isValidSourceCountry (String countryName);
+
+  boolean isValidVector (String fromCountryName, String toCountryName);
 }

@@ -62,6 +62,7 @@ import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.class
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.DefaultCreateGameServerHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.DefaultJoinGameServerHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.JoinGameServerHandler;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.game.GameMode;
@@ -190,24 +191,25 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     stage = new Stage (viewport, batch);
 
     // @formatter:off
-    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit the current game?", stage, new DialogListenerAdapter ()
-    {
-      @Override
-      public void onSubmit ()
-      {
-        isLoading = false;
-        eventBus.publishAsync (new QuitGameEvent ());
-        unloadPlayMapAssets ();
-        resetLoadingProgress (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
-          }
-        });
-      }
-    });
+    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit the current game?", stage,
+            new CancellableDialogListenerAdapter ()
+            {
+              @Override
+              public void onSubmit ()
+              {
+                isLoading = false;
+                eventBus.publishAsync (new QuitGameEvent ());
+                unloadPlayMapAssets ();
+                resetLoadingProgress (new Runnable ()
+                {
+                  @Override
+                  public void run ()
+                  {
+                    screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+                  }
+                });
+              }
+            });
     // @formatter:on
 
     errorDialog = widgetFactory.createErrorDialog (stage, new DialogListenerAdapter ()

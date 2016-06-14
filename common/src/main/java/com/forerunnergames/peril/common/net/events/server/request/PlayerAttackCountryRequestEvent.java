@@ -18,78 +18,23 @@
 
 package com.forerunnergames.peril.common.net.events.server.request;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSelectCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMultimap;
 
-import java.util.Map;
-
-public final class PlayerAttackCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
+public final class PlayerAttackCountryRequestEvent extends AbstractPlayerSelectCountriesRequestEvent
 {
-  private final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors;
-
   public PlayerAttackCountryRequestEvent (final PlayerPacket currentPlayer,
                                           final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)
   {
-    super (currentPlayer);
-
-    Arguments.checkIsNotNull (validAttackVectors, "validAttackVectors");
-
-    this.validAttackVectors = validAttackVectors;
-  }
-
-  public ImmutableMultimap <CountryPacket, CountryPacket> getValidAttackVectors ()
-  {
-    return validAttackVectors;
-  }
-
-  public boolean isValidAttackFromCountry (final String countryName)
-  {
-    Arguments.checkIsNotNull (countryName, "countryName");
-
-    return FluentIterable.from (validAttackVectors.keySet ()).firstMatch (new Predicate <CountryPacket> ()
-    {
-      @Override
-      public boolean apply (final CountryPacket input)
-      {
-        return input.hasName (countryName);
-      }
-    }).isPresent ();
-  }
-
-  public boolean isValidAttackVector (final String fromCountryName, final String toCountryName)
-  {
-    Arguments.checkIsNotNull (fromCountryName, "fromCountryName");
-    Arguments.checkIsNotNull (toCountryName, "toCountryName");
-
-    return FluentIterable.from (validAttackVectors.entries ())
-            .firstMatch (new Predicate <Map.Entry <CountryPacket, CountryPacket>> ()
-            {
-              @Override
-              public boolean apply (Map.Entry <CountryPacket, CountryPacket> input)
-              {
-                return input.getKey ().hasName (fromCountryName) && input.getValue ().hasName (toCountryName);
-              }
-            }).isPresent ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | AttackVectors: [{}]", super.toString (), validAttackVectors);
+    super (currentPlayer, validAttackVectors);
   }
 
   @RequiredForNetworkSerialization
   private PlayerAttackCountryRequestEvent ()
   {
-    validAttackVectors = null;
   }
 }

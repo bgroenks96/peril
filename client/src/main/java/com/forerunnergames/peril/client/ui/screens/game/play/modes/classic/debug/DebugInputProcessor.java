@@ -22,15 +22,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.reinforcement.FortificationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.tools.common.Arguments;
@@ -399,7 +399,8 @@ public final class DebugInputProcessor extends InputAdapter
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        occupationDialog.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        occupationDialog.show (minArmies, destinationCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
+                               destinationCountry);
         playMap.disable ();
 
         return true;
@@ -432,7 +433,8 @@ public final class DebugInputProcessor extends InputAdapter
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        fortificationDialog.show (minArmies, maxArmies, sourceCountry, destinationCountry, totalArmies);
+        fortificationDialog.show (minArmies, destinationCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
+                                  destinationCountry);
         playMap.disable ();
 
         return true;

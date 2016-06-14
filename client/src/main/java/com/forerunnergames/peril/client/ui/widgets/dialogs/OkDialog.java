@@ -143,6 +143,60 @@ public class OkDialog implements Dialog
   }
 
   @Override
+  public boolean isInputDisabled ()
+  {
+    return delegate.isInputDisabled ();
+  }
+
+  @Override
+  public void enableSubmission ()
+  {
+    delegate.enableSubmission ();
+  }
+
+  @Override
+  public void disableSubmission ()
+  {
+    delegate.disableSubmission ();
+  }
+
+  @Override
+  public void setSubmissionDisabled (final boolean isDisabled)
+  {
+    delegate.setSubmissionDisabled (isDisabled);
+  }
+
+  @Override
+  public boolean isSubmissionDisabled ()
+  {
+    return delegate.isSubmissionDisabled ();
+  }
+
+  @Override
+  public void enableTextButton (final String buttonText)
+  {
+    delegate.enableTextButton (buttonText);
+  }
+
+  @Override
+  public void disableTextButton (final String buttonText)
+  {
+    delegate.disableTextButton (buttonText);
+  }
+
+  @Override
+  public void setTextButtonDisabled (final String buttonText, final boolean isDisabled)
+  {
+    delegate.setTextButtonDisabled (buttonText, isDisabled);
+  }
+
+  @Override
+  public boolean isDisabledTextButton (final String buttonText)
+  {
+    return delegate.isDisabledTextButton (buttonText);
+  }
+
+  @Override
   @OverridingMethodsMustInvokeSuper
   public void update (final float delta)
   {
@@ -217,7 +271,7 @@ public class OkDialog implements Dialog
 
   private final class DelegateDialog extends com.badlogic.gdx.scenes.scene2d.ui.Dialog
   {
-    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap <> ();
+    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap<> ();
     private final WidgetFactory widgetFactory;
     private final DialogStyle dialogStyle;
     private final Stage stage;
@@ -225,6 +279,8 @@ public class OkDialog implements Dialog
     private final MessageBox <MessageBoxRow <Message>> messageBox;
     private Cell <Actor> messageBoxCell;
     private boolean isShown = false;
+    private boolean isInputDisabled = false;
+    private boolean isSubmissionDisabled = false;
 
     DelegateDialog (final String title,
                     final WidgetFactory widgetFactory,
@@ -370,13 +426,27 @@ public class OkDialog implements Dialog
     @Override
     protected void result (@Nullable final Object object)
     {
-      if (!(object instanceof DialogAction) || object == DialogAction.NONE)
+      if (isInputDisabled || !(object instanceof DialogAction))
       {
         cancel ();
         return;
       }
 
-      if (object == DialogAction.SUBMIT)
+      final DialogAction action = (DialogAction) object;
+
+      if (action == DialogAction.NONE)
+      {
+        cancel ();
+        return;
+      }
+
+      if ((action == DialogAction.SUBMIT || action == DialogAction.SUBMIT_AND_HIDE) && isSubmissionDisabled)
+      {
+        cancel ();
+        return;
+      }
+
+      if (action == DialogAction.SUBMIT)
       {
         cancel ();
 
@@ -398,7 +468,7 @@ public class OkDialog implements Dialog
         public void run ()
         {
           remove ();
-          if (object == DialogAction.SUBMIT_AND_HIDE) listener.onSubmit ();
+          if (action == DialogAction.SUBMIT_AND_HIDE) listener.onSubmit ();
         }
       })));
     }
@@ -482,7 +552,9 @@ public class OkDialog implements Dialog
       return button;
     }
 
-    public ImageButton addImageButton (final String style, final DialogAction dialogAction, final EventListener listener)
+    public ImageButton addImageButton (final String style,
+                                       final DialogAction dialogAction,
+                                       final EventListener listener)
     {
       Arguments.checkIsNotNull (style, "style");
       Arguments.checkIsNotNull (dialogAction, "dialogAction");
@@ -524,8 +596,7 @@ public class OkDialog implements Dialog
         @Override
         public boolean keyDown (final InputEvent event, final int keycode)
         {
-          if (keyCode != keycode) return false;
-
+          if (keyCode != keycode || isInputDisabled) return false;
           listener.keyDown ();
           return true;
         }
@@ -586,12 +657,89 @@ public class OkDialog implements Dialog
 
     public void enableInput ()
     {
+      if (!isInputDisabled) return;
+
       setTouchable (Touchable.enabled);
+
+      for (final Button button : buttonsToButtonStyleNames.keySet ())
+      {
+        button.setDisabled (false);
+      }
+
+      isInputDisabled = false;
     }
 
     public void disableInput ()
     {
+      if (isInputDisabled) return;
+
       setTouchable (Touchable.disabled);
+
+      for (final Button button : buttonsToButtonStyleNames.keySet ())
+      {
+        button.setDisabled (true);
+      }
+
+      isInputDisabled = true;
+    }
+
+    public boolean isInputDisabled ()
+    {
+      return isInputDisabled;
+    }
+
+    public void enableSubmission ()
+    {
+      isSubmissionDisabled = false;
+    }
+
+    public void disableSubmission ()
+    {
+      isSubmissionDisabled = true;
+    }
+
+    public boolean isSubmissionDisabled ()
+    {
+      return isSubmissionDisabled;
+    }
+
+    public void setSubmissionDisabled (final boolean isDisabled)
+    {
+      isSubmissionDisabled = isDisabled;
+    }
+
+    public void enableTextButton (final String buttonText)
+    {
+      Arguments.checkIsNotNull (buttonText, "buttonText");
+
+      getTextButton (buttonText).setDisabled (false);
+    }
+
+    public void disableTextButton (final String buttonText)
+    {
+      Arguments.checkIsNotNull (buttonText, "buttonText");
+
+      getTextButton (buttonText).setDisabled (true);
+    }
+
+    public void setTextButtonDisabled (final String buttonText, final boolean isDisabled)
+    {
+      Arguments.checkIsNotNull (buttonText, "buttonText");
+
+      if (isDisabled)
+      {
+        disableTextButton (buttonText);
+        return;
+      }
+
+      enableTextButton (buttonText);
+    }
+
+    public boolean isDisabledTextButton (final String buttonText)
+    {
+      Arguments.checkIsNotNull (buttonText, "buttonText");
+
+      return getTextButton (buttonText).isDisabled ();
     }
 
     private <T extends Button> void addButton (final String style, final T button, final DialogAction dialogAction)
@@ -604,7 +752,6 @@ public class OkDialog implements Dialog
 
       if (dialogStyle.getButtonWidth () != DialogStyle.AUTO_WIDTH) buttonCell.width (dialogStyle.getButtonWidth ());
       if (dialogStyle.getButtonHeight () != DialogStyle.AUTO_HEIGHT) buttonCell.height (dialogStyle.getButtonHeight ());
-
       if (dialogAction != DialogAction.NONE) setObject (button, dialogAction);
 
       buttonsToButtonStyleNames.put (button, style);
@@ -616,7 +763,10 @@ public class OkDialog implements Dialog
 
       for (final Actor actor : getButtonTable ().getChildren ())
       {
-        if (actor instanceof TextButton && buttonText.equals (((TextButton) actor).getText ().toString ())) return (TextButton) actor;
+        if (actor instanceof TextButton && buttonText.equals (((TextButton) actor).getText ().toString ()))
+        {
+          return (TextButton) actor;
+        }
       }
 
       throw new IllegalStateException (Strings.format ("Cannot find button with text {}.", buttonText));

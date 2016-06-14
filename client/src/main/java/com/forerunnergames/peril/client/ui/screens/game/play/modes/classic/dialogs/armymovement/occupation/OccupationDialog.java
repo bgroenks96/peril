@@ -23,19 +23,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.AbstractArmyMovementDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
-import com.forerunnergames.tools.common.Event;
-
-import net.engio.mbassy.bus.MBassador;
 
 public class OccupationDialog extends AbstractArmyMovementDialog
 {
-  private static final String TITLE = "Occupation";
+  private static final String TITLE = "OCCUPATION";
 
   public OccupationDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
                            final Stage stage,
-                           final DialogListener listener,
-                           final MBassador <Event> eventBus)
+                           final DialogListener listener)
   {
-    super (widgetFactory, TITLE, stage, listener, eventBus);
+    super (widgetFactory, TITLE, stage, listener);
   }
 }

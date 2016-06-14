@@ -55,6 +55,7 @@ import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.tools.common.Arguments;
@@ -558,7 +559,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   }
   // @formatter:on
 
-  protected final Dialog createQuitDialog (final String message, final DialogListener listener)
+  protected final Dialog createQuitDialog (final String message, final CancellableDialogListener listener)
   {
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (listener, "listener");

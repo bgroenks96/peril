@@ -39,19 +39,16 @@ import com.badlogic.gdx.utils.Scaling;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultCountryArmyText;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.padding.CellPadding;
 import com.forerunnergames.peril.client.ui.widgets.Widgets;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
+import com.forerunnergames.peril.client.ui.widgets.padding.CellPadding;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
-
-import net.engio.mbassy.bus.MBassador;
 
 public abstract class AbstractArmyMovementDialog extends OkDialog
 {
@@ -92,13 +89,13 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
   private float plusButtonPressTimeSeconds = 0.0f;
   private float minusButtonRepeatDeltaSeconds = 0.0f;
   private float plusButtonRepeatDeltaSeconds = 0.0f;
+  private int originalDestinationArmies = 0;
   private int totalArmies = 0;
 
   protected AbstractArmyMovementDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                         final String title,
                                         final Stage stage,
-                                        final DialogListener listener,
-                                        final MBassador <Event> eventBus)
+                                        final DialogListener listener)
 
   {
     // @formatter:off
@@ -121,8 +118,6 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (listener, "listener");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
 
@@ -135,6 +130,7 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
       public void changed (final ChangeEvent event, final Actor actor)
       {
         updateCountryArmies ();
+        updateSubmitability ();
       }
     });
 
@@ -256,6 +252,52 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     });
   }
 
+  //
+  // @Override
+  // public void draw (final Batch batch, final float parentAlpha)
+  // {
+  // super.draw (batch, parentAlpha);
+  //
+  // stageToLocalCoordinates (tempSize.set (getWidth (), getHeight ()));
+  // tempColor.set (getColor ());
+  // batch.setColor (tempColor.r, tempColor.g, tempColor.b, tempColor.a * parentAlpha);
+  // foregroundArrow.draw (batch, getX (), getY (), getX () + tempSize.x, getY () + tempSize.y);
+  // foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_DIALOG_REFERENCE_SPACE.x,
+  // getY () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_DIALOG_REFERENCE_SPACE.y,
+  // FOREGROUND_ARROW_TEXT_SIZE_DIALOG_REFERENCE_SPACE.x,
+  // FOREGROUND_ARROW_TEXT_SIZE_DIALOG_REFERENCE_SPACE.y);
+  // }
+
+  @Override
+  public void enableSubmission ()
+  {
+    if (!isSubmissionDisabled ()) return;
+
+    super.enableSubmission ();
+
+    enableTextButton ("OK");
+  }
+
+  @Override
+  public void disableSubmission ()
+  {
+    if (isSubmissionDisabled ()) return;
+
+    super.disableSubmission ();
+
+    disableTextButton ("OK");
+  }
+
+  @Override
+  public void setSubmissionDisabled (final boolean isDisabled)
+  {
+    if (isSubmissionDisabled () == isDisabled) return;
+
+    super.setSubmissionDisabled (isDisabled);
+
+    setTextButtonDisabled ("OK", isDisabled);
+  }
+
   @Override
   public void update (final float delta)
   {
@@ -282,22 +324,6 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     }
   }
 
-  //
-  // @Override
-  // public void draw (final Batch batch, final float parentAlpha)
-  // {
-  // super.draw (batch, parentAlpha);
-  //
-  // stageToLocalCoordinates (tempSize.set (getWidth (), getHeight ()));
-  // tempColor.set (getColor ());
-  // batch.setColor (tempColor.r, tempColor.g, tempColor.b, tempColor.a * parentAlpha);
-  // foregroundArrow.draw (batch, getX (), getY (), getX () + tempSize.x, getY () + tempSize.y);
-  // foregroundArrowText.draw (batch, getX () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_DIALOG_REFERENCE_SPACE.x,
-  // getY () + FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_DIALOG_REFERENCE_SPACE.y,
-  // FOREGROUND_ARROW_TEXT_SIZE_DIALOG_REFERENCE_SPACE.x,
-  // FOREGROUND_ARROW_TEXT_SIZE_DIALOG_REFERENCE_SPACE.y);
-  // }
-
   @Override
   public void refreshAssets ()
   {
@@ -313,28 +339,33 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
   }
 
   public void show (final int minDestinationArmies,
+                    final int currentDestinationArmies,
                     final int maxDestinationArmies,
+                    final int totalArmies,
                     final Country sourceCountry,
-                    final Country destinationCountry,
-                    final int totalArmies)
+                    final Country destinationCountry)
   {
     // @formatter:off
     Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
+    Arguments.checkIsNotNegative (currentDestinationArmies, "currentDestinationArmies");
     Arguments.checkIsNotNegative (maxDestinationArmies, "maxDestinationArmies");
+    Arguments.checkIsNotNegative (totalArmies, "totalArmies");
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
-    Arguments.checkIsNotNegative (totalArmies, "totalArmies");
     Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies", "maxDestinationArmies");
+    Arguments.checkUpperInclusiveBound (currentDestinationArmies, maxDestinationArmies, "currentDestinationArmies", "maxDestinationArmies");
     Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
-    Arguments.checkUpperInclusiveBound (maxDestinationArmies, totalArmies, "maxDestinationArmies", "totalArmies");
     // @formatter:on
 
     if (isShown ()) return;
 
+    originalDestinationArmies = currentDestinationArmies;
     this.totalArmies = totalArmies;
 
     setSliderRange (minDestinationArmies, maxDestinationArmies);
     setSliderToMinValue ();
+    updateSlidability ();
+    updateSubmitability ();
     setCountries (sourceCountry, destinationCountry);
     show ();
   }
@@ -372,16 +403,13 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
 
   public int getDeltaArmyCount ()
   {
-    return getSliderValue ();
+    return getSliderValue () - originalDestinationArmies;
   }
 
   private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
   {
-    return Math.max (0.0f,
-                     Math.min (arrowWidth,
-                               arrowWidth
-                                       - (COUNTRY_BOX_WIDTH - COUNTRY_BOX_INNER_PADDING * 2.0f - countryImagePostLayout
-                                               .getImageWidth ())));
+    return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
+            - (COUNTRY_BOX_WIDTH - COUNTRY_BOX_INNER_PADDING * 2.0f - countryImagePostLayout.getImageWidth ())));
   }
 
   private static Image asImage (final Country country)
@@ -538,5 +566,21 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
   {
     sourceCountryNameLabel.setText (sourceCountryName);
     destinationCountryNameLabel.setText (destinationCountryName);
+  }
+
+  private void updateSlidability ()
+  {
+    if (Math.round (slider.getMinValue ()) != Math.round (slider.getMaxValue ())) return;
+
+    slider.setDisabled (true);
+    minButton.setDisabled (true);
+    maxButton.setDisabled (true);
+    minusButton.setDisabled (true);
+    plusButton.setDisabled (true);
+  }
+
+  private void updateSubmitability ()
+  {
+    setSubmissionDisabled (getSliderValue () == originalDestinationArmies);
   }
 }

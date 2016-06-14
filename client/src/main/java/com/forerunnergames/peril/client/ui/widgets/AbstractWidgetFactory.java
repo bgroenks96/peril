@@ -55,6 +55,7 @@ import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.ErrorDialog;
@@ -283,7 +284,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public Dialog createQuitDialog (final String message, final Stage stage, final DialogListener listener)
+  public Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener)
   {
     return new QuitDialog (this, message, stage, listener);
   }

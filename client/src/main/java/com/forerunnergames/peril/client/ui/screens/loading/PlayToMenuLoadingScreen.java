@@ -52,6 +52,7 @@ import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.tools.common.Arguments;
@@ -133,17 +134,18 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
     stage = new Stage (viewport, batch);
 
     // @formatter:off
-    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit Peril?", stage, new DialogListenerAdapter ()
-    {
-      @Override
-      public void onSubmit ()
-      {
-        isLoading = false;
-        eventBus.publishAsync (new QuitGameEvent ());
-        resetLoadingProgress ();
-        Gdx.app.exit ();
-      }
-    });
+    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit Peril?", stage,
+            new CancellableDialogListenerAdapter ()
+            {
+              @Override
+              public void onSubmit ()
+              {
+                isLoading = false;
+                eventBus.publishAsync (new QuitGameEvent ());
+                resetLoadingProgress ();
+                Gdx.app.exit ();
+              }
+            });
     // @formatter:on
 
     errorDialog = widgetFactory.createErrorDialog (stage, new DialogListenerAdapter ()

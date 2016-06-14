@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.dialogs;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,21 +24,25 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.AbstractArmyMovementDialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.KeyListener;
 import com.forerunnergames.tools.common.Arguments;
 
-public class OkCancelDialog extends OkDialog
+public final class FortificationDialog extends AbstractArmyMovementDialog
 {
+  private static final String TITLE = "FORTIFICATION";
   private static final String CANCEL_BUTTON_TEXT = "CANCEL";
   private final CancellableDialogListener listener;
   private TextButton cancelButton;
 
-  public OkCancelDialog (final WidgetFactory widgetFactory,
-                         final DialogStyle dialogStyle,
-                         final Stage stage,
-                         final CancellableDialogListener listener)
+  public FortificationDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
+                              final Stage stage,
+                              final CancellableDialogListener listener)
+
   {
-    super (widgetFactory, dialogStyle, stage, listener);
+    super (widgetFactory, TITLE, stage, listener);
 
     Arguments.checkIsNotNull (listener, "listener");
 

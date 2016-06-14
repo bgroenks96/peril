@@ -29,7 +29,11 @@ public interface BattleDialog extends Dialog
              final String attackingPlayerName,
              final String defendingPlayerName);
 
-  void startBattle ();
+  void battle ();
+
+  boolean isBattleInProgress ();
+
+  boolean isResetting ();
 
   void showBattleResult (final BattleResultPacket result);
 

@@ -30,8 +30,8 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 
 public final class MainMenuScreen extends AbstractMenuScreen
 {
@@ -44,7 +44,7 @@ public final class MainMenuScreen extends AbstractMenuScreen
   {
     super (widgetFactory, screenChanger, screenSize, batch);
 
-    quitDialog = createQuitDialog ("Are you sure you want to quit Peril?", new DialogListenerAdapter ()
+    quitDialog = createQuitDialog ("Are you sure you want to quit Peril?", new CancellableDialogListenerAdapter ()
     {
       @Override
       public void onSubmit ()

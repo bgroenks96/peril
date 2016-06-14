@@ -22,26 +22,23 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattleResetState;
 import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
 
 public final class DefendDialog extends AbstractBattleDialog
 {
-  private static final String TITLE_TEXT = "Defend";
+  private static final String TITLE_TEXT = "DEFEND";
 
   public DefendDialog (final BattleDialogWidgetFactory widgetFactory,
                        final Stage stage,
-                       final BattleResetState resetState,
                        final ScreenShaker screenShaker,
-                       final BattleDialogListener listener,
-                       final MBassador <Event> eventBus)
+                       final MBassador <Event> eventBus,
+                       final DefendDialogListener listener)
   {
-    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, resetState, screenShaker,
-           listener, eventBus);
+    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, eventBus,
+           listener);
   }
 
   @Override

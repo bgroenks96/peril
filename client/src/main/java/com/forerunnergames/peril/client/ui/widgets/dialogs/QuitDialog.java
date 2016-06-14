@@ -27,7 +27,7 @@ public final class QuitDialog extends OkCancelDialog
   public QuitDialog (final WidgetFactory widgetFactory,
                      final String message,
                      final Stage stage,
-                     final DialogListener listener)
+                     final CancellableDialogListener listener)
   {
     this (widgetFactory, message, DialogStyle.AUTO_H_CENTER, DialogStyle.AUTO_V_CENTER, stage, listener);
   }
@@ -37,7 +37,7 @@ public final class QuitDialog extends OkCancelDialog
                      final int positionUpperLeftReferenceScreenSpaceX,
                      final int positionUpperLeftReferenceScreenSpacey,
                      final Stage stage,
-                     final DialogListener listener)
+                     final CancellableDialogListener listener)
   {
     super (widgetFactory, DialogStyle.builder ()
             .position (positionUpperLeftReferenceScreenSpaceX, positionUpperLeftReferenceScreenSpacey).size (650, 244)

@@ -47,6 +47,24 @@ public interface Dialog
 
   void disableInput ();
 
+  boolean isInputDisabled ();
+
+  void enableSubmission ();
+
+  void disableSubmission ();
+
+  void setSubmissionDisabled (final boolean isDisabled);
+
+  boolean isSubmissionDisabled ();
+
+  void enableTextButton (final String buttonText);
+
+  void disableTextButton (final String buttonText);
+
+  void setTextButtonDisabled (final String buttonText, final boolean isDisabled);
+
+  boolean isDisabledTextButton (final String buttonText);
+
   void update (final float delta);
 
   void refreshAssets ();

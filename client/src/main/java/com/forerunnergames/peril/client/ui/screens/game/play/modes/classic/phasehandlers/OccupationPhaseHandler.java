@@ -76,7 +76,7 @@ public final class OccupationPhaseHandler
       log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
                 PlayerOccupyCountryRequestEvent.class.getSimpleName ());
-      StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy.");
+      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy."));
       return;
     }
 
@@ -85,11 +85,11 @@ public final class OccupationPhaseHandler
     if (!sourceCountryName.equals (this.sourceCountryName))
     {
       log.warn ("Not sending response [{}] because specified source country name [{}] does not match the "
-                        + "source country name [{}] of the original request [{}].",
+              + "source country name [{}] of the original request [{}].",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), sourceCountryName,
                 this.sourceCountryName, request);
-      StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy from {}.",
-                                        sourceCountryName);
+      eventBus.publish (StatusMessageEventFactory
+              .create ("Whoops, it looks like you aren't authorized to occupy from {}.", sourceCountryName));
       return;
     }
 
@@ -98,10 +98,11 @@ public final class OccupationPhaseHandler
     if (!destCountryName.equals (this.destCountryName))
     {
       log.warn ("Not sending response [{}] because specified destination country name [{}] does not match the "
-                        + "destination country name [{}] of the original request [{}].",
+              + "destination country name [{}] of the original request [{}].",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), destCountryName, this.destCountryName,
                 request);
-      StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy {}.", destCountryName);
+      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy {}.",
+                                                          destCountryName));
       return;
     }
 
@@ -148,8 +149,9 @@ public final class OccupationPhaseHandler
     {
       log.error ("Not showing {} for request [{}] because source country [{}] does not exist in {}.",
                  OccupationDialog.class.getSimpleName (), event, sourceCountryName, PlayMap.class.getSimpleName ());
-      StatusMessageEventFactory.create ("Whoops, it looks like {} doesn't exist on this map, so it can't be occupied",
-                                        sourceCountryName);
+      eventBus.publish (StatusMessageEventFactory.create (
+                                                          "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied",
+                                                          sourceCountryName));
       return;
     }
 
@@ -158,21 +160,24 @@ public final class OccupationPhaseHandler
     if (!playMap.existsCountryWithName (destinationCountryName))
     {
       log.error ("Not showing {} for request [{}] because destination country [{}] does not exist in {}.",
-                 OccupationDialog.class.getSimpleName (), event, destinationCountryName, PlayMap.class.getSimpleName ());
-      StatusMessageEventFactory.create ("Whoops, it looks like {} doesn't exist on this map, so it can't be occupied.",
-                                        destinationCountryName);
+                 OccupationDialog.class.getSimpleName (), event, destinationCountryName,
+                 PlayMap.class.getSimpleName ());
+      eventBus.publish (StatusMessageEventFactory.create (
+                                                          "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied.",
+                                                          destinationCountryName));
       return;
     }
 
     playMap.setCountryState (destinationCountryName, playMap.getPrimaryImageStateOf (sourceCountryName));
 
-    occupationDialog.show (event.getMinOccupationArmyCount (), event.getMaxOccupationArmyCount (),
+    occupationDialog.show (event.getMinOccupationArmyCount (), event.getDestinationCountryArmyCount (),
+                           event.getMaxOccupationArmyCount (), event.getTotalArmyCount (),
                            playMap.getCountryWithName (sourceCountryName),
-                           playMap.getCountryWithName (destinationCountryName), event.getTotalArmyCount ());
+                           playMap.getCountryWithName (destinationCountryName));
 
     battleResultDialog.setTitle ("Victory");
-    battleResultDialog.setMessage (new DefaultMessage ("General, you conquered " + destinationCountryName
-            + "!\nWe must now occupy it quickly."));
+    battleResultDialog.setMessage (new DefaultMessage (
+            "General, you conquered " + destinationCountryName + "!\nWe must now occupy it quickly."));
     battleResultDialog.show ();
   }
 
@@ -182,6 +187,15 @@ public final class OccupationPhaseHandler
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
+
+    if (request == null)
+    {
+      log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
+                PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
+                PlayerOccupyCountryRequestEvent.class.getSimpleName ());
+      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy."));
+      return;
+    }
 
     final String sourceCountryName = event.getSourceCountryName ();
     final String destinationCountryName = event.getDestinationCountryName ();
@@ -218,8 +232,9 @@ public final class OccupationPhaseHandler
     log.debug ("Event received [{}].", event);
     log.error ("Could not occupy country. Reason: {}", event.getReason ());
 
-    StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy {} from {}.",
-                                      sourceCountryName, destCountryName);
+    eventBus.publish (StatusMessageEventFactory.create (
+                                                        "Whoops, it looks like you aren't authorized to occupy {} from {}.",
+                                                        sourceCountryName, destCountryName));
 
     reset ();
   }

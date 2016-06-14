@@ -822,7 +822,7 @@ public class GameModelTest
     expectedFortifyVectors = buildCountryMultimapFromIndices (defaultTestCountries, adj (0, 1, 3), adj (1, 0),
                                                               adj (3, 0));
     assertEquals (expectedFortifyVectors,
-                  eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getValidFortifyVectors ());
+                  eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getValidVectors ());
   }
 
   @Test

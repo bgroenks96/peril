@@ -36,22 +36,22 @@ import com.badlogic.gdx.utils.Align;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
-import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.settings.StyleSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.reinforcement.FortificationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattleResetState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
+import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.ControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.DefaultControlRoomBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
@@ -146,26 +146,20 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
             mySettingsButtonListener, surrenderButtonListener);
   }
 
-  public FortificationDialog createFortificationDialog (final Stage stage,
-                                                        final MBassador <Event> eventBus,
-                                                        final DialogListener listener)
+  public FortificationDialog createFortificationDialog (final Stage stage, final CancellableDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new FortificationDialog (this, stage, listener, eventBus);
+    return new FortificationDialog (this, stage, listener);
   }
 
-  public OccupationDialog createOccupationDialog (final Stage stage,
-                                                  final MBassador <Event> eventBus,
-                                                  final DialogListener listener)
+  public OccupationDialog createOccupationDialog (final Stage stage, final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new OccupationDialog (this, stage, listener, eventBus);
+    return new OccupationDialog (this, stage, listener);
   }
 
   public Slider createArmyMovementDialogSlider (final ChangeListener changeListener)
@@ -244,33 +238,29 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   }
 
   public AttackDialog createAttackDialog (final Stage stage,
-                                          final BattleResetState resetState,
                                           final ScreenShaker screenShaker,
                                           final MBassador <Event> eventBus,
                                           final AttackDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (resetState, "resetState");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new AttackDialog (battleDialogWidgetFactory, stage, resetState, screenShaker, listener, eventBus);
+    return new AttackDialog (battleDialogWidgetFactory, stage, screenShaker, eventBus, listener);
   }
 
   public DefendDialog createDefendDialog (final Stage stage,
-                                          final BattleResetState resetState,
                                           final ScreenShaker screenShaker,
                                           final MBassador <Event> eventBus,
-                                          final BattleDialogListener listener)
+                                          final DefendDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (resetState, "resetState");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new DefendDialog (battleDialogWidgetFactory, stage, resetState, screenShaker, listener, eventBus);
+    return new DefendDialog (battleDialogWidgetFactory, stage, screenShaker, eventBus, listener);
   }
 
   public void destroyPlayMap (final MapMetadata mapMetadata)
@@ -284,13 +274,15 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   {
     Arguments.checkIsNotNull (stage, "stage");
 
-    return new OkDialog (this, DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false).movable (true)
-            .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51).border (28)
-            .buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21)
-            .textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
+    return new OkDialog (this,
+            DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false)
+                    .movable (true).position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244)
+                    .titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
+                    .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (),
+            stage, listener);
   }
 
-  public Dialog createQuitDialog (final Stage stage, final DialogListener listener)
+  public Dialog createQuitDialog (final Stage stage, final CancellableDialogListener listener)
   {
     return new QuitDialog (this,
             "Are you sure you want to quit?\nIf you are the host, quitting will end the game for everyone.", 587,

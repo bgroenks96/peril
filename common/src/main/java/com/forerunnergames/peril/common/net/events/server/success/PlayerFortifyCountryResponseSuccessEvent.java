@@ -28,27 +28,27 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.base.Optional;
 
-public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlayerEvent
-        implements PlayerResponseSuccessEvent
+public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlayerEvent implements
+        PlayerResponseSuccessEvent
 {
   private final Optional <CountryPacket> sourceCountry;
-  private final Optional <CountryPacket> targetCountry;
-  private final int fortifyArmyCount;
+  private final Optional <CountryPacket> destCountry;
+  private final int deltaArmyCount;
 
   public PlayerFortifyCountryResponseSuccessEvent (final PlayerPacket player,
                                                    final CountryPacket sourceCountry,
-                                                   final CountryPacket targetCountry,
-                                                   final int fortifyArmyCount)
+                                                   final CountryPacket destCountry,
+                                                   final int deltaArmyCount)
   {
     super (player);
 
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
-    Arguments.checkIsNotNull (targetCountry, "targetCountry");
-    Arguments.checkIsNotNegative (fortifyArmyCount, "fortifyArmyCount");
+    Arguments.checkIsNotNull (destCountry, "destCountry");
+    Arguments.checkIsNotNegative (deltaArmyCount, "deltaArmyCount");
 
     this.sourceCountry = Optional.of (sourceCountry);
-    this.targetCountry = Optional.of (targetCountry);
-    this.fortifyArmyCount = fortifyArmyCount;
+    this.destCountry = Optional.of (destCountry);
+    this.deltaArmyCount = deltaArmyCount;
   }
 
   public PlayerFortifyCountryResponseSuccessEvent (final PlayerPacket player)
@@ -58,13 +58,13 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
     Arguments.checkIsNotNull (player, "player");
 
     sourceCountry = Optional.absent ();
-    targetCountry = Optional.absent ();
-    fortifyArmyCount = 0;
+    destCountry = Optional.absent ();
+    deltaArmyCount = 0;
   }
 
-  public boolean isCountryDataPresent ()
+  public boolean fortificationOccurred ()
   {
-    return sourceCountry.isPresent () && targetCountry.isPresent ();
+    return sourceCountry.isPresent () && destCountry.isPresent ();
   }
 
   public Optional <CountryPacket> getSourceCountry ()
@@ -72,28 +72,44 @@ public final class PlayerFortifyCountryResponseSuccessEvent extends AbstractPlay
     return sourceCountry;
   }
 
-  public Optional <CountryPacket> getTargetCountry ()
+  public Optional <CountryPacket> getDestinationCountry ()
   {
-    return targetCountry;
+    return destCountry;
   }
 
-  public int getFortifyArmyCount ()
+  /**
+   * @return Empty string if {@link #fortificationOccurred()} is false;
+   */
+  public String getSourceCountryName ()
   {
-    return fortifyArmyCount;
+    return sourceCountry.isPresent () ? sourceCountry.get ().getName () : "";
+  }
+
+  /**
+   * @return Empty string if {@link #fortificationOccurred()} is false;
+   */
+  public String getDestinationCountryName ()
+  {
+    return destCountry.isPresent () ? destCountry.get ().getName () : "";
+  }
+
+  public int getDeltaArmyCount ()
+  {
+    return deltaArmyCount;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | SourceCountry: {} | TargetCountry: {} | FortifyArmyCount: {}", super.toString (),
-                           sourceCountry, targetCountry, fortifyArmyCount);
+    return Strings.format ("{} | SourceCountry: {} | DestCountry: {} | DeltaArmyCount: {}", super.toString (),
+                           sourceCountry, destCountry, deltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
   private PlayerFortifyCountryResponseSuccessEvent ()
   {
     sourceCountry = null;
-    targetCountry = null;
-    fortifyArmyCount = 0;
+    destCountry = null;
+    deltaArmyCount = 0;
   }
 }

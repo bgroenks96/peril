@@ -24,7 +24,9 @@ public interface BattleDialogListener extends DialogListener
 {
   void onBattle ();
 
+  // TODO Production: Remove
   void onAttackerWinFinal ();
 
+  // TODO Production: Remove
   void onAttackerLoseFinal ();
 }

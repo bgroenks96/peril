@@ -62,6 +62,11 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
     return sourceCountry.getName ();
   }
 
+  public int getSourceCountryArmyCount ()
+  {
+    return sourceCountry.getArmyCount ();
+  }
+
   public CountryPacket getDestinationCountry ()
   {
     return destinationCountry;
@@ -70,6 +75,11 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
   public String getDestinationCountryName ()
   {
     return destinationCountry.getName ();
+  }
+
+  public int getDestinationCountryArmyCount ()
+  {
+    return destinationCountry.getArmyCount ();
   }
 
   public int getTotalArmyCount ()
@@ -91,7 +101,8 @@ public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent i
   public String toString ()
   {
     return Strings.format (
-                           "{} | SourceCountry: [{}] | DestinationCountry: [{}] | MinOccupationArmyCount: [{}] | MaxOccupationArmyCount: [{}] | TotalArmyCount: [{}]",
+                           "{} | SourceCountry: [{}] | DestinationCountry: [{}] | MinOccupationArmyCount: [{}]"
+                                   + " | MaxOccupationArmyCount: [{}] | TotalArmyCount: [{}]",
                            super.toString (), sourceCountry, destinationCountry, minOccupationArmyCount,
                            maxOccupationArmyCount, getTotalArmyCount ());
   }
