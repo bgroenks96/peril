@@ -244,7 +244,6 @@ public class MultiplayerControllerTest
       @Override
       public PlayerJoinGameSuccessEvent apply (final Remote client)
       {
-
         final String playerName = "Test" + client.getConnectionId ();
         final PlayerPacket player = mock (PlayerPacket.class);
         when (player.getName ()).thenReturn (playerName);
