@@ -22,7 +22,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 
 import com.forerunnergames.peril.client.assets.AssetController;
-import com.forerunnergames.peril.client.assets.AssetLoadingErrorDeadEventHandler;
+import com.forerunnergames.peril.client.assets.AssetLoadingErrorUnhandledEventHandler;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.assets.AssetManagerFactory;
 import com.forerunnergames.peril.client.assets.AssetUpdater;
@@ -35,7 +35,7 @@ import com.forerunnergames.peril.client.ui.music.MusicFactory;
 import com.forerunnergames.peril.client.ui.music.MusicVolumeController;
 import com.forerunnergames.peril.client.ui.screens.ScreenController;
 import com.forerunnergames.peril.client.ui.screens.ScreenFactoryCreator;
-import com.forerunnergames.peril.common.eventbus.DeadEventHandler;
+import com.forerunnergames.peril.common.eventbus.UnhandledEventHandler;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.ThrowingPublicationErrorHandler;
 import com.forerunnergames.peril.common.net.GameServerCreator;
@@ -66,7 +66,7 @@ public final class LibGdxGameFactory
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
     final MBassador <Event> eventBus = EventBusFactory
             .create (ImmutableSet.<IPublicationErrorHandler> of (new ThrowingPublicationErrorHandler ()),
-                     ImmutableSet.<DeadEventHandler> of (new AssetLoadingErrorDeadEventHandler ()));
+                     ImmutableSet.<UnhandledEventHandler> of (new AssetLoadingErrorUnhandledEventHandler ()));
     final Client client = new KryonetClient ();
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
     final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES,

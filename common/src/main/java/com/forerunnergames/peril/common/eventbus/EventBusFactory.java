@@ -25,7 +25,7 @@ import com.forerunnergames.tools.common.Event;
 import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.bus.common.DeadMessage;
+import net.engio.mbassy.bus.common.PublicationEvent;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 import net.engio.mbassy.listener.Handler;
@@ -42,33 +42,33 @@ public final class EventBusFactory
   public static MBassador <Event> create ()
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.<DeadEventHandler> of ());
+    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.<UnhandledEventHandler> of ());
   }
 
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> handlers)
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (handlers, ImmutableSet.<DeadEventHandler> of ());
+    return create (handlers, ImmutableSet.<UnhandledEventHandler> of ());
   }
 
-  public static MBassador <Event> create (final DeadEventHandler... deadEventHandlers)
+  public static MBassador <Event> create (final UnhandledEventHandler... unhandledEventHandlers)
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.copyOf (deadEventHandlers));
+    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.copyOf (unhandledEventHandlers));
   }
 
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> publicationErrorHandlers,
-                                          final Iterable <DeadEventHandler> deadEventHandlers)
+                                          final Iterable <UnhandledEventHandler> unhandledEventHandlers)
   {
     Arguments.checkIsNotNull (publicationErrorHandlers, "publicationErrorHandlers");
     Arguments.checkHasNoNullElements (publicationErrorHandlers, "publicationErrorHandlers");
-    Arguments.checkIsNotNull (deadEventHandlers, "deadEventHandlers");
-    Arguments.checkHasNoNullElements (deadEventHandlers, "deadEventHandlers");
+    Arguments.checkIsNotNull (unhandledEventHandlers, "unhandledEventHandlers");
+    Arguments.checkHasNoNullElements (unhandledEventHandlers, "unhandledEventHandlers");
 
-    final MBassador <Event> eventBus = new MBassador <> (new PublicationErrorDispatcher (
-            ImmutableSet.copyOf (publicationErrorHandlers)));
+    final MBassador <Event> eventBus = new MBassador<> (
+            new PublicationErrorDispatcher (ImmutableSet.copyOf (publicationErrorHandlers)));
 
-    eventBus.subscribe (new DeadMessageDispatcher (ImmutableSet.copyOf (deadEventHandlers)));
+    eventBus.subscribe (new UnhandledEventDispatcher (ImmutableSet.copyOf (unhandledEventHandlers)));
 
     return eventBus;
   }
@@ -107,11 +107,11 @@ public final class EventBusFactory
   }
 
   @Listener (references = References.Strong)
-  private static final class DeadMessageDispatcher
+  private static final class UnhandledEventDispatcher
   {
-    private final ImmutableSet <DeadEventHandler> handlers;
+    private final ImmutableSet <UnhandledEventHandler> handlers;
 
-    DeadMessageDispatcher (final ImmutableSet <DeadEventHandler> handlers)
+    UnhandledEventDispatcher (final ImmutableSet <UnhandledEventHandler> handlers)
     {
       Arguments.checkIsNotNull (handlers, "handlers");
       Arguments.checkHasNoNullElements (handlers, "handlers");
@@ -120,17 +120,18 @@ public final class EventBusFactory
     }
 
     @Handler
-    void onEvent (final DeadMessage deadMessage)
+    void onEvent (final PublicationEvent unhandledEvent)
     {
-      Arguments.checkIsNotNull (deadMessage, "deadMessage");
+      Arguments.checkIsNotNull (unhandledEvent, "unhandledEvent");
 
-      // standard behavior; log the dead message
-      log.warn ("Dead event detected, no handlers are registered to receive it. Event [{}]", deadMessage.getMessage ());
+      // standard behavior; log the unhandled event
+      log.warn ("Unhandled event detected, no handlers are registered to receive it. Event [{}]",
+                unhandledEvent.getMessage ());
 
-      // dispatch dead message to all registered handlers
-      for (final DeadEventHandler handler : handlers)
+      // dispatch unhandled event to all registered handlers
+      for (final UnhandledEventHandler handler : handlers)
       {
-        handler.onDeadMessage (deadMessage);
+        handler.onUnhandledEvent (unhandledEvent);
       }
     }
   }

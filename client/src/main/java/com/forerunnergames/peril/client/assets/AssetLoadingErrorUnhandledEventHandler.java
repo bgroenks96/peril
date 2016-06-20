@@ -16,11 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.eventbus;
+package com.forerunnergames.peril.client.assets;
 
-import net.engio.mbassy.bus.common.DeadMessage;
+import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
+import com.forerunnergames.peril.common.eventbus.UnhandledEventHandler;
+import com.forerunnergames.tools.common.Arguments;
 
-public interface DeadEventHandler
+import net.engio.mbassy.bus.common.PublicationEvent;
+
+public class AssetLoadingErrorUnhandledEventHandler implements UnhandledEventHandler
 {
-  void onDeadMessage (final DeadMessage deadMessage);
+  @Override
+  public void onUnhandledEvent (final PublicationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    if (!(event.getMessage () instanceof AssetLoadingErrorEvent)) return;
+
+    throw new RuntimeException (((AssetLoadingErrorEvent) event.getMessage ()).getThrowable ());
+  }
 }
