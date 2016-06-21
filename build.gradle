@@ -227,6 +227,17 @@ project (":core") {
   }
 }
 
+project (":ai") {
+  apply plugin: "groovy"
+  
+  dependencies {
+    compile project (":common")
+    compile project (":core")
+    testCompile project (":common").sourceSets.test.output
+    testCompile project (":core").sourceSets.test.output
+  }
+}
+
 project (":client") {
   dependencies {
     compile project (":common")
