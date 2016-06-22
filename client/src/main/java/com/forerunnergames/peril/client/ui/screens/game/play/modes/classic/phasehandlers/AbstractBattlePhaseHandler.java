@@ -90,9 +90,8 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
       return;
     }
 
-    response = createResponse (battleDialog.getAttackingCountryName (), battleDialog.getDefendingCountryName (),
-                               getBattlingDieCount (battleDialog.getActiveAttackerDieCount (),
-                                                    battleDialog.getActiveDefenderDieCount ()));
+    response = createBattleResponse (getBattlingDieCount (battleDialog.getActiveAttackerDieCount (),
+                                                          battleDialog.getActiveDefenderDieCount ()));
 
     eventBus.publish (response);
 
@@ -119,8 +118,8 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
   {
     if (request == null)
     {
-      log.warn ("Ignoring ending attack phase because no prior {} was received.",
-                PlayerBeginAttackRequestEvent.class.getSimpleName ());
+      log.warn ("Ignoring ending {} phase because no prior {} was received.", attackOrDefend (),
+                getBattleRequestClassName ());
       status ("Whoops, it looks like you aren't authorized to end Attack Phase.");
       return;
     }
@@ -163,9 +162,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
   protected abstract String getBattleResponseRequestClassName ();
 
-  protected abstract ResponseRequestEvent createResponse (final String attackingCountry,
-                                                          final String defendingCountry,
-                                                          final int dieCount);
+  protected abstract ResponseRequestEvent createBattleResponse (final int dieCount);
 
   protected abstract void onNewBattleRequest ();
 

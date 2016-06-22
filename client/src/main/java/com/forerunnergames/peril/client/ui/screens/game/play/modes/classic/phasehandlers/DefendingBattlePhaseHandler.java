@@ -68,12 +68,8 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Override
-  protected ResponseRequestEvent createResponse (final String attackingCountry,
-                                                 final String defendingCountry,
-                                                 final int dieCount)
+  protected ResponseRequestEvent createBattleResponse (final int dieCount)
   {
-    Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
-    Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
     Arguments.checkLowerExclusiveBound (dieCount, 0, "dieCount");
 
     return new PlayerDefendCountryResponseRequestEvent (dieCount);
