@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.events.server.request;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -28,47 +29,67 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 public final class PlayerAttackOrderRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
-  private final PlayerPacket defendingPlayer;
-  private final CountryPacket attackingCountry;
-  private final CountryPacket defendingCountry;
+  private final PendingBattleActorPacket attacker;
+  private final PendingBattleActorPacket defender;
   private final int minValidDieCount;
   private final int maxValidDieCount;
 
-  public PlayerAttackOrderRequestEvent (final PlayerPacket attackingPlayer,
-                                          final PlayerPacket defendingPlayer,
-                                          final CountryPacket attackingCountry,
-                                          final CountryPacket defendingCountry,
-                                          final int minValidDieCount,
-                                          final int maxValidDieCount)
+  public PlayerAttackOrderRequestEvent (final PendingBattleActorPacket attacker,
+                                        final PendingBattleActorPacket defender,
+                                        final int minValidDieCount,
+                                        final int maxValidDieCount)
   {
-    super (attackingPlayer);
+    super (attacker.getPlayer ());
 
-    Arguments.checkIsNotNull (defendingPlayer, "defendingPlayer");
-    Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
-    Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
+    Arguments.checkIsNotNull (attacker, "attacker");
+    Arguments.checkIsNotNull (defender, "defender");
     Arguments.checkIsNotNegative (minValidDieCount, "minValidDieCount");
     Arguments.checkIsNotNegative (maxValidDieCount, "maxValidDieCount");
 
-    this.defendingPlayer = defendingPlayer;
-    this.attackingCountry = attackingCountry;
-    this.defendingCountry = defendingCountry;
+    this.attacker = attacker;
+    this.defender = defender;
     this.minValidDieCount = minValidDieCount;
     this.maxValidDieCount = maxValidDieCount;
   }
 
+  public String getAttackingPlayerName ()
+  {
+    return attacker.getPlayerName ();
+  }
+
+  public String getDefendingPlayerName ()
+  {
+    return defender.getPlayerName ();
+  }
+
+  public PlayerPacket getAttackingPlayer ()
+  {
+    return attacker.getPlayer ();
+  }
+
   public PlayerPacket getDefendingPlayer ()
   {
-    return defendingPlayer;
+    return defender.getPlayer ();
   }
 
   public CountryPacket getAttackingCountry ()
   {
-    return attackingCountry;
+    return attacker.getCountry ();
   }
 
   public CountryPacket getDefendingCountry ()
   {
-    return defendingCountry;
+    return defender.getCountry ();
+  }
+
+  public int getAttackingCountryArmyCount ()
+  {
+    return attacker.getCountryArmyCount ();
+  }
+
+  public int getDefendingCountryArmyCount ()
+  {
+    return defender.getCountryArmyCount ();
   }
 
   public int getMinValidDieCount ()
@@ -84,18 +105,15 @@ public final class PlayerAttackOrderRequestEvent extends AbstractPlayerEvent imp
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{} | DefendingPlayer: [{}] | AttackingCountry: [{}] | DefendingCountry: [{}] | MinValidDieCount: [{}] | MaxValidDieCount: [{}]",
-                           super.toString (), defendingPlayer, attackingCountry, defendingCountry, minValidDieCount,
-                           maxValidDieCount);
+    return Strings.format ("{} | Attacker: [{}] | Defender: [{}] | MinValidDieCount: [{}] | MaxValidDieCount: [{}]",
+                           super.toString (), attacker, defender, minValidDieCount, maxValidDieCount);
   }
 
   @RequiredForNetworkSerialization
   private PlayerAttackOrderRequestEvent ()
   {
-    defendingPlayer = null;
-    attackingCountry = null;
-    defendingCountry = null;
+    attacker = null;
+    defender = null;
     minValidDieCount = -1;
     maxValidDieCount = -1;
   }

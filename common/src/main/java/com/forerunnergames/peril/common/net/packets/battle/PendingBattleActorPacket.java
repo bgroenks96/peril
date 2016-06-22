@@ -16,25 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.packets.battle;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSelectCountriesRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableMultimap;
-
-public final class PlayerBeginAttackRequestEvent extends AbstractPlayerSelectCountriesRequestEvent
+/**
+ * A battle actor that does not yet have a die count.
+ */
+public interface PendingBattleActorPacket
 {
-  public PlayerBeginAttackRequestEvent (final PlayerPacket currentPlayer,
-                                        final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)
-  {
-    super (currentPlayer, validAttackVectors);
-  }
+  PlayerPacket getPlayer ();
 
-  @RequiredForNetworkSerialization
-  private PlayerBeginAttackRequestEvent ()
-  {
-  }
+  String getPlayerName ();
+
+  CountryPacket getCountry ();
+
+  int getCountryArmyCount ();
+
+  String getCountryName ();
 }
