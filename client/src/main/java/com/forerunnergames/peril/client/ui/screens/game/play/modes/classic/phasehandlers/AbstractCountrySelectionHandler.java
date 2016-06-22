@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * Note: This class may be unsubscribed on the {@link net.engio.mbassy.bus.MBassador} event bus in order to stop
  * receiving {@link SelectCountryEvent}'s, but even if it remains subscribed, it will ignore any events received before
  * calling {@link CountrySelectionHandler#start(PlayerSelectCountriesRequestEvent)} or after calling {@link #reset()}.
- * If unsubscribed, t must be resubscribed before calling
+ * If unsubscribed, it must be resubscribed before calling
  * {@link CountrySelectionHandler#start(PlayerSelectCountriesRequestEvent)} in order to receive events again.
  *
  * @see CountrySelectionHandler
