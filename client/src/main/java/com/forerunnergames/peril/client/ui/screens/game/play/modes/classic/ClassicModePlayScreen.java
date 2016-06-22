@@ -116,7 +116,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackOr
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceInitialCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -781,7 +781,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final PlayerReinforceInitialCountryResponseSuccessEvent event)
+  void onEvent (final PlayerReinforceCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

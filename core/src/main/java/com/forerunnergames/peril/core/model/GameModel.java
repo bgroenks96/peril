@@ -31,8 +31,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceInitialCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerRetreatOrderResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
@@ -46,8 +45,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCou
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountriesResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceInitialCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.ActivePlayerChangedEvent;
@@ -78,7 +76,6 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCou
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackOrderResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerBeginAttackResponseSuccessEvent;
@@ -88,8 +85,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttac
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountriesResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceInitialCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatOrderResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
@@ -614,15 +610,12 @@ public final class GameModel
 
     log.trace ("Waiting for [{}] to place initial reinforcements...", player);
 
-    // add country reinforcements and publish event
-    final ImmutableSet <CountryPacket> playerOwnedCountries = countryOwnerModel.getCountriesOwnedBy (playerId);
-    publish (new PlayerReinforceInitialCountryRequestEvent (player, playerOwnedCountries,
-            rules.getInitialReinforcementArmyCount (), rules.getMaxArmiesOnCountry ()));
+    publish (eventFactory.createReinforcementRequestFor (playerId));
     publish (new ActivePlayerChangedEvent (player));
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerInitialCountryReinforcements (final PlayerReinforceInitialCountryResponseRequestEvent event)
+  public boolean verifyPlayerInitialCountryReinforcements (final PlayerReinforceCountryResponseRequestEvent event)
   {
     log.info ("Event received [{}]", event);
 
@@ -632,30 +625,30 @@ public final class GameModel
     final int reinforcementCount = rules.getInitialReinforcementArmyCount ();
     if (reinforcementCount > player.getArmiesInHand ())
     {
-      publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player,
-              PlayerReinforceInitialCountryResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
-      publish (eventFactory.createInitialReinforcementRequestFor (playerId));
+      publish (new PlayerReinforceCountryResponseDeniedEvent (player,
+              PlayerReinforceCountryResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
+      publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
     final String countryName = event.getCountryName ();
     if (!countryMapGraphModel.existsCountryWith (countryName))
     {
-      publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player,
-              PlayerReinforceInitialCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      publish (eventFactory.createInitialReinforcementRequestFor (playerId));
+      publish (new PlayerReinforceCountryResponseDeniedEvent (player,
+              PlayerReinforceCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+      publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
     final Id countryId = countryMapGraphModel.countryWith (countryName);
 
-    final MutatorResult <PlayerReinforceInitialCountryResponseDeniedEvent.Reason> result;
+    final MutatorResult <PlayerReinforceCountryResponseDeniedEvent.Reason> result;
     result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
 
     if (result.failed ())
     {
-      publish (new PlayerReinforceInitialCountryResponseDeniedEvent (player, result.getFailureReason ()));
-      publish (eventFactory.createInitialReinforcementRequestFor (playerId));
+      publish (new PlayerReinforceCountryResponseDeniedEvent (player, result.getFailureReason ()));
+      publish (eventFactory.createReinforcementRequestFor (playerId));
       return false;
     }
 
@@ -665,7 +658,7 @@ public final class GameModel
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (playerId);
     final CountryPacket updatedCountry = countryMapGraphModel.countryPacketWith (countryId);
 
-    publish (new PlayerReinforceInitialCountryResponseSuccessEvent (updatedPlayer, updatedCountry, reinforcementCount));
+    publish (new PlayerReinforceCountryResponseSuccessEvent (updatedPlayer, updatedCountry, reinforcementCount));
     return true;
   }
 
@@ -677,8 +670,6 @@ public final class GameModel
     final Id playerId = getCurrentPlayerId ();
 
     log.info ("Begin reinforcement phase for player [{}].", player);
-
-    publish (new BeginReinforcementPhaseEvent (player));
 
     // add country reinforcements and publish event
     final int countryReinforcementBonus = rules
@@ -692,16 +683,30 @@ public final class GameModel
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
-    publish (new DefaultPlayerArmiesChangedEvent (getCurrentPlayerPacket (), totalReinforcementBonus));
+    // publish phase begin event and trade in request
+    publish (new BeginReinforcementPhaseEvent (player, countryReinforcementBonus, continentReinforcementBonus));
     publish (eventFactory.createTradeInCardsRequestFor (playerId, TurnPhase.REINFORCE));
-    // publish reinforcement request
-    publish (eventFactory.createReinforcementRequestFor (playerId));
-    log.info ("Waiting for player [{}] to place reinforcements...", getCurrentPlayerPacket ());
   }
 
   @StateMachineAction
-  @StateMachineCondition
-  public boolean verifyPlayerCountryReinforcements (final PlayerReinforceCountriesResponseRequestEvent event)
+  public void waitForPlayerToPlaceReinforcements ()
+  {
+    final Id playerId = getCurrentPlayerId ();
+    if (playerModel.getArmiesInHand (playerId) > 0)
+    {
+      publish (eventFactory.createReinforcementRequestFor (playerId));
+      log.info ("Waiting for player [{}] to place reinforcements...", getCurrentPlayerPacket ());
+    }
+    else
+    {
+      final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+      publish (new EndReinforcementPhaseEvent (playerPacket, countryOwnerModel.getCountriesOwnedBy (playerId)));
+      log.info ("Player [{}] has no more armies in hand. Moving to next phase...", playerPacket);
+    }
+  }
+
+  @StateMachineAction
+  public void placePlayerCountryReinforcements (final PlayerReinforceCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -709,76 +714,55 @@ public final class GameModel
 
     final Id playerId = getCurrentPlayerId ();
 
-    // failure result variable for storing first failed result
-    Result <PlayerReinforceCountriesResponseDeniedEvent.Reason> failureResult = Result.success ();
-    // mutator result set builder for storing successful results
-    final ImmutableSet.Builder <MutatorResult <?>> results = ImmutableSet.builder ();
-
     // --- process country reinforcements --- //
 
-    final ImmutableMap <String, Integer> reinforcedCountries = event.getReinforcedCountries ();
+    final String countryName = event.getCountryName ();
+    final int reinforcementCount = event.getReinforcementCount ();
 
-    int totalReinforcementCount = 0;
-    for (final int armyCount : reinforcedCountries.values ())
+    MutatorResult <PlayerReinforceCountryResponseDeniedEvent.Reason> result;
+    final ImmutableSet.Builder <MutatorResult <PlayerReinforceCountryResponseDeniedEvent.Reason>> resultBuilder;
+    resultBuilder = ImmutableSet.builder ();
+
+    if (reinforcementCount > playerModel.getArmiesInHand (playerId))
     {
-      totalReinforcementCount += armyCount;
-    }
-    if (totalReinforcementCount > playerModel.getArmiesInHand (playerId))
-    {
-      publish (new PlayerReinforceCountriesResponseDeniedEvent (getCurrentPlayerPacket (),
-              PlayerReinforceCountriesResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
-      publish (eventFactory.createReinforcementRequestFor (playerId));
-      return false;
+      result = MutatorResult.failure (PlayerReinforceCountryResponseDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND);
+      resultBuilder.add (result);
     }
 
-    final ImmutableMap.Builder <CountryPacket, Integer> builder = ImmutableMap.builder ();
-    for (final String countryName : reinforcedCountries.keySet ())
+    if (!countryMapGraphModel.existsCountryWith (countryName))
     {
-      final MutatorResult <PlayerReinforceCountriesResponseDeniedEvent.Reason> result;
-      if (!countryMapGraphModel.existsCountryWith (countryName))
-      {
-        failureResult = MutatorResult
-                .failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
-        break;
-      }
-      final CountryPacket country = countryMapGraphModel.countryPacketWith (countryName);
-      final Id countryId = countryMapGraphModel.idOf (country.getName ());
-      if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
-      {
-        failureResult = MutatorResult.failure (PlayerReinforceCountriesResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
-        break;
-      }
-      final int reinforcementCount = reinforcedCountries.get (countryName);
-      result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
-      results.add (result);
-      if (result.failed ())
-      {
-        failureResult = result;
-        break;
-      }
-      playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
-      builder.put (country, reinforcementCount);
+      result = MutatorResult.failure (PlayerReinforceCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
+      resultBuilder.add (result);
     }
 
-    if (failureResult.failed ())
+    final CountryPacket country = countryMapGraphModel.countryPacketWith (countryName);
+    final Id countryId = countryMapGraphModel.idOf (country.getName ());
+    if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
     {
-      publish (new PlayerReinforceCountriesResponseDeniedEvent (getCurrentPlayerPacket (),
-              failureResult.getFailureReason ()));
-      publish (eventFactory.createReinforcementRequestFor (playerId));
-      return false;
+      result = MutatorResult.failure (PlayerReinforceCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
+      resultBuilder.add (result);
     }
 
-    MutatorResult.commitAllSuccessful (results.build ());
+    result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
+    resultBuilder.add (result);
 
-    final ImmutableMap <CountryPacket, Integer> countriesToDeltaArmyCounts = builder.build ();
-    for (final CountryPacket country : countriesToDeltaArmyCounts.keySet ())
+    final ImmutableSet <MutatorResult <PlayerReinforceCountryResponseDeniedEvent.Reason>> results = resultBuilder
+            .build ();
+    final Optional <MutatorResult <PlayerReinforceCountryResponseDeniedEvent.Reason>> firstFailure;
+    firstFailure = MutatorResult.firstFailedFrom (results);
+
+    if (firstFailure.isPresent ())
     {
-      final CountryPacket updatedCountryPacket = countryMapGraphModel.countryPacketWith (country.getName ());
-      publish (new DefaultCountryArmiesChangedEvent (updatedCountryPacket, countriesToDeltaArmyCounts.get (country)));
+      publish (new PlayerReinforceCountryResponseDeniedEvent (getCurrentPlayerPacket (),
+              firstFailure.get ().getFailureReason ()));
+      return;
     }
-    publish (new PlayerReinforceCountriesResponseSuccessEvent (getCurrentPlayerPacket (), -totalReinforcementCount));
 
-    return true;
+    // commit results
+    playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
+    MutatorResult.commitAllSuccessful (results.toArray (new MutatorResult <?> [results.size ()]));
+
+    publish (new PlayerReinforceCountryResponseSuccessEvent (getCurrentPlayerPacket (), country, reinforcementCount));
   }
 
   @StateMachineAction
@@ -787,8 +771,6 @@ public final class GameModel
     final PlayerPacket player = getCurrentPlayerPacket ();
 
     log.info ("End reinforcement phase for player [{}].", player);
-
-    publish (new EndReinforcementPhaseEvent (player));
   }
 
   @StateMachineAction
@@ -1529,7 +1511,8 @@ public final class GameModel
     final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.requestFor (event);
     if (!originalRequest.isPresent ())
     {
-      Exceptions.throwRuntime ("Unable to find request event matching response [{}].", event);
+      log.warn ("Unable to find request event matching response [{}].", event);
+      return;
     }
     publish (originalRequest.get ());
   }

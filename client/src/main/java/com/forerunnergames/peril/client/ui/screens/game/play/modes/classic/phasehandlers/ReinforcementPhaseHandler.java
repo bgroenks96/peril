@@ -22,8 +22,7 @@ import com.badlogic.gdx.Gdx;
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
@@ -69,8 +68,7 @@ public final class ReinforcementPhaseHandler
   }
 
   @Handler
-  @Enveloped (messages = { PlayerReinforceCountriesRequestEvent.class,
-                           PlayerReinforceInitialCountryRequestEvent.class })
+  @Enveloped (messages = { PlayerReinforceCountryRequestEvent.class })
   void onEvent (final MessageEnvelope envelope)
   {
     Arguments.checkIsNotNull (envelope, "envelope");

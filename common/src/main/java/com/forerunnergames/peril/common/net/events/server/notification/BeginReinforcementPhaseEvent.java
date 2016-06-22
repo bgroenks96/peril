@@ -18,20 +18,39 @@
 
 package com.forerunnergames.peril.common.net.events.server.notification;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class BeginReinforcementPhaseEvent extends AbstractPlayerEvent implements PlayerNotificationEvent
+public final class BeginReinforcementPhaseEvent extends AbstractPlayerArmiesChangedEvent
 {
-  public BeginReinforcementPhaseEvent (final PlayerPacket currentPlayer)
+  private final int countryReinforcementBonus;
+  private final int continentReinforcementBonus;
+
+  public BeginReinforcementPhaseEvent (final PlayerPacket currentPlayer,
+                                       final int countryReinforcementBonus,
+                                       final int continentReinforcementBonus)
   {
-    super (currentPlayer);
+    super (currentPlayer, countryReinforcementBonus + continentReinforcementBonus);
+
+    this.countryReinforcementBonus = countryReinforcementBonus;
+    this.continentReinforcementBonus = continentReinforcementBonus;
+  }
+
+  public int getCountryReinforcementBonus ()
+  {
+    return this.countryReinforcementBonus;
+  }
+
+  public int getContinentReinforcementBonus ()
+  {
+    return this.continentReinforcementBonus;
   }
 
   @RequiredForNetworkSerialization
   private BeginReinforcementPhaseEvent ()
   {
+    this.countryReinforcementBonus = 0;
+    this.continentReinforcementBonus = 0;
   }
 }

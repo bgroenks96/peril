@@ -29,44 +29,26 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
+public final class PlayerReinforceCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
   private final ImmutableSet <ContinentPacket> playerOwnedContinents;
-  private final int countryReinforcementBonus;
-  private final int continentReinforcementBonus;
   private final int maxArmiesPerCountry;
 
-  public PlayerReinforceCountriesRequestEvent (final PlayerPacket player,
-                                               final ImmutableSet <CountryPacket> playerOwnedCountries,
-                                               final ImmutableSet <ContinentPacket> playerOwnedContinents,
-                                               final int countryReinforcementBonus,
-                                               final int continentReinforcementBonus,
-                                               final int maxArmiesPerCountry)
+  public PlayerReinforceCountryRequestEvent (final PlayerPacket player,
+                                             final ImmutableSet <CountryPacket> playerOwnedCountries,
+                                             final ImmutableSet <ContinentPacket> playerOwnedContinents,
+                                             final int maxArmiesPerCountry)
   {
     super (player);
 
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
     Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");
-    Arguments.checkIsNotNegative (countryReinforcementBonus, "countryReinforcementBonus");
-    Arguments.checkIsNotNegative (continentReinforcementBonus, "continentReinforcementBonus");
     Arguments.checkIsNotNegative (maxArmiesPerCountry, "maxArmiesPerCountry");
 
     this.playerOwnedCountries = playerOwnedCountries;
     this.playerOwnedContinents = playerOwnedContinents;
-    this.countryReinforcementBonus = countryReinforcementBonus;
-    this.continentReinforcementBonus = continentReinforcementBonus;
     this.maxArmiesPerCountry = maxArmiesPerCountry;
-  }
-
-  public int getCountryReinforcementBonus ()
-  {
-    return countryReinforcementBonus;
-  }
-
-  public int getContinentReinforcementBonus ()
-  {
-    return continentReinforcementBonus;
   }
 
   public int getTotalReinforcements ()
@@ -116,19 +98,15 @@ public final class PlayerReinforceCountriesRequestEvent extends AbstractPlayerEv
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{} | CountryReinforcementBonus: {} | ContinentReinforcementBonus: {} | MaxArmiesPerCountry: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
-                           super.toString (), countryReinforcementBonus, continentReinforcementBonus,
-                           maxArmiesPerCountry, playerOwnedCountries, playerOwnedContinents);
+    return Strings.format ("{} | MaxArmiesPerCountry: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
+                           super.toString (), maxArmiesPerCountry, playerOwnedCountries, playerOwnedContinents);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerReinforceCountriesRequestEvent ()
+  private PlayerReinforceCountryRequestEvent ()
   {
     playerOwnedCountries = null;
     playerOwnedContinents = null;
-    countryReinforcementBonus = 0;
-    continentReinforcementBonus = 0;
     maxArmiesPerCountry = 0;
   }
 }

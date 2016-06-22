@@ -27,12 +27,12 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountriesResponseDeniedEvent extends AbstractCountryStateChangeDeniedEvent
+public final class PlayerReinforceCountryResponseDeniedEvent extends AbstractCountryStateChangeDeniedEvent
         implements PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerPacket player;
 
-  public PlayerReinforceCountriesResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerReinforceCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
   {
     super (reason);
 
@@ -66,7 +66,7 @@ public final class PlayerReinforceCountriesResponseDeniedEvent extends AbstractC
   }
 
   @RequiredForNetworkSerialization
-  private PlayerReinforceCountriesResponseDeniedEvent ()
+  private PlayerReinforceCountryResponseDeniedEvent ()
   {
     player = null;
   }

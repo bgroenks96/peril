@@ -18,22 +18,24 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountriesResponseSuccessEvent extends AbstractPlayerArmiesChangedEvent
-        implements PlayerResponseSuccessEvent, PlayerArmiesChangedEvent
+public final class PlayerReinforceCountryResponseSuccessEvent extends AbstractPlayerCountryArmiesChangedEvent
+        implements PlayerResponseSuccessEvent
 {
-  public PlayerReinforceCountriesResponseSuccessEvent (final PlayerPacket player, final int deltaArmyCount)
+  public PlayerReinforceCountryResponseSuccessEvent (final PlayerPacket player,
+                                                     final CountryPacket country,
+                                                     final int countryArmyDelta)
   {
-    super (player, deltaArmyCount);
+    super (player, country, -countryArmyDelta, countryArmyDelta);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerReinforceCountriesResponseSuccessEvent ()
+  private PlayerReinforceCountryResponseSuccessEvent ()
   {
   }
 }

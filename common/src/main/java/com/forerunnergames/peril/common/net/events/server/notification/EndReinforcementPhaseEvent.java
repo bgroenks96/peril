@@ -21,17 +21,40 @@ package com.forerunnergames.peril.common.net.events.server.notification;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+
+import com.google.common.collect.ImmutableSet;
 
 public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implements PlayerNotificationEvent
 {
-  public EndReinforcementPhaseEvent (final PlayerPacket player)
+  private final ImmutableSet <CountryPacket> playerOwnedCountries;
+
+  public EndReinforcementPhaseEvent (final PlayerPacket player, final ImmutableSet <CountryPacket> playerOwnedCountries)
   {
     super (player);
+
+    Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
+
+    this.playerOwnedCountries = playerOwnedCountries;
+  }
+
+  public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
+  {
+    return this.playerOwnedCountries;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | PlayerOwnedCountries: [{}]", super.toString (), playerOwnedCountries);
   }
 
   @RequiredForNetworkSerialization
   private EndReinforcementPhaseEvent ()
   {
+    this.playerOwnedCountries = null;
   }
 }

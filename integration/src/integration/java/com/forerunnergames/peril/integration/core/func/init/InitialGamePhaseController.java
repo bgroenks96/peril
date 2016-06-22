@@ -25,15 +25,15 @@ import static org.testng.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceInitialCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceInitialCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.integration.TestUtil;
@@ -220,17 +220,17 @@ public final class InitialGamePhaseController implements TestPhaseController
       for (final TestClient client : sortedClients)
       {
         assertTrue (client.waitForEventCommunication (BeginInitialReinforcementPhaseEvent.class).isPresent ());
-        final Optional <PlayerReinforceInitialCountryRequestEvent> event;
-        event = client.waitForEventCommunication (PlayerReinforceInitialCountryRequestEvent.class);
+        final Optional <PlayerReinforceCountryRequestEvent> event;
+        event = client.waitForEventCommunication (PlayerReinforceCountryRequestEvent.class);
         assertTrue (event.isPresent ());
         final ImmutableSet <CountryPacket> availableCountries = event.get ().getPlayerOwnedCountries ();
         assertFalse (availableCountries.isEmpty ());
         final CountryPacket someCountry = Randomness.getRandomElementFrom (availableCountries);
-        client.sendEvent (new PlayerReinforceInitialCountryResponseRequestEvent (someCountry.getName ()));
-        final Optional <PlayerReinforceInitialCountryResponseSuccessEvent> chkEvent2;
-        chkEvent2 = client.waitForEventCommunication (PlayerReinforceInitialCountryResponseSuccessEvent.class);
+        client.sendEvent (new PlayerReinforceCountryResponseRequestEvent (someCountry.getName (), 1));
+        final Optional <PlayerReinforceCountryResponseSuccessEvent> chkEvent2;
+        chkEvent2 = client.waitForEventCommunication (PlayerReinforceCountryResponseSuccessEvent.class);
         assertTrue (chkEvent2.isPresent ());
-        final PlayerReinforceInitialCountryResponseSuccessEvent event2 = chkEvent2.get ();
+        final PlayerReinforceCountryResponseSuccessEvent event2 = chkEvent2.get ();
         assertEquals (client.getPlayer (), event2.getPlayer ());
         client.setPlayer (event2.getPlayer ());
         assertEquals (someCountry.getName (), event2.getCountryName ());

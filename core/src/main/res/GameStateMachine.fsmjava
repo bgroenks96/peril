@@ -65,20 +65,20 @@
                 type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
                 name="event"/>
       </event>
-      <event id="onPlayerReinforceInitialCountryResponseRequestEvent">
-        <parameter
-                name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceInitialCountryResponseRequestEvent"/>
-      </event>
       <event id="onEndInitialReinforcementPhaseEvent">
         <parameter
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent"/>
       </event>
-      <event id="onPlayerReinforceCountriesResponseRequestEvent">
+      <event id="onPlayerReinforceCountryResponseRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent"/>
+      </event>
+      <event id="onEndReinforcementPhaseEvent">
+        <parameter
+                name="event"
+                type="com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent"/>
       </event>
       <event id="onPlayerTradeInCardsResponseRequestEvent">
         <parameter
@@ -247,7 +247,7 @@
                 <transition event="onSkipPlayerTurnEvent"
                             action="gameModel.skipPlayerTurn(event)"
                             nextState="WaitForPlayersToReinforceInitialCountries"/>
-                <transition event="onPlayerReinforceInitialCountryResponseRequestEvent"
+                <transition event="onPlayerReinforceCountryResponseRequestEvent"
                             condition="gameModel.verifyPlayerInitialCountryReinforcements(event)"
                             nextState="WaitForPlayersToReinforceInitialCountries"/>
                 <transition event="onEndInitialReinforcementPhaseEvent"
@@ -264,12 +264,16 @@
                   <onEntry action="gameModel.beginReinforcementPhase()"/>
                   <onExit action="gameModel.endReinforcementPhase()"/>
                   <state name="WaitForPlayerToPlaceReinforcements">
-                    <transition event="onPlayerReinforceCountriesResponseRequestEvent"
-                                condition="gameModel.verifyPlayerCountryReinforcements(event)"
-                                nextState="AttackPhase"/>
+                    <onEntry action="gameModel.waitForPlayerToPlaceReinforcements()"/>
+                    <transition event="onPlayerReinforceCountryResponseRequestEvent"
+                                action="gameModel.placePlayerCountryReinforcements(event)"
+                                nextState="WaitForPlayerToPlaceReinforcements"/>
                     <transition event="onPlayerTradeInCardsResponseRequestEvent"
                                 action="gameModel.handlePlayerCardTradeIn(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
+                    <transition event="onEndReinforcementPhaseEvent"
+                                action="gameModel.endReinforcementPhase()"
+                                nextState="AttackPhase"/>
                   </state>
                 </state>
                 <state name="AttackPhase">

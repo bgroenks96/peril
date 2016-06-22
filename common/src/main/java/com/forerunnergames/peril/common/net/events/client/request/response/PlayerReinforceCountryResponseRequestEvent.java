@@ -18,44 +18,55 @@
 
 package com.forerunnergames.peril.common.net.events.client.request.response;
 
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceInitialCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public final class PlayerReinforceInitialCountryResponseRequestEvent implements ResponseRequestEvent
+public final class PlayerReinforceCountryResponseRequestEvent implements ResponseRequestEvent
 {
   private final String countryName;
+  private final int reinforcementCount;
 
-  public PlayerReinforceInitialCountryResponseRequestEvent (final String countryName)
+  public PlayerReinforceCountryResponseRequestEvent (final String countryName, final int reinforcementCount)
   {
+
     Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNegative (reinforcementCount, "reinforcementCount");
 
     this.countryName = countryName;
-  }
-
-  public String getCountryName ()
-  {
-    return countryName;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: CountryName: {}", getClass ().getSimpleName (), countryName);
+    this.reinforcementCount = reinforcementCount;
   }
 
   @Override
   public Class <? extends ServerRequestEvent> getRequestType ()
   {
-    return PlayerReinforceInitialCountryRequestEvent.class;
+    return PlayerReinforceCountryRequestEvent.class;
+  }
+
+  public String getCountryName ()
+  {
+    return this.countryName;
+  }
+
+  public int getReinforcementCount ()
+  {
+    return this.reinforcementCount;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: CountryName: {} | ReinforcementCount: {}", getClass ().getSimpleName (),
+                           this.countryName, this.reinforcementCount);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerReinforceInitialCountryResponseRequestEvent ()
+  private PlayerReinforceCountryResponseRequestEvent ()
   {
     countryName = null;
+    reinforcementCount = 0;
   }
 }

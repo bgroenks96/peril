@@ -26,8 +26,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountriesResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceInitialCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerRetreatOrderResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -236,16 +235,6 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerReinforceInitialCountryResponseRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Received event {}", event);
-
-    context.onPlayerReinforceInitialCountryResponseRequestEvent (event);
-  }
-
-  @Handler
   public void onEvent (final EndInitialReinforcementPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -256,13 +245,13 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerReinforceCountriesResponseRequestEvent event)
+  public void onEvent (final PlayerReinforceCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerReinforceCountriesResponseRequestEvent (event);
+    context.onPlayerReinforceCountryResponseRequestEvent (event);
   }
 
   @Handler
