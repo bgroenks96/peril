@@ -27,14 +27,14 @@ import com.google.common.collect.ImmutableList;
 
 public final class DefaultBattleResult implements BattleResult
 {
-  private final BattleActor attacker;
-  private final BattleActor defender;
+  private final FinalBattleActor attacker;
+  private final FinalBattleActor defender;
   private final Id defendingCountryOwner;
   private final ImmutableList <DieRoll> attackerRolls;
   private final ImmutableList <DieRoll> defenderRolls;
 
-  public DefaultBattleResult (final BattleActor attacker,
-                              final BattleActor defender,
+  public DefaultBattleResult (final FinalBattleActor attacker,
+                              final FinalBattleActor defender,
                               final Id defendingCountryOwner,
                               final ImmutableList <DieRoll> attackerRolls,
                               final ImmutableList <DieRoll> defenderRolls)
@@ -53,13 +53,13 @@ public final class DefaultBattleResult implements BattleResult
   }
 
   @Override
-  public BattleActor getAttacker ()
+  public FinalBattleActor getAttacker ()
   {
     return attacker;
   }
 
   @Override
-  public BattleActor getDefender ()
+  public FinalBattleActor getDefender ()
   {
     return defender;
   }

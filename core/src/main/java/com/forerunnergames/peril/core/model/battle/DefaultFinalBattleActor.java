@@ -16,17 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.id.Id;
 
-public final class PlayerAttackOrderRequestEvent extends AbstractBattleRequestEvent
+public final class DefaultFinalBattleActor extends DefaultPendingBattleActor implements FinalBattleActor
 {
-  public PlayerAttackOrderRequestEvent (final PendingBattleActorPacket attacker,
-                                        final PendingBattleActorPacket defender,
-                                        final int minValidDieCount,
-                                        final int maxValidDieCount)
+  private final int dieCount;
+
+  public DefaultFinalBattleActor (final Id playerId, final Id countryId, final int dieCount)
   {
-    super (attacker, defender, minValidDieCount, maxValidDieCount);
+    super (playerId, countryId);
+
+    Arguments.checkIsNotNegative (dieCount, "dieCount");
+
+    this.dieCount = dieCount;
+  }
+
+  @Override
+  public int getDieCount ()
+  {
+    return dieCount;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Die count: {}", super.toString (), dieCount);
   }
 }

@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +21,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
-public final class DefaultPendingBattleActor implements PendingBattleActor
+public class DefaultPendingBattleActor implements PendingBattleActor
 {
   private final Id playerId;
   private final Id countryId;
@@ -37,13 +36,13 @@ public final class DefaultPendingBattleActor implements PendingBattleActor
   }
 
   @Override
-  public Id getPlayerId ()
+  public final Id getPlayerId ()
   {
     return playerId;
   }
 
   @Override
-  public Id getCountryId ()
+  public final Id getCountryId ()
   {
     return countryId;
   }

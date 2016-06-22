@@ -271,9 +271,9 @@ public final class DefaultBattleModel implements BattleModel
       defenderRolls.add (new DieRoll (defenderDieValue, defenderOutcome));
     }
 
-    final BattleActor attacker = new DefaultBattleActor (attackVector.getPlayerId (), attackerCountry,
+    final FinalBattleActor attacker = new DefaultFinalBattleActor (attackVector.getPlayerId (), attackerCountry,
             attackOrder.getDieCount ());
-    final BattleActor defender = new DefaultBattleActor (defenderId, defenderCountry, defenderDieCount);
+    final FinalBattleActor defender = new DefaultFinalBattleActor (defenderId, defenderCountry, defenderDieCount);
     final BattleResult result = new DefaultBattleResult (attacker, defender,
             countryOwnerModel.ownerOf (defenderCountry), attackerRolls.build (), defenderRolls.build ());
 

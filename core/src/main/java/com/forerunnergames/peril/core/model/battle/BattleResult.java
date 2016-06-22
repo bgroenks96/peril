@@ -25,9 +25,9 @@ import com.google.common.collect.ImmutableList;
 
 public interface BattleResult
 {
-  BattleActor getAttacker ();
+  FinalBattleActor getAttacker ();
 
-  BattleActor getDefender ();
+  FinalBattleActor getDefender ();
 
   /**
    * @return the Id of the defending country owner, after the battle has completed; Note: this Id will always be the

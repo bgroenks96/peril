@@ -16,22 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.packets.battle;
+package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-
-public interface BattleActorPacket
+/**
+ * A battle actor (player + country) that has a final die count.
+ */
+public interface FinalBattleActor extends PendingBattleActor
 {
-  PlayerPacket getPlayer ();
-
-  String getPlayerName ();
-
-  CountryPacket getCountry ();
-
-  int getCountryArmyCount ();
-
-  String getCountryName ();
-
   int getDieCount ();
 }

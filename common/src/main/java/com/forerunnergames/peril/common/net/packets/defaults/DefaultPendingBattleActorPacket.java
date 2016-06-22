@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +24,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
+public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
 {
   private final PlayerPacket player;
   private final CountryPacket country;
@@ -40,31 +39,31 @@ public final class DefaultPendingBattleActorPacket implements PendingBattleActor
   }
 
   @Override
-  public PlayerPacket getPlayer ()
+  public final PlayerPacket getPlayer ()
   {
     return player;
   }
 
   @Override
-  public String getPlayerName ()
+  public final String getPlayerName ()
   {
     return player.getName ();
   }
 
   @Override
-  public CountryPacket getCountry ()
+  public final CountryPacket getCountry ()
   {
     return country;
   }
 
   @Override
-  public int getCountryArmyCount ()
+  public final int getCountryArmyCount ()
   {
     return country.getArmyCount ();
   }
 
   @Override
-  public String getCountryName ()
+  public final String getCountryName ()
   {
     return country.getName ();
   }
@@ -76,7 +75,7 @@ public final class DefaultPendingBattleActorPacket implements PendingBattleActor
   }
 
   @RequiredForNetworkSerialization
-  private DefaultPendingBattleActorPacket ()
+  DefaultPendingBattleActorPacket ()
   {
     player = null;
     country = null;

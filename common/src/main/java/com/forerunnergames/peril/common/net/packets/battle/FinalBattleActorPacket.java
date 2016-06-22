@@ -16,15 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model.battle;
+package com.forerunnergames.peril.common.net.packets.battle;
 
-import com.forerunnergames.tools.common.id.Id;
-
-public interface BattleActor
+/**
+ * A read-only, network-ready view of a battle actor that has a final die count.
+ */
+public interface FinalBattleActorPacket extends PendingBattleActorPacket
 {
-  Id getPlayerId ();
-
-  Id getCountryId ();
-
   int getDieCount ();
 }

@@ -18,10 +18,10 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
-import com.forerunnergames.peril.common.net.packets.defaults.DefaultBattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.defaults.DefaultFinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultBattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -48,9 +48,9 @@ public final class BattlePackets
     return new DefaultPendingBattleActorPacket (player, country);
   }
 
-  public static BattleActorPacket from (final BattleActor actor,
-                                        final PlayerModel playerModel,
-                                        final CountryMapGraphModel mapGraphModel)
+  public static FinalBattleActorPacket from (final FinalBattleActor actor,
+                                             final PlayerModel playerModel,
+                                             final CountryMapGraphModel mapGraphModel)
   {
     Arguments.checkIsNotNull (actor, "actor");
     Arguments.checkIsNotNull (playerModel, "playerModel");
@@ -59,7 +59,7 @@ public final class BattlePackets
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
     final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
 
-    return new DefaultBattleActorPacket (player, country, actor.getDieCount ());
+    return new DefaultFinalBattleActorPacket (player, country, actor.getDieCount ());
   }
 
   public static BattleResultPacket from (final BattleResult result,
@@ -72,8 +72,8 @@ public final class BattlePackets
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (mapGraphModel, "mapGraphModel");
 
-    final BattleActorPacket attacker = from (result.getAttacker (), playerModel, mapGraphModel);
-    final BattleActorPacket defender = from (result.getDefender (), playerModel, mapGraphModel);
+    final FinalBattleActorPacket attacker = from (result.getAttacker (), playerModel, mapGraphModel);
+    final FinalBattleActorPacket defender = from (result.getDefender (), playerModel, mapGraphModel);
 
     return new DefaultBattleResultPacket (attacker, defender,
             playerModel.playerPacketWith (result.getDefendingCountryOwner ()), result.getAttackerRolls (),

@@ -18,98 +18,15 @@
 
 package com.forerunnergames.peril.common.net.events.server.request;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
+public final class PlayerDefendCountryRequestEvent extends AbstractBattleRequestEvent
 {
-  private final PendingBattleActorPacket defender;
-  private final BattleActorPacket attacker;
-  private final int minValidDieCount;
-  private final int maxValidDieCount;
-
   public PlayerDefendCountryRequestEvent (final PendingBattleActorPacket defender,
-                                          final BattleActorPacket attacker,
+                                          final PendingBattleActorPacket attacker,
                                           final int minValidDieCount,
                                           final int maxValidDieCount)
   {
-    super (defender.getPlayer ());
-
-    Arguments.checkIsNotNull (defender, "defender");
-    Arguments.checkIsNotNull (attacker, "attacker");
-    Arguments.checkIsNotNegative (minValidDieCount, "minValidDieCount");
-    Arguments.checkIsNotNegative (maxValidDieCount, "maxValidDieCount");
-
-    this.defender = defender;
-    this.attacker = attacker;
-    this.minValidDieCount = minValidDieCount;
-    this.maxValidDieCount = maxValidDieCount;
-  }
-
-  public int getMinValidDieCount ()
-  {
-    return minValidDieCount;
-  }
-
-  public int getMaxValidDieCount ()
-  {
-    return maxValidDieCount;
-  }
-
-  public CountryPacket getAttackingCountry ()
-  {
-    return attacker.getCountry ();
-  }
-
-  public CountryPacket getDefendingCountry ()
-  {
-    return defender.getCountry ();
-  }
-
-  public String getAttackingCountryName ()
-  {
-    return attacker.getCountryName ();
-  }
-
-  public String getDefendingCountryName ()
-  {
-    return defender.getCountryName ();
-  }
-
-  public String getAttackingPlayerName ()
-  {
-    return attacker.getPlayerName ();
-  }
-
-  public String getDefendingPlayerName ()
-  {
-    return getPlayerName ();
-  }
-
-  public int getAttackerDieCount ()
-  {
-    return attacker.getDieCount ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | Defender: [{}] | Attacker: [{}] | MinValidDieCount: {} | MaxValidDieCount {}",
-                           super.toString (), defender, attacker, minValidDieCount, maxValidDieCount);
-  }
-
-  @RequiredForNetworkSerialization
-  private PlayerDefendCountryRequestEvent ()
-  {
-    defender = null;
-    attacker = null;
-    minValidDieCount = 0;
-    maxValidDieCount = 0;
+    super (attacker, defender, minValidDieCount, maxValidDieCount);
   }
 }

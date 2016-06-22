@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +21,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
 /**
- * A battle actor that does not yet have a die count.
+ * A read-only, network-ready view of a battle actor that does not yet have a die count.
  */
 public interface PendingBattleActorPacket
 {

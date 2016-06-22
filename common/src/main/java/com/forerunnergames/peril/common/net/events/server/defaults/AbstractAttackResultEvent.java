@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
-import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -26,12 +26,12 @@ public abstract class AbstractAttackResultEvent extends AbstractPlayerEvent impl
     return battleResult;
   }
 
-  public BattleActorPacket getAttacker ()
+  public FinalBattleActorPacket getAttacker ()
   {
     return battleResult.getAttacker ();
   }
 
-  public BattleActorPacket getDefender ()
+  public FinalBattleActorPacket getDefender ()
   {
     return battleResult.getDefender ();
   }

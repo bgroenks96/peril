@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.common.net.packets.defaults;
 
 import com.forerunnergames.peril.common.game.DieRoll;
-import com.forerunnergames.peril.common.net.packets.battle.BattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -30,16 +30,16 @@ import com.google.common.collect.ImmutableList;
 
 public final class DefaultBattleResultPacket implements BattleResultPacket
 {
-  private final BattleActorPacket attacker;
-  private final BattleActorPacket defender;
+  private final FinalBattleActorPacket attacker;
+  private final FinalBattleActorPacket defender;
   private final PlayerPacket defendingCountryOwner;
   private final ImmutableList <DieRoll> attackerRolls;
   private final ImmutableList <DieRoll> defenderRolls;
   private final int attackingCountryArmyDelta;
   private final int defendingCountryArmyDelta;
 
-  public DefaultBattleResultPacket (final BattleActorPacket attacker,
-                                    final BattleActorPacket defender,
+  public DefaultBattleResultPacket (final FinalBattleActorPacket attacker,
+                                    final FinalBattleActorPacket defender,
                                     final PlayerPacket defendingCountryOwner,
                                     final ImmutableList <DieRoll> attackerRolls,
                                     final ImmutableList <DieRoll> defenderRolls,
@@ -62,13 +62,13 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
-  public BattleActorPacket getAttacker ()
+  public FinalBattleActorPacket getAttacker ()
   {
     return attacker;
   }
 
   @Override
-  public BattleActorPacket getDefender ()
+  public FinalBattleActorPacket getDefender ()
   {
     return defender;
   }

@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,39 +15,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.packets.battle;
+package com.forerunnergames.peril.common.net.events.server.interfaces;
 
-import com.forerunnergames.peril.common.game.DieRoll;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
-import com.google.common.collect.ImmutableList;
-
-public interface BattleResultPacket
+public interface BattleRequestEvent extends PlayerInputRequestEvent
 {
-  FinalBattleActorPacket getAttacker ();
+  PendingBattleActorPacket getAttacker ();
 
-  FinalBattleActorPacket getDefender ();
+  PendingBattleActorPacket getDefender ();
 
-  /**
-   * @return the PlayerPacket representing the defending country owner, after the battle has completed; Note: the player
-   *         will always be the same as the defending player unless the battle resulted in ownership changing to the
-   *         attacker.
-   */
-  PlayerPacket getDefendingCountryOwner ();
+  PlayerPacket getAttackingPlayer ();
 
-  ImmutableList <DieRoll> getAttackerRolls ();
-
-  ImmutableList <DieRoll> getDefenderRolls ();
+  PlayerPacket getDefendingPlayer ();
 
   String getAttackingPlayerName ();
 
   String getDefendingPlayerName ();
 
+  CountryPacket getAttackingCountry ();
+
+  CountryPacket getDefendingCountry ();
+
   String getAttackingCountryName ();
 
   String getDefendingCountryName ();
 
-  int getAttackingCountryArmyDelta ();
+  int getAttackingCountryArmyCount ();
 
-  int getDefendingCountryArmyDelta ();
+  int getDefendingCountryArmyCount ();
+
+  int getMinValidDieCount ();
+
+  int getMaxValidDieCount ();
 }

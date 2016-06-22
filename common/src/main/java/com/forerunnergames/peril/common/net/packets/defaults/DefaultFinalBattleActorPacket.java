@@ -16,39 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model.battle;
+package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.id.Id;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultBattleActor implements BattleActor
+public final class DefaultFinalBattleActorPacket extends DefaultPendingBattleActorPacket
+        implements FinalBattleActorPacket
 {
-  private final Id playerId;
-  private final Id countryId;
   private final int dieCount;
 
-  public DefaultBattleActor (final Id playerId, final Id countryId, final int dieCount)
+  public DefaultFinalBattleActorPacket (final PlayerPacket player, final CountryPacket country, final int dieCount)
   {
-    Arguments.checkIsNotNull (playerId, "playerId");
-    Arguments.checkIsNotNull (countryId, "countryId");
+    super (player, country);
+
     Arguments.checkIsNotNegative (dieCount, "dieCount");
 
-    this.playerId = playerId;
-    this.countryId = countryId;
     this.dieCount = dieCount;
-  }
-
-  @Override
-  public Id getPlayerId ()
-  {
-    return playerId;
-  }
-
-  @Override
-  public Id getCountryId ()
-  {
-    return countryId;
   }
 
   @Override
@@ -60,7 +48,12 @@ public final class DefaultBattleActor implements BattleActor
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | Country: [{}] | Die count: {}", getClass ().getSimpleName (), playerId,
-                           countryId, dieCount);
+    return Strings.format ("{} | Die count: {}", super.toString (), dieCount);
+  }
+
+  @RequiredForNetworkSerialization
+  private DefaultFinalBattleActorPacket ()
+  {
+    dieCount = 0;
   }
 }
