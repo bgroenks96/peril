@@ -16,15 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model.state;
+package com.forerunnergames.peril.core.model.state.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention (RetentionPolicy.SOURCE)
-@Target (ElementType.METHOD)
-public @interface StateEntryAction
+@Retention (value = RetentionPolicy.SOURCE)
+@Target (value = ElementType.METHOD)
+public @interface StateTransitionAction
 {
 }
