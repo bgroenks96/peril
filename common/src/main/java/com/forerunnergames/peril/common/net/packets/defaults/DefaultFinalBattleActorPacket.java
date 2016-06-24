@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -30,11 +31,16 @@ public final class DefaultFinalBattleActorPacket extends DefaultPendingBattleAct
 {
   private final int dieCount;
 
-  public DefaultFinalBattleActorPacket (final PlayerPacket player, final CountryPacket country, final int dieCount)
+  public DefaultFinalBattleActorPacket (final PlayerPacket player,
+                                        final CountryPacket country,
+                                        final DieRange dieRange,
+                                        final int dieCount)
   {
-    super (player, country);
+    super (player, country, dieRange);
 
     Arguments.checkIsNotNegative (dieCount, "dieCount");
+    Arguments.checkLowerInclusiveBound (dieCount, dieRange.getMinDieCount (), "dieCount", "dieRange.getMinDieCount ()");
+    Arguments.checkUpperInclusiveBound (dieCount, dieRange.getMaxDieCount (), "dieCount", "dieRange.getMaxDieCount ()");
 
     this.dieCount = dieCount;
   }

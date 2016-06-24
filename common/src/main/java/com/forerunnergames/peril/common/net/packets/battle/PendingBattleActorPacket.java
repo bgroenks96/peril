@@ -17,11 +17,17 @@
 
 package com.forerunnergames.peril.common.net.packets.battle;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
 /**
- * A read-only, network-ready view of a battle actor that does not yet have a die count.
+ * A read-only, network-ready view of a battle actor (player + country) that does not yet have a final die count. The
+ * final die count is guaranteed to be within the range of {@link #getDieRange()}.
+ *
+ * {@see com.forerunnergames.peril.core.model.battle.PendingBattleActor}
+ * {@see com.forerunnergames.peril.core.model.battle.FinalBattleActor}
+ * {@see com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket}
  */
 public interface PendingBattleActorPacket
 {
@@ -34,4 +40,8 @@ public interface PendingBattleActorPacket
   int getCountryArmyCount ();
 
   String getCountryName ();
+
+  DieRange getDieRange ();
+
+  boolean playerAndCountryMatches (final PendingBattleActorPacket battleActor);
 }

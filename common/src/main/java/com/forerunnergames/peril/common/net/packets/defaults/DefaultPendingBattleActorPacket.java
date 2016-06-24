@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -28,14 +29,19 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
 {
   private final PlayerPacket player;
   private final CountryPacket country;
+  private final DieRange dieRange;
 
-  public DefaultPendingBattleActorPacket (final PlayerPacket player, final CountryPacket country)
+  public DefaultPendingBattleActorPacket (final PlayerPacket player,
+                                          final CountryPacket country,
+                                          final DieRange dieRange)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (country, "country");
+    Arguments.checkIsNotNull (dieRange, "dieRange");
 
     this.player = player;
     this.country = country;
+    this.dieRange = dieRange;
   }
 
   @Override
@@ -69,9 +75,24 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   }
 
   @Override
+  public DieRange getDieRange ()
+  {
+    return dieRange;
+  }
+
+  @Override
+  public boolean playerAndCountryMatches (final PendingBattleActorPacket battleActor)
+  {
+    Arguments.checkIsNotNull (battleActor, "battleActor");
+
+    return player.is (battleActor.getPlayer ()) && country.is (battleActor.getCountry ());
+  }
+
+  @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | Country: [{}]", getClass ().getSimpleName (), player, country);
+    return Strings.format ("{}: Player: [{}] | Country: [{}] | DieRange: [{}]", getClass ().getSimpleName (), player,
+                           country, dieRange);
   }
 
   @RequiredForNetworkSerialization
@@ -79,5 +100,6 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   {
     player = null;
     country = null;
+    dieRange = null;
   }
 }

@@ -18,11 +18,11 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
-import com.forerunnergames.peril.common.net.packets.defaults.DefaultFinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultBattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.defaults.DefaultFinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -45,7 +45,7 @@ public final class BattlePackets
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
     final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
 
-    return new DefaultPendingBattleActorPacket (player, country);
+    return new DefaultPendingBattleActorPacket (player, country, actor.getDieRange ());
   }
 
   public static FinalBattleActorPacket from (final FinalBattleActor actor,
@@ -59,7 +59,7 @@ public final class BattlePackets
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
     final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
 
-    return new DefaultFinalBattleActorPacket (player, country, actor.getDieCount ());
+    return new DefaultFinalBattleActorPacket (player, country, actor.getDieRange (), actor.getDieCount ());
   }
 
   public static BattleResultPacket from (final BattleResult result,

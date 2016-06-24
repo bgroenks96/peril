@@ -19,14 +19,18 @@
 package com.forerunnergames.peril.common.net.events.server.request;
 
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerAttackOrderRequestEvent extends AbstractBattleRequestEvent
 {
   public PlayerAttackOrderRequestEvent (final PendingBattleActorPacket attacker,
-                                        final PendingBattleActorPacket defender,
-                                        final int minValidDieCount,
-                                        final int maxValidDieCount)
+                                        final PendingBattleActorPacket defender)
   {
-    super (attacker, defender, minValidDieCount, maxValidDieCount);
+    super (attacker, defender);
+  }
+
+  @RequiredForNetworkSerialization
+  private PlayerAttackOrderRequestEvent ()
+  {
   }
 }

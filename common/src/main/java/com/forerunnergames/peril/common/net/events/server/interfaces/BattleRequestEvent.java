@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -47,7 +48,9 @@ public interface BattleRequestEvent extends PlayerInputRequestEvent
 
   int getDefendingCountryArmyCount ();
 
-  int getMinValidDieCount ();
+  DieRange getAttackerDieRange ();
 
-  int getMaxValidDieCount ();
+  DieRange getDefenderDieRange ();
+
+  boolean playersAndCountriesMatch (final BattleRequestEvent event);
 }

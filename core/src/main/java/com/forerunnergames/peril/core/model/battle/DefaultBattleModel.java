@@ -20,6 +20,7 @@ package com.forerunnergames.peril.core.model.battle;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent;
@@ -183,6 +184,10 @@ public final class DefaultBattleModel implements BattleModel
     final Id defenderCountry = attackVector.getTargetCountry ();
     final Id defenderId = countryOwnerModel.ownerOf (attackVector.getTargetCountry ());
 
+    // The die ranges actually used for this attack, must be obtained before armies are removed from countries.
+    final DieRange attackerDieRange = rules.getAttackerDieRange (countryArmyModel.getArmyCountFor (attackerCountry));
+    final DieRange defenderDieRange = rules.getDefenderDieRange (countryArmyModel.getArmyCountFor (defenderCountry));
+
     // assertion sanity checks
     assert countryArmyModel.armyCountIsAtLeast (rules.getMinArmiesOnCountryForAttack (), attackerCountry);
 
@@ -272,8 +277,9 @@ public final class DefaultBattleModel implements BattleModel
     }
 
     final FinalBattleActor attacker = new DefaultFinalBattleActor (attackVector.getPlayerId (), attackerCountry,
-            attackOrder.getDieCount ());
-    final FinalBattleActor defender = new DefaultFinalBattleActor (defenderId, defenderCountry, defenderDieCount);
+            attackerDieRange, attackOrder.getDieCount ());
+    final FinalBattleActor defender = new DefaultFinalBattleActor (defenderId, defenderCountry, defenderDieRange,
+            defenderDieCount);
     final BattleResult result = new DefaultBattleResult (attacker, defender,
             countryOwnerModel.ownerOf (defenderCountry), attackerRolls.build (), defenderRolls.build ());
 

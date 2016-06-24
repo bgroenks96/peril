@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
@@ -26,11 +27,13 @@ public final class DefaultFinalBattleActor extends DefaultPendingBattleActor imp
 {
   private final int dieCount;
 
-  public DefaultFinalBattleActor (final Id playerId, final Id countryId, final int dieCount)
+  public DefaultFinalBattleActor (final Id playerId, final Id countryId, final DieRange dieRange, final int dieCount)
   {
-    super (playerId, countryId);
+    super (playerId, countryId, dieRange);
 
     Arguments.checkIsNotNegative (dieCount, "dieCount");
+    Arguments.checkLowerInclusiveBound (dieCount, dieRange.getMinDieCount (), "dieCount", "dieRange.getMinDieCount ()");
+    Arguments.checkUpperInclusiveBound (dieCount, dieRange.getMaxDieCount (), "dieCount", "dieRange.getMaxDieCount ()");
 
     this.dieCount = dieCount;
   }

@@ -21,6 +21,7 @@ package com.forerunnergames.peril.common.game.rules;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.tools.common.Arguments;
@@ -313,6 +314,15 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
+  public DieRange getAttackerDieRange (final int attackingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
+
+    return new DieRange (getMinAttackerDieCount (attackingCountryArmyCount),
+            getMaxAttackerDieCount (attackingCountryArmyCount));
+  }
+
+  @Override
   public int getMinDefenderDieCount (final int defendingCountryArmyCount)
   {
     Arguments.checkIsNotNegative (defendingCountryArmyCount, "defendingCountryArmyCount");
@@ -328,6 +338,15 @@ public final class ClassicGameRules implements GameRules
     if (defendingCountryArmyCount > 1) return MAX_TOTAL_DEFENDER_DIE_COUNT;
 
     return defendingCountryArmyCount == 1 ? 1 : 0;
+  }
+
+  @Override
+  public DieRange getDefenderDieRange (final int defendingCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (defendingCountryArmyCount, "defendingCountryArmyCount");
+
+    return new DieRange (getMinDefenderDieCount (defendingCountryArmyCount),
+            getMaxDefenderDieCount (defendingCountryArmyCount));
   }
 
   @Override

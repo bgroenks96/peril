@@ -27,18 +27,18 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEv
 
 public class PlayerDefendCountryResponseRequestEvent implements ResponseRequestEvent
 {
-  private final int defenderDieCount;
+  private final int dieCount;
 
-  public PlayerDefendCountryResponseRequestEvent (final int numDiceToRoll)
+  public PlayerDefendCountryResponseRequestEvent (final int dieCount)
   {
-    Arguments.checkIsNotNegative (numDiceToRoll, "numDiceToRoll");
+    Arguments.checkIsNotNegative (dieCount, "dieCount");
 
-    defenderDieCount = numDiceToRoll;
+    this.dieCount = dieCount;
   }
 
   public int getDefenderDieCount ()
   {
-    return defenderDieCount;
+    return dieCount;
   }
 
   @Override
@@ -50,12 +50,12 @@ public class PlayerDefendCountryResponseRequestEvent implements ResponseRequestE
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: DieCount: {}", getClass ().getSimpleName (), defenderDieCount);
+    return Strings.format ("{}: DieCount: {}", getClass ().getSimpleName (), dieCount);
   }
 
   @RequiredForNetworkSerialization
   private PlayerDefendCountryResponseRequestEvent ()
   {
-    defenderDieCount = 0;
+    dieCount = 0;
   }
 }

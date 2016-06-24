@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
@@ -25,14 +26,17 @@ public class DefaultPendingBattleActor implements PendingBattleActor
 {
   private final Id playerId;
   private final Id countryId;
+  private final DieRange dieRange;
 
-  public DefaultPendingBattleActor (final Id playerId, final Id countryId)
+  public DefaultPendingBattleActor (final Id playerId, final Id countryId, final DieRange dieRange)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (countryId, "countryId");
+    Arguments.checkIsNotNull (dieRange, "dieRange");
 
     this.playerId = playerId;
     this.countryId = countryId;
+    this.dieRange = dieRange;
   }
 
   @Override
@@ -48,8 +52,15 @@ public class DefaultPendingBattleActor implements PendingBattleActor
   }
 
   @Override
+  public DieRange getDieRange ()
+  {
+    return dieRange;
+  }
+
+  @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | Country: [{}]", getClass ().getSimpleName (), playerId, countryId);
+    return Strings.format ("{}: Player: [{}] | Country: [{}] | DieRange: [{}]", getClass ().getSimpleName (), playerId,
+                           countryId, dieRange);
   }
 }

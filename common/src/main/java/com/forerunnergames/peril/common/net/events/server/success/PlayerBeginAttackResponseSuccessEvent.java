@@ -12,25 +12,17 @@ public final class PlayerBeginAttackResponseSuccessEvent extends AbstractPlayerE
 {
   private final PendingBattleActorPacket attacker;
   private final PendingBattleActorPacket defender;
-  private final int minAttackerDieCount;
-  private final int maxAttackerDieCount;
 
   public PlayerBeginAttackResponseSuccessEvent (final PendingBattleActorPacket attacker,
-                                                final PendingBattleActorPacket defender,
-                                                final int minAttackerDieCount,
-                                                final int maxAttackerDieCount)
+                                                final PendingBattleActorPacket defender)
   {
     super (attacker.getPlayer ());
 
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
-    Arguments.checkIsNotNegative (minAttackerDieCount, "minAttackerDieCount");
-    Arguments.checkIsNotNegative (maxAttackerDieCount, "maxAttackerDieCount");
 
     this.attacker = attacker;
     this.defender = defender;
-    this.minAttackerDieCount = minAttackerDieCount;
-    this.maxAttackerDieCount = maxAttackerDieCount;
   }
 
   public PendingBattleActorPacket getAttacker ()
@@ -43,22 +35,10 @@ public final class PlayerBeginAttackResponseSuccessEvent extends AbstractPlayerE
     return defender;
   }
 
-  public int getMinAttackerDieCount ()
-  {
-    return minAttackerDieCount;
-  }
-
-  public int getMaxAttackerDieCount ()
-  {
-    return maxAttackerDieCount;
-  }
-
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{} | Attacker: [{}] | Defender: [{}] | MinAttackerDieCount: [{}] | MaxAttackerDieCount: [{}]",
-                           super.toString (), attacker, defender, minAttackerDieCount, maxAttackerDieCount);
+    return Strings.format ("{} | Attacker: [{}] | Defender: [{}]", super.toString (), attacker, defender);
   }
 
   @RequiredForNetworkSerialization
@@ -66,7 +46,5 @@ public final class PlayerBeginAttackResponseSuccessEvent extends AbstractPlayerE
   {
     attacker = null;
     defender = null;
-    minAttackerDieCount = 0;
-    maxAttackerDieCount = 0;
   }
 }

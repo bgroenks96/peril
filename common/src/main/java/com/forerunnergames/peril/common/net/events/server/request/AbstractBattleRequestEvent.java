@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.request;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
@@ -30,34 +31,16 @@ abstract class AbstractBattleRequestEvent extends AbstractPlayerEvent implements
 {
   private final PendingBattleActorPacket attacker;
   private final PendingBattleActorPacket defender;
-  private final int minValidDieCount;
-  private final int maxValidDieCount;
 
-  AbstractBattleRequestEvent (final PendingBattleActorPacket attacker,
-                              final PendingBattleActorPacket defender,
-                              final int minValidDieCount,
-                              final int maxValidDieCount)
+  AbstractBattleRequestEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {
     super (attacker.getPlayer ());
 
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
-    Arguments.checkIsNotNegative (minValidDieCount, "minValidDieCount");
-    Arguments.checkIsNotNegative (maxValidDieCount, "maxValidDieCount");
 
     this.attacker = attacker;
     this.defender = defender;
-    this.minValidDieCount = minValidDieCount;
-    this.maxValidDieCount = maxValidDieCount;
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractBattleRequestEvent ()
-  {
-    attacker = null;
-    defender = null;
-    minValidDieCount = -1;
-    maxValidDieCount = -1;
   }
 
   @Override
@@ -133,21 +116,36 @@ abstract class AbstractBattleRequestEvent extends AbstractPlayerEvent implements
   }
 
   @Override
-  public int getMinValidDieCount ()
+  public DieRange getAttackerDieRange ()
   {
-    return minValidDieCount;
+    return attacker.getDieRange ();
   }
 
   @Override
-  public int getMaxValidDieCount ()
+  public DieRange getDefenderDieRange ()
   {
-    return maxValidDieCount;
+    return defender.getDieRange ();
+  }
+
+  @Override
+  public boolean playersAndCountriesMatch (final BattleRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return attacker.playerAndCountryMatches (event.getAttacker ())
+            && defender.playerAndCountryMatches (event.getDefender ());
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Attacker: [{}] | Defender: [{}] | MinValidDieCount: [{}] | MaxValidDieCount: [{}]",
-                           super.toString (), attacker, defender, minValidDieCount, maxValidDieCount);
+    return Strings.format ("{} | Attacker: [{}] | Defender: [{}]", super.toString (), attacker, defender);
+  }
+
+  @RequiredForNetworkSerialization
+  protected AbstractBattleRequestEvent ()
+  {
+    attacker = null;
+    defender = null;
   }
 }
