@@ -18,9 +18,10 @@
 
 package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
-import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -89,6 +90,18 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   public ImmutableList <DieRoll> getDefenderRolls ()
   {
     return defenderRolls;
+  }
+
+  @Override
+  public DieRange getAttackerDieRange ()
+  {
+    return attacker.getDieRange ();
+  }
+
+  @Override
+  public DieRange getDefenderDieRange ()
+  {
+    return defender.getDieRange ();
   }
 
   @Override

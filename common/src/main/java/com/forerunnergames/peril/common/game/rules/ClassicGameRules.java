@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 
 public final class ClassicGameRules implements GameRules
 {
+  // @formatter:off
   public static final int MIN_PLAYERS = 2;
   public static final int MAX_PLAYERS = 10;
   public static final int MIN_PLAYER_LIMIT = MIN_PLAYERS;
@@ -51,10 +52,12 @@ public final class ClassicGameRules implements GameRules
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
   public static final InitialCountryAssignment DEFAULT_INITIAL_COUNTRY_ASSIGNMENT = InitialCountryAssignment.RANDOM;
-  public static final int MIN_TOTAL_ATTACKER_DIE_COUNT = 1;
-  public static final int MAX_TOTAL_ATTACKER_DIE_COUNT = 3;
-  public static final int MIN_TOTAL_DEFENDER_DIE_COUNT = 1;
-  public static final int MAX_TOTAL_DEFENDER_DIE_COUNT = 2;
+  public static final int ABSOLUTE_MIN_ATTACKER_DIE_COUNT = 1;
+  public static final int ABSOLUTE_MAX_ATTACKER_DIE_COUNT = 3;
+  public static final int ABSOLUTE_MIN_DEFENDER_DIE_COUNT = 1;
+  public static final int ABSOLUTE_MAX_DEFENDER_DIE_COUNT = 2;
+  public static final DieRange ABSOLUTE_ATTACKER_DIE_RANGE = new DieRange (ABSOLUTE_MIN_ATTACKER_DIE_COUNT, ABSOLUTE_MAX_ATTACKER_DIE_COUNT);
+  public static final DieRange ABSOLUTE_DEFENDER_DIE_RANGE = new DieRange (ABSOLUTE_MIN_DEFENDER_DIE_COUNT, ABSOLUTE_MAX_DEFENDER_DIE_COUNT);
   private static final int INITIAL_REINFORCEMENT_ARMY_COUNT = 1;
   private static final int MIN_REINFORCEMENT_COUNT = 3;
   private static final int CARD_TRADE_IN_COUNT = 3;
@@ -72,6 +75,7 @@ public final class ClassicGameRules implements GameRules
   private final int initialArmies;
   private final int winningCountryCount;
   private final InitialCountryAssignment initialCountryAssignment;
+  // @formatter:on
 
   @Override
   public int getInitialArmies ()
@@ -272,27 +276,39 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getMinTotalAttackerDieCount ()
+  public int getAbsoluteMinAttackerDieCount ()
   {
-    return MIN_TOTAL_ATTACKER_DIE_COUNT;
+    return ABSOLUTE_MIN_ATTACKER_DIE_COUNT;
   }
 
   @Override
-  public int getMaxTotalAttackerDieCount ()
+  public int getAbsoluteMaxAttackerDieCount ()
   {
-    return MAX_TOTAL_ATTACKER_DIE_COUNT;
+    return ABSOLUTE_MAX_ATTACKER_DIE_COUNT;
   }
 
   @Override
-  public int getMinTotalDefenderDieCount ()
+  public int getAbsoluteMinDefenderDieCount ()
   {
-    return MIN_TOTAL_DEFENDER_DIE_COUNT;
+    return ABSOLUTE_MIN_DEFENDER_DIE_COUNT;
   }
 
   @Override
-  public int getMaxTotalDefenderDieCount ()
+  public int getAbsoluteMaxDefenderDieCount ()
   {
-    return MAX_TOTAL_DEFENDER_DIE_COUNT;
+    return ABSOLUTE_MAX_DEFENDER_DIE_COUNT;
+  }
+
+  @Override
+  public DieRange getAbsoluteAttackerDieRange ()
+  {
+    return ABSOLUTE_ATTACKER_DIE_RANGE;
+  }
+
+  @Override
+  public DieRange getAbsoluteDefenderDieRange ()
+  {
+    return ABSOLUTE_DEFENDER_DIE_RANGE;
   }
 
   @Override
@@ -300,7 +316,7 @@ public final class ClassicGameRules implements GameRules
   {
     Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
 
-    return attackingCountryArmyCount > 1 ? MIN_TOTAL_ATTACKER_DIE_COUNT : 0;
+    return attackingCountryArmyCount > 1 ? ABSOLUTE_MIN_ATTACKER_DIE_COUNT : 0;
   }
 
   @Override
@@ -308,7 +324,7 @@ public final class ClassicGameRules implements GameRules
   {
     Arguments.checkIsNotNegative (attackingCountryArmyCount, "attackingCountryArmyCount");
 
-    if (attackingCountryArmyCount > 3) return MAX_TOTAL_ATTACKER_DIE_COUNT;
+    if (attackingCountryArmyCount > 3) return ABSOLUTE_MAX_ATTACKER_DIE_COUNT;
 
     return attackingCountryArmyCount == 3 || attackingCountryArmyCount == 2 ? attackingCountryArmyCount - 1 : 0;
   }
@@ -327,7 +343,7 @@ public final class ClassicGameRules implements GameRules
   {
     Arguments.checkIsNotNegative (defendingCountryArmyCount, "defendingCountryArmyCount");
 
-    return defendingCountryArmyCount > 0 ? MIN_TOTAL_DEFENDER_DIE_COUNT : 0;
+    return defendingCountryArmyCount > 0 ? ABSOLUTE_MIN_DEFENDER_DIE_COUNT : 0;
   }
 
   @Override
@@ -335,7 +351,7 @@ public final class ClassicGameRules implements GameRules
   {
     Arguments.checkIsNotNegative (defendingCountryArmyCount, "defendingCountryArmyCount");
 
-    if (defendingCountryArmyCount > 1) return MAX_TOTAL_DEFENDER_DIE_COUNT;
+    if (defendingCountryArmyCount > 1) return ABSOLUTE_MAX_DEFENDER_DIE_COUNT;
 
     return defendingCountryArmyCount == 1 ? 1 : 0;
   }

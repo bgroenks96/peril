@@ -46,8 +46,8 @@ public abstract class AbstractDiceFactory implements DiceFactory
   {
     Arguments.checkIsNotNull (rules, "rules");
 
-    final int absoluteMinDieCount = rules.getMinTotalAttackerDieCount ();
-    final int absoluteMaxDieCount = rules.getMaxTotalAttackerDieCount ();
+    final int absoluteMinDieCount = rules.getAbsoluteMinAttackerDieCount ();
+    final int absoluteMaxDieCount = rules.getAbsoluteMaxAttackerDieCount ();
     final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
 
     for (int dieIndex = 0; dieIndex < absoluteMaxDieCount; ++dieIndex)
@@ -77,8 +77,8 @@ public abstract class AbstractDiceFactory implements DiceFactory
   {
     Arguments.checkIsNotNull (rules, "rules");
 
-    final int absoluteMinDieCount = rules.getMinTotalDefenderDieCount ();
-    final int absoluteMaxDieCount = rules.getMaxTotalDefenderDieCount ();
+    final int absoluteMinDieCount = rules.getAbsoluteMinDefenderDieCount ();
+    final int absoluteMaxDieCount = rules.getAbsoluteMaxDefenderDieCount ();
     final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
 
     for (int dieIndex = 0; dieIndex < absoluteMaxDieCount; ++dieIndex)

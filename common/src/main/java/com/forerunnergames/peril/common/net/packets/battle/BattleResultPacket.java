@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.packets.battle;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
@@ -39,6 +40,10 @@ public interface BattleResultPacket
   ImmutableList <DieRoll> getAttackerRolls ();
 
   ImmutableList <DieRoll> getDefenderRolls ();
+
+  DieRange getAttackerDieRange ();
+
+  DieRange getDefenderDieRange ();
 
   String getAttackingPlayerName ();
 

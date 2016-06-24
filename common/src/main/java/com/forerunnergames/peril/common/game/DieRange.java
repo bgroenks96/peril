@@ -29,18 +29,41 @@ public final class DieRange
   public DieRange (final int minDieCount, final int maxDieCount)
   {
     Arguments.checkIsNotNegative (minDieCount, "minDieCount");
+    Arguments.checkIsNotNegative (maxDieCount, "maxDieCount");
     Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
 
     this.minDieCount = minDieCount;
     this.maxDieCount = maxDieCount;
   }
 
-  public int getMinDieCount ()
+  @RequiredForNetworkSerialization
+  public DieRange ()
+  {
+    minDieCount = 0;
+    maxDieCount = 0;
+  }
+
+  public boolean includes (final int dieCount)
+  {
+    return dieCount >= minDieCount && dieCount <= maxDieCount;
+  }
+
+  public boolean excludesLow (final int dieCount)
+  {
+    return dieCount < minDieCount;
+  }
+
+  public boolean excludesHigh (final int dieCount)
+  {
+    return dieCount > maxDieCount;
+  }
+
+  public int min ()
   {
     return minDieCount;
   }
 
-  public int getMaxDieCount ()
+  public int max ()
   {
     return maxDieCount;
   }
@@ -67,12 +90,5 @@ public final class DieRange
   {
     return Strings.format ("{}: MinDieCount: [{}] | MaxDieCount: [{}]", getClass ().getSimpleName (), minDieCount,
             maxDieCount);
-  }
-
-  @RequiredForNetworkSerialization
-  private DieRange ()
-  {
-    minDieCount = -1;
-    maxDieCount = -1;
   }
 }

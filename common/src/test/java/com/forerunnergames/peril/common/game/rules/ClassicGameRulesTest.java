@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 
 import com.google.common.collect.ImmutableList;
@@ -432,35 +433,51 @@ public class ClassicGameRulesTest
   }
 
   @Test
-  public void testGetMinTotalAttackerDieCount ()
+  public void testGetAbsoluteMinAttackerDieCount ()
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinTotalAttackerDieCount ());
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_ATTACKER_DIE_COUNT, rules.getAbsoluteMinAttackerDieCount ());
   }
 
   @Test
-  public void testGetMaxTotalAttackerDieCount ()
+  public void testGetAbsoluteMaxAttackerDieCount ()
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT, rules.getMaxTotalAttackerDieCount ());
+    assertEquals (ClassicGameRules.ABSOLUTE_MAX_ATTACKER_DIE_COUNT, rules.getAbsoluteMaxAttackerDieCount ());
   }
 
   @Test
-  public void testGetMinTotalDefenderDieCount ()
+  public void testGetAbsoluteMinDefenderDieCount ()
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinTotalDefenderDieCount ());
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_DEFENDER_DIE_COUNT, rules.getAbsoluteMinDefenderDieCount ());
   }
 
   @Test
-  public void testGetMaxTotalDefenderDieCount ()
+  public void testGetAbsoluteMaxDefenderDieCount ()
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT, rules.getMaxTotalDefenderDieCount ());
+    assertEquals (ClassicGameRules.ABSOLUTE_MAX_DEFENDER_DIE_COUNT, rules.getAbsoluteMaxDefenderDieCount ());
+  }
+
+  @Test
+  public void testGetAbsoluteAttackerDieRange ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.ABSOLUTE_ATTACKER_DIE_RANGE, rules.getAbsoluteAttackerDieRange ());
+  }
+
+  @Test
+  public void testGetAbsoluteDefenderDieRange ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.ABSOLUTE_DEFENDER_DIE_RANGE, rules.getAbsoluteDefenderDieRange ());
   }
 
   @Test
@@ -468,10 +485,10 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (Integer.MAX_VALUE));
-    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (4));
-    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (3));
-    assertEquals (ClassicGameRules.MIN_TOTAL_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (2));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (4));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (3));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_ATTACKER_DIE_COUNT, rules.getMinAttackerDieCount (2));
     assertEquals (0, rules.getMinAttackerDieCount (1));
     assertEquals (0, rules.getMinAttackerDieCount (0));
   }
@@ -481,9 +498,9 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (Integer.MAX_VALUE));
-    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (2));
-    assertEquals (ClassicGameRules.MIN_TOTAL_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (1));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (2));
+    assertEquals (ClassicGameRules.ABSOLUTE_MIN_DEFENDER_DIE_COUNT, rules.getMinDefenderDieCount (1));
     assertEquals (0, rules.getMinDefenderDieCount (0));
   }
 
@@ -524,8 +541,8 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT, rules.getMaxAttackerDieCount (Integer.MAX_VALUE));
-    assertEquals (ClassicGameRules.MAX_TOTAL_ATTACKER_DIE_COUNT, rules.getMaxAttackerDieCount (4));
+    assertEquals (ClassicGameRules.ABSOLUTE_MAX_ATTACKER_DIE_COUNT, rules.getMaxAttackerDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.ABSOLUTE_MAX_ATTACKER_DIE_COUNT, rules.getMaxAttackerDieCount (4));
     assertEquals (2, rules.getMaxAttackerDieCount (3));
     assertEquals (1, rules.getMaxAttackerDieCount (2));
     assertEquals (0, rules.getMaxAttackerDieCount (1));
@@ -537,8 +554,8 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
-    assertEquals (ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT, rules.getMaxDefenderDieCount (Integer.MAX_VALUE));
-    assertEquals (ClassicGameRules.MAX_TOTAL_DEFENDER_DIE_COUNT, rules.getMaxDefenderDieCount (2));
+    assertEquals (ClassicGameRules.ABSOLUTE_MAX_DEFENDER_DIE_COUNT, rules.getMaxDefenderDieCount (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.ABSOLUTE_MAX_DEFENDER_DIE_COUNT, rules.getMaxDefenderDieCount (2));
     assertEquals (1, rules.getMaxDefenderDieCount (1));
     assertEquals (0, rules.getMaxDefenderDieCount (0));
   }
@@ -576,13 +593,37 @@ public class ClassicGameRulesTest
   }
 
   @Test
+  public void testGetAttackerDieRange ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.ABSOLUTE_ATTACKER_DIE_RANGE, rules.getAttackerDieRange (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.ABSOLUTE_ATTACKER_DIE_RANGE, rules.getAttackerDieRange (4));
+    assertEquals (new DieRange (1, 2), rules.getAttackerDieRange (3));
+    assertEquals (new DieRange (1, 1), rules.getAttackerDieRange (2));
+    assertEquals (new DieRange (0, 0), rules.getAttackerDieRange (1));
+    assertEquals (new DieRange (0, 0), rules.getAttackerDieRange (0));
+  }
+
+  @Test
+  public void testGetDefenderDieRange ()
+  {
+    final GameRules rules = new ClassicGameRules.Builder ().build ();
+
+    assertEquals (ClassicGameRules.ABSOLUTE_DEFENDER_DIE_RANGE, rules.getDefenderDieRange (Integer.MAX_VALUE));
+    assertEquals (ClassicGameRules.ABSOLUTE_DEFENDER_DIE_RANGE, rules.getDefenderDieRange (2));
+    assertEquals (new DieRange (1, 1), rules.getDefenderDieRange (1));
+    assertEquals (new DieRange (0, 0), rules.getDefenderDieRange (0));
+  }
+
+  @Test
   public void testGetMinOccupyArmyCountForAllPossibleDieCounts ()
   {
     final GameRules rules = new ClassicGameRules.Builder ().build ();
 
     final int attackingArmyCount = rules.getMaxArmiesOnCountry ();
 
-    for (int i = rules.getMinTotalAttackerDieCount (); i <= rules.getMaxAttackerDieCount (attackingArmyCount); i++)
+    for (int i = rules.getAbsoluteMinAttackerDieCount (); i <= rules.getMaxAttackerDieCount (attackingArmyCount); i++)
     {
       assertEquals (i, rules.getMinOccupyArmyCount (i));
     }

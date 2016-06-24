@@ -32,8 +32,8 @@ public final class DefaultFinalBattleActor extends DefaultPendingBattleActor imp
     super (playerId, countryId, dieRange);
 
     Arguments.checkIsNotNegative (dieCount, "dieCount");
-    Arguments.checkLowerInclusiveBound (dieCount, dieRange.getMinDieCount (), "dieCount", "dieRange.getMinDieCount ()");
-    Arguments.checkUpperInclusiveBound (dieCount, dieRange.getMaxDieCount (), "dieCount", "dieRange.getMaxDieCount ()");
+    Arguments.checkLowerInclusiveBound (dieCount, dieRange.min (), "dieCount", "dieRange.min ()");
+    Arguments.checkUpperInclusiveBound (dieCount, dieRange.max (), "dieCount", "dieRange.max ()");
 
     this.dieCount = dieCount;
   }

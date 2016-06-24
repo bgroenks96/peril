@@ -83,13 +83,17 @@ public interface GameRules
 
   int getMinCardsInHandToRequireTradeIn (final TurnPhase turnPhase);
 
-  int getMinTotalAttackerDieCount ();
+  int getAbsoluteMinAttackerDieCount ();
 
-  int getMaxTotalAttackerDieCount ();
+  int getAbsoluteMaxAttackerDieCount ();
 
-  int getMinTotalDefenderDieCount ();
+  int getAbsoluteMinDefenderDieCount ();
 
-  int getMaxTotalDefenderDieCount ();
+  int getAbsoluteMaxDefenderDieCount ();
+
+  DieRange getAbsoluteAttackerDieRange ();
+
+  DieRange getAbsoluteDefenderDieRange ();
 
   int getMinAttackerDieCount (final int attackingCountryArmyCount);
 

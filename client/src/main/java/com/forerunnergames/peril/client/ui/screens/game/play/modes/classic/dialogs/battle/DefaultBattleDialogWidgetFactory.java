@@ -101,7 +101,7 @@ public class DefaultBattleDialogWidgetFactory extends AbstractWidgetFactory impl
     Arguments.checkIsNotNull (rules, "rules");
 
     final ImmutableSet.Builder <DiceArrow> arrowsBuilder = ImmutableSet.builder ();
-    final int arrowCount = Math.min (rules.getMaxTotalAttackerDieCount (), rules.getMaxTotalDefenderDieCount ());
+    final int arrowCount = Math.min (rules.getAbsoluteMaxAttackerDieCount (), rules.getAbsoluteMaxDefenderDieCount ());
 
     for (int index = 0; index < arrowCount; ++index)
     {
