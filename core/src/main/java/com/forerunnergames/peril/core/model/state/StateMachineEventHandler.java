@@ -34,6 +34,7 @@ import com.forerunnergames.peril.common.net.events.server.notification.Determine
 import com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackDefeatEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackIndecisiveEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackVictoryEvent;
@@ -262,6 +263,16 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerTradeInCardsResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final EndReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onEndReinforcementPhaseEvent (event);
   }
 
   @Handler

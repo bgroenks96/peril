@@ -18,8 +18,10 @@
 
 package com.forerunnergames.peril.integration.server;
 
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.integration.server.TestClientPool.ClientEventCallback;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
@@ -30,11 +32,17 @@ import com.forerunnergames.tools.net.client.AbstractClientController;
 import com.forerunnergames.tools.net.client.Client;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Collection;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,19 +53,22 @@ import org.slf4j.LoggerFactory;
 
 public class TestClient extends AbstractClientController
 {
+  public static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;
+  public static final int DEFAULT_WAIT_TIMEOUT_MS = 6000;
   private static final Logger log = LoggerFactory.getLogger (TestClient.class);
-  private static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;
-  private static final int DEFAULT_WAIT_TIMEOUT_MS = 6000;
   private static final int DEFAULT_MAX_ATTEMPTS = 2;
   private static final AtomicInteger clientCount = new AtomicInteger ();
   private final int clientId = clientCount.getAndIncrement ();
   private final ExecutorService exec = Executors.newCachedThreadPool ();
-  private final ConcurrentLinkedQueue <Event> inboundEventQueue = new ConcurrentLinkedQueue <> ();
+  private final BlockingQueue <Event> inboundEventQueue = new LinkedBlockingQueue <> ();
+  private final Multimap <Class <?>, ClientEventCallback <?>> callbacks;
   private PlayerPacket player;
 
   public TestClient (final Client client)
   {
     super (client, KryonetRegistration.CLASSES);
+
+    callbacks = Multimaps.synchronizedListMultimap (ArrayListMultimap. <Class <?>, ClientEventCallback <?>> create ());
   }
 
   public Result <String> connect (final String addr, final int tcpPort)
@@ -81,6 +92,41 @@ public class TestClient extends AbstractClientController
     shutDown ();
   }
 
+  public <T extends Event> void registerCallback (final Class <T> paramType, final ClientEventCallback <T> callback)
+  {
+    callbacks.put (paramType, callback);
+  }
+
+  public <T extends Event> boolean unregisterCallback (final ClientEventCallback <T> callback)
+  {
+    boolean removed = false;
+    for (final Class <?> key : callbacks.keySet ())
+    {
+      removed = removed | callbacks.remove (key, callback);
+    }
+
+    return removed;
+  }
+
+  public void clearCallbacks ()
+  {
+    callbacks.clear ();
+  }
+
+  /**
+   * Retrieves the next item in the inbound event queue; blocks if necessary.
+   *
+   * @return the next event in the queue
+   * @throws InterruptedException
+   */
+  public Event pollNextEvent () throws InterruptedException
+  {
+    final Event next = inboundEventQueue.take ();
+    updatePlayerDataIfPresent (next);
+    invokeCallbacks (next);
+    return next;
+  }
+
   public <T> Optional <T> waitForEventCommunication (final Class <T> type)
   {
     Arguments.checkIsNotNull (type, "type");
@@ -99,9 +145,8 @@ public class TestClient extends AbstractClientController
                                                      final long waitTimeoutMillis,
                                                      final boolean exceptionOnFail)
   {
-    Arguments.checkIsNotNegative (waitTimeoutMillis, "waitTimeoutMillis");
-
     Arguments.checkIsNotNull (type, "type");
+    Arguments.checkIsNotNegative (waitTimeoutMillis, "waitTimeoutMillis");
 
     final Exchanger <T> exchanger = new Exchanger <> ();
     final AtomicBoolean keepAlive = new AtomicBoolean (true);
@@ -114,21 +159,16 @@ public class TestClient extends AbstractClientController
         {
           while (keepAlive.get ())
           {
-            final Event next = inboundEventQueue.poll ();
-            if (next == null)
-            {
-              Thread.sleep (10);
-              continue;
-            }
-            log.trace ("[{}] Event received: [{}]", TestClient.this, next);
+            final Event next = pollNextEvent ();
             if (type.isInstance (next))
             {
+              log.debug ("[{}] Found event match: {}", TestClient.this, next);
               exchanger.exchange (type.cast (next));
               keepAlive.set (false);
             }
             else
             {
-              log.warn ("[{}] Unexpected event: {} | Expected: {}", TestClient.this, next.getClass (), type);
+              log.warn ("[{}] Unexpected event: {} | Expected: {}", TestClient.this, next, type.getSimpleName ());
             }
           }
         }
@@ -184,6 +224,26 @@ public class TestClient extends AbstractClientController
     return type.isInstance (nextEvent.get ());
   }
 
+  public boolean hasEventOfTypeInQueue (final Class <?>... types)
+  {
+    Arguments.checkIsNotNull (types, "types");
+
+    for (final Event next : inboundEventQueue)
+    {
+      for (final Class <?> type : types)
+      {
+        if (type.isInstance (next)) return true;
+      }
+    }
+
+    return false;
+  }
+
+  public boolean hasEventOfTypeInQueue (final Iterable <Class <? extends Event>> types)
+  {
+    return hasEventOfTypeInQueue (Iterables.toArray (types, Class.class));
+  }
+
   public int getClientId ()
   {
     return clientId;
@@ -202,10 +262,48 @@ public class TestClient extends AbstractClientController
     return player;
   }
 
+  public void flushEventQueue ()
+  {
+    while (inboundEventQueue.size () > 0)
+    {
+      try
+      {
+        pollNextEvent ();
+      }
+      catch (final InterruptedException e)
+      {
+        e.printStackTrace ();
+      }
+    }
+  }
+
   @Override
   public String toString ()
   {
     return Strings.format ("{}-{}", getClass ().getSimpleName (), clientId);
+  }
+
+  @SuppressWarnings ({ "unchecked", "rawtypes" })
+  protected <T extends Event> void invokeCallbacks (final T event)
+  {
+    if (!callbacks.containsKey (event.getClass ())) return;
+    final Collection <ClientEventCallback <?>> callbacks = this.callbacks.get (event.getClass ());
+    log.debug ("Dispatching event of type [{}] to {} registered callback handlers...",
+               event.getClass ().getSimpleName (), callbacks.size ());
+    for (final ClientEventCallback callback : callbacks)
+    {
+      callback.onEventReceived (Optional.of (event), this);
+    }
+  }
+
+  // automatically update player data from player events, if present
+  protected void updatePlayerDataIfPresent (final Event event)
+  {
+    if (!(event instanceof PlayerEvent) || player == null) return;
+
+    final PlayerEvent playerEvent = (PlayerEvent) event;
+    if (!playerEvent.getPlayer ().is (player)) return;
+    player = playerEvent.getPlayer ();
   }
 
   @Override
@@ -226,6 +324,8 @@ public class TestClient extends AbstractClientController
     Arguments.checkIsNotNull (object, "object");
     Arguments.checkIsNotNull (server, "server");
 
-    inboundEventQueue.offer ((Event) object);
+    final Event event = (Event) object;
+    log.trace ("[{}] Event received: [{}]", this, event);
+    inboundEventQueue.add (event);
   }
 }

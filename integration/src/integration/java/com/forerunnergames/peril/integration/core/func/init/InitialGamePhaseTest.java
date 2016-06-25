@@ -274,7 +274,9 @@ public final class InitialGamePhaseTest
     assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
     assertFalse (controller.waitForAllClientsToReceiveCountryAssignment ().hasAnyFailed ());
     // this controller method performs assertions so we don't need to do anything
-    controller.randomlyPlaceInitialReinforcements ();
+    controller.performRandomInitialArmyPlacement ();
+    TestUtil.pause (100);
+    assertTrue (stateMachineMonitor.entered ("TurnPhase").atLeastOnce ());
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 

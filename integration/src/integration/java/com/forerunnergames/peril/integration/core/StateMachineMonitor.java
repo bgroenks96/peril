@@ -21,37 +21,30 @@ package com.forerunnergames.peril.integration.core;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
-import com.beust.jcommander.internal.Sets;
 
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
-import com.forerunnergames.peril.core.model.state.StateMachineListener;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
 
 import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.Phaser;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 
 /**
  * Utility type for state machine integration tests.
  */
-public final class StateMachineMonitor
+public final class StateMachineMonitor extends StateMachineEventAdapter
 {
   public static final int DEFAULT_TEST_TIMEOUT = 5000;
   public static final int DEFAULT_STATE_CHANGE_TIMOUT = 3000;
   private final StateMachineEventHandler stateMachine;
-  private final StateChangeMonitor monitor = new StateChangeMonitor ();
-  private final Logger log;
+  private final Queue <String> stateChangeHistory = Queues.newLinkedBlockingQueue ();
+
+  final Logger log;
 
   public StateMachineMonitor (final StateMachineEventHandler stateMachine, final Logger log)
   {
@@ -61,7 +54,7 @@ public final class StateMachineMonitor
     this.stateMachine = stateMachine;
     this.log = log;
 
-    stateMachine.addStateMachineListener (monitor);
+    stateMachine.addStateMachineListener (this);
   }
 
   /**
@@ -77,19 +70,27 @@ public final class StateMachineMonitor
   }
 
   /**
-   * StateMachineTester keeps an internal queue of all states transitioned into by the state machine. This method
+   * StateMachineMonitor keeps an internal queue of all states transitioned into by the state machine. This method
    * essentially polls that queue, so the returned value may or may not be the current state the state machine is in,
    * but it allows for verification that the state machine reached the expected state in sequence. Subsequent calls to
    * this method after polling the state machine's current state will continue to return the name of that state.
    */
   public String pollNextState ()
   {
-    final Optional <String> nextInQueue = Optional.fromNullable (monitor.stateChangeQueue.poll ());
+    final Optional <String> nextInQueue = Optional.fromNullable (stateChangeHistory.poll ());
     if (nextInQueue.isPresent ()) return nextInQueue.get ();
     return stateMachine.getCurrentGameStateName ();
   }
 
-  public void waitForStateChange (final String newStateName, final long timeout)
+  /**
+   * @return a list of all states since the last call to {@link #pollNextState()}
+   */
+  public ImmutableList <String> dumpStateHistory ()
+  {
+    return ImmutableList.copyOf (stateChangeHistory);
+  }
+
+  public boolean waitForStateChange (final String newStateName, final long timeout)
   {
     Arguments.checkIsNotNull (newStateName, "newStateName");
     Arguments.checkIsNotNegative (timeout, "timeout");
@@ -99,10 +100,16 @@ public final class StateMachineMonitor
     try
     {
       barrier.waitForNewStateEntry (timeout);
+      return true;
     }
     catch (final InterruptedException | TimeoutException e)
     {
       log.error ("Reached state change timeout.", e);
+      return false;
+    }
+    finally
+    {
+      stateMachine.removeStateListener (barrier);
     }
   }
 
@@ -111,7 +118,7 @@ public final class StateMachineMonitor
     Arguments.checkIsNotNull (stateName, "stateName");
 
     final OngoingStateCheck stub = new OngoingStateCheck ();
-    for (final String nextState : monitor.stateChangeQueue)
+    for (final String nextState : stateChangeHistory)
     {
       if (nextState.equals (stateName))
       {
@@ -128,130 +135,11 @@ public final class StateMachineMonitor
     return stateMachine.checkError ();
   }
 
-  private class StateChangeBarrier extends StateMachineEventAdapter
+  @Override
+  public void onEntry (final String context, final String state)
   {
-    private final Phaser barrier = new Phaser (2);
-    private final String newStateName;
+    super.onEntry (context, state);
 
-    StateChangeBarrier (final String newStateName)
-    {
-      Arguments.checkIsNotNull (newStateName, "newStateName");
-
-      this.newStateName = newStateName;
-    }
-
-    void waitForNewStateEntry (final long timeout) throws InterruptedException, TimeoutException
-    {
-      Arguments.checkIsNotNegative (timeout, "timeout");
-
-      barrier.awaitAdvanceInterruptibly (barrier.arrive (), timeout, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void onEntry (final String context, final String state)
-    {
-      super.onEntry (context, state);
-
-      if (state.equals (newStateName)) barrier.arrive ();
-    }
-  }
-
-  private class StateChangeMonitor extends StateMachineEventAdapter
-  {
-    private final Queue <String> stateChangeQueue = Queues.newConcurrentLinkedQueue ();
-
-    @Override
-    public void onEntry (final String context, final String state)
-    {
-      super.onEntry (context, state);
-
-      stateChangeQueue.add (state);
-    }
-  }
-
-  private class StateMachineEventAdapter implements StateMachineListener
-  {
-    @Override
-    public void onEntry (final String context, final String state)
-    {
-      Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (state, "state");
-    }
-
-    @Override
-    public void onExit (final String context, final String state)
-    {
-      Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (state, "state");
-    }
-
-    @Override
-    public void onTransitionBegin (final String context,
-                                   final String statePrevious,
-                                   final String stateNext,
-                                   final String transition)
-    {
-      Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (statePrevious, "statePrevious");
-      Arguments.checkIsNotNull (stateNext, "stateNext");
-      Arguments.checkIsNotNull (transition, "transition");
-    }
-
-    @Override
-    public void onTransitionEnd (final String context,
-                                 final String statePrevious,
-                                 final String stateNext,
-                                 final String transition)
-    {
-      Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (statePrevious, "statePrevious");
-      Arguments.checkIsNotNull (stateNext, "stateNext");
-      Arguments.checkIsNotNull (transition, "transition");
-    }
-
-    @Override
-    public void onTimerStart (final String context, final String name, final long duration)
-    {
-      Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (name, "name");
-      Arguments.checkIsNotNegative (duration, "duration");
-    }
-
-    @Override
-    public void onTimerStop (final String context, final String name)
-    {
-      Arguments.checkIsNotNull (context, "context");
-      Arguments.checkIsNotNull (name, "name");
-    }
-
-    @Override
-    public void onActionException (final String context, @Nullable final Throwable throwable)
-    {
-      Arguments.checkIsNotNull (context, "context");
-    }
-
-    @Override
-    public void end (@Nullable final Throwable throwable)
-    {
-    }
-  }
-
-  public final class OngoingStateCheck
-  {
-    private Optional <String> state = Optional.absent ();
-    private final Set <String> priorStates = Sets.newHashSet ();
-
-    public void after (final String stateName)
-    {
-      Arguments.checkIsNotNull (stateName, "stateName");
-
-      assertTrue (state.isPresent ());
-      log.debug (">>>>>>>> STATES BEFORE: {}", priorStates);
-      assertTrue (priorStates.contains (stateName));
-    }
-
-    private OngoingStateCheck ()
-    {
-    }
+    stateChangeHistory.add (state);
   }
 }

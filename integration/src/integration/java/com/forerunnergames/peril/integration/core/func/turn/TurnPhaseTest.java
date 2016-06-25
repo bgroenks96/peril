@@ -2,55 +2,85 @@ package com.forerunnergames.peril.integration.core.func.turn;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.integration.TestSessions;
+import com.forerunnergames.peril.integration.TestSessions.TestSession;
+import com.forerunnergames.peril.integration.TestUtil;
 import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
 import com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTest;
+import com.forerunnergames.tools.common.Strings;
+
+import com.google.common.collect.Sets;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public final class TurnPhaseTest
 {
   private static final Logger log = LoggerFactory.getLogger (InitialGamePhaseTest.class);
-  private String sessionName;
-  private DedicatedGameSession session;
-  private TurnPhaseController controller;
-  private StateMachineMonitor stateMachineMonitor;
+  private static final String SINGLETON_PROVIDER = "SingletonDataProvider";
+  private final Set <TestSession> sessions = Sets.newConcurrentHashSet ();
 
-  @BeforeMethod
-  public void generateTestName (final Method method)
+  @DataProvider (name = SINGLETON_PROVIDER)
+  public Object[][] generateSessionName (final Method method)
   {
-    sessionName = TestSessions.createUniqueNameFrom (method.getName ());
+    final String fullMethodName = Strings.format ("{}_{}", getClass ().getSimpleName (), method.getName ());
+    return new Object [] [] {
+            { TestSessions.createUniqueNameFrom (fullMethodName), LoggerFactory.getLogger (fullMethodName) } };
   }
 
-  @AfterMethod
-  public void tearDownTest ()
+  @AfterClass
+  public void tearDown ()
   {
-    TestSessions.end (sessionName);
+    for (final TestSession session : sessions)
+    {
+      TestSessions.end (session);
+    }
+
+    sessions.clear ();
   }
 
-  @Test (enabled = false)
-  public void testBeginReinforcementPhase ()
+  @Test (dataProvider = SINGLETON_PROVIDER)
+  public void testBeginReinforcementPhase (final String sessionName, final Logger log)
   {
-    initializeSession ();
+    final DedicatedGameSession testSession = createNewTestSession (sessionName);
+    final TurnPhaseController controller = new TurnPhaseController (testSession);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (testSession.getStateMachine (), log);
+    controller.setUpInitialGamePhase ();
     final ActionResult result = controller.waitForReinforcementPhaseToBegin ();
+    TestUtil.pause (100);
+    assertTrue (stateMachineMonitor.entered ("ReinforcementPhase").atLeastOnce ());
     assertFalse (result.hasAnyFailed ());
-    assertEquals (session.getTestClientCount (), result.verified ());
+    assertEquals (testSession.getTestClientCount (), result.verified ());
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  private void initializeSession ()
+  @Test (dataProvider = SINGLETON_PROVIDER)
+  public void testValidCountryReinforcement (final String sessionName, final Logger log)
+  {
+    final DedicatedGameSession testSession = createNewTestSession (sessionName);
+    final TurnPhaseController controller = new TurnPhaseController (testSession);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (testSession.getStateMachine (), log);
+    controller.setUpInitialGamePhase ();
+    controller.performRandomCountryReinforcement ();
+    TestUtil.pause (100);
+    assertTrue (stateMachineMonitor.entered ("AttackPhase").atLeastOnce ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
+  }
+
+  private DedicatedGameSession createNewTestSession (final String sessionName)
   {
     final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT).build ();
 
@@ -60,10 +90,8 @@ public final class TurnPhaseTest
     log.trace ("Initializing test session {}", sessionName);
     TestSessions.start (sessionName, testSession);
 
-    controller = new TurnPhaseController (testSession);
-    stateMachineMonitor = new StateMachineMonitor (testSession.getStateMachine (), log);
-    session = testSession;
+    sessions.add (testSession);
 
-    controller.setUpInitialGamePhase ();
+    return testSession;
   }
 }

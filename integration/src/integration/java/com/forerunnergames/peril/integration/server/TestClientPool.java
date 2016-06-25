@@ -24,12 +24,15 @@ import static org.testng.Assert.fail;
 import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +43,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.testng.collections.Lists;
+
 public class TestClientPool implements Iterable <TestClient>
 {
   private static final Logger log = LoggerFactory.getLogger (TestClientPool.class);
@@ -47,6 +52,10 @@ public class TestClientPool implements Iterable <TestClient>
   private final List <TestClient> clients = Collections.synchronizedList (new ArrayList <TestClient> ());
   private final ExecutorService clientThreadPool = Executors.newFixedThreadPool (MAX_THREADS);
   private final AtomicInteger pendingOperationCount = new AtomicInteger ();
+
+  public TestClientPool ()
+  {
+  }
 
   public synchronized void connectNew (final String serverAddress, final int serverPort)
   {
@@ -102,11 +111,20 @@ public class TestClientPool implements Iterable <TestClient>
   /**
    * @return set of clients that did not receive the event
    */
-  public <T> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType)
+  public <T extends Event> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType)
+  {
+    return waitForAllClientsToReceive (eventType, TestClient.DEFAULT_WAIT_TIMEOUT_MS);
+  }
+
+  /**
+   * @return set of clients that did not receive the event
+   */
+  public <T extends Event> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType,
+                                                                                 final long timeout)
   {
     Arguments.checkIsNotNull (eventType, "eventType");
 
-    return waitForAllClientsToReceive (eventType, new ClientEventCallback <T> ()
+    return waitForAllClientsToReceive (eventType, timeout, new ClientEventCallback <T> ()
     {
       @Override
       public void onEventReceived (final Optional <T> event, final TestClient client)
@@ -122,18 +140,25 @@ public class TestClientPool implements Iterable <TestClient>
     });
   }
 
+  public <T extends Event> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType,
+                                                                                 final ClientEventCallback <T> callback)
+  {
+    return waitForAllClientsToReceive (eventType, TestClient.DEFAULT_WAIT_TIMEOUT_MS, callback);
+  }
+
   /**
    * @return set of clients that did not receive the event
    */
-  public <T> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType,
-                                                                   final ClientEventCallback <T> callback)
+  public <T extends Event> ImmutableSet <TestClient> waitForAllClientsToReceive (final Class <T> eventType,
+                                                                                 final long timeout,
+                                                                                 final ClientEventCallback <T> callback)
   {
     Arguments.checkIsNotNull (eventType, "eventType");
     Arguments.checkIsNotNull (callback, "callback");
 
     final ImmutableSet.Builder <TestClient> failed = ImmutableSet.builder ();
 
-    for (final TestClient client : clients)
+    for (final TestClient client : ImmutableList.copyOf (clients))
     {
       pendingOperationCount.incrementAndGet ();
       clientThreadPool.execute (new Runnable ()
@@ -143,7 +168,7 @@ public class TestClientPool implements Iterable <TestClient>
         {
           try
           {
-            final Optional <T> event = client.waitForEventCommunication (eventType, false);
+            final Optional <T> event = client.waitForEventCommunication (eventType, timeout, false);
             if (!event.isPresent ()) failed.add (client);
             callback.onEventReceived (event, client);
           }
@@ -206,6 +231,34 @@ public class TestClientPool implements Iterable <TestClient>
     }
   }
 
+  public synchronized <T extends Event> void registerCallback (final Class <T> paramType,
+                                                               final ClientEventCallback <T> callback)
+  {
+    for (final TestClient client : clients)
+    {
+      client.registerCallback (paramType, callback);
+    }
+  }
+
+  public synchronized void unregisterCallback (final ClientEventCallback <?> callback)
+  {
+    for (final TestClient client : clients)
+    {
+      client.unregisterCallback (callback);
+    }
+  }
+
+  /**
+   * Calls {@link TestClient#flushEventQueue()} for all clients in the pool.
+   */
+  public synchronized void flushAll ()
+  {
+    for (final TestClient client : clients)
+    {
+      client.flushEventQueue ();
+    }
+  }
+
   public synchronized void dispose (final int clientIndex)
   {
     Arguments.checkIsNotNegative (clientIndex, "clientIndex");
@@ -223,14 +276,34 @@ public class TestClientPool implements Iterable <TestClient>
     clients.clear ();
   }
 
+  /**
+   * @return a new TestClientPool that holds references to all of this pool's clients except for the given client
+   */
+  public TestClientPool except (final TestClient client)
+  {
+    if (!clients.contains (client)) Exceptions.throwIllegalArg ("[{}] does not exist in this pool!", client);
+
+    final List <TestClient> copy = Lists.newArrayList (clients);
+    copy.remove (client);
+    return new TestClientPool (copy);
+  }
+
   @Override
   public Iterator <TestClient> iterator ()
   {
     return clients.iterator ();
   }
 
-  public interface ClientEventCallback <T>
+  public interface ClientEventCallback <T extends Event>
   {
     void onEventReceived (Optional <T> event, TestClient client);
+  }
+
+  private TestClientPool (final Collection <TestClient> clients)
+  {
+    Arguments.checkIsNotNull (clients, "clients");
+    Arguments.checkHasNoNullElements (clients, "clients");
+
+    this.clients.addAll (clients);
   }
 }

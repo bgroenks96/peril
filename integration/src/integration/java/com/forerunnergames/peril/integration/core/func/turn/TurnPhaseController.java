@@ -1,15 +1,23 @@
 package com.forerunnergames.peril.integration.core.func.turn;
 
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.integration.TestMonitor;
 import com.forerunnergames.peril.integration.TestUtil;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
 import com.forerunnergames.peril.integration.core.func.TestPhaseController;
 import com.forerunnergames.peril.integration.core.func.WaitForCommunicationActionResult;
 import com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseController;
+import com.forerunnergames.peril.integration.server.ClientEventProcessor;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestClientPool;
 import com.forerunnergames.peril.integration.server.TestClientPool.ClientEventCallback;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Randomness;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -65,9 +73,53 @@ public final class TurnPhaseController implements TestPhaseController
         if (event.get ().getPlayer ().equals (current.getPlayer ())) verified.incrementAndGet ();
       }
     };
+
     final ImmutableSet <TestClient> failed = clientPool.waitForAllClientsToReceive (BeginReinforcementPhaseEvent.class,
                                                                                     callback);
     return new WaitForCommunicationActionResult (failed, verified.get ());
+  }
+
+  public void performRandomCountryReinforcement ()
+  {
+    final TestMonitor monitor = new TestMonitor (2);
+    final TestClientPool clientPool = session.getTestClientPool ();
+    final TestClient current = getClientInTurn ();
+    // create a ClientEventProcessor for only this client
+    final ClientEventProcessor processor = new ClientEventProcessor (ImmutableSet.of (current));
+    final ClientEventCallback <PlayerReinforceCountryRequestEvent> callback = new ClientEventCallback <PlayerReinforceCountryRequestEvent> ()
+    {
+      @Override
+      public void onEventReceived (final Optional <PlayerReinforceCountryRequestEvent> maybe, final TestClient client)
+      {
+        monitor.assertTrue (maybe.isPresent ());
+        final PlayerReinforceCountryRequestEvent event = maybe.get ();
+        final CountryPacket randomCountry = Randomness.getRandomElementFrom (event.getPlayerOwnedCountries ());
+        final int randomArmyCount = Randomness.getRandomIntegerFrom (1, event.getMaxArmiesPerCountry ());
+        client.send (new PlayerReinforceCountryResponseRequestEvent (randomCountry.getName (), randomArmyCount));
+        final ImmutableSet <TestClient> failed = clientPool
+                .waitForAllClientsToReceive (PlayerReinforceCountryResponseSuccessEvent.class);
+        monitor.assertTrue (failed.isEmpty ());
+      }
+    };
+
+    processor.registerCallback (PlayerReinforceCountryRequestEvent.class, callback);
+    processor.registerCompletionTask (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        // our current client has already had the EndReinforcementPhaseEvent processed, so we need
+        // a client pool reference that excludes it
+        final ImmutableSet <TestClient> failed = clientPool.except (current)
+                .waitForAllClientsToReceive (EndReinforcementPhaseEvent.class);
+        monitor.assertTrue (failed.isEmpty ());
+        monitor.checkIn ();
+      }
+    });
+
+    processor.start (EndReinforcementPhaseEvent.class, monitor);
+
+    monitor.awaitCompletion ();
   }
 
   public TestClient getClientInTurn ()
