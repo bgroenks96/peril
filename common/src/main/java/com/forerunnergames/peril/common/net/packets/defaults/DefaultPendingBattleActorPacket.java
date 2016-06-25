@@ -81,14 +81,6 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   }
 
   @Override
-  public boolean playerAndCountryMatches (final PendingBattleActorPacket battleActor)
-  {
-    Arguments.checkIsNotNull (battleActor, "battleActor");
-
-    return player.is (battleActor.getPlayer ()) && country.is (battleActor.getCountry ());
-  }
-
-  @Override
   public String toString ()
   {
     return Strings.format ("{}: Player: [{}] | Country: [{}] | DieRange: [{}]", getClass ().getSimpleName (), player,

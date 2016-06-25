@@ -51,6 +51,4 @@ public interface BattleRequestEvent extends PlayerInputRequestEvent
   DieRange getAttackerDieRange ();
 
   DieRange getDefenderDieRange ();
-
-  boolean playersAndCountriesMatch (final BattleRequestEvent event);
 }

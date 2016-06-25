@@ -42,6 +42,4 @@ public interface PendingBattleActorPacket
   String getCountryName ();
 
   DieRange getDieRange ();
-
-  boolean playerAndCountryMatches (final PendingBattleActorPacket battleActor);
 }

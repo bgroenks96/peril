@@ -128,15 +128,6 @@ abstract class AbstractBattleRequestEvent extends AbstractPlayerEvent implements
   }
 
   @Override
-  public boolean playersAndCountriesMatch (final BattleRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    return attacker.playerAndCountryMatches (event.getAttacker ())
-            && defender.playerAndCountryMatches (event.getDefender ());
-  }
-
-  @Override
   public String toString ()
   {
     return Strings.format ("{} | Attacker: [{}] | Defender: [{}]", super.toString (), attacker, defender);
