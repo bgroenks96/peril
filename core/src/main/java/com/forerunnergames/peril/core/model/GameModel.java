@@ -91,6 +91,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInC
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -283,7 +284,20 @@ public final class GameModel
       checkPlayerGameStatus (playerId);
     }
 
-    publish (new EndPlayerTurnEvent (getCurrentPlayerPacket ()));
+    // check if player should draw card
+    final Optional <Boolean> playerOccupiedCountry = turnDataCache.checkAndGet (CacheKey.PLAYER_OCCUPIED_COUNTRY,
+                                                                                Boolean.class);
+    Optional <CardPacket> newPlayerCard = Optional.absent ();
+    if (playerOccupiedCountry.isPresent () && playerOccupiedCountry.get ())
+    {
+      // use fortify phase for rule check since card count should never exceed 6 at the end of a turn
+      // TODO: Attack phase trade-ins; for the prior statement to be true, attack-phase trade-ins must be implemented
+      final Card card = cardModel.giveCard (getCurrentPlayerId (), TurnPhase.FORTIFY);
+      log.debug ("Distributing card [{}] to player [{}]...", card, getCurrentPlayerPacket ());
+      newPlayerCard = Optional.of (CardPackets.from (card));
+    }
+
+    publish (new EndPlayerTurnEvent (getCurrentPlayerPacket (), newPlayerCard));
   }
 
   public void skipPlayerTurn (final SkipPlayerTurnEvent event)
@@ -1136,7 +1150,7 @@ public final class GameModel
     final Id sourceCountryId = countryMapGraphModel.countryWith (sourceCountry.getName ());
     final Id destCountryId = countryMapGraphModel.countryWith (destCountry.getName ());
 
-    final MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason> res1, res2, res3;
+    final MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason> res1, res2;
     res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
     res2 = countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
     final Optional <MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason>> failure;
@@ -1158,6 +1172,11 @@ public final class GameModel
     publish (new DefaultCountryArmiesChangedEvent (updatedDestCountry, deltaArmyCount));
     publish (new PlayerOccupyCountryResponseSuccessEvent (updatedPlayerPacket, updatedPrevDestCountryOwner,
             updatedSourceCountry, updatedDestCountry, deltaArmyCount));
+
+    if (turnDataCache.isNotSet (CacheKey.PLAYER_OCCUPIED_COUNTRY))
+    {
+      turnDataCache.put (CacheKey.PLAYER_OCCUPIED_COUNTRY, true);
+    }
 
     clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
                       CacheKey.OCCUPY_MIN_ARMY_COUNT);
@@ -1464,16 +1483,6 @@ public final class GameModel
     return new DefaultPendingBattleActor (defendingPlayer, defenderCountry, defenderDieRange);
   }
 
-  private FinalBattleActorPacket createFinalAttackerPacket (final AttackVector attackVector, final int attackerDieCount)
-  {
-    return asPacket (createFinalAttacker (attackVector, attackerDieCount));
-  }
-
-  private FinalBattleActorPacket createFinalDefenderPacket (final AttackVector attackVector, final int defenderDieCount)
-  {
-    return asPacket (createFinalDefender (attackVector, defenderDieCount));
-  }
-
   private FinalBattleActor createFinalAttacker (final AttackVector attackVector, final int dieCount)
   {
     final Id attackerCountry = attackVector.getSourceCountry ();
@@ -1676,6 +1685,7 @@ public final class GameModel
     OCCUPY_SOURCE_COUNTRY,
     OCCUPY_DEST_COUNTRY,
     OCCUPY_PREV_OWNER,
-    OCCUPY_MIN_ARMY_COUNT
+    OCCUPY_MIN_ARMY_COUNT,
+    PLAYER_OCCUPIED_COUNTRY
   }
 }
