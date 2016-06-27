@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -32,14 +33,19 @@ import com.google.common.collect.Sets;
 public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
 {
   private final PlayerPacket player;
+  private final PersonIdentity identity;
   private final ImmutableSet <PlayerPacket> playersInGame;
 
-  public PlayerJoinGameSuccessEvent (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player,
+                                     final PersonIdentity identity,
+                                     final ImmutableSet <PlayerPacket> playersInGame)
   {
     Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (identity, "identity");
     Arguments.checkIsNotNull (playersInGame, "playersInGame");
 
     this.player = player;
+    this.identity = identity;
     this.playersInGame = playersInGame;
   }
 
@@ -47,6 +53,11 @@ public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
   public PlayerPacket getPlayer ()
   {
     return player;
+  }
+
+  public PersonIdentity getIdentity ()
+  {
+    return this.identity;
   }
 
   @Override
@@ -93,6 +104,7 @@ public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
   private PlayerJoinGameSuccessEvent ()
   {
     player = null;
+    identity = null;
     playersInGame = null;
   }
 }

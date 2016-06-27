@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
@@ -40,17 +39,13 @@ public final class PlayerFactory
     playerCount++;
   }
 
-  public void newPlayerWith (final String name,
-                             final PersonIdentity identity,
-                             final PlayerColor color,
-                             final PlayerTurnOrder turnOrder)
+  public void newPlayerWith (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (name, "name");
-    Arguments.checkIsNotNull (identity, "identity");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
-    playerSetBuilder.add (create (name, identity, color, turnOrder));
+    playerSetBuilder.add (create (name, color, turnOrder));
     playerCount++;
   }
 
@@ -79,17 +74,13 @@ public final class PlayerFactory
     return builder (name).build ();
   }
 
-  static Player create (final String name,
-                        final PersonIdentity identity,
-                        final PlayerColor color,
-                        final PlayerTurnOrder turnOrder)
+  static Player create (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (name, "name");
-    Arguments.checkIsNotNull (identity, "identity");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
-    return builder (name).identity (identity).color (color).turnOrder (turnOrder).build ();
+    return builder (name).color (color).turnOrder (turnOrder).build ();
   }
 
   static PlayerFactory from (final ImmutableCollection <Player> players)
@@ -121,7 +112,6 @@ public final class PlayerFactory
   {
     private final String name;
     private final Id id;
-    private PersonIdentity identity = PersonIdentity.UNKNOWN;
     private PlayerColor color = PlayerColor.UNKNOWN;
     private PlayerTurnOrder turnOrder = PlayerTurnOrder.UNKNOWN;
 
@@ -138,15 +128,6 @@ public final class PlayerFactory
       Arguments.checkIsNotNull (color, "color");
 
       this.color = color;
-
-      return this;
-    }
-
-    public PlayerBuilder identity (final PersonIdentity identity)
-    {
-      Arguments.checkIsNotNull (identity, "identity");
-
-      this.identity = identity;
 
       return this;
     }
@@ -169,7 +150,7 @@ public final class PlayerFactory
 
     Player build ()
     {
-      return new DefaultPlayer (name, id, identity, color, turnOrder);
+      return new DefaultPlayer (name, id, color, turnOrder);
     }
   }
 }

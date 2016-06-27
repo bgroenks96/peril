@@ -93,6 +93,7 @@ import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacke
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -475,7 +476,7 @@ public final class GameModel
         continue;
       }
 
-      publish (new PlayerJoinGameSuccessEvent (player, playerModel.getPlayerPackets ()));
+      publish (new PlayerJoinGameSuccessEvent (player, PersonIdentity.UNKNOWN, playerModel.getPlayerPackets ()));
     }
   }
 

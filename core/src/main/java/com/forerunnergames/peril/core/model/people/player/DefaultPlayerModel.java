@@ -24,7 +24,6 @@ import static com.google.common.base.Predicates.not;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -153,19 +152,6 @@ public final class DefaultPlayerModel implements PlayerModel
     for (final Player player : players ())
     {
       if (player.has (turnOrder)) return true;
-    }
-
-    return false;
-  }
-
-  @Override
-  public boolean existsPlayerWith (final PersonIdentity identity)
-  {
-    Arguments.checkIsNotNull (identity, "identity");
-
-    for (final Player player : players ())
-    {
-      if (player.has (identity)) return true;
     }
 
     return false;
@@ -403,14 +389,6 @@ public final class DefaultPlayerModel implements PlayerModel
   public PlayerTurnOrder turnOrderOf (final Id playerId)
   {
     return modelPlayerWith (playerId).getTurnOrder ();
-  }
-
-  @Override
-  public PersonIdentity identityOf (final Id playerId)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-
-    return modelPlayerWith (playerId).getIdentity ();
   }
 
   @Override

@@ -20,7 +20,6 @@ package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
@@ -46,8 +45,6 @@ public interface PlayerModel
   boolean existsPlayerWith (final PlayerColor color);
 
   boolean existsPlayerWith (final PlayerTurnOrder turnOrder);
-
-  boolean existsPlayerWith (final PersonIdentity identity);
 
   boolean existsPlayerWithName (final String name);
 
@@ -104,8 +101,6 @@ public interface PlayerModel
   PlayerColor colorOf (final Id player);
 
   PlayerTurnOrder turnOrderOf (final Id player);
-
-  PersonIdentity identityOf (final Id player);
 
   Id idOf (final String playerName);
 

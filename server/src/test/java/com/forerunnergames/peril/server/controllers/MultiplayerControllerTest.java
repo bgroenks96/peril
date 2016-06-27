@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.server.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -69,6 +70,7 @@ import com.forerunnergames.peril.common.net.events.server.success.JoinGameServer
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -106,6 +108,7 @@ import net.engio.mbassy.bus.MBassador;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 import org.junit.After;
 import org.junit.Before;
@@ -123,7 +126,8 @@ public class MultiplayerControllerTest
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
   private final EventBusHandler eventHandler = new EventBusHandler ();
   private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
-  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class, Mockito.RETURNS_SMART_NULLS);
+  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
+                                                                  Mockito.RETURNS_SMART_NULLS);
   private final PlayerCommunicator defaultPlayerCommunicator = new DefaultPlayerCommunicator (mockClientCommunicator);
   private final SpectatorCommunicator defaultSpectatorCommunicator = new DefaultSpectatorCommunicator (
           mockClientCommunicator);
@@ -255,7 +259,7 @@ public class MultiplayerControllerTest
         communicateEventFromClient (requestEvent, client);
         eventHandler.wasFiredExactlyOnce (requestEvent);
         players.add (player);
-        final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
+        final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player, PersonIdentity.UNKNOWN,
                 ImmutableSet.copyOf (players));
         eventBus.publish (successEvent);
         verify (mockClientCommunicator, times (players.size ())).sendTo (any (Remote.class), eq (successEvent));
@@ -507,9 +511,32 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testPlayerJoinGameSuccess ()
+  public void testPlayerJoinGameSuccessForTwoClients ()
   {
-    addClientAndMockPlayerToGameServer ("Test Player 1", mpcBuilder.build (eventBus));
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final String playerName1 = "TestPlayer1";
+    final String playerName2 = "TestPlayer2";
+
+    // add first client
+    final ClientPlayerTuple player1 = addClientAndMockPlayerToGameServer (playerName1, mpc);
+    final Remote client1 = player1.client;
+
+    // add second client
+    final Remote client2 = addClient ();
+    final PlayerPacket mockPlayerPacket = mock (PlayerPacket.class);
+    when (mockPlayerPacket.getName ()).thenReturn (playerName2);
+    when (mockPlayerPacket.hasName (eq (playerName2))).thenReturn (true);
+    when (mockPlayerPacket.toString ()).thenReturn (playerName2);
+    communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName2), client2);
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, PersonIdentity.UNKNOWN,
+            ImmutableSet.of (mockPlayerPacket)));
+    verify (mockClientCommunicator).sendTo (eq (client1),
+                                            argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
+                                                            new PersonIdentityMatcher (PersonIdentity.NON_SELF))));
+    verify (mockClientCommunicator).sendTo (eq (client2),
+                                            argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
+                                                            new PersonIdentityMatcher (PersonIdentity.SELF))));
+    assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
   }
 
   @Test
@@ -542,7 +569,7 @@ public class MultiplayerControllerTest
 
     eventBus.publish (new ClientDisconnectionEvent (clientPlayer.client ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (clientPlayer.player ()));
-    eventBus.publish (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet.<PlayerPacket> of ()));
+    eventBus.publish (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet. <PlayerPacket> of ()));
 
     // make sure nothing was sent to the disconnecting player
     verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), isA (PlayerLeaveGameEvent.class));
@@ -687,7 +714,7 @@ public class MultiplayerControllerTest
     mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
     // Request that the player/client claim an available country.
-    eventBus.publish (new PlayerClaimCountryRequestEvent (clientPlayer.player (), ImmutableSet.<CountryPacket> of ()));
+    eventBus.publish (new PlayerClaimCountryRequestEvent (clientPlayer.player (), ImmutableSet. <CountryPacket> of ()));
     verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
     // Simulate player/client claiming a country.
@@ -728,7 +755,7 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple second = addClientAndMockPlayerToGameServer ("Test Player 2", mpc);
 
     // Request that the player/client claim an available country.
-    eventBus.publish (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet.<CountryPacket> of ()));
+    eventBus.publish (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet. <CountryPacket> of ()));
     verify (mockClientCommunicator).sendTo (eq (first.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
@@ -755,7 +782,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent1 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent1);
     verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent1);
     // Make sure that the request was not sent to the second player/client.
@@ -768,7 +795,7 @@ public class MultiplayerControllerTest
 
     // Request that the second player/client claim an available country.
     final Event claimCountryRequestEvent2 = new PlayerClaimCountryRequestEvent (second.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent2);
     verify (mockClientCommunicator).sendTo (second.client (), claimCountryRequestEvent2);
     // Make sure that the request was not sent to the first player/client.
@@ -781,7 +808,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent3 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent3);
     verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent3);
     // Make sure that the request was not sent to the second player/client.
@@ -794,7 +821,7 @@ public class MultiplayerControllerTest
 
     // Request that the second player/client claim an available country.
     final Event claimCountryRequestEvent4 = new PlayerClaimCountryRequestEvent (second.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent4);
     verify (mockClientCommunicator).sendTo (second.client (), claimCountryRequestEvent4);
     // Make sure that the request was not sent to the first player/client.
@@ -807,7 +834,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent5 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent5);
     verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent5);
     // Make sure that the request was not sent to the second player/client.
@@ -876,11 +903,13 @@ public class MultiplayerControllerTest
     // disconnect client
     eventBus.publish (new ClientDisconnectionEvent (client));
     assertFalse (mpc.isClientInServer (client));
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket)));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, PersonIdentity.UNKNOWN,
+            ImmutableSet.of (mockPlayerPacket)));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (mockPlayerPacket));
   }
 
-  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName, final MultiplayerController mpc)
+  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
+                                                                final MultiplayerController mpc)
   {
     final Remote client = joinClientToGameServer ();
     final PlayerPacket player = addMockPlayerToGameWithName (playerName, client, mpc);
@@ -905,7 +934,8 @@ public class MultiplayerControllerTest
     when (mockPlayerPacket.hasName (eq (playerName))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName), client);
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket)));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, PersonIdentity.UNKNOWN,
+            ImmutableSet.of (mockPlayerPacket)));
     verify (mockClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
 
@@ -956,29 +986,29 @@ public class MultiplayerControllerTest
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
-                        + eventHandler.lastEventType () + "] All events (newest to oldest): ["
-                        + eventHandler.getAllEvents () + "].", eventHandler.lastEventWasType (eventType));
+            + eventHandler.lastEventType () + "] All events (newest to oldest): [" + eventHandler.getAllEvents ()
+            + "].", eventHandler.lastEventWasType (eventType));
   }
 
   private void assertLastEventWas (final Event event)
   {
     assertEquals ("Expected last event was [" + event + "], but was [" + eventHandler.lastEvent ()
-                          + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
+            + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
                   eventHandler.lastEvent ());
   }
 
   private void assertEventFiredExactlyOnce (final Class <?> eventType)
   {
     assertTrue ("Expected event type [" + eventType.getSimpleName () + "] was fired exactly once, but was fired ["
-                        + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
-                        + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
+            + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
+            + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
   }
 
   private void assertEventFiredExactlyOnce (final Event event)
   {
     assertTrue ("Expected event type [" + event.getClass ().getSimpleName ()
-                        + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
-                        + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
+            + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
+            + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
                 eventHandler.wasFiredExactlyOnce (event));
   }
 
@@ -1155,6 +1185,28 @@ public class MultiplayerControllerTest
       this.communicator = communicator;
       this.spectatorCommunicator = spectatorCommunicator;
       this.coreCommunicator = coreCommunicator;
+    }
+  }
+
+  private final class PersonIdentityMatcher extends BaseMatcher <PlayerJoinGameSuccessEvent>
+  {
+    private final PersonIdentity identity;
+
+    PersonIdentityMatcher (final PersonIdentity identity)
+    {
+      this.identity = identity;
+    }
+
+    @Override
+    public boolean matches (final Object arg0)
+    {
+      if (!(arg0 instanceof PlayerJoinGameSuccessEvent)) return false;
+      return ((PlayerJoinGameSuccessEvent) arg0).getIdentity () == identity;
+    }
+
+    @Override
+    public void describeTo (final Description arg0)
+    {
     }
   }
 

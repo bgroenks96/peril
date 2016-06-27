@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
@@ -34,13 +33,9 @@ final class DefaultPlayer extends AbstractPerson implements Player
   private PlayerTurnOrder turnOrder;
   private int armiesInHand;
 
-  public DefaultPlayer (final String name,
-                        final Id id,
-                        final PersonIdentity identity,
-                        final PlayerColor color,
-                        final PlayerTurnOrder turnOrder)
+  public DefaultPlayer (final String name, final Id id, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
-    super (name, id, identity);
+    super (name, id);
 
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNull (turnOrder, "turnOrder");

@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.tools.common.Result;
@@ -175,17 +174,6 @@ public class PlayerModelTest
     playerModel.requestToAdd (PlayerFactory.builder (name).toFactory ());
 
     assertTrue (playerModel.existsPlayerWithName (name));
-  }
-
-  @Test
-  public void testExistsPlayerWithPersonIdentity ()
-  {
-    final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final PersonIdentity identity = PersonIdentity.SELF;
-
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").identity (identity).toFactory ());
-
-    assertTrue (playerModel.existsPlayerWith (identity));
   }
 
   @Test
@@ -478,10 +466,9 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final Id player1Id = IdGenerator.generateUniqueId ();
-    final Player player1 = new DefaultPlayer ("TestPlayer1", player1Id, PersonIdentity.UNKNOWN, PlayerColor.UNKNOWN,
+    final Player player1 = new DefaultPlayer ("TestPlayer1", player1Id, PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
+    final Player player2 = new DefaultPlayer ("TestPlayer2", IdGenerator.generateUniqueId (), PlayerColor.UNKNOWN,
             PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("TestPlayer2", IdGenerator.generateUniqueId (), PersonIdentity.UNKNOWN,
-            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
 
     playerModel.requestToAdd (factoryFrom (player1));
     playerModel.requestToAdd (factoryFrom (player2));
@@ -591,10 +578,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final String duplicateName = "TestPlayer";
-    final Player player1 = PlayerFactory.create (duplicateName, PersonIdentity.SELF, PlayerColor.PINK,
-                                                 PlayerTurnOrder.EIGHTH);
-    final Player player2 = PlayerFactory.create (duplicateName, PersonIdentity.NON_SELF, PlayerColor.BLUE,
-                                                 PlayerTurnOrder.THIRD);
+    final Player player1 = PlayerFactory.create (duplicateName, PlayerColor.PINK, PlayerTurnOrder.EIGHTH);
+    final Player player2 = PlayerFactory.create (duplicateName, PlayerColor.BLUE, PlayerTurnOrder.THIRD);
 
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factoryFrom (player1))));
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player2));
@@ -708,15 +693,13 @@ public class PlayerModelTest
     final String name = "TestPlayer";
     final PlayerColor color = PlayerColor.TEAL;
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIFTH;
-    final PersonIdentity identity = PersonIdentity.SELF;
-    final Player player = PlayerFactory.create (name, identity, color, turnOrder);
+    final Player player = PlayerFactory.create (name, color, turnOrder);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player))).succeeded ());
     assertTrue (playerModel.playerCountIs (1));
     assertTrue (playerModel.existsPlayerWith (name));
     assertTrue (playerModel.existsPlayerWith (color));
     assertTrue (playerModel.existsPlayerWith (turnOrder));
-    assertTrue (playerModel.identityOf (player.getId ()).equals (identity));
   }
 
   @Test (expected = IllegalArgumentException.class)
