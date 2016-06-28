@@ -261,8 +261,24 @@ public class MultiplayerControllerTest
         players.add (player);
         final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player, PersonIdentity.UNKNOWN,
                 ImmutableSet.copyOf (players));
+        final BaseMatcher <PlayerJoinGameSuccessEvent> successEventMatcher = new BaseMatcher <PlayerJoinGameSuccessEvent> ()
+        {
+          @Override
+          public boolean matches (final Object arg0)
+          {
+            if (!(arg0 instanceof PlayerJoinGameSuccessEvent)) return false;
+            final PlayerJoinGameSuccessEvent event = (PlayerJoinGameSuccessEvent) arg0;
+            return event.getPlayer ().equals (player) && event.getPlayersInGame ().equals (players);
+          }
+
+          @Override
+          public void describeTo (final Description arg0)
+          {
+          }
+        };
         eventBus.publish (successEvent);
-        verify (mockClientCommunicator, times (players.size ())).sendTo (any (Remote.class), eq (successEvent));
+        verify (mockClientCommunicator, times (players.size ())).sendTo (any (Remote.class),
+                                                                         argThat (successEventMatcher));
         assertTrue (mpc.isPlayerInGame (player));
 
         return successEvent;
