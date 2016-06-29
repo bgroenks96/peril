@@ -18,14 +18,14 @@
 
 package com.forerunnergames.peril.core.model;
 
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // Handler class for internal communication events from server
-final class InternalCommunicationHandler
+class InternalCommunicationHandler
 {
   private static final Logger log = LoggerFactory.getLogger (InternalCommunicationHandler.class);
   private final PlayerModel playerModel;

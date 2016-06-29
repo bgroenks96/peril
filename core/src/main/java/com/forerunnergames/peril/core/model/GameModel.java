@@ -23,6 +23,7 @@ import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackOrderResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerBeginAttackResponseRequestEvent;
@@ -38,6 +39,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCount
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerBeginAttackResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
@@ -77,6 +79,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCo
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackOrderResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerBeginAttackResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -306,6 +309,24 @@ public final class GameModel
     Arguments.checkIsNotNull (event, "event");
 
     log.info ("Skipping turn for player [{}].", event.getPlayerName ());
+  }
+
+  public boolean verifyPlayerEndTurnRequest (final EndPlayerTurnRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent () || player.isNot (sender.get ()))
+    {
+      publish (new EndPlayerTurnDeniedEvent (player, EndPlayerTurnDeniedEvent.Reason.NOT_IN_TURN));
+      return false;
+    }
+
+    publish (new EndPlayerTurnSuccessEvent (player));
+    return true;
   }
 
   @StateMachineAction
@@ -1589,12 +1610,16 @@ public final class GameModel
     private PlayerTurnModel playerTurnModel;
     private BattleModel battleModel;
     private PlayerTurnDataCache <CacheKey> turnDataCache;
+    private InternalCommunicationHandler internalCommHandler;
     private MBassador <Event> eventBus = EventBusFactory.create ();
 
     public GameModel build ()
     {
-      final InternalCommunicationHandler internalCommHandler = new InternalCommunicationHandler (playerModel,
-              playMapModel, playerTurnModel, eventBus);
+      if (internalCommHandler == null)
+      {
+        internalCommHandler = new InternalCommunicationHandler (playerModel, playMapModel, playerTurnModel, eventBus);
+      }
+
       final EventFactory eventFactory = new DefaultEventFactory (playerModel, playMapModel, cardModel, gameRules);
       return new GameModel (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules,
               internalCommHandler, turnDataCache, eventFactory, eventBus);
@@ -1640,11 +1665,19 @@ public final class GameModel
       return this;
     }
 
-    public Builder turnDataCache (final PlayerTurnDataCache turnDataCache)
+    public Builder turnDataCache (final PlayerTurnDataCache <CacheKey> turnDataCache)
     {
       Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
 
       this.turnDataCache = turnDataCache;
+      return this;
+    }
+
+    public Builder internalComms (final InternalCommunicationHandler internalCommHandler)
+    {
+      Arguments.checkIsNotNull (internalCommHandler, "internalCommHandler");
+
+      this.internalCommHandler = internalCommHandler;
       return this;
     }
 

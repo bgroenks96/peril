@@ -70,6 +70,11 @@
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent"/>
       </event>
+      <event id="onEndPlayerTurnRequestEvent">
+        <parameter
+                name="event"
+                type="com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent"/>
+      </event>
       <event id="onPlayerReinforceCountryResponseRequestEvent">
         <parameter
                 name="event"
@@ -259,6 +264,9 @@
                 <onEntry action="gameModel.beginPlayerTurn()"/>
                 <transition event="onSkipPlayerTurnEvent"
                             action="gameModel.skipPlayerTurn(event)"
+                            nextState="AdvancePlayerTurn"/>
+                <transition event="onEndPlayerTurnRequestEvent"
+                            condition="gameModel.verifyPlayerEndTurnRequest(event)"
                             nextState="AdvancePlayerTurn"/>
                 <state name="ReinforcementPhase">
                   <onEntry action="gameModel.beginReinforcementPhase()"/>

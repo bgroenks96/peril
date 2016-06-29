@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.EventBusHandler;
@@ -38,11 +39,13 @@ import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -63,6 +66,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCou
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -103,6 +107,7 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -153,6 +158,7 @@ public class GameModelTest
     gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
             .totalCountryCount (defaultTestCountryCount).build ();
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
+    mockCommHandler = mock (InternalCommunicationHandler.class);
     initializeGameModelWith (playMapModel);
     assert gameModel != null;
   }
@@ -424,11 +430,12 @@ public class GameModelTest
 
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             "Transylvania");
+    when (mockCommHandler.requestFor (responseRequest)).thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
     publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseDeniedEvent.class));
-    assertTrue (eventHandler.lastEventWasType (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerInputRequestEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
@@ -454,11 +461,12 @@ public class GameModelTest
 
     gameModel.advancePlayerTurn (); // state machine does this as state exit action
 
+    when (mockCommHandler.requestFor (responseRequest)).thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
     publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // unsuccessful for second player
     assertTrue (eventHandler.secondToLastEventWasType (PlayerClaimCountryResponseDeniedEvent.class));
-    assertTrue (eventHandler.lastEventWasType (PlayerClaimCountryRequestEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerInputRequestEvent.class));
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
   }
@@ -996,6 +1004,33 @@ public class GameModelTest
   }
 
   @Test
+  public void testVerifyPlayerEndTurnRequest ()
+  {
+    addMaxPlayers ();
+
+    final PlayerPacket player = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
+    final EndPlayerTurnRequestEvent endTurnRequest = new EndPlayerTurnRequestEvent ();
+    when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
+
+    assertTrue (gameModel.verifyPlayerEndTurnRequest (endTurnRequest));
+    assertTrue (eventHandler.wasFiredExactlyOnce (EndPlayerTurnSuccessEvent.class));
+  }
+
+  @Test
+  public void testVerifyPlayerEndTurnRequestFailsWithInvalidPlayer ()
+  {
+    addMaxPlayers ();
+
+    final PlayerPacket player = playerModel.playerPacketWith (PlayerTurnOrder.SECOND);
+    final EndPlayerTurnRequestEvent endTurnRequest = new EndPlayerTurnRequestEvent ();
+    when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
+
+    assertFalse (gameModel.verifyPlayerEndTurnRequest (endTurnRequest));
+    assertTrue (eventHandler.wasFiredExactlyOnce (EndPlayerTurnDeniedEvent.class));
+    assertTrue (eventHandler.wasNeverFired (EndPlayerTurnSuccessEvent.class));
+  }
+
+  @Test
   public void testHandlePlayerJoinGameRequestFailed ()
   {
     addMaxPlayers ();
@@ -1165,7 +1200,7 @@ public class GameModelTest
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxPlayers ();
     gameModel = GameModel.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel).playerModel (playerModel)
-            .cardModel (cardModel).build ();
+            .cardModel (cardModel).internalComms (mockCommHandler).build ();
   }
 
   private PlayMapModel createPlayMapModelWithDisjointMapGraph (final ImmutableList <String> countryNames)
