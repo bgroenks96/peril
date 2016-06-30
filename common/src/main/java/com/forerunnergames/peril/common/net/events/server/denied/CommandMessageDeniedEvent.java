@@ -18,56 +18,43 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultCommandMessageEvent;
+import com.forerunnergames.peril.common.net.events.defaults.AbstractMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.CommandMessageEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.DefaultDeniedEvent;
 import com.forerunnergames.peril.common.net.messages.CommandMessage;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
-public final class CommandMessageDeniedEvent implements CommandMessageEvent, DeniedEvent <String>
+public final class CommandMessageDeniedEvent extends AbstractMessageEvent <CommandMessage>
+        implements CommandMessageEvent, DeniedEvent <String>
 {
-  private final CommandMessageEvent commandMessageEvent;
-  private final DeniedEvent <String> deniedEvent;
+  private final String reason;
 
   public CommandMessageDeniedEvent (final CommandMessage message, final String reason)
   {
-    Arguments.checkIsNotNull (message, "message");
+    super (message);
+
     Arguments.checkIsNotNull (reason, "reason");
 
-    commandMessageEvent = new DefaultCommandMessageEvent (message);
-    deniedEvent = new DefaultDeniedEvent (reason);
-  }
-
-  @Override
-  public CommandMessage getMessage ()
-  {
-    return commandMessageEvent.getMessage ();
-  }
-
-  @Override
-  public String getMessageText ()
-  {
-    return commandMessageEvent.getMessageText ();
+    this.reason = reason;
   }
 
   @Override
   public String getReason ()
   {
-    return deniedEvent.getReason ();
+    return reason;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), commandMessageEvent, deniedEvent);
+    return Strings.format ("{} | Reason: {}", super.toString (), reason);
   }
 
   @RequiredForNetworkSerialization
   private CommandMessageDeniedEvent ()
   {
-    commandMessageEvent = null;
-    deniedEvent = null;
+    reason = null;
   }
 }

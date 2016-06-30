@@ -18,72 +18,61 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultChatMessageEvent;
+import com.forerunnergames.peril.common.net.events.defaults.AbstractMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.DefaultDeniedEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageDeniedEvent implements ChatMessageEvent, DeniedEvent <String>
+public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMessage>
+        implements ChatMessageEvent, DeniedEvent <String>
 {
-  private final ChatMessageEvent chatMessageEvent;
-  private final DeniedEvent <String> deniedEvent;
+  private ChatMessage message;
+  private final String reason;
 
   public ChatMessageDeniedEvent (final ChatMessage message, final String reason)
   {
-    Arguments.checkIsNotNull (message, "message");
+    super (message);
+
     Arguments.checkIsNotNull (reason, "reason");
 
-    chatMessageEvent = new DefaultChatMessageEvent (message);
-    deniedEvent = new DefaultDeniedEvent (reason);
+    this.message = message;
+    this.reason = reason;
   }
 
   @Nullable
   @Override
   public Author getAuthor ()
   {
-    return chatMessageEvent.getAuthor ();
+    return message.getAuthor ();
   }
 
   @Override
   public boolean hasAuthor ()
   {
-    return chatMessageEvent.hasAuthor ();
-  }
-
-  @Override
-  public ChatMessage getMessage ()
-  {
-    return chatMessageEvent.getMessage ();
-  }
-
-  @Override
-  public String getMessageText ()
-  {
-    return chatMessageEvent.getMessageText ();
+    return message.hasAuthor ();
   }
 
   @Override
   public String getReason ()
   {
-    return deniedEvent.getReason ();
+    return reason;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s | %3$s", getClass ().getSimpleName (), chatMessageEvent, deniedEvent);
+    return Strings.format ("{} | Reason: {}", getClass ().getSimpleName (), reason);
   }
 
   @RequiredForNetworkSerialization
   private ChatMessageDeniedEvent ()
   {
-    chatMessageEvent = null;
-    deniedEvent = null;
+    reason = null;
   }
 }

@@ -18,61 +18,50 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultChatMessageEvent;
+import com.forerunnergames.peril.common.net.events.defaults.AbstractMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
-import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageRequestEvent implements ChatMessageEvent, ClientRequestEvent
+public final class ChatMessageRequestEvent extends AbstractMessageEvent <ChatMessage>
+        implements ChatMessageEvent, ClientRequestEvent
 {
-  private final ChatMessageEvent event;
+  private final ChatMessage chatMessage;
 
   public ChatMessageRequestEvent (final ChatMessage chatMessage)
   {
-    Arguments.checkIsNotNull (chatMessage, "chatMessage");
+    super (chatMessage);
 
-    event = new DefaultChatMessageEvent (chatMessage);
+    this.chatMessage = chatMessage;
   }
 
   @Nullable
   @Override
   public Author getAuthor ()
   {
-    return event.getAuthor ();
+    return chatMessage.getAuthor ();
   }
 
   @Override
   public boolean hasAuthor ()
   {
-    return event.hasAuthor ();
-  }
-
-  @Override
-  public ChatMessage getMessage ()
-  {
-    return event.getMessage ();
-  }
-
-  @Override
-  public String getMessageText ()
-  {
-    return event.getMessageText ();
+    return chatMessage.hasAuthor ();
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), event);
+    return Strings.format ("{} | Author: {}", super.toString (), chatMessage.getAuthor ());
   }
 
   @RequiredForNetworkSerialization
   private ChatMessageRequestEvent ()
   {
-    event = null;
+    chatMessage = null;
   }
 }

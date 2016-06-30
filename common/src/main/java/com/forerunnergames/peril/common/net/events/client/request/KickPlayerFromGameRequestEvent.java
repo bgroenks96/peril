@@ -18,7 +18,6 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -26,30 +25,30 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEv
 
 public final class KickPlayerFromGameRequestEvent implements KickEvent, ClientRequestEvent
 {
-  private final KickEvent kickEvent;
+  private final String reasonForKick;
 
   public KickPlayerFromGameRequestEvent (final String reasonForKick)
   {
     Arguments.checkIsNotNull (reasonForKick, "reasonForKick");
 
-    kickEvent = new DefaultKickEvent (reasonForKick);
+    this.reasonForKick = reasonForKick;
   }
 
   @Override
   public String getReasonForKick ()
   {
-    return kickEvent.getReasonForKick ();
+    return reasonForKick;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), kickEvent);
+    return String.format ("{}: ReasonForKick: {}", getClass ().getSimpleName (), reasonForKick);
   }
 
   @RequiredForNetworkSerialization
   private KickPlayerFromGameRequestEvent ()
   {
-    kickEvent = null;
+    reasonForKick = null;
   }
 }

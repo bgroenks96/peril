@@ -18,62 +18,50 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultChatMessageEvent;
+import com.forerunnergames.peril.common.net.events.defaults.AbstractMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
-import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Author;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageSuccessEvent implements ChatMessageEvent, SuccessEvent
+public final class ChatMessageSuccessEvent extends AbstractMessageEvent <ChatMessage>
+        implements ChatMessageEvent, BroadcastSuccessEvent
 {
-  private final ChatMessageEvent event;
+  private final ChatMessage message;
 
   public ChatMessageSuccessEvent (final ChatMessage message)
   {
-    Arguments.checkIsNotNull (message, "message");
+    super (message);
 
-    event = new DefaultChatMessageEvent (message);
+    this.message = message;
   }
 
   @Nullable
   @Override
   public Author getAuthor ()
   {
-    return event.getAuthor ();
+    return message.getAuthor ();
   }
 
   @Override
   public boolean hasAuthor ()
   {
-    return event.hasAuthor ();
-  }
-
-  @Override
-  public ChatMessage getMessage ()
-  {
-    return event.getMessage ();
-  }
-
-  @Override
-  public String getMessageText ()
-  {
-    return event.getMessageText ();
+    return message.hasAuthor ();
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: %2$s", getClass ().getSimpleName (), event);
+    return Strings.format ("{} | Author: {}", super.toString (), message.getAuthor ());
   }
 
   @RequiredForNetworkSerialization
   private ChatMessageSuccessEvent ()
   {
-    event = null;
+    message = null;
   }
 }

@@ -18,39 +18,38 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.defaults.DefaultKickEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
-public final class KickPlayerFromGameSuccessEvent implements KickEvent, SuccessEvent
+public final class KickPlayerFromGameSuccessEvent implements KickEvent, BroadcastSuccessEvent
 {
-  private final KickEvent kickEvent;
+  private final String reasonForKick;
 
   public KickPlayerFromGameSuccessEvent (final String reasonForKick)
   {
     Arguments.checkIsNotNull (reasonForKick, "reasonForKick");
 
-    kickEvent = new DefaultKickEvent (reasonForKick);
+    this.reasonForKick = reasonForKick;
   }
 
   @Override
   public String getReasonForKick ()
   {
-    return kickEvent.getReasonForKick ();
+    return reasonForKick;
   }
 
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: | %2$s", getClass ().getSimpleName (), kickEvent);
+    return Strings.format ("{}: ReasonForKick: {}", getClass ().getSimpleName (), reasonForKick);
   }
 
   @RequiredForNetworkSerialization
   private KickPlayerFromGameSuccessEvent ()
   {
-    kickEvent = null;
+    reasonForKick = null;
   }
 }
