@@ -18,21 +18,20 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
+public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implements BroadcastSuccessEvent
 {
-  private final PlayerPacket player;
   private final PersonIdentity identity;
   private final ImmutableSet <PlayerPacket> playersInGame;
 
@@ -40,41 +39,18 @@ public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
                                      final PersonIdentity identity,
                                      final ImmutableSet <PlayerPacket> playersInGame)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
+
     Arguments.checkIsNotNull (identity, "identity");
     Arguments.checkIsNotNull (playersInGame, "playersInGame");
 
-    this.player = player;
     this.identity = identity;
     this.playersInGame = playersInGame;
   }
 
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
   public PersonIdentity getIdentity ()
   {
-    return this.identity;
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return player.getColor ();
-  }
-
-  public int getPlayerTurnOrder ()
-  {
-    return player.getTurnOrder ();
+    return identity;
   }
 
   public ImmutableSet <PlayerPacket> getPlayersInGame ()
@@ -89,7 +65,7 @@ public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
       @Override
       public boolean apply (final PlayerPacket input)
       {
-        return input.isNot (player);
+        return input.isNot (getPlayer ());
       }
     }));
   }
@@ -97,13 +73,12 @@ public final class PlayerJoinGameSuccessEvent implements PlayerSuccessEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: {}", getClass ().getSimpleName (), player);
+    return Strings.format ("{} | PersonIdenity: {} | PlayersInGame: {}", super.toString (), identity, playersInGame);
   }
 
   @RequiredForNetworkSerialization
   private PlayerJoinGameSuccessEvent ()
   {
-    player = null;
     identity = null;
     playersInGame = null;
   }

@@ -19,16 +19,16 @@
 package com.forerunnergames.peril.common.net.events.server.notification;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableSet;
 
-public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implements PlayerNotificationEvent
+public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
 

@@ -22,9 +22,9 @@ import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
-public final class SpectatorJoinGameSuccessEvent implements SuccessEvent
+public final class SpectatorJoinGameSuccessEvent implements BroadcastSuccessEvent
 {
   private final SpectatorPacket spectator;
 

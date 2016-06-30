@@ -18,7 +18,9 @@
 
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
-public interface CountryArmiesChangedEvent extends CountryNotificationEvent
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
+
+public interface CountryArmiesChangedEvent extends CountryEvent, BroadcastNotificationEvent
 {
   int getCountryDeltaArmyCount ();
 }

@@ -25,12 +25,12 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerCountryAssignmentCompleteEvent implements ServerNotificationEvent
+public final class PlayerCountryAssignmentCompleteEvent implements BroadcastNotificationEvent
 {
   private final InitialCountryAssignment assignmentMode;
   private final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets;

@@ -21,9 +21,9 @@ package com.forerunnergames.peril.common.net.events.server.notification;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class BeginPlayerCountryAssignmentEvent implements ServerNotificationEvent
+public final class BeginPlayerCountryAssignmentEvent implements BroadcastNotificationEvent
 {
   private final InitialCountryAssignment assignmentMode;
 

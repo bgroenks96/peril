@@ -23,11 +23,11 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableMap;
 
-public final class EndInitialReinforcementPhaseEvent implements ServerNotificationEvent
+public final class EndInitialReinforcementPhaseEvent implements BroadcastNotificationEvent
 {
   private final ImmutableMap <CountryPacket, PlayerPacket> playMapView;
 

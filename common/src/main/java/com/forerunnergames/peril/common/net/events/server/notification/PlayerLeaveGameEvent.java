@@ -18,44 +18,26 @@
 
 package com.forerunnergames.peril.common.net.events.server.notification;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerLeaveGameEvent implements PlayerNotificationEvent
+public final class PlayerLeaveGameEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  private final PlayerPacket player;
   private final ImmutableSet <PlayerPacket> playersLeftInGame;
 
   public PlayerLeaveGameEvent (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersLeftInGame)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
 
-    this.player = player;
+    Arguments.checkIsNotNull (playersLeftInGame, "playersLeftInGame");
+
     this.playersLeftInGame = playersLeftInGame;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return player.getColor ();
   }
 
   public ImmutableSet <PlayerPacket> getPlayersLeftInGame ()
@@ -66,14 +48,12 @@ public final class PlayerLeaveGameEvent implements PlayerNotificationEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Player: [{}] | RemainingPlayers: [{}]", getClass ().getSimpleName (), player,
-                           playersLeftInGame);
+    return Strings.format ("{} | RemainingPlayers: [{}]", super.toString (), playersLeftInGame);
   }
 
   @RequiredForNetworkSerialization
   private PlayerLeaveGameEvent ()
   {
-    player = null;
     playersLeftInGame = null;
   }
 }

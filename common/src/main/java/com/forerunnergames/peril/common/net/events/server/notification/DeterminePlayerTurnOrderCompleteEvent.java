@@ -22,11 +22,11 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableSortedSet;
 
-public final class DeterminePlayerTurnOrderCompleteEvent implements ServerNotificationEvent
+public final class DeterminePlayerTurnOrderCompleteEvent implements BroadcastNotificationEvent
 {
   private final ImmutableSortedSet <PlayerPacket> turnOrderedPlayers;
 

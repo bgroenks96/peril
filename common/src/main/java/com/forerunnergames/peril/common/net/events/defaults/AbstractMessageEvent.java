@@ -21,6 +21,7 @@ package com.forerunnergames.peril.common.net.events.defaults;
 import com.forerunnergames.peril.common.net.events.interfaces.MessageEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public abstract class AbstractMessageEvent <T extends Message> implements MessageEvent <T>
@@ -53,8 +54,8 @@ public abstract class AbstractMessageEvent <T extends Message> implements Messag
   }
 
   @Override
-  public final String toString ()
+  public String toString ()
   {
-    return String.format ("%1$s", message);
+    return Strings.format ("{}: Message: {}", getClass ().getSimpleName (), message.getText ());
   }
 }

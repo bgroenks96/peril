@@ -23,9 +23,9 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
-import com.forerunnergames.tools.net.events.remote.origin.server.SuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
-public final class JoinGameServerSuccessEvent implements SuccessEvent
+public final class JoinGameServerSuccessEvent implements BroadcastSuccessEvent
 {
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;
@@ -54,8 +54,8 @@ public final class JoinGameServerSuccessEvent implements SuccessEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}",
-                           getClass ().getSimpleName (), gameServerConfig, clientConfig);
+    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}", getClass ().getSimpleName (),
+                           gameServerConfig, clientConfig);
   }
 
   @RequiredForNetworkSerialization

@@ -1,14 +1,14 @@
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
-import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public abstract class AbstractAttackResultEvent extends AbstractPlayerEvent implements ServerNotificationEvent
+public abstract class AbstractAttackResultEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
   final BattleResultPacket battleResult;
 

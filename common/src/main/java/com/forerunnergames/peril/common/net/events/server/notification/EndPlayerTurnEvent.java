@@ -19,15 +19,15 @@
 package com.forerunnergames.peril.common.net.events.server.notification;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.base.Optional;
 
-public final class EndPlayerTurnEvent extends AbstractPlayerEvent implements PlayerNotificationEvent
+public final class EndPlayerTurnEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
   private final Optional <CardPacket> newCard;
 

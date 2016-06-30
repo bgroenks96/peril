@@ -32,7 +32,7 @@ import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinG
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notification.PlayerLoseGameEvent;
@@ -67,7 +67,7 @@ import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
 import com.google.common.base.Optional;
@@ -195,12 +195,30 @@ public final class MultiplayerController extends ControllerAdapter
 
   // ---------- inbound events from core module ---------- //
 
-  @Handler
-  public void onEvent (final PlayerJoinGameSuccessEvent event)
+  @Handler (priority = Integer.MIN_VALUE)
+  public void onEvent (final BroadcastEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Event received [{}]", event);
+
+    sendToAllPlayersAndSpectators (event);
+  }
+
+  @Handler (priority = Integer.MIN_VALUE)
+  public void onEvent (final DirectPlayerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    sendToPlayer (event.getPlayer (), event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerJoinGameSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
 
     final String playerName = event.getPlayerName ();
 
@@ -241,7 +259,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    // let handler for server notification events handle forwarding the event
+    // let handler for broadcast events handle forwarding the event
   }
 
   @Handler
@@ -278,7 +296,7 @@ public final class MultiplayerController extends ControllerAdapter
     // remove client mapping
     remove (client.get ());
 
-    // let handler for server notification events handle forwarding the event
+    // let handler for broadcast events handle forwarding the event
   }
 
   @Handler
@@ -295,27 +313,7 @@ public final class MultiplayerController extends ControllerAdapter
     // add client as an spectator
     clientsToSpectators.put (client.get (), createNewSpectatorFromValidName (event.getPlayer ().getName ()));
 
-    // let handler for server notification events handle forwarding the event
-  }
-
-  @Handler
-  public void onEvent (final PlayerDeniedEvent <?> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    sendToPlayer (event.getPlayer (), event);
-  }
-
-  @Handler (priority = Integer.MIN_VALUE)
-  public void onEvent (final ServerNotificationEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    sendToAllPlayersAndSpectators (event);
+    // let handler for broadcast events handle forwarding the event
   }
 
   @Handler
@@ -323,12 +321,10 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}]", event);
-
     final boolean wasAdded = playerInputRequestEventCache.put (event.getPlayer (), event);
     assert wasAdded;
 
-    sendToPlayer (event.getPlayer (), event);
+    // let handler for direct player event handle forwarding the event
   }
 
   // ---------- remote inbound/outbound event communication ---------- //
