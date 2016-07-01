@@ -23,16 +23,16 @@ import static org.testng.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.integration.TestMonitor;
@@ -218,26 +218,26 @@ public final class InitialGamePhaseController implements TestPhaseController
 
     final ClientEventProcessor processor = new ClientEventProcessor (clientPool);
 
-    final ClientEventCallback <PlayerReinforceCountryRequestEvent> requestCallback;
-    requestCallback = new ClientEventCallback <PlayerReinforceCountryRequestEvent> ()
+    final ClientEventCallback <PlayerBeginCountryReinforcementEvent> requestCallback;
+    requestCallback = new ClientEventCallback <PlayerBeginCountryReinforcementEvent> ()
     {
       @Override
-      public void onEventReceived (final Optional <PlayerReinforceCountryRequestEvent> event, final TestClient client)
+      public void onEventReceived (final Optional <PlayerBeginCountryReinforcementEvent> event, final TestClient client)
       {
         monitor.assertTrue (event.isPresent ());
         final ImmutableSet <CountryPacket> availableCountries = event.get ().getPlayerOwnedCountries ();
         monitor.assertFalse (availableCountries.isEmpty ());
         final CountryPacket someCountry = Randomness.getRandomElementFrom (availableCountries);
-        client.sendEvent (new PlayerReinforceCountryResponseRequestEvent (someCountry.getName (), 1));
-        final Optional <PlayerReinforceCountryResponseSuccessEvent> chkEvent2;
-        chkEvent2 = client.waitForEventCommunication (PlayerReinforceCountryResponseSuccessEvent.class);
+        client.sendEvent (new PlayerReinforceCountryRequestEvent (someCountry.getName (), 1));
+        final Optional <PlayerReinforceCountrySuccessEvent> chkEvent2;
+        chkEvent2 = client.waitForEventCommunication (PlayerReinforceCountrySuccessEvent.class);
         monitor.assertTrue (chkEvent2.isPresent ());
-        final PlayerReinforceCountryResponseSuccessEvent event2 = chkEvent2.get ();
+        final PlayerReinforceCountrySuccessEvent event2 = chkEvent2.get ();
         monitor.assertEquals (someCountry.getName (), event2.getCountryName ());
       }
     };
 
-    processor.registerCallback (PlayerReinforceCountryRequestEvent.class, requestCallback);
+    processor.registerCallback (PlayerBeginCountryReinforcementEvent.class, requestCallback);
 
     processor.start (EndInitialReinforcementPhaseEvent.class, monitor);
 

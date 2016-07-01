@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.integration.core.func.turn;
 
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.integration.TestMonitor;
 import com.forerunnergames.peril.integration.TestUtil;
@@ -86,23 +86,23 @@ public final class TurnPhaseController implements TestPhaseController
     final TestClient current = getClientInTurn ();
     // create a ClientEventProcessor for only this client
     final ClientEventProcessor processor = new ClientEventProcessor (ImmutableSet.of (current));
-    final ClientEventCallback <PlayerReinforceCountryRequestEvent> callback = new ClientEventCallback <PlayerReinforceCountryRequestEvent> ()
+    final ClientEventCallback <PlayerBeginCountryReinforcementEvent> callback = new ClientEventCallback <PlayerBeginCountryReinforcementEvent> ()
     {
       @Override
-      public void onEventReceived (final Optional <PlayerReinforceCountryRequestEvent> maybe, final TestClient client)
+      public void onEventReceived (final Optional <PlayerBeginCountryReinforcementEvent> maybe, final TestClient client)
       {
         monitor.assertTrue (maybe.isPresent ());
-        final PlayerReinforceCountryRequestEvent event = maybe.get ();
+        final PlayerBeginCountryReinforcementEvent event = maybe.get ();
         final CountryPacket randomCountry = Randomness.getRandomElementFrom (event.getPlayerOwnedCountries ());
         final int randomArmyCount = Randomness.getRandomIntegerFrom (1, event.getMaxArmiesPerCountry ());
-        client.send (new PlayerReinforceCountryResponseRequestEvent (randomCountry.getName (), randomArmyCount));
+        client.send (new PlayerReinforceCountryRequestEvent (randomCountry.getName (), randomArmyCount));
         final ImmutableSet <TestClient> failed = clientPool
-                .waitForAllClientsToReceive (PlayerReinforceCountryResponseSuccessEvent.class);
+                .waitForAllClientsToReceive (PlayerReinforceCountrySuccessEvent.class);
         monitor.assertTrue (failed.isEmpty ());
       }
     };
 
-    processor.registerCallback (PlayerReinforceCountryRequestEvent.class, callback);
+    processor.registerCallback (PlayerBeginCountryReinforcementEvent.class, callback);
     processor.registerCompletionTask (new Runnable ()
     {
       @Override

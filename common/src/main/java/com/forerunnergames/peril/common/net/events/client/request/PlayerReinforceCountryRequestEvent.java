@@ -16,21 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request.response;
+package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public final class PlayerReinforceCountryResponseRequestEvent implements ResponseRequestEvent
+public final class PlayerReinforceCountryRequestEvent implements PlayerRequestEvent
 {
   private final String countryName;
   private final int reinforcementCount;
 
-  public PlayerReinforceCountryResponseRequestEvent (final String countryName, final int reinforcementCount)
+  public PlayerReinforceCountryRequestEvent (final String countryName, final int reinforcementCount)
   {
 
     Arguments.checkIsNotNull (countryName, "countryName");
@@ -38,12 +36,6 @@ public final class PlayerReinforceCountryResponseRequestEvent implements Respons
 
     this.countryName = countryName;
     this.reinforcementCount = reinforcementCount;
-  }
-
-  @Override
-  public Class <? extends ServerRequestEvent> getRequestType ()
-  {
-    return PlayerReinforceCountryRequestEvent.class;
   }
 
   public String getCountryName ()
@@ -64,7 +56,7 @@ public final class PlayerReinforceCountryResponseRequestEvent implements Respons
   }
 
   @RequiredForNetworkSerialization
-  private PlayerReinforceCountryResponseRequestEvent ()
+  private PlayerReinforceCountryRequestEvent ()
   {
     countryName = null;
     reinforcementCount = 0;

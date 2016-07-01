@@ -16,21 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request.response;
+package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public final class PlayerTradeInCardsResponseRequestEvent implements ResponseRequestEvent
+public final class PlayerTradeInCardsRequestEvent implements PlayerRequestEvent
 {
   private final CardSetPacket tradeIn;
 
-  public PlayerTradeInCardsResponseRequestEvent (final CardSetPacket tradeIn)
+  public PlayerTradeInCardsRequestEvent (final CardSetPacket tradeIn)
   {
     Arguments.checkIsNotNull (tradeIn, "tradeIn");
 
@@ -48,14 +46,8 @@ public final class PlayerTradeInCardsResponseRequestEvent implements ResponseReq
     return Strings.format ("{}: TradeIn: [{}]", getClass ().getSimpleName (), tradeIn);
   }
 
-  @Override
-  public Class <? extends ServerRequestEvent> getRequestType ()
-  {
-    return PlayerTradeInCardsRequestEvent.class;
-  }
-
   @RequiredForNetworkSerialization
-  private PlayerTradeInCardsResponseRequestEvent ()
+  private PlayerTradeInCardsRequestEvent ()
   {
     tradeIn = null;
   }

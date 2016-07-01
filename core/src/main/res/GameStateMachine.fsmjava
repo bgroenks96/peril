@@ -34,12 +34,12 @@
       </event>
       <event id="onDeterminePlayerTurnOrderCompleteEvent">
         <parameter
-                type="com.forerunnergames.peril.common.net.events.server.notification.DeterminePlayerTurnOrderCompleteEvent"
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent"
                 name="event"/>
       </event>
       <event id="onDistributeInitialArmiesCompleteEvent">
         <parameter
-                type="com.forerunnergames.peril.common.net.events.server.notification.DistributeInitialArmiesCompleteEvent"
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent"
                 name="event"/>
       </event>
       <event id="onRandomlyAssignPlayerCountriesEvent">
@@ -62,33 +62,33 @@
       </event>
       <event id="onPlayerCountryAssignmentCompleteEvent">
         <parameter
-                type="com.forerunnergames.peril.common.net.events.server.notification.PlayerCountryAssignmentCompleteEvent"
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent"
                 name="event"/>
       </event>
       <event id="onEndInitialReinforcementPhaseEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.server.notification.EndInitialReinforcementPhaseEvent"/>
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent"/>
       </event>
       <event id="onEndPlayerTurnRequestEvent">
         <parameter
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent"/>
       </event>
-      <event id="onPlayerReinforceCountryResponseRequestEvent">
+      <event id="onPlayerReinforceCountryRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent"/>
       </event>
       <event id="onEndReinforcementPhaseEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent"/>
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent"/>
       </event>
-      <event id="onPlayerTradeInCardsResponseRequestEvent">
+      <event id="onPlayerTradeInCardsRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.response.PlayerTradeInCardsResponseRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent"/>
       </event>
       <event id="onPlayerBeginAttackResponseRequestEvent">
         <parameter
@@ -123,17 +123,17 @@
       <event id="onPlayerAttackVictoryEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackVictoryEvent"/>
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackVictoryEvent"/>
       </event>
       <event id="onPlayerAttackDefeatEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackDefeatEvent"/>
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackDefeatEvent"/>
       </event>
       <event id="onPlayerAttackIndecisiveEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.server.notification.PlayerAttackIndecisiveEvent"/>
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackIndecisiveEvent"/>
       </event>
       <event id="onPlayerOccupyCountryResponseRequestEvent">
         <parameter
@@ -166,15 +166,15 @@
                    name="event"/>
       </event>
       <event id="onEndPlayerTurnEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notification.EndPlayerTurnEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent"
                    name="event"/>
       </event>
       <event id="onSkipPlayerTurnEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notification.SkipPlayerTurnEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent"
                    name="event"/>
       </event>
       <event id="onPlayerLeaveGameEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent"
                    name="event"/>
       </event>
     </eventSource>
@@ -252,7 +252,7 @@
                 <transition event="onSkipPlayerTurnEvent"
                             action="gameModel.skipPlayerTurn(event)"
                             nextState="WaitForPlayersToReinforceInitialCountries"/>
-                <transition event="onPlayerReinforceCountryResponseRequestEvent"
+                <transition event="onPlayerReinforceCountryRequestEvent"
                             condition="gameModel.verifyPlayerInitialCountryReinforcements(event)"
                             nextState="WaitForPlayersToReinforceInitialCountries"/>
                 <transition event="onEndInitialReinforcementPhaseEvent"
@@ -271,13 +271,18 @@
                 <state name="ReinforcementPhase">
                   <onEntry action="gameModel.beginReinforcementPhase()"/>
                   <onExit action="gameModel.endReinforcementPhase()"/>
+                  <state name="WaitForPlayerToReinforceOrTradeIn">
+                    <transition event="onPlayerReinforceCountryRequestEvent"
+                                action="gameModel.handlePlayerReinforceCountry(event)"
+                                nextState="WaitForPlayerToPlaceReinforcements"/>
+                    <transition event="onPlayerTradeInCardsRequestEvent"
+                                condition="gameModel.verifyPlayerCardTradeIn(event)"
+                                nextState="WaitForPlayerToPlaceReinforcements"/>
+                  </state>
                   <state name="WaitForPlayerToPlaceReinforcements">
                     <onEntry action="gameModel.waitForPlayerToPlaceReinforcements()"/>
-                    <transition event="onPlayerReinforceCountryResponseRequestEvent"
-                                action="gameModel.placePlayerCountryReinforcements(event)"
-                                nextState="WaitForPlayerToPlaceReinforcements"/>
-                    <transition event="onPlayerTradeInCardsResponseRequestEvent"
-                                action="gameModel.handlePlayerCardTradeIn(event)"
+                    <transition event="onPlayerReinforceCountryRequestEvent"
+                                action="gameModel.handlePlayerReinforceCountry(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
                     <transition event="onEndReinforcementPhaseEvent"
                                 action="gameModel.endReinforcementPhase()"

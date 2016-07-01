@@ -20,8 +20,8 @@ package com.forerunnergames.peril.core.events;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -72,7 +72,7 @@ public final class DefaultEventFactory implements EventFactory
   }
 
   @Override
-  public PlayerReinforceCountryRequestEvent createReinforcementRequestFor (final Id playerId)
+  public PlayerBeginCountryReinforcementEvent createReinforcementEventFor (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
@@ -90,17 +90,18 @@ public final class DefaultEventFactory implements EventFactory
 
     final int playerArmyCount = playerModel.getArmiesInHand (playerId);
 
-    return new PlayerReinforceCountryRequestEvent (playerModel.playerPacketWith (playerId), validCountries,
+    return new PlayerBeginCountryReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
             playerOwnedContinents, Math.min (rules.getMaxArmiesInHand (), playerArmyCount));
   }
 
   @Override
-  public PlayerTradeInCardsRequestEvent createTradeInCardsRequestFor (final Id playerId, final TurnPhase turnPhase)
+  public PlayerCardTradeInAvailableEvent createCardTradeInEventFor (final Id playerId,
+                                                                    final ImmutableSet <CardSet.Match> matches,
+                                                                    final TurnPhase turnPhase)
   {
-    final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
     final int cardCount = cardModel.countCardsInHand (playerId);
     final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
-    return new PlayerTradeInCardsRequestEvent (playerModel.playerPacketWith (playerId),
+    return new PlayerCardTradeInAvailableEvent (playerModel.playerPacketWith (playerId),
             cardModel.getNextTradeInBonus (), matchPackets, cardCount > rules.getMaxCardsInHand (turnPhase));
   }
 }

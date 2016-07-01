@@ -24,10 +24,10 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountryResponseSuccessEvent extends AbstractPlayerCountryArmiesChangedEvent
+public final class PlayerReinforceCountrySuccessEvent extends AbstractPlayerCountryArmiesChangedEvent
         implements PlayerResponseSuccessEvent
 {
-  public PlayerReinforceCountryResponseSuccessEvent (final PlayerPacket player,
+  public PlayerReinforceCountrySuccessEvent (final PlayerPacket player,
                                                      final CountryPacket country,
                                                      final int countryArmyDelta)
   {
@@ -35,7 +35,7 @@ public final class PlayerReinforceCountryResponseSuccessEvent extends AbstractPl
   }
 
   @RequiredForNetworkSerialization
-  private PlayerReinforceCountryResponseSuccessEvent ()
+  private PlayerReinforceCountrySuccessEvent ()
   {
   }
 }
