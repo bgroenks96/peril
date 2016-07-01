@@ -16,25 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-/**
- * An event reserved only for the biggest of failures and truest of scrubs.
- */
-public final class PlayerLoseGameEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class BeginPlayerTurnEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  public PlayerLoseGameEvent (final PlayerPacket player)
+  public BeginPlayerTurnEvent (final PlayerPacket player)
   {
     super (player);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerLoseGameEvent ()
+  private BeginPlayerTurnEvent ()
   {
   }
 }

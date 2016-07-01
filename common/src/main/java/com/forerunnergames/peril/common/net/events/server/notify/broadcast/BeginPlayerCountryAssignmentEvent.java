@@ -16,44 +16,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-import com.google.common.collect.ImmutableSet;
-
-public final class PlayerLeaveGameEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class BeginPlayerCountryAssignmentEvent implements BroadcastNotificationEvent
 {
-  private final ImmutableSet <PlayerPacket> playersLeftInGame;
+  private final InitialCountryAssignment assignmentMode;
 
-  public PlayerLeaveGameEvent (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersLeftInGame)
+  public BeginPlayerCountryAssignmentEvent (final InitialCountryAssignment assignmentMode)
   {
-    super (player);
-
-    Arguments.checkIsNotNull (playersLeftInGame, "playersLeftInGame");
-
-    this.playersLeftInGame = playersLeftInGame;
+    this.assignmentMode = assignmentMode;
   }
 
-  public ImmutableSet <PlayerPacket> getPlayersLeftInGame ()
+  public InitialCountryAssignment getAssignmentMode ()
   {
-    return playersLeftInGame;
+    return assignmentMode;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | RemainingPlayers: [{}]", super.toString (), playersLeftInGame);
+    return Strings.format ("{}: AssignmentMode: {}", getClass ().getSimpleName (), assignmentMode);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerLeaveGameEvent ()
+  private BeginPlayerCountryAssignmentEvent ()
   {
-    playersLeftInGame = null;
+    assignmentMode = null;
   }
 }

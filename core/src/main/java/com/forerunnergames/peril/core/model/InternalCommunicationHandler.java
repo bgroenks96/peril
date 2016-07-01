@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;

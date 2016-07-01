@@ -1,5 +1,6 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2011 - 2013 Aaron Mahan.
+ * Copyright © 2013 - 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,22 +16,44 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class ActivePlayerChangedEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+import com.google.common.collect.ImmutableSet;
+
+public final class PlayerLeaveGameEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  public ActivePlayerChangedEvent (final PlayerPacket player)
+  private final ImmutableSet <PlayerPacket> playersLeftInGame;
+
+  public PlayerLeaveGameEvent (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersLeftInGame)
   {
     super (player);
+
+    Arguments.checkIsNotNull (playersLeftInGame, "playersLeftInGame");
+
+    this.playersLeftInGame = playersLeftInGame;
+  }
+
+  public ImmutableSet <PlayerPacket> getPlayersLeftInGame ()
+  {
+    return playersLeftInGame;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | RemainingPlayers: [{}]", super.toString (), playersLeftInGame);
   }
 
   @RequiredForNetworkSerialization
-  private ActivePlayerChangedEvent ()
+  private PlayerLeaveGameEvent ()
   {
+    playersLeftInGame = null;
   }
 }

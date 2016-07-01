@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -24,34 +24,34 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.ImmutableSet;
 
-public final class DeterminePlayerTurnOrderCompleteEvent implements BroadcastNotificationEvent
+public final class DistributeInitialArmiesCompleteEvent implements BroadcastNotificationEvent
 {
-  private final ImmutableSortedSet <PlayerPacket> turnOrderedPlayers;
+  private final ImmutableSet <PlayerPacket> players;
 
-  public DeterminePlayerTurnOrderCompleteEvent (final ImmutableSortedSet <PlayerPacket> turnOrderedPlayers)
+  public DistributeInitialArmiesCompleteEvent (final ImmutableSet <PlayerPacket> players)
   {
-    Arguments.checkIsNotNull (turnOrderedPlayers, "turnOrderedPlayers");
-    Arguments.checkHasNoNullElements (turnOrderedPlayers, "turnOrderedPlayers");
+    Arguments.checkIsNotNull (players, "players");
+    Arguments.checkHasNoNullElements (players, "players");
 
-    this.turnOrderedPlayers = turnOrderedPlayers;
+    this.players = players;
   }
 
-  public ImmutableSortedSet <PlayerPacket> getPlayersSortedByTurnOrder ()
+  public ImmutableSet <PlayerPacket> getPlayers ()
   {
-    return turnOrderedPlayers;
+    return players;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Turn Ordered Players: {}", getClass ().getSimpleName (), turnOrderedPlayers);
+    return Strings.format ("{}: Players: {}", getClass ().getSimpleName (), players);
   }
 
   @RequiredForNetworkSerialization
-  private DeterminePlayerTurnOrderCompleteEvent ()
+  private DistributeInitialArmiesCompleteEvent ()
   {
-    turnOrderedPlayers = null;
+    players = null;
   }
 }

@@ -16,47 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-import com.google.common.base.Optional;
-
-public final class EndPlayerTurnEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class EndFortifyPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  private final Optional <CardPacket> newCard;
-
-  public EndPlayerTurnEvent (final PlayerPacket player, final Optional <CardPacket> newCard)
+  public EndFortifyPhaseEvent (final PlayerPacket player)
   {
     super (player);
-
-    this.newCard = newCard;
-  }
-
-  public Optional <CardPacket> getNewCard ()
-  {
-    return newCard;
-  }
-
-  public boolean wasNewCardReceived ()
-  {
-    return newCard.isPresent ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | NewCard: {}", super.toString (), newCard);
   }
 
   @RequiredForNetworkSerialization
-  private EndPlayerTurnEvent ()
+  private EndFortifyPhaseEvent ()
   {
-    newCard = null;
   }
 }

@@ -16,36 +16,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class BeginPlayerCountryAssignmentEvent implements BroadcastNotificationEvent
-{
-  private final InitialCountryAssignment assignmentMode;
+import com.google.common.collect.ImmutableMap;
 
-  public BeginPlayerCountryAssignmentEvent (final InitialCountryAssignment assignmentMode)
+public final class EndInitialReinforcementPhaseEvent implements BroadcastNotificationEvent
+{
+  private final ImmutableMap <CountryPacket, PlayerPacket> playMapView;
+
+  public EndInitialReinforcementPhaseEvent (final ImmutableMap <CountryPacket, PlayerPacket> playMapView)
   {
-    this.assignmentMode = assignmentMode;
+    Arguments.checkIsNotNull (playMapView, "playMapView");
+
+    this.playMapView = playMapView;
   }
 
-  public InitialCountryAssignment getAssignmentMode ()
+  public ImmutableMap <CountryPacket, PlayerPacket> getPlayMapView ()
   {
-    return assignmentMode;
+    return playMapView;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: AssignmentMode: {}", getClass ().getSimpleName (), assignmentMode);
+    return Strings.format ("{}: PlayMapView: [{}]", getClass ().getSimpleName (), playMapView);
   }
 
   @RequiredForNetworkSerialization
-  private BeginPlayerCountryAssignmentEvent ()
+  private EndInitialReinforcementPhaseEvent ()
   {
-    assignmentMode = null;
+    playMapView = null;
   }
 }

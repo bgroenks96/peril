@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractAttackResultEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;

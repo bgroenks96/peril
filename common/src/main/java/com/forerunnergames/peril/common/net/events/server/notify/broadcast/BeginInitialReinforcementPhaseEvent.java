@@ -16,42 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-import com.google.common.collect.ImmutableMap;
-
-public final class EndInitialReinforcementPhaseEvent implements BroadcastNotificationEvent
+public final class BeginInitialReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  private final ImmutableMap <CountryPacket, PlayerPacket> playMapView;
-
-  public EndInitialReinforcementPhaseEvent (final ImmutableMap <CountryPacket, PlayerPacket> playMapView)
+  public BeginInitialReinforcementPhaseEvent (final PlayerPacket currentPlayer)
   {
-    Arguments.checkIsNotNull (playMapView, "playMapView");
-
-    this.playMapView = playMapView;
-  }
-
-  public ImmutableMap <CountryPacket, PlayerPacket> getPlayMapView ()
-  {
-    return playMapView;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: PlayMapView: [{}]", getClass ().getSimpleName (), playMapView);
+    super (currentPlayer);
   }
 
   @RequiredForNetworkSerialization
-  private EndInitialReinforcementPhaseEvent ()
+  private BeginInitialReinforcementPhaseEvent ()
   {
-    playMapView = null;
   }
 }

@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.integration.core.func.turn;
 
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerReinforceCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.BeginReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notification.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;

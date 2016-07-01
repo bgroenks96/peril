@@ -16,22 +16,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class BeginInitialReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+import com.google.common.collect.ImmutableSet;
+
+public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  public BeginInitialReinforcementPhaseEvent (final PlayerPacket currentPlayer)
+  private final ImmutableSet <CountryPacket> playerOwnedCountries;
+
+  public EndReinforcementPhaseEvent (final PlayerPacket player, final ImmutableSet <CountryPacket> playerOwnedCountries)
   {
-    super (currentPlayer);
+    super (player);
+
+    Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
+
+    this.playerOwnedCountries = playerOwnedCountries;
+  }
+
+  public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
+  {
+    return this.playerOwnedCountries;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | PlayerOwnedCountries: [{}]", super.toString (), playerOwnedCountries);
   }
 
   @RequiredForNetworkSerialization
-  private BeginInitialReinforcementPhaseEvent ()
+  private EndReinforcementPhaseEvent ()
   {
+    this.playerOwnedCountries = null;
   }
 }

@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +15,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notification;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class EndAttackPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class ActivePlayerChangedEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  public EndAttackPhaseEvent (final PlayerPacket player)
+  public ActivePlayerChangedEvent (final PlayerPacket player)
   {
     super (player);
   }
 
   @RequiredForNetworkSerialization
-  private EndAttackPhaseEvent ()
+  private ActivePlayerChangedEvent ()
   {
   }
 }
