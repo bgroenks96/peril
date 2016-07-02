@@ -16,23 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.success;
+package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 
-public final class PlayerEndAttackPhaseResponseSuccessEvent extends AbstractPlayerEvent
-        implements PlayerResponseSuccessEvent
+public final class PlayerEndAttackPhaseRequestEvent implements PlayerRequestEvent
 {
-  public PlayerEndAttackPhaseResponseSuccessEvent (final PlayerPacket player)
+  @Override
+  public String toString ()
   {
-    super (player);
-  }
-
-  @RequiredForNetworkSerialization
-  private PlayerEndAttackPhaseResponseSuccessEvent ()
-  {
+    return getClass ().getSimpleName ();
   }
 }

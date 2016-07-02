@@ -214,7 +214,7 @@ public final class FortificationPhaseHandler
   {
     response = null;
     countrySelectionHandler.reset ();
-    countrySelectionHandler.start (request);
+    // FIXME: countrySelectionHandler.start (request);
   }
 
   private void showFortificationDialog (final String sourceCountryName, final String destCountryName)

@@ -20,19 +20,18 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackOrderResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerBeginAttackResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackOrderRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerBeginAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackOrderResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerBeginAttackResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -53,7 +52,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
       @Override
       public void onEnd (final String sourceCountryName, final String destCountryName)
       {
-        eventBus.publish (new PlayerBeginAttackResponseRequestEvent (sourceCountryName, destCountryName));
+        eventBus.publish (new PlayerSelectAttackVectorRequestEvent (sourceCountryName, destCountryName));
       }
     };
   }
@@ -73,7 +72,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
     super.softReset ();
 
     countrySelectionHandler.reset ();
-    countrySelectionHandler.start (getBattleRequestAs (PlayerSelectCountriesRequestEvent.class));
+    countrySelectionHandler.start (getBattleRequestAs (PlayerBeginAttackEvent.class));
   }
 
   @Override
@@ -91,19 +90,19 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   @Override
   protected String getBattleRequestClassName ()
   {
-    return PlayerAttackOrderRequestEvent.class.getSimpleName ();
+    return PlayerIssueAttackOrderEvent.class.getSimpleName ();
   }
 
   @Override
   protected String getBattleResponseRequestClassName ()
   {
-    return PlayerAttackOrderResponseRequestEvent.class.getSimpleName ();
+    return PlayerOrderAttackRequestEvent.class.getSimpleName ();
   }
 
   @Override
-  protected ResponseRequestEvent createBattleResponse (final int dieCount)
+  protected PlayerRequestEvent createBattleResponse (final int dieCount)
   {
-    return new PlayerAttackOrderResponseRequestEvent (dieCount);
+    return new PlayerOrderAttackRequestEvent (dieCount);
   }
 
   @Override
@@ -128,7 +127,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerBeginAttackRequestEvent event)
+  void onEvent (final PlayerBeginAttackEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -139,7 +138,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerBeginAttackResponseSuccessEvent event)
+  void onEvent (final PlayerSelectAttackVectorSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -147,19 +146,19 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerAttackOrderRequestEvent event)
+  void onEvent (final PlayerIssueAttackOrderEvent event)
   {
     super.onEvent (event);
   }
 
   @Handler
-  void onEvent (final PlayerAttackOrderResponseSuccessEvent event)
+  void onEvent (final PlayerOrderAttackSuccessEvent event)
   {
     super.onEvent (event);
   }
 
   @Handler
-  void onEvent (final PlayerAttackOrderResponseDeniedEvent event)
+  void onEvent (final PlayerOrderAttackDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

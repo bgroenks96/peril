@@ -1,20 +1,19 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerBeginAttackResponseSuccessEvent extends AbstractPlayerEvent
-        implements PlayerResponseSuccessEvent
+public final class PlayerSelectAttackVectorSuccessEvent extends AbstractPlayerEvent implements PlayerSuccessEvent
 {
   private final PendingBattleActorPacket attacker;
   private final PendingBattleActorPacket defender;
 
-  public PlayerBeginAttackResponseSuccessEvent (final PendingBattleActorPacket attacker,
-                                                final PendingBattleActorPacket defender)
+  public PlayerSelectAttackVectorSuccessEvent (final PendingBattleActorPacket attacker,
+                                               final PendingBattleActorPacket defender)
   {
     super (attacker.getPlayer ());
 
@@ -42,7 +41,7 @@ public final class PlayerBeginAttackResponseSuccessEvent extends AbstractPlayerE
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginAttackResponseSuccessEvent ()
+  private PlayerSelectAttackVectorSuccessEvent ()
   {
     attacker = null;
     defender = null;

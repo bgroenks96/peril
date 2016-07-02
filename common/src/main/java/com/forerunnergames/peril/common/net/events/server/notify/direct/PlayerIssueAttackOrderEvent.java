@@ -16,25 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSelectCountriesRequestEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleSetupEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableMultimap;
-
-public final class PlayerBeginAttackRequestEvent extends AbstractPlayerSelectCountriesRequestEvent
+public final class PlayerIssueAttackOrderEvent extends AbstractBattleSetupEvent implements DirectPlayerNotificationEvent
 {
-  public PlayerBeginAttackRequestEvent (final PlayerPacket currentPlayer,
-                                        final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)
+  public PlayerIssueAttackOrderEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {
-    super (currentPlayer, validAttackVectors);
+    super (attacker, defender);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginAttackRequestEvent ()
+  private PlayerIssueAttackOrderEvent ()
   {
   }
 }

@@ -28,7 +28,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -68,7 +68,7 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Override
-  protected ResponseRequestEvent createBattleResponse (final int dieCount)
+  protected RequestEvent createBattleResponse (final int dieCount)
   {
     Arguments.checkLowerExclusiveBound (dieCount, 0, "dieCount");
 

@@ -22,7 +22,7 @@ import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPac
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
-public interface BattleRequestEvent extends PlayerInputRequestEvent
+public interface BattleSetupEvent extends PlayerEvent
 {
   PendingBattleActorPacket getAttacker ();
 

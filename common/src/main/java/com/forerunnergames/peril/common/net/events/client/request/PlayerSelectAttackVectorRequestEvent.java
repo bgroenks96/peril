@@ -16,21 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request.response;
+package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.server.request.PlayerBeginAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public final class PlayerBeginAttackResponseRequestEvent implements ResponseRequestEvent
+public final class PlayerSelectAttackVectorRequestEvent implements PlayerRequestEvent
 {
   private final String sourceCountryName;
   private final String targetCountryName;
 
-  public PlayerBeginAttackResponseRequestEvent (final String sourceCountryName, final String targetCountryName)
+  public PlayerSelectAttackVectorRequestEvent (final String sourceCountryName, final String targetCountryName)
   {
     Arguments.checkIsNotNull (sourceCountryName, "sourceCountryName");
     Arguments.checkIsNotNull (targetCountryName, "targetCountryName");
@@ -50,12 +48,6 @@ public final class PlayerBeginAttackResponseRequestEvent implements ResponseRequ
   }
 
   @Override
-  public Class <? extends ServerRequestEvent> getRequestType ()
-  {
-    return PlayerBeginAttackRequestEvent.class;
-  }
-
-  @Override
   public String toString ()
   {
     return Strings.format ("{}: SourceCountry: {} | TargetCountry: {}", getClass ().getSimpleName (), sourceCountryName,
@@ -63,7 +55,7 @@ public final class PlayerBeginAttackResponseRequestEvent implements ResponseRequ
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginAttackResponseRequestEvent ()
+  private PlayerSelectAttackVectorRequestEvent ()
   {
     sourceCountryName = null;
     targetCountryName = null;

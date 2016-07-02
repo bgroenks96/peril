@@ -26,10 +26,10 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerAttackOrderResponseSuccessEvent extends AbstractBattleResultEvent
+public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEvent
         implements PlayerResponseSuccessEvent
 {
-  public PlayerAttackOrderResponseSuccessEvent (final BattleResultPacket result)
+  public PlayerOrderAttackSuccessEvent (final BattleResultPacket result)
   {
     super (result);
   }
@@ -59,7 +59,7 @@ public final class PlayerAttackOrderResponseSuccessEvent extends AbstractBattleR
   }
 
   @RequiredForNetworkSerialization
-  private PlayerAttackOrderResponseSuccessEvent ()
+  private PlayerOrderAttackSuccessEvent ()
   {
   }
 }

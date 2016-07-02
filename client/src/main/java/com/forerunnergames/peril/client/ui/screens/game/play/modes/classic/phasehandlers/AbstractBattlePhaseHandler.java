@@ -25,16 +25,16 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleResultEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerBeginAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
 import com.google.common.base.Optional;
 
@@ -58,9 +58,9 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
   private final AtomicBoolean isBattleQueued = new AtomicBoolean (false);
   private PlayMap playMap;
   @Nullable
-  private PlayerInputRequestEvent request;
+  private DirectPlayerEvent request;
   @Nullable
-  private ResponseRequestEvent response;
+  private RequestEvent response; // FIXME
 
   AbstractBattlePhaseHandler (final PlayMap playMap,
                               final PlayerBox playerBox,
@@ -124,7 +124,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
       return;
     }
 
-    eventBus.publish (new PlayerEndAttackPhaseResponseRequestEvent ());
+    eventBus.publish (new PlayerEndAttackPhaseRequestEvent ());
 
     reset ();
   }
@@ -162,13 +162,13 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
   protected abstract String getBattleResponseRequestClassName ();
 
-  protected abstract ResponseRequestEvent createBattleResponse (final int dieCount);
+  protected abstract RequestEvent createBattleResponse (final int dieCount);
 
   protected abstract void onNewBattleRequest ();
 
   protected abstract void onBattleStart ();
 
-  final void onEvent (final PlayerInputRequestEvent event)
+  final void onEvent (final DirectPlayerEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -296,7 +296,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
     }
 
     // TODO This is a hack until the core battle API redesign is complete.
-    if (request instanceof PlayerBeginAttackRequestEvent && !attackingPlayerName.equals (request.getPlayerName ()))
+    if (request instanceof PlayerBeginAttackEvent && !attackingPlayerName.equals (request.getPlayerName ()))
     {
       log.warn ("Not showing {} for request [{}] because resolved owner [{}] of attacking country [{}] is not the same "
               + "player [{}] from the original request.", battleDialog.getClass ().getSimpleName (), request,
@@ -367,7 +367,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
   }
 
   // TODO This is a hack until the core battle API redesign is complete.
-  final <T extends PlayerInputRequestEvent> T getBattleRequestAs (final Class <T> requestType)
+  final <T> T getBattleRequestAs (final Class <T> requestType)
   {
     Arguments.checkIsNotNull (requestType, "requestType");
     Preconditions.checkIsTrue (request != null, "{} does not exist.", requestType);

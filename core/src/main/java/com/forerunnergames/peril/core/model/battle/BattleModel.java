@@ -18,8 +18,8 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerBeginAttackResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -37,11 +37,11 @@ public interface BattleModel
    * Validates the given attack order data and returns a DataResult containing an AttackOrder on success or Reason on
    * failure.
    */
-  DataResult <AttackVector, PlayerBeginAttackResponseDeniedEvent.Reason> newPlayerAttackVector (final Id playerId,
+  DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> newPlayerAttackVector (final Id playerId,
                                                                                                 final Id sourceCountry,
                                                                                                 final Id targetCountry);
 
-  DataResult <AttackOrder, PlayerAttackOrderResponseDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
+  DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
                                                                                               final int dieCount);
 
   BattleResult generateResultFor (final AttackOrder attackOrder,

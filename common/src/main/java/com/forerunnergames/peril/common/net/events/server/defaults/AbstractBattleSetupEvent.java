@@ -15,11 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.events.server.defaults;
 
 import com.forerunnergames.peril.common.game.DieRange;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.BattleRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -27,12 +26,12 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-abstract class AbstractBattleRequestEvent extends AbstractPlayerEvent implements BattleRequestEvent
+public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent implements BattleSetupEvent
 {
   private final PendingBattleActorPacket attacker;
   private final PendingBattleActorPacket defender;
 
-  AbstractBattleRequestEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
+  protected AbstractBattleSetupEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {
     super (attacker.getPlayer ());
 
@@ -134,7 +133,7 @@ abstract class AbstractBattleRequestEvent extends AbstractPlayerEvent implements
   }
 
   @RequiredForNetworkSerialization
-  protected AbstractBattleRequestEvent ()
+  protected AbstractBattleSetupEvent ()
   {
     attacker = null;
     defender = null;

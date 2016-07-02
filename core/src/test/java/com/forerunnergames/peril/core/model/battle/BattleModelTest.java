@@ -30,7 +30,7 @@ import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerBeginAttackResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.GameModelTest;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
@@ -179,10 +179,10 @@ public class BattleModelTest
     final Id sourceCountry = countries.get (2);
     final Id targetCountry = countries.get (3);
     final int dieCount = gameRules.getMaxAttackerDieCount (countryArmyCount);
-    final DataResult <AttackVector, PlayerBeginAttackResponseDeniedEvent.Reason> result;
+    final DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackVector (player0, sourceCountry, targetCountry);
     assertTrue (result.failed ());
-    assertTrue (result.failedBecauseOf (PlayerBeginAttackResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
+    assertTrue (result.failedBecauseOf (PlayerSelectAttackVectorDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
   }
 
   @Test
@@ -203,10 +203,10 @@ public class BattleModelTest
     final Id sourceCountry = countries.get (0);
     final Id targetCountry = countries.get (1);
     final int dieCount = gameRules.getMaxAttackerDieCount (countryArmyCount);
-    final DataResult <AttackVector, PlayerBeginAttackResponseDeniedEvent.Reason> result;
+    final DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackVector (player0, sourceCountry, targetCountry);
     assertTrue (result.failed ());
-    assertTrue (result.failedBecauseOf (PlayerBeginAttackResponseDeniedEvent.Reason.ALREADY_OWNER_OF_TARGET_COUNTRY));
+    assertTrue (result.failedBecauseOf (PlayerSelectAttackVectorDeniedEvent.Reason.ALREADY_OWNER_OF_TARGET_COUNTRY));
   }
 
   @Test
@@ -227,10 +227,10 @@ public class BattleModelTest
     final Id sourceCountry = countries.get (0);
     final Id targetCountry = countries.get (2);
     final int dieCount = gameRules.getMaxAttackerDieCount (countryArmyCount);
-    final DataResult <AttackVector, PlayerBeginAttackResponseDeniedEvent.Reason> result;
+    final DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackVector (player0, sourceCountry, targetCountry);
     assertTrue (result.failed ());
-    assertTrue (result.failedBecauseOf (PlayerBeginAttackResponseDeniedEvent.Reason.INSUFFICIENT_ARMY_COUNT));
+    assertTrue (result.failedBecauseOf (PlayerSelectAttackVectorDeniedEvent.Reason.INSUFFICIENT_ARMY_COUNT));
   }
 
   @Test

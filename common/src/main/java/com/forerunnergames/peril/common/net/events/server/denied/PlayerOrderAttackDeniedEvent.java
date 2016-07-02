@@ -20,18 +20,18 @@ package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerAttackOrderResponseDeniedEvent extends AbstractDeniedEvent <Reason>
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerOrderAttackDeniedEvent extends AbstractDeniedEvent <Reason>
+        implements PlayerDeniedEvent <Reason>
 {
   private final PlayerPacket player;
 
-  public PlayerAttackOrderResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerOrderAttackDeniedEvent (final PlayerPacket player, final Reason reason)
   {
     super (reason);
 
@@ -69,7 +69,7 @@ public final class PlayerAttackOrderResponseDeniedEvent extends AbstractDeniedEv
   }
 
   @RequiredForNetworkSerialization
-  private PlayerAttackOrderResponseDeniedEvent ()
+  private PlayerOrderAttackDeniedEvent ()
   {
     player = null;
   }

@@ -23,9 +23,9 @@ import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerBeginAttackResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerBeginAttackResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.map.PlayMapModel;
 import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
@@ -96,7 +96,7 @@ public final class DefaultBattleModel implements BattleModel
   }
 
   @Override
-  public DataResult <AttackVector, PlayerBeginAttackResponseDeniedEvent.Reason> newPlayerAttackVector (final Id playerId,
+  public DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> newPlayerAttackVector (final Id playerId,
                                                                                                        final Id sourceCountry,
                                                                                                        final Id targetCountry)
   {
@@ -136,7 +136,7 @@ public final class DefaultBattleModel implements BattleModel
   }
 
   @Override
-  public DataResult <AttackOrder, PlayerAttackOrderResponseDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
+  public DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
                                                                                                      final int dieCount)
   {
     Arguments.checkIsNotNull (attackVector, "attackVector");
@@ -148,13 +148,13 @@ public final class DefaultBattleModel implements BattleModel
 
     if (sourceCountryArmyCount < rules.getMinArmiesOnCountryForAttack ())
     {
-      return DataResult.failureNoData (PlayerAttackOrderResponseDeniedEvent.Reason.INSUFFICIENT_ARMY_COUNT);
+      return DataResult.failureNoData (PlayerOrderAttackDeniedEvent.Reason.INSUFFICIENT_ARMY_COUNT);
     }
 
     if (dieCount < rules.getMinAttackerDieCount (sourceCountryArmyCount)
             || dieCount > rules.getMaxAttackerDieCount (sourceCountryArmyCount))
     {
-      return DataResult.failureNoData (PlayerAttackOrderResponseDeniedEvent.Reason.INVALID_DIE_COUNT);
+      return DataResult.failureNoData (PlayerOrderAttackDeniedEvent.Reason.INVALID_DIE_COUNT);
     }
 
     final AttackOrder attackOrder = new DefaultAttackOrder (attackVector, dieCount);

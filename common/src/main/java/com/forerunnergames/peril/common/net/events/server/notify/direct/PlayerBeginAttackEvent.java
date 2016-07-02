@@ -16,27 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSelectCountryVectorEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableMultimap;
 
-public final class PlayerFortifyCountryRequestEvent extends AbstractPlayerSelectCountryVectorEvent
-        implements PlayerInputRequestEvent
+public final class PlayerBeginAttackEvent extends AbstractPlayerSelectCountryVectorEvent
+        implements DirectPlayerNotificationEvent
 {
-  public PlayerFortifyCountryRequestEvent (final PlayerPacket player,
-                                           final ImmutableMultimap <CountryPacket, CountryPacket> fortifyVectors)
+  public PlayerBeginAttackEvent (final PlayerPacket currentPlayer,
+                                 final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)
   {
-    super (player, fortifyVectors);
+    super (currentPlayer, validAttackVectors);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerFortifyCountryRequestEvent ()
+  private PlayerBeginAttackEvent ()
   {
   }
 }

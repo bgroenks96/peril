@@ -18,11 +18,15 @@
 
 package com.forerunnergames.peril.common.net.events.server.request;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleSetupEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryRequestEvent extends AbstractBattleRequestEvent
+public final class PlayerDefendCountryRequestEvent extends AbstractBattleSetupEvent implements PlayerInputRequestEvent
+
 {
+
   public PlayerDefendCountryRequestEvent (final PendingBattleActorPacket attacker,
                                           final PendingBattleActorPacket defender)
   {

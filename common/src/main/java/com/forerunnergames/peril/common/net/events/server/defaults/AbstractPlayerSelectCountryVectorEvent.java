@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
-import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountriesRequestEvent;
+import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -31,13 +31,13 @@ import com.google.common.collect.ImmutableMultimap;
 
 import java.util.Map;
 
-public abstract class AbstractPlayerSelectCountriesRequestEvent extends AbstractPlayerEvent implements
-        PlayerSelectCountriesRequestEvent
+public abstract class AbstractPlayerSelectCountryVectorEvent extends AbstractPlayerEvent
+        implements PlayerSelectCountryVectorEvent
 {
   private final ImmutableMultimap <CountryPacket, CountryPacket> validVectors;
 
-  public AbstractPlayerSelectCountriesRequestEvent (final PlayerPacket currentPlayer,
-                                                    final ImmutableMultimap <CountryPacket, CountryPacket> validVectors)
+  public AbstractPlayerSelectCountryVectorEvent (final PlayerPacket currentPlayer,
+                                             final ImmutableMultimap <CountryPacket, CountryPacket> validVectors)
   {
     super (currentPlayer);
 
@@ -77,7 +77,7 @@ public abstract class AbstractPlayerSelectCountriesRequestEvent extends Abstract
             .firstMatch (new Predicate <Map.Entry <CountryPacket, CountryPacket>> ()
             {
               @Override
-              public boolean apply (Map.Entry <CountryPacket, CountryPacket> input)
+              public boolean apply (final Map.Entry <CountryPacket, CountryPacket> input)
               {
                 return input.getKey ().hasName (fromCountryName) && input.getValue ().hasName (toCountryName);
               }
@@ -91,7 +91,7 @@ public abstract class AbstractPlayerSelectCountriesRequestEvent extends Abstract
   }
 
   @RequiredForNetworkSerialization
-  protected AbstractPlayerSelectCountriesRequestEvent ()
+  protected AbstractPlayerSelectCountryVectorEvent ()
   {
     validVectors = null;
   }

@@ -35,11 +35,14 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 
+import java.util.Deque;
 import java.util.Map;
 
 import net.engio.mbassy.bus.MBassador;
@@ -58,6 +61,7 @@ class InternalCommunicationHandler
   private final MBassador <Event> eventBus;
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
   private final Map <ResponseRequestEvent, PlayerInputRequestEvent> responseRequests = Maps.newHashMap ();
+  private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
 
   InternalCommunicationHandler (final PlayerModel playerModel,
                                 final PlayMapModel playMapModel,
@@ -95,6 +99,26 @@ class InternalCommunicationHandler
     return Optional.fromNullable (responseRequests.get (event));
   }
 
+  <T extends ServerEvent> Optional <T> lastOutboundEventOfType (final Class <T> type)
+  {
+    final Deque <ServerEvent> tempDeque = Queues.newArrayDeque ();
+    Optional <T> maybe = Optional.absent ();
+    while (!maybe.isPresent () && outboundEventCache.size () > 0)
+    {
+      final ServerEvent next = outboundEventCache.poll ();
+      tempDeque.push (next);
+      if (next.getClass ().equals (type)) maybe = Optional.of (type.cast (next));
+    }
+
+    // push events back into cache in the same order they were removed
+    for (final ServerEvent next : tempDeque)
+    {
+      outboundEventCache.push (next);
+    }
+
+    return maybe;
+  }
+
   /**
    * This method should be called periodically to avoid stale request events from polluting the map caches.
    */
@@ -105,6 +129,14 @@ class InternalCommunicationHandler
 
     this.requestEvents.clear ();
     this.responseRequests.clear ();
+  }
+
+  @Handler
+  void onEvent (final ServerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    outboundEventCache.push (event);
   }
 
   @Handler (priority = 1)

@@ -17,7 +17,8 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountriesRequestEvent;
+import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 
 /**
  * API for selection of a validated source country followed by selection of a validated destination country.
@@ -34,7 +35,7 @@ public interface CountrySelectionHandler
    * @param requestEvent
    *          The original server request authorizing this country selection, used to validate the source & destination.
    */
-  void start (final PlayerSelectCountriesRequestEvent requestEvent);
+  void start (final PlayerBeginAttackEvent requestEvent);
 
   /**
    * Should be called after country selection is finished, i.e., after {@link #onEnd(String, String)}.
@@ -45,9 +46,9 @@ public interface CountrySelectionHandler
    * Callback for when country selection has ended, i.e., when a valid source country & a valid destination country have
    * been selected according to {@link #isValidSourceCountry(String)} & {@link #isValidDestCountry(String, String)}.
    *
-   * {@link #reset()} should be called after this callback, so that {@link #start(PlayerSelectCountriesRequestEvent)}
-   * must be called again in order to initiate another country selection, and so that otherwise country selection will
-   * remain disabled.
+   * {@link #reset()} should be called after this callback, so that {@link #start(PlayerSelectCountryVectorEvent)} must
+   * be called again in order to initiate another country selection, and so that otherwise country selection will remain
+   * disabled.
    */
   void onEnd (final String sourceCountryName, final String destCountryName);
 

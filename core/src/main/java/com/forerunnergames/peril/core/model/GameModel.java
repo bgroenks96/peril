@@ -24,30 +24,30 @@ import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerAttackOrderResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerBeginAttackResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerEndAttackPhaseResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerRetreatOrderResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackOrderResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerBeginAttackResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
@@ -72,23 +72,23 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerAttackOrderRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerBeginAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackOrderResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerBeginAttackResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatOrderResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatOrderSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
@@ -662,7 +662,6 @@ public final class GameModel
     {
       publish (new PlayerReinforceCountryDeniedEvent (player,
               PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
-      publish (eventFactory.createReinforcementEventFor (playerId));
       return false;
     }
 
@@ -671,7 +670,6 @@ public final class GameModel
     {
       publish (new PlayerReinforceCountryDeniedEvent (player,
               PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      publish (eventFactory.createReinforcementEventFor (playerId));
       return false;
     }
 
@@ -683,7 +681,6 @@ public final class GameModel
     if (result.failed ())
     {
       publish (new PlayerReinforceCountryDeniedEvent (player, result.getFailureReason ()));
-      publish (eventFactory.createReinforcementEventFor (playerId));
       return false;
     }
 
@@ -847,9 +844,6 @@ public final class GameModel
     else if (result.failed ())
     {
       publish (new PlayerTradeInCardsResponseDeniedEvent (getCurrentPlayerPacket (), result.getFailureReason ()));
-      // send new request event
-      final ImmutableSet <CardSet.Match> matches = cardModel.computeMatchesFor (playerId);
-      publish (eventFactory.createCardTradeInEventFor (playerId, matches, TurnPhase.REINFORCE));
       return false;
     }
 
@@ -871,7 +865,7 @@ public final class GameModel
 
   @StateMachineAction
   @StateEntryAction
-  public void waitForPlayerToBeginAttack ()
+  public void waitForPlayerToSelectAttackVector ()
   {
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
     for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (getCurrentPlayerId ()))
@@ -880,11 +874,11 @@ public final class GameModel
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
     }
 
-    publish (new PlayerBeginAttackRequestEvent (getCurrentPlayerPacket (), builder.build ()));
+    publish (new PlayerBeginAttackEvent (getCurrentPlayerPacket (), builder.build ()));
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerAttackVector (final PlayerBeginAttackResponseRequestEvent event)
+  public boolean verifyPlayerAttackVector (final PlayerSelectAttackVectorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -900,31 +894,28 @@ public final class GameModel
 
     if (!countryMapGraphModel.existsCountryWith (sourceCountryName))
     {
-      publish (new PlayerBeginAttackResponseDeniedEvent (currentPlayerPacket,
-              PlayerBeginAttackResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
-      republishRequestFor (event);
+      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket,
+              PlayerSelectAttackVectorDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryMapGraphModel.existsCountryWith (targetCountryName))
     {
-      publish (new PlayerBeginAttackResponseDeniedEvent (currentPlayerPacket,
-              PlayerBeginAttackResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
-      republishRequestFor (event);
+      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket,
+              PlayerSelectAttackVectorDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
-    final DataResult <AttackVector, PlayerBeginAttackResponseDeniedEvent.Reason> result;
+    final DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackVector (currentPlayer, sourceCountry, targetCountry);
     if (result.failed ())
     {
-      publish (new PlayerBeginAttackResponseDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
-      republishRequestFor (event);
+      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
       return false;
     }
 
     final AttackVector vector = result.getReturnValue ();
-    publish (new PlayerBeginAttackResponseSuccessEvent (createPendingAttackerPacket (vector),
+    publish (new PlayerSelectAttackVectorSuccessEvent (createPendingAttackerPacket (vector),
             createPendingDefenderPacket (vector)));
 
     // store pending attack vector
@@ -937,11 +928,11 @@ public final class GameModel
   public void waitForPlayerAttackOrder ()
   {
     final AttackVector vector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
-    publish (new PlayerAttackOrderRequestEvent (createPendingAttackerPacket (vector),
+    publish (new PlayerIssueAttackOrderEvent (createPendingAttackerPacket (vector),
             createPendingDefenderPacket (vector)));
   }
 
-  public boolean verifyPlayerAttackOrder (final PlayerAttackOrderResponseRequestEvent event)
+  public boolean verifyPlayerAttackOrder (final PlayerOrderAttackRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -954,13 +945,12 @@ public final class GameModel
     final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
     final int attackerDieCount = event.getDieCount ();
 
-    final DataResult <AttackOrder, PlayerAttackOrderResponseDeniedEvent.Reason> result;
+    final DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackOrder (attackVector, attackerDieCount);
 
     if (result.failed ())
     {
-      publish (new PlayerAttackOrderResponseDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
-      republishRequestFor (event);
+      publish (new PlayerOrderAttackDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
       return false;
     }
 
@@ -975,7 +965,7 @@ public final class GameModel
     return true;
   }
 
-  public void processPlayerRetreat (final PlayerRetreatOrderResponseRequestEvent event)
+  public void processPlayerRetreat (final PlayerOrderRetreatRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -988,11 +978,11 @@ public final class GameModel
     final CountryPacket attackingCountry = countryMapGraphModel.countryPacketWith (attackVector.getSourceCountry ());
     final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
 
-    publish (new PlayerRetreatOrderResponseSuccessEvent (attackingPlayer, attackingCountry, defendingCountry));
+    publish (new PlayerRetreatOrderSuccessEvent (attackingPlayer, attackingCountry, defendingCountry));
   }
 
   @StateMachineCondition
-  public void processPlayerEndAttackPhase (final PlayerEndAttackPhaseResponseRequestEvent event)
+  public void processPlayerEndAttackPhase (final PlayerEndAttackPhaseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -1000,7 +990,7 @@ public final class GameModel
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    publish (new PlayerEndAttackPhaseResponseSuccessEvent (currentPlayer));
+    publish (new PlayerEndAttackPhaseSuccessEvent (currentPlayer));
   }
 
   @StateMachineCondition
@@ -1101,7 +1091,7 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
 
     publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket));
-    publish (new PlayerAttackOrderResponseSuccessEvent (resultPacket));
+    publish (new PlayerOrderAttackSuccessEvent (resultPacket));
 
     final int attackingCountryArmyCount = countryArmyModel.getArmyCountFor (attacker.getCountryId ());
 
@@ -1557,6 +1547,7 @@ public final class GameModel
       log.warn ("Unable to find request event matching response [{}].", event);
       return;
     }
+
     publish (originalRequest.get ());
   }
 

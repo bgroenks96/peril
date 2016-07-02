@@ -19,7 +19,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
-import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountriesRequestEvent;
+import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
@@ -43,14 +44,14 @@ import org.slf4j.LoggerFactory;
  * what should happen after the player successfully selects a source & destination country.
  *
  * Note: This class must be subscribed on the {@link net.engio.mbassy.bus.MBassador} event bus before calling
- * {@link CountrySelectionHandler#start(PlayerSelectCountriesRequestEvent)} in order to receive
- * {@link SelectCountryEvent}'s.
+ * {@link CountrySelectionHandler#start(PlayerSelectCountryVectorEvent)} in order to receive {@link SelectCountryEvent}
+ * 's.
  *
  * Note: This class may be unsubscribed on the {@link net.engio.mbassy.bus.MBassador} event bus in order to stop
  * receiving {@link SelectCountryEvent}'s, but even if it remains subscribed, it will ignore any events received before
- * calling {@link CountrySelectionHandler#start(PlayerSelectCountriesRequestEvent)} or after calling {@link #reset()}.
- * If unsubscribed, it must be resubscribed before calling
- * {@link CountrySelectionHandler#start(PlayerSelectCountriesRequestEvent)} in order to receive events again.
+ * calling {@link CountrySelectionHandler#start(PlayerSelectCountryVectorEvent)} or after calling {@link #reset()}. If
+ * unsubscribed, it must be resubscribed before calling
+ * {@link CountrySelectionHandler#start(PlayerSelectCountryVectorEvent)} in order to receive events again.
  *
  * @see CountrySelectionHandler
  */
@@ -60,7 +61,7 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   private final String phaseAsVerb;
   private final MBassador <Event> eventBus;
   private boolean isStarted;
-  private PlayerSelectCountriesRequestEvent requestEvent;
+  private PlayerBeginAttackEvent requestEvent;
   @Nullable
   private String sourceCountryName;
   @Nullable
@@ -78,12 +79,12 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   /**
    * {@inheritDoc}
    *
-   * Begins accepting {@link SelectCountryEvent}'s & asks the player in the {@link PlayerSelectCountriesRequestEvent} to
+   * Begins accepting {@link SelectCountryEvent}'s & asks the player in the {@link PlayerSelectCountryVectorEvent} to
    * choose a source country.
    */
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void start (final PlayerSelectCountriesRequestEvent requestEvent)
+  public void start (final PlayerBeginAttackEvent requestEvent)
   {
     Arguments.checkIsNotNull (requestEvent, "requestEvent");
     Preconditions.checkIsFalse (isStarted, "Cannot start a new country selection. One is already in progress. "
@@ -210,9 +211,10 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Phase (as verb): {} | Started: {} | Source Country: {} | Destination Country: {}"
-                                   + " | Server Request: {}", getClass ().getSimpleName (), phaseAsVerb, isStarted,
-                           sourceCountryName,
-                           destCountryName, requestEvent);
+    return Strings.format (
+                           "{}: Phase (as verb): {} | Started: {} | Source Country: {} | Destination Country: {}"
+                                   + " | Server Request: {}",
+                           getClass ().getSimpleName (), phaseAsVerb, isStarted, sourceCountryName, destCountryName,
+                           requestEvent);
   }
 }
