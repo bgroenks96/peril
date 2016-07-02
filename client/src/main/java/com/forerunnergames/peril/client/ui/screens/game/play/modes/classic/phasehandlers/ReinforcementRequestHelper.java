@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -20,7 +20,7 @@ public final class ReinforcementRequestHelper
 {
   private static final Logger log = LoggerFactory.getLogger (ReinforcementRequestHelper.class);
   @Nullable
-  private PlayerBeginCountryReinforcementEvent regularRequest;
+  private PlayerBeginReinforcementEvent regularRequest;
 
   public boolean isSet ()
   {
@@ -31,9 +31,9 @@ public final class ReinforcementRequestHelper
   {
     Arguments.checkIsNotNull (request, "request");
 
-    if (request instanceof PlayerBeginCountryReinforcementEvent)
+    if (request instanceof PlayerBeginReinforcementEvent)
     {
-      regularRequest = (PlayerBeginCountryReinforcementEvent) request;
+      regularRequest = (PlayerBeginReinforcementEvent) request;
       return;
     }
 

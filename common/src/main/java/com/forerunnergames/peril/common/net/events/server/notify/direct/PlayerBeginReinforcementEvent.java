@@ -11,13 +11,13 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public class PlayerBeginCountryReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
+public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
   private final ImmutableSet <ContinentPacket> playerOwnedContinents;
   private final int maxArmiesPerCountry;
 
-  public PlayerBeginCountryReinforcementEvent (final PlayerPacket player,
+  public PlayerBeginReinforcementEvent (final PlayerPacket player,
                                                final ImmutableSet <CountryPacket> playerOwnedCountries,
                                                final ImmutableSet <ContinentPacket> playerOwnedContinents,
                                                final int maxArmiesPerCountry)
@@ -85,7 +85,7 @@ public class PlayerBeginCountryReinforcementEvent extends AbstractPlayerEvent im
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginCountryReinforcementEvent ()
+  private PlayerBeginReinforcementEvent ()
   {
     playerOwnedCountries = null;
     playerOwnedContinents = null;

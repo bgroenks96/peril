@@ -20,7 +20,7 @@ package com.forerunnergames.peril.core.events;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -72,7 +72,7 @@ public final class DefaultEventFactory implements EventFactory
   }
 
   @Override
-  public PlayerBeginCountryReinforcementEvent createReinforcementEventFor (final Id playerId)
+  public PlayerBeginReinforcementEvent createReinforcementEventFor (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
@@ -90,7 +90,7 @@ public final class DefaultEventFactory implements EventFactory
 
     final int playerArmyCount = playerModel.getArmiesInHand (playerId);
 
-    return new PlayerBeginCountryReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
+    return new PlayerBeginReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
             playerOwnedContinents, Math.min (rules.getMaxArmiesInHand (), playerArmyCount));
   }
 

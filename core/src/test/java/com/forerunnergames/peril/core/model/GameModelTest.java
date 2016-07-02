@@ -62,7 +62,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Distr
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
@@ -481,21 +481,21 @@ public class GameModelTest
     playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.THIRD), 1);
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginCountryReinforcementEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
 
     eventHandler.clearEvents ();
     gameModel.advancePlayerTurn ();
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
-    assertTrue (eventHandler.wasNeverFired (PlayerBeginCountryReinforcementEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.lastEventWasType (SkipPlayerTurnEvent.class));
 
     eventHandler.clearEvents ();
     gameModel.advancePlayerTurn ();
     gameModel.waitForPlayersToReinforceInitialCountries ();
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginCountryReinforcementEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
 
   }
@@ -520,7 +520,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginCountryReinforcementEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCardTradeInAvailableEvent.class));
   }
 
@@ -551,7 +551,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginCountryReinforcementEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCardTradeInAvailableEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPlayer ()
             .is (testPlayerPacket));
@@ -570,10 +570,10 @@ public class GameModelTest
 
     gameModel.waitForPlayerToPlaceReinforcements ();
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginCountryReinforcementEvent.class));
-    assertTrue (eventHandler.lastEventOfType (PlayerBeginCountryReinforcementEvent.class).getPlayer ()
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPlayer ()
             .is (playerModel.playerPacketWith (testPlayer)));
-    assertTrue (eventHandler.lastEventOfType (PlayerBeginCountryReinforcementEvent.class).getPlayerOwnedCountries ()
+    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPlayerOwnedCountries ()
             .equals (countryMapGraphModel.getCountryPackets ()));
   }
 
@@ -590,7 +590,7 @@ public class GameModelTest
 
     gameModel.waitForPlayerToPlaceReinforcements ();
 
-    assertTrue (eventHandler.wasNeverFired (PlayerBeginCountryReinforcementEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (EndReinforcementPhaseEvent.class));
     assertTrue (eventHandler.lastEventOfType (EndReinforcementPhaseEvent.class).getPlayerOwnedCountries ()
             .equals (countryMapGraphModel.getCountryPackets ()));

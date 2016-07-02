@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.core.events;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginCountryReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.tools.common.id.Id;
@@ -32,5 +32,5 @@ public interface EventFactory
                                                              final ImmutableSet <CardSet.Match> matches,
                                                              final TurnPhase turnPhase);
 
-  PlayerBeginCountryReinforcementEvent createReinforcementEventFor (Id playerId);
+  PlayerBeginReinforcementEvent createReinforcementEventFor (Id playerId);
 }
