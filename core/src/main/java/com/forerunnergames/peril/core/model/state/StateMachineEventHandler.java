@@ -41,6 +41,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackVictoryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerResponseTimeoutEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -433,6 +434,16 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onSkipPlayerTurnEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerResponseTimeoutEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerResponseTimeoutEvent (event);
   }
 
   @Handler

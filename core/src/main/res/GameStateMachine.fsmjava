@@ -178,6 +178,10 @@
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent"
                    name="event"/>
       </event>
+      <event id="onPlayerResponseTimeoutEvent">
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerResponseTimeoutEvent"
+                   name="event"/>
+      </event>
       <event id="onPlayerLeaveGameEvent">
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent"
                    name="event"/>
@@ -318,6 +322,9 @@
                   <state name="WaitForDefenderResponse">
                     <transition event="onPlayerDefendCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerDefendCountryResponseRequest(event)"
+                                nextState="ProcessBattle"/>
+                    <transition event="onPlayerResponseTimeoutEvent"
+                                action="gameModel.handleDefenderTimeout(event)"
                                 nextState="ProcessBattle"/>
                   </state>
                   <state name="ProcessBattle">

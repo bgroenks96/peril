@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.common.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
-
 import com.esotericsoftware.kryo.Serializer;
+
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
 import com.forerunnergames.peril.common.net.events.EventFluency;
@@ -43,12 +43,12 @@ import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableSortedSetSerializer;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.UUID;
 
-import de.javakaffee.kryoserializers.guava.ImmutableSortedSetSerializer;
 import org.objenesis.instantiator.ObjectInstantiator;
 import org.objenesis.strategy.InstantiatorStrategy;
 import org.objenesis.strategy.StdInstantiatorStrategy;
@@ -92,6 +92,7 @@ public final class KryonetRegistration
           com.forerunnergames.tools.common.Classes.class,
           com.forerunnergames.tools.common.DefaultMessage.class,
           com.forerunnergames.tools.common.id.Id.class,
+          java.util.concurrent.TimeUnit.class,
           java.util.ArrayList.class,
           java.util.HashMap.class,
           java.net.InetSocketAddress.class,
@@ -192,8 +193,8 @@ public final class KryonetRegistration
     Classes.instantiationNotAllowed ();
   }
 
-  private static final class PackageToClassInfosFunction implements
-          Function <String, ImmutableSet <ClassPath.ClassInfo>>
+  private static final class PackageToClassInfosFunction
+          implements Function <String, ImmutableSet <ClassPath.ClassInfo>>
   {
     @Override
     public ImmutableSet <ClassPath.ClassInfo> apply (final String input)
@@ -250,7 +251,7 @@ public final class KryonetRegistration
     public ImmutableSet <Class <?>> apply (final Class <?> input)
     {
       // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
-      return ImmutableSet.<Class <?>> builder ().add (input).add (input.getDeclaredClasses ()).build ();
+      return ImmutableSet. <Class <?>> builder ().add (input).add (input.getDeclaredClasses ()).build ();
     }
   }
 
