@@ -79,6 +79,17 @@ class InternalCommunicationHandler
     this.eventBus = eventBus;
   }
 
+  boolean isSenderOf (final RequestEvent event, final PlayerPacket player)
+  {
+    final Optional <PlayerPacket> sender = senderOf (event);
+    return sender.isPresent () && sender.get ().is (player);
+  }
+
+  boolean isNotSenderOf (final RequestEvent event, final PlayerPacket player)
+  {
+    return !isSenderOf (event, player);
+  }
+
   /**
    * Fetches the PlayerPacket representing the player from whom this client request event was received.
    */

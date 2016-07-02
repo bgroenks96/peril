@@ -42,6 +42,7 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
@@ -50,6 +51,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCoun
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
@@ -61,16 +63,18 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Deter
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
@@ -860,27 +864,44 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginFortifyPhaseEvent.class));
     assertEquals (playerModel.playerPacketWith (player1),
                   eventHandler.lastEventOfType (BeginFortifyPhaseEvent.class).getPlayer ());
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryRequestEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginFortificationEvent.class));
     assertEquals (playerModel.playerPacketWith (player1),
-                  eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getPlayer ());
+                  eventHandler.lastEventOfType (PlayerBeginFortificationEvent.class).getPlayer ());
     final ImmutableMultimap <CountryPacket, CountryPacket> expectedFortifyVectors;
     expectedFortifyVectors = buildCountryMultimapFromIndices (defaultTestCountries, adj (0, 1, 3), adj (1, 0),
                                                               adj (3, 0));
     assertEquals (expectedFortifyVectors,
-                  eventHandler.lastEventOfType (PlayerFortifyCountryRequestEvent.class).getValidVectors ());
+                  eventHandler.lastEventOfType (PlayerBeginFortificationEvent.class).getValidVectors ());
   }
 
   @Test
-  public void testVerifyEmptyPlayerFortifyCountryResponseRequest ()
+  public void testBeginFortifyPhaseSkipsPhaseWhenNoValidVectorsExist ()
   {
     initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
 
     addMaxPlayers ();
 
-    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent ());
+    // sanity checks
+    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseSuccessEvent.class));
-    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseDeniedEvent.class));
+    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    // make sure country army count is below threshold for fortification
+    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () - 1;
+    final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
+    final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
+    final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
+    final ImmutableList <Id> countryIdsPlayer2 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer2);
+    final PlayMapStateBuilder playMapStateBuilder = new PlayMapStateBuilder (playMapModel);
+    playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
+    playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
+
+    gameModel.beginFortifyPhase ();
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (SkipFortifyPhaseEvent.class));
+    assertTrue (eventHandler.wasNeverFired (BeginFortifyPhaseEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerBeginFortificationEvent.class));
   }
 
   @Test
@@ -905,10 +926,14 @@ public class GameModelTest
     playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
     playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
 
-    assertTrue (gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
-            defaultTestCountries.get (0), defaultTestCountries.get (3), countryArmyCount - 1)));
+    assertTrue (gameModel.verifyPlayerFortifyVectorSelection (new PlayerSelectFortifyVectorRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (3))));
+    assertTrue (gameModel
+            .verifyPlayerFortifyCountryResponse (new PlayerFortifyCountryResponseRequestEvent (countryArmyCount - 1)));
 
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorDeniedEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseDeniedEvent.class));
   }
 
@@ -934,13 +959,13 @@ public class GameModelTest
     playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
     playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
 
-    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
-            defaultTestCountries.get (2), defaultTestCountries.get (0), countryArmyCount - 1));
+    assertFalse (gameModel.verifyPlayerFortifyVectorSelection (new PlayerSelectFortifyVectorRequestEvent (
+            defaultTestCountries.get (2), defaultTestCountries.get (0))));
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
-    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY,
-                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
-    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorDeniedEvent.class));
+    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY,
+                  eventHandler.lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorSuccessEvent.class));
   }
 
   @Test
@@ -965,13 +990,13 @@ public class GameModelTest
     playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
     playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
 
-    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
-            defaultTestCountries.get (0), defaultTestCountries.get (2), countryArmyCount - 1));
+    assertFalse (gameModel.verifyPlayerFortifyVectorSelection (new PlayerSelectFortifyVectorRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (2))));
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
-    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY,
-                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
-    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorDeniedEvent.class));
+    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY,
+                  eventHandler.lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorSuccessEvent.class));
   }
 
   @Test
@@ -996,13 +1021,13 @@ public class GameModelTest
     playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
     playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
 
-    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
-            defaultTestCountries.get (1), defaultTestCountries.get (3), countryArmyCount - 1));
+    assertFalse (gameModel.verifyPlayerFortifyVectorSelection (new PlayerSelectFortifyVectorRequestEvent (
+            defaultTestCountries.get (1), defaultTestCountries.get (3))));
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
-    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT,
-                  eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
-    assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorDeniedEvent.class));
+    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT,
+                  eventHandler.lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorSuccessEvent.class));
   }
 
   @Test
@@ -1027,9 +1052,12 @@ public class GameModelTest
     playMapStateBuilder.forCountries (countryIdsPlayer1).setOwner (player1).addArmies (countryArmyCount);
     playMapStateBuilder.forCountries (countryIdsPlayer2).setOwner (player2).addArmies (countryArmyCount);
 
-    gameModel.verifyPlayerFortifyCountryResponseRequest (new PlayerFortifyCountryResponseRequestEvent (
-            defaultTestCountries.get (0), defaultTestCountries.get (1), countryArmyCount));
+    assertTrue (gameModel.verifyPlayerFortifyVectorSelection (new PlayerSelectFortifyVectorRequestEvent (
+            defaultTestCountries.get (0), defaultTestCountries.get (1))));
+    assertFalse (gameModel
+            .verifyPlayerFortifyCountryResponse (new PlayerFortifyCountryResponseRequestEvent (countryArmyCount)));
 
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
     assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW,
                   eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());

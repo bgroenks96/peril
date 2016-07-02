@@ -7,12 +7,12 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerRetreatOrderSuccessEvent extends AbstractPlayerEvent implements PlayerSuccessEvent
+public class PlayerOrderRetreatSuccessEvent extends AbstractPlayerEvent implements PlayerSuccessEvent
 {
   private final CountryPacket attackingCountry;
   private final CountryPacket defendingCountry;
 
-  public PlayerRetreatOrderSuccessEvent (final PlayerPacket player,
+  public PlayerOrderRetreatSuccessEvent (final PlayerPacket player,
                                          final CountryPacket attackingCountry,
                                          final CountryPacket defendingCountry)
   {
@@ -46,7 +46,7 @@ public class PlayerRetreatOrderSuccessEvent extends AbstractPlayerEvent implemen
   }
 
   @RequiredForNetworkSerialization
-  private PlayerRetreatOrderSuccessEvent ()
+  private PlayerOrderRetreatSuccessEvent ()
   {
     attackingCountry = null;
     defendingCountry = null;

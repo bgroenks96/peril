@@ -24,6 +24,7 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAtt
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
@@ -362,6 +363,16 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerOccupyCountryResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerSelectFortifyVectorRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerSelectFortifyVectorRequestEvent (event);
   }
 
   @Handler

@@ -112,10 +112,10 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -1077,16 +1077,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getPlayer ()))
-    {
-      statusOn (!event.fortificationOccurred (), "Skipping post-combat maneuver.");
-      return;
-    }
-
-    statusOn (!event.fortificationOccurred (), "{} decided not to maneuver any armies.", event.getPlayerName ());
-    statusOn (event.fortificationOccurred (), "{} maneuvered {} into {} from {}.", event.getPlayerName (),
-              Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"), event.getDestinationCountryName (),
-              event.getSourceCountryName ());
+    status ("{} decided not to maneuver any armies.", event.getPlayerName ());
+    status ("{} maneuvered {} into {} from {}.", event.getPlayerName (),
+            Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"), event.getTargetCountryName (),
+            event.getSourceCountryName ());
   }
 
   @Handler

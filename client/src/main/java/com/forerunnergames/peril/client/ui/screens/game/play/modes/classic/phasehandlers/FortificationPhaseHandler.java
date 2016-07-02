@@ -21,9 +21,10 @@ import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -46,9 +47,9 @@ public final class FortificationPhaseHandler
   private final MBassador <Event> eventBus;
   private PlayMap playMap;
   @Nullable
-  private PlayerFortifyCountryRequestEvent request = null;
+  private PlayerBeginFortificationEvent request = null;
   @Nullable
-  private PlayerFortifyCountryResponseRequestEvent response = null;
+  private PlayerSelectFortifyVectorRequestEvent response = null;
 
   public FortificationPhaseHandler (final PlayMap playMap,
                                     final FortificationDialog fortificationDialog,
@@ -77,16 +78,17 @@ public final class FortificationPhaseHandler
     if (request == null)
     {
       log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
-                PlayerFortifyCountryResponseRequestEvent.class.getSimpleName (),
-                PlayerFortifyCountryRequestEvent.class.getSimpleName ());
+                PlayerSelectFortifyVectorRequestEvent.class.getSimpleName (),
+                PlayerBeginFortificationEvent.class.getSimpleName ());
       eventBus.publish (StatusMessageEventFactory
               .create ("Whoops, it looks like you aren't authorized to perform a post-combat maneuver."));
       softReset ();
       return;
     }
 
-    response = new PlayerFortifyCountryResponseRequestEvent (fortificationDialog.getSourceCountryName (),
-            fortificationDialog.getDestinationCountryName (), fortificationDialog.getDeltaArmyCount ());
+    // FIXME ?
+    response = new PlayerSelectFortifyVectorRequestEvent (fortificationDialog.getSourceCountryName (),
+            fortificationDialog.getDestinationCountryName ());
 
     eventBus.publish (response);
   }
@@ -116,12 +118,12 @@ public final class FortificationPhaseHandler
 
   public void onEndFortificationPhase ()
   {
-    eventBus.publish (new PlayerFortifyCountryResponseRequestEvent ());
+    eventBus.publish (new EndPlayerTurnRequestEvent ());
     reset ();
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryRequestEvent event)
+  void onEvent (final PlayerBeginFortificationEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -154,14 +156,8 @@ public final class FortificationPhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    if (!event.fortificationOccurred ())
-    {
-      reset ();
-      return;
-    }
-
     final String sourceCountryName = event.getSourceCountryName ();
-    final String destinationCountryName = event.getDestinationCountryName ();
+    final String destinationCountryName = event.getTargetCountryName ();
     final int deltaArmyCount = event.getDeltaArmyCount ();
 
     if (!fortificationDialog.getSourceCountryName ().equals (sourceCountryName))
@@ -195,7 +191,7 @@ public final class FortificationPhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryResponseDeniedEvent event)
+  void onEvent (final PlayerSelectFortifyVectorDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

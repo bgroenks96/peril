@@ -30,6 +30,7 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAtt
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
@@ -48,6 +49,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCou
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
@@ -71,8 +73,10 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
@@ -86,9 +90,10 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyC
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatOrderSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
@@ -978,7 +983,7 @@ public final class GameModel
     final CountryPacket attackingCountry = countryMapGraphModel.countryPacketWith (attackVector.getSourceCountry ());
     final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
 
-    publish (new PlayerRetreatOrderSuccessEvent (attackingPlayer, attackingCountry, defendingCountry));
+    publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, attackingCountry, defendingCountry));
   }
 
   @StateMachineCondition
@@ -1215,25 +1220,31 @@ public final class GameModel
 
     log.info ("Begin fortify phase for player [{}].", currentPlayer);
 
-    publish (new BeginFortifyPhaseEvent (currentPlayer));
-
     final Id currentPlayerId = getCurrentPlayerId ();
     final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
-    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectors = ImmutableSetMultimap
+    final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectorBuilder = ImmutableSetMultimap
             .builder ();
     for (final CountryPacket country : ownedCountries)
     {
-      if (!country.hasAtLeastNArmies (rules.getMinArmiesOnCountryForAttack ())) continue;
+      if (!country.hasAtLeastNArmies (rules.getMinArmiesOnCountryForFortify ())) continue;
       final Id countryId = countryMapGraphModel.countryWith (country.getName ());
       final ImmutableSet <Id> adjCountries = countryMapGraphModel.getAdjacentNodes (countryId);
       for (final Id adjCountry : adjCountries)
       {
         if (!countryOwnerModel.isCountryOwnedBy (adjCountry, currentPlayerId)) continue;
-        validFortifyVectors.put (country, countryMapGraphModel.countryPacketWith (adjCountry));
+        validFortifyVectorBuilder.put (country, countryMapGraphModel.countryPacketWith (adjCountry));
       }
     }
 
-    publish (new PlayerFortifyCountryRequestEvent (getCurrentPlayerPacket (), validFortifyVectors.build ()));
+    final ImmutableMultimap <CountryPacket, CountryPacket> validFortifyVectors = validFortifyVectorBuilder.build ();
+    if (validFortifyVectors.isEmpty ())
+    {
+      publish (new SkipFortifyPhaseEvent (currentPlayer));
+      return;
+    }
+
+    publish (new BeginFortifyPhaseEvent (currentPlayer));
+    publish (new PlayerBeginFortificationEvent (getCurrentPlayerPacket (), validFortifyVectors));
   }
 
   @StateMachineAction
@@ -1247,107 +1258,136 @@ public final class GameModel
   }
 
   @StateMachineCondition
-  public boolean verifyPlayerFortifyCountryResponseRequest (final PlayerFortifyCountryResponseRequestEvent event)
+  public boolean verifyPlayerFortifyVectorSelection (final PlayerSelectFortifyVectorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
 
     final Id currentPlayerId = getCurrentPlayerId ();
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    if (!event.isCountryDataPresent ())
+    if (internalCommHandler.isNotSenderOf (event, currentPlayer))
     {
-      // empty fortify actions do not need to be checked
-      publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayer));
-      return true;
-    }
-
-    if (!countryMapGraphModel.existsCountryWith (event.getSourceCountry ().get ()))
-    {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
       return false;
     }
 
-    if (!countryMapGraphModel.existsCountryWith (event.getTargetCountry ().get ()))
+    if (!countryMapGraphModel.existsCountryWith (event.getSourceCountry ()))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
-    final Id sourceCountryId = countryMapGraphModel.countryWith (event.getSourceCountry ().get ());
-    final Id targetCountryId = countryMapGraphModel.countryWith (event.getTargetCountry ().get ());
+    if (!countryMapGraphModel.existsCountryWith (event.getTargetCountry ()))
+    {
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
+      return false;
+    }
+
+    final Id sourceCountryId = countryMapGraphModel.countryWith (event.getSourceCountry ());
+    final Id targetCountryId = countryMapGraphModel.countryWith (event.getTargetCountry ());
 
     if (!countryOwnerModel.isCountryOwnedBy (sourceCountryId, currentPlayerId))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
       return false;
     }
 
     if (!countryOwnerModel.isCountryOwnedBy (targetCountryId, currentPlayerId))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY));
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY));
       return false;
     }
 
     if (!countryMapGraphModel.areAdjacent (sourceCountryId, targetCountryId))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
-      return false;
-    }
-
-    final int fortifyArmyCount = event.getFortifyArmyCount ();
-
-    if (fortifyArmyCount == 0)
-    {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_UNDERFLOW));
-      return false;
-    }
-
-    if (fortifyArmyCount > rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId)))
-    {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW));
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
       return false;
     }
 
     CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
     CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
 
-    final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res1, res2;
-    res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, fortifyArmyCount);
-    res2 = countryArmyModel.requestToAddArmiesToCountry (targetCountryId, fortifyArmyCount);
+    sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
+    targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
 
-    // this case should never happen if the previous fortification checks passed
-    if (res1.failed ()) Exceptions.throwIllegalState ("Failed to remove armies from country: {}", sourceCountryPacket);
-    // check for target country army overflow
-    if (res2.failed ())
+    turnDataCache.put (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, sourceCountryId);
+    turnDataCache.put (CacheKey.FORTIFY_TARGET_COUNTRY_ID, targetCountryId);
+
+    publish (new PlayerSelectFortifyVectorSuccessEvent (getCurrentPlayerPacket (), sourceCountryPacket,
+            targetCountryPacket));
+
+    final int maxArmyDelta = rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId));
+
+    publish (new PlayerFortifyCountryRequestEvent (getCurrentPlayerPacket (), sourceCountryPacket, targetCountryPacket,
+            maxArmyDelta));
+
+    return true;
+  }
+
+  @StateMachineCondition
+  public boolean verifyPlayerFortifyCountryResponse (final PlayerFortifyCountryResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    checkCacheValues (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, CacheKey.FORTIFY_TARGET_COUNTRY_ID);
+
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+
+    if (internalCommHandler.isNotSenderOf (event, currentPlayer))
     {
-      switch (res2.getFailureReason ())
-      {
-        case COUNTRY_ARMY_COUNT_OVERFLOW:
-          publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-                  PlayerFortifyCountryResponseDeniedEvent.Reason.TARGET_COUNTRY_ARMY_COUNT_OVERFLOW));
-          return false;
-        default:
-          Exceptions.throwIllegalState ("Failed to add armies to country: {}", targetCountryPacket);
-      }
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
+      return false;
+    }
+
+    final Id sourceCountry = turnDataCache.get (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, Id.class);
+    final Id targetCountry = turnDataCache.get (CacheKey.FORTIFY_TARGET_COUNTRY_ID, Id.class);
+    final int deltaArmyCount = event.getDeltaArmyCount ();
+    final int maxDeltaArmyCount = rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountry));
+    if (deltaArmyCount > maxDeltaArmyCount)
+    {
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW));
+      return false;
+    }
+
+    if (deltaArmyCount == 0)
+    {
+      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
+              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_UNDERFLOW));
+      return false;
+    }
+
+    final MutatorResult <?> res1, res2;
+    res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountry, deltaArmyCount);
+    res2 = countryArmyModel.requestToAddArmiesToCountry (targetCountry, deltaArmyCount);
+
+    final Optional <MutatorResult <?>> failed = Result.firstGenericFailedFrom (res1, res2);
+    if (failed.isPresent ())
+    {
+      // failure result from model class suggests some kind of serious state inconsistency
+      Exceptions.throwIllegalState ("Failed to change country army states [Reason: {}].",
+                                    failed.get ().getFailureReason ());
     }
 
     MutatorResult.commitAllSuccessful (res1, res2);
 
-    sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountry);
+    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
+    publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayer, sourceCountryPacket, targetCountryPacket,
+            deltaArmyCount));
 
-    publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -fortifyArmyCount));
-    publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, fortifyArmyCount));
-
-    publish (new PlayerFortifyCountryResponseSuccessEvent (getCurrentPlayerPacket (), sourceCountryPacket,
-            targetCountryPacket, fortifyArmyCount));
+    clearCacheValues (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, CacheKey.FORTIFY_TARGET_COUNTRY_ID);
 
     return true;
   }
@@ -1723,6 +1763,8 @@ public final class GameModel
     OCCUPY_DEST_COUNTRY,
     OCCUPY_PREV_OWNER,
     OCCUPY_MIN_ARMY_COUNT,
-    PLAYER_OCCUPIED_COUNTRY
+    PLAYER_OCCUPIED_COUNTRY,
+    FORTIFY_SOURCE_COUNTRY_ID,
+    FORTIFY_TARGET_COUNTRY_ID
   }
 }
