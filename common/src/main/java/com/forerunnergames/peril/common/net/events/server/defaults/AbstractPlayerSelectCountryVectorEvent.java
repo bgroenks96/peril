@@ -37,13 +37,19 @@ public abstract class AbstractPlayerSelectCountryVectorEvent extends AbstractPla
   private final ImmutableMultimap <CountryPacket, CountryPacket> validVectors;
 
   public AbstractPlayerSelectCountryVectorEvent (final PlayerPacket currentPlayer,
-                                             final ImmutableMultimap <CountryPacket, CountryPacket> validVectors)
+                                                 final ImmutableMultimap <CountryPacket, CountryPacket> validVectors)
   {
     super (currentPlayer);
 
     Arguments.checkIsNotNull (validVectors, "validVectors");
 
     this.validVectors = validVectors;
+  }
+
+  @RequiredForNetworkSerialization
+  protected AbstractPlayerSelectCountryVectorEvent ()
+  {
+    validVectors = null;
   }
 
   @Override
@@ -88,11 +94,5 @@ public abstract class AbstractPlayerSelectCountryVectorEvent extends AbstractPla
   public String toString ()
   {
     return Strings.format ("{} | ValidVectors: [{}]", super.toString (), validVectors);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractPlayerSelectCountryVectorEvent ()
-  {
-    validVectors = null;
   }
 }

@@ -17,12 +17,12 @@
 
 package com.forerunnergames.peril.common.net.events.interfaces;
 
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.collect.ImmutableMultimap;
 
-public interface PlayerSelectCountryVectorEvent extends ServerEvent
+public interface PlayerSelectCountryVectorEvent extends PlayerEvent
 {
   ImmutableMultimap <CountryPacket, CountryPacket> getValidVectors ();
 
