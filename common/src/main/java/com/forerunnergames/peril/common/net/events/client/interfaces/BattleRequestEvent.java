@@ -16,7 +16,7 @@
  */
 package com.forerunnergames.peril.common.net.events.client.interfaces;
 
-public interface BattleRequestEvent
+public interface BattleRequestEvent extends PlayerRequestEvent
 {
   int getDieCount ();
 }
