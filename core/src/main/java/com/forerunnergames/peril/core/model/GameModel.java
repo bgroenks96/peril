@@ -1041,7 +1041,7 @@ public final class GameModel
       return false;
     }
 
-    final int dieCount = event.getDefenderDieCount ();
+    final int dieCount = event.getDieCount ();
     if (dieCount < rules.getMinDefenderDieCount (defendingCountry.getArmyCount ())
             || dieCount > rules.getMaxDefenderDieCount (defendingCountry.getArmyCount ()))
     {

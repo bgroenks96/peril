@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.client.request.response;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -25,7 +26,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public class PlayerDefendCountryResponseRequestEvent implements ResponseRequestEvent
+public class PlayerDefendCountryResponseRequestEvent implements BattleRequestEvent, ResponseRequestEvent
 {
   private final int dieCount;
 
@@ -36,7 +37,8 @@ public class PlayerDefendCountryResponseRequestEvent implements ResponseRequestE
     this.dieCount = dieCount;
   }
 
-  public int getDefenderDieCount ()
+  @Override
+  public int getDieCount ()
   {
     return dieCount;
   }
