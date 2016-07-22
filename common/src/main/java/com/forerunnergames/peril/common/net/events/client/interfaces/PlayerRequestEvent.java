@@ -21,8 +21,9 @@ package com.forerunnergames.peril.common.net.events.client.interfaces;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
 /**
- * Represents request events sent by the client representing game-related actions or requests sent by the client after
- * successfully joining the game as a player.
+ * Represents request events sent by a client to the server after successfully joining the game as a player. Should be
+ * answered by a {@link com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent} or
+ * {@link com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent}
  */
 public interface PlayerRequestEvent extends ClientRequestEvent
 {
