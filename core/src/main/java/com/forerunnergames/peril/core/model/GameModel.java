@@ -138,8 +138,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
-import com.forerunnergames.peril.core.model.state.annotations.StateMachineAction;
-import com.forerunnergames.peril.core.model.state.annotations.StateMachineCondition;
+import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
+import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
@@ -246,7 +246,6 @@ public final class GameModel
     return builder (rules).build ();
   }
 
-  @StateMachineAction
   @StateTransitionAction
   public void beginGame ()
   {
@@ -260,7 +259,6 @@ public final class GameModel
     // TODO Reset entire game state.
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void endGame ()
   {
@@ -269,6 +267,7 @@ public final class GameModel
     // TODO End the game gracefully - this can be called DURING ANY GAME STATE
   }
 
+  @StateEntryAction
   public void beginPlayerTurn ()
   {
     log.info ("Turn begins for player [{}].", getCurrentPlayerName ());
@@ -285,6 +284,7 @@ public final class GameModel
     publish (new ActivePlayerChangedEvent (currentPlayer));
   }
 
+  @StateEntryAction
   public void endPlayerTurn ()
   {
     log.info ("Turn ends for player [{}].", getCurrentPlayerName ());
@@ -311,6 +311,7 @@ public final class GameModel
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket (), newPlayerCard));
   }
 
+  @StateTransitionAction
   public void skipPlayerTurn (final SkipPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -318,6 +319,7 @@ public final class GameModel
     log.info ("Skipping turn for player [{}].", event.getPlayerName ());
   }
 
+  @StateTransitionCondition
   public boolean verifyPlayerEndTurnRequest (final EndPlayerTurnRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -336,7 +338,6 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void determinePlayerTurnOrder ()
   {
@@ -363,7 +364,6 @@ public final class GameModel
     publish (new DeterminePlayerTurnOrderCompleteEvent (ordered.build ()));
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void distributeInitialArmies ()
   {
@@ -382,7 +382,6 @@ public final class GameModel
     publish (new DistributeInitialArmiesCompleteEvent (playerModel.getPlayerPackets ()));
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void waitForCountryAssignmentToBegin ()
   {
@@ -410,7 +409,6 @@ public final class GameModel
     }
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void randomlyAssignPlayerCountries ()
   {
@@ -481,7 +479,6 @@ public final class GameModel
     publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
   }
 
-  @StateMachineAction
   @StateTransitionAction
   public void handlePlayerJoinGameRequest (final PlayerJoinGameRequestEvent event)
   {
@@ -512,7 +509,6 @@ public final class GameModel
    * This method will be called after {@link InternalCommunicationHandler} has already handled the
    * {@link InternalPlayerLeaveGameEvent}.
    */
-  @StateMachineAction
   @StateTransitionAction
   public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
   {
@@ -529,6 +525,7 @@ public final class GameModel
     }
   }
 
+  @StateEntryAction
   public void beginInitialReinforcementPhase ()
   {
     log.info ("Begin initial reinforcement phase...");
@@ -538,7 +535,6 @@ public final class GameModel
     publish (new BeginInitialReinforcementPhaseEvent (getCurrentPlayerPacket ()));
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void waitForPlayersToClaimInitialCountries ()
   {
@@ -566,7 +562,7 @@ public final class GameModel
     publish (new ActivePlayerChangedEvent (currentPlayer));
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerClaimCountryResponseRequest (final PlayerClaimCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -624,7 +620,6 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void waitForPlayersToReinforceInitialCountries ()
   {
@@ -657,7 +652,7 @@ public final class GameModel
     publish (new ActivePlayerChangedEvent (player));
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerInitialCountryReinforcements (final PlayerReinforceCountryRequestEvent event)
   {
     log.info ("Event received [{}]", event);
@@ -702,7 +697,6 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void beginReinforcementPhase ()
   {
@@ -729,7 +723,7 @@ public final class GameModel
     publishTradeInEventIfNecessary ();
   }
 
-  @StateMachineAction
+  @StateEntryAction
   public void waitForPlayerToPlaceReinforcements ()
   {
     final Id playerId = getCurrentPlayerId ();
@@ -746,7 +740,7 @@ public final class GameModel
     }
   }
 
-  @StateMachineAction
+  @StateTransitionAction
   public void handlePlayerReinforceCountry (final PlayerReinforceCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -805,7 +799,7 @@ public final class GameModel
     publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), country, reinforcementCount));
   }
 
-  @StateMachineAction
+  @StateExitAction
   public void endReinforcementPhase ()
   {
     final PlayerPacket player = getCurrentPlayerPacket ();
@@ -814,11 +808,10 @@ public final class GameModel
   }
 
   /**
-   * @param event
    * @return true if trade-ins are complete and state machine should advance to normal reinforcement state, false if
    *         additional trade-ins are available
    */
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerCardTradeIn (final PlayerTradeInCardsRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -862,7 +855,6 @@ public final class GameModel
     return !shouldWaitForNextTradeIn;
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void beginAttackPhase ()
   {
@@ -871,7 +863,6 @@ public final class GameModel
     publish (new BeginAttackPhaseEvent (currentPlayer));
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void waitForPlayerToSelectAttackVector ()
   {
@@ -885,7 +876,7 @@ public final class GameModel
     publish (new PlayerBeginAttackEvent (getCurrentPlayerPacket (), builder.build ()));
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerAttackVector (final PlayerSelectAttackVectorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -932,7 +923,7 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
+  @StateTransitionAction
   public void waitForPlayerAttackOrder ()
   {
     final AttackVector vector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
@@ -940,6 +931,7 @@ public final class GameModel
             createPendingDefenderPacket (vector)));
   }
 
+  @StateTransitionCondition
   public boolean verifyPlayerAttackOrder (final PlayerOrderAttackRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -982,6 +974,7 @@ public final class GameModel
     return true;
   }
 
+  @StateEntryAction
   public void processPlayerRetreat (final PlayerOrderRetreatRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -998,7 +991,7 @@ public final class GameModel
     publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, attackingCountry, defendingCountry));
   }
 
-  @StateMachineCondition
+  @StateTransitionAction
   public void processPlayerEndAttackPhase (final PlayerEndAttackPhaseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1010,7 +1003,7 @@ public final class GameModel
     publish (new PlayerEndAttackPhaseSuccessEvent (currentPlayer));
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerDefendCountryResponseRequest (final PlayerDefendCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1056,7 +1049,7 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
+  @StateTransitionAction
   public void handleDefenderTimeout (final PlayerResponseTimeoutEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1079,7 +1072,7 @@ public final class GameModel
     // fix for this would be related to PERIL-372
   }
 
-  @StateMachineAction
+  @StateEntryAction
   public void processBattle ()
   {
     checkCacheValues (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, CacheKey.FINAL_BATTLE_ACTOR_DEFENDER,
@@ -1167,7 +1160,7 @@ public final class GameModel
             maxOccupationArmyCount));
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerOccupyCountryResponseRequest (final PlayerOccupyCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1239,7 +1232,7 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
+  @StateExitAction
   public void endAttackPhase ()
   {
     final PlayerPacket player = getCurrentPlayerPacket ();
@@ -1247,7 +1240,6 @@ public final class GameModel
     publish (new EndAttackPhaseEvent (player));
   }
 
-  @StateMachineAction
   @StateEntryAction
   public void beginFortifyPhase ()
   {
@@ -1282,7 +1274,7 @@ public final class GameModel
     publish (new PlayerBeginFortificationEvent (getCurrentPlayerPacket (), validFortifyVectors));
   }
 
-  @StateMachineAction
+  @StateExitAction
   public void endFortifyPhase ()
   {
     final PlayerPacket player = getCurrentPlayerPacket ();
@@ -1292,7 +1284,7 @@ public final class GameModel
     publish (new EndFortifyPhaseEvent (player));
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerFortifyVectorSelection (final PlayerSelectFortifyVectorRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1367,7 +1359,7 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean verifyPlayerFortifyCountryResponse (final PlayerFortifyCountryResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1427,25 +1419,25 @@ public final class GameModel
     return true;
   }
 
-  @StateMachineAction
+  @StateExitAction
   public void advancePlayerTurn ()
   {
     playerTurnModel.advance ();
   }
 
-  @StateMachineAction
+  @StateExitAction
   public void resetTurn ()
   {
     playerTurnModel.reset ();
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean isFull ()
   {
     return playerModel.isFull ();
   }
 
-  @StateMachineCondition
+  @StateTransitionCondition
   public boolean isNotFull ()
   {
     return playerModel.isNotFull ();

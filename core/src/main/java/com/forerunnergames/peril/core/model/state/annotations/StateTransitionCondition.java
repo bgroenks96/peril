@@ -24,10 +24,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks methods in use as actions by a StateForge state machine, specified in a .fsmjava file.
+ * Marks methods in use as transition conditions by a StateForge state machine, specified in a .fsmjava file. A state
+ * transition will only occur if the method returns {@code true}.
  */
 @Retention (RetentionPolicy.SOURCE)
 @Target (ElementType.METHOD)
-public @interface StateMachineAction
+public @interface StateTransitionCondition
 {
 }

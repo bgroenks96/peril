@@ -23,8 +23,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention (value = RetentionPolicy.SOURCE)
-@Target (value = ElementType.METHOD)
+/**
+ * Marks methods in use as transition actions by a StateForge state machine, specified in a .fsmjava file. The action is
+ * guaranteed to be executed during the state transition.
+ */
+@Retention (RetentionPolicy.SOURCE)
+@Target (ElementType.METHOD)
 public @interface StateTransitionAction
 {
 }

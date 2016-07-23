@@ -23,6 +23,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marks methods in use as state entry actions by a StateForge state machine, specified in a .fsmjava file. The action
+ * is guaranteed to be executed when the specified state is entered, except when transitioning from child to parent
+ * states (since it can be understood that when exiting a child state, we are technically already still inside the
+ * parent state, so we haven't truly "entered" it again).
+ */
 @Retention (RetentionPolicy.SOURCE)
 @Target (ElementType.METHOD)
 public @interface StateEntryAction

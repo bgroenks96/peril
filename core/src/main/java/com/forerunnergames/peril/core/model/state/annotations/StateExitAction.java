@@ -24,10 +24,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks methods in use as conditions by a StateForge state machine, specified in a .fsmjava file.
+ * Marks methods in use as state exit actions by a StateForge state machine, specified in a .fsmjava file. The action is
+ * guaranteed to be executed when the specified state is exited.
  */
 @Retention (RetentionPolicy.SOURCE)
 @Target (ElementType.METHOD)
-public @interface StateMachineCondition
+public @interface StateExitAction
 {
 }
