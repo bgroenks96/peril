@@ -787,15 +787,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        playerBox.updateExisting (event.getPlayer ());
-      }
-    });
-
     final String playerName = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
 
     status ("{} placed {} on {}.", playerName,
