@@ -135,12 +135,12 @@ import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
-import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAction;
+import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
@@ -983,12 +983,15 @@ public final class GameModel
 
     checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
 
+    // @formatter:off
     final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
     final PlayerPacket attackingPlayer = playerModel.playerPacketWith (attackVector.getPlayerId ());
+    final PlayerPacket defendingPlayer = playerModel.playerPacketWith (countryOwnerModel.ownerOf (attackVector.getTargetCountry ()));
     final CountryPacket attackingCountry = countryMapGraphModel.countryPacketWith (attackVector.getSourceCountry ());
     final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
+    // @formatter:on
 
-    publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, attackingCountry, defendingCountry));
+    publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
   }
 
   @StateTransitionAction
