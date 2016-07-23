@@ -38,7 +38,7 @@ import net.engio.mbassy.listener.Handler;
 
 public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandler
 {
-  private final CountrySelectionHandler countrySelectionHandler;
+  private final CountryVectorSelectionHandler countryVectorSelectionHandler;
 
   public AttackingBattlePhaseHandler (final PlayMap playMap,
                                       final PlayerBox playerBox,
@@ -47,12 +47,12 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   {
     super (playMap, playerBox, attackDialog, eventBus);
 
-    countrySelectionHandler = new AbstractCountrySelectionHandler ("attack", eventBus)
+    countryVectorSelectionHandler = new AbstractCountryVectorSelectionHandler ("attack", eventBus)
     {
       @Override
-      public void onEnd (final String sourceCountryName, final String destCountryName)
+      public void onEnd (final String sourceCountryName, final String targetCountryName)
       {
-        eventBus.publish (new PlayerSelectAttackVectorRequestEvent (sourceCountryName, destCountryName));
+        eventBus.publish (new PlayerSelectAttackVectorRequestEvent (sourceCountryName, targetCountryName));
       }
     };
   }
@@ -62,8 +62,8 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   {
     super.reset ();
 
-    countrySelectionHandler.reset ();
-    unsubscribe (countrySelectionHandler);
+    countryVectorSelectionHandler.reset ();
+    unsubscribe (countryVectorSelectionHandler);
   }
 
   @Override
@@ -71,8 +71,8 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   {
     super.softReset ();
 
-    countrySelectionHandler.reset ();
-    countrySelectionHandler.start (getBattleRequestAs (PlayerBeginAttackEvent.class));
+    countryVectorSelectionHandler.reset ();
+    countryVectorSelectionHandler.start (getBattleRequestAs (PlayerBeginAttackEvent.class));
   }
 
   @Override
@@ -109,7 +109,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   protected void onNewBattleRequest ()
   {
     softReset ();
-    subscribe (countrySelectionHandler);
+    subscribe (countryVectorSelectionHandler);
   }
 
   @Override
@@ -134,7 +134,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
     log.debug ("Event received [{}].", event);
 
     softReset ();
-    subscribe (countrySelectionHandler);
+    subscribe (countryVectorSelectionHandler);
   }
 
   @Handler

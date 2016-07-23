@@ -20,7 +20,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
@@ -37,42 +36,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Framework for asynchronous selection of server-request-validated source & destination countries via
+ * {@inheritDoc}
+ *
+ * Framework for asynchronous selection of server-request-validated source & target countries via
  * {@link SelectCountryEvent}.
  *
  * Concrete implementations are only *required* to implement {@link #onEnd(String, String)}, which is the callback for
- * what should happen after the player successfully selects a source & destination country.
+ * what should happen after the player successfully selects a source & target country.
  *
- * Note: This class must be subscribed on the {@link net.engio.mbassy.bus.MBassador} event bus before calling
- * {@link CountrySelectionHandler#start(PlayerSelectCountryVectorEvent)} in order to receive {@link SelectCountryEvent}
- * 's.
- *
- * Note: This class may be unsubscribed on the {@link net.engio.mbassy.bus.MBassador} event bus in order to stop
- * receiving {@link SelectCountryEvent}'s, but even if it remains subscribed, it will ignore any events received before
- * calling {@link CountrySelectionHandler#start(PlayerSelectCountryVectorEvent)} or after calling {@link #reset()}. If
- * unsubscribed, it must be resubscribed before calling
- * {@link CountrySelectionHandler#start(PlayerSelectCountryVectorEvent)} in order to receive events again.
- *
- * @see CountrySelectionHandler
+ * @see CountryVectorSelectionHandler
  */
-abstract class AbstractCountrySelectionHandler implements CountrySelectionHandler
+abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSelectionHandler
 {
   protected final Logger log = LoggerFactory.getLogger (getClass ());
-  private final String phaseAsVerb;
+  private final String gamePhaseAsVerb;
   private final MBassador <Event> eventBus;
   private boolean isStarted;
-  private PlayerBeginAttackEvent requestEvent;
+  private PlayerSelectCountryVectorEvent event;
   @Nullable
   private String sourceCountryName;
   @Nullable
-  private String destCountryName;
+  private String targetCountryName;
 
-  AbstractCountrySelectionHandler (final String phaseAsVerb, final MBassador <Event> eventBus)
+  AbstractCountryVectorSelectionHandler (final String gamePhaseAsVerb, final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (phaseAsVerb, "phaseAsVerb");
+    Arguments.checkIsNotNull (gamePhaseAsVerb, "gamePhaseAsVerb");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.phaseAsVerb = phaseAsVerb;
+    this.gamePhaseAsVerb = gamePhaseAsVerb;
     this.eventBus = eventBus;
   }
 
@@ -84,27 +75,45 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
    */
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void start (final PlayerBeginAttackEvent requestEvent)
+  public void start (final PlayerSelectCountryVectorEvent event)
   {
-    Arguments.checkIsNotNull (requestEvent, "requestEvent");
+    Arguments.checkIsNotNull (event, "event");
     Preconditions.checkIsFalse (isStarted, "Cannot start a new country selection. One is already in progress. "
             + "Call reset() first.");
 
-    this.requestEvent = requestEvent;
+    this.event = event;
 
     isStarted = true;
 
     log.debug ("Country selection has started.");
 
-    eventBus.publish (StatusMessageEventFactory.create ("{}, choose a country to {} from.",
-                                                        this.requestEvent.getPlayerName (), phaseAsVerb));
+    eventBus.subscribe (this);
+    eventBus.publish (StatusMessageEventFactory.create ("{}, choose a country to {} from.", event.getPlayerName (),
+                                                        gamePhaseAsVerb));
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * Begins accepting {@link SelectCountryEvent}'s & asks the player in the {@link PlayerSelectCountryVectorEvent} to
+   * choose a source country.
+   */
+  @Override
+  public void restart ()
+  {
+    Preconditions.checkIsTrue (event != null, "Cannot start another country selection. You must call "
+            + "#start (final PlayerSelectCountryVectorEvent event) first in order to set the event data.");
+
+    start (event);
   }
 
   /**
    * {@inheritDoc}
    *
    * Stops accepting {@link SelectCountryEvent}'s. Called automatically after {@link #onEnd(String, String)}. Provided
-   * in case the implementor needs to immediately stop any country selection which might be in progress.
+   * in case the implementor needs to immediately stop any country selection which might be in progress. Saves any
+   * previous event data passed in from {@link #start(PlayerSelectCountryVectorEvent)}, so that {@link #restart()} may
+   * be called immediately after this method.
    */
   @Override
   @OverridingMethodsMustInvokeSuper
@@ -112,7 +121,8 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   {
     isStarted = false;
     sourceCountryName = null;
-    destCountryName = null;
+    targetCountryName = null;
+    eventBus.unsubscribe (this);
   }
 
   @Override
@@ -122,7 +132,7 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   }
 
   @Override
-  public void onSelectInvalidDestCountry (final String sourceCountryName, final String destCountryName)
+  public void onSelectInvalidTargetCountry (final String sourceCountryName, final String targetCountryName)
   {
     // Empty base implementation.
   }
@@ -130,13 +140,13 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   @Override
   public boolean isValidSourceCountry (final String countryName)
   {
-    return requestEvent.isValidSourceCountry (countryName);
+    return event.isValidSourceCountry (countryName);
   }
 
   @Override
-  public boolean isValidDestCountry (final String sourceCountryName, final String destCountryName)
+  public boolean isValidTargetCountry (final String sourceCountryName, final String targetCountryName)
   {
-    return requestEvent.isValidVector (sourceCountryName, destCountryName);
+    return event.isValidVector (sourceCountryName, targetCountryName);
   }
 
   @Handler
@@ -158,29 +168,29 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
     {
       sourceCountryName = countryName;
       log.info ("Selected valid source country [{}].", sourceCountryName);
-      eventBus.publish (StatusMessageEventFactory.create ("{}, choose a country to {} to.",
-                                                          requestEvent.getPlayerName (), phaseAsVerb));
+      eventBus.publish (StatusMessageEventFactory.create ("{}, choose a country to {} to.", this.event.getPlayerName (),
+                                                          gamePhaseAsVerb));
       return;
     }
 
-    if (isSelectingDestCountry () && checkIsValidDestCountry (countryName).succeeded ())
+    if (isSelectingTargetCountry () && checkIsValidTargetCountry (countryName).succeeded ())
     {
-      destCountryName = countryName;
-      log.info ("Selected valid destination country [{}].", destCountryName);
-      onEnd (sourceCountryName, destCountryName);
-      log.debug ("Country selection has ended.");
+      targetCountryName = countryName;
+      log.info ("Selected valid target country [{}].", targetCountryName);
+      onEnd (sourceCountryName, targetCountryName);
       reset ();
+      log.debug ("Country selection has ended.");
     }
   }
 
   private boolean isSelectingSourceCountry ()
   {
-    return isStarted && requestEvent != null && sourceCountryName == null;
+    return isStarted && event != null && sourceCountryName == null;
   }
 
-  private boolean isSelectingDestCountry ()
+  private boolean isSelectingTargetCountry ()
   {
-    return isStarted && sourceCountryName != null && destCountryName == null;
+    return isStarted && sourceCountryName != null && targetCountryName == null;
   }
 
   private Result <String> checkIsValidSourceCountry (final String countryName)
@@ -195,12 +205,12 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
     return Result.success ();
   }
 
-  private Result <String> checkIsValidDestCountry (final String countryName)
+  private Result <String> checkIsValidTargetCountry (final String countryName)
   {
-    if (!isValidDestCountry (sourceCountryName, countryName))
+    if (!isValidTargetCountry (sourceCountryName, countryName))
     {
-      onSelectInvalidDestCountry (sourceCountryName, countryName);
-      log.warn ("Rejecting invalid destination country selection [{}]. Validated source country selection: [{}].",
+      onSelectInvalidTargetCountry (sourceCountryName, countryName);
+      log.warn ("Rejecting invalid target country selection [{}]. Validated source country selection: [{}].",
                 countryName, sourceCountryName);
       return Result.failure ("");
     }
@@ -212,9 +222,9 @@ abstract class AbstractCountrySelectionHandler implements CountrySelectionHandle
   public String toString ()
   {
     return Strings.format (
-                           "{}: Phase (as verb): {} | Started: {} | Source Country: {} | Destination Country: {}"
+                           "{}: Phase (as verb): {} | Started: {} | Source Country: {} | Target Country: {}"
                                    + " | Server Request: {}",
-                           getClass ().getSimpleName (), phaseAsVerb, isStarted, sourceCountryName, destCountryName,
-                           requestEvent);
+                           getClass ().getSimpleName (), gamePhaseAsVerb, isStarted, sourceCountryName,
+                           targetCountryName, event);
   }
 }

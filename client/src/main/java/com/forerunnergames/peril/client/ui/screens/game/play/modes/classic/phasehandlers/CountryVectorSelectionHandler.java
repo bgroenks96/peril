@@ -18,24 +18,35 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 
 /**
- * API for selection of a validated source country followed by selection of a validated destination country.
+ * API for selection of a country vector - a validated source country followed by selection of a validated target
+ * country.
  *
  * The implementor decides the strategy for valid country selection with {@link #isValidSourceCountry(String)} &
- * {@link #isValidDestCountry(String, String)}.
+ * {@link #isValidTargetCountry(String, String)}.
  */
-public interface CountrySelectionHandler
+public interface CountryVectorSelectionHandler
 {
   /**
    * Start requesting a country selection. Should not be called more than once in a row - {@link #reset()} should be
    * called in between each invocation.
    *
-   * @param requestEvent
-   *          The original server request authorizing this country selection, used to validate the source & destination.
+   * @param event
+   *          The original server event authorizing this country selection, used to validate the source & target.
+   *
+   * @see #restart()
    */
-  void start (final PlayerBeginAttackEvent requestEvent);
+  void start (final PlayerSelectCountryVectorEvent event);
+
+  /**
+   * Start requesting another country selection with the event data from the last invocation of
+   * {@link #start(PlayerSelectCountryVectorEvent)}, which must have been previously called. Should not be called more
+   * than once in a row - {@link #reset()} should be called in between each invocation.
+   *
+   * @see #start(PlayerSelectCountryVectorEvent)
+   */
+  void restart ();
 
   /**
    * Should be called after country selection is finished, i.e., after {@link #onEnd(String, String)}.
@@ -43,14 +54,14 @@ public interface CountrySelectionHandler
   void reset ();
 
   /**
-   * Callback for when country selection has ended, i.e., when a valid source country & a valid destination country have
-   * been selected according to {@link #isValidSourceCountry(String)} & {@link #isValidDestCountry(String, String)}.
+   * Callback for when country selection has ended, i.e., when a valid source country & a valid target country have been
+   * selected according to {@link #isValidSourceCountry(String)} & {@link #isValidTargetCountry(String, String)}.
    *
    * {@link #reset()} should be called after this callback, so that {@link #start(PlayerSelectCountryVectorEvent)} must
    * be called again in order to initiate another country selection, and so that otherwise country selection will remain
    * disabled.
    */
-  void onEnd (final String sourceCountryName, final String destCountryName);
+  void onEnd (final String sourceCountryName, final String targetCountryName);
 
   /**
    * Callback for when the source country is invalid according to {@link #isValidSourceCountry(String)}.
@@ -58,26 +69,26 @@ public interface CountrySelectionHandler
   void onSelectInvalidSourceCountry (final String countryName);
 
   /**
-   * Callback for when the destination country is invalid according to {@link #isValidDestCountry(String, String)}. The
+   * Callback for when the target country is invalid according to {@link #isValidTargetCountry(String, String)}. The
    * source country has already been validated.
    */
-  void onSelectInvalidDestCountry (final String sourceCountryName, final String destCountryName);
+  void onSelectInvalidTargetCountry (final String sourceCountryName, final String targetCountryName);
 
   /**
    * Whether the selected country name is a valid source country.
    *
    * The implementor decides the strategy for valid country selection with this method &
-   * {@link #isValidDestCountry(String, String)}.
+   * {@link #isValidTargetCountry(String, String)}.
    */
   boolean isValidSourceCountry (final String countryName);
 
   /**
-   * Whether the selected country name is a valid destination country. The source country has already been validated,
-   * and is provided in case the implementation for determining whether the destination country is valid depends on the
-   * source country.
+   * Whether the selected country name is a valid target country. The source country has already been validated, and is
+   * provided in case the implementation for determining whether the target country is valid depends on the source
+   * country.
    *
    * The implementor decides the strategy for valid country selection with {@link #isValidSourceCountry(String)} & this
    * method.
    */
-  boolean isValidDestCountry (final String sourceCountryName, final String destCountryName);
+  boolean isValidTargetCountry (final String sourceCountryName, final String targetCountryName);
 }

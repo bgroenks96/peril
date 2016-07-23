@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public final class FortificationPhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (FortificationPhaseHandler.class);
-  private final CountrySelectionHandler countrySelectionHandler;
+  private final CountryVectorSelectionHandler countryVectorSelectionHandler;
   private final FortificationDialog fortificationDialog;
   private final MBassador <Event> eventBus;
   private PlayMap playMap;
@@ -63,12 +63,12 @@ public final class FortificationPhaseHandler
     this.fortificationDialog = fortificationDialog;
     this.eventBus = eventBus;
 
-    countrySelectionHandler = new AbstractCountrySelectionHandler ("maneuver", eventBus)
+    countryVectorSelectionHandler = new AbstractCountryVectorSelectionHandler ("maneuver", eventBus)
     {
       @Override
-      public void onEnd (final String sourceCountryName, final String destCountryName)
+      public void onEnd (final String sourceCountryName, final String targetCountryName)
       {
-        showFortificationDialog (sourceCountryName, destCountryName);
+        showFortificationDialog (sourceCountryName, targetCountryName);
       }
     };
   }
@@ -105,8 +105,8 @@ public final class FortificationPhaseHandler
   {
     request = null;
     response = null;
-    countrySelectionHandler.reset ();
-    eventBus.unsubscribe (countrySelectionHandler);
+    countryVectorSelectionHandler.reset ();
+    eventBus.unsubscribe (countryVectorSelectionHandler);
   }
 
   public void setPlayMap (final PlayMap playMap)
@@ -145,7 +145,7 @@ public final class FortificationPhaseHandler
 
     request = event;
 
-    eventBus.subscribe (countrySelectionHandler);
+    eventBus.subscribe (countryVectorSelectionHandler);
     softReset ();
   }
 
@@ -209,8 +209,8 @@ public final class FortificationPhaseHandler
   private void softReset ()
   {
     response = null;
-    countrySelectionHandler.reset ();
-    // FIXME: countrySelectionHandler.start (request);
+    countryVectorSelectionHandler.reset ();
+    // FIXME: countryVectorSelectionHandler.start (request);
   }
 
   private void showFortificationDialog (final String sourceCountryName, final String destCountryName)
