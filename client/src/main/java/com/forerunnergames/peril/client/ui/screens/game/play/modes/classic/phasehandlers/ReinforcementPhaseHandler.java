@@ -45,7 +45,7 @@ public final class ReinforcementPhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandler.class);
   private static final int REINFORCEMENTS_PER_COUNTRY_SELECTION = 1;
-  private final Map <String, Integer> countryNamesToReinforcementsResponseData = new HashMap <> ();
+  private final Map <String, Integer> countryNamesToReinforcementsResponseData = new HashMap<> ();
   private final MBassador <Event> eventBus;
   private final ReinforcementRequestHelper requestHelper = new ReinforcementRequestHelper ();
   private PlayMap playMap;
