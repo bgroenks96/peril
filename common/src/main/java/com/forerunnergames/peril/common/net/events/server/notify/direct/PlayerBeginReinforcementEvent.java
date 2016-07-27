@@ -9,10 +9,12 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
+  private final ImmutableMap <String, Integer> playerOwnedCountryNamesToCountryArmyCounts;
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
   private final ImmutableSet <ContinentPacket> playerOwnedContinents;
   private final int maxArmiesPerCountry;
@@ -27,6 +29,15 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
     Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");
     Arguments.checkIsNotNegative (maxArmiesPerCountry, "maxArmiesPerCountry");
+
+    final ImmutableMap.Builder <String, Integer> builder = ImmutableMap.builder ();
+
+    for (final CountryPacket country : playerOwnedCountries)
+    {
+      builder.put (country.getName (), country.getArmyCount ());
+    }
+
+    playerOwnedCountryNamesToCountryArmyCounts = builder.build ();
 
     this.playerOwnedCountries = playerOwnedCountries;
     this.playerOwnedContinents = playerOwnedContinents;
@@ -52,12 +63,7 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    for (final CountryPacket country : playerOwnedCountries)
-    {
-      if (country.hasName (countryName)) return true;
-    }
-
-    return false;
+    return playerOwnedCountryNamesToCountryArmyCounts.containsKey (countryName);
   }
 
   public boolean isNotPlayerOwnedCountry (final String countryName)
@@ -65,28 +71,35 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
     return !isPlayerOwnedCountry (countryName);
   }
 
-  public boolean canAddArmiesToCountry (final String countryName)
+  public boolean canReinforceCountryWithSingleArmy (final String countryName)
+  {
+    return canReinforceCountryWithArmies (countryName, 1);
+  }
+
+  public boolean canReinforceCountryWithArmies (final String countryName, final int armies)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNegative (armies, "armies");
 
-    for (final CountryPacket country : playerOwnedCountries)
-    {
-      if (country.hasName (countryName)) return country.getArmyCount () < maxArmiesPerCountry;
-    }
+    final Integer armyCount = playerOwnedCountryNamesToCountryArmyCounts.get (countryName);
 
-    return false;
+    return armyCount != null && armyCount + armies <= maxArmiesPerCountry;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | MaxArmiesPerCountry: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}]",
-                           super.toString (), maxArmiesPerCountry, playerOwnedCountries, playerOwnedContinents);
+    return Strings.format (
+                           "{} | MaxArmiesPerCountry: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}] "
+                                   + "| PlayerOwnedCountryNamesToCountryArmyCounts: [{}]",
+                           super.toString (), maxArmiesPerCountry, playerOwnedCountryNamesToCountryArmyCounts,
+                           playerOwnedContinents, playerOwnedCountryNamesToCountryArmyCounts);
   }
 
   @RequiredForNetworkSerialization
   private PlayerBeginReinforcementEvent ()
   {
+    playerOwnedCountryNamesToCountryArmyCounts = null;
     playerOwnedCountries = null;
     playerOwnedContinents = null;
     maxArmiesPerCountry = 0;

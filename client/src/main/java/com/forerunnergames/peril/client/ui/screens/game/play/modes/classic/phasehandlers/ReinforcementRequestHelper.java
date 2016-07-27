@@ -75,7 +75,7 @@ public final class ReinforcementRequestHelper
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (regularRequest != null) return regularRequest.canAddArmiesToCountry (countryName);
+    if (regularRequest != null) return regularRequest.canReinforceCountryWithSingleArmy (countryName);
 
     log.warn ("No prior corresponding reinforcement request was received.");
 

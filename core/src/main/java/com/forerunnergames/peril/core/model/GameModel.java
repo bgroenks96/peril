@@ -664,7 +664,7 @@ public final class GameModel
     if (reinforcementCount > player.getArmiesInHand ())
     {
       publish (new PlayerReinforceCountryDeniedEvent (player,
-              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
+              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND, event));
       return false;
     }
 
@@ -672,7 +672,7 @@ public final class GameModel
     if (!countryMapGraphModel.existsCountryWith (countryName))
     {
       publish (new PlayerReinforceCountryDeniedEvent (player,
-              PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
+              PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, event));
       return false;
     }
 
@@ -683,7 +683,7 @@ public final class GameModel
 
     if (result.failed ())
     {
-      publish (new PlayerReinforceCountryDeniedEvent (player, result.getFailureReason ()));
+      publish (new PlayerReinforceCountryDeniedEvent (player, result.getFailureReason (), event));
       return false;
     }
 
@@ -788,7 +788,7 @@ public final class GameModel
     if (firstFailure.isPresent ())
     {
       publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              firstFailure.get ().getFailureReason ()));
+              firstFailure.get ().getFailureReason (), event));
       return;
     }
 

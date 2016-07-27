@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
@@ -31,14 +32,19 @@ public final class PlayerReinforceCountryDeniedEvent extends AbstractCountryStat
         implements PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerPacket player;
+  private final PlayerReinforceCountryRequestEvent originalRequest;
 
-  public PlayerReinforceCountryDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerReinforceCountryDeniedEvent (final PlayerPacket player,
+                                            final Reason reason,
+                                            final PlayerReinforceCountryRequestEvent originalRequest)
   {
     super (reason);
 
     Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (originalRequest, "originalRequest");
 
     this.player = player;
+    this.originalRequest = originalRequest;
   }
 
   @Override
@@ -59,15 +65,21 @@ public final class PlayerReinforceCountryDeniedEvent extends AbstractCountryStat
     return player.getColor ();
   }
 
+  public PlayerReinforceCountryRequestEvent getOriginalRequest ()
+  {
+    return originalRequest;
+  }
+
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Player: [{}]", super.toString (), player);
+    return Strings.format ("{} | Player: [{}] | OriginalRequest: [{}]", super.toString (), player, originalRequest);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountryDeniedEvent ()
   {
     player = null;
+    originalRequest = null;
   }
 }
