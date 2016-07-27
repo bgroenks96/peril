@@ -88,10 +88,8 @@ public final class DefaultEventFactory implements EventFactory
     };
     validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountriesOwnedBy (playerId), filter));
 
-    final int playerArmyCount = playerModel.getArmiesInHand (playerId);
-
     return new PlayerBeginReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
-            playerOwnedContinents, Math.min (rules.getMaxArmiesInHand (), playerArmyCount));
+            playerOwnedContinents, rules.getMaxArmiesOnCountry ());
   }
 
   @Override

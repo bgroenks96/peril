@@ -20,9 +20,9 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
   private final int maxArmiesPerCountry;
 
   public PlayerBeginReinforcementEvent (final PlayerPacket player,
-                                               final ImmutableSet <CountryPacket> playerOwnedCountries,
-                                               final ImmutableSet <ContinentPacket> playerOwnedContinents,
-                                               final int maxArmiesPerCountry)
+                                        final ImmutableSet <CountryPacket> playerOwnedCountries,
+                                        final ImmutableSet <ContinentPacket> playerOwnedContinents,
+                                        final int maxArmiesPerCountry)
   {
     super (player);
 
