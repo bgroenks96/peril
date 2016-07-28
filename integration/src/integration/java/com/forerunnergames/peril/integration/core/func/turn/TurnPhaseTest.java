@@ -67,15 +67,14 @@ public final class TurnPhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  // TODO FIXME
-  @Test (dataProvider = SINGLETON_PROVIDER, enabled = false)
+  @Test (dataProvider = SINGLETON_PROVIDER)
   public void testValidCountryReinforcement (final String sessionName, final Logger log)
   {
     final DedicatedGameSession testSession = createNewTestSession (sessionName);
     final TurnPhaseController controller = new TurnPhaseController (testSession);
     final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (testSession.getStateMachine (), log);
     controller.setUpInitialGamePhase ();
-    controller.performRandomCountryReinforcement (); // TODO FIXME
+    controller.performRandomCountryReinforcement ();
     TestUtil.pause (100);
     assertTrue (stateMachineMonitor.entered ("AttackPhase").atLeastOnce ());
     assertFalse (stateMachineMonitor.checkError ().isPresent ());

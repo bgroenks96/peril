@@ -79,7 +79,6 @@ public final class TurnPhaseController implements TestPhaseController
     return new WaitForCommunicationActionResult (failed, verified.get ());
   }
 
-  // TODO FIXME
   public void performRandomCountryReinforcement ()
   {
     final TestMonitor monitor = new TestMonitor (2);
@@ -94,29 +93,20 @@ public final class TurnPhaseController implements TestPhaseController
       {
         monitor.assertTrue (maybe.isPresent ());
         final PlayerBeginReinforcementEvent event = maybe.get ();
-        int reinforcementsRemaining = event.getTotalReinforcements ();
+        final int randomReinforcementCount = Randomness.getRandomIntegerFrom (1, event.getTotalReinforcements ());
 
-        // Keep placing random reinforcements on random countries until all reinforcements are used up.
-        // This is required to trigger EndReinforcementPhaseEvent.
+        // Ensure random country can be reinforced with random reinforcement count.
+        CountryPacket randomCountry;
         do
         {
-          final int randomReinforcementCount = Randomness.getRandomIntegerFrom (1, event.getTotalReinforcements ());
-
-          // Ensure random country can be reinforced with random reinforcement count.
-          CountryPacket randomCountry;
-          do
-          {
-            randomCountry = Randomness.getRandomElementFrom (event.getPlayerOwnedCountries ());
-          }
-          while (!event.canReinforceCountryWithArmies (randomCountry.getName (), randomReinforcementCount));
-
-          reinforcementsRemaining -= randomReinforcementCount;
-          client.send (new PlayerReinforceCountryRequestEvent (randomCountry.getName (), randomReinforcementCount));
-          final ImmutableSet <TestClient> failed = clientPool
-                  .waitForAllClientsToReceive (PlayerReinforceCountrySuccessEvent.class);
-          monitor.assertTrue (failed.isEmpty ());
+          randomCountry = Randomness.getRandomElementFrom (event.getPlayerOwnedCountries ());
         }
-        while (reinforcementsRemaining > 0);
+        while (!event.canReinforceCountryWithArmies (randomCountry.getName (), randomReinforcementCount));
+
+        client.send (new PlayerReinforceCountryRequestEvent (randomCountry.getName (), randomReinforcementCount));
+        final ImmutableSet <TestClient> failed = clientPool
+                .waitForAllClientsToReceive (PlayerReinforceCountrySuccessEvent.class);
+        monitor.assertTrue (failed.isEmpty ());
       }
     };
 
