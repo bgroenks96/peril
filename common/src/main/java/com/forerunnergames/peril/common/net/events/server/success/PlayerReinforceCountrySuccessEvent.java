@@ -28,8 +28,8 @@ public final class PlayerReinforceCountrySuccessEvent extends AbstractPlayerCoun
         implements PlayerResponseSuccessEvent
 {
   public PlayerReinforceCountrySuccessEvent (final PlayerPacket player,
-                                                     final CountryPacket country,
-                                                     final int countryArmyDelta)
+                                             final CountryPacket country,
+                                             final int countryArmyDelta)
   {
     super (player, country, -countryArmyDelta, countryArmyDelta);
   }

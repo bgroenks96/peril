@@ -39,18 +39,18 @@ public final class BeginReinforcementPhaseEvent extends AbstractPlayerArmiesChan
 
   public int getCountryReinforcementBonus ()
   {
-    return this.countryReinforcementBonus;
+    return countryReinforcementBonus;
   }
 
   public int getContinentReinforcementBonus ()
   {
-    return this.continentReinforcementBonus;
+    return continentReinforcementBonus;
   }
 
   @RequiredForNetworkSerialization
   private BeginReinforcementPhaseEvent ()
   {
-    this.countryReinforcementBonus = 0;
-    this.continentReinforcementBonus = 0;
+    countryReinforcementBonus = 0;
+    continentReinforcementBonus = 0;
   }
 }
