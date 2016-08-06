@@ -700,10 +700,9 @@ public final class GameModel
   @StateEntryAction
   public void beginReinforcementPhase ()
   {
-    final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
 
-    log.info ("Begin reinforcement phase for player [{}].", player);
+    log.info ("Begin reinforcement phase for player [{}].", getCurrentPlayerPacket ());
 
     // add country reinforcements and publish event
     final int countryReinforcementBonus = rules
@@ -718,7 +717,8 @@ public final class GameModel
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
     // publish phase begin event and trade in request
-    publish (new BeginReinforcementPhaseEvent (player, countryReinforcementBonus, continentReinforcementBonus));
+    publish (new BeginReinforcementPhaseEvent (getCurrentPlayerPacket (), countryReinforcementBonus,
+            continentReinforcementBonus));
     publish (eventFactory.createReinforcementEventFor (playerId));
     publishTradeInEventIfNecessary ();
   }
