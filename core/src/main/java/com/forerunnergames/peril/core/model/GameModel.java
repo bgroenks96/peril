@@ -796,7 +796,10 @@ public final class GameModel
     playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
     MutatorResult.commitAllSuccessful (results.toArray (new MutatorResult <?> [results.size ()]));
 
-    publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), country, reinforcementCount));
+    final PlayerPacket updatedPlayer = playerModel.playerPacketWith (playerId);
+    final CountryPacket updatedCountry = countryMapGraphModel.countryPacketWith (countryId);
+
+    publish (new PlayerReinforceCountrySuccessEvent (updatedPlayer, updatedCountry, reinforcementCount));
   }
 
   @StateExitAction

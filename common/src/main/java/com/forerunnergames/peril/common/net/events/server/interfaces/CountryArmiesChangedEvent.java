@@ -20,6 +20,10 @@ package com.forerunnergames.peril.common.net.events.server.interfaces;
 
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
+/**
+ * All implementations of CountryArmiesChangedEvent should be constructed with an updated CountryPacket (accessible via
+ * {@link #getCountry()} that contains the number of armies on the country <b>after</b> the delta is applied.
+ */
 public interface CountryArmiesChangedEvent extends CountryEvent, BroadcastNotificationEvent
 {
   int getCountryDeltaArmyCount ();
