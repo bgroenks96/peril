@@ -283,7 +283,7 @@ public final class StateMachineEventHandler
 
     log.trace ("Received event {}", event);
 
-    // context.onPlayerEndAttackPhaseResponseRequestEvent (event);
+    context.onPlayerEndAttackPhaseRequestEvent (event);
   }
 
   @Handler
@@ -303,7 +303,7 @@ public final class StateMachineEventHandler
 
     log.trace ("Received event {}", event);
 
-    // context.onPlayerBeginAttackResponseRequestEvent (event);
+    context.onPlayerSelectAttackVectorRequestEvent (event);
   }
 
   @Handler
@@ -313,7 +313,7 @@ public final class StateMachineEventHandler
 
     log.trace ("Received event {}", event);
 
-    // context.onPlayerAttackOrderResponseRequestEvent (event);
+    context.onPlayerOrderAttackRequestEvent (event);
   }
 
   @Handler
@@ -323,7 +323,7 @@ public final class StateMachineEventHandler
 
     log.trace ("Received event {}", event);
 
-    // context.onPlayerRetreatOrderResponseRequestEvent (event);
+    context.onPlayerOrderRetreatRequestEvent (event);
   }
 
   @Handler
