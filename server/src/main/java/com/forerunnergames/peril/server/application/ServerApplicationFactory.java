@@ -30,6 +30,8 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.battle.BattleModel;
+import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
@@ -97,8 +99,8 @@ public final class ServerApplicationFactory
 
     final CountryFactory countryFactory = dataFactory.createCountries (mapMetadata);
 
-    final ContinentFactory continentFactory = dataFactory.createContinents (mapMetadata, new DefaultCountryIdResolver (
-            countryFactory));
+    final ContinentFactory continentFactory = dataFactory
+            .createContinents (mapMetadata, new DefaultCountryIdResolver (countryFactory));
 
     final CountryMapGraphModel countryMapGraphModel = dataFactory.createCountryMapGraphModel (mapMetadata,
                                                                                               countryFactory);
@@ -117,9 +119,11 @@ public final class ServerApplicationFactory
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
     final PlayMapModel playMapModel = playMapModelFactory.create (countryMapGraphModel, continentMapGraphModel);
     final CardModel cardModel = new DefaultCardModel (gameRules, cards);
+    final BattleModel battleModel = new DefaultBattleModel (playMapModel);
     final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (args.playerLimit);
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
-            .cardModel (cardModel).playerTurnModel (playerTurnModel).eventBus (eventBus).build ();
+            .cardModel (cardModel).battleModel (battleModel).playerTurnModel (playerTurnModel).eventBus (eventBus)
+            .build ();
     final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, args.playerLimit,

@@ -82,6 +82,8 @@ import com.forerunnergames.peril.common.net.packets.defaults.DefaultCardSetPacke
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.model.battle.BattleModel;
+import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardModelTest;
@@ -147,6 +149,7 @@ public class GameModelTest
   private CountryOwnerModel countryOwnerModel;
   private CountryArmyModel countryArmyModel;
   private CountryMapGraphModel countryMapGraphModel;
+  private BattleModel battleModel;
   private CardModel cardModel;
   private InternalCommunicationHandler mockCommHandler;
   private ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
@@ -1252,6 +1255,7 @@ public class GameModelTest
     gameRules = playMapModel.getRules ();
     playerModel = new DefaultPlayerModel (gameRules);
     cardModel = new DefaultCardModel (gameRules, cardDeck);
+    battleModel = new DefaultBattleModel (playMapModel);
     countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
     countryArmyModel = playMapModel.getCountryArmyModel ();
@@ -1260,8 +1264,8 @@ public class GameModelTest
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxPlayers ();
-    gameModel = GameModel.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel).playerModel (playerModel)
-            .cardModel (cardModel).internalComms (mockCommHandler).build ();
+    gameModel = GameModel.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel).battleModel (battleModel)
+            .playerModel (playerModel).cardModel (cardModel).internalComms (mockCommHandler).build ();
   }
 
   private PlayMapModel createPlayMapModelWithDisjointMapGraph (final ImmutableList <String> countryNames)
