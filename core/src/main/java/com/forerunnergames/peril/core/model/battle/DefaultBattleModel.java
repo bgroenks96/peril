@@ -66,7 +66,7 @@ public final class DefaultBattleModel implements BattleModel
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
     this.playMapModel = playMapModel;
-    this.rules = playMapModel.getRules ();
+    rules = playMapModel.getRules ();
   }
 
   @Override
@@ -97,13 +97,12 @@ public final class DefaultBattleModel implements BattleModel
 
   @Override
   public DataResult <AttackVector, PlayerSelectAttackVectorDeniedEvent.Reason> newPlayerAttackVector (final Id playerId,
-                                                                                                       final Id sourceCountry,
-                                                                                                       final Id targetCountry)
+                                                                                                      final Id sourceCountry,
+                                                                                                      final Id targetCountry)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (targetCountry, "targetCountry");
-    Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
     final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
     final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
@@ -137,7 +136,7 @@ public final class DefaultBattleModel implements BattleModel
 
   @Override
   public DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
-                                                                                                     final int dieCount)
+                                                                                             final int dieCount)
   {
     Arguments.checkIsNotNull (attackVector, "attackVector");
     Arguments.checkIsNotNegative (dieCount, "dieCount");

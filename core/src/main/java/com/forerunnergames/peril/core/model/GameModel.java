@@ -1345,11 +1345,8 @@ public final class GameModel
       return false;
     }
 
-    CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
-
-    sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
+    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
 
     turnDataCache.put (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, sourceCountryId);
     turnDataCache.put (CacheKey.FORTIFY_TARGET_COUNTRY_ID, targetCountryId);
