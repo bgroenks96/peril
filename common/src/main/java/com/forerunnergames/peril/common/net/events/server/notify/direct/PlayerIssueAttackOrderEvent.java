@@ -27,7 +27,7 @@ public final class PlayerIssueAttackOrderEvent extends AbstractBattleSetupEvent 
 {
   public PlayerIssueAttackOrderEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {
-    super (attacker, defender);
+    super (attacker.getPlayer (), attacker, defender);
   }
 
   @RequiredForNetworkSerialization

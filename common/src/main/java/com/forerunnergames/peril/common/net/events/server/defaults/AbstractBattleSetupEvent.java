@@ -19,6 +19,7 @@ package com.forerunnergames.peril.common.net.events.server.defaults;
 
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -31,15 +32,30 @@ public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent imple
   private final PendingBattleActorPacket attacker;
   private final PendingBattleActorPacket defender;
 
-  protected AbstractBattleSetupEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
+  /**
+   * @param primaryPlayer
+   *          Attacking player for attack events, defending player for defend events, used for
+   *          {@link PlayerEvent#getPlayer()}, which in turn is used to decide which player's client should receive this
+   *          event.
+   */
+  protected AbstractBattleSetupEvent (final PlayerPacket primaryPlayer,
+                                      final PendingBattleActorPacket attacker,
+                                      final PendingBattleActorPacket defender)
   {
-    super (attacker.getPlayer ());
+    super (primaryPlayer);
 
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
 
     this.attacker = attacker;
     this.defender = defender;
+  }
+
+  @RequiredForNetworkSerialization
+  protected AbstractBattleSetupEvent ()
+  {
+    attacker = null;
+    defender = null;
   }
 
   @Override
@@ -130,12 +146,5 @@ public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent imple
   public String toString ()
   {
     return Strings.format ("{} | Attacker: [{}] | Defender: [{}]", super.toString (), attacker, defender);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractBattleSetupEvent ()
-  {
-    attacker = null;
-    defender = null;
   }
 }

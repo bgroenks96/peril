@@ -26,11 +26,10 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class PlayerDefendCountryRequestEvent extends AbstractBattleSetupEvent implements PlayerInputRequestEvent
 
 {
-
   public PlayerDefendCountryRequestEvent (final PendingBattleActorPacket attacker,
                                           final PendingBattleActorPacket defender)
   {
-    super (attacker, defender);
+    super (defender.getPlayer (), attacker, defender);
   }
 
   @RequiredForNetworkSerialization
