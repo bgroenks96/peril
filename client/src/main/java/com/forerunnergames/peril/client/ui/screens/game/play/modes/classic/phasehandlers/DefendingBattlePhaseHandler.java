@@ -17,18 +17,15 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
+import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.LetterCase;
-import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -36,81 +33,27 @@ import net.engio.mbassy.listener.Handler;
 public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandler
 {
   public DefendingBattlePhaseHandler (final PlayMap playMap,
-                                      final PlayerBox playerBox,
-                                      final DefendDialog defendDialog,
+                                      final BattleDialog defendDialog,
+                                      final BattleResultDialog resultDialog,
                                       final MBassador <Event> eventBus)
   {
-    super (playMap, playerBox, defendDialog, eventBus);
+    super (playMap, defendDialog, resultDialog, eventBus);
   }
 
   @Override
-  protected int getBattlingDieCount (final int attackerDieCount, final int defenderDieCount)
+  protected BattleRequestEvent createBattleRequestEvent (final int dieCount)
   {
-    return defenderDieCount;
-  }
-
-  @Override
-  protected String attackOrDefend ()
-  {
-    return "defend";
-  }
-
-  @Override
-  protected String getBattleRequestClassName ()
-  {
-    return PlayerDefendCountryRequestEvent.class.getSimpleName ();
-  }
-
-  @Override
-  protected String getBattleResponseRequestClassName ()
-  {
-    return PlayerDefendCountryResponseRequestEvent.class.getSimpleName ();
-  }
-
-  @Override
-  protected RequestEvent createBattleResponse (final int dieCount)
-  {
-    Arguments.checkLowerExclusiveBound (dieCount, 0, "dieCount");
-
     return new PlayerDefendCountryResponseRequestEvent (dieCount);
   }
 
-  @Override
-  protected void onNewBattleRequest ()
-  {
-    final PlayerDefendCountryRequestEvent request = getBattleRequestAs (PlayerDefendCountryRequestEvent.class);
-
-    showBattleDialog (request.getAttackingCountryName (), request.getDefendingCountryName (),
-                      request.getAttackingPlayerName (), request.getDefendingPlayerName ());
-  }
-
-  @Override
-  protected void onBattleStart ()
-  {
-    status ("{}, prepare to defend {} against {} in {}!", getBattleDialogDefenderName (),
-            getBattleDialogDefendingCountryName (), getBattleDialogAttackerName (),
-            getBattleDialogAttackingCountryName ());
-  }
-
   @Handler
-  void onEvent (final PlayerDefendCountryRequestEvent event)
-  {
-    super.onEvent (event);
-  }
-
-  @Handler
-  void onEvent (final PlayerDefendCountryResponseSuccessEvent event)
+  void onEvent (final PlayerOrderRetreatSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    status ("You defended {} against {} in {}, destroying {} & losing {}!", event.getDefendingCountryName (),
-            event.getAttackingPlayerName (), event.getAttackingCountryName (),
-            Strings.pluralize (Math.abs (event.getAttackingCountryArmyDelta ()), "army", "armies"),
-            Strings.pluralize (Math.abs (event.getDefendingCountryArmyDelta ()), "army", "armies"));
-
-    super.onEvent (event);
+    reset ();
   }
 
   @Handler
@@ -119,12 +62,8 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
+    log.warn ("Could not defend. Reason: {}", event.getReason ());
 
-    status ("Whoops, it looks like you aren't authorized to defend {} against {} in {}. Reason: {}",
-            getBattleDialogDefendingCountryName (), getBattleDialogAttackerName (),
-            getBattleDialogAttackingCountryName (),
-            Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER));
-
-    super.onEvent (event);
+    reset ();
   }
 }

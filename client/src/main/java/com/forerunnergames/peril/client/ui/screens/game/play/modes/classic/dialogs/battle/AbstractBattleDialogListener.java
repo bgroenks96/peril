@@ -26,7 +26,7 @@ public abstract class AbstractBattleDialogListener implements BattleDialogListen
   public final void onSubmit ()
   {
     throw new UnsupportedOperationException (
-            Strings.format ("The behavior of this method is intentionally undefined for {} because it is ambiguous.",
+            Strings.format ("The behavior of this method is intentionally undefined for {}.",
                             BattleDialog.class.getSimpleName ()));
   }
 }

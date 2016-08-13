@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -25,6 +26,8 @@ import com.google.common.collect.ImmutableList;
 
 public interface BattleResult
 {
+  BattleOutcome getOutcome ();
+
   FinalBattleActor getAttacker ();
 
   FinalBattleActor getDefender ();

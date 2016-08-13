@@ -476,7 +476,8 @@ public final class DebugInputProcessor extends InputAdapter
         attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
         defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        attackDialog.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
+        // TODO Create PendingBattleActorPacket's in DebugPackets.
+//        attackDialog.show (, attackingCountry, , defendingCountry);
 
         playMap.disable ();
 
@@ -519,7 +520,8 @@ public final class DebugInputProcessor extends InputAdapter
         attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
         defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        defendDialog.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
+        // TODO Create PendingBattleActorPacket's in DebugPackets.
+//        defendDialog.show (, attackingCountry, , defendingCountry);
 
         playMap.disable ();
 

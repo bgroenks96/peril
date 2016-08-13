@@ -20,20 +20,18 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dial
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 
 public interface BattleDialog extends Dialog
 {
-  void show (final Country attackingCountry,
-             final Country defendingCountry,
-             final String attackingPlayerName,
-             final String defendingPlayerName);
+  void startBattle (final PendingBattleActorPacket attacker,
+                    final PendingBattleActorPacket defender,
+                    final Country attackingCountry,
+                    final Country defendingCountry);
 
-  void battle ();
-
-  boolean isBattleInProgress ();
-
-  boolean isResetting ();
+  void continueBattle (final DieRange attackerDieRange, final DieRange defenderDieRange);
 
   void showBattleResult (final BattleResultPacket result);
 
@@ -47,6 +45,8 @@ public interface BattleDialog extends Dialog
 
   String getDefendingPlayerName ();
 
+  int getActiveDieCount ();
+
   int getActiveAttackerDieCount ();
 
   int getActiveDefenderDieCount ();
@@ -54,6 +54,4 @@ public interface BattleDialog extends Dialog
   int getAttackingCountryArmyCount ();
 
   int getDefendingCountryArmyCount ();
-
-  void stopBattle ();
 }

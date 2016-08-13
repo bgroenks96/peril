@@ -15,10 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.events;
+package com.forerunnergames.peril.core.model.state.events;
 
-import com.forerunnergames.tools.net.events.local.LocalEvent;
-
-public final class BattleDialogResetCompleteEvent implements LocalEvent
+/**
+ * Attacker was victorious & conquered the defender's country. The battle cannot continue on the same vector.
+ */
+public final class BattleResultVictoryEvent implements StateEvent
 {
 }

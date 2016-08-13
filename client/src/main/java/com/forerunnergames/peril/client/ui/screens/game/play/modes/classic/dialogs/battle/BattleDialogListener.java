@@ -19,14 +19,13 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
 
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 
 public interface BattleDialogListener extends DialogListener
 {
   void onBattle ();
 
-  // TODO Production: Remove
-  void onAttackerWinFinal ();
+  void onResultAttackerVictorious (final BattleResultPacket result);
 
-  // TODO Production: Remove
-  void onAttackerLoseFinal ();
+  void onResultAttackerDefeated (final BattleResultPacket result);
 }

@@ -369,13 +369,7 @@ public final class DefaultPlayMap implements PlayMap
 
     final Country country = countryNamesToCountries.get (countryName);
 
-    if (country == null)
-    {
-      throw new IllegalStateException ("Cannot find " + DefaultCountry.class.getSimpleName () + " with name ["
-              + countryName + "].");
-    }
-
-    return country;
+    return country == null ? Country.NULL_COUNTRY : country;
   }
 
   @Override

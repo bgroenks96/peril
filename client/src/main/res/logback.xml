@@ -54,6 +54,14 @@
     <appender-ref ref="STDOUT" />
   </logger>
 
+  <logger name="com.forerunnergames.peril.client.ui.widgets.messagebox" level="WARN">
+    <appender-ref ref="STDOUT" />
+  </logger>
+
+  <logger name="com.forerunnergames.peril.client.net" level="WARN">
+    <appender-ref ref="STDOUT" />
+  </logger>
+
   <logger name="com.forerunnergames.tools" level="TRACE">
     <appender-ref ref="STDOUT" />
   </logger>

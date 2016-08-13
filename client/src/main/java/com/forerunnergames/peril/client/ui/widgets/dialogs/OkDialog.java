@@ -101,12 +101,14 @@ public class OkDialog implements Dialog
   }
 
   @Override
-  public final void show ()
+  @OverridingMethodsMustInvokeSuper
+  public void show ()
   {
     delegate.show ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void show (@Nullable final Action action)
   {
     delegate.show (action);
@@ -120,12 +122,14 @@ public class OkDialog implements Dialog
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void hide (@Nullable final Action action)
   {
     delegate.hide (action);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void setTitle (final String title)
   {
     Arguments.checkIsNotNull (title, "title");
@@ -134,6 +138,7 @@ public class OkDialog implements Dialog
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void setMessage (final Message message)
   {
     Arguments.checkIsNotNull (message, "message");
@@ -156,66 +161,77 @@ public class OkDialog implements Dialog
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void enableInput ()
   {
     delegate.enableInput ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void disableInput ()
   {
     delegate.disableInput ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public boolean isInputDisabled ()
   {
     return delegate.isInputDisabled ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void enableSubmission ()
   {
     delegate.enableSubmission ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void disableSubmission ()
   {
     delegate.disableSubmission ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void setSubmissionDisabled (final boolean isDisabled)
   {
     delegate.setSubmissionDisabled (isDisabled);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public boolean isSubmissionDisabled ()
   {
     return delegate.isSubmissionDisabled ();
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void enableTextButton (final String buttonText)
   {
     delegate.enableTextButton (buttonText);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void disableTextButton (final String buttonText)
   {
     delegate.disableTextButton (buttonText);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void setTextButtonDisabled (final String buttonText, final boolean isDisabled)
   {
     delegate.setTextButtonDisabled (buttonText, isDisabled);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public boolean isDisabledTextButton (final String buttonText)
   {
     return delegate.isDisabledTextButton (buttonText);
@@ -343,8 +359,6 @@ public class OkDialog implements Dialog
     @Override
     public com.badlogic.gdx.scenes.scene2d.ui.Dialog show (final Stage stage, @Nullable final Action action)
     {
-      if (isShown) return this;
-
       isShown = true;
 
       stage.cancelTouchFocus ();
@@ -377,8 +391,6 @@ public class OkDialog implements Dialog
     @Override
     public com.badlogic.gdx.scenes.scene2d.ui.Dialog show (final Stage stage)
     {
-      if (isShown) return this;
-
       isShown = true;
 
       stage.cancelTouchFocus ();
@@ -405,8 +417,6 @@ public class OkDialog implements Dialog
     @Override
     public void hide (@Nullable final Action action)
     {
-      if (!isShown) return;
-
       isShown = false;
 
       clearActions ();
@@ -431,8 +441,6 @@ public class OkDialog implements Dialog
     @Override
     public void hide ()
     {
-      if (!isShown) return;
-
       isShown = false;
 
       clearActions ();

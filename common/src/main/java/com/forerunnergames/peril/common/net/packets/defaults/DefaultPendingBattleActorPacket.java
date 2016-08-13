@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.common.net.packets.defaults;
 
 import com.forerunnergames.peril.common.game.DieRange;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -44,6 +45,14 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
     this.dieRange = dieRange;
   }
 
+  @RequiredForNetworkSerialization
+  DefaultPendingBattleActorPacket ()
+  {
+    player = null;
+    country = null;
+    dieRange = null;
+  }
+
   @Override
   public final PlayerPacket getPlayer ()
   {
@@ -54,6 +63,12 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   public final String getPlayerName ()
   {
     return player.getName ();
+  }
+
+  @Override
+  public PlayerColor getPlayerColor ()
+  {
+    return player.getColor ();
   }
 
   @Override
@@ -85,13 +100,5 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   {
     return Strings.format ("{}: Player: [{}] | Country: [{}] | DieRange: [{}]", getClass ().getSimpleName (), player,
                            country, dieRange);
-  }
-
-  @RequiredForNetworkSerialization
-  DefaultPendingBattleActorPacket ()
-  {
-    player = null;
-    country = null;
-    dieRange = null;
   }
 }

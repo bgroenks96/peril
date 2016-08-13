@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.common.net.packets.battle;
 
 import com.forerunnergames.peril.common.game.DieRange;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
@@ -34,6 +35,8 @@ public interface PendingBattleActorPacket
   PlayerPacket getPlayer ();
 
   String getPlayerName ();
+
+  PlayerColor getPlayerColor ();
 
   CountryPacket getCountry ();
 

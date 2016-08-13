@@ -21,6 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -43,28 +44,20 @@ abstract class AbstractDice implements Dice
   private final ImmutableSortedSet <Die> dice;
   private final Table table;
   private final DieListener listener;
-  private final int absoluteMinDieCount;
-  private final int absoluteMaxDieCount;
+  private final DieRange absoluteDieRange;
+  private DieRange currentDieRange;
   private boolean isTouchable = Dice.DEFAULT_IS_TOUCHABLE;
-  private int currentMinDieCount;
-  private int currentMaxDieCount;
   private int activeDieCount;
 
-  protected AbstractDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
+  protected AbstractDice (final ImmutableSet <Die> dice, final DieRange absoluteDieRange)
   {
-    // @formatter:off
     Arguments.checkIsNotNull (dice, "dice");
     Arguments.checkHasNoNullElements (dice, "dice");
-    Arguments.checkIsNotNegative (absoluteMinDieCount, "absoluteMinDieCount");
-    Arguments.checkIsNotNegative (absoluteMaxDieCount, "absoluteMaxDieCount");
-    Arguments.checkUpperInclusiveBound (absoluteMinDieCount, absoluteMaxDieCount, "absoluteMinDieCount", "absoluteMaxDieCount");
-    // @formatter:on
+    Arguments.checkIsNotNull (absoluteDieRange, "absoluteDieRange");
 
     this.dice = ImmutableSortedSet.copyOf (dice);
-    this.absoluteMinDieCount = absoluteMinDieCount;
-    this.absoluteMaxDieCount = absoluteMaxDieCount;
-    currentMaxDieCount = absoluteMaxDieCount;
-    currentMinDieCount = absoluteMinDieCount;
+    this.absoluteDieRange = absoluteDieRange;
+    currentDieRange = absoluteDieRange;
     activeDieCount = this.dice.size ();
 
     table = new Table ();
@@ -128,19 +121,15 @@ abstract class AbstractDice implements Dice
   }
 
   @Override
-  public final void roll (final ImmutableList <DieRoll> dieRolls)
+  public final void roll (final ImmutableList <DieRoll> rolls)
   {
-    // @formatter:off
-    Arguments.checkIsNotNull (dieRolls, "dieRolls");
-    Arguments.checkHasNoNullElements (dieRolls, "dieRolls");
-    Arguments.checkLowerInclusiveBound (dieRolls.size (), currentMinDieCount, "dieRolls.size ()", "minDieCount");
-    Arguments.checkUpperInclusiveBound (dieRolls.size (), currentMaxDieCount, "dieRolls.size ()", "maxDieCount");
-    Arguments.checkIsTrue (dieRolls.size () == activeDieCount,
+    Arguments.checkIsNotNull (rolls, "rolls");
+    Arguments.checkHasNoNullElements (rolls, "rolls");
+    Arguments.checkIsTrue (rolls.size () == activeDieCount,
                            Strings.format ("You must roll exactly {}, but you rolled {}.",
-                                           Strings.pluralize (activeDieCount, "die", "dice"), dieRolls.size ()));
-    // @formatter:on
+                                           Strings.pluralize (activeDieCount, "die", "dice"), rolls.size ()));
 
-    final Iterator <DieRoll> dieRollIterator = sortDescendingByFaceValue (dieRolls);
+    final Iterator <DieRoll> dieRollIterator = sortDescendingByFaceValue (rolls);
 
     for (final Die die : dice)
     {
@@ -151,19 +140,15 @@ abstract class AbstractDice implements Dice
   }
 
   @Override
-  public void setOutcomes (final ImmutableList <DieRoll> dieRolls)
+  public void setOutcomes (final ImmutableList <DieRoll> rolls)
   {
-    // @formatter:off
-    Arguments.checkIsNotNull (dieRolls, "dieRolls");
-    Arguments.checkHasNoNullElements (dieRolls, "dieRolls");
-    Arguments.checkLowerInclusiveBound (dieRolls.size (), currentMinDieCount, "dieRolls.size ()", "minDieCount");
-    Arguments.checkUpperInclusiveBound (dieRolls.size (), currentMaxDieCount, "dieRolls.size ()", "maxDieCount");
-    Arguments.checkIsTrue (dieRolls.size () == activeDieCount,
+    Arguments.checkIsNotNull (rolls, "rolls");
+    Arguments.checkHasNoNullElements (rolls, "rolls");
+    Arguments.checkIsTrue (rolls.size () == activeDieCount,
                            Strings.format ("You must specify exactly {} rolls, but you specified {}.",
-                                           Strings.pluralize (activeDieCount, "die", "dice"), dieRolls.size ()));
-    // @formatter:on
+                                           Strings.pluralize (activeDieCount, "die", "dice"), rolls.size ()));
 
-    final Iterator <DieRoll> dieRollIterator = sortDescendingByFaceValue (dieRolls);
+    final Iterator <DieRoll> dieRollIterator = sortDescendingByFaceValue (rolls);
 
     for (final Die die : dice)
     {
@@ -174,40 +159,39 @@ abstract class AbstractDice implements Dice
   }
 
   @Override
-  public final void clamp (final int minDieCount, final int maxDieCount)
+  public final void clamp (final DieRange dieRange)
   {
-    Arguments.checkIsNotNegative (minDieCount, "minDieCount");
-    Arguments.checkUpperInclusiveBound (minDieCount, maxDieCount, "minDieCount", "maxDieCount");
-    Arguments.checkLowerInclusiveBound (minDieCount, absoluteMinDieCount, "minDieCount", "absoluteMinDieCount");
-    Arguments.checkUpperInclusiveBound (maxDieCount, absoluteMaxDieCount, "maxDieCount", "absoluteMaxDieCount");
+    Arguments.checkIsNotNull (dieRange, "dieRange");
 
-    if (activeDieCount >= minDieCount && activeDieCount <= maxDieCount)
+    if (dieRange.includes (activeDieCount))
     {
-      clampToCount (activeDieCount, minDieCount, maxDieCount);
+      clampToCount (activeDieCount, dieRange);
     }
-    else if (activeDieCount < minDieCount)
+    else if (dieRange.excludesHigh (activeDieCount))
     {
-      clampToCount (minDieCount, minDieCount, maxDieCount);
+      clampToCount (dieRange.max (), dieRange);
     }
     else
     {
-      clampToCount (maxDieCount, minDieCount, maxDieCount);
+      clampToCount (dieRange.min (), dieRange);
     }
   }
 
   @Override
-  public void clampToCount (final int desiredActiveDieCount, final int minDieCount, final int maxDieCount)
+  public void clampToCount (final int dieCount, final DieRange dieRange)
   {
-    log.trace ("Clamping dice within range: [{} - {}] to [{}].", minDieCount, maxDieCount, desiredActiveDieCount);
+    Arguments.checkIsNotNegative (dieCount, "dieCount");
+    Arguments.checkIsNotNull (dieRange, "dieRange");
+
+    log.trace ("Clamping dice within range: [{}] to [{}].", dieRange, dieCount);
 
     resetPreserveFaceValueAndOutcome ();
 
-    currentMinDieCount = minDieCount;
-    currentMaxDieCount = maxDieCount;
+    currentDieRange = dieRange;
 
     final Iterator <Die> descendingIter = dice.descendingIterator ();
 
-    while (activeDieCount > desiredActiveDieCount && descendingIter.hasNext ())
+    while (activeDieCount > dieCount && descendingIter.hasNext ())
     {
       descendingIter.next ().disable ();
     }
@@ -218,7 +202,7 @@ abstract class AbstractDice implements Dice
   {
     this.isTouchable = isTouchable;
 
-    clampToCount (activeDieCount, currentMinDieCount, currentMaxDieCount);
+    clampToCount (activeDieCount, currentDieRange);
   }
 
   @Override
@@ -251,9 +235,8 @@ abstract class AbstractDice implements Dice
   @Override
   public final void resetAll ()
   {
-    currentMinDieCount = absoluteMinDieCount;
-    currentMaxDieCount = absoluteMaxDieCount;
-    activeDieCount = currentMaxDieCount;
+    currentDieRange = absoluteDieRange;
+    activeDieCount = absoluteDieRange.max ();
 
     for (final Die die : dice)
     {
@@ -289,7 +272,7 @@ abstract class AbstractDice implements Dice
 
   private Iterator <DieRoll> sortDescendingByFaceValue (final ImmutableList <DieRoll> dieRolls)
   {
-    final List <DieRoll> sortedDieRolls = new ArrayList <> (dieRolls);
+    final List <DieRoll> sortedDieRolls = new ArrayList<> (dieRolls);
 
     Collections.sort (sortedDieRolls, DieRoll.DESCENDING_BY_FACE_VALUE);
 
@@ -298,9 +281,8 @@ abstract class AbstractDice implements Dice
 
   private void resetPreserveFaceValueAndOutcome ()
   {
-    currentMinDieCount = absoluteMinDieCount;
-    currentMaxDieCount = absoluteMaxDieCount;
-    activeDieCount = currentMaxDieCount;
+    currentDieRange = absoluteDieRange;
+    activeDieCount = absoluteDieRange.max ();
 
     for (final Die die : dice)
     {
@@ -318,12 +300,12 @@ abstract class AbstractDice implements Dice
 
   private boolean canEnableMoreDice ()
   {
-    return activeDieCount < currentMaxDieCount;
+    return activeDieCount < currentDieRange.max ();
   }
 
   private boolean canDisableMoreDice ()
   {
-    return activeDieCount > currentMinDieCount;
+    return activeDieCount > currentDieRange.min ();
   }
 
   private Die previousDieFrom (final Die die)
@@ -347,9 +329,7 @@ abstract class AbstractDice implements Dice
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: Active Count: {} | Current Min: {} | Current Max: {} | Dice: {} | Absolute Min: {} | Absolute Max: {}",
-                     getClass ().getSimpleName (), activeDieCount, currentMinDieCount, currentMaxDieCount, dice,
-                     absoluteMinDieCount, absoluteMaxDieCount);
+    return Strings.format ("{}: Active Count: [{}] | Current Range: [{}] | Absolute Range: [{}] | Dice: [{}]",
+                           getClass ().getSimpleName (), activeDieCount, currentDieRange, absoluteDieRange, dice);
   }
 }

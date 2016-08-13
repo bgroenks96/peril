@@ -23,9 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
-import com.forerunnergames.tools.common.Event;
-
-import net.engio.mbassy.bus.MBassador;
 
 public final class DefendDialog extends AbstractBattleDialog
 {
@@ -34,11 +31,9 @@ public final class DefendDialog extends AbstractBattleDialog
   public DefendDialog (final BattleDialogWidgetFactory widgetFactory,
                        final Stage stage,
                        final ScreenShaker screenShaker,
-                       final MBassador <Event> eventBus,
                        final DefendDialogListener listener)
   {
-    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, eventBus,
-           listener);
+    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, listener);
   }
 
   @Override
@@ -56,5 +51,11 @@ public final class DefendDialog extends AbstractBattleDialog
   {
     setAttackerDiceTouchable (false);
     setDefenderDiceTouchable (areTouchable);
+  }
+
+  @Override
+  public int getActiveDieCount ()
+  {
+    return getActiveDefenderDieCount ();
   }
 }

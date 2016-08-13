@@ -18,11 +18,14 @@
 
 package com.forerunnergames.peril.common.net.packets.defaults;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -31,6 +34,7 @@ import com.google.common.collect.ImmutableList;
 
 public final class DefaultBattleResultPacket implements BattleResultPacket
 {
+  private final BattleOutcome outcome;
   private final FinalBattleActorPacket attacker;
   private final FinalBattleActorPacket defender;
   private final PlayerPacket defendingCountryOwner;
@@ -39,7 +43,8 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   private final int attackingCountryArmyDelta;
   private final int defendingCountryArmyDelta;
 
-  public DefaultBattleResultPacket (final FinalBattleActorPacket attacker,
+  public DefaultBattleResultPacket (final BattleOutcome outcome,
+                                    final FinalBattleActorPacket attacker,
                                     final FinalBattleActorPacket defender,
                                     final PlayerPacket defendingCountryOwner,
                                     final ImmutableList <DieRoll> attackerRolls,
@@ -47,12 +52,14 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
                                     final int attackingCountryArmyDelta,
                                     final int defendingCountryArmyDelta)
   {
+    Arguments.checkIsNotNull (outcome, "outcome");
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
     Arguments.checkIsNotNull (defendingCountryOwner, "defendingCountryOwner");
     Arguments.checkIsNotNull (attackerRolls, "attackerRolls");
     Arguments.checkIsNotNull (defenderRolls, "defenderRolls");
 
+    this.outcome = outcome;
     this.attacker = attacker;
     this.defender = defender;
     this.defendingCountryOwner = defendingCountryOwner;
@@ -60,6 +67,20 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
     this.defenderRolls = defenderRolls;
     this.attackingCountryArmyDelta = attackingCountryArmyDelta;
     this.defendingCountryArmyDelta = defendingCountryArmyDelta;
+  }
+
+  @Override
+  public BattleOutcome getOutcome ()
+  {
+    return outcome;
+  }
+
+  @Override
+  public boolean outcomeIs (final BattleOutcome outcome)
+  {
+    Arguments.checkIsNotNull (outcome, "outcome");
+
+    return this.outcome == outcome;
   }
 
   @Override
@@ -105,6 +126,30 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
+  public int getAttackerDieCount ()
+  {
+    return attacker.getDieCount ();
+  }
+
+  @Override
+  public int getDefenderDieCount ()
+  {
+    return defender.getDieCount ();
+  }
+
+  @Override
+  public PlayerPacket getAttackingPlayer ()
+  {
+    return attacker.getPlayer ();
+  }
+
+  @Override
+  public PlayerPacket getDefendingPlayer ()
+  {
+    return defender.getPlayer ();
+  }
+
+  @Override
   public String getAttackingPlayerName ()
   {
     return attacker.getPlayerName ();
@@ -114,6 +159,30 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   public String getDefendingPlayerName ()
   {
     return defender.getPlayerName ();
+  }
+
+  @Override
+  public PlayerColor getAttackingPlayerColor ()
+  {
+    return attacker.getPlayerColor ();
+  }
+
+  @Override
+  public PlayerColor getDefendingPlayerColor ()
+  {
+    return defender.getPlayerColor ();
+  }
+
+  @Override
+  public CountryPacket getAttackingCountry ()
+  {
+    return attacker.getCountry ();
+  }
+
+  @Override
+  public CountryPacket getDefendingCountry ()
+  {
+    return defender.getCountry ();
   }
 
   @Override
@@ -141,12 +210,24 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
+  public int getAttackingCountryArmyCount ()
+  {
+    return attacker.getCountryArmyCount ();
+  }
+
+  @Override
+  public int getDefendingCountryArmyCount ()
+  {
+    return defender.getCountryArmyCount ();
+  }
+
+  @Override
   public String toString ()
   {
     // @formatter:off
-    return Strings.format ("{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
+    return Strings.format ("{}: Outcome: [{}] | Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
             + "AttackerRolls: [{}] | DefenderRolls: [{}] | AttackingCountryArmyDelta: [{}]"
-            + " | DefendingCountryArmyDelta: [{}]", getClass ().getSimpleName (), attacker, defender,
+            + " | DefendingCountryArmyDelta: [{}]", getClass ().getSimpleName (), outcome, attacker, defender,
             defendingCountryOwner, attackerRolls, defenderRolls, attackingCountryArmyDelta, defendingCountryArmyDelta);
     // @formatter:on
   }
@@ -154,6 +235,7 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   @RequiredForNetworkSerialization
   private DefaultBattleResultPacket ()
   {
+    outcome = null;
     attacker = null;
     defender = null;
     defendingCountryOwner = null;

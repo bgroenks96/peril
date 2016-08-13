@@ -24,6 +24,7 @@ import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -46,11 +47,10 @@ public abstract class AbstractDiceFactory implements DiceFactory
   {
     Arguments.checkIsNotNull (rules, "rules");
 
-    final int absoluteMinDieCount = rules.getAbsoluteMinAttackerDieCount ();
-    final int absoluteMaxDieCount = rules.getAbsoluteMaxAttackerDieCount ();
+    final DieRange absoluteDieRange = rules.getAbsoluteAttackerDieRange ();
     final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
 
-    for (int dieIndex = 0; dieIndex < absoluteMaxDieCount; ++dieIndex)
+    for (int dieIndex = 0; dieIndex < absoluteDieRange.max (); ++dieIndex)
     {
       dieBuilder.add (new AttackerDie (dieIndex, createAttackerDieImageButton (Die.DEFAULT_STATE,
                                                                                GameSettings.DEFAULT_DIE_FACE_VALUE,
@@ -66,7 +66,7 @@ public abstract class AbstractDiceFactory implements DiceFactory
       });
     }
 
-    final Dice dice = new AttackerDice (dieBuilder.build (), absoluteMinDieCount, absoluteMaxDieCount);
+    final Dice dice = new AttackerDice (dieBuilder.build (), absoluteDieRange);
     dice.setTouchable (areAttackerDiceTouchable ());
 
     return dice;
@@ -77,11 +77,10 @@ public abstract class AbstractDiceFactory implements DiceFactory
   {
     Arguments.checkIsNotNull (rules, "rules");
 
-    final int absoluteMinDieCount = rules.getAbsoluteMinDefenderDieCount ();
-    final int absoluteMaxDieCount = rules.getAbsoluteMaxDefenderDieCount ();
+    final DieRange absoluteDieRange = rules.getAbsoluteDefenderDieRange ();
     final ImmutableSet.Builder <Die> dieBuilder = ImmutableSet.builder ();
 
-    for (int dieIndex = 0; dieIndex < absoluteMaxDieCount; ++dieIndex)
+    for (int dieIndex = 0; dieIndex < absoluteDieRange.max (); ++dieIndex)
     {
       dieBuilder.add (new DefenderDie (dieIndex, createDefenderDieImageButton (Die.DEFAULT_STATE,
                                                                                GameSettings.DEFAULT_DIE_FACE_VALUE,
@@ -97,7 +96,7 @@ public abstract class AbstractDiceFactory implements DiceFactory
       });
     }
 
-    final Dice dice = new DefenderDice (dieBuilder.build (), absoluteMinDieCount, absoluteMaxDieCount);
+    final Dice dice = new DefenderDice (dieBuilder.build (), absoluteDieRange);
     dice.setTouchable (areDefenderDiceTouchable ());
 
     return dice;

@@ -22,10 +22,12 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
-import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.id.Id;
+
+import com.google.common.math.IntMath;
 
 public final class DefaultCountryArmyModel implements CountryArmyModel
 {
@@ -48,7 +50,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
-    if (country.getArmyCount () + armyCount > rules.getMaxArmiesOnCountry ())
+    if (IntMath.checkedAdd (country.getArmyCount (), armyCount) > rules.getMaxArmiesOnCountry ())
     {
       return MutatorResult.failure (Reason.COUNTRY_ARMY_COUNT_OVERFLOW);
     }
@@ -70,7 +72,7 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
     final Country country = countryMapGraphModel.modelCountryWith (countryId);
-    if (country.getArmyCount () - armyCount < rules.getMinArmiesOnCountry ())
+    if (IntMath.checkedSubtract (country.getArmyCount (), armyCount) < rules.getMinArmiesOnCountry ())
     {
       return MutatorResult.failure (Reason.COUNTRY_ARMY_COUNT_UNDERFLOW);
     }
@@ -98,19 +100,19 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
   @Override
   public boolean armyCountIs (final int armyCount, final Id countryId)
   {
-    Arguments.checkIsNotNegative (armyCount, "minArmyCount");
+    Arguments.checkIsNotNegative (armyCount, "armyCount");
     Arguments.checkIsNotNull (countryId, "countryId");
 
     return getArmyCountFor (countryId) == armyCount;
   }
 
   @Override
-  public boolean armyCountIsAtLeast (final int minArmyCount, final Id countryId)
+  public boolean armyCountIsAtLeast (final int armyCount, final Id countryId)
   {
-    Arguments.checkIsNotNegative (minArmyCount, "minArmyCount");
+    Arguments.checkIsNotNegative (armyCount, "armyCount");
     Arguments.checkIsNotNull (countryId, "countryId");
 
-    return getArmyCountFor (countryId) >= minArmyCount;
+    return getArmyCountFor (countryId) >= armyCount;
   }
 
   @Override

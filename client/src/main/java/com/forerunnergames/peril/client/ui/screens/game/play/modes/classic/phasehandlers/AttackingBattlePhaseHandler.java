@@ -17,21 +17,18 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.LetterCase;
-import com.forerunnergames.tools.common.Strings;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -41,11 +38,11 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   private final CountryVectorSelectionHandler countryVectorSelectionHandler;
 
   public AttackingBattlePhaseHandler (final PlayMap playMap,
-                                      final PlayerBox playerBox,
-                                      final AttackDialog attackDialog,
+                                      final BattleDialog attackDialog,
+                                      final BattleResultDialog resultDialog,
                                       final MBassador <Event> eventBus)
   {
-    super (playMap, playerBox, attackDialog, eventBus);
+    super (playMap, attackDialog, resultDialog, eventBus);
 
     countryVectorSelectionHandler = new AbstractCountryVectorSelectionHandler ("attack", eventBus)
     {
@@ -61,69 +58,13 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   public void reset ()
   {
     super.reset ();
-
     countryVectorSelectionHandler.reset ();
-    unsubscribe (countryVectorSelectionHandler);
   }
 
   @Override
-  public void softReset ()
-  {
-    super.softReset ();
-
-    countryVectorSelectionHandler.reset ();
-    countryVectorSelectionHandler.start (getBattleRequestAs (PlayerBeginAttackEvent.class));
-  }
-
-  @Override
-  protected int getBattlingDieCount (final int attackerDieCount, final int defenderDieCount)
-  {
-    return attackerDieCount;
-  }
-
-  @Override
-  protected String attackOrDefend ()
-  {
-    return "attack";
-  }
-
-  @Override
-  protected String getBattleRequestClassName ()
-  {
-    return PlayerIssueAttackOrderEvent.class.getSimpleName ();
-  }
-
-  @Override
-  protected String getBattleResponseRequestClassName ()
-  {
-    return PlayerOrderAttackRequestEvent.class.getSimpleName ();
-  }
-
-  @Override
-  protected PlayerRequestEvent createBattleResponse (final int dieCount)
+  protected BattleRequestEvent createBattleRequestEvent (final int dieCount)
   {
     return new PlayerOrderAttackRequestEvent (dieCount);
-  }
-
-  @Override
-  protected void onNewBattleRequest ()
-  {
-    softReset ();
-    subscribe (countryVectorSelectionHandler);
-  }
-
-  @Override
-  protected void onBattleStart ()
-  {
-    status ("{}, prepare to attack {} in {} from {}!", getBattleDialogAttackerName (), getBattleDialogDefenderName (),
-            getBattleDialogDefendingCountryName (), getBattleDialogAttackingCountryName ());
-  }
-
-  @Override
-  void onRetreatSuccess ()
-  {
-    status ("You stopped attacking {} in {} from {}.", getBattleDialogDefenderName (),
-            getBattleDialogDefendingCountryName (), getBattleDialogAttackingCountryName ());
   }
 
   @Handler
@@ -133,8 +74,8 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
 
     log.debug ("Event received [{}].", event);
 
-    softReset ();
-    subscribe (countryVectorSelectionHandler);
+    reset ();
+    countryVectorSelectionHandler.start (event);
   }
 
   @Handler
@@ -146,15 +87,15 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerIssueAttackOrderEvent event)
+  void onEvent (final PlayerSelectAttackVectorDeniedEvent event)
   {
-    super.onEvent (event);
-  }
+    Arguments.checkIsNotNull (event, "event");
 
-  @Handler
-  void onEvent (final PlayerOrderAttackSuccessEvent event)
-  {
-    super.onEvent (event);
+    log.debug ("Event received [{}].", event);
+    log.warn ("Could not attack. Reason: {}", event.getReason ());
+
+    reset ();
+    countryVectorSelectionHandler.restart ();
   }
 
   @Handler
@@ -163,12 +104,9 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
+    log.warn ("Could not attack. Reason: {}", event.getReason ());
 
-    status ("Whoops, it looks like you aren't authorized to attack {} in {} from {}. Reason: {}",
-            getBattleDialogDefenderName (), getBattleDialogDefendingCountryName (),
-            getBattleDialogAttackingCountryName (),
-            Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER));
-
-    super.onEvent (event);
+    reset ();
+    countryVectorSelectionHandler.restart ();
   }
 }

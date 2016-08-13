@@ -14,15 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.forerunnergames.peril.client.ui;
 
-import com.badlogic.gdx.utils.Timer;
+package com.forerunnergames.peril.core.model.state.events;
 
-public final class NonPausingTimer extends Timer
+/**
+ * Attacker was defeated & permanently failed to conquer the defender's country. The battle cannot continue on the same
+ * vector.
+ */
+public final class BattleResultDefeatEvent implements StateEvent
 {
-  @Override
-  public void delay (final long delayMillis)
-  {
-    // Do nothing. We don't want to delay when the application resumes from a paused state.
-  }
 }

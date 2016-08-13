@@ -36,23 +36,29 @@ final class DefaultAttackOrder implements AttackOrder
     this.attackVector = attackVector;
     this.dieCount = dieCount;
   }
-  
+
   @Override
-  public Id getId()
+  public Id getId ()
   {
-    return this.attackOrderId;
+    return attackOrderId;
   }
 
   @Override
   public AttackVector getAttackVector ()
   {
-    return this.attackVector;
+    return attackVector;
   }
 
   @Override
   public int getDieCount ()
   {
-    return this.dieCount;
+    return dieCount;
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return attackOrderId.hashCode ();
   }
 
   @Override
@@ -60,11 +66,5 @@ final class DefaultAttackOrder implements AttackOrder
   {
     if (!(obj instanceof AttackOrder)) return false;
     return ((AttackOrder) obj).getId ().equals (attackOrderId);
-  }
-
-  @Override
-  public int hashCode ()
-  {
-    return attackOrderId.hashCode ();
   }
 }

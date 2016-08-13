@@ -27,14 +27,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.NonDelayingTimer;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 
-import com.forerunnergames.peril.client.events.BattleDialogResetCompleteEvent;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
-import com.forerunnergames.peril.client.ui.NonPausingTimer;
+import com.forerunnergames.peril.client.ui.EmptyTimerTask;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.Dice;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceArrows;
@@ -43,22 +43,20 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
+import com.forerunnergames.peril.common.game.BattleOutcome;
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-
-import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +75,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final BattleDialogWidgetFactory widgetFactory;
   private final ScreenShaker screenShaker;
-  private final MBassador <Event> eventBus;
   private final BattleDialogListener listener;
   private final GameRules gameRules;
   private final Vector2 tempPosition = new Vector2 ();
@@ -97,41 +94,18 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   private final DiceArrows diceArrows;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
-  private final Timer timer = new NonPausingTimer ();
-  private final AtomicBoolean isBattleInProgress = new AtomicBoolean (false);
-  private final AtomicBoolean isResettingBattle = new AtomicBoolean (false);
-  private final AtomicBoolean shouldStartBattle = new AtomicBoolean (false);
-  private final Object lock = new Object ();
+  private final Timer timer = new NonDelayingTimer ();
   private Sound battleSingleExplosionSoundEffect;
   private Music battleAmbienceSoundEffect;
-  private Timer.Task battleTask = new Timer.Task ()
-  {
-    @Override
-    public void run ()
-    {
-    }
-  };
-  private Timer.Task resetBattleTask = new Timer.Task ()
-  {
-    @Override
-    public void run ()
-    {
-    }
-  };
-  private Timer.Task playBattleEffectsTask = new Timer.Task ()
-  {
-    @Override
-    public void run ()
-    {
-    }
-  };
+  private Timer.Task battleTask = new EmptyTimerTask ();
+  private Timer.Task playBattleEffectsTask = new EmptyTimerTask ();
+  private Timer.Task showBattleResultCompleteTask = new EmptyTimerTask ();
 
   protected AbstractBattleDialog (final BattleDialogWidgetFactory widgetFactory,
                                   final DiceFactory diceFactory,
                                   final String title,
                                   final Stage stage,
                                   final ScreenShaker screenShaker,
-                                  final MBassador <Event> eventBus,
                                   final BattleDialogListener listener)
   {
     // @formatter:off
@@ -157,12 +131,10 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     Arguments.checkIsNotNull (diceFactory, "diceFactory");
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
     this.widgetFactory = widgetFactory;
     this.screenShaker = screenShaker;
-    this.eventBus = eventBus;
     this.listener = listener;
 
     gameRules = new ClassicGameRules.Builder ().build ();
@@ -243,35 +215,47 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
+  @SuppressWarnings ("RefusedBequest")
   public final void hide ()
   {
-    battleTask.cancel ();
-    resetBattleTask.cancel ();
-    playBattleEffectsTask.cancel ();
-    battleSingleExplosionSoundEffect.stop ();
-    battleAmbienceSoundEffect.stop ();
-    screenShaker.stop ();
-    isBattleInProgress.set (false);
-    isResettingBattle.set (false);
-    shouldStartBattle.set (false);
-
-    super.hide ();
+    timer.scheduleTask (new Timer.Task ()
+    {
+      @Override
+      public void run ()
+      {
+        reset ();
+        AbstractBattleDialog.super.hide ();
+      }
+    }, getBattleResultCompleteDelaySeconds ());
   }
 
   @Override
+  @SuppressWarnings ("RefusedBequest")
   public void hide (@Nullable final Action action)
   {
-    battleTask.cancel ();
-    resetBattleTask.cancel ();
-    playBattleEffectsTask.cancel ();
-    battleSingleExplosionSoundEffect.stop ();
-    battleAmbienceSoundEffect.stop ();
-    screenShaker.stop ();
-    isBattleInProgress.set (false);
-    isResettingBattle.set (false);
-    shouldStartBattle.set (false);
+    timer.scheduleTask (new Timer.Task ()
+    {
+      @Override
+      public void run ()
+      {
+        reset ();
+        AbstractBattleDialog.super.hide (action);
+      }
+    }, getBattleResultCompleteDelaySeconds ());
+  }
 
-    super.hide (action);
+  @Override
+  public void enableInput ()
+  {
+    super.enableInput ();
+    setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
+  }
+
+  @Override
+  public void disableInput ()
+  {
+    super.disableInput ();
+    setDiceTouchable (false);
   }
 
   @Override
@@ -310,91 +294,45 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public final void show (final Country attackingCountry,
-                          final Country defendingCountry,
-                          final String attackingPlayerName,
-                          final String defendingPlayerName)
+  public final void startBattle (final PendingBattleActorPacket attacker,
+                                 final PendingBattleActorPacket defender,
+                                 final Country attackingCountry,
+                                 final Country defendingCountry)
   {
+    Arguments.checkIsNotNull (attacker, "attacker");
+    Arguments.checkIsNotNull (defender, "defender");
     Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
     Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
-    Arguments.checkIsNotNull (attackingPlayerName, "attackingPlayerName");
-    Arguments.checkIsNotNull (defendingPlayerName, "defendingPlayerName");
-
-    if (isShown ()) return;
-
-    final int attackingCountryArmies = attackingCountry.getArmies ();
-    final int defendingCountryArmies = defendingCountry.getArmies ();
 
     setCountries (attackingCountry, defendingCountry);
-    initializeCountryArmies (attackingCountryArmies, defendingCountryArmies);
-    setPlayerNames (attackingPlayerName, defendingPlayerName);
-    initializeDice (attackingCountryArmies, defendingCountryArmies);
+    initializeCountryArmies (attacker.getCountryArmyCount (), defender.getCountryArmyCount ());
+    setPlayerNames (attacker.getPlayerName (), defender.getPlayerName ());
+    initializeDice (attacker.getDieRange (), defender.getDieRange ());
     show ();
     playBattleAmbienceSoundEffect ();
+    battle ();
   }
 
   @Override
-  public void battle ()
+  public void continueBattle (final DieRange attackerDieRange, final DieRange defenderDieRange)
   {
-    synchronized (battleTask)
-    {
-      if (battleTask.isScheduled ())
-      {
-        log.warn ("Battle task already scheduled, not starting battle.");
-        return;
-      }
-    }
+    Arguments.checkIsNotNull (attackerDieRange, "attackerDieRange");
+    Arguments.checkIsNotNull (defenderDieRange, "defenderDieRange");
 
-    synchronized (lock)
-    {
-      if (shouldStartBattle.get ())
-      {
-        log.warn ("Not starting battle (already waiting for battle to start after reset is complete).");
-        return;
-      }
-
-      if (isResettingBattle.get ())
-      {
-        shouldStartBattle.set (true);
-        log.debug ("Battle reset in progress; battle will start when reset is complete.");
-        return;
-      }
-
-      shouldStartBattle.set (false);
-      isBattleInProgress.set (true);
-    }
-
-    enableInput ();
-    setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
-
-    battleTask = timer.scheduleTask (new Timer.Task ()
+    timer.scheduleTask (new Timer.Task ()
     {
       @Override
       public void run ()
       {
-        disableInput ();
-        listener.onBattle ();
+        clampDice (attackerDieRange, defenderDieRange);
+        resetDieFaces ();
+        resetDieOutcomes ();
+        resetDiceArrows ();
+        resetDiceSpinning ();
+        setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
+        battle ();
       }
-
-      @Override
-      public synchronized void cancel ()
-      {
-        shouldStartBattle.set (false);
-        isBattleInProgress.set (false);
-      }
-    }, GameSettings.BATTLE_INTERACTION_TIME_SECONDS);
-  }
-
-  @Override
-  public boolean isBattleInProgress ()
-  {
-    return isBattleInProgress.get ();
-  }
-
-  @Override
-  public boolean isResetting ()
-  {
-    return isResettingBattle.get ();
+    }, getBattleResultCompleteDelaySeconds ());
   }
 
   @Override
@@ -402,11 +340,32 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   {
     Arguments.checkIsNotNull (result, "result");
 
-    rollDice (result.getAttackerRolls (), result.getDefenderRolls ());
+    // @formatter:off
+    rollDice (result.getAttackerRolls (), result.getAttackerDieRange (), result.getDefenderRolls (), result.getDefenderDieRange ());
     playBattleEffects (result.getAttackingCountryArmyDelta (), result.getDefendingCountryArmyDelta ());
     changeCountryArmiesBy (result.getAttackingCountryArmyDelta (), result.getDefendingCountryArmyDelta ());
     setDiceTouchable (false);
-    resetBattle ();
+    // @formatter:on
+
+    synchronized (showBattleResultCompleteTask)
+    {
+      if (showBattleResultCompleteTask.isScheduled ())
+      {
+        log.warn ("Show battle result complete task already scheduled, not re-scheduling.");
+        return;
+      }
+    }
+
+    showBattleResultCompleteTask = timer.scheduleTask (new Timer.Task ()
+    {
+      @Override
+      public void run ()
+      {
+        if (!result.outcomeIs (BattleOutcome.CONTINUE)) battleAmbienceSoundEffect.stop ();
+        if (result.outcomeIs (BattleOutcome.ATTACKER_VICTORIOUS)) listener.onResultAttackerVictorious (result);
+        if (result.outcomeIs (BattleOutcome.ATTACKER_DEFEATED)) listener.onResultAttackerDefeated (result);
+      }
+    }, GameSettings.BATTLE_RESULT_VIEWING_TIME_SECONDS);
   }
 
   @Override
@@ -428,6 +387,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
           screenShaker.shake ();
         }
 
+        @Override
         public synchronized void cancel ()
         {
           battleSingleExplosionSoundEffect.stop ();
@@ -485,16 +445,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     return defendingCountryArmyText.getArmies ();
   }
 
-  @Override
-  public final void stopBattle ()
-  {
-    battleTask.cancel ();
-    isBattleInProgress.set (false);
-    shouldStartBattle.set (false);
-    setDiceTouchable (false);
-    log.debug ("Stopped battle.");
-  }
-
   protected abstract void setDiceTouchable (final boolean areTouchable);
 
   protected final void setAttackerDiceTouchable (final boolean areTouchable)
@@ -512,10 +462,57 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     return new Image (country.getPrimaryDrawable (), Scaling.none);
   }
 
-  private void rollDice (final ImmutableList <DieRoll> attackerRolls, final ImmutableList <DieRoll> defenderRolls)
+  private void battle ()
   {
-    clampAttackerDiceToCount (attackerRolls.size ());
-    clampDefenderDiceToCount (defenderRolls.size ());
+    synchronized (battleTask)
+    {
+      if (battleTask.isScheduled ())
+      {
+        log.warn ("Battle task already scheduled, not re-scheduling.");
+        return;
+      }
+    }
+
+    enableInput ();
+
+    battleTask = timer.scheduleTask (new Timer.Task ()
+    {
+      @Override
+      public void run ()
+      {
+        disableInput ();
+        listener.onBattle ();
+      }
+    }, GameSettings.BATTLE_INTERACTION_TIME_SECONDS);
+  }
+
+  @SuppressWarnings ("IntegerDivisionInFloatingPointContext")
+  private float getBattleResultCompleteDelaySeconds ()
+  {
+    synchronized (showBattleResultCompleteTask)
+    {
+      final float seconds = (showBattleResultCompleteTask.getExecuteTimeMillis () - (System.nanoTime () / 1000000L))
+              / 1000.0f;
+      return seconds > 0.0f ? seconds : 0.0f;
+    }
+  }
+
+  private void reset ()
+  {
+    battleTask.cancel ();
+    playBattleEffectsTask.cancel ();
+    battleSingleExplosionSoundEffect.stop ();
+    battleAmbienceSoundEffect.stop ();
+    screenShaker.stop ();
+  }
+
+  private void rollDice (final ImmutableList <DieRoll> attackerRolls,
+                         final DieRange attackerDieRange,
+                         final ImmutableList <DieRoll> defenderRolls,
+                         final DieRange defenderDieRange)
+  {
+    attackerDice.clampToCount (attackerRolls.size (), attackerDieRange);
+    defenderDice.clampToCount (defenderRolls.size (), defenderDieRange);
 
     attackerDice.roll (attackerRolls);
     defenderDice.roll (defenderRolls);
@@ -532,75 +529,12 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     battleAmbienceSoundEffect.play ();
   }
 
-  private void resetBattle ()
-  {
-    synchronized (resetBattleTask)
-    {
-      if (resetBattleTask.isScheduled ()) return;
-    }
-
-    synchronized (lock)
-    {
-      if (isResettingBattle.get ())
-      {
-        log.warn ("Not resetting battle (reset is already in progress).");
-        return;
-      }
-    }
-
-    isResettingBattle.set (true);
-
-    resetBattleTask = timer.scheduleTask (new Timer.Task ()
-    {
-      @Override
-      public void run ()
-      {
-        final int attackingCountryArmies = getAttackingCountryArmyCount ();
-        final int defendingCountryArmies = getDefendingCountryArmyCount ();
-
-        if (gameRules.canBattle (attackingCountryArmies, defendingCountryArmies))
-        {
-          resetDieFaces ();
-          resetDieOutcomes ();
-          resetDiceArrows ();
-          resetDiceSpinning ();
-          clampDice (attackingCountryArmies, defendingCountryArmies);
-        }
-        else if (!gameRules.attackerCanBattle (attackingCountryArmies))
-        {
-          stopBattle ();
-          listener.onAttackerLoseFinal ();
-        }
-        else if (!gameRules.defenderCanBattle (defendingCountryArmies))
-        {
-          stopBattle ();
-          listener.onAttackerWinFinal ();
-        }
-
-        updateDiceTouchability (attackingCountryArmies, defendingCountryArmies);
-
-        isResettingBattle.set (false);
-
-        eventBus.publish (new BattleDialogResetCompleteEvent ());
-
-        if (shouldStartBattle.getAndSet (false)) battle ();
-      }
-
-      @Override
-      public synchronized void cancel ()
-      {
-        super.cancel ();
-        isResettingBattle.set (false);
-      }
-    }, GameSettings.BATTLE_OUTCOME_VIEWING_TIME_SECONDS);
-  }
-
-  private void initializeDice (final int attackingCountryArmies, final int defendingCountryArmies)
+  private void initializeDice (final DieRange attackerDieRange, final DieRange defenderDieRange)
   {
     resetDice ();
-    clampDice (attackingCountryArmies, defendingCountryArmies);
+    clampDice (attackerDieRange, defenderDieRange);
     resetDiceArrows ();
-    updateDiceTouchability (attackingCountryArmies, defendingCountryArmies);
+    setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
   }
 
   private void resetDice ()
@@ -609,39 +543,10 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     defenderDice.resetAll ();
   }
 
-  private void clampDice (final int attackingCountryArmies, final int defendingCountryArmies)
+  private void clampDice (final DieRange attackerDieRange, final DieRange defenderDieRange)
   {
-    attackerDice.clamp (gameRules.getMinAttackerDieCount (attackingCountryArmies),
-                        gameRules.getMaxAttackerDieCount (attackingCountryArmies));
-
-    defenderDice.clamp (gameRules.getMinDefenderDieCount (defendingCountryArmies),
-                        gameRules.getMaxDefenderDieCount (defendingCountryArmies));
-  }
-
-  private void clampAttackerDiceToCount (final int count)
-  {
-    if (attackerDice.getActiveCount () == count) return;
-
-    final int attackingCountryArmies = getAttackingCountryArmyCount ();
-
-    attackerDice.clampToCount (count, gameRules.getMinAttackerDieCount (attackingCountryArmies),
-                               gameRules.getMaxAttackerDieCount (attackingCountryArmies));
-  }
-
-  private void clampDefenderDiceToCount (final int count)
-  {
-    if (defenderDice.getActiveCount () == count) return;
-
-    final int defendingCountryArmies = getDefendingCountryArmyCount ();
-
-    defenderDice.clampToCount (count, gameRules.getMinDefenderDieCount (defendingCountryArmies),
-                               gameRules.getMaxDefenderDieCount (defendingCountryArmies));
-  }
-
-  private void updateDiceTouchability (final int attackingCountryArmies, final int defendingCountryArmies)
-  {
-    setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE
-            && gameRules.canBattle (attackingCountryArmies, defendingCountryArmies));
+    attackerDice.clamp (attackerDieRange);
+    defenderDice.clamp (defenderDieRange);
   }
 
   private void resetDieFaces ()

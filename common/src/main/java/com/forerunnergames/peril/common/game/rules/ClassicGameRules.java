@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.game.rules;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
@@ -129,6 +130,12 @@ public final class ClassicGameRules implements GameRules
   public int getMinArmiesOnCountryForAttack ()
   {
     return MIN_ARMIES_ON_COUNTRY_FOR_ATTACK;
+  }
+
+  @Override
+  public int getMinArmiesOnCountryForDefend ()
+  {
+    return MIN_ARMIES_ON_COUNTRY_FOR_DEFEND;
   }
 
   @Override
@@ -536,6 +543,18 @@ public final class ClassicGameRules implements GameRules
   public boolean defenderCanBattle (final int defendingCountryArmies)
   {
     return defendingCountryArmies >= MIN_ARMIES_ON_COUNTRY_FOR_DEFEND;
+  }
+
+  @Override
+  public BattleOutcome getBattleOutcome (final int attackingCountryArmies, final int defendingCountryArmies)
+  {
+    final boolean attackerCanBattle = attackerCanBattle (attackingCountryArmies);
+    final boolean defenderCanBattle = defenderCanBattle (defendingCountryArmies);
+
+    if (attackerCanBattle && defenderCanBattle) return BattleOutcome.CONTINUE;
+    if (attackerCanBattle) return BattleOutcome.ATTACKER_VICTORIOUS;
+
+    return BattleOutcome.ATTACKER_DEFEATED;
   }
 
   // @formatter:off

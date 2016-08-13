@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.application;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.utils.TimerUtils;
 import com.forerunnergames.peril.common.application.DefaultApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.Controller;
@@ -58,6 +59,8 @@ public final class ClientApplication extends DefaultApplication
       }
     }));
 
+    TimerUtils.allowTimerToRunInBackgroundWindow ();
+
     super.initialize ();
   }
 
@@ -69,5 +72,13 @@ public final class ClientApplication extends DefaultApplication
     if (shouldShutDown ()) Gdx.app.exit ();
 
     mainThreadExecutor.executeQueuedJobs ();
+  }
+
+  @Override
+  public void shutDown ()
+  {
+    super.shutDown ();
+
+    TimerUtils.disposeTimerThread ();
   }
 }

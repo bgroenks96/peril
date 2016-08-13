@@ -17,28 +17,20 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.events.BattleDialogResetCompleteEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
-import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.game.BattleOutcome;
+import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleResultEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.net.events.remote.RequestEvent;
-
-import com.google.common.base.Optional;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -52,80 +44,69 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 {
   protected final Logger log = LoggerFactory.getLogger (getClass ());
-  private final PlayerBox playerBox;
   private final BattleDialog battleDialog;
+  private final BattleResultDialog resultDialog;
   private final MBassador <Event> eventBus;
-  private final AtomicBoolean isBattleQueued = new AtomicBoolean (false);
   private PlayMap playMap;
   @Nullable
-  private DirectPlayerEvent request;
+  private BattleResultEvent lastResultEvent;
   @Nullable
-  private RequestEvent response; // FIXME
+  private PlayerPacket selfPlayer;
 
   AbstractBattlePhaseHandler (final PlayMap playMap,
-                              final PlayerBox playerBox,
                               final BattleDialog battleDialog,
+                              final BattleResultDialog resultDialog,
                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
-    Arguments.checkIsNotNull (playerBox, "playerBox");
     Arguments.checkIsNotNull (battleDialog, "battleDialog");
+    Arguments.checkIsNotNull (resultDialog, "resultDialog");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playMap = playMap;
-    this.playerBox = playerBox;
     this.battleDialog = battleDialog;
+    this.resultDialog = resultDialog;
     this.eventBus = eventBus;
   }
 
   @Override
-  @OverridingMethodsMustInvokeSuper
-  public void onBattle ()
+  public final void onBattle ()
   {
-    if (request == null)
-    {
-      log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
-                getBattleResponseRequestClassName (), getBattleRequestClassName ());
-      status ("Whoops, it looks like you aren't authorized to {}.", attackOrDefend ());
-      return;
-    }
-
-    response = createBattleResponse (getBattlingDieCount (battleDialog.getActiveAttackerDieCount (),
-                                                          battleDialog.getActiveDefenderDieCount ()));
-
-    eventBus.publish (response);
-
-    status ("Waiting for battle result...");
+    eventBus.publish (createBattleRequestEvent (battleDialog.getActiveDieCount ()));
+    eventBus.publish (StatusMessageEventFactory.create ("Waiting for battle result..."));
   }
 
   @Override
-  public final void onRetreat ()
+  public void onResultAttackerVictorious (final BattleResultPacket result)
   {
-    if (request == null)
-    {
-      log.warn ("Ignoring retreat because no prior {} was received.", getBattleRequestClassName ());
-      status ("Whoops, it looks like you aren't authorized to retreat.");
-      return;
-    }
+    Arguments.checkIsNotNull (result, "result");
 
-    onRetreatSuccess ();
-    softReset ();
+    assert result.outcomeIs (BattleOutcome.ATTACKER_VICTORIOUS);
+
+    resultDialog.show (result);
   }
 
   @Override
-  @OverridingMethodsMustInvokeSuper
-  public void onEndBattlePhase ()
+  public void onResultAttackerDefeated (final BattleResultPacket result)
   {
-    if (request == null)
-    {
-      log.warn ("Ignoring ending {} phase because no prior {} was received.", attackOrDefend (),
-                getBattleRequestClassName ());
-      status ("Whoops, it looks like you aren't authorized to end Attack Phase.");
-      return;
-    }
+    Arguments.checkIsNotNull (result, "result");
 
+    assert result.outcomeIs (BattleOutcome.ATTACKER_DEFEATED);
+
+    resultDialog.show (result);
+  }
+
+  @Override
+  public void onRetreat ()
+  {
+    eventBus.publish (new PlayerOrderRetreatRequestEvent ());
+    reset ();
+  }
+
+  @Override
+  public final void onEndBattlePhase ()
+  {
     eventBus.publish (new PlayerEndAttackPhaseRequestEvent ());
-
     reset ();
   }
 
@@ -133,17 +114,8 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
   @OverridingMethodsMustInvokeSuper
   public void reset ()
   {
-    request = null;
-    response = null;
     battleDialog.hide ();
-  }
-
-  @Override
-  @OverridingMethodsMustInvokeSuper
-  public void softReset ()
-  {
-    response = null;
-    battleDialog.hide ();
+    lastResultEvent = null;
   }
 
   @Override
@@ -154,270 +126,75 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
     this.playMap = playMap;
   }
 
-  protected abstract int getBattlingDieCount (final int attackerDieCount, final int defenderDieCount);
+  @Override
+  public void setSelfPlayer (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
 
-  protected abstract String attackOrDefend ();
+    selfPlayer = player;
+  }
 
-  protected abstract String getBattleRequestClassName ();
+  protected abstract BattleRequestEvent createBattleRequestEvent (final int dieCount);
 
-  protected abstract String getBattleResponseRequestClassName ();
-
-  protected abstract RequestEvent createBattleResponse (final int dieCount);
-
-  protected abstract void onNewBattleRequest ();
-
-  protected abstract void onBattleStart ();
-
-  final void onEvent (final DirectPlayerEvent event)
+  @Handler
+  final void onEvent (final BattleSetupEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    request = event;
-
-    if (battleDialog.isResetting ())
+    if (isContinuingBattle (event))
     {
-      isBattleQueued.set (true);
-      log.debug ("Queuing new battle request [{}] until {} reset is complete.", event,
-                 battleDialog.getClass ().getSimpleName ());
-      return;
+      battleDialog.continueBattle (event.getAttackerDieRange (), event.getDefenderDieRange ());
     }
-
-    battle ();
+    else
+    {
+      battleDialog.startBattle (event.getAttacker (), event.getDefender (),
+                                playMap.getCountryWithName (event.getAttackingCountryName ()),
+                                playMap.getCountryWithName (event.getDefendingCountryName ()));
+    }
   }
 
   @Handler
-  final void onEvent (final BattleDialogResetCompleteEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    if (isBattleQueued.getAndSet (false))
-    {
-      battle ();
-      return;
-    }
-
-    reset ();
-  }
-
   final void onEvent (final BattleResultEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    if (response == null)
+    if (!isSelf (event.getPlayer ()))
     {
-      log.warn ("Ignoring [{}] because no prior corresponding {} was sent.", event,
-                getBattleResponseRequestClassName ());
+      log.debug ("Ignoring event [{}] because does not pertain to player [{}].", event, selfPlayer);
       return;
     }
+
+    lastResultEvent = event;
 
     battleDialog.showBattleResult (event.getBattleResult ());
   }
 
-  final void onEvent (final PlayerResponseDeniedEvent event)
+  // TODO Uncomment after PERIL-816 is completed by Brian Groenke.
+  // @Handler
+  // final void onEvent (final PlayerOrderRetreatDeniedEvent event)
+  // {
+  // Arguments.checkIsNotNull (event, "event");
+  //
+  // log.debug ("Event received [{}].", event);
+  // log.warn ("Could not retreat. Reason: {}", event.getReason ());
+  // }
+
+  private boolean isContinuingBattle (final BattleSetupEvent event)
   {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-    log.warn ("Could not {}. Reason: {}", attackOrDefend (), event.getReason ());
-
-    reset ();
+    return battleDialog.isShown () && lastResultEvent != null
+            && lastResultEvent.battleOutcomeIs (BattleOutcome.CONTINUE)
+            && lastResultEvent.getAttackingCountry ().equals (event.getAttackingCountry ())
+            && lastResultEvent.getDefendingCountry ().equals (event.getDefendingCountry ())
+            && lastResultEvent.getAttackingPlayer ().equals (event.getAttackingPlayer ())
+            && lastResultEvent.getDefendingPlayer ().equals (event.getDefendingPlayer ());
   }
 
-  // TODO This is a hack until the core battle API redesign is complete.
-  final void showBattleDialog (final String attackingCountryName, final String defendingCountryName)
+  private boolean isSelf (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
-    Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
-
-    final Optional <String> attackingPlayerName = resolveOwnerName (attackingCountryName);
-    final Optional <String> defendingPlayerName = resolveOwnerName (defendingCountryName);
-
-    if (!attackingPlayerName.isPresent ())
-    {
-      log.error ("Not showing {} for request [{}]. Could not resolve owner of attacking country [{}].",
-                 battleDialog.getClass ().getSimpleName (), request, attackingCountryName);
-      status ("Whoops, it looks like the attacker doesn't own {}.", attackingCountryName);
-      softReset ();
-      return;
-    }
-
-    if (!defendingPlayerName.isPresent ())
-    {
-      log.error ("Not showing {} for request [{}]. Could not resolve owner of defending country [{}].",
-                 battleDialog.getClass ().getSimpleName (), request, defendingCountryName);
-      status ("Whoops, it looks like the defender doesn't own {}.", defendingCountryName);
-      softReset ();
-      return;
-    }
-
-    showBattleDialog (attackingCountryName, defendingCountryName, attackingPlayerName.get (),
-                      defendingPlayerName.get ());
-  }
-
-  final void showBattleDialog (final String attackingCountryName,
-                               final String defendingCountryName,
-                               final String attackingPlayerName,
-                               final String defendingPlayerName)
-  {
-    Arguments.checkIsNotNull (attackingCountryName, "attackingCountryName");
-    Arguments.checkIsNotNull (defendingCountryName, "defendingCountryName");
-    Arguments.checkIsNotNull (attackingPlayerName, "attackingPlayerName");
-    Arguments.checkIsNotNull (defendingPlayerName, "defendingPlayerName");
-
-    if (request == null)
-    {
-      log.error ("Not showing {} because no prior request [{}] was received.",
-                 battleDialog.getClass ().getSimpleName (), getBattleRequestClassName ());
-      return;
-    }
-
-    if (!playMap.existsCountryWithName (attackingCountryName))
-    {
-      log.error ("Not showing {} for request [{}] because attacking country [{}] does not exist.",
-                 battleDialog.getClass ().getSimpleName (), request, attackingCountryName);
-      status ("Whoops, it looks like {} doesn't exist on this map.", attackingCountryName);
-      softReset ();
-      return;
-    }
-
-    if (!playMap.existsCountryWithName (defendingCountryName))
-    {
-      log.error ("Not showing {} for request [{}] because defending country [{}] does not exist.",
-                 battleDialog.getClass ().getSimpleName (), request, defendingCountryName);
-      status ("Whoops, it looks like {} doesn't exist on this map.", defendingCountryName);
-      softReset ();
-      return;
-    }
-
-    // TODO This is a hack until the core battle API redesign is complete.
-    if (request instanceof PlayerBeginAttackEvent && !attackingPlayerName.equals (request.getPlayerName ()))
-    {
-      log.warn ("Not showing {} for request [{}] because resolved owner [{}] of attacking country [{}] is not the same "
-              + "player [{}] from the original request.", battleDialog.getClass ().getSimpleName (), request,
-                attackingPlayerName, attackingCountryName, request.getPlayerName ());
-      status ("Whoops, it looks like the attacker doesn't own {}.", attackingCountryName);
-      softReset ();
-      return;
-    }
-
-    // TODO This is a hack until the core battle API redesign is complete.
-    if (request instanceof PlayerDefendCountryRequestEvent
-            && !defendingPlayerName.equals (((PlayerDefendCountryRequestEvent) request).getDefendingPlayerName ()))
-    {
-      log.warn ("Not showing {} for request [{}] because resolved owner [{}] of defending country [{}] is not the same "
-              + "player [{}] from the original request.", battleDialog.getClass ().getSimpleName (), request,
-                defendingPlayerName, defendingCountryName, request.getPlayerName ());
-      status ("Whoops, it looks like the defender doesn't own {}.", defendingCountryName);
-      softReset ();
-      return;
-    }
-
-    final Country attackingCountry = playMap.getCountryWithName (attackingCountryName);
-    final Country defendingCountry = playMap.getCountryWithName (defendingCountryName);
-
-    battleDialog.show (attackingCountry, defendingCountry, attackingPlayerName, defendingPlayerName);
-    battleDialog.battle ();
-
-    onBattleStart ();
-  }
-
-  void onRetreatSuccess ()
-  {
-    // Empty base implementation.
-  }
-
-  final void subscribe (final Object eventBusListener)
-  {
-    Arguments.checkIsNotNull (eventBusListener, "eventBusListener");
-
-    eventBus.subscribe (eventBusListener);
-  }
-
-  final void unsubscribe (final Object eventBusListener)
-  {
-    Arguments.checkIsNotNull (eventBusListener, "eventBusListener");
-
-    eventBus.unsubscribe (eventBusListener);
-  }
-
-  final String getBattleDialogAttackerName ()
-  {
-    return battleDialog.getAttackingPlayerName ();
-  }
-
-  final String getBattleDialogDefenderName ()
-  {
-    return battleDialog.getDefendingPlayerName ();
-  }
-
-  final String getBattleDialogAttackingCountryName ()
-  {
-    return battleDialog.getAttackingCountryName ();
-  }
-
-  final String getBattleDialogDefendingCountryName ()
-  {
-    return battleDialog.getDefendingCountryName ();
-  }
-
-  // TODO This is a hack until the core battle API redesign is complete.
-  final <T> T getBattleRequestAs (final Class <T> requestType)
-  {
-    Arguments.checkIsNotNull (requestType, "requestType");
-    Preconditions.checkIsTrue (request != null, "{} does not exist.", requestType);
-
-    return requestType.cast (request);
-  }
-
-  final void status (final String statusMessage)
-  {
-    eventBus.publish (StatusMessageEventFactory.create (statusMessage));
-  }
-
-  final void status (final String statusMessage, final Object... args)
-  {
-    eventBus.publish (StatusMessageEventFactory.create (statusMessage, args));
-  }
-
-  final void statusOn (final boolean condition, final String statusMessage)
-  {
-    if (!condition) return;
-    status (statusMessage);
-  }
-
-  final void statusOn (final boolean condition, final String statusMessage, final Object... args)
-  {
-    if (!condition) return;
-    status (statusMessage, args);
-  }
-
-  private void battle ()
-  {
-    if (battleDialog.isBattleInProgress ())
-    {
-      battleDialog.battle ();
-      return;
-    }
-
-    onNewBattleRequest ();
-  }
-
-  // TODO This is a hack until the core battle API redesign is complete.
-  private Optional <String> resolveOwnerName (final String countryName)
-  {
-    if (!playMap.existsCountryWithName (countryName)) return Optional.absent ();
-
-    final CountryPrimaryImageState imageState = playMap.getPrimaryImageStateOf (countryName);
-    assert imageState != null;
-
-    if (!PlayerColor.isValidValue (imageState.name ())) return Optional.absent ();
-
-    return playerBox.getNameOfPlayerWithColor (PlayerColor.valueOf (imageState.name ()));
+    return selfPlayer != null && player.is (selfPlayer);
   }
 }

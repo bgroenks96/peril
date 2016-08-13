@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -27,29 +28,39 @@ import com.google.common.collect.ImmutableList;
 
 public final class DefaultBattleResult implements BattleResult
 {
+  private final BattleOutcome outcome;
   private final FinalBattleActor attacker;
   private final FinalBattleActor defender;
   private final Id defendingCountryOwner;
   private final ImmutableList <DieRoll> attackerRolls;
   private final ImmutableList <DieRoll> defenderRolls;
 
-  public DefaultBattleResult (final FinalBattleActor attacker,
+  public DefaultBattleResult (final BattleOutcome outcome,
+                              final FinalBattleActor attacker,
                               final FinalBattleActor defender,
                               final Id defendingCountryOwner,
                               final ImmutableList <DieRoll> attackerRolls,
                               final ImmutableList <DieRoll> defenderRolls)
   {
+    Arguments.checkIsNotNull (outcome, "outcome");
     Arguments.checkIsNotNull (attacker, "attacker");
     Arguments.checkIsNotNull (defender, "defender");
     Arguments.checkIsNotNull (defendingCountryOwner, "defendingCountryOwner");
     Arguments.checkIsNotNull (attackerRolls, "attackerRolls");
     Arguments.checkIsNotNull (defenderRolls, "defenderRolls");
 
+    this.outcome = outcome;
     this.attacker = attacker;
     this.defender = defender;
     this.defendingCountryOwner = defendingCountryOwner;
     this.attackerRolls = attackerRolls;
     this.defenderRolls = defenderRolls;
+  }
+
+  @Override
+  public BattleOutcome getOutcome ()
+  {
+    return outcome;
   }
 
   @Override
@@ -85,10 +96,10 @@ public final class DefaultBattleResult implements BattleResult
   @Override
   public String toString ()
   {
-    // @formatter:off
-    return Strings.format ("{}: Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
-                                   + "AttackerRolls: [{}] | DefenderRollsults: [{}]", getClass ().getSimpleName (),
-                           attacker, defender, defendingCountryOwner, attackerRolls, defenderRolls);
-    // @formatter:on
+    return Strings.format (
+                           "{}: Outcome: [{}] | Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
+                                   + "AttackerRolls: [{}] | DefenderRollsults: [{}]",
+                           getClass ().getSimpleName (), outcome, attacker, defender, defendingCountryOwner,
+                           attackerRolls, defenderRolls);
   }
 }

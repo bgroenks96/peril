@@ -20,13 +20,11 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 
 import javax.annotation.Nullable;
@@ -41,7 +39,6 @@ public final class OccupationPhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (OccupationPhaseHandler.class);
   private final OccupationDialog occupationDialog;
-  private final Dialog battleResultDialog;
   private final MBassador <Event> eventBus;
   private PlayMap playMap;
   @Nullable
@@ -55,17 +52,14 @@ public final class OccupationPhaseHandler
 
   public OccupationPhaseHandler (final PlayMap playMap,
                                  final OccupationDialog occupationDialog,
-                                 final Dialog battleResultDialog,
                                  final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
     Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
-    Arguments.checkIsNotNull (battleResultDialog, "battleResultDialog");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playMap = playMap;
     this.occupationDialog = occupationDialog;
-    this.battleResultDialog = battleResultDialog;
     this.eventBus = eventBus;
   }
 
@@ -170,15 +164,10 @@ public final class OccupationPhaseHandler
 
     playMap.setCountryState (destinationCountryName, playMap.getPrimaryImageStateOf (sourceCountryName));
 
-    occupationDialog.show (event.getMinOccupationArmyCount (), event.getDestinationCountryArmyCount (),
-                           event.getMaxOccupationArmyCount (), event.getTotalArmyCount (),
-                           playMap.getCountryWithName (sourceCountryName),
-                           playMap.getCountryWithName (destinationCountryName));
-
-    battleResultDialog.setTitle ("Victory");
-    battleResultDialog.setMessage (new DefaultMessage (
-            "General, you conquered " + destinationCountryName + "!\nWe must now occupy it quickly."));
-    battleResultDialog.show ();
+    occupationDialog.set (event.getMinOccupationArmyCount (), event.getDestinationCountryArmyCount (),
+                          event.getMaxOccupationArmyCount (), event.getTotalArmyCount (),
+                          playMap.getCountryWithName (sourceCountryName),
+                          playMap.getCountryWithName (destinationCountryName));
   }
 
   @Handler

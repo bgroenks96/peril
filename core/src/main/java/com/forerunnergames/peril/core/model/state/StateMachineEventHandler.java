@@ -32,14 +32,15 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
+import com.forerunnergames.peril.core.model.state.events.BattleResultContinueEvent;
+import com.forerunnergames.peril.core.model.state.events.BattleResultDefeatEvent;
+import com.forerunnergames.peril.core.model.state.events.BattleResultVictoryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackDefeatEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackIndecisiveEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackVictoryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerResponseTimeoutEvent;
@@ -328,33 +329,33 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerAttackVictoryEvent event)
+  public void onEvent (final BattleResultVictoryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerAttackVictoryEvent (event);
+    context.onBattleResultVictoryEvent (event);
   }
 
   @Handler
-  public void onEvent (final PlayerAttackDefeatEvent event)
+  public void onEvent (final BattleResultDefeatEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerAttackDefeatEvent (event);
+    context.onBattleResultDefeatEvent (event);
   }
 
   @Handler
-  public void onEvent (final PlayerAttackIndecisiveEvent event)
+  public void onEvent (final BattleResultContinueEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerAttackIndecisiveEvent (event);
+    context.onBattleResultContinueEvent (event);
   }
 
   @Handler
@@ -365,6 +366,16 @@ public final class StateMachineEventHandler
     log.trace ("Received event {}", event);
 
     context.onPlayerOccupyCountryResponseRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final SkipFortifyPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onSkipFortifyPhaseEvent (event);
   }
 
   @Handler
@@ -469,7 +480,7 @@ public final class StateMachineEventHandler
 
   private class CompositeStateMachineListener implements StateMachineListener
   {
-    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList <> ();
+    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList<> ();
 
     CompositeStateMachineListener ()
     {

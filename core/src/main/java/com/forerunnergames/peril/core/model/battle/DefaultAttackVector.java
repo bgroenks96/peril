@@ -8,15 +8,13 @@ public class DefaultAttackVector implements AttackVector
   private final Id playerId;
   private final Id sourceCountryId;
   private final Id targetCountryId;
-  
-  public DefaultAttackVector (final Id playerId,
-                              final Id sourceCountryId,
-                              final Id targetCountryId)
+
+  public DefaultAttackVector (final Id playerId, final Id sourceCountryId, final Id targetCountryId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (sourceCountryId, "sourceCountryId");
     Arguments.checkIsNotNull (targetCountryId, "targetCountryId");
-    
+
     this.playerId = playerId;
     this.sourceCountryId = sourceCountryId;
     this.targetCountryId = targetCountryId;
@@ -25,18 +23,18 @@ public class DefaultAttackVector implements AttackVector
   @Override
   public Id getPlayerId ()
   {
-    return this.playerId;
+    return playerId;
   }
 
   @Override
   public Id getSourceCountry ()
   {
-    return this.sourceCountryId;
+    return sourceCountryId;
   }
 
   @Override
   public Id getTargetCountry ()
   {
-    return this.targetCountryId;
+    return targetCountryId;
   }
 }

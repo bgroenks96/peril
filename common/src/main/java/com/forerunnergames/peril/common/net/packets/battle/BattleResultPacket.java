@@ -18,14 +18,21 @@
 
 package com.forerunnergames.peril.common.net.packets.battle;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
 import com.google.common.collect.ImmutableList;
 
 public interface BattleResultPacket
 {
+  BattleOutcome getOutcome ();
+
+  boolean outcomeIs (final BattleOutcome outcome);
+
   FinalBattleActorPacket getAttacker ();
 
   FinalBattleActorPacket getDefender ();
@@ -45,9 +52,25 @@ public interface BattleResultPacket
 
   DieRange getDefenderDieRange ();
 
+  int getAttackerDieCount ();
+
+  int getDefenderDieCount ();
+
+  PlayerPacket getAttackingPlayer ();
+
+  PlayerPacket getDefendingPlayer ();
+
   String getAttackingPlayerName ();
 
   String getDefendingPlayerName ();
+
+  PlayerColor getAttackingPlayerColor ();
+
+  PlayerColor getDefendingPlayerColor ();
+
+  CountryPacket getAttackingCountry ();
+
+  CountryPacket getDefendingCountry ();
 
   String getAttackingCountryName ();
 
@@ -56,4 +79,8 @@ public interface BattleResultPacket
   int getAttackingCountryArmyDelta ();
 
   int getDefendingCountryArmyDelta ();
+
+  int getAttackingCountryArmyCount ();
+
+  int getDefendingCountryArmyCount ();
 }

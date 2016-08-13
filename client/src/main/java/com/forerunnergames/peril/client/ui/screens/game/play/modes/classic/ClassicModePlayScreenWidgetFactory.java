@@ -47,6 +47,9 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.AttackerBattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
@@ -55,13 +58,9 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogList
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
-
-import net.engio.mbassy.bus.MBassador;
 
 public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFactory
 {
@@ -239,28 +238,24 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
 
   public AttackDialog createAttackDialog (final Stage stage,
                                           final ScreenShaker screenShaker,
-                                          final MBassador <Event> eventBus,
                                           final AttackDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new AttackDialog (battleDialogWidgetFactory, stage, screenShaker, eventBus, listener);
+    return new AttackDialog (battleDialogWidgetFactory, stage, screenShaker, listener);
   }
 
   public DefendDialog createDefendDialog (final Stage stage,
                                           final ScreenShaker screenShaker,
-                                          final MBassador <Event> eventBus,
                                           final DefendDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new DefendDialog (battleDialogWidgetFactory, stage, screenShaker, eventBus, listener);
+    return new DefendDialog (battleDialogWidgetFactory, stage, screenShaker, listener);
   }
 
   public void destroyPlayMap (final MapMetadata mapMetadata)
@@ -270,11 +265,25 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     playMapFactory.destroy (mapMetadata);
   }
 
-  public OkDialog createBattleResultDialog (final Stage stage, final DialogListener listener)
+  public BattleResultDialog createAttackerBattleResultDialog (final Stage stage, final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
 
-    return new OkDialog (this,
+    return new AttackerBattleResultDialog (this,
+            DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false)
+                    .movable (true).position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244)
+                    .titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
+                    .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (),
+            stage, listener);
+  }
+
+  public BattleResultDialog createDefenderBattleResultDialog (final Stage stage, final DialogListener listener)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new DefenderBattleResultDialog (this,
             DialogStyle.builder ().windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false)
                     .movable (true).position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244)
                     .titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)

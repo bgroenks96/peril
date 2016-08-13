@@ -66,6 +66,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.AttackingBattlePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattlePhaseHandler;
@@ -86,9 +87,11 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
@@ -105,7 +108,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerAttackVictoryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
@@ -116,8 +118,10 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyC
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -161,7 +165,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final FortificationDialog fortificationDialog;
   private final AttackDialog attackDialog;
   private final DefendDialog defendDialog;
-  private final Dialog battleResultDialog;
+  private final BattleResultDialog attackerBattleResultDialog;
+  private final BattleResultDialog defenderBattleResultDialog;
   private final Dialog quitDialog;
   private final Vector2 tempPosition = new Vector2 ();
   private final Cell <Actor> playMapCell;
@@ -310,19 +315,21 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     // @formatter:off
 
-    attackDialog = widgetFactory.createAttackDialog (stage, screenShaker, eventBus, new DefaultAttackDialogListener ());
-    defendDialog = widgetFactory.createDefendDialog (stage, screenShaker, eventBus, new DefaultDefendDialogListener ());
-    battleResultDialog = widgetFactory.createBattleResultDialog (stage, new BattleResultDialogListener ());
+    attackDialog = widgetFactory.createAttackDialog (stage, screenShaker, new DefaultAttackDialogListener ());
+    defendDialog = widgetFactory.createDefendDialog (stage, screenShaker, new DefaultDefendDialogListener ());
+    attackerBattleResultDialog = widgetFactory.createAttackerBattleResultDialog (stage, new AttackerBattleResultDialogListener ());
+    defenderBattleResultDialog = widgetFactory.createDefenderBattleResultDialog (stage, new DefenderBattleResultDialogListener ());
     occupationDialog = widgetFactory.createOccupationDialog (stage, new OccupationDialogListener ());
     fortificationDialog = widgetFactory.createFortificationDialog (stage, new FortificationDialogListener ());
     quitDialog = widgetFactory.createQuitDialog (stage, new QuitDialogListener ());
-    allDialogs = new CompositeDialog (attackDialog, defendDialog, battleResultDialog, occupationDialog, fortificationDialog, quitDialog);
+    allDialogs = new CompositeDialog (attackDialog, defendDialog, attackerBattleResultDialog, defenderBattleResultDialog,
+                                      occupationDialog, fortificationDialog, quitDialog);
 
     reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
-    attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, playerBox, attackDialog, eventBus);
-    defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, playerBox, defendDialog, eventBus);
-    occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, battleResultDialog, eventBus);
+    attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog, attackerBattleResultDialog, eventBus);
+    defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog, defenderBattleResultDialog, eventBus);
+    occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
 
     // @formatter:on
@@ -401,10 +408,10 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
     keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
+    final InputMultiplexer inputMultiplexer = new InputMultiplexer (preInputProcessor, stage, this);
+
     debugInputProcessor = new DebugInputProcessor (debugEventGenerator, mouseInput, playMap, statusBox, chatBox,
             playerBox, occupationDialog, fortificationDialog, attackDialog, defendDialog, eventBus);
-
-    final InputMultiplexer inputMultiplexer = new InputMultiplexer (preInputProcessor, stage, this);
 
     if (DEBUG) inputMultiplexer.addProcessor (debugInputProcessor);
 
@@ -533,6 +540,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     log.debug ("Event received [{}].", event);
 
     selfPlayer = event.getSelfPlayer ();
+
+    attackingBattlePhaseHandler.setSelfPlayer (selfPlayer);
+    defendingBattlePhaseHandler.setSelfPlayer (selfPlayer);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -909,13 +919,29 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final PlayerOrderAttackSuccessEvent event)
+  void onEvent (final BattleSetupEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getDefendingPlayer ())) return;
+    final boolean isAttacker = isSelf (event.getAttackingPlayer ());
+    final boolean isDefender = isSelf (event.getDefendingPlayer ());
+    final String attacker = isAttacker ? "You" : event.getAttackingPlayerName ();
+    final String defender = isDefender ? "You" : event.getDefendingPlayerName ();
+    final String attackerCountry = event.getAttackingCountryName ();
+    final String defenderCountry = event.getDefendingCountryName ();
+
+    status ("{} {} attacking {} in {} from {}!", attacker, isAttacker ? "are" : "is", defender, defenderCountry,
+            attackerCountry);
+  }
+
+  @Handler
+  void onEvent (final PlayerOrderAttackSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
 
     final int defenderLoss = Math.abs (event.getDefendingCountryArmyDelta ());
     final int attackerLoss = Math.abs (event.getAttackingCountryArmyDelta ());
@@ -925,7 +951,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     final boolean attackerOnlyLostArmies = !defenderLostArmies && attackerLostArmies;
     final boolean bothLostArmies = attackerLostArmies && defenderLostArmies;
     final String attacker = isSelf (event.getAttackingPlayer ()) ? "You" : event.getAttackingPlayerName ();
-    final String defender = event.getDefendingPlayerName ();
+    final String defender = isSelf (event.getDefendingPlayer ()) ? "you" : event.getDefendingPlayerName ();
     final String attackerCountry = event.getAttackingCountryName ();
     final String defenderCountry = event.getDefendingCountryName ();
     final String defenderLossInWords = Strings.pluralize (defenderLoss, "no armies", "an army",
@@ -941,20 +967,30 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     statusOn (defenderOnlyLostArmies, "{} attacked {} in {} from {} & destroyed {}!", attacker, defender,
               defenderCountry, attackerCountry, defenderLossInWords);
+
+    statusOn (event.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS), "{} conquered {}, defeating {} in battle.",
+              attacker, defenderCountry, defender);
+
+    statusOn (event.battleOutcomeIs (BattleOutcome.ATTACKER_DEFEATED),
+              "{} failed to conquer {}, defeated by {} in battle.", attacker, defenderCountry, defender);
   }
 
   @Handler
-  void onEvent (final PlayerAttackVictoryEvent event)
+  void onEvent (final PlayerOrderRetreatSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    statusOn (isSelf (event.getPlayer ()), "General, we have conquered {}!",
-              event.getBattleResult ().getDefendingCountryName ());
+    statusOn (isSelf (event.getAttackingPlayer ()), "You stopped attacking {} in {} from {}.",
+              event.getDefendingPlayerName (), event.getDefendingCountryName (), event.getAttackingCountryName ());
 
-    statusOn (!isSelf (event.getPlayer ()), "{} conquered {}, defeating {} in battle.", event.getPlayerName (),
-              event.getBattleResult ().getDefendingCountryName (), event.getBattleResult ().getDefendingPlayerName ());
+    statusOn (isSelf (event.getDefendingPlayer ()), "{} stopped attacking you in {} from {}.",
+              event.getAttackingPlayerName (), event.getDefendingCountryName (), event.getAttackingCountryName ());
+
+    statusOn (!isSelf (event.getAttackingPlayer ()) && !isSelf (event.getDefendingPlayer ()),
+              "{} stopped attacking {} in {} from {}.", event.getAttackingPlayerName (),
+              event.getDefendingPlayerName (), event.getDefendingCountryName (), event.getAttackingCountryName ());
   }
 
   @Handler
@@ -964,7 +1000,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    statusOn (isSelf (event.getPlayer ()), "General, we lost the war.");
+    statusOn (isSelf (event.getPlayer ()), "General, we have lost the war.");
     statusOn (!isSelf (event.getPlayer ()), "{} was annihilated.", event.getPlayerName ());
   }
 
@@ -1068,10 +1104,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    status ("{} decided not to maneuver any armies.", event.getPlayerName ());
-    status ("{} maneuvered {} into {} from {}.", event.getPlayerName (),
-            Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"), event.getTargetCountryName (),
-            event.getSourceCountryName ());
+    final String player = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
+    final String sourceCountry = event.getSourceCountryName ();
+    final String destCountry = event.getTargetCountryName ();
+    final String armies = Strings.pluralize (event.getDeltaArmyCount (), "army", "armies");
+
+    status ("{} maneuvered {} into {} from {}.", player, armies, destCountry, sourceCountry);
   }
 
   @Handler
@@ -1198,6 +1236,135 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     updatePlayMap (PlayMap.NULL_PLAY_MAP);
   }
 
+  private final class DefaultAttackDialogListener extends AbstractBattleDialogListener implements AttackDialogListener
+  {
+    @Override
+    public void onBattle ()
+    {
+      attackingBattlePhaseHandler.onBattle ();
+    }
+
+    @Override
+    public void onResultAttackerVictorious (final BattleResultPacket result)
+    {
+      Arguments.checkIsNotNull (result, "result");
+
+      attackingBattlePhaseHandler.onResultAttackerVictorious (result);
+    }
+
+    @Override
+    public void onResultAttackerDefeated (final BattleResultPacket result)
+    {
+      Arguments.checkIsNotNull (result, "result");
+
+      attackingBattlePhaseHandler.onResultAttackerDefeated (result);
+    }
+
+    @Override
+    public void onRetreat ()
+    {
+      attackingBattlePhaseHandler.onRetreat ();
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMap.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (occupationDialog.isShown () || attackerBattleResultDialog.isShown () || quitDialog.isShown ()) return;
+
+      playMap.enable (mouseInput.position ());
+    }
+  }
+
+  private final class DefaultDefendDialogListener extends AbstractBattleDialogListener implements DefendDialogListener
+  {
+    @Override
+    public void onBattle ()
+    {
+      defendingBattlePhaseHandler.onBattle ();
+    }
+
+    @Override
+    public void onResultAttackerVictorious (final BattleResultPacket result)
+    {
+      Arguments.checkIsNotNull (result, "result");
+
+      defendingBattlePhaseHandler.onResultAttackerVictorious (result);
+    }
+
+    @Override
+    public void onResultAttackerDefeated (final BattleResultPacket result)
+    {
+      Arguments.checkIsNotNull (result, "result");
+
+      defendingBattlePhaseHandler.onResultAttackerDefeated (result);
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMap.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (attackerBattleResultDialog.isShown () || quitDialog.isShown ()) return;
+
+      playMap.enable (mouseInput.position ());
+    }
+  }
+
+  private final class AttackerBattleResultDialogListener extends DialogListenerAdapter
+  {
+    @Override
+    public void onShow ()
+    {
+      if (quitDialog.isShown ())
+      {
+        quitDialog.hide (null);
+        quitDialog.show (null);
+      }
+
+      playMap.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      attackDialog.hide ();
+      if (attackerBattleResultDialog.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS)) occupationDialog.show ();
+      if (!occupationDialog.isShown () && !quitDialog.isShown ()) playMap.enable (mouseInput.position ());
+    }
+  }
+
+  private final class DefenderBattleResultDialogListener extends DialogListenerAdapter
+  {
+    @Override
+    public void onShow ()
+    {
+      if (quitDialog.isShown ())
+      {
+        quitDialog.hide (null);
+        quitDialog.show (null);
+      }
+
+      playMap.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      defendDialog.hide ();
+      if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
+    }
+  }
+
   private final class OccupationDialogListener implements DialogListener
   {
     @Override
@@ -1209,18 +1376,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onShow ()
     {
-      if (attackDialog.isShown ()) attackDialog.hide ();
-      if (defendDialog.isShown ()) defendDialog.hide ();
-
       playMap.disable ();
     }
 
     @Override
     public void onHide ()
     {
-      if (quitDialog.isShown ()) return;
-
-      playMap.enable (mouseInput.position ());
+      if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
     }
   }
 
@@ -1247,114 +1409,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onHide ()
     {
-      if (quitDialog.isShown ()) return;
-
-      playMap.enable (mouseInput.position ());
-    }
-  }
-
-  private final class DefaultAttackDialogListener extends AbstractBattleDialogListener implements AttackDialogListener
-  {
-    @Override
-    public void onBattle ()
-    {
-      attackingBattlePhaseHandler.onBattle ();
-    }
-
-    @Override
-    public void onRetreat ()
-    {
-      attackingBattlePhaseHandler.onRetreat ();
-    }
-
-    // TODO Production: Remove
-    @Override
-    public void onAttackerWinFinal ()
-    {
-    }
-
-    // TODO Production: Remove
-    @Override
-    public void onAttackerLoseFinal ()
-    {
-      battleResultDialog.setTitle ("Defeat");
-      battleResultDialog.setMessage (new DefaultMessage (
-              "General, we have failed to conquer " + attackDialog.getDefendingCountryName () + "."));
-      battleResultDialog.show ();
-
-      status ("You failed to conquer {}.", attackDialog.getDefendingCountryName ());
-
-      attackingBattlePhaseHandler.softReset ();
-    }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (occupationDialog.isShown () || battleResultDialog.isShown () || quitDialog.isShown ()) return;
-
-      playMap.enable (mouseInput.position ());
-    }
-  }
-
-  private final class DefaultDefendDialogListener extends AbstractBattleDialogListener implements DefendDialogListener
-  {
-    @Override
-    public void onBattle ()
-    {
-      defendingBattlePhaseHandler.onBattle ();
-    }
-
-    // TODO Production: Remove
-    @Override
-    public void onAttackerWinFinal ()
-    {
-      defendDialog.hide ();
-
-      playMap.setCountryState (defendDialog.getDefendingCountryName (),
-                               playMap.getPrimaryImageStateOf (defendDialog.getAttackingCountryName ()));
-
-      battleResultDialog.setTitle ("Defeat");
-      battleResultDialog.setMessage (new DefaultMessage ("General, we have failed to defend "
-              + defendDialog.getDefendingCountryName () + ".\nThe enemy has taken it."));
-      battleResultDialog.show ();
-
-      status ("You were defeated in {} & it has been conquered by {}!", defendDialog.getDefendingCountryName (),
-              defendDialog.getAttackingPlayerName ());
-    }
-
-    // TODO Production: Remove
-    @Override
-    public void onAttackerLoseFinal ()
-    {
-      defendDialog.hide ();
-
-      battleResultDialog.setTitle ("Victory");
-      battleResultDialog.setMessage (new DefaultMessage ("General, we have successfully protected "
-              + defendDialog.getDefendingCountryName () + " from the enemy!"));
-      battleResultDialog.show ();
-
-      status ("You defeated {} in {}!", defendDialog.getAttackingPlayerName (),
-              defendDialog.getAttackingCountryName ());
-    }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (battleResultDialog.isShown () || quitDialog.isShown ()) return;
-
-      playMap.enable (mouseInput.position ());
+      if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
     }
   }
 
@@ -1376,36 +1431,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onCancel ()
     {
-      if (defendDialog.isShown () || occupationDialog.isShown () || battleResultDialog.isShown ()) return;
-
-      playMap.enable (mouseInput.position ());
-    }
-  }
-
-  private final class BattleResultDialogListener extends DialogListenerAdapter
-  {
-    @Override
-    public void onShow ()
-    {
-      if (quitDialog.isShown ())
+      if (!attackDialog.isShown () && !defendDialog.isShown () && !occupationDialog.isShown ()
+              && !fortificationDialog.isShown () && !attackerBattleResultDialog.isShown ()
+              && !defenderBattleResultDialog.isShown ())
       {
-        quitDialog.hide (null);
-        quitDialog.show (null);
+        playMap.enable (mouseInput.position ());
       }
-
-      if (occupationDialog.isShown ()) occupationDialog.disableInput ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (occupationDialog.isShown ())
-      {
-        occupationDialog.enableInput ();
-        return;
-      }
-
-      playMap.enable (mouseInput.position ());
     }
   }
 }

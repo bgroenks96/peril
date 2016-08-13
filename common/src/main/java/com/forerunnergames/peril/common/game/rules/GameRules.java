@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.game.rules;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
@@ -46,6 +47,8 @@ public interface GameRules
   int getMaxArmiesOnCountry ();
 
   int getMinArmiesOnCountryForAttack ();
+
+  int getMinArmiesOnCountryForDefend ();
 
   int getMinArmiesOnCountryForFortify ();
 
@@ -132,4 +135,6 @@ public interface GameRules
   boolean attackerCanBattle (final int attackingCountryArmies);
 
   boolean defenderCanBattle (final int defendingCountryArmies);
+
+  BattleOutcome getBattleOutcome (final int attackingCountryArmies, final int defendingCountryArmies);
 }

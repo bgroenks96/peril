@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
@@ -179,16 +180,16 @@ public final class DefaultBattleModel implements BattleModel
     final CountryArmyModel countryArmyModel = playMapModel.getCountryArmyModel ();
     final AttackVector attackVector = attackOrder.getAttackVector ();
 
-    final Id attackerCountry = attackVector.getSourceCountry ();
-    final Id defenderCountry = attackVector.getTargetCountry ();
+    final Id attackerCountryId = attackVector.getSourceCountry ();
+    final Id defenderCountryId = attackVector.getTargetCountry ();
     final Id defenderId = countryOwnerModel.ownerOf (attackVector.getTargetCountry ());
 
     // The die ranges actually used for this attack, must be obtained before armies are removed from countries.
-    final DieRange attackerDieRange = rules.getAttackerDieRange (countryArmyModel.getArmyCountFor (attackerCountry));
-    final DieRange defenderDieRange = rules.getDefenderDieRange (countryArmyModel.getArmyCountFor (defenderCountry));
+    final DieRange attackerDieRange = rules.getAttackerDieRange (countryArmyModel.getArmyCountFor (attackerCountryId));
+    final DieRange defenderDieRange = rules.getDefenderDieRange (countryArmyModel.getArmyCountFor (defenderCountryId));
 
     // assertion sanity checks
-    assert countryArmyModel.armyCountIsAtLeast (rules.getMinArmiesOnCountryForAttack (), attackerCountry);
+    assert countryArmyModel.armyCountIsAtLeast (rules.getMinArmiesOnCountryForAttack (), attackerCountryId);
 
     final ImmutableList <DieFaceValue> attackerRoll = generateSortedDieValues (attackOrder.getDieCount ());
     final ImmutableList <DieFaceValue> defenderRoll = generateSortedDieValues (defenderDieCount);
@@ -196,7 +197,7 @@ public final class DefaultBattleModel implements BattleModel
     final ImmutableList.Builder <DieRoll> attackerRolls = ImmutableList.builder ();
     final ImmutableList.Builder <DieRoll> defenderRolls = ImmutableList.builder ();
     final int maxDieCount = Math.max (attackerRoll.size (), defenderRoll.size ());
-    boolean battleFinished = false;
+    BattleOutcome battleOutcome = BattleOutcome.CONTINUE;
     for (int i = 0; i < maxDieCount; i++)
     {
       // Guard:
@@ -227,33 +228,33 @@ public final class DefaultBattleModel implements BattleModel
 
       // remove armies from losing battles if the battle has not already been finished
       // i.e. if both parties have not yet depleted all available armies
-      if (attackerOutcome == DieOutcome.LOSE && !battleFinished)
+      if (attackerOutcome == DieOutcome.LOSE && battleOutcome == BattleOutcome.CONTINUE)
       {
-        final MutatorResult <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (attackerCountry, 1);
+        final MutatorResult <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (attackerCountryId, 1);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to remove army from attacking country [id={}] | Reason: {}",
-                                        attackerCountry, result.getFailureReason ());
+                                        attackerCountryId, result.getFailureReason ());
         }
 
         result.commitIfSuccessful ();
       }
 
-      if (defenderOutcome == DieOutcome.LOSE && !battleFinished)
+      if (defenderOutcome == DieOutcome.LOSE && battleOutcome == BattleOutcome.CONTINUE)
       {
-        final MutatorResult <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (defenderCountry, 1);
+        final MutatorResult <?> result = countryArmyModel.requestToRemoveArmiesFromCountry (defenderCountryId, 1);
         if (result.failed ())
         {
           Exceptions.throwIllegalState ("Failed to remove army from defending country [id={}] | Reason: {}",
-                                        attackerCountry, result.getFailureReason ());
+                                        attackerCountryId, result.getFailureReason ());
         }
 
         result.commitIfSuccessful ();
 
-        if (countryArmyModel.armyCountIs (0, defenderCountry))
+        if (countryArmyModel.armyCountIs (0, defenderCountryId))
         {
           final MutatorResult <?> reassignmentResult;
-          reassignmentResult = countryOwnerModel.requestToReassignCountryOwner (defenderCountry,
+          reassignmentResult = countryOwnerModel.requestToReassignCountryOwner (defenderCountryId,
                                                                                 attackVector.getPlayerId ());
           if (reassignmentResult.failed ())
           {
@@ -265,22 +266,21 @@ public final class DefaultBattleModel implements BattleModel
         }
       }
 
-      // set battleFinished to true if either the attacking country has too few armies to attack or the
-      // defending country has too few to defend
-      battleFinished = countryArmyModel.armyCountIs (rules.getMinArmiesOnCountryForAttack (), attackerCountry)
-              || countryArmyModel.armyCountIs (rules.getMinArmiesOnCountry (), defenderCountry);
+      final int attackingCountryArmyCount = countryArmyModel.getArmyCountFor (attackerCountryId);
+      final int defendingCountryArmyCount = countryArmyModel.getArmyCountFor (defenderCountryId);
+      battleOutcome = rules.getBattleOutcome (attackingCountryArmyCount, defendingCountryArmyCount);
 
       // store die values and outcomes regardless of whether or not the battle has already finished
       attackerRolls.add (new DieRoll (attackerDieValue, attackerOutcome));
       defenderRolls.add (new DieRoll (defenderDieValue, defenderOutcome));
     }
 
-    final FinalBattleActor attacker = new DefaultFinalBattleActor (attackVector.getPlayerId (), attackerCountry,
+    final FinalBattleActor attacker = new DefaultFinalBattleActor (attackVector.getPlayerId (), attackerCountryId,
             attackerDieRange, attackOrder.getDieCount ());
-    final FinalBattleActor defender = new DefaultFinalBattleActor (defenderId, defenderCountry, defenderDieRange,
+    final FinalBattleActor defender = new DefaultFinalBattleActor (defenderId, defenderCountryId, defenderDieRange,
             defenderDieCount);
-    final BattleResult result = new DefaultBattleResult (attacker, defender,
-            countryOwnerModel.ownerOf (defenderCountry), attackerRolls.build (), defenderRolls.build ());
+    final BattleResult result = new DefaultBattleResult (battleOutcome, attacker, defender,
+            countryOwnerModel.ownerOf (defenderCountryId), attackerRolls.build (), defenderRolls.build ());
 
     battleResultArchive.add (result);
 

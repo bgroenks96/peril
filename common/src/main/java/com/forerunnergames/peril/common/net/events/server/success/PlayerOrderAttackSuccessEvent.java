@@ -20,15 +20,13 @@ package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleResultEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEvent
-        implements PlayerResponseSuccessEvent
 {
+
   public PlayerOrderAttackSuccessEvent (final BattleResultPacket result)
   {
     super (result);
@@ -43,19 +41,13 @@ public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEve
   @Override
   public String getPlayerName ()
   {
-    return getPlayer ().getName ();
+    return getAttackingPlayerName ();
   }
 
   @Override
   public PlayerColor getPlayerColor ()
   {
-    return getPlayer ().getColor ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | Player: [{}]", super.toString (), getPlayer ());
+    return getAttackingPlayerColor ();
   }
 
   @RequiredForNetworkSerialization

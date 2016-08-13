@@ -338,12 +338,12 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     maxButton.setStyle (widgetFactory.createArmyMovementDialogMaxButtonStyle ());
   }
 
-  public void show (final int minDestinationArmies,
-                    final int currentDestinationArmies,
-                    final int maxDestinationArmies,
-                    final int totalArmies,
-                    final Country sourceCountry,
-                    final Country destinationCountry)
+  public void set (final int minDestinationArmies,
+                   final int currentDestinationArmies,
+                   final int maxDestinationArmies,
+                   final int totalArmies,
+                   final Country sourceCountry,
+                   final Country destinationCountry)
   {
     // @formatter:off
     Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
@@ -357,8 +357,6 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
     // @formatter:on
 
-    if (isShown ()) return;
-
     originalDestinationArmies = currentDestinationArmies;
     this.totalArmies = totalArmies;
 
@@ -367,6 +365,18 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     updateSlidability ();
     updateSubmitability ();
     setCountries (sourceCountry, destinationCountry);
+  }
+
+  public void show (final int minDestinationArmies,
+                    final int currentDestinationArmies,
+                    final int maxDestinationArmies,
+                    final int totalArmies,
+                    final Country sourceCountry,
+                    final Country destinationCountry)
+  {
+    set (minDestinationArmies, currentDestinationArmies, maxDestinationArmies, totalArmies, sourceCountry,
+         destinationCountry);
+
     show ();
   }
 

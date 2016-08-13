@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice;
+package com.forerunnergames.peril.core.model.state.events;
 
-import com.forerunnergames.peril.common.game.DieRange;
-
-import com.google.common.collect.ImmutableSet;
-
-public final class AttackerDice extends AbstractDice
+/**
+ * Attacker was neither victorious nor defeated, and the battle can continue on the same vector.
+ */
+public final class BattleResultContinueEvent implements StateEvent
 {
-  public AttackerDice (final ImmutableSet <Die> dice, final DieRange absoluteDieRange)
-  {
-    super (dice, absoluteDieRange);
-  }
 }

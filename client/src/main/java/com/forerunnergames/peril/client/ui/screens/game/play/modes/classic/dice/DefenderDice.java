@@ -18,12 +18,14 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice;
 
+import com.forerunnergames.peril.common.game.DieRange;
+
 import com.google.common.collect.ImmutableSet;
 
 public final class DefenderDice extends AbstractDice
 {
-  public DefenderDice (final ImmutableSet <Die> dice, final int absoluteMinDieCount, final int absoluteMaxDieCount)
+  public DefenderDice (final ImmutableSet <Die> dice, final DieRange absoluteDieRange)
   {
-    super (dice, absoluteMinDieCount, absoluteMaxDieCount);
+    super (dice, absoluteDieRange);
   }
 }

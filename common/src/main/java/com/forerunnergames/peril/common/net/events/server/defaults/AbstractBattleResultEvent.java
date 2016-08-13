@@ -17,8 +17,11 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
+import com.forerunnergames.peril.common.game.BattleOutcome;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleResultEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -27,102 +30,152 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 public abstract class AbstractBattleResultEvent implements BattleResultEvent
 {
-  private final BattleResultPacket result;
+  final BattleResultPacket battleResult;
 
-  protected AbstractBattleResultEvent (final BattleResultPacket result)
+  public AbstractBattleResultEvent (final BattleResultPacket battleResult)
   {
-    Arguments.checkIsNotNull (result, "result");
+    Arguments.checkIsNotNull (battleResult, "battleResult");
 
-    this.result = result;
-  }
-
-  @Override
-  public BattleResultPacket getBattleResult ()
-  {
-    return result;
-  }
-
-  @Override
-  public PlayerPacket getAttackingPlayer ()
-  {
-    return result.getAttacker ().getPlayer ();
-  }
-
-  @Override
-  public String getAttackingPlayerName ()
-  {
-    return result.getAttacker ().getPlayerName ();
-  }
-
-  @Override
-  public int getAttackerDieCount ()
-  {
-    return result.getAttacker ().getDieCount ();
-  }
-
-  @Override
-  public PlayerPacket getDefendingPlayer ()
-  {
-    return result.getDefender ().getPlayer ();
-  }
-
-  @Override
-  public String getDefendingPlayerName ()
-  {
-    return result.getDefender ().getPlayerName ();
-  }
-
-  @Override
-  public int getDefenderDieCount ()
-  {
-    return result.getDefender ().getDieCount ();
-  }
-
-  @Override
-  public CountryPacket getAttackingCountry ()
-  {
-    return result.getAttacker ().getCountry ();
-  }
-
-  @Override
-  public int getAttackingCountryArmyCount ()
-  {
-    return result.getAttacker ().getCountryArmyCount ();
-  }
-
-  @Override
-  public int getAttackingCountryArmyDelta ()
-  {
-    return result.getAttackingCountryArmyDelta ();
-  }
-
-  @Override
-  public int getDefendingCountryArmyDelta ()
-  {
-    return result.getDefendingCountryArmyDelta ();
-  }
-
-  @Override
-  public String getAttackingCountryName ()
-  {
-    return result.getAttacker ().getCountryName ();
-  }
-
-  @Override
-  public String getDefendingCountryName ()
-  {
-    return result.getDefender ().getCountryName ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Result: [{}]", getClass ().getSimpleName (), result);
+    this.battleResult = battleResult;
   }
 
   @RequiredForNetworkSerialization
   protected AbstractBattleResultEvent ()
   {
-    result = null;
+    battleResult = null;
+  }
+
+  @Override
+  public BattleResultPacket getBattleResult ()
+  {
+    return battleResult;
+  }
+
+  @Override
+  public BattleOutcome getBattleOutcome ()
+  {
+    return battleResult.getOutcome ();
+  }
+
+  @Override
+  public boolean battleOutcomeIs (final BattleOutcome outcome)
+  {
+    Arguments.checkIsNotNull (outcome, "outcome");
+
+    return battleResult.outcomeIs (outcome);
+  }
+
+  @Override
+  public FinalBattleActorPacket getAttacker ()
+  {
+    return battleResult.getAttacker ();
+  }
+
+  @Override
+  public FinalBattleActorPacket getDefender ()
+  {
+    return battleResult.getDefender ();
+  }
+
+  @Override
+  public int getAttackerDieCount ()
+  {
+    return battleResult.getAttackerDieCount ();
+  }
+
+  @Override
+  public int getDefenderDieCount ()
+  {
+    return battleResult.getDefenderDieCount ();
+  }
+
+  @Override
+  public PlayerPacket getAttackingPlayer ()
+  {
+    return battleResult.getAttackingPlayer ();
+  }
+
+  @Override
+  public PlayerPacket getDefendingPlayer ()
+  {
+    return battleResult.getDefendingPlayer ();
+  }
+
+  @Override
+  public String getAttackingPlayerName ()
+  {
+    return battleResult.getAttackingPlayerName ();
+  }
+
+  @Override
+  public String getDefendingPlayerName ()
+  {
+    return battleResult.getDefendingPlayerName ();
+  }
+
+  @Override
+  public PlayerColor getAttackingPlayerColor ()
+  {
+    return battleResult.getAttackingPlayerColor ();
+  }
+
+  @Override
+  public PlayerColor getDefendingPlayerColor ()
+  {
+    return battleResult.getDefendingPlayerColor ();
+  }
+
+  @Override
+  public CountryPacket getAttackingCountry ()
+  {
+    return battleResult.getAttackingCountry ();
+  }
+
+  @Override
+  public CountryPacket getDefendingCountry ()
+  {
+    return battleResult.getDefendingCountry ();
+  }
+
+  @Override
+  public String getAttackingCountryName ()
+  {
+    return battleResult.getAttackingCountryName ();
+  }
+
+  @Override
+  public String getDefendingCountryName ()
+  {
+    return battleResult.getDefendingCountryName ();
+  }
+
+  @Override
+  public int getAttackingCountryArmyCount ()
+  {
+    return battleResult.getAttackingCountryArmyCount ();
+  }
+
+  @Override
+  public int getDefendingCountryArmyCount ()
+  {
+    return battleResult.getDefendingCountryArmyCount ();
+  }
+
+  @Override
+  public int getAttackingCountryArmyDelta ()
+  {
+    return battleResult.getAttackingCountryArmyDelta ();
+  }
+
+  @Override
+  public int getDefendingCountryArmyDelta ()
+  {
+    return battleResult.getDefendingCountryArmyDelta ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | BattleResult: [{}]", getClass ().getSimpleName (), battleResult);
   }
 }

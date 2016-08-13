@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result;
 
-import com.forerunnergames.peril.common.game.DieRange;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.common.game.BattleOutcome;
+import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 
-import com.google.common.collect.ImmutableSet;
-
-public final class AttackerDice extends AbstractDice
+public interface BattleResultDialog extends Dialog
 {
-  public AttackerDice (final ImmutableSet <Die> dice, final DieRange absoluteDieRange)
-  {
-    super (dice, absoluteDieRange);
-  }
+  void show (final BattleResultPacket result);
+
+  boolean battleOutcomeIs (final BattleOutcome outcome);
 }

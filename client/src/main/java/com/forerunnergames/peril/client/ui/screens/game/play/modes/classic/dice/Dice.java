@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 
 import com.google.common.collect.ImmutableList;
@@ -30,7 +31,7 @@ public interface Dice
 
   int getActiveCount ();
 
-  void roll (final ImmutableList <DieRoll> dieRolls);
+  void roll (final ImmutableList <DieRoll> rolls);
 
   void setOutcomes (final ImmutableList <DieRoll> rolls);
 
@@ -50,15 +51,11 @@ public interface Dice
    * For example, if there are 2 (out of 3 possible) active dice, with a current range of [2, 2],
    * no dice will be touchable, but clamping to [1, 3] would make active die #2 & inactive die #3 touchable,
    * but would not affect the number of active dice.
-   *
-   * @param minDieCount The lower inclusive bound on the specified range of allowed active dice.
-   * @param maxDieCount The upper inclusive bound on the specified range of allowed active dice.
-   *
    */
    // @formatter:on
-  void clamp (final int minDieCount, final int maxDieCount);
+  void clamp (final DieRange dieRange);
 
-  void clampToCount (final int desiredActiveDieCount, final int minDieCount, final int maxDieCount);
+  void clampToCount (final int dieCount, final DieRange dieRange);
 
   void setTouchable (final boolean isTouchable);
 

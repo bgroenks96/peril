@@ -29,9 +29,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.KeyListener;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
-
-import net.engio.mbassy.bus.MBassador;
 
 public final class AttackDialog extends AbstractBattleDialog
 {
@@ -43,11 +40,9 @@ public final class AttackDialog extends AbstractBattleDialog
   public AttackDialog (final BattleDialogWidgetFactory widgetFactory,
                        final Stage stage,
                        final ScreenShaker screenShaker,
-                       final MBassador <Event> eventBus,
                        final AttackDialogListener listener)
   {
-    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, eventBus,
-           listener);
+    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, listener);
 
     Arguments.checkIsNotNull (listener, "listener");
 
@@ -62,7 +57,6 @@ public final class AttackDialog extends AbstractBattleDialog
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        stopBattle ();
         listener.onRetreat ();
       }
     });
@@ -86,5 +80,11 @@ public final class AttackDialog extends AbstractBattleDialog
   {
     setAttackerDiceTouchable (areTouchable);
     setDefenderDiceTouchable (false);
+  }
+
+  @Override
+  public int getActiveDieCount ()
+  {
+    return getActiveAttackerDieCount ();
   }
 }
