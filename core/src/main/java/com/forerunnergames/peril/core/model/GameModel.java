@@ -1091,7 +1091,7 @@ public final class GameModel
 
     final int initialAttackerArmyCount = countryArmyModel.getArmyCountFor (attacker.getCountryId ());
     final int initialDefenderAmryCount = countryArmyModel.getArmyCountFor (defender.getCountryId ());
-    final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackOrder.class);
+    final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_ATTACK_ORDER, AttackOrder.class);
     final BattleResult result = battleModel.generateResultFor (attackOrder, defender.getDieCount (), playerModel);
 
     log.trace ("Battle result: {}", result);
