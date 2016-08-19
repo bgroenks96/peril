@@ -43,6 +43,8 @@ import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,10 +57,33 @@ public class OkDialog implements Dialog
 
   protected enum DialogAction
   {
-    SUBMIT_AND_HIDE,
-    SUBMIT,
-    HIDE,
-    NONE
+    SUBMIT_AND_HIDE (DialogProperty.SUBMITTABLE, DialogProperty.HIDEABLE),
+    SUBMIT (DialogProperty.SUBMITTABLE),
+    HIDE (DialogProperty.HIDEABLE),
+    NONE;
+
+    private final ImmutableList <DialogProperty> properties;
+
+    boolean isSubmittable ()
+    {
+      return properties.contains (DialogProperty.SUBMITTABLE);
+    }
+
+    boolean isHideable ()
+    {
+      return properties.contains (DialogProperty.HIDEABLE);
+    }
+
+    DialogAction (final DialogProperty... properties)
+    {
+      this.properties = ImmutableList.copyOf (properties);
+    }
+  }
+
+  private enum DialogProperty
+  {
+    SUBMITTABLE,
+    HIDEABLE
   }
 
   public OkDialog (final WidgetFactory widgetFactory,
@@ -364,16 +389,15 @@ public class OkDialog implements Dialog
       setPosition ();
       clearActions ();
 
-      // @formatter:off
-      super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade), Actions.run (new Runnable ()
-      {
-        @Override
-        public void run ()
-        {
-          listener.onShow ();
-        }
-      })));
-      // @formatter:on
+      super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade),
+                                           Actions.run (new Runnable ()
+                                           {
+                                             @Override
+                                             public void run ()
+                                             {
+                                               listener.onShow ();
+                                             }
+                                           })));
 
       return this;
     }
@@ -426,30 +450,24 @@ public class OkDialog implements Dialog
     @Override
     protected void result (@Nullable final Object object)
     {
-      if (isInputDisabled || !(object instanceof DialogAction))
-      {
-        cancel ();
-        return;
-      }
+      // Cancels call to DelegateDialog#hide from the button table's ChangeListener in
+      // com.badlogic.gdx.scenes.scene2d.ui.Dialog#initialize when a DialogAction#Submit result is triggered via a
+      // button click (or a key press from the InputListener in com.badlogic.gdx.scenes.scene2d.ui.Dialog#key).
+      //
+      // BUGFIX: This must be called even for HIDE-able DialogAction's because otherwise DelegateDialog#hide() would be
+      // called in addition to DelegateDialog#hide(Action) already called in this method, subsequently clearing all
+      // actions passed to DelegateDialog#hide(Action) via this method - i.e., they will never be run.
+      cancel ();
+
+      if (isInputDisabled || !(object instanceof DialogAction)) return;
 
       final DialogAction action = (DialogAction) object;
 
-      if (action == DialogAction.NONE)
-      {
-        cancel ();
-        return;
-      }
-
-      if ((action == DialogAction.SUBMIT || action == DialogAction.SUBMIT_AND_HIDE) && isSubmissionDisabled)
-      {
-        cancel ();
-        return;
-      }
+      if (action == DialogAction.NONE) return;
+      if (action.isSubmittable () && isSubmissionDisabled) return;
 
       if (action == DialogAction.SUBMIT)
       {
-        cancel ();
-
         addAction (Actions.run (new Runnable ()
         {
           @Override
@@ -468,7 +486,7 @@ public class OkDialog implements Dialog
         public void run ()
         {
           remove ();
-          if (action == DialogAction.SUBMIT_AND_HIDE) listener.onSubmit ();
+          if (action.isSubmittable ()) listener.onSubmit ();
         }
       })));
     }
@@ -752,7 +770,7 @@ public class OkDialog implements Dialog
 
       if (dialogStyle.getButtonWidth () != DialogStyle.AUTO_WIDTH) buttonCell.width (dialogStyle.getButtonWidth ());
       if (dialogStyle.getButtonHeight () != DialogStyle.AUTO_HEIGHT) buttonCell.height (dialogStyle.getButtonHeight ());
-      if (dialogAction != DialogAction.NONE) setObject (button, dialogAction);
+      if (dialogAction.isSubmittable () || dialogAction.isHideable ()) setObject (button, dialogAction);
 
       buttonsToButtonStyleNames.put (button, style);
     }
