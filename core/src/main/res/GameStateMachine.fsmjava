@@ -251,7 +251,7 @@
                   <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
                 </state>
               </state>
-            </state>
+            </state> <!-- End AssignPlayerCountries state -->
             <state name="InitialReinforcementPhase">
               <onEntry action="gameModel.beginInitialReinforcementPhase()"/>
               <onExit action="gameModel.resetTurn()"/>
@@ -267,7 +267,7 @@
                 <transition event="onEndInitialReinforcementPhaseEvent"
                             nextState="TurnPhase"/>
               </state>
-            </state>
+            </state> <!-- End InitialReinforcementPhase state -->
             <state name="TurnPhase">
               <state name="PlayerTurn">
                 <onEntry action="gameModel.beginPlayerTurn()"/>
@@ -297,7 +297,7 @@
                                 action="gameModel.endReinforcementPhase()"
                                 nextState="AttackPhase"/>
                   </state>
-                </state>
+                </state> <!-- End ReinforcementPhase state -->
                 <state name="AttackPhase">
                   <onEntry action="gameModel.beginAttackPhase()"/>
                   <onExit action="gameModel.endAttackPhase()"/>
@@ -341,7 +341,7 @@
                                 condition="gameModel.verifyPlayerOccupyCountryResponseRequest(event)"
                                 nextState="WaitForPlayerToSelectAttackVector"/>
                   </state>
-                </state>
+                </state> <!-- End AttackPhase state -->
                 <state name="FortifyPhase">
                   <onEntry action="gameModel.beginFortifyPhase()"/>
                   <onExit action="gameModel.endFortifyPhase()"/>
@@ -357,7 +357,7 @@
                                 condition="gameModel.verifyPlayerFortifyCountryResponse(event)"
                                 nextState="AdvancePlayerTurn" />
                   </state>
-                </state>
+                </state> <!-- End FortifyPhase state -->
               </state> <!-- End PlayerTurn state -->
               <state name="AdvancePlayerTurn">
                 <onEntry action="gameModel.endPlayerTurn()"/>
