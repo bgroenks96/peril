@@ -7,6 +7,6 @@ public final class EndPlayerTurnRequestEvent implements PlayerRequestEvent
   @Override
   public String toString ()
   {
-    return this.getClass ().getSimpleName ();
+    return getClass ().getSimpleName ();
   }
 }
