@@ -317,6 +317,8 @@ public final class GameModel
     Arguments.checkIsNotNull (event, "event");
 
     log.info ("Skipping turn for player [{}].", event.getPlayerName ());
+
+    turnDataCache.clearAll ();
   }
 
   @StateTransitionCondition
@@ -335,6 +337,9 @@ public final class GameModel
     }
 
     publish (new EndPlayerTurnSuccessEvent (player));
+
+    turnDataCache.clearAll ();
+
     return true;
   }
 
@@ -929,7 +934,9 @@ public final class GameModel
   @StateTransitionAction
   public void waitForPlayerAttackOrder ()
   {
+    checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
     final AttackVector vector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
+
     publish (new PlayerIssueAttackOrderEvent (createPendingAttackerPacket (vector),
             createPendingDefenderPacket (vector)));
   }
@@ -970,7 +977,6 @@ public final class GameModel
     internalCommHandler.startTimerFor (PlayerDefendCountryResponseRequestEvent.class, defenderPacket.getPlayer (),
                                        DEFENDER_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-    clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
     turnDataCache.put (CacheKey.BATTLE_ATTACK_ORDER, result.getReturnValue ());
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, attacker);
 
@@ -995,6 +1001,8 @@ public final class GameModel
     // @formatter:on
 
     publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
+
+    clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
   }
 
   @StateTransitionAction
@@ -1007,6 +1015,10 @@ public final class GameModel
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
     publish (new PlayerEndAttackPhaseSuccessEvent (currentPlayer));
+
+    clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR, CacheKey.BATTLE_ATTACK_ORDER, CacheKey.FINAL_BATTLE_ACTOR_ATTACKER,
+                      CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, CacheKey.OCCUPY_SOURCE_COUNTRY,
+                      CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER, CacheKey.OCCUPY_MIN_ARMY_COUNT);
   }
 
   @StateTransitionCondition
@@ -1146,10 +1158,12 @@ public final class GameModel
       if (attackerExhaustedArmies)
       {
         publish (new PlayerAttackDefeatEvent (attackingPlayer, resultPacket));
+        clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
       }
       else
       {
         publish (new PlayerAttackIndecisiveEvent (attackingPlayer, resultPacket));
+        // do not clear attack vector cache data here because it will be reused in the next attack order
       }
 
       return;
@@ -1164,6 +1178,8 @@ public final class GameModel
     publish (new PlayerOccupyCountryRequestEvent (newOwner,
             countryMapGraphModel.countryPacketWith (attacker.getCountryId ()), defenderCountry, minOccupationArmyCount,
             maxOccupationArmyCount));
+
+    clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
   }
 
   @StateTransitionCondition
