@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
@@ -427,6 +428,16 @@ public final class StateMachineEventHandler
   }
 
   @Handler
+  public void onEvent (final EndPlayerTurnRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onEndPlayerTurnRequestEvent (event);
+  }
+
+  @Handler
   public void onEvent (final SkipPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -463,20 +474,6 @@ public final class StateMachineEventHandler
     CompositeStateMachineListener ()
     {
       stateMachineListeners.add (new LoggingStateMachineListener ());
-    }
-
-    public void add (final StateMachineListener listener)
-    {
-      Arguments.checkIsNotNull (listener, "listener");
-
-      stateMachineListeners.add (listener);
-    }
-
-    public void remove (final StateMachineListener listener)
-    {
-      Arguments.checkIsNotNull (listener, "listener");
-
-      stateMachineListeners.remove (listener);
     }
 
     @Override
@@ -571,6 +568,20 @@ public final class StateMachineEventHandler
       {
         listener.onActionException (context, throwable);
       }
+    }
+
+    public void add (final StateMachineListener listener)
+    {
+      Arguments.checkIsNotNull (listener, "listener");
+
+      stateMachineListeners.add (listener);
+    }
+
+    public void remove (final StateMachineListener listener)
+    {
+      Arguments.checkIsNotNull (listener, "listener");
+
+      stateMachineListeners.remove (listener);
     }
 
     @Override
