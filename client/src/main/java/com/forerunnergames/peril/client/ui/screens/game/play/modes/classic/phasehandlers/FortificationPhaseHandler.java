@@ -17,10 +17,10 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
@@ -80,7 +80,7 @@ public final class FortificationPhaseHandler
       log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
                 PlayerSelectFortifyVectorRequestEvent.class.getSimpleName (),
                 PlayerBeginFortificationEvent.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventFactory
+      eventBus.publish (StatusMessageEventGenerator
               .create ("Whoops, it looks like you aren't authorized to perform a post-combat maneuver."));
       softReset ();
       return;
@@ -95,9 +95,9 @@ public final class FortificationPhaseHandler
 
   public void onCancel ()
   {
-    eventBus.publish (StatusMessageEventFactory.create ("You cancelled your post-combat maneuver from {} to {}.",
-                                                        fortificationDialog.getSourceCountryName (),
-                                                        fortificationDialog.getDestinationCountryName ()));
+    eventBus.publish (StatusMessageEventGenerator.create ("You cancelled your post-combat maneuver from {} to {}.",
+                                                          fortificationDialog.getSourceCountryName (),
+                                                          fortificationDialog.getDestinationCountryName ()));
     softReset ();
   }
 
@@ -137,7 +137,7 @@ public final class FortificationPhaseHandler
 
     if (event.getValidVectors ().isEmpty ())
     {
-      eventBus.publish (StatusMessageEventFactory
+      eventBus.publish (StatusMessageEventGenerator
               .create ("Skipping Post-Combat Maneuver Phase because you have no valid maneuvers."));
       onEndFortificationPhase ();
       return;
@@ -181,12 +181,6 @@ public final class FortificationPhaseHandler
                  event);
     }
 
-    // @formatter:off
-    eventBus.publish (StatusMessageEventFactory.create ("You maneuvered {} into {} from {}.",
-                                                        Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"),
-                                                        destinationCountryName, sourceCountryName));
-    // @formatter:on
-
     reset ();
   }
 
@@ -198,7 +192,7 @@ public final class FortificationPhaseHandler
     log.debug ("Event received [{}].", event);
     log.error ("Could not fortify country. Reason: {}", event.getReason ());
 
-    eventBus.publish (StatusMessageEventFactory
+    eventBus.publish (StatusMessageEventGenerator
             .create ("Whoops, it looks like you aren't authorized to maneuver from {} to {}. Reason: {}",
                      fortificationDialog.getSourceCountryName (), fortificationDialog.getDestinationCountryName (),
                      Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER)));
@@ -219,8 +213,8 @@ public final class FortificationPhaseHandler
     {
       log.error ("Not showing {} for request [{}] because source country [{}] does not exist.",
                  fortificationDialog.getClass ().getSimpleName (), request, sourceCountryName);
-      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like {} doesn't exist on this map.",
-                                                          sourceCountryName));
+      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like {} doesn't exist on this map.",
+                                                            sourceCountryName));
       softReset ();
       return;
     }
@@ -229,8 +223,8 @@ public final class FortificationPhaseHandler
     {
       log.error ("Not showing {} for request [{}] because destination country [{}] does not exist.",
                  fortificationDialog.getClass ().getSimpleName (), request, destCountryName);
-      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like {} doesn't exist on this map.",
-                                                          destCountryName));
+      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like {} doesn't exist on this map.",
+                                                            destCountryName));
       softReset ();
       return;
     }

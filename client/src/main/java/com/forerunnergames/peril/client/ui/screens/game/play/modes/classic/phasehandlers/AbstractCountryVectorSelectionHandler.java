@@ -18,7 +18,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -88,8 +88,8 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
     log.debug ("Country selection has started.");
 
     eventBus.subscribe (this);
-    eventBus.publish (StatusMessageEventFactory.create ("{}, choose a country to {} from.", event.getPlayerName (),
-                                                        gamePhaseAsVerb));
+    eventBus.publish (StatusMessageEventGenerator.create ("{}, choose a country to {} from.", event.getPlayerName (),
+                                                          gamePhaseAsVerb));
   }
 
   /**
@@ -168,8 +168,8 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
     {
       sourceCountryName = countryName;
       log.info ("Selected valid source country [{}].", sourceCountryName);
-      eventBus.publish (StatusMessageEventFactory.create ("{}, choose a country to {} to.", this.event.getPlayerName (),
-                                                          gamePhaseAsVerb));
+      eventBus.publish (StatusMessageEventGenerator.create ("{}, choose a country to {} to.",
+                                                            this.event.getPlayerName (), gamePhaseAsVerb));
       return;
     }
 

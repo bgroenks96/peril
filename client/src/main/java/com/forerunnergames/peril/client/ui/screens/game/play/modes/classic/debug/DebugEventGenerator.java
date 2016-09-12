@@ -185,8 +185,7 @@ public final class DebugEventGenerator
 
   void generateStatusMessageEvent ()
   {
-    // TODO Production: Remove
-    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage (), ImmutableSet.<PlayerPacket> of ()));
+    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage ()));
   }
 
   void generateChatMessageSuccessEvent ()

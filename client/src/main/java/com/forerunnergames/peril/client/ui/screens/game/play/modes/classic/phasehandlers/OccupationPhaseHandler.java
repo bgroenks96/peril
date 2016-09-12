@@ -17,9 +17,9 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
@@ -70,7 +70,7 @@ public final class OccupationPhaseHandler
       log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
                 PlayerOccupyCountryRequestEvent.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy."));
+      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy."));
       return;
     }
 
@@ -82,7 +82,7 @@ public final class OccupationPhaseHandler
               + "source country name [{}] of the original request [{}].",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), sourceCountryName,
                 this.sourceCountryName, request);
-      eventBus.publish (StatusMessageEventFactory
+      eventBus.publish (StatusMessageEventGenerator
               .create ("Whoops, it looks like you aren't authorized to occupy from {}.", sourceCountryName));
       return;
     }
@@ -95,8 +95,8 @@ public final class OccupationPhaseHandler
               + "destination country name [{}] of the original request [{}].",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), destCountryName, this.destCountryName,
                 request);
-      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy {}.",
-                                                          destCountryName));
+      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy {}.",
+                                                            destCountryName));
       return;
     }
 
@@ -143,9 +143,9 @@ public final class OccupationPhaseHandler
     {
       log.error ("Not showing {} for request [{}] because source country [{}] does not exist in {}.",
                  OccupationDialog.class.getSimpleName (), event, sourceCountryName, PlayMap.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventFactory.create (
-                                                          "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied",
-                                                          sourceCountryName));
+      eventBus.publish (StatusMessageEventGenerator.create (
+                                                            "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied",
+                                                            sourceCountryName));
       return;
     }
 
@@ -156,9 +156,9 @@ public final class OccupationPhaseHandler
       log.error ("Not showing {} for request [{}] because destination country [{}] does not exist in {}.",
                  OccupationDialog.class.getSimpleName (), event, destinationCountryName,
                  PlayMap.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventFactory.create (
-                                                          "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied.",
-                                                          destinationCountryName));
+      eventBus.publish (StatusMessageEventGenerator.create (
+                                                            "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied.",
+                                                            destinationCountryName));
       return;
     }
 
@@ -182,7 +182,7 @@ public final class OccupationPhaseHandler
       log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
                 PlayerOccupyCountryRequestEvent.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventFactory.create ("Whoops, it looks like you aren't authorized to occupy."));
+      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy."));
       return;
     }
 
@@ -221,9 +221,9 @@ public final class OccupationPhaseHandler
     log.debug ("Event received [{}].", event);
     log.error ("Could not occupy country. Reason: {}", event.getReason ());
 
-    eventBus.publish (StatusMessageEventFactory.create (
-                                                        "Whoops, it looks like you aren't authorized to occupy {} from {}.",
-                                                        sourceCountryName, destCountryName));
+    eventBus.publish (StatusMessageEventGenerator.create (
+                                                          "Whoops, it looks like you aren't authorized to occupy {} from {}.",
+                                                          sourceCountryName, destCountryName));
 
     reset ();
   }

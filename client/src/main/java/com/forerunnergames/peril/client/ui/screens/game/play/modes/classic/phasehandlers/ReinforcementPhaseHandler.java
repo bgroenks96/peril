@@ -20,8 +20,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.badlogic.gdx.Gdx;
 
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
@@ -131,7 +131,7 @@ public final class ReinforcementPhaseHandler
       }
     });
 
-    eventBus.publish (StatusMessageEventFactory.create (Strings
+    eventBus.publish (StatusMessageEventGenerator.create (Strings
             .format ("Whoops, you aren't authorized to reinforce {}.", event.getOriginalRequest ().getCountryName ())));
 
     askPlayerToChooseACountry (event.getPlayerName ());
@@ -139,7 +139,7 @@ public final class ReinforcementPhaseHandler
 
   private void askPlayerToChooseACountry (final String playerName)
   {
-    eventBus.publish (StatusMessageEventFactory
+    eventBus.publish (StatusMessageEventGenerator
             .create (Strings.format ("{}, choose a country to reinforce.", playerName)));
   }
 

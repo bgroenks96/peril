@@ -45,7 +45,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.StatusMessageEvent;
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -77,6 +76,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phase
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
@@ -89,9 +89,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBo
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
@@ -100,26 +98,18 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Begin
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -177,6 +167,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final BattlePhaseHandler defendingBattlePhaseHandler;
   private final OccupationPhaseHandler occupationPhaseHandler;
   private final FortificationPhaseHandler fortificationPhaseHandler;
+  private final StatusMessageEventGenerator statusMessageEventGenerator;
   private final CompositeDialog allDialogs;
   private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
   private boolean endTurnFromAttackPhase;
@@ -331,6 +322,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog, defenderBattleResultDialog, eventBus);
     occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
+    statusMessageEventGenerator = new StatusMessageEventGenerator (eventBus);
 
     // @formatter:on
 
@@ -424,7 +416,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     showCursor ();
 
     eventBus.subscribe (this);
-    eventBus.subscribe (reinforcementPhaseHandler);
+    eventBus.subscribe (statusMessageEventGenerator);
 
     Gdx.input.setInputProcessor (inputProcessor);
 
@@ -481,6 +473,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     eventBus.unsubscribe (defendingBattlePhaseHandler);
     eventBus.unsubscribe (occupationPhaseHandler);
     eventBus.unsubscribe (fortificationPhaseHandler);
+    eventBus.unsubscribe (statusMessageEventGenerator);
 
     stage.unfocusAll ();
 
@@ -558,17 +551,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         if (DEBUG) debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
       }
     });
-
-    final GameServerConfiguration config = event.getGameServerConfiguration ();
-    final int nMorePlayers = config.getPlayerLimit () - event.getPlayerCount ();
-
-    status ("Welcome, {}.", event.getSelfPlayerName ());
-    statusOn (event.isFirstPlayerInGame (), "It looks like you're the first one here.");
-    statusOn (nMorePlayers > 0, "The game will begin when {}.",
-              Strings.pluralize (nMorePlayers, "more player joins", "more players join"));
-    statusOn (nMorePlayers > 0, "This is a {} player {} Mode game. You must conquer {}% of the map to achieve victory.",
-              config.getPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
-              config.getWinPercentage ());
   }
 
   @Handler
@@ -623,8 +605,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         if (DEBUG) debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
       }
     });
-
-    statusOn (!isSelf (event.getPlayer ()), "{} joined the game.", event.getPlayerName ());
   }
 
   @Handler
@@ -661,9 +641,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                  CountryPrimaryImageState.fromPlayerColor (event.getNewOwner ().getColor ()));
       }
     });
-
-    statusOn (!isSelf (event.getNewOwner ()), "{} now owns {}.", event.getNewOwnerName (), event.getCountryName ());
-    statusOn (isSelf (event.getNewOwner ()), "You now own {}.", event.getCountryName ());
   }
 
   @Handler
@@ -718,15 +695,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         playerBox.setPlayers (event.getPlayersSortedByTurnOrder ());
       }
     });
-
-    status ("The order of turns has been decided.");
-
-    for (final PlayerPacket player : event.getPlayersSortedByTurnOrder ())
-    {
-      final String turn = Strings.toMixedOrdinal (player.getTurnOrder ());
-      statusOn (!isSelf (player), "{} is going {}.", player.getName (), turn);
-      statusOn (isSelf (player), "You are going {}.", turn);
-    }
   }
 
   @Handler
@@ -751,8 +719,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName (Strings.format ("{} Country Assignment", mode));
       }
     });
-
-    status ("{} country assignment phase.", mode);
   }
 
   @Handler
@@ -785,22 +751,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName ("Initial Reinforcement");
       }
     });
-
-    statusOn (isSelf (event.getPlayer ()), "Initial Reinforcement phase.");
-    statusOn (!isSelf (event.getPlayer ()), "{} is placing initial reinforcements...", event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final PlayerReinforceCountrySuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    final String playerName = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
-
-    status ("{} placed {} on {}.", playerName,
-            Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"), event.getCountryName ());
   }
 
   @Handler
@@ -811,17 +761,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     log.debug ("Event received [{}].", event);
 
     eventBus.unsubscribe (reinforcementPhaseHandler);
-  }
-
-  @Handler
-  void onEvent (final BeginPlayerTurnEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    statusOn (isSelf (event.getPlayer ()), "It is your turn.");
-    statusOn (!isSelf (event.getPlayer ()), "It is {}'s turn.", event.getPlayerName ());
   }
 
   @Handler
@@ -841,9 +780,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName ("Reinforcement");
       }
     });
-
-    statusOn (isSelf (event.getPlayer ()), "Reinforcement phase.");
-    statusOn (!isSelf (event.getPlayer ()), "{} is placing reinforcements...", event.getPlayerName ());
   }
 
   @Handler
@@ -867,9 +803,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    final String playerName = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
-
-    status ("{} purchased {} reinforcements!", playerName, event.getTradeInBonus ());
+    // TODO Implement trade-in.
   }
 
   @Handler
@@ -880,8 +814,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     log.debug ("Event received [{}].", event);
 
     eventBus.unsubscribe (reinforcementPhaseHandler);
-
-    statusOn (!isSelf (event.getPlayer ()), "{} is finished reinforcing.", event.getPlayerName ());
   }
 
   @Handler
@@ -913,95 +845,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName ("Attack");
       }
     });
-
-    statusOn (isSelf (event.getPlayer ()), "Attack phase.");
-    statusOn (!isSelf (event.getPlayer ()), "{} is deciding where to attack...", event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final BattleSetupEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    final boolean isAttacker = isSelf (event.getAttackingPlayer ());
-    final boolean isDefender = isSelf (event.getDefendingPlayer ());
-    final String attacker = isAttacker ? "You" : event.getAttackingPlayerName ();
-    final String defender = isDefender ? "You" : event.getDefendingPlayerName ();
-    final String attackerCountry = event.getAttackingCountryName ();
-    final String defenderCountry = event.getDefendingCountryName ();
-
-    status ("{} {} attacking {} in {} from {}!", attacker, isAttacker ? "are" : "is", defender, defenderCountry,
-            attackerCountry);
-  }
-
-  @Handler
-  void onEvent (final PlayerOrderAttackSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    final int defenderLoss = Math.abs (event.getDefendingCountryArmyDelta ());
-    final int attackerLoss = Math.abs (event.getAttackingCountryArmyDelta ());
-    final boolean defenderLostArmies = defenderLoss > 0;
-    final boolean attackerLostArmies = attackerLoss > 0;
-    final boolean defenderOnlyLostArmies = defenderLostArmies && !attackerLostArmies;
-    final boolean attackerOnlyLostArmies = !defenderLostArmies && attackerLostArmies;
-    final boolean bothLostArmies = attackerLostArmies && defenderLostArmies;
-    final String attacker = isSelf (event.getAttackingPlayer ()) ? "You" : event.getAttackingPlayerName ();
-    final String defender = isSelf (event.getDefendingPlayer ()) ? "you" : event.getDefendingPlayerName ();
-    final String attackerCountry = event.getAttackingCountryName ();
-    final String defenderCountry = event.getDefendingCountryName ();
-    final String defenderLossInWords = Strings.pluralize (defenderLoss, "no armies", "an army",
-                                                          defenderLoss + " armies");
-    final String attackerLossInWords = Strings.pluralize (attackerLoss, "no armies", "an army",
-                                                          defenderLoss + " armies");
-
-    statusOn (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
-              defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
-
-    statusOn (attackerOnlyLostArmies, "{} attacked {} in {} from {} & lost {}!", attacker, defender, defenderCountry,
-              attackerCountry, attackerLossInWords);
-
-    statusOn (defenderOnlyLostArmies, "{} attacked {} in {} from {} & destroyed {}!", attacker, defender,
-              defenderCountry, attackerCountry, defenderLossInWords);
-
-    statusOn (event.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS), "{} conquered {}, defeating {} in battle.",
-              attacker, defenderCountry, defender);
-
-    statusOn (event.battleOutcomeIs (BattleOutcome.ATTACKER_DEFEATED),
-              "{} failed to conquer {}, defeated by {} in battle.", attacker, defenderCountry, defender);
-  }
-
-  @Handler
-  void onEvent (final PlayerOrderRetreatSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    statusOn (isSelf (event.getAttackingPlayer ()), "You stopped attacking {} in {} from {}.",
-              event.getDefendingPlayerName (), event.getDefendingCountryName (), event.getAttackingCountryName ());
-
-    statusOn (isSelf (event.getDefendingPlayer ()), "{} stopped attacking you in {} from {}.",
-              event.getAttackingPlayerName (), event.getDefendingCountryName (), event.getAttackingCountryName ());
-
-    statusOn (!isSelf (event.getAttackingPlayer ()) && !isSelf (event.getDefendingPlayer ()),
-              "{} stopped attacking {} in {} from {}.", event.getAttackingPlayerName (),
-              event.getDefendingPlayerName (), event.getDefendingCountryName (), event.getAttackingCountryName ());
-  }
-
-  @Handler
-  void onEvent (final PlayerLoseGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    statusOn (isSelf (event.getPlayer ()), "General, we have lost the war.");
-    statusOn (!isSelf (event.getPlayer ()), "{} was annihilated.", event.getPlayerName ());
   }
 
   @Handler
@@ -1019,24 +862,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName ("Game Over");
       }
     });
-
-    statusOn (isSelf (event.getPlayer ()), "General, we won the war!");
-    statusOn (!isSelf (event.getPlayer ()), "{} won the game.", event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final PlayerOccupyCountryResponseSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    final String player = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
-    final String country = event.getDestinationCountryName ();
-    final int armies = Math.abs (event.getDeltaArmyCount ());
-
-    status ("{} occupied {} with {}.", player, country, Strings.pluralize (armies, "army", "armies"));
-    statusOn (armies == 1, "Looks like an easy target.");
   }
 
   @Handler
@@ -1059,8 +884,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       defendingBattlePhaseHandler.reset ();
       eventBus.unsubscribe (defendingBattlePhaseHandler);
     }
-
-    statusOn (!isSelf (event.getPlayer ()), "{} is finished attacking.", event.getPlayerName ());
   }
 
   @Handler
@@ -1092,24 +915,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName ("Post-Combat Maneuver");
       }
     });
-
-    statusOn (isSelf (event.getPlayer ()), "Post-Combat Maneuver phase.");
-    statusOn (!isSelf (event.getPlayer ()), "{} is considering a post-combat maneuver...", event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final PlayerFortifyCountryResponseSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    final String player = isSelf (event.getPlayer ()) ? "You" : event.getPlayerName ();
-    final String sourceCountry = event.getSourceCountryName ();
-    final String destCountry = event.getTargetCountryName ();
-    final String armies = Strings.pluralize (event.getDeltaArmyCount (), "army", "armies");
-
-    status ("{} maneuvered {} into {} from {}.", player, armies, destCountry, sourceCountry);
   }
 
   @Handler
@@ -1125,19 +930,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       fortificationPhaseHandler.reset ();
       eventBus.unsubscribe (fortificationPhaseHandler);
     }
-
-    statusOn (!isSelf (event.getPlayer ()), "{} is finished maneuvering.", event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final EndPlayerTurnEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    statusOn (isSelf (event.getPlayer ()), "Your turn is over.");
-    statusOn (!isSelf (event.getPlayer ()), "{}'s turn is over.", event.getPlayerName ());
   }
 
   @Handler
@@ -1156,8 +948,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         if (DEBUG) debugEventGenerator.makePlayerAvailable (event.getPlayer ());
       }
     });
-
-    statusOn (!isSelf (event.getPlayer ()), "{} left the game.", event.getPlayerName ());
   }
 
   @Handler
@@ -1180,28 +970,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private static void hideCursor ()
   {
     Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
-  }
-
-  private void status (final String statusMessage)
-  {
-    eventBus.publish (StatusMessageEventFactory.create (statusMessage));
-  }
-
-  private void status (final String statusMessage, final Object... args)
-  {
-    eventBus.publish (StatusMessageEventFactory.create (statusMessage, args));
-  }
-
-  private void statusOn (final boolean condition, final String statusMessage)
-  {
-    if (!condition) return;
-    status (statusMessage);
-  }
-
-  private void statusOn (final boolean condition, final String statusMessage, final Object... args)
-  {
-    if (!condition) return;
-    status (statusMessage, args);
   }
 
   private boolean isSelf (final PlayerPacket player)

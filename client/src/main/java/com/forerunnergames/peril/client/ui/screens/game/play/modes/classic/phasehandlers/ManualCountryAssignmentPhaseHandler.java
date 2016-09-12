@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
 import com.forerunnergames.peril.client.events.SelectCountryEvent;
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -53,7 +53,7 @@ public final class ManualCountryAssignmentPhaseHandler
 
     request = event;
 
-    eventBus.publish (StatusMessageEventFactory
+    eventBus.publish (StatusMessageEventGenerator
             .create (Strings.format ("{}, claim a country.", event.getPlayerName ())));
   }
 
@@ -84,7 +84,7 @@ public final class ManualCountryAssignmentPhaseHandler
     playMap.setCountryState (event.getCountryName (),
                              CountryPrimaryImageState.fromPlayerColor (event.getPlayerColor ()));
 
-    eventBus.publish (StatusMessageEventFactory
+    eventBus.publish (StatusMessageEventGenerator
             .create (Strings.format ("{} claimed {} .", event.getPlayerName (), event.getCountryName ())));
   }
 

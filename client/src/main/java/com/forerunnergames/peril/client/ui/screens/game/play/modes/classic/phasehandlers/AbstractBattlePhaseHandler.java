@@ -17,7 +17,6 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.events.StatusMessageEventFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
@@ -73,7 +72,6 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
   public final void onBattle ()
   {
     eventBus.publish (createBattleRequestEvent (battleDialog.getActiveDieCount ()));
-    eventBus.publish (StatusMessageEventFactory.create ("Waiting for battle result..."));
   }
 
   @Override
