@@ -33,6 +33,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
@@ -476,8 +477,15 @@ public final class DebugInputProcessor extends InputAdapter
         attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
         defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        // TODO Create PendingBattleActorPacket's in DebugPackets.
-//        attackDialog.show (, attackingCountry, , defendingCountry);
+        final PendingBattleActorPacket attacker = DebugPackets
+                .asAttackerPendingBattleActorPacket (attackingPlayerName, attackingCountryName,
+                                                     attackingCountry.getArmies ());
+
+        final PendingBattleActorPacket defender = DebugPackets
+                .asDefenderPendingBattleActorPacket (defendingPlayerName, defendingCountryName,
+                                                     defendingCountry.getArmies ());
+
+        attackDialog.startBattle (attacker, defender, attackingCountry, defendingCountry);
 
         playMap.disable ();
 
@@ -520,8 +528,15 @@ public final class DebugInputProcessor extends InputAdapter
         attackingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
         defendingCountry.setArmies (Randomness.getRandomIntegerFrom (10, 10));
 
-        // TODO Create PendingBattleActorPacket's in DebugPackets.
-//        defendDialog.show (, attackingCountry, , defendingCountry);
+        final PendingBattleActorPacket attacker = DebugPackets
+                .asAttackerPendingBattleActorPacket (attackingPlayerName, attackingCountryName,
+                                                     attackingCountry.getArmies ());
+
+        final PendingBattleActorPacket defender = DebugPackets
+                .asDefenderPendingBattleActorPacket (defendingPlayerName, defendingCountryName,
+                                                     defendingCountry.getArmies ());
+
+        defendDialog.startBattle (attacker, defender, attackingCountry, defendingCountry);
 
         playMap.disable ();
 

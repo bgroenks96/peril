@@ -151,6 +151,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final Cursor normalCursor;
   private final MBassador <Event> eventBus;
   private final DebugEventGenerator debugEventGenerator;
+  private final DebugInputProcessor debugInputProcessor;
   private final Stage stage;
   private final Image playMapTableForegroundImage;
   private final Table playMapTable;
@@ -176,7 +177,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final BattlePhaseHandler defendingBattlePhaseHandler;
   private final OccupationPhaseHandler occupationPhaseHandler;
   private final FortificationPhaseHandler fortificationPhaseHandler;
-  private final DebugInputProcessor debugInputProcessor;
   private final CompositeDialog allDialogs;
   private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
   private boolean endTurnFromAttackPhase;
@@ -494,7 +494,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     playerBox.clear ();
     attackingBattlePhaseHandler.reset ();
     defendingBattlePhaseHandler.reset ();
-    debugInputProcessor.reset ();
+    if (DEBUG) debugInputProcessor.reset ();
 
     clearPlayMap ();
 
@@ -555,7 +555,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setClientConfiguration (event.getClientConfiguration ());
         intelBox.setPlayer (event.getSelfPlayer ());
         playerBox.setPlayers (event.getAllPlayers ());
-        debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
+        if (DEBUG) debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
       }
     });
 
@@ -620,7 +620,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         playerBox.addPlayer (event.getPlayer ());
-        debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
+        if (DEBUG) debugEventGenerator.makePlayerUnavailable (event.getPlayer ());
       }
     });
 
@@ -1153,7 +1153,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         playerBox.removePlayer (event.getPlayer ());
-        debugEventGenerator.makePlayerAvailable (event.getPlayer ());
+        if (DEBUG) debugEventGenerator.makePlayerAvailable (event.getPlayer ());
       }
     });
 
@@ -1225,7 +1225,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     defendingBattlePhaseHandler.setPlayMap (playMap);
     occupationPhaseHandler.setPlayMap (playMap);
     fortificationPhaseHandler.setPlayMap (playMap);
-    debugInputProcessor.setPlayMap (this.playMap);
+    if (DEBUG) debugInputProcessor.setPlayMap (this.playMap);
   }
 
   private void clearPlayMap ()

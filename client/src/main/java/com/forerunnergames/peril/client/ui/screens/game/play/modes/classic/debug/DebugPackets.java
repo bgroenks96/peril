@@ -18,7 +18,12 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultCountryPacket;
+import com.forerunnergames.peril.common.net.packets.defaults.DefaultPendingBattleActorPacket;
+import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
@@ -32,7 +37,31 @@ public final class DebugPackets
 {
   private static final Map <String, UUID> packetIdCache = Maps.newHashMap ();
 
-  public static CountryPacket from (final String countryName, final int armyCount)
+  static PendingBattleActorPacket asAttackerPendingBattleActorPacket (final String playerName,
+                                                                      final String countryName,
+                                                                      final int countryArmyCount)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNegative (countryArmyCount, "countryArmyCount");
+
+    return new DefaultPendingBattleActorPacket (asPlayerPacket (playerName),
+            asCountryPacket (countryName, countryArmyCount), ClassicGameRules.ABSOLUTE_ATTACKER_DIE_RANGE);
+  }
+
+  static PendingBattleActorPacket asDefenderPendingBattleActorPacket (final String playerName,
+                                                                      final String countryName,
+                                                                      final int countryArmyCount)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNegative (countryArmyCount, "countryArmyCount");
+
+    return new DefaultPendingBattleActorPacket (asPlayerPacket (playerName),
+            asCountryPacket (countryName, countryArmyCount), ClassicGameRules.ABSOLUTE_DEFENDER_DIE_RANGE);
+  }
+
+  static CountryPacket asCountryPacket (final String countryName, final int armyCount)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNegative (armyCount, "armyCount");
@@ -40,11 +69,19 @@ public final class DebugPackets
     return new DefaultCountryPacket (idFor (countryName), countryName, armyCount);
   }
 
-  public static CountryPacket from (final String countryName)
+  static CountryPacket asCountryPacket (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return from (countryName, 0);
+    return asCountryPacket (countryName, 0);
+  }
+
+  static PlayerPacket asPlayerPacket (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return new DefaultPlayerPacket (idFor (playerName), playerName, DebugEventGenerator.getRandomPlayerColor (),
+            DebugEventGenerator.getRandomPlayerTurnOrder (), DebugEventGenerator.getRandomCountryDeltaArmyCount ());
   }
 
   private static UUID idFor (final String str)

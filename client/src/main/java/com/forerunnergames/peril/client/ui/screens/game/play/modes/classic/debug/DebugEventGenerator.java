@@ -23,6 +23,7 @@ import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -92,10 +93,10 @@ public final class DebugEventGenerator
   // @formatter:on
 
   private final MBassador <Event> eventBus;
-  private final Set <String> availablePlayerNames = new HashSet <> ();
-  private final Set <PlayerColor> availablePlayerColors = new HashSet <> ();
-  private final Set <Integer> availablePlayerTurnOrders = new HashSet <> ();
-  private final Collection <PlayerPacket> unavailablePlayers = new ArrayList <> ();
+  private final Set <String> availablePlayerNames = new HashSet<> ();
+  private final Set <PlayerColor> availablePlayerColors = new HashSet<> ();
+  private final Set <Integer> availablePlayerTurnOrders = new HashSet<> ();
+  private final Collection <PlayerPacket> unavailablePlayers = new ArrayList<> ();
   private Iterator <PlayerColor> playerColorIterator;
   private Iterator <Integer> playerTurnOrderIterator;
   private PlayMap playMap;
@@ -114,6 +115,21 @@ public final class DebugEventGenerator
   static String getRandomPlayerName ()
   {
     return Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES);
+  }
+
+  static PlayerColor getRandomPlayerColor ()
+  {
+    return Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES);
+  }
+
+  static int getRandomPlayerTurnOrder ()
+  {
+    return Randomness.getRandomElementFrom (VALID_SORTED_PLAYER_TURN_ORDERS);
+  }
+
+  static int getRandomCountryDeltaArmyCount ()
+  {
+    return Randomness.getRandomIntegerFrom (0, ClassicGameRules.MAX_ARMIES_ON_COUNTRY);
   }
 
   public void makePlayersUnavailable (final Collection <PlayerPacket> players)
@@ -158,10 +174,19 @@ public final class DebugEventGenerator
     return Randomness.getRandomElementFrom (playMap.getAllCountryNames ());
   }
 
+  Optional <? extends PlayerPacket> createAvailablePlayer ()
+  {
+    if (shouldResetPlayers ()) resetPlayersKeepUnavailable ();
+    if (shouldResetPlayers ()) return Optional.absent ();
+
+    return Optional.of (new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), nextAvailablePlayerName (),
+            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0));
+  }
+
   void generateStatusMessageEvent ()
   {
     // TODO Production: Remove
-    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage (), ImmutableSet. <PlayerPacket> of ()));
+    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage (), ImmutableSet.<PlayerPacket> of ()));
   }
 
   void generateChatMessageSuccessEvent ()
@@ -186,14 +211,14 @@ public final class DebugEventGenerator
   void generateCountryArmiesChangedEvent ()
   {
     final int deltaArmyCount = getRandomCountryDeltaArmyCount ();
-    final CountryPacket countryPacket = DebugPackets.from (getRandomCountryName (), deltaArmyCount);
+    final CountryPacket countryPacket = DebugPackets.asCountryPacket (getRandomCountryName (), deltaArmyCount);
     eventBus.publish (new DefaultCountryArmiesChangedEvent (countryPacket, deltaArmyCount));
   }
 
   void generatePlayerClaimCountryResponseSuccessEvent ()
   {
     eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createRandomPlayer (),
-            DebugPackets.from (getRandomCountryName ()), 1));
+            DebugPackets.asCountryPacket (getRandomCountryName ()), 1));
   }
 
   void resetPlayers ()
@@ -209,21 +234,6 @@ public final class DebugEventGenerator
     Arguments.checkIsNotNull (playMap, "playMap");
 
     this.playMap = playMap;
-  }
-
-  private static int getRandomCountryDeltaArmyCount ()
-  {
-    return Randomness.getRandomIntegerFrom (0, 99);
-  }
-
-  private static PlayerColor getRandomPlayerColor ()
-  {
-    return Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES);
-  }
-
-  private static int getRandomPlayerTurnOrder ()
-  {
-    return Randomness.getRandomElementFrom (VALID_SORTED_PLAYER_TURN_ORDERS);
   }
 
   private static PlayerPacket createRandomPlayer ()
@@ -278,15 +288,6 @@ public final class DebugEventGenerator
             Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES), 0, 0);
 
     return new DefaultChatMessage (author, createMessageText ());
-  }
-
-  private Optional <? extends PlayerPacket> createAvailablePlayer ()
-  {
-    if (shouldResetPlayers ()) resetPlayersKeepUnavailable ();
-    if (shouldResetPlayers ()) return Optional.absent ();
-
-    return Optional.of (new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), nextAvailablePlayerName (),
-            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0));
   }
 
   private boolean shouldResetPlayers ()
