@@ -398,30 +398,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public final String getAttackingCountryName ()
-  {
-    return attackingCountryNameLabel.getText ().toString ();
-  }
-
-  @Override
-  public final String getDefendingCountryName ()
-  {
-    return defendingCountryNameLabel.getText ().toString ();
-  }
-
-  @Override
-  public final String getAttackingPlayerName ()
-  {
-    return attackingPlayerNameLabel.getText ().toString ();
-  }
-
-  @Override
-  public final String getDefendingPlayerName ()
-  {
-    return defendingPlayerNameLabel.getText ().toString ();
-  }
-
-  @Override
   public final int getActiveAttackerDieCount ()
   {
     return attackerDice.getActiveCount ();
@@ -431,18 +407,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   public final int getActiveDefenderDieCount ()
   {
     return defenderDice.getActiveCount ();
-  }
-
-  @Override
-  public final int getAttackingCountryArmyCount ()
-  {
-    return attackingCountryArmyText.getArmies ();
-  }
-
-  @Override
-  public final int getDefendingCountryArmyCount ()
-  {
-    return defendingCountryArmyText.getArmies ();
   }
 
   protected abstract void setDiceTouchable (final boolean areTouchable);

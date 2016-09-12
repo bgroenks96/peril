@@ -37,21 +37,9 @@ public interface BattleDialog extends Dialog
 
   void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies);
 
-  String getAttackingCountryName ();
-
-  String getDefendingCountryName ();
-
-  String getAttackingPlayerName ();
-
-  String getDefendingPlayerName ();
-
   int getActiveDieCount ();
 
   int getActiveAttackerDieCount ();
 
   int getActiveDefenderDieCount ();
-
-  int getAttackingCountryArmyCount ();
-
-  int getDefendingCountryArmyCount ();
 }
