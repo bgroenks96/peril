@@ -61,6 +61,8 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class AbstractBattleDialog extends OkDialog implements BattleDialog
 {
   private static final boolean DEBUG = false;
@@ -94,6 +96,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   private final DiceArrows diceArrows;
   private final Stack attackingCountryStack;
   private final Stack defendingCountryStack;
+  private final AtomicBoolean isBattling = new AtomicBoolean (false);
   private final Timer timer = new NonDelayingTimer ();
   private Sound battleSingleExplosionSoundEffect;
   private Music battleAmbienceSoundEffect;
@@ -304,6 +307,8 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
     Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
 
+    isBattling.set (true);
+
     setCountries (attackingCountry, defendingCountry);
     initializeCountryArmies (attacker.getCountryArmyCount (), defender.getCountryArmyCount ());
     setPlayerNames (attacker.getPlayerName (), defender.getPlayerName ());
@@ -318,6 +323,8 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   {
     Arguments.checkIsNotNull (attackerDieRange, "attackerDieRange");
     Arguments.checkIsNotNull (defenderDieRange, "defenderDieRange");
+
+    isBattling.set (true);
 
     timer.scheduleTask (new Timer.Task ()
     {
@@ -361,6 +368,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
       @Override
       public void run ()
       {
+        isBattling.set (false);
         if (!result.outcomeIs (BattleOutcome.CONTINUE)) battleAmbienceSoundEffect.stop ();
         if (result.outcomeIs (BattleOutcome.ATTACKER_VICTORIOUS)) listener.onResultAttackerVictorious (result);
         if (result.outcomeIs (BattleOutcome.ATTACKER_DEFEATED)) listener.onResultAttackerDefeated (result);
@@ -395,6 +403,12 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
         }
       }, 0.25f);
     }
+  }
+
+  @Override
+  public boolean isBattling ()
+  {
+    return isBattling.get ();
   }
 
   @Override
@@ -468,6 +482,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     battleSingleExplosionSoundEffect.stop ();
     battleAmbienceSoundEffect.stop ();
     screenShaker.stop ();
+    isBattling.set (false);
   }
 
   private void rollDice (final ImmutableList <DieRoll> attackerRolls,

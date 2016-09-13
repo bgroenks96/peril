@@ -1105,7 +1105,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onHide ()
     {
-      attackDialog.hide ();
+      if (!attackDialog.isBattling ()) attackDialog.hide ();
       if (attackerBattleResultDialog.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS)) occupationDialog.show ();
       if (!occupationDialog.isShown () && !quitDialog.isShown ()) playMap.enable (mouseInput.position ());
     }
@@ -1128,7 +1128,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onHide ()
     {
-      defendDialog.hide ();
+      if (!defendDialog.isBattling ()) defendDialog.hide ();
       if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
     }
   }

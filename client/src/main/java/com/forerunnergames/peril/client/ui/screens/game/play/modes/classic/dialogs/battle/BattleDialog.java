@@ -37,6 +37,8 @@ public interface BattleDialog extends Dialog
 
   void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies);
 
+  boolean isBattling ();
+
   int getActiveDieCount ();
 
   int getActiveAttackerDieCount ();
