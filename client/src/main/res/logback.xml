@@ -62,6 +62,14 @@
     <appender-ref ref="STDOUT" />
   </logger>
 
+  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice" level="WARN">
+    <appender-ref ref="STDOUT" />
+  </logger>
+
+  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status" level="WARN">
+    <appender-ref ref="STDOUT" />
+  </logger>
+
   <logger name="com.forerunnergames.tools" level="TRACE">
     <appender-ref ref="STDOUT" />
   </logger>
