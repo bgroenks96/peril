@@ -162,7 +162,7 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
     if (!isSelf (event.getPlayer ()))
     {
-      log.debug ("Ignoring event [{}] because does not pertain to player [{}].", event, selfPlayer);
+      log.debug ("Ignoring event because does not pertain to player [{}]. Event: [{}]", selfPlayer, event);
       return;
     }
 
