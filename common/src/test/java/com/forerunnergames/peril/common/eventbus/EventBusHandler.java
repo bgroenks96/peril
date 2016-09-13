@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
@@ -40,7 +41,12 @@ import net.engio.mbassy.listener.Handler;
 
 public final class EventBusHandler
 {
-  private final Deque <Event> events = new ArrayDeque <> ();
+  private final Deque <Event> events = new ArrayDeque<> ();
+
+  public static IPublicationErrorHandler createEventBusFailureHandler ()
+  {
+    return new FailOnEventBusError ();
+  }
 
   public void clearEvents ()
   {
@@ -196,9 +202,63 @@ public final class EventBusHandler
     return type.isInstance (getSecondToLastEvent ());
   }
 
-  public Class <?> seocndToLastEventType ()
+  public Class <?> secondToLastEventType ()
   {
     return getSecondToLastEvent ().getClass ();
+  }
+
+  public <T> T thirdToLastEvent (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    return type.cast (getThirdToLastEvent ());
+  }
+
+  public Event thirdToLastEvent ()
+  {
+    return getThirdToLastEvent ();
+  }
+
+  public <T> boolean thirdToLastEventWasType (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    return type.isInstance (getThirdToLastEvent ());
+  }
+
+  public Class <?> thirdToLastEventType ()
+  {
+    return getThirdToLastEvent ().getClass ();
+  }
+
+  public <T> T nthToLastEvent (final Class <T> type, final int n)
+  {
+    Arguments.checkIsNotNull (type, "type");
+    Arguments.checkLowerInclusiveBound (n, 1, "n");
+
+    return type.cast (getNthToLastEvent (n));
+  }
+
+  public Event nthToLastEvent (final int n)
+  {
+    Arguments.checkLowerInclusiveBound (n, 1, "n");
+
+    return getNthToLastEvent (n);
+  }
+
+  public <T> boolean nthToLastEventWasType (final Class <T> type, final int n)
+  {
+    Arguments.checkIsNotNull (type, "type");
+    Arguments.checkLowerInclusiveBound (n, 1, "n");
+
+    return type.isInstance (getNthToLastEvent (n));
+  }
+
+  public Class <?> nthToLastEventType (final int n)
+  {
+    Arguments.checkLowerInclusiveBound (n, 1, "n");
+
+    return getNthToLastEvent (n).getClass ();
   }
 
   public ImmutableCollection <Event> getAllEvents ()
@@ -244,28 +304,42 @@ public final class EventBusHandler
 
   private Event getLastEvent ()
   {
-    final Event event = events.peekFirst ();
-
-    if (event == null) throw new IllegalStateException (EventBusHandler.class.getSimpleName () + " is empty.");
-
-    return event;
+    return getNthToLastEvent (1);
   }
 
   private Event getSecondToLastEvent ()
   {
-    final Event last = events.poll ();
-    final Event prev = events.peekFirst ();
-
-    if (prev == null) throw new IllegalStateException (EventBusHandler.class.getSimpleName () + " is empty.");
-
-    events.push (last);
-
-    return prev;
+    return getNthToLastEvent (2);
   }
 
-  public static IPublicationErrorHandler createEventBusFailureHandler ()
+  private Event getThirdToLastEvent ()
   {
-    return new FailOnEventBusError ();
+    return getNthToLastEvent (3);
+  }
+
+  private Event getNthToLastEvent (final int n)
+  {
+    if (n < 1) throw new IllegalStateException ("n must be >= 1");
+
+    Event nthToLastEvent = null;
+
+    final Iterator <Event> eventIterator = events.iterator ();
+
+    for (int i = 0; i < n; ++i)
+    {
+      if (!eventIterator.hasNext ())
+      {
+        throw new IllegalStateException (
+                Strings.format ("{} does not have enough events to get the {}-to-last event.",
+                                EventBusHandler.class.getSimpleName (), Strings.toMixedOrdinal (n)));
+      }
+
+      nthToLastEvent = eventIterator.next ();
+    }
+
+    assert nthToLastEvent != null;
+
+    return nthToLastEvent;
   }
 
   private static class FailOnEventBusError implements IPublicationErrorHandler
@@ -288,7 +362,7 @@ public final class EventBusHandler
       // if (causeMessage.isPresent () && causeMessage.get ().contains (getClass ().getSimpleName ())) return;
 
       final StringBuilder errorTraceBuilder = new StringBuilder (error + "\n");
-      final Deque <Throwable> causeChain = new ArrayDeque <> ();
+      final Deque <Throwable> causeChain = new ArrayDeque<> ();
       addCause (errorTraceBuilder, error.getCause (), causeChain);
       fail (Strings.format ("{}: Error caught in EventBus:\n{}", getClass ().getSimpleName (),
                             errorTraceBuilder.toString ()));

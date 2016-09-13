@@ -48,7 +48,7 @@ public final class OccupationPhaseHandler
   @Nullable
   private String sourceCountryName = null;
   @Nullable
-  private String destCountryName = null;
+  private String targetCountryName = null;
 
   public OccupationPhaseHandler (final PlayMap playMap,
                                  final OccupationDialog occupationDialog,
@@ -87,16 +87,16 @@ public final class OccupationPhaseHandler
       return;
     }
 
-    final String destCountryName = occupationDialog.getDestinationCountryName ();
+    final String targetCountryName = occupationDialog.getTargetCountryName ();
 
-    if (!destCountryName.equals (this.destCountryName))
+    if (!targetCountryName.equals (this.targetCountryName))
     {
-      log.warn ("Not sending response [{}] because specified destination country name [{}] does not match the "
-              + "destination country name [{}] of the original request [{}].",
-                PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), destCountryName, this.destCountryName,
+      log.warn ("Not sending response [{}] because specified target country name [{}] does not match the "
+              + "target country name [{}] of the original request [{}].",
+                PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), targetCountryName, this.targetCountryName,
                 request);
       eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy {}.",
-                                                            destCountryName));
+                                                            targetCountryName));
       return;
     }
 
@@ -110,7 +110,7 @@ public final class OccupationPhaseHandler
     request = null;
     response = null;
     sourceCountryName = null;
-    destCountryName = null;
+    targetCountryName = null;
   }
 
   public void setPlayMap (final PlayMap playMap)
@@ -135,7 +135,7 @@ public final class OccupationPhaseHandler
 
     request = event;
     sourceCountryName = event.getSourceCountryName ();
-    destCountryName = event.getDestinationCountryName ();
+    targetCountryName = event.getTargetCountryName ();
 
     final String sourceCountryName = event.getSourceCountryName ();
 
@@ -149,25 +149,25 @@ public final class OccupationPhaseHandler
       return;
     }
 
-    final String destinationCountryName = event.getDestinationCountryName ();
+    final String targetCountryName = event.getTargetCountryName ();
 
-    if (!playMap.existsCountryWithName (destinationCountryName))
+    if (!playMap.existsCountryWithName (targetCountryName))
     {
-      log.error ("Not showing {} for request [{}] because destination country [{}] does not exist in {}.",
-                 OccupationDialog.class.getSimpleName (), event, destinationCountryName,
+      log.error ("Not showing {} for request [{}] because target country [{}] does not exist in {}.",
+                 OccupationDialog.class.getSimpleName (), event, targetCountryName,
                  PlayMap.class.getSimpleName ());
       eventBus.publish (StatusMessageEventGenerator.create (
                                                             "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied.",
-                                                            destinationCountryName));
+                                                            targetCountryName));
       return;
     }
 
-    playMap.setCountryState (destinationCountryName, playMap.getPrimaryImageStateOf (sourceCountryName));
+    playMap.setCountryState (targetCountryName, playMap.getPrimaryImageStateOf (sourceCountryName));
 
-    occupationDialog.set (event.getMinOccupationArmyCount (), event.getDestinationCountryArmyCount (),
+    occupationDialog.set (event.getMinOccupationArmyCount (), event.getTargetCountryArmyCount (),
                           event.getMaxOccupationArmyCount (), event.getTotalArmyCount (),
                           playMap.getCountryWithName (sourceCountryName),
-                          playMap.getCountryWithName (destinationCountryName));
+                          playMap.getCountryWithName (targetCountryName));
   }
 
   @Handler
@@ -187,7 +187,7 @@ public final class OccupationPhaseHandler
     }
 
     final String sourceCountryName = event.getSourceCountryName ();
-    final String destinationCountryName = event.getDestinationCountryName ();
+    final String targetCountryName = event.getTargetCountryName ();
     final int deltaArmyCount = event.getDeltaArmyCount ();
 
     if (!occupationDialog.getSourceCountryName ().equals (sourceCountryName))
@@ -197,11 +197,11 @@ public final class OccupationPhaseHandler
                  event);
     }
 
-    if (!occupationDialog.getDestinationCountryName ().equals (destinationCountryName))
+    if (!occupationDialog.getTargetCountryName ().equals (targetCountryName))
     {
-      log.error ("{} destination country name [{}] does not match destination country name [{}] from event [{}].",
-                 OccupationDialog.class.getSimpleName (), occupationDialog.getDestinationCountryName (),
-                 destinationCountryName, event);
+      log.error ("{} target country name [{}] does not match target country name [{}] from event [{}].",
+                 OccupationDialog.class.getSimpleName (), occupationDialog.getTargetCountryName (),
+                 targetCountryName, event);
     }
 
     if (occupationDialog.getDeltaArmyCount () != deltaArmyCount)
@@ -223,7 +223,7 @@ public final class OccupationPhaseHandler
 
     eventBus.publish (StatusMessageEventGenerator.create (
                                                           "Whoops, it looks like you aren't authorized to occupy {} from {}.",
-                                                          sourceCountryName, destCountryName));
+                                                          sourceCountryName, targetCountryName));
 
     reset ();
   }

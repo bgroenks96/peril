@@ -88,7 +88,7 @@ public final class FortificationPhaseHandler
 
     // FIXME ?
     response = new PlayerSelectFortifyVectorRequestEvent (fortificationDialog.getSourceCountryName (),
-            fortificationDialog.getDestinationCountryName ());
+            fortificationDialog.getTargetCountryName ());
 
     eventBus.publish (response);
   }
@@ -97,7 +97,7 @@ public final class FortificationPhaseHandler
   {
     eventBus.publish (StatusMessageEventGenerator.create ("You cancelled your post-combat maneuver from {} to {}.",
                                                           fortificationDialog.getSourceCountryName (),
-                                                          fortificationDialog.getDestinationCountryName ()));
+                                                          fortificationDialog.getTargetCountryName ()));
     softReset ();
   }
 
@@ -157,7 +157,7 @@ public final class FortificationPhaseHandler
     log.debug ("Event received [{}].", event);
 
     final String sourceCountryName = event.getSourceCountryName ();
-    final String destinationCountryName = event.getTargetCountryName ();
+    final String targetCountryName = event.getTargetCountryName ();
     final int deltaArmyCount = event.getDeltaArmyCount ();
 
     if (!fortificationDialog.getSourceCountryName ().equals (sourceCountryName))
@@ -167,11 +167,11 @@ public final class FortificationPhaseHandler
                  sourceCountryName, event);
     }
 
-    if (!fortificationDialog.getDestinationCountryName ().equals (destinationCountryName))
+    if (!fortificationDialog.getTargetCountryName ().equals (targetCountryName))
     {
-      log.error ("{} destination country name [{}] does not match destination country name [{}] from event [{}].",
-                 FortificationDialog.class.getSimpleName (), fortificationDialog.getDestinationCountryName (),
-                 destinationCountryName, event);
+      log.error ("{} target country name [{}] does not match target country name [{}] from event [{}].",
+                 FortificationDialog.class.getSimpleName (), fortificationDialog.getTargetCountryName (),
+                 targetCountryName, event);
     }
 
     if (fortificationDialog.getDeltaArmyCount () != deltaArmyCount)
@@ -194,7 +194,7 @@ public final class FortificationPhaseHandler
 
     eventBus.publish (StatusMessageEventGenerator
             .create ("Whoops, it looks like you aren't authorized to maneuver from {} to {}. Reason: {}",
-                     fortificationDialog.getSourceCountryName (), fortificationDialog.getDestinationCountryName (),
+                     fortificationDialog.getSourceCountryName (), fortificationDialog.getTargetCountryName (),
                      Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER)));
 
     reset ();
@@ -207,7 +207,7 @@ public final class FortificationPhaseHandler
     // FIXME: countryVectorSelectionHandler.start (request);
   }
 
-  private void showFortificationDialog (final String sourceCountryName, final String destCountryName)
+  private void showFortificationDialog (final String sourceCountryName, final String targetCountryName)
   {
     if (!playMap.existsCountryWithName (sourceCountryName))
     {
@@ -219,25 +219,26 @@ public final class FortificationPhaseHandler
       return;
     }
 
-    if (!playMap.existsCountryWithName (destCountryName))
+    if (!playMap.existsCountryWithName (targetCountryName))
     {
-      log.error ("Not showing {} for request [{}] because destination country [{}] does not exist.",
-                 fortificationDialog.getClass ().getSimpleName (), request, destCountryName);
+      log.error ("Not showing {} for request [{}] because target country [{}] does not exist.",
+                 fortificationDialog.getClass ().getSimpleName (), request, targetCountryName);
       eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like {} doesn't exist on this map.",
-                                                            destCountryName));
+                                                            targetCountryName));
       softReset ();
       return;
     }
 
     final Country sourceCountry = playMap.getCountryWithName (sourceCountryName);
-    final Country destCountry = playMap.getCountryWithName (destCountryName);
+    final Country targetCountry = playMap.getCountryWithName (targetCountryName);
 
     // TODO This is a hack until the core fortification API redesign is complete.
-    final int currentDestArmies = destCountry.getArmies ();
-    final int totalArmies = currentDestArmies + sourceCountry.getArmies ();
-    final int minDestArmies = currentDestArmies;
-    final int maxDestArmies = totalArmies - 1;
+    final int currentTargetCountryArmies = targetCountry.getArmies ();
+    final int totalArmies = currentTargetCountryArmies + sourceCountry.getArmies ();
+    final int minTargetCountryArmies = currentTargetCountryArmies;
+    final int maxTargetCountryArmies = totalArmies - 1;
 
-    fortificationDialog.show (minDestArmies, currentDestArmies, maxDestArmies, totalArmies, sourceCountry, destCountry);
+    fortificationDialog.show (minTargetCountryArmies, currentTargetCountryArmies, maxTargetCountryArmies, totalArmies,
+                              sourceCountry, targetCountry);
   }
 }

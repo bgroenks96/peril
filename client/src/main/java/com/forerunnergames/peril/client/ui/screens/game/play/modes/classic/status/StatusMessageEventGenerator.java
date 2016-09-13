@@ -23,8 +23,6 @@ import com.forerunnergames.peril.client.events.StatusMessageEvent;
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
@@ -40,6 +38,14 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -163,6 +169,16 @@ public final class StatusMessageEventGenerator
   }
 
   @Handler
+  void onEvent (final PlayerClaimCountryWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyoneElse (event.getPlayer (), "{} is claiming a country...", event.getPlayerName ());
+  }
+
+  @Handler
   void onEvent (final BeginInitialReinforcementPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -170,7 +186,16 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     you (event.getPlayer (), "Initial Reinforcement phase.");
-    everyoneElse (event.getPlayer (), "{} is placing initial reinforcements...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerBeginReinforcementWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyoneElse (event.getPlayer (), "{} is placing reinforcements...", event.getPlayerName ());
   }
 
   @Handler
@@ -203,7 +228,6 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     you (event.getPlayer (), "Reinforcement phase.");
-    everyoneElse (event.getPlayer (), "{} is placing reinforcements...", event.getPlayerName ());
   }
 
   @Handler
@@ -245,29 +269,36 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     you (event.getPlayer (), "Attack phase.");
+  }
+
+  @Handler
+  void onEvent (final PlayerBeginAttackWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
     everyoneElse (event.getPlayer (), "{} is deciding where to attack...", event.getPlayerName ());
   }
 
   @Handler
-  void onEvent (final BattleSetupEvent event)
+  void onEvent (final PlayerIssueAttackOrderWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} attacking {} in {} from {}!", nameifyVerb (event.getAttackingPlayer (), LetterCase.PROPER),
-              nameify (event.getDefendingPlayer (), LetterCase.LOWER), event.getDefendingCountryName (),
-              event.getAttackingCountryName ());
+    everyone ("Waiting for {} to roll attacker dice...", nameify (event.getPlayer (), LetterCase.LOWER));
   }
 
   @Handler
-  void onEvent (final BattleRequestEvent event)
+  void onEvent (final PlayerDefendCountryWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("Waiting for battle result...");
+    everyone ("Waiting for {} to roll defender dice...", nameify (event.getPlayer (), LetterCase.LOWER));
   }
 
   @Handler
@@ -344,13 +375,24 @@ public final class StatusMessageEventGenerator
   }
 
   @Handler
+  void onEvent (final PlayerOccupyCountryWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyoneElse (event.getPlayer (), "{} is occupying {} with troops from {}...", event.getPlayerName (),
+                  event.getTargetCountryName (), event.getSourceCountryName ());
+  }
+
+  @Handler
   void onEvent (final PlayerOccupyCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    final String country = event.getDestinationCountryName ();
+    final String country = event.getTargetCountryName ();
     final int armies = Math.abs (event.getDeltaArmyCount ());
 
     everyone ("{} occupied {} with {}.", nameify (event.getPlayer (), LetterCase.PROPER), country,
@@ -377,7 +419,27 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     you (event.getPlayer (), "Post-Combat Maneuver phase.");
+  }
+
+  @Handler
+  void onEvent (final PlayerBeginFortificationWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
     everyoneElse (event.getPlayer (), "{} is considering a post-combat maneuver...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerFortifyCountryWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyoneElse (event.getPlayer (), "{} is maneuvering troops into {} from {}...", event.getPlayerName (),
+                  event.getTargetCountryName (), event.getSourceCountryName ());
   }
 
   @Handler
@@ -388,11 +450,11 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     final String sourceCountry = event.getSourceCountryName ();
-    final String destCountry = event.getTargetCountryName ();
+    final String targetCountry = event.getTargetCountryName ();
     final String armies = Strings.pluralize (event.getDeltaArmyCount (), "army", "armies");
 
-    everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPlayer (), LetterCase.PROPER), armies, destCountry,
-              sourceCountry);
+    everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPlayer (), LetterCase.PROPER), armies,
+              event.getTargetCountryName (), sourceCountry);
   }
 
   @Handler

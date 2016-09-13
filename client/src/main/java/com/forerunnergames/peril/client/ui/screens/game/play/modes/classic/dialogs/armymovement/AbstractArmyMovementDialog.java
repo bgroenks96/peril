@@ -59,8 +59,8 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
   private static final float COUNTRY_BOX_WIDTH = 400 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float COUNTRY_BOX_HEIGHT = 200 - COUNTRY_BOX_INNER_PADDING * 2;
   private static final float SOURCE_COUNTRY_ARROW_WIDTH = 74;
-  private static final float DESTINATION_COUNTRY_ARROW_WIDTH = 74;
-  private static final float SOURCE_DESTINATION_COUNTRY_BOX_SPACING = 2;
+  private static final float TARGET_COUNTRY_ARROW_WIDTH = 74;
+  private static final float SOURCE_TARGET_COUNTRY_BOX_SPACING = 2;
   // private static final Vector2 FOREGROUND_ARROW_TEXT_BOTTOM_LEFT_DIALOG_REFERENCE_SPACE = new Vector2 (368, 255);
   // private static final Vector2 FOREGROUND_ARROW_TEXT_SIZE_DIALOG_REFERENCE_SPACE = new Vector2 (94, 14);
   private static final int SLIDER_STEP_SIZE = 1;
@@ -73,23 +73,23 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
   // private final Color tempColor = new Color ();
   private final BitmapFont countryArmyTextFont = new BitmapFont ();
   private final CountryArmyText sourceCountryArmyText = new DefaultCountryArmyText (countryArmyTextFont);
-  private final CountryArmyText destinationCountryArmyText = new DefaultCountryArmyText (countryArmyTextFont);
+  private final CountryArmyText targetCountryArmyText = new DefaultCountryArmyText (countryArmyTextFont);
   private final Label sourceCountryNameLabel;
-  private final Label destinationCountryNameLabel;
+  private final Label targetCountryNameLabel;
   private final ImageButton minusButton;
   private final ImageButton plusButton;
   private final ImageButton minButton;
   private final ImageButton maxButton;
   private final Cell <Stack> sourceCountryStackCell;
-  private final Cell <Stack> destinationCountryStackCell;
+  private final Cell <Stack> targetCountryStackCell;
   private final Slider slider;
   private final Stack sourceCountryStack;
-  private final Stack destinationCountryStack;
+  private final Stack targetCountryStack;
   private float minusButtonPressTimeSeconds = 0.0f;
   private float plusButtonPressTimeSeconds = 0.0f;
   private float minusButtonRepeatDeltaSeconds = 0.0f;
   private float plusButtonRepeatDeltaSeconds = 0.0f;
-  private int originalDestinationArmies = 0;
+  private int originalTargetCountryArmies = 0;
   private int totalArmies = 0;
 
   protected AbstractArmyMovementDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
@@ -122,7 +122,7 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     this.widgetFactory = widgetFactory;
 
     sourceCountryNameLabel = widgetFactory.createArmyMovementDialogCountryNameLabel ();
-    destinationCountryNameLabel = widgetFactory.createArmyMovementDialogCountryNameLabel ();
+    targetCountryNameLabel = widgetFactory.createArmyMovementDialogCountryNameLabel ();
 
     slider = widgetFactory.createArmyMovementDialogSlider (new ChangeListener ()
     {
@@ -171,35 +171,34 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     });
 
     sourceCountryStack = new Stack ();
-    destinationCountryStack = new Stack ();
+    targetCountryStack = new Stack ();
     sourceCountryStack.setDebug (DEBUG, true);
-    destinationCountryStack.setDebug (DEBUG, true);
+    targetCountryStack.setDebug (DEBUG, true);
 
     final Table sourceCountryStackTable = new Table ();
     sourceCountryStackCell = sourceCountryStackTable.add (sourceCountryStack).padRight (SOURCE_COUNTRY_ARROW_WIDTH);
     sourceCountryStackTable.setDebug (DEBUG, true);
 
-    final Table destinationCountryStackTable = new Table ();
-    destinationCountryStackCell = destinationCountryStackTable.add (destinationCountryStack)
-            .padLeft (DESTINATION_COUNTRY_ARROW_WIDTH);
-    destinationCountryStackTable.setDebug (DEBUG, true);
+    final Table targetCountryStackTable = new Table ();
+    targetCountryStackCell = targetCountryStackTable.add (targetCountryStack).padLeft (TARGET_COUNTRY_ARROW_WIDTH);
+    targetCountryStackTable.setDebug (DEBUG, true);
 
     final Table sourceCountryTable = new Table ();
     sourceCountryTable.add (sourceCountryStackTable);
     sourceCountryTable.setClip (true);
     sourceCountryTable.setDebug (DEBUG, true);
 
-    final Table destinationCountryTable = new Table ();
-    destinationCountryTable.add (destinationCountryStackTable);
-    destinationCountryTable.setClip (true);
-    destinationCountryTable.setDebug (DEBUG, true);
+    final Table targetCountryTable = new Table ();
+    targetCountryTable.add (targetCountryStackTable);
+    targetCountryTable.setClip (true);
+    targetCountryTable.setDebug (DEBUG, true);
 
     final Table countryTable = new Table ().center ();
     countryTable.add (sourceCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
-            .spaceRight (SOURCE_DESTINATION_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
+            .spaceRight (SOURCE_TARGET_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
             .padRight (COUNTRY_BOX_INNER_PADDING);
-    countryTable.add (destinationCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
-            .spaceLeft (SOURCE_DESTINATION_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
+    countryTable.add (targetCountryTable).width (COUNTRY_BOX_WIDTH).maxHeight (COUNTRY_BOX_HEIGHT)
+            .spaceLeft (SOURCE_TARGET_COUNTRY_BOX_SPACING).padLeft (COUNTRY_BOX_INNER_PADDING)
             .padRight (COUNTRY_BOX_INNER_PADDING);
     countryTable.setDebug (DEBUG, true);
 
@@ -215,7 +214,7 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     getContentTable ().top ();
     getContentTable ().row ().size (COUNTRY_NAME_BOX_WIDTH, COUNTRY_NAME_BOX_HEIGHT).spaceBottom (1);
     getContentTable ().add (sourceCountryNameLabel);
-    getContentTable ().add (destinationCountryNameLabel);
+    getContentTable ().add (targetCountryNameLabel);
     getContentTable ().row ().colspan (2).height (COUNTRY_BOX_HEIGHT).spaceTop (1);
     getContentTable ().add (countryTable).padLeft (2).padRight (2).padTop (COUNTRY_BOX_INNER_PADDING - 2)
             .padBottom (COUNTRY_BOX_INNER_PADDING);
@@ -330,7 +329,7 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     super.refreshAssets ();
 
     sourceCountryNameLabel.setStyle (widgetFactory.createArmyMovementDialogCountryNameLabelStyle ());
-    destinationCountryNameLabel.setStyle (widgetFactory.createArmyMovementDialogCountryNameLabelStyle ());
+    targetCountryNameLabel.setStyle (widgetFactory.createArmyMovementDialogCountryNameLabelStyle ());
     slider.setStyle (widgetFactory.createArmyMovementDialogSliderStyle ());
     minButton.setStyle (widgetFactory.createArmyMovementDialogMinButtonStyle ());
     minusButton.setStyle (widgetFactory.createArmyMovementDialogMinusButtonStyle ());
@@ -338,44 +337,44 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     maxButton.setStyle (widgetFactory.createArmyMovementDialogMaxButtonStyle ());
   }
 
-  public void set (final int minDestinationArmies,
-                   final int currentDestinationArmies,
-                   final int maxDestinationArmies,
+  public void set (final int minTargetCountryArmies,
+                   final int currentTargetCountryArmies,
+                   final int maxTargetCountryArmies,
                    final int totalArmies,
                    final Country sourceCountry,
-                   final Country destinationCountry)
+                   final Country targetCountry)
   {
     // @formatter:off
-    Arguments.checkIsNotNegative (minDestinationArmies, "minDestinationArmies");
-    Arguments.checkIsNotNegative (currentDestinationArmies, "currentDestinationArmies");
-    Arguments.checkIsNotNegative (maxDestinationArmies, "maxDestinationArmies");
+    Arguments.checkIsNotNegative (minTargetCountryArmies, "minTargetCountryArmies");
+    Arguments.checkIsNotNegative (currentTargetCountryArmies, "currentTargetCountryArmies");
+    Arguments.checkIsNotNegative (maxTargetCountryArmies, "maxTargetCountryArmies");
     Arguments.checkIsNotNegative (totalArmies, "totalArmies");
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
-    Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
-    Arguments.checkUpperInclusiveBound (minDestinationArmies, maxDestinationArmies, "minDestinationArmies", "maxDestinationArmies");
-    Arguments.checkUpperInclusiveBound (currentDestinationArmies, maxDestinationArmies, "currentDestinationArmies", "maxDestinationArmies");
-    Arguments.checkUpperInclusiveBound (minDestinationArmies, totalArmies, "minDestinationArmies", "totalArmies");
+    Arguments.checkIsNotNull (targetCountry, "targetCountry");
+    Arguments.checkUpperInclusiveBound (minTargetCountryArmies, maxTargetCountryArmies, "minTargetCountryArmies", "maxTargetCountryArmies");
+    Arguments.checkUpperInclusiveBound (currentTargetCountryArmies, maxTargetCountryArmies, "currentTargetCountryArmies", "maxTargetCountryArmies");
+    Arguments.checkUpperInclusiveBound (minTargetCountryArmies, totalArmies, "minTargetCountryArmies", "totalArmies");
     // @formatter:on
 
-    originalDestinationArmies = currentDestinationArmies;
+    originalTargetCountryArmies = currentTargetCountryArmies;
     this.totalArmies = totalArmies;
 
-    setSliderRange (minDestinationArmies, maxDestinationArmies);
+    setSliderRange (minTargetCountryArmies, maxTargetCountryArmies);
     setSliderToMinValue ();
     updateSlidability ();
     updateSubmitability ();
-    setCountries (sourceCountry, destinationCountry);
+    setCountries (sourceCountry, targetCountry);
   }
 
-  public void show (final int minDestinationArmies,
-                    final int currentDestinationArmies,
-                    final int maxDestinationArmies,
+  public void show (final int minTargetCountryArmies,
+                    final int currentTargetCountryArmies,
+                    final int maxTargetCountryArmies,
                     final int totalArmies,
                     final Country sourceCountry,
-                    final Country destinationCountry)
+                    final Country targetCountry)
   {
-    set (minDestinationArmies, currentDestinationArmies, maxDestinationArmies, totalArmies, sourceCountry,
-         destinationCountry);
+    set (minTargetCountryArmies, currentTargetCountryArmies, maxTargetCountryArmies, totalArmies, sourceCountry,
+         targetCountry);
 
     show ();
   }
@@ -406,14 +405,14 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     return sourceCountryNameLabel.getText ().toString ();
   }
 
-  public String getDestinationCountryName ()
+  public String getTargetCountryName ()
   {
-    return destinationCountryNameLabel.getText ().toString ();
+    return targetCountryNameLabel.getText ().toString ();
   }
 
   public int getDeltaArmyCount ()
   {
-    return getSliderValue () - originalDestinationArmies;
+    return getSliderValue () - originalTargetCountryArmies;
   }
 
   private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
@@ -430,7 +429,7 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
   private void updateCountryArmies ()
   {
     updateSourceCountryArmies ();
-    updateDestinationCountryArmies ();
+    updateTargetCountryArmies ();
   }
 
   private void updateSourceCountryArmies ()
@@ -448,14 +447,14 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     sourceCountryArmyText.changeArmiesTo (armies);
   }
 
-  private void updateDestinationCountryArmies ()
+  private void updateTargetCountryArmies ()
   {
-    setDestinationCountryArmies (getSliderValue ());
+    setTargetCountryArmies (getSliderValue ());
   }
 
-  private void setDestinationCountryArmies (final int armies)
+  private void setTargetCountryArmies (final int armies)
   {
-    destinationCountryArmyText.changeArmiesTo (armies);
+    targetCountryArmyText.changeArmiesTo (armies);
   }
 
   private void setSliderToMinValue ()
@@ -478,25 +477,25 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     slider.setValue (slider.getValue () + slider.getStepSize ());
   }
 
-  private void setCountries (final Country sourceCountry, final Country destinationCountry)
+  private void setCountries (final Country sourceCountry, final Country targetCountry)
   {
-    setCountryNames (sourceCountry, destinationCountry);
-    setCountryImages (sourceCountry, destinationCountry);
+    setCountryNames (sourceCountry, targetCountry);
+    setCountryImages (sourceCountry, targetCountry);
     updateCountryArmies ();
   }
 
-  private void setCountryNames (final Country sourceCountry, final Country destinationCountry)
+  private void setCountryNames (final Country sourceCountry, final Country targetCountry)
   {
-    setCountryNames (sourceCountry.getName (), destinationCountry.getName ());
+    setCountryNames (sourceCountry.getName (), targetCountry.getName ());
   }
 
-  private void setCountryImages (final Country sourceCountry, final Country destinationCountry)
+  private void setCountryImages (final Country sourceCountry, final Country targetCountry)
   {
     setCountryImage (sourceCountry, sourceCountryArmyText, sourceCountryStack, sourceCountryStackCell,
                      SOURCE_COUNTRY_ARROW_WIDTH, CellPadding.LEFT);
 
-    setCountryImage (destinationCountry, destinationCountryArmyText, destinationCountryStack,
-                     destinationCountryStackCell, DESTINATION_COUNTRY_ARROW_WIDTH, CellPadding.RIGHT);
+    setCountryImage (targetCountry, targetCountryArmyText, targetCountryStack, targetCountryStackCell,
+                     TARGET_COUNTRY_ARROW_WIDTH, CellPadding.RIGHT);
   }
 
   private void setCountryImage (final Country country,
@@ -572,10 +571,10 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     slider.setRange (minValue, maxValue);
   }
 
-  private void setCountryNames (final String sourceCountryName, final String destinationCountryName)
+  private void setCountryNames (final String sourceCountryName, final String targetCountryName)
   {
     sourceCountryNameLabel.setText (sourceCountryName);
-    destinationCountryNameLabel.setText (destinationCountryName);
+    targetCountryNameLabel.setText (targetCountryName);
   }
 
   private void updateSlidability ()
@@ -591,6 +590,6 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
 
   private void updateSubmitability ()
   {
-    setSubmissionDisabled (getSliderValue () == originalDestinationArmies);
+    setSubmissionDisabled (getSliderValue () == originalTargetCountryArmies);
   }
 }

@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSourceTargetCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -29,65 +29,59 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.base.Optional;
 
-public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerEvent implements
-        PlayerResponseSuccessEvent, CountryOwnerChangedEvent
+public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent
+        implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
-  private final PlayerPacket prevDestCountryOwner;
-  private final CountryPacket sourceCountry;
-  private final CountryPacket destinationCountry;
+  private final PlayerPacket previousTargetCountryOwner;
   private final int deltaArmyCount;
 
   public PlayerOccupyCountryResponseSuccessEvent (final PlayerPacket player,
-                                                  final PlayerPacket prevDestCountryOwner,
+                                                  final PlayerPacket previousTargetCountryOwner,
                                                   final CountryPacket sourceCountry,
-                                                  final CountryPacket destinationCountry,
+                                                  final CountryPacket targetCountry,
                                                   final int deltaArmyCount)
   {
-    super (player);
+    super (player, sourceCountry, targetCountry);
 
-    Arguments.checkIsNotNull (prevDestCountryOwner, "prevDestCountryOwner");
-    Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
-    Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
+    Arguments.checkIsNotNull (previousTargetCountryOwner, "previousTargetCountryOwner");
     Arguments.checkIsNotNegative (deltaArmyCount, "deltaArmyCount");
 
-    this.prevDestCountryOwner = prevDestCountryOwner;
-    this.sourceCountry = sourceCountry;
-    this.destinationCountry = destinationCountry;
+    this.previousTargetCountryOwner = previousTargetCountryOwner;
     this.deltaArmyCount = deltaArmyCount;
   }
 
   /**
-   * @return the country whose ownership changed; i.e. the destination country
+   * @return the country whose ownership changed; i.e. the target country
    */
   @Override
   public CountryPacket getCountry ()
   {
-    return destinationCountry;
+    return getTargetCountry ();
   }
 
   @Override
   public int getCountryArmyCount ()
   {
-    return destinationCountry.getArmyCount ();
+    return getTargetCountryArmyCount ();
   }
 
   /**
-   * @return name of the country whose ownership changed; i.e. the destination country
+   * @return name of the country whose ownership changed; i.e. the target country
    */
   @Override
   public String getCountryName ()
   {
-    return destinationCountry.getName ();
+    return getTargetCountryName ();
   }
 
   @Override
   public Optional <PlayerPacket> getPreviousOwner ()
   {
-    return Optional.of (prevDestCountryOwner);
+    return Optional.of (previousTargetCountryOwner);
   }
 
   /**
-   * @return the new destination country owner; same as {@link #getPlayer()}
+   * @return the new target country owner; same as {@link #getPlayer()}
    */
   @Override
   public PlayerPacket getNewOwner ()
@@ -101,44 +95,22 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
     return getPlayerName ();
   }
 
-  public CountryPacket getSourceCountry ()
-  {
-    return sourceCountry;
-  }
-
-  public CountryPacket getDestinationCountry ()
-  {
-    return destinationCountry;
-  }
-
   public int getDeltaArmyCount ()
   {
     return deltaArmyCount;
   }
 
-  public String getSourceCountryName ()
-  {
-    return sourceCountry.getName ();
-  }
-
-  public String getDestinationCountryName ()
-  {
-    return destinationCountry.getName ();
-  }
-
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | SourceCountry: [{}] | DestinationCountry: [{}] | DeltaArmyCount: [{}]",
-                           super.toString (), sourceCountry, destinationCountry, deltaArmyCount);
+    return Strings.format ("{} | PreviousTargetCountryOwner: [{}] | DeltaArmyCount: [{}]", super.toString (),
+                           previousTargetCountryOwner, deltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
   private PlayerOccupyCountryResponseSuccessEvent ()
   {
-    prevDestCountryOwner = null;
-    sourceCountry = null;
-    destinationCountry = null;
+    previousTargetCountryOwner = null;
     deltaArmyCount = 0;
   }
 }

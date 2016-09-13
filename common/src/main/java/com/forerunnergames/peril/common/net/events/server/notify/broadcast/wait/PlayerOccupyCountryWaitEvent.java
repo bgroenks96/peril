@@ -15,27 +15,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerFortifyCountryEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerOccupyCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerWaitEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerFortifyCountryRequestEvent extends AbstractPlayerFortifyCountryEvent
-        implements PlayerInputRequestEvent
+public final class PlayerOccupyCountryWaitEvent extends AbstractPlayerOccupyCountryEvent implements PlayerWaitEvent
 {
-  public PlayerFortifyCountryRequestEvent (final PlayerPacket player,
-                                           final CountryPacket sourceCountry,
-                                           final CountryPacket targetCountry,
-                                           final int maxDeltaArmyCount)
+  public PlayerOccupyCountryWaitEvent (final PlayerPacket player,
+                                       final CountryPacket sourceCountry,
+                                       final CountryPacket targetCountry,
+                                       final int minOccupationArmyCount,
+                                       final int maxOccupationArmyCount)
   {
-    super (player, sourceCountry, targetCountry, maxDeltaArmyCount);
+    super (player, sourceCountry, targetCountry, minOccupationArmyCount, maxOccupationArmyCount);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerFortifyCountryRequestEvent ()
+  private PlayerOccupyCountryWaitEvent ()
   {
   }
 }

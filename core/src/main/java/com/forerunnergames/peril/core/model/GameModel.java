@@ -73,6 +73,14 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
@@ -200,7 +208,7 @@ public final class GameModel
     FINAL_BATTLE_ACTOR_ATTACKER,
     FINAL_BATTLE_ACTOR_DEFENDER,
     OCCUPY_SOURCE_COUNTRY,
-    OCCUPY_DEST_COUNTRY,
+    OCCUPY_TARGET_COUNTRY,
     OCCUPY_PREV_OWNER,
     OCCUPY_NEW_OWNER,
     OCCUPY_MIN_ARMY_COUNT,
@@ -581,6 +589,7 @@ public final class GameModel
 
     log.info ("Waiting for player [{}] to claim a country...", currentPlayer.getName ());
     publish (new PlayerClaimCountryRequestEvent (currentPlayer, countryOwnerModel.getUnownedCountries ()));
+    publish (new PlayerClaimCountryWaitEvent (currentPlayer));
     publish (new ActivePlayerChangedEvent (currentPlayer));
   }
 
@@ -657,21 +666,21 @@ public final class GameModel
       return;
     }
 
-    final PlayerPacket player = getCurrentPlayerPacket ();
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
 
     if (playerModel.getArmiesInHand (playerId) == 0)
     {
-      log.trace ("Player [{}] has no armies remaining in hand. Skipping...", player);
-
-      publish (new SkipPlayerTurnEvent (player));
+      log.trace ("Player [{}] has no armies remaining in hand. Skipping...", playerPacket);
+      publish (new SkipPlayerTurnEvent (playerPacket));
       return;
     }
 
-    log.trace ("Waiting for [{}] to place initial reinforcements...", player);
+    log.trace ("Waiting for [{}] to place initial reinforcements...", playerPacket);
 
     publish (eventFactory.createReinforcementEventFor (playerId));
-    publish (new ActivePlayerChangedEvent (player));
+    publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+    publish (new ActivePlayerChangedEvent (playerPacket));
   }
 
   @StateTransitionCondition
@@ -738,25 +747,29 @@ public final class GameModel
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+
     // publish phase begin event and trade in request
-    publish (new BeginReinforcementPhaseEvent (getCurrentPlayerPacket (), countryReinforcementBonus,
-            continentReinforcementBonus));
+    publish (new BeginReinforcementPhaseEvent (playerPacket, countryReinforcementBonus, continentReinforcementBonus));
     publish (eventFactory.createReinforcementEventFor (playerId));
     publishTradeInEventIfNecessary ();
+    publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
   }
 
   @StateEntryAction
   public void waitForPlayerToPlaceReinforcements ()
   {
     final Id playerId = getCurrentPlayerId ();
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+
     if (playerModel.getArmiesInHand (playerId) > 0)
     {
       publish (eventFactory.createReinforcementEventFor (playerId));
-      log.info ("Waiting for player [{}] to place reinforcements...", getCurrentPlayerPacket ());
+      publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+      log.info ("Waiting for player [{}] to place reinforcements...", playerPacket);
     }
     else
     {
-      final PlayerPacket playerPacket = getCurrentPlayerPacket ();
       publish (new EndReinforcementPhaseEvent (playerPacket, countryOwnerModel.getCountriesOwnedBy (playerId)));
       log.info ("Player [{}] has no more armies in hand. Moving to next phase...", playerPacket);
     }
@@ -898,7 +911,10 @@ public final class GameModel
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
     }
 
-    publish (new PlayerBeginAttackEvent (getCurrentPlayerPacket (), builder.build ()));
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+
+    publish (new PlayerBeginAttackEvent (playerPacket, builder.build ()));
+    publish (new PlayerBeginAttackWaitEvent (playerPacket));
   }
 
   @StateTransitionCondition
@@ -952,9 +968,11 @@ public final class GameModel
   {
     checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
     final AttackVector vector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
+    final PendingBattleActorPacket attacker = createPendingAttackerPacket (vector);
+    final PendingBattleActorPacket defender = createPendingDefenderPacket (vector);
 
-    publish (new PlayerIssueAttackOrderEvent (createPendingAttackerPacket (vector),
-            createPendingDefenderPacket (vector)));
+    publish (new PlayerIssueAttackOrderEvent (attacker, defender));
+    publish (new PlayerIssueAttackOrderWaitEvent (attacker.getPlayer ()));
   }
 
   @StateTransitionCondition
@@ -988,8 +1006,12 @@ public final class GameModel
 
     final AttackOrder order = result.getReturnValue ();
     final FinalBattleActor attacker = createFinalAttacker (attackVector, order.getDieCount ());
+    final PendingBattleActorPacket attackerPacket = asPacket (attacker);
     final PendingBattleActorPacket defenderPacket = createPendingDefenderPacket (attackVector);
-    publish (new PlayerDefendCountryRequestEvent (asPacket (attacker), defenderPacket));
+
+    publish (new PlayerDefendCountryRequestEvent (attackerPacket, defenderPacket));
+    publish (new PlayerDefendCountryWaitEvent (defenderPacket.getPlayer ()));
+
     internalCommHandler.startTimerFor (PlayerDefendCountryResponseRequestEvent.class, defenderPacket.getPlayer (),
                                        DEFENDER_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
@@ -1034,7 +1056,7 @@ public final class GameModel
 
     clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR, CacheKey.BATTLE_ATTACK_ORDER, CacheKey.FINAL_BATTLE_ACTOR_ATTACKER,
                       CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, CacheKey.OCCUPY_SOURCE_COUNTRY,
-                      CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER, CacheKey.OCCUPY_NEW_OWNER,
+                      CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_PREV_OWNER, CacheKey.OCCUPY_NEW_OWNER,
                       CacheKey.OCCUPY_MIN_ARMY_COUNT, CacheKey.OCCUPY_MAX_ARMY_COUNT);
   }
 
@@ -1153,7 +1175,7 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_PREV_OWNER, prevOwner);
     turnDataCache.put (CacheKey.OCCUPY_NEW_OWNER, newOwner);
     turnDataCache.put (CacheKey.OCCUPY_SOURCE_COUNTRY, attackerCountry);
-    turnDataCache.put (CacheKey.OCCUPY_DEST_COUNTRY, defenderCountry);
+    turnDataCache.put (CacheKey.OCCUPY_TARGET_COUNTRY, defenderCountry);
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
     turnDataCache.put (CacheKey.OCCUPY_MAX_ARMY_COUNT, rules.getMaxOccupyArmyCount (newAttackerArmyCount));
 
@@ -1188,16 +1210,18 @@ public final class GameModel
   @StateEntryAction
   public void waitForPlayerToOccupyCountry ()
   {
-    checkCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_NEW_OWNER,
+    checkCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_NEW_OWNER,
                       CacheKey.OCCUPY_MIN_ARMY_COUNT, CacheKey.OCCUPY_MAX_ARMY_COUNT);
 
     final CountryPacket sourceCountry = turnDataCache.get (CacheKey.OCCUPY_SOURCE_COUNTRY, CountryPacket.class);
-    final CountryPacket destCountry = turnDataCache.get (CacheKey.OCCUPY_DEST_COUNTRY, CountryPacket.class);
+    final CountryPacket targetCountry = turnDataCache.get (CacheKey.OCCUPY_TARGET_COUNTRY, CountryPacket.class);
     final int minOccupationArmyCount = turnDataCache.get (CacheKey.OCCUPY_MIN_ARMY_COUNT, Integer.class);
     final int maxOccupationArmyCount = turnDataCache.get (CacheKey.OCCUPY_MAX_ARMY_COUNT, Integer.class);
     final PlayerPacket newOwner = turnDataCache.get (CacheKey.OCCUPY_NEW_OWNER, PlayerPacket.class);
 
-    publish (new PlayerOccupyCountryRequestEvent (newOwner, sourceCountry, destCountry, minOccupationArmyCount,
+    publish (new PlayerOccupyCountryRequestEvent (newOwner, sourceCountry, targetCountry, minOccupationArmyCount,
+            maxOccupationArmyCount));
+    publish (new PlayerOccupyCountryWaitEvent (newOwner, sourceCountry, targetCountry, minOccupationArmyCount,
             maxOccupationArmyCount));
   }
 
@@ -1208,15 +1232,15 @@ public final class GameModel
 
     log.trace ("Event received [{}]", event);
 
-    checkCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
+    checkCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
                       CacheKey.OCCUPY_MIN_ARMY_COUNT);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
 
     final CountryPacket sourceCountry = turnDataCache.get (CacheKey.OCCUPY_SOURCE_COUNTRY, CountryPacket.class);
-    final CountryPacket destCountry = turnDataCache.get (CacheKey.OCCUPY_DEST_COUNTRY, CountryPacket.class);
-    final PlayerPacket prevDestCountryOwner = turnDataCache.get (CacheKey.OCCUPY_PREV_OWNER, PlayerPacket.class);
-    final Id prevDestCountryOwnerId = playerModel.idOf (prevDestCountryOwner.getName ());
+    final CountryPacket targetCountry = turnDataCache.get (CacheKey.OCCUPY_TARGET_COUNTRY, CountryPacket.class);
+    final PlayerPacket prevTargetCountryOwner = turnDataCache.get (CacheKey.OCCUPY_PREV_OWNER, PlayerPacket.class);
+    final Id prevTargetCountryOwnerId = playerModel.idOf (prevTargetCountryOwner.getName ());
     final int minDeltaArmyCount = turnDataCache.get (CacheKey.OCCUPY_MIN_ARMY_COUNT, Integer.class);
     final int deltaArmyCount = event.getDeltaArmyCount ();
 
@@ -1237,11 +1261,11 @@ public final class GameModel
     }
 
     final Id sourceCountryId = countryMapGraphModel.countryWith (sourceCountry.getName ());
-    final Id destCountryId = countryMapGraphModel.countryWith (destCountry.getName ());
+    final Id targetCountryId = countryMapGraphModel.countryWith (targetCountry.getName ());
 
     final MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason> res1, res2;
     res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
-    res2 = countryArmyModel.requestToAddArmiesToCountry (destCountryId, deltaArmyCount);
+    res2 = countryArmyModel.requestToAddArmiesToCountry (targetCountryId, deltaArmyCount);
     final Optional <MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason>> failure;
     failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2));
     if (failure.isPresent ())
@@ -1254,20 +1278,20 @@ public final class GameModel
     MutatorResult.commitAllSuccessful (res1, res2);
 
     final PlayerPacket updatedPlayerPacket = getCurrentPlayerPacket ();
-    final PlayerPacket updatedPrevDestCountryOwner = playerModel.playerPacketWith (prevDestCountryOwnerId);
+    final PlayerPacket updatedPrevTargetCountryOwner = playerModel.playerPacketWith (prevTargetCountryOwnerId);
     final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    final CountryPacket updatedDestCountry = countryMapGraphModel.countryPacketWith (destCountryId);
+    final CountryPacket updatedTargetCountry = countryMapGraphModel.countryPacketWith (targetCountryId);
     publish (new DefaultCountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
-    publish (new DefaultCountryArmiesChangedEvent (updatedDestCountry, deltaArmyCount));
-    publish (new PlayerOccupyCountryResponseSuccessEvent (updatedPlayerPacket, updatedPrevDestCountryOwner,
-            updatedSourceCountry, updatedDestCountry, deltaArmyCount));
+    publish (new DefaultCountryArmiesChangedEvent (updatedTargetCountry, deltaArmyCount));
+    publish (new PlayerOccupyCountryResponseSuccessEvent (updatedPlayerPacket, updatedPrevTargetCountryOwner,
+            updatedSourceCountry, updatedTargetCountry, deltaArmyCount));
 
     if (turnDataCache.isNotSet (CacheKey.PLAYER_OCCUPIED_COUNTRY))
     {
       turnDataCache.put (CacheKey.PLAYER_OCCUPIED_COUNTRY, true);
     }
 
-    clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_DEST_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
+    clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
                       CacheKey.OCCUPY_NEW_OWNER, CacheKey.OCCUPY_MIN_ARMY_COUNT, CacheKey.OCCUPY_MAX_ARMY_COUNT);
 
     return true;
@@ -1311,8 +1335,11 @@ public final class GameModel
       return;
     }
 
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+
     publish (new BeginFortifyPhaseEvent (currentPlayer));
-    publish (new PlayerBeginFortificationEvent (getCurrentPlayerPacket (), validFortifyVectors));
+    publish (new PlayerBeginFortificationEvent (playerPacket, validFortifyVectors));
+    publish (new PlayerBeginFortificationWaitEvent (playerPacket));
   }
 
   @StateExitAction
@@ -1390,8 +1417,11 @@ public final class GameModel
             targetCountryPacket));
 
     final int maxArmyDelta = rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId));
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
 
-    publish (new PlayerFortifyCountryRequestEvent (getCurrentPlayerPacket (), sourceCountryPacket, targetCountryPacket,
+    publish (new PlayerFortifyCountryRequestEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
+            maxArmyDelta));
+    publish (new PlayerFortifyCountryWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
             maxArmyDelta));
 
     return true;

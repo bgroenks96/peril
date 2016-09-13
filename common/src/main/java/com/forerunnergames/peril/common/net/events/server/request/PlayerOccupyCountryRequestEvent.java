@@ -18,101 +18,26 @@
 
 package com.forerunnergames.peril.common.net.events.server.request;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerOccupyCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
+public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerOccupyCountryEvent
+        implements PlayerInputRequestEvent
 {
-  private final CountryPacket sourceCountry;
-  private final CountryPacket destinationCountry;
-  private final int minOccupationArmyCount;
-  private final int maxOccupationArmyCount;
-
   public PlayerOccupyCountryRequestEvent (final PlayerPacket player,
                                           final CountryPacket sourceCountry,
-                                          final CountryPacket destinationCountry,
+                                          final CountryPacket targetCountry,
                                           final int minOccupationArmyCount,
                                           final int maxOccupationArmyCount)
   {
-    super (player);
-
-    Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
-    Arguments.checkIsNotNull (destinationCountry, "destinationCountry");
-    Arguments.checkIsNotNegative (minOccupationArmyCount, "minOccupationArmyCount");
-    Arguments.checkIsNotNegative (maxOccupationArmyCount, "maxOccupationArmyCount");
-
-    this.sourceCountry = sourceCountry;
-    this.destinationCountry = destinationCountry;
-    this.minOccupationArmyCount = minOccupationArmyCount;
-    this.maxOccupationArmyCount = maxOccupationArmyCount;
-  }
-
-  public CountryPacket getSourceCountry ()
-  {
-    return sourceCountry;
-  }
-
-  public String getSourceCountryName ()
-  {
-    return sourceCountry.getName ();
-  }
-
-  public int getSourceCountryArmyCount ()
-  {
-    return sourceCountry.getArmyCount ();
-  }
-
-  public CountryPacket getDestinationCountry ()
-  {
-    return destinationCountry;
-  }
-
-  public String getDestinationCountryName ()
-  {
-    return destinationCountry.getName ();
-  }
-
-  public int getDestinationCountryArmyCount ()
-  {
-    return destinationCountry.getArmyCount ();
-  }
-
-  public int getTotalArmyCount ()
-  {
-    return sourceCountry.getArmyCount ();
-  }
-
-  public int getMinOccupationArmyCount ()
-  {
-    return minOccupationArmyCount;
-  }
-
-  public int getMaxOccupationArmyCount ()
-  {
-    return maxOccupationArmyCount;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format (
-                           "{} | SourceCountry: [{}] | DestinationCountry: [{}] | MinOccupationArmyCount: [{}]"
-                                   + " | MaxOccupationArmyCount: [{}] | TotalArmyCount: [{}]",
-                           super.toString (), sourceCountry, destinationCountry, minOccupationArmyCount,
-                           maxOccupationArmyCount, getTotalArmyCount ());
+    super (player, sourceCountry, targetCountry, minOccupationArmyCount, maxOccupationArmyCount);
   }
 
   @RequiredForNetworkSerialization
   private PlayerOccupyCountryRequestEvent ()
   {
-    sourceCountry = null;
-    destinationCountry = null;
-    minOccupationArmyCount = 0;
-    maxOccupationArmyCount = 0;
   }
 }

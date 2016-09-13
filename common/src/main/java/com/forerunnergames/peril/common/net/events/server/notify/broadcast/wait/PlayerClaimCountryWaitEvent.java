@@ -15,27 +15,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerFortifyCountryEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class PlayerFortifyCountryRequestEvent extends AbstractPlayerFortifyCountryEvent
-        implements PlayerInputRequestEvent
+public final class PlayerClaimCountryWaitEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  public PlayerFortifyCountryRequestEvent (final PlayerPacket player,
-                                           final CountryPacket sourceCountry,
-                                           final CountryPacket targetCountry,
-                                           final int maxDeltaArmyCount)
+  public PlayerClaimCountryWaitEvent (final PlayerPacket player)
   {
-    super (player, sourceCountry, targetCountry, maxDeltaArmyCount);
+    super (player);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerFortifyCountryRequestEvent ()
+  private PlayerClaimCountryWaitEvent ()
   {
   }
 }

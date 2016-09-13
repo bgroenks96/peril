@@ -375,7 +375,7 @@ public final class DebugInputProcessor extends InputAdapter
       case 'm':
       {
         // final String sourceCountryName = "Brazil";
-        // final String destinationCountryName = "Brazil";
+        // final String targetCountryName = "Brazil";
 
         String sourceCountryName;
 
@@ -385,23 +385,22 @@ public final class DebugInputProcessor extends InputAdapter
         }
         while (!playMap.existsCountryWithName (sourceCountryName));
 
-        String destinationCountryName;
+        String targetCountryName;
 
         do
         {
-          destinationCountryName = eventGenerator.getRandomCountryName ();
+          targetCountryName = eventGenerator.getRandomCountryName ();
         }
-        while (destinationCountryName.equals (sourceCountryName)
-                || !playMap.existsCountryWithName (destinationCountryName));
+        while (targetCountryName.equals (sourceCountryName) || !playMap.existsCountryWithName (targetCountryName));
 
         final Country sourceCountry = playMap.getCountryWithName (sourceCountryName);
-        final Country destinationCountry = playMap.getCountryWithName (destinationCountryName);
+        final Country targetCountry = playMap.getCountryWithName (targetCountryName);
         final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        occupationDialog.show (minArmies, destinationCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
-                               destinationCountry);
+        occupationDialog.show (minArmies, targetCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
+                               targetCountry);
         playMap.disable ();
 
         return true;
@@ -409,7 +408,7 @@ public final class DebugInputProcessor extends InputAdapter
       case 'n':
       {
         // final String sourceCountryName = "Brazil";
-        // final String destinationCountryName = "Brazil";
+        // final String targetCountryName = "Brazil";
 
         String sourceCountryName;
 
@@ -419,23 +418,22 @@ public final class DebugInputProcessor extends InputAdapter
         }
         while (!playMap.existsCountryWithName (sourceCountryName));
 
-        String destinationCountryName;
+        String targetCountryName;
 
         do
         {
-          destinationCountryName = eventGenerator.getRandomCountryName ();
+          targetCountryName = eventGenerator.getRandomCountryName ();
         }
-        while (destinationCountryName.equals (sourceCountryName)
-                || !playMap.existsCountryWithName (destinationCountryName));
+        while (targetCountryName.equals (sourceCountryName) || !playMap.existsCountryWithName (targetCountryName));
 
         final Country sourceCountry = playMap.getCountryWithName (sourceCountryName);
-        final Country destinationCountry = playMap.getCountryWithName (destinationCountryName);
+        final Country targetCountry = playMap.getCountryWithName (targetCountryName);
         final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
-        fortificationDialog.show (minArmies, destinationCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
-                                  destinationCountry);
+        fortificationDialog.show (minArmies, targetCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
+                                  targetCountry);
         playMap.disable ();
 
         return true;

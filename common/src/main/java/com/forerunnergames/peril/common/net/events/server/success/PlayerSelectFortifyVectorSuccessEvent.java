@@ -18,62 +18,24 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSourceTargetCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectFortifyVectorSuccessEvent extends AbstractPlayerEvent implements PlayerSuccessEvent
+public final class PlayerSelectFortifyVectorSuccessEvent extends AbstractPlayerSourceTargetCountryEvent
+        implements PlayerSuccessEvent
 {
-  private final CountryPacket sourceCountry;
-  private final CountryPacket destCountry;
-
   public PlayerSelectFortifyVectorSuccessEvent (final PlayerPacket player,
                                                 final CountryPacket sourceCountry,
-                                                final CountryPacket destCountry)
+                                                final CountryPacket targetCountry)
   {
-    super (player);
-
-    Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
-    Arguments.checkIsNotNull (destCountry, "destCountry");
-
-    this.sourceCountry = sourceCountry;
-    this.destCountry = destCountry;
-  }
-
-  public CountryPacket getSourceCountry ()
-  {
-    return sourceCountry;
-  }
-
-  public CountryPacket getDestinationCountry ()
-  {
-    return destCountry;
-  }
-
-  public String getSourceCountryName ()
-  {
-    return sourceCountry.getName ();
-  }
-
-  public String getDestinationCountryName ()
-  {
-    return destCountry.getName ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | SourceCountry: {} | DestCountry: {}", super.toString (), sourceCountry, destCountry);
+    super (player, sourceCountry, targetCountry);
   }
 
   @RequiredForNetworkSerialization
   private PlayerSelectFortifyVectorSuccessEvent ()
   {
-    sourceCountry = null;
-    destCountry = null;
   }
 }

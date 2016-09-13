@@ -65,6 +65,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
@@ -488,7 +489,8 @@ public class GameModelTest
     playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.THIRD), 1);
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.thirdToLastEventWasType (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementWaitEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
 
     eventHandler.clearEvents ();
@@ -496,13 +498,15 @@ public class GameModelTest
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementWaitEvent.class));
     assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.lastEventWasType (SkipPlayerTurnEvent.class));
 
     eventHandler.clearEvents ();
     gameModel.advancePlayerTurn ();
     gameModel.waitForPlayersToReinforceInitialCountries ();
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.thirdToLastEventWasType (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementWaitEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
 
   }
