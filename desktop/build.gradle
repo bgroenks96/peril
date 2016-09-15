@@ -25,6 +25,9 @@ task run (dependsOn: classes, type: JavaExec) {
   standardInput = System.in
   workingDir = project.assetsDir
   ignoreExitValue = true
+  if (project.hasProperty ("args")) {
+    args project.args.split ("\\s+")
+  }
 }
 
 task dist (type: Jar, dependsOn: classes) {
