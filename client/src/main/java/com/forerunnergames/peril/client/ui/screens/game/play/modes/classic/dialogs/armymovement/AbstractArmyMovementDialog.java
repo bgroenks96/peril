@@ -579,13 +579,22 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
 
   private void updateSlidability ()
   {
-    if (Math.round (slider.getMinValue ()) != Math.round (slider.getMaxValue ())) return;
-
-    slider.setDisabled (true);
-    minButton.setDisabled (true);
-    maxButton.setDisabled (true);
-    minusButton.setDisabled (true);
-    plusButton.setDisabled (true);
+    if (Math.round (slider.getMinValue ()) == Math.round (slider.getMaxValue ()))
+    {
+      slider.setDisabled (true);
+      minButton.setDisabled (true);
+      maxButton.setDisabled (true);
+      minusButton.setDisabled (true);
+      plusButton.setDisabled (true);
+    }
+    else
+    {
+      slider.setDisabled (false);
+      minButton.setDisabled (false);
+      maxButton.setDisabled (false);
+      minusButton.setDisabled (false);
+      plusButton.setDisabled (false);
+    }
   }
 
   private void updateSubmitability ()
