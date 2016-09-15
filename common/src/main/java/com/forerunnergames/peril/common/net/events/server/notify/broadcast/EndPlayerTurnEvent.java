@@ -21,6 +21,7 @@ package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
@@ -29,34 +30,47 @@ import com.google.common.base.Optional;
 
 public final class EndPlayerTurnEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  private final Optional <CardPacket> newCard;
+  private final Optional <CardPacket> card;
 
-  public EndPlayerTurnEvent (final PlayerPacket player, final Optional <CardPacket> newCard)
+  public EndPlayerTurnEvent (final PlayerPacket player, final Optional <CardPacket> card)
   {
     super (player);
 
-    this.newCard = newCard;
+    this.card = card;
   }
 
-  public Optional <CardPacket> getNewCard ()
+  public boolean wasCardReceived ()
   {
-    return newCard;
+    return card.isPresent ();
   }
 
-  public boolean wasNewCardReceived ()
+  public CardPacket getCard ()
   {
-    return newCard.isPresent ();
+    Preconditions.checkIsTrue (card.isPresent (),
+                               Strings.format ("Cannot get card: {} not present.", CardPacket.class.getSimpleName ()));
+
+    return card.get ();
+  }
+
+  public String getCardName ()
+  {
+    return getCard ().getName ();
+  }
+
+  public int getCardType ()
+  {
+    return getCard ().getType ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | NewCard: {}", super.toString (), newCard);
+    return Strings.format ("{} | Card: {}", super.toString (), card);
   }
 
   @RequiredForNetworkSerialization
   private EndPlayerTurnEvent ()
   {
-    newCard = null;
+    card = null;
   }
 }

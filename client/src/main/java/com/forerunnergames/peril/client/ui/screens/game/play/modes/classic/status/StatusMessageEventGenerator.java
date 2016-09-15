@@ -474,7 +474,16 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
+    youIf (event.wasCardReceived (), event.getPlayer (),
+           "General, you earned a card as a reward for your military genius!\n\nCard: [ Country: {}, MSV: {} ]\n",
+           event.getCardName (), event.getCardType ());
+
+    youIf (!event.wasCardReceived (), event.getPlayer (),
+           "General, we failed to earn you a card, sir. We will try harder next time, sir.");
+
     everyone ("{} turn is over.", nameifyPossessive (event.getPlayer (), LetterCase.PROPER));
+    everyoneElseIf (event.wasCardReceived (), event.getPlayer (), "{} earned a card.", event.getPlayerName ());
+    everyoneElseIf (!event.wasCardReceived (), event.getPlayer (), "{} did not earn a card.", event.getPlayerName ());
   }
 
   @Handler
@@ -529,6 +538,19 @@ public final class StatusMessageEventGenerator
     statusIf (condition, statusMessage, args);
   }
 
+  private void everyoneElse (final PlayerPacket player, final String statusMessage, final Object... args)
+  {
+    statusIf (!isSelf (player), statusMessage, args);
+  }
+
+  private void everyoneElseIf (final boolean condition,
+                               final PlayerPacket player,
+                               final String statusMessage,
+                               final Object... args)
+  {
+    statusIf (condition && !isSelf (player), statusMessage, args);
+  }
+
   private void you (final PlayerPacket player, final String statusMessage, final Object... args)
   {
     statusIf (isSelf (player), statusMessage, args);
@@ -540,11 +562,6 @@ public final class StatusMessageEventGenerator
                       final Object... args)
   {
     statusIf (condition && isSelf (player), statusMessage, args);
-  }
-
-  private void everyoneElse (final PlayerPacket player, final String statusMessage, final Object... args)
-  {
-    statusIf (!isSelf (player), statusMessage, args);
   }
 
   private boolean isSelf (final PlayerPacket player)
