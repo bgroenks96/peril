@@ -330,8 +330,9 @@ public final class EventBusHandler
       if (!eventIterator.hasNext ())
       {
         throw new IllegalStateException (
-                Strings.format ("{} does not have enough events to get the {}-to-last event.",
-                                EventBusHandler.class.getSimpleName (), Strings.toMixedOrdinal (n)));
+                Strings.format ("{} does not have enough events to get the {}last event.\nAll events: [{}]",
+                                EventBusHandler.class.getSimpleName (),
+                                n > 1 ? Strings.toMixedOrdinal (n) + "-to-" : "", getAllEvents ()));
       }
 
       nthToLastEvent = eventIterator.next ();
