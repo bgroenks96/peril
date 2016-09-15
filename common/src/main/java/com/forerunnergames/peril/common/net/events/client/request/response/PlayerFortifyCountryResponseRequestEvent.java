@@ -17,15 +17,15 @@ public final class PlayerFortifyCountryResponseRequestEvent implements ResponseR
     this.deltaArmyCount = deltaArmyCount;
   }
 
-  public int getDeltaArmyCount ()
-  {
-    return this.deltaArmyCount;
-  }
-
   @Override
   public Class <? extends ServerRequestEvent> getRequestType ()
   {
     return PlayerFortifyCountryRequestEvent.class;
+  }
+
+  public int getDeltaArmyCount ()
+  {
+    return deltaArmyCount;
   }
 
   @Override

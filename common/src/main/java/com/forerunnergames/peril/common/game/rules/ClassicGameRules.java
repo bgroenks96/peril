@@ -229,11 +229,11 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getMaxCardsInHand (final TurnPhase turnPhase)
+  public int getMaxCardsInHand (final TurnPhase phase)
   {
-    Arguments.checkIsNotNull (turnPhase, "turnPhase");
+    Arguments.checkIsNotNull (phase, "phase");
 
-    switch (turnPhase)
+    switch (phase)
     {
       case REINFORCE:
       {

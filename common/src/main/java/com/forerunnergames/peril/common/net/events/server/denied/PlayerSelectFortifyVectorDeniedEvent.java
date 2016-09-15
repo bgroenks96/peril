@@ -32,15 +32,6 @@ public class PlayerSelectFortifyVectorDeniedEvent extends AbstractDeniedEvent <R
 {
   private final PlayerPacket player;
 
-  public PlayerSelectFortifyVectorDeniedEvent (final PlayerPacket player, final Reason reason)
-  {
-    super (reason);
-
-    Arguments.checkIsNotNull (player, "player");
-
-    this.player = player;
-  }
-
   public enum Reason
   {
     SOURCE_COUNTRY_DOES_NOT_EXIST,
@@ -49,6 +40,15 @@ public class PlayerSelectFortifyVectorDeniedEvent extends AbstractDeniedEvent <R
     NOT_OWNER_OF_SOURCE_COUNTRY,
     NOT_OWNER_OF_TARGET_COUNTRY,
     PLAYER_NOT_IN_TURN
+  }
+
+  public PlayerSelectFortifyVectorDeniedEvent (final PlayerPacket player, final Reason reason)
+  {
+    super (reason);
+
+    Arguments.checkIsNotNull (player, "player");
+
+    this.player = player;
   }
 
   @Override
