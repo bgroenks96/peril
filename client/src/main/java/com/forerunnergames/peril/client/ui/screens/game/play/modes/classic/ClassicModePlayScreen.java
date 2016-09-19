@@ -845,6 +845,69 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         intelBox.setGamePhaseName ("Attack");
       }
     });
+
+    statusOn (isSelf (event.getPlayer ()), "Attack phase.");
+    statusOn (!isSelf (event.getPlayer ()), "{} is deciding where to attack...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerAttackOrderResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (isSelf (event.getDefendingPlayer ())) return;
+
+    final int defenderLoss = Math.abs (event.getDefendingCountryArmyDelta ());
+    final int attackerLoss = Math.abs (event.getAttackingCountryArmyDelta ());
+    final boolean defenderLostArmies = defenderLoss > 0;
+    final boolean attackerLostArmies = attackerLoss > 0;
+    final boolean defenderOnlyLostArmies = defenderLostArmies && !attackerLostArmies;
+    final boolean attackerOnlyLostArmies = !defenderLostArmies && attackerLostArmies;
+    final boolean bothLostArmies = attackerLostArmies && defenderLostArmies;
+    final String attacker = isSelf (event.getAttackingPlayer ()) ? "You" : event.getAttackingPlayerName ();
+    final String defender = event.getDefendingPlayerName ();
+    final String attackerCountry = event.getAttackingCountryName ();
+    final String defenderCountry = event.getDefendingCountryName ();
+    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army",
+                                                              defenderLoss + " armies");
+    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army",
+                                                              defenderLoss + " armies");
+
+    statusOn (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
+              defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
+
+    statusOn (attackerOnlyLostArmies, "{} attacked {} in {} from {} & lost {}!", attacker, defender, defenderCountry,
+              attackerCountry, attackerLossInWords);
+
+    statusOn (defenderOnlyLostArmies, "{} attacked {} in {} from {} & destroyed {}!", attacker, defender,
+              defenderCountry, attackerCountry, defenderLossInWords);
+  }
+
+  @Handler
+  void onEvent (final PlayerAttackVictoryEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (isSelf (event.getPlayer ()), "General, we have conquered {}!",
+              event.getBattleResult ().getDefendingCountryName ());
+
+    statusOn (!isSelf (event.getPlayer ()), "{} conquered {}, defeating {} in battle.", event.getPlayerName (),
+              event.getBattleResult ().getDefendingCountryName (), event.getBattleResult ().getDefendingPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerLoseGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    statusOn (isSelf (event.getPlayer ()), "General, we lost the war.");
+    statusOn (!isSelf (event.getPlayer ()), "{} was annihilated.", event.getPlayerName ());
   }
 
   @Handler
