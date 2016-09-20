@@ -319,10 +319,10 @@ public final class StatusMessageEventGenerator
     final String defender = nameify (event.getDefendingPlayer (), LetterCase.LOWER);
     final String attackerCountry = event.getAttackingCountryName ();
     final String defenderCountry = event.getDefendingCountryName ();
-    final String defenderLossInWords = Strings.pluralize (defenderLoss, "no armies", "an army",
-                                                          defenderLoss + " armies");
-    final String attackerLossInWords = Strings.pluralize (attackerLoss, "no armies", "an army",
-                                                          defenderLoss + " armies");
+    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army",
+                                                              defenderLoss + " armies");
+    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army",
+                                                              defenderLoss + " armies");
 
     everyoneIf (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
                 defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
