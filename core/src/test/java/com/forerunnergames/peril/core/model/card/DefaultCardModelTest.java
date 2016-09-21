@@ -19,21 +19,40 @@
 package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableSet;
 
 public class DefaultCardModelTest extends CardModelTest
 {
   @Override
-  protected CardModel createCardModel (final GameRules rules, final ImmutableSet <Card> cards)
+  protected CardModel createCardModel (final GameRules rules,
+                                       final PlayerModel playerModel,
+                                       final ImmutableSet <Card> cards)
   {
-    return new DefaultCardModel (rules, new DefaultPlayerCardHandler (rules), new DefaultCardDealer (cards));
+    Arguments.checkIsNotNull (rules, "rules");
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (cards, "cards");
+    Arguments.checkHasNoNullElements (cards, "cards");
+
+    return new DefaultCardModel (rules, new DefaultPlayerCardHandler (playerModel, rules),
+            new DefaultCardDealer (cards));
   }
 
   @Override
-  protected CardModel createCardModel (final GameRules rules, final CardDealer dealer, final ImmutableSet <Card> cards)
+  protected CardModel createCardModel (final GameRules rules,
+                                       final PlayerModel playerModel,
+                                       final CardDealer dealer,
+                                       final ImmutableSet <Card> cards)
   {
-    return new DefaultCardModel (rules, new DefaultPlayerCardHandler (rules), dealer);
+    Arguments.checkIsNotNull (rules, "rules");
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (dealer, "dealer");
+    Arguments.checkIsNotNull (cards, "cards");
+    Arguments.checkHasNoNullElements (cards, "cards");
+
+    return new DefaultCardModel (rules, new DefaultPlayerCardHandler (playerModel, rules), dealer);
   }
 
   @Override

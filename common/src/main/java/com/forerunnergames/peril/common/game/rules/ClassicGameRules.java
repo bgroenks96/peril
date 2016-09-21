@@ -48,7 +48,10 @@ public final class ClassicGameRules implements GameRules
   public static final int MAX_ARMIES_ON_COUNTRY = 99;
   public static final int MIN_ARMIES_ON_COUNTRY_FOR_ATTACK = 2;
   public static final int MIN_ARMIES_ON_COUNTRY_FOR_DEFEND = 1;
-  public static final int MIN_ARMIES_ON_COUNTRY_FOR_FORTIFY = 2;
+  public static final int ABSOLUTE_MIN_CARDS_IN_HAND = 0;
+  public static final int ABSOLUTE_MAX_CARDS_IN_HAND = 9;
+  public static final int MIN_ARMIES_ON_SOURCE_COUNTRY_FOR_FORTIFY = 2;
+  public static final int MAX_ARMIES_ON_TARGET_COUNTRY_FOR_FORTIFY = MAX_ARMIES_ON_COUNTRY - 1;
   public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
@@ -252,6 +255,18 @@ public final class ClassicGameRules implements GameRules
         throw new IllegalArgumentException ("Illegal value for [" + TurnPhase.class.getSimpleName () + "].");
       }
     }
+  }
+
+  @Override
+  public int getAbsoluteMaxCardsInHand ()
+  {
+    return ABSOLUTE_MAX_CARDS_IN_HAND;
+  }
+
+  @Override
+  public int getAbsoluteMinCardsInHand ()
+  {
+    return ABSOLUTE_MIN_CARDS_IN_HAND;
   }
 
   @Override

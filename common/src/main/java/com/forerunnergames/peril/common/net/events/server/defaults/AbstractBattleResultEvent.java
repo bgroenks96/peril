@@ -126,6 +126,18 @@ public abstract class AbstractBattleResultEvent implements BattleResultEvent
   }
 
   @Override
+  public int getAttackingPlayerCardsInHand ()
+  {
+    return battleResult.getAttackingPlayerCardsInHand ();
+  }
+
+  @Override
+  public int getDefendingPlayerCardsInHand ()
+  {
+    return battleResult.getDefendingPlayerCardsInHand ();
+  }
+
+  @Override
   public CountryPacket getAttackingCountry ()
   {
     return battleResult.getAttackingCountry ();

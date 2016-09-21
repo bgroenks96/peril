@@ -72,6 +72,12 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   }
 
   @Override
+  public int getPlayerCardsInHand ()
+  {
+    return player.getCardsInHand ();
+  }
+
+  @Override
   public final CountryPacket getCountry ()
   {
     return country;

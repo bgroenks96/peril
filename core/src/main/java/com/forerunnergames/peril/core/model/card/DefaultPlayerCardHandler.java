@@ -19,8 +19,10 @@
 package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -31,12 +33,15 @@ import com.google.common.collect.ImmutableSet;
 final class DefaultPlayerCardHandler implements PlayerCardHandler
 {
   private final BiMap <Id, CardSet> playerHands = HashBiMap.create ();
+  private final PlayerModel playerModel;
   private final GameRules rules;
 
-  DefaultPlayerCardHandler (final GameRules rules)
+  DefaultPlayerCardHandler (final PlayerModel playerModel, final GameRules rules)
   {
+    Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (rules, "rules");
 
+    this.playerModel = playerModel;
     this.rules = rules;
   }
 
@@ -73,9 +78,7 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    final Optional <CardSet> cards = get (playerId);
-    if (!cards.isPresent ()) return 0;
-    return cards.get ().size ();
+    return playerModel.getCardsInHand (playerId);
   }
 
   @Override
@@ -103,16 +106,18 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
             : newCardSet (ImmutableSet.<Card> of ());
     final CardSet newHand = hand.merge (new CardSet (rules, card));
     playerHands.forcePut (playerId, newHand);
+    playerModel.addCardToHandOf (playerId);
   }
 
   private void remove (final Id playerId, final CardSet cards)
   {
     Preconditions.checkIsTrue (hasCardsInHand (playerId, cards),
-                               String.format ("%s not in hand of %s", cards, playerId));
+                               Strings.format ("{} not in hand of {}", cards, playerId));
 
     final CardSet hand = playerHands.get (playerId);
     final CardSet newHand = hand.difference (cards);
     playerHands.forcePut (playerId, newHand);
+    playerModel.removeCardsFromHandOf (playerId, cards.size ());
   }
 
   private Optional <CardSet> get (final Id playerId)

@@ -28,12 +28,15 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
+import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -44,9 +47,10 @@ public abstract class CardModelTest
 {
   static final int DEFAULT_CARD_COUNT = 45;
   static final int DEFAULT_WILDCARD_COUNT = 2;
-
+  private static final String TEST_PLAYER_NAME = "TestPlayer0";
   private final GameRules rules = new ClassicGameRules.Builder ().build ();
   private final ImmutableSet <Card> testDeck = generateTestCards ();
+  private final PlayerModel playerModel = new DefaultPlayerModel (rules);
 
   public static ImmutableSet <Card> generateTestCards ()
   {
@@ -58,12 +62,27 @@ public abstract class CardModelTest
     return CardDealerTest.generateCards (type, count);
   }
 
+  @Before
+  public void beforeTest ()
+  {
+    final PlayerFactory factory = new PlayerFactory ();
+    factory.newPlayerWith (TEST_PLAYER_NAME);
+    assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
+  }
+
+  @Before
+  public void afterTest ()
+  {
+    playerModel.removeByName (TEST_PLAYER_NAME);
+  }
+
   @Test (expected = IllegalStateException.class)
   public void testGiveCardFailsWhenHandFullReinforceTurnPhase ()
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.REINFORCE);
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final CardModel cardModel = createCardModel (rules, playerModel,
+                                                 CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < maxCards + 1; i++)
     {
       cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
@@ -74,8 +93,9 @@ public abstract class CardModelTest
   public void testGiveCardFailsWhenHandFullAttackTurnPhase ()
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.ATTACK);
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final CardModel cardModel = createCardModel (rules, playerModel,
+                                                 CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < maxCards + 1; i++)
     {
       cardModel.giveCard (testPlayerId, TurnPhase.ATTACK);
@@ -86,8 +106,9 @@ public abstract class CardModelTest
   public void testGiveCardFailsWhenHandFullFortifyTurnPhase ()
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.FORTIFY);
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final CardModel cardModel = createCardModel (rules, playerModel,
+                                                 CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < maxCards + 1; i++)
     {
       cardModel.giveCard (testPlayerId, TurnPhase.FORTIFY);
@@ -108,8 +129,8 @@ public abstract class CardModelTest
     assertTrue (cardSet.isMatch ());
 
     final CardSet.Match match = cardSet.match ();
-    final CardModel cardModel = createCardModel (rules, dealer, match.getCards ());
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final CardModel cardModel = createCardModel (rules, playerModel, dealer, match.getCards ());
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < deckSize; i++)
     {
       cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
@@ -132,18 +153,18 @@ public abstract class CardModelTest
   @Test
   public void testNextTradeInBonusInitial ()
   {
-    final CardModel cardModel = createCardModel (rules, testDeck);
+    final CardModel cardModel = createCardModel (rules, playerModel, testDeck);
     assertEquals (rules.calculateTradeInBonusReinforcements (0), cardModel.getNextTradeInBonus ());
   }
 
   @Test
   public void testNextTradeInBonusGlobalCountIs2 ()
   {
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, 6));
+    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest.generateCards (CardType.TYPE1, 6));
     final int tradeInCount = 2;
     for (int i = 0; i < tradeInCount; i++)
     {
-      final Id testPlayerId = IdGenerator.generateUniqueId ();
+      final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
       for (int k = 0; k < 3; k++)
       {
         cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
@@ -158,11 +179,11 @@ public abstract class CardModelTest
   @Test
   public void testNextTradeInBonusGlobalCountIs7 ()
   {
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE1, 21));
+    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest.generateCards (CardType.TYPE1, 21));
     final int tradeInCount = 7;
     for (int i = 0; i < tradeInCount; i++)
     {
-      final Id testPlayerId = IdGenerator.generateUniqueId ();
+      final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
       for (int k = 0; k < 3; k++)
       {
         cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
@@ -179,8 +200,9 @@ public abstract class CardModelTest
   {
     final int deckSize = rules.getCardTradeInCount ();
     // all wildcards; shouldn't match (for ClassicGameRules at leasts)
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.WILDCARD, deckSize));
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final CardModel cardModel = createCardModel (rules, playerModel,
+                                                 CardDealerTest.generateCards (CardType.WILDCARD, deckSize));
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < rules.getCardTradeInCount (); i++)
     {
       cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
@@ -194,8 +216,9 @@ public abstract class CardModelTest
   public void testComputeMatchesOneMatch ()
   {
     final int deckSize = rules.getCardTradeInCount ();
-    final CardModel cardModel = createCardModel (rules, CardDealerTest.generateCards (CardType.TYPE2, deckSize));
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final CardModel cardModel = createCardModel (rules, playerModel,
+                                                 CardDealerTest.generateCards (CardType.TYPE2, deckSize));
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final ImmutableSet.Builder <Card> builder = ImmutableSet.builder ();
     for (int i = 0; i < rules.getCardTradeInCount (); i++)
     {
@@ -209,9 +232,12 @@ public abstract class CardModelTest
     assertEquals (expected, matches.asList ().get (0).getCards ());
   }
 
-  protected abstract CardModel createCardModel (final GameRules rules, final ImmutableSet <Card> cards);
+  protected abstract CardModel createCardModel (final GameRules rules,
+                                                final PlayerModel playerModel,
+                                                final ImmutableSet <Card> cards);
 
   protected abstract CardModel createCardModel (final GameRules rules,
+                                                final PlayerModel playerModel,
                                                 final CardDealer dealer,
                                                 final ImmutableSet <Card> cards);
 

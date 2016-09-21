@@ -19,12 +19,17 @@
 package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.tools.common.Arguments;
 
 public class DefaultPlayerCardHandlerTest extends PlayerCardHandlerTest
 {
   @Override
-  protected PlayerCardHandler createPlayerCardHandler (final GameRules rules)
+  protected PlayerCardHandler createPlayerCardHandler (final PlayerModel playerModel, final GameRules rules)
   {
-    return new DefaultPlayerCardHandler (rules);
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (rules, "rules");
+
+    return new DefaultPlayerCardHandler (playerModel, rules);
   }
 }

@@ -32,22 +32,26 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   private final PlayerColor color;
   private final int turnOrder;
   private final int armiesInHand;
+  private final int cardsInHand;
 
   public DefaultPlayerPacket (final UUID playerId,
                               final String name,
                               final PlayerColor color,
                               final int turnOrder,
-                              final int armiesInHand)
+                              final int armiesInHand,
+                              final int cardsInHand)
   {
     super (name, playerId);
 
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNegative (turnOrder, "turnOrder");
     Arguments.checkIsNotNegative (armiesInHand, "armiesInHand");
+    Arguments.checkIsNotNegative (cardsInHand, "cardsInHand");
 
     this.color = color;
     this.turnOrder = turnOrder;
     this.armiesInHand = armiesInHand;
+    this.cardsInHand = cardsInHand;
   }
 
   @Override
@@ -66,6 +70,12 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   public int getArmiesInHand ()
   {
     return armiesInHand;
+  }
+
+  @Override
+  public int getCardsInHand ()
+  {
+    return cardsInHand;
   }
 
   @Override
@@ -93,6 +103,30 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   }
 
   @Override
+  public boolean hasCardsInHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return cardsInHand == cards;
+  }
+
+  @Override
+  public boolean hasAtLeastNCardsInHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return cardsInHand >= cards;
+  }
+
+  @Override
+  public boolean hasAtMostNCardsInHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return cardsInHand <= cards;
+  }
+
+  @Override
   public boolean doesNotHave (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
@@ -111,8 +145,8 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Color: {} | Turn Order: {} | Armies in Hand: {}", super.toString (), color, turnOrder,
-                           armiesInHand);
+    return Strings.format ("{} | Color: {} | TurnOrder: {} | ArmiesInHand: {} | CardsInHand: {}", super.toString (),
+                           color, turnOrder, armiesInHand, cardsInHand);
   }
 
   @RequiredForNetworkSerialization
@@ -121,5 +155,6 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
     color = null;
     turnOrder = 0;
     armiesInHand = 0;
+    cardsInHand = 0;
   }
 }

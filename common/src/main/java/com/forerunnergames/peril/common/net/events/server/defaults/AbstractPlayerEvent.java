@@ -61,6 +61,12 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   }
 
   @Override
+  public final int getPlayerCardsInHand ()
+  {
+    return player.getCardsInHand ();
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);

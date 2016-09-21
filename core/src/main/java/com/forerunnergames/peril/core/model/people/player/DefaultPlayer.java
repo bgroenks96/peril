@@ -22,6 +22,7 @@ import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.core.model.people.person.AbstractPerson;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
@@ -32,6 +33,7 @@ final class DefaultPlayer extends AbstractPerson implements Player
   private PlayerColor color;
   private PlayerTurnOrder turnOrder;
   private int armiesInHand;
+  private int cardsInHand;
 
   public DefaultPlayer (final String name, final Id id, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
@@ -54,6 +56,20 @@ final class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public void addCardsToHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    cardsInHand = IntMath.checkedAdd (cardsInHand, cards);
+  }
+
+  @Override
+  public void addCardToHand ()
+  {
+    addCardsToHand (1);
+  }
+
+  @Override
   public boolean doesNotHave (final PlayerColor color)
   {
     return !has (color);
@@ -69,6 +85,12 @@ final class DefaultPlayer extends AbstractPerson implements Player
   public int getArmiesInHand ()
   {
     return armiesInHand;
+  }
+
+  @Override
+  public int getCardsInHand ()
+  {
+    return cardsInHand;
   }
 
   @Override
@@ -138,6 +160,36 @@ final class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public boolean hasCardsInHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return cardsInHand == cards;
+  }
+
+  @Override
+  public boolean hasAtLeastNCardsInHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return cardsInHand >= cards;
+  }
+
+  @Override
+  public boolean hasAtMostNCardsInHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return cardsInHand <= cards;
+  }
+
+  @Override
+  public void removeCardFromHand ()
+  {
+    removeCardsFromHand (1);
+  }
+
+  @Override
   public void removeArmiesFromHand (final int armies)
   {
     Arguments.checkIsNotNull (armies, "armies");
@@ -149,16 +201,33 @@ final class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public void removeCardsFromHand (final int cards)
+  {
+    Arguments.checkIsNotNegative (cards, "cards");
+    Preconditions
+            .checkIsTrue (cards <= cardsInHand,
+                          "Cannot remove more cards [" + cards + "] than are currently in hand [" + cardsInHand + "].");
+
+    cardsInHand = IntMath.checkedSubtract (cardsInHand, cards);
+  }
+
+  @Override
   public void removeAllArmiesFromHand ()
   {
     armiesInHand = 0;
   }
 
   @Override
+  public void removeAllCardsFromHand ()
+  {
+    cardsInHand = 0;
+  }
+
+  @Override
   public String toString ()
   {
-    return String.format ("%1$s | Color: %2$s | Turn order: %3$s | Armies in hand: %4$s", super.toString (), color,
-                          turnOrder, armiesInHand);
+    return Strings.format ("{} | Color: {} | TurnOrder: {} | ArmiesInHand: {} | CardsInHand: {}", super.toString (),
+                           color, turnOrder, armiesInHand, cardsInHand);
   }
 
   @RequiredForNetworkSerialization

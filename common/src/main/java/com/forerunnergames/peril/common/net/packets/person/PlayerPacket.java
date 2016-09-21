@@ -50,11 +50,19 @@ public interface PlayerPacket extends PersonPacket
 
   int getArmiesInHand ();
 
+  int getCardsInHand ();
+
   boolean has (final PlayerColor color);
 
   boolean has (final int turnOrder);
 
   boolean hasArmiesInHand (final int armies);
+
+  boolean hasCardsInHand (final int cards);
+
+  boolean hasAtLeastNCardsInHand (final int cards);
+
+  boolean hasAtMostNCardsInHand (final int cards);
 
   boolean doesNotHave (final PlayerColor color);
 

@@ -68,6 +68,26 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public void addCardsToHandOf (final Id playerId, final int cards)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (cards, "cards");
+    Preconditions.checkIsTrue (canAddCardsToHandOf (playerId, cards),
+                               "Cannot add " + cards + " cards to hand of player with id: [" + playerId
+                                       + "]. That player already has " + getCardsInHand (playerId)
+                                       + " cards in hand. The maximum cards allowed in a player's hand is "
+                                       + rules.getAbsoluteMaxCardsInHand () + ".");
+
+    modelPlayerWith (playerId).addCardsToHand (cards);
+  }
+
+  @Override
+  public void addCardToHandOf (final Id playerId)
+  {
+    addCardsToHandOf (playerId, 1);
+  }
+
+  @Override
   public boolean canAddArmiesToHandOf (final Id playerId, final int armies)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -78,12 +98,43 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public boolean canAddCardsToHandOf (final Id playerId, final int cards)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return modelPlayerWith (playerId).getCardsInHand () <= IntMath.checkedSubtract (rules.getAbsoluteMaxCardsInHand (),
+                                                                                    cards);
+  }
+
+  @Override
+  public boolean canAddCardToHandOf (final Id playerId)
+  {
+    return canAddCardsToHandOf (playerId, 1);
+  }
+
+  @Override
   public boolean canRemoveArmiesFromHandOf (final Id playerId, final int armies)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
     return playerPacketWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
+  }
+
+  @Override
+  public boolean canRemoveCardsFromHandOf (final Id playerId, final int cards)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (cards, "cards");
+
+    return modelPlayerWith (playerId).getCardsInHand () >= IntMath.checkedAdd (rules.getAbsoluteMinCardsInHand (), cards);
+  }
+
+  @Override
+  public boolean canRemoveCardFromHandOf (final Id playerId)
+  {
+    return canRemoveCardsFromHandOf (playerId, 1);
   }
 
   @Override
@@ -172,6 +223,12 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public int getCardsInHand (final Id playerId)
+  {
+    return modelPlayerWith (playerId).getCardsInHand ();
+  }
+
+  @Override
   public int getPlayerCount ()
   {
     return players.size ();
@@ -223,6 +280,12 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNegative (armies, "armies");
 
     return playerPacketWith (playerId).hasArmiesInHand (armies);
+  }
+
+  @Override
+  public boolean hasCardsInHandOf (final Id playerId, final int cards)
+  {
+    return modelPlayerWith (playerId).hasCardsInHand (cards);
   }
 
   @Override
@@ -407,6 +470,15 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public void removeAllCardsFromHandsOfAllPlayers ()
+  {
+    for (final Player player : players ())
+    {
+      player.removeAllCardsFromHand ();
+    }
+  }
+
+  @Override
   public void removeArmiesFromHandOf (final Id playerId, final int armies)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -418,6 +490,26 @@ public final class DefaultPlayerModel implements PlayerModel
                                        + rules.getMinArmiesInHand () + ".");
 
     modelPlayerWith (playerId).removeArmiesFromHand (armies);
+  }
+
+  @Override
+  public void removeCardsFromHandOf (final Id playerId, final int cards)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNegative (cards, "cards");
+    Preconditions.checkIsTrue (canRemoveCardsFromHandOf (playerId, cards),
+                               "Cannot remove " + cards + " cards from hand of player with id: [" + playerId
+                                       + "]. That player only has " + getCardsInHand (playerId)
+                                       + " cards in hand. The minimum cards allowed in a player's hand is "
+                                       + rules.getAbsoluteMinCardsInHand () + ".");
+
+    modelPlayerWith (playerId).removeCardsFromHand (cards);
+  }
+
+  @Override
+  public void removeCardFromHandOf (final Id playerId)
+  {
+    removeCardsFromHandOf (playerId, 1);
   }
 
   @Override

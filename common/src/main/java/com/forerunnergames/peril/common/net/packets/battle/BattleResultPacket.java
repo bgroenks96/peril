@@ -68,6 +68,10 @@ public interface BattleResultPacket
 
   PlayerColor getDefendingPlayerColor ();
 
+  int getAttackingPlayerCardsInHand ();
+
+  int getDefendingPlayerCardsInHand ();
+
   CountryPacket getAttackingCountry ();
 
   CountryPacket getDefendingCountry ();

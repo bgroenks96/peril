@@ -24,24 +24,42 @@ import static org.junit.Assert.assertTrue;
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
+import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public abstract class PlayerCardHandlerTest
 {
+  private static final String TEST_PLAYER_NAME = "TestPlayer0";
   private final GameRules defaultRules = new ClassicGameRules.Builder ().build ();
+  private final PlayerModel playerModel = new DefaultPlayerModel (defaultRules);
 
-  protected abstract PlayerCardHandler createPlayerCardHandler (final GameRules rules);
+  @Before
+  public void beforeTest ()
+  {
+    final PlayerFactory factory = new PlayerFactory ();
+    factory.newPlayerWith (TEST_PLAYER_NAME);
+    assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
+  }
+
+  @Before
+  public void afterTest ()
+  {
+    playerModel.removeByName (TEST_PLAYER_NAME);
+  }
 
   @Test
   public void testAddCardToHandOfPlayer ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final Card card = CardFactory.create ("TestCard", CardType.TYPE1);
     cardHandler.addCardToHand (testPlayerId, card);
     assertTrue (cardHandler.isCardInHand (testPlayerId, card));
@@ -50,8 +68,8 @@ public abstract class PlayerCardHandlerTest
   @Test
   public void testRemoveAllCardsFromHandOfPlayer ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final ImmutableSet.Builder <Card> cards = ImmutableSet.builder ();
     for (int i = 0; i < 3; i++)
     {
@@ -67,8 +85,8 @@ public abstract class PlayerCardHandlerTest
   @Test
   public void testRemoveSomeCardsFromHandOfPlayer ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final ImmutableSet.Builder <Card> cardsToRetain = ImmutableSet.builder ();
     final ImmutableSet.Builder <Card> cardsToRemove = ImmutableSet.builder ();
     for (int i = 0; i < 5; i++)
@@ -95,8 +113,8 @@ public abstract class PlayerCardHandlerTest
   @Test
   public void testIsCardInHand ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final Card card = CardFactory.create ("TestCard", CardType.TYPE1);
     cardHandler.addCardToHand (testPlayerId, card);
     assertTrue (cardHandler.isCardInHand (testPlayerId, card));
@@ -106,16 +124,16 @@ public abstract class PlayerCardHandlerTest
   public void testIsCardNotInHand ()
   {
     final Card card = CardFactory.create ("TestCard", CardType.random ());
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     assertFalse (cardHandler.isCardInHand (testPlayerId, card));
   }
 
   @Test
   public void testAreCardsInHand ()
   {
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final Card card1 = CardFactory.create ("TestCard-1", CardType.TYPE1);
     final Card card2 = CardFactory.create ("TestCard-2", CardType.TYPE2);
     cardHandler.addCardToHand (testPlayerId, card1);
@@ -127,10 +145,12 @@ public abstract class PlayerCardHandlerTest
   public void testAreCardsNotInHand ()
   {
     final ImmutableSet <Card> cards = CardDealerTest.generateCards (CardType.random (), 3);
-    final PlayerCardHandler cardHandler = createPlayerCardHandler (defaultRules);
-    final Id testPlayerId = IdGenerator.generateUniqueId ();
+    final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
+    final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     assertFalse (cardHandler.areCardsInHand (testPlayerId, createCardSetFrom (cards)));
   }
+
+  protected abstract PlayerCardHandler createPlayerCardHandler (final PlayerModel playerModel, final GameRules rules);
 
   private CardSet createCardSetFrom (final ImmutableSet <Card> cards)
   {

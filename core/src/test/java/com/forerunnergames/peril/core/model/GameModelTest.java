@@ -1258,7 +1258,7 @@ public class GameModelTest
   {
     gameRules = playMapModel.getRules ();
     playerModel = new DefaultPlayerModel (gameRules);
-    cardModel = new DefaultCardModel (gameRules, cardDeck);
+    cardModel = new DefaultCardModel (gameRules, playerModel, cardDeck);
     battleModel = new DefaultBattleModel (playMapModel);
     countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
     countryOwnerModel = playMapModel.getCountryOwnerModel ();

@@ -282,6 +282,7 @@ public final class GameModel
     log.info ("Starting a new game...");
 
     playerModel.removeAllArmiesFromHandsOfAllPlayers ();
+    playerModel.removeAllCardsFromHandsOfAllPlayers ();
     countryOwnerModel.unassignAllCountries ();
     countryArmyModel.resetAllCountries ();
     playerTurnModel.reset ();
@@ -1861,7 +1862,7 @@ public final class GameModel
               .create (disjointCountryGraph,
                        ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
-      cardModel = new DefaultCardModel (gameRules, ImmutableSet.<Card> of ());
+      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
       battleModel = new DefaultBattleModel (playMapModel);
       turnDataCache = new PlayerTurnDataCache <CacheKey> ();

@@ -38,6 +38,8 @@ public interface PendingBattleActorPacket
 
   PlayerColor getPlayerColor ();
 
+  int getPlayerCardsInHand ();
+
   CountryPacket getCountry ();
 
   int getCountryArmyCount ();

@@ -82,6 +82,10 @@ public interface GameRules
 
   int getMaxCardsInHand (final TurnPhase phase);
 
+  int getAbsoluteMaxCardsInHand ();
+
+  int getAbsoluteMinCardsInHand ();
+
   int getMinCardsInHandForTradeInReinforcePhase ();
 
   int getMinCardsInHandToRequireTradeIn (final TurnPhase turnPhase);

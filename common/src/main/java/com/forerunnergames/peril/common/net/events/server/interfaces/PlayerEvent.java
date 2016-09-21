@@ -29,4 +29,6 @@ public interface PlayerEvent extends ServerEvent
   String getPlayerName ();
 
   PlayerColor getPlayerColor ();
+
+  int getPlayerCardsInHand ();
 }

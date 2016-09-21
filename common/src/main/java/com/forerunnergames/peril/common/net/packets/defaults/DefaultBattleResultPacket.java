@@ -174,6 +174,18 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
+  public int getAttackingPlayerCardsInHand ()
+  {
+    return attacker.getPlayerCardsInHand ();
+  }
+
+  @Override
+  public int getDefendingPlayerCardsInHand ()
+  {
+    return defender.getPlayerCardsInHand ();
+  }
+
+  @Override
   public CountryPacket getAttackingCountry ()
   {
     return attacker.getCountry ();

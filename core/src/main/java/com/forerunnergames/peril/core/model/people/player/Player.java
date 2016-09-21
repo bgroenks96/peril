@@ -27,11 +27,17 @@ interface Player extends Person
 {
   void addArmiesToHand (final int armies);
 
+  void addCardsToHand (final int cards);
+
+  void addCardToHand ();
+
   boolean doesNotHave (final PlayerColor color);
 
   boolean doesNotHave (final PlayerTurnOrder turnOrder);
 
   int getArmiesInHand ();
+
+  int getCardsInHand ();
 
   PlayerColor getColor ();
 
@@ -59,7 +65,17 @@ interface Player extends Person
 
   boolean hasArmiesInHand (final int armies);
 
+  boolean hasCardsInHand (final int cards);
+
+  boolean hasAtLeastNCardsInHand (final int cards);
+
+  boolean hasAtMostNCardsInHand (final int cards);
+
+  void removeCardFromHand ();
+
   void removeArmiesFromHand (final int armies);
+
+  void removeCardsFromHand (final int cards);
 
   void removeAllArmiesFromHand ();
 
@@ -82,4 +98,5 @@ interface Player extends Person
       }
     }
   };
+  void removeAllCardsFromHand ();
 }

@@ -38,7 +38,7 @@ final class PlayerPackets
     Arguments.checkIsNotNull (player, "player");
 
     return new DefaultPlayerPacket (idOf (player).value (), nameOf (player), player.getColor (), player.getTurnOrder ()
-            .asInt (), player.getArmiesInHand ());
+            .asInt (), player.getArmiesInHand (), player.getCardsInHand ());
   }
 
   static ImmutableSet <PlayerPacket> fromPlayers (final Collection <Player> players)

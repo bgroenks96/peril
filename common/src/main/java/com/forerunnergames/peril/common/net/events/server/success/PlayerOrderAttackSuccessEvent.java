@@ -50,6 +50,12 @@ public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEve
     return getAttackingPlayerColor ();
   }
 
+  @Override
+  public int getPlayerCardsInHand ()
+  {
+    return getAttackingPlayerCardsInHand ();
+  }
+
   @RequiredForNetworkSerialization
   private PlayerOrderAttackSuccessEvent ()
   {

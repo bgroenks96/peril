@@ -23,9 +23,11 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent.Reason;
 import com.forerunnergames.peril.core.model.card.CardSet.Match;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
@@ -37,9 +39,9 @@ public final class DefaultCardModel implements CardModel
   private final GameRules rules;
   private int tradeInCount = 0;
 
-  public DefaultCardModel (final GameRules rules, final ImmutableSet <Card> cardDeck)
+  public DefaultCardModel (final GameRules rules, final PlayerModel playerModel, final ImmutableSet <Card> cardDeck)
   {
-    this (rules, new DefaultPlayerCardHandler (rules), new DefaultCardDealer (cardDeck));
+    this (rules, new DefaultPlayerCardHandler (playerModel, rules), new DefaultCardDealer (cardDeck));
   }
 
   DefaultCardModel (final GameRules rules, final PlayerCardHandler playerCardHandler, final CardDealer cardDealer)
@@ -60,8 +62,8 @@ public final class DefaultCardModel implements CardModel
     Arguments.checkIsNotNull (turnPhase, "turnPhase");
     final int maxCardsInHand = rules.getMaxCardsInHand (turnPhase);
     Preconditions.checkIsTrue (playerCardHandler.countCardsInHand (playerId) < maxCardsInHand,
-                               String.format ("Player [%s] has reached maximum cards in hand [%d] for [%s]", playerId,
-                                              maxCardsInHand, turnPhase));
+                               Strings.format ("Player [{}] has reached maximum cards in hand [{}] for [{}]", playerId,
+                                               maxCardsInHand, turnPhase));
 
     final Card card = cardDealer.take ();
     playerCardHandler.addCardToHand (playerId, card);

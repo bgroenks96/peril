@@ -32,9 +32,21 @@ public interface PlayerModel
 {
   void addArmiesToHandOf (final Id playerId, final int armies);
 
+  void addCardsToHandOf (final Id playerId, final int cards);
+
+  void addCardToHandOf (final Id playerId);
+
   boolean canAddArmiesToHandOf (final Id playerId, final int armies);
 
+  boolean canAddCardsToHandOf (final Id playerId, final int cards);
+
+  boolean canAddCardToHandOf (final Id playerId);
+
   boolean canRemoveArmiesFromHandOf (final Id playerId, final int armies);
+
+  boolean canRemoveCardsFromHandOf (final Id playerId, final int cards);
+
+  boolean canRemoveCardFromHandOf (final Id playerId);
 
   void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder);
 
@@ -50,6 +62,8 @@ public interface PlayerModel
 
   int getArmiesInHand (final Id playerId);
 
+  int getCardsInHand (final Id playerId);
+
   int getPlayerCount ();
 
   int getPlayerLimit ();
@@ -63,6 +77,8 @@ public interface PlayerModel
   ImmutableSet <PlayerPacket> getAllPlayersExcept (final Id playerId);
 
   boolean hasArmiesInHandOf (final Id playerId, final int armies);
+
+  boolean hasCardsInHandOf (final Id playerId, final int cards);
 
   boolean isEmpty ();
 
@@ -106,7 +122,13 @@ public interface PlayerModel
 
   void removeAllArmiesFromHandsOfAllPlayers ();
 
+  void removeAllCardsFromHandsOfAllPlayers ();
+
   void removeArmiesFromHandOf (final Id playerId, final int armies);
+
+  void removeCardsFromHandOf (final Id playerId, final int cards);
+
+  void removeCardFromHandOf (final Id playerId);
 
   ImmutableSet <PlayerJoinGameStatus> requestToAdd (final PlayerFactory players);
 

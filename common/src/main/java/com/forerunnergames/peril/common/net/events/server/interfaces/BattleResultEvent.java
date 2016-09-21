@@ -52,6 +52,10 @@ public interface BattleResultEvent extends PlayerSuccessEvent
 
   PlayerColor getDefendingPlayerColor ();
 
+  int getAttackingPlayerCardsInHand ();
+
+  int getDefendingPlayerCardsInHand ();
+
   CountryPacket getAttackingCountry ();
 
   CountryPacket getDefendingCountry ();

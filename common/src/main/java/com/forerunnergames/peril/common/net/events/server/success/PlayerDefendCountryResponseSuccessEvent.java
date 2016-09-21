@@ -51,6 +51,12 @@ public final class PlayerDefendCountryResponseSuccessEvent extends AbstractBattl
     return getDefendingPlayerColor ();
   }
 
+  @Override
+  public int getPlayerCardsInHand ()
+  {
+    return getDefendingPlayerCardsInHand ();
+  }
+
   @RequiredForNetworkSerialization
   private PlayerDefendCountryResponseSuccessEvent ()
   {
