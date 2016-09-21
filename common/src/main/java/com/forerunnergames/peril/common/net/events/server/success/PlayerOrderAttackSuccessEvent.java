@@ -51,6 +51,12 @@ public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEve
   }
 
   @Override
+  public int getPlayerArmiesInHand ()
+  {
+    return getAttackingPlayerArmiesInHand ();
+  }
+
+  @Override
   public int getPlayerCardsInHand ()
   {
     return getAttackingPlayerCardsInHand ();

@@ -72,7 +72,7 @@ public class PlayerModelTest
     final Player player = addSinglePlayerTo (playerModel);
 
     playerModel.addArmiesToHandOf (player.getId (), MAX_ARMIES_IN_PLAYER_HAND);
-    playerModel.addArmiesToHandOf (player.getId (), 1);
+    playerModel.addArmyToHandOf (player.getId ());
   }
 
   @Test
@@ -81,7 +81,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final Player player = addSinglePlayerTo (playerModel);
 
-    assertTrue (playerModel.canAddArmiesToHandOf (player.getId (), 1));
+    assertTrue (playerModel.canAddArmyToHandOf (player.getId ()));
   }
 
   @Test
@@ -90,9 +90,9 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final Player player = addSinglePlayerTo (playerModel);
 
-    playerModel.addArmiesToHandOf (player.getId (), 1);
+    playerModel.addArmyToHandOf (player.getId ());
 
-    assertTrue (playerModel.canRemoveArmiesFromHandOf (player.getId (), 1));
+    assertTrue (playerModel.canRemoveArmyFromHandOf (player.getId ()));
   }
 
   @Test
@@ -103,7 +103,7 @@ public class PlayerModelTest
 
     playerModel.addArmiesToHandOf (player.getId (), MAX_ARMIES_IN_PLAYER_HAND);
 
-    assertFalse (playerModel.canAddArmiesToHandOf (player.getId (), 1));
+    assertFalse (playerModel.canAddArmyToHandOf (player.getId ()));
   }
 
   @Test
@@ -532,7 +532,7 @@ public class PlayerModelTest
 
     assertTrue (playerModel.hasArmiesInHandOf (player.getId (), MIN_ARMIES_IN_PLAYER_HAND));
 
-    playerModel.removeArmiesFromHandOf (player.getId (), 1);
+    playerModel.removeArmyFromHandOf (player.getId ());
   }
 
   @Test

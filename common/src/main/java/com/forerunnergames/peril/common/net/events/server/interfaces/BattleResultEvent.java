@@ -52,6 +52,10 @@ public interface BattleResultEvent extends PlayerSuccessEvent
 
   PlayerColor getDefendingPlayerColor ();
 
+  int getAttackingPlayerArmiesInHand ();
+
+  int getDefendingPlayerArmiesInHand ();
+
   int getAttackingPlayerCardsInHand ();
 
   int getDefendingPlayerCardsInHand ();

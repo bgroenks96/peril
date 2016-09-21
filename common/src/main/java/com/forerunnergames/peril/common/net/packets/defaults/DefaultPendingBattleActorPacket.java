@@ -72,6 +72,12 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   }
 
   @Override
+  public int getPlayerArmiesInHand ()
+  {
+    return player.getArmiesInHand ();
+  }
+
+  @Override
   public int getPlayerCardsInHand ()
   {
     return player.getCardsInHand ();

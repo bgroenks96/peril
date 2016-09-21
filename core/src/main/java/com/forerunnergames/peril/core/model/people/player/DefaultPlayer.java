@@ -49,10 +49,15 @@ final class DefaultPlayer extends AbstractPerson implements Player
   @Override
   public void addArmiesToHand (final int armies)
   {
-    Arguments.checkIsNotNull (armies, "armies");
     Arguments.checkIsNotNegative (armies, "armies");
 
     armiesInHand = IntMath.checkedAdd (armiesInHand, armies);
+  }
+
+  @Override
+  public void addArmyToHand ()
+  {
+    addArmiesToHand (1);
   }
 
   @Override
@@ -156,7 +161,23 @@ final class DefaultPlayer extends AbstractPerson implements Player
   {
     Arguments.checkIsNotNegative (armies, "armies");
 
+    return armiesInHand == armies;
+  }
+
+  @Override
+  public boolean hasAtLeastNArmiesInHand (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+
     return armiesInHand >= armies;
+  }
+
+  @Override
+  public boolean hasAtMostNArmiesInHand (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    return armiesInHand <= armies;
   }
 
   @Override
@@ -184,6 +205,12 @@ final class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
+  public void removeArmyFromHand ()
+  {
+    removeArmiesFromHand (1);
+  }
+
+  @Override
   public void removeCardFromHand ()
   {
     removeCardsFromHand (1);
@@ -192,12 +219,11 @@ final class DefaultPlayer extends AbstractPerson implements Player
   @Override
   public void removeArmiesFromHand (final int armies)
   {
-    Arguments.checkIsNotNull (armies, "armies");
     Arguments.checkIsNotNegative (armies, "armies");
     Preconditions.checkIsTrue (armies <= armiesInHand, "Cannot remove more armies [" + armies
             + "] than are currently in hand [" + armiesInHand + "].");
 
-    armiesInHand -= armies;
+    armiesInHand = IntMath.checkedSubtract (armiesInHand, armies);
   }
 
   @Override

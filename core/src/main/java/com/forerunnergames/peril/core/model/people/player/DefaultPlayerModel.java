@@ -68,6 +68,12 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public void addArmyToHandOf (final Id playerId)
+  {
+    addArmiesToHandOf (playerId, 1);
+  }
+
+  @Override
   public void addCardsToHandOf (final Id playerId, final int cards)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -98,6 +104,12 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public boolean canAddArmyToHandOf (final Id playerId)
+  {
+    return canAddArmiesToHandOf (playerId, 1);
+  }
+
+  @Override
   public boolean canAddCardsToHandOf (final Id playerId, final int cards)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -120,6 +132,12 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNegative (armies, "armies");
 
     return playerPacketWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
+  }
+
+  @Override
+  public boolean canRemoveArmyFromHandOf (final Id playerId)
+  {
+    return canRemoveArmiesFromHandOf (playerId, 1);
   }
 
   @Override
@@ -490,6 +508,12 @@ public final class DefaultPlayerModel implements PlayerModel
                                        + rules.getMinArmiesInHand () + ".");
 
     modelPlayerWith (playerId).removeArmiesFromHand (armies);
+  }
+
+  @Override
+  public void removeArmyFromHandOf (final Id playerId)
+  {
+    removeArmiesFromHandOf (playerId, 1);
   }
 
   @Override

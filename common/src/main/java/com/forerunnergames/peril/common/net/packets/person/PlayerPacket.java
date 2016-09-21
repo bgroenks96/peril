@@ -58,6 +58,10 @@ public interface PlayerPacket extends PersonPacket
 
   boolean hasArmiesInHand (final int armies);
 
+  boolean hasAtLeastNArmiesInHand (final int armies);
+
+  boolean hasAtMostNArmiesInHand (final int armies);
+
   boolean hasCardsInHand (final int cards);
 
   boolean hasAtLeastNCardsInHand (final int cards);

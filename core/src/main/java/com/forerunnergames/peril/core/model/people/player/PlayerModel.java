@@ -32,17 +32,23 @@ public interface PlayerModel
 {
   void addArmiesToHandOf (final Id playerId, final int armies);
 
+  void addArmyToHandOf (final Id playerId);
+
   void addCardsToHandOf (final Id playerId, final int cards);
 
   void addCardToHandOf (final Id playerId);
 
   boolean canAddArmiesToHandOf (final Id playerId, final int armies);
 
+  boolean canAddArmyToHandOf (final Id playerId);
+
   boolean canAddCardsToHandOf (final Id playerId, final int cards);
 
   boolean canAddCardToHandOf (final Id playerId);
 
   boolean canRemoveArmiesFromHandOf (final Id playerId, final int armies);
+
+  boolean canRemoveArmyFromHandOf (final Id playerId);
 
   boolean canRemoveCardsFromHandOf (final Id playerId, final int cards);
 
@@ -125,6 +131,8 @@ public interface PlayerModel
   void removeAllCardsFromHandsOfAllPlayers ();
 
   void removeArmiesFromHandOf (final Id playerId, final int armies);
+
+  void removeArmyFromHandOf (final Id playerId);
 
   void removeCardsFromHandOf (final Id playerId, final int cards);
 

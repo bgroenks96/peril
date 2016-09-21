@@ -52,6 +52,12 @@ public final class PlayerDefendCountryResponseSuccessEvent extends AbstractBattl
   }
 
   @Override
+  public int getPlayerArmiesInHand ()
+  {
+    return getDefendingPlayerArmiesInHand ();
+  }
+
+  @Override
   public int getPlayerCardsInHand ()
   {
     return getDefendingPlayerCardsInHand ();

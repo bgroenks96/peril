@@ -356,7 +356,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // add army to first player's hand
-    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST));
 
     assertTrue (countryOwnerModel.allCountriesAreUnowned ());
 
@@ -417,7 +417,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // add armies to player hands
-    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST));
 
     final Id randomCountry = randomCountry ();
     final String randomCountryName = countryMapGraphModel.nameOf (randomCountry);
@@ -455,8 +455,8 @@ public class GameModelTest
     addMaxPlayers ();
 
     // add armies to player hands
-    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
-    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.SECOND), 1);
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST));
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.SECOND));
 
     final Id country = randomCountry ();
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
@@ -485,8 +485,8 @@ public class GameModelTest
     addMaxPlayers ();
 
     // add armies to player hands
-    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST), 1);
-    playerModel.addArmiesToHandOf (playerModel.playerWith (PlayerTurnOrder.THIRD), 1);
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST));
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.THIRD));
 
     gameModel.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.thirdToLastEventWasType (PlayerBeginReinforcementEvent.class));

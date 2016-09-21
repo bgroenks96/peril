@@ -498,7 +498,7 @@ public final class GameModel
 
         result.commitIfSuccessful ();
 
-        playerModel.removeArmiesFromHandOf (nextPlayerId, 1);
+        playerModel.removeArmyFromHandOf (nextPlayerId);
         assignSuccessCount++;
 
         publish (new DefaultCountryArmiesChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), 1));
@@ -616,7 +616,7 @@ public final class GameModel
 
     final String claimedCountryName = event.getClaimedCountryName ();
 
-    if (!playerModel.canRemoveArmiesFromHandOf (currentPlayerId, 1))
+    if (!playerModel.canRemoveArmyFromHandOf (currentPlayerId))
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
@@ -653,7 +653,7 @@ public final class GameModel
     }
 
     MutatorResult.commitAllSuccessful (res1, res2);
-    playerModel.removeArmiesFromHandOf (currentPlayerId, 1);
+    playerModel.removeArmyFromHandOf (currentPlayerId);
 
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
     publish (new PlayerClaimCountryResponseSuccessEvent (updatedPlayer,

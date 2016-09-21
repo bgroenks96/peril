@@ -61,6 +61,12 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   }
 
   @Override
+  public final int getPlayerArmiesInHand ()
+  {
+    return player.getArmiesInHand ();
+  }
+
+  @Override
   public final int getPlayerCardsInHand ()
   {
     return player.getCardsInHand ();

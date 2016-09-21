@@ -103,6 +103,22 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
   }
 
   @Override
+  public boolean hasAtLeastNArmiesInHand (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    return armiesInHand >= armies;
+  }
+
+  @Override
+  public boolean hasAtMostNArmiesInHand (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    return armiesInHand <= armies;
+  }
+
+  @Override
   public boolean hasCardsInHand (final int cards)
   {
     Arguments.checkIsNotNegative (cards, "cards");

@@ -27,6 +27,8 @@ interface Player extends Person
 {
   void addArmiesToHand (final int armies);
 
+  void addArmyToHand ();
+
   void addCardsToHand (final int cards);
 
   void addCardToHand ();
@@ -65,11 +67,17 @@ interface Player extends Person
 
   boolean hasArmiesInHand (final int armies);
 
+  boolean hasAtLeastNArmiesInHand (final int armies);
+
+  boolean hasAtMostNArmiesInHand (final int armies);
+
   boolean hasCardsInHand (final int cards);
 
   boolean hasAtLeastNCardsInHand (final int cards);
 
   boolean hasAtMostNCardsInHand (final int cards);
+
+  void removeArmyFromHand ();
 
   void removeCardFromHand ();
 
