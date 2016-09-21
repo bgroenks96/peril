@@ -215,10 +215,10 @@
         <!-- Second parallel section -->
         <state name="GameHandler">
           <state name="WaitForGameToBegin">
-            <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()"
-                        action="gameModel.beginGame()" nextState="DeterminePlayerTurnOrder"/>
+            <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()" nextState="PlayingGame"/>
           </state>
           <state name="PlayingGame">
+            <onEntry action="gameModel.beginGame()"/>
             <!-- A player leaving during the game should end the game, for now -->
             <transition event="onPlayerLeaveGameEvent" nextState="EndGame"/>
             <!-- Ending the game can occur at any time during the game -->

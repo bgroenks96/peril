@@ -272,7 +272,7 @@ public final class GameModel
     return builder (rules).build ();
   }
 
-  @StateTransitionAction
+  @StateEntryAction
   public void beginGame ()
   {
     log.info ("Starting a new game...");
