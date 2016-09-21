@@ -52,6 +52,12 @@ public final class PlayerDefendCountryResponseSuccessEvent extends AbstractBattl
   }
 
   @Override
+  public int getPlayerTurnOrder ()
+  {
+    return getDefendingPlayerTurnOrder ();
+  }
+
+  @Override
   public int getPlayerArmiesInHand ()
   {
     return getDefendingPlayerArmiesInHand ();

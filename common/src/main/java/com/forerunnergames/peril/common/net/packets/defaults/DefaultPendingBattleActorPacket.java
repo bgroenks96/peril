@@ -72,6 +72,12 @@ public class DefaultPendingBattleActorPacket implements PendingBattleActorPacket
   }
 
   @Override
+  public int getPlayerTurnOrder ()
+  {
+    return player.getTurnOrder ();
+  }
+
+  @Override
   public int getPlayerArmiesInHand ()
   {
     return player.getArmiesInHand ();

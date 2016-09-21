@@ -174,6 +174,18 @@ public final class DefaultBattleResultPacket implements BattleResultPacket
   }
 
   @Override
+  public int getAttackingPlayerTurnOrder ()
+  {
+    return attacker.getPlayerTurnOrder ();
+  }
+
+  @Override
+  public int getDefendingPlayerTurnOrder ()
+  {
+    return defender.getPlayerTurnOrder ();
+  }
+
+  @Override
   public int getAttackingPlayerArmiesInHand ()
   {
     return attacker.getPlayerArmiesInHand ();

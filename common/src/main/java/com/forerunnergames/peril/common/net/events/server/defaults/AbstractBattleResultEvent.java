@@ -126,6 +126,18 @@ public abstract class AbstractBattleResultEvent implements BattleResultEvent
   }
 
   @Override
+  public int getAttackingPlayerTurnOrder ()
+  {
+    return battleResult.getAttackingPlayerTurnOrder ();
+  }
+
+  @Override
+  public int getDefendingPlayerTurnOrder ()
+  {
+    return battleResult.getDefendingPlayerTurnOrder ();
+  }
+
+  @Override
   public int getAttackingPlayerArmiesInHand ()
   {
     return battleResult.getAttackingPlayerArmiesInHand ();

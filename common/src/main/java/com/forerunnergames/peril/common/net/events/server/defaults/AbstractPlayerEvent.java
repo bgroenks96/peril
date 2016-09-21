@@ -61,6 +61,12 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   }
 
   @Override
+  public final int getPlayerTurnOrder ()
+  {
+    return player.getTurnOrder ();
+  }
+
+  @Override
   public final int getPlayerArmiesInHand ()
   {
     return player.getArmiesInHand ();

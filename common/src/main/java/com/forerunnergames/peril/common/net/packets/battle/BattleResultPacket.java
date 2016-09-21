@@ -68,6 +68,10 @@ public interface BattleResultPacket
 
   PlayerColor getDefendingPlayerColor ();
 
+  int getAttackingPlayerTurnOrder ();
+
+  int getDefendingPlayerTurnOrder ();
+
   int getAttackingPlayerArmiesInHand ();
 
   int getDefendingPlayerArmiesInHand ();

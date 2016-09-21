@@ -30,6 +30,8 @@ public interface PlayerEvent extends ServerEvent
 
   PlayerColor getPlayerColor ();
 
+  int getPlayerTurnOrder ();
+
   int getPlayerArmiesInHand ();
 
   int getPlayerCardsInHand ();

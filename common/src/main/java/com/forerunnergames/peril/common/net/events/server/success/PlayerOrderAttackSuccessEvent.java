@@ -51,6 +51,12 @@ public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEve
   }
 
   @Override
+  public int getPlayerTurnOrder ()
+  {
+    return getAttackingPlayerTurnOrder ();
+  }
+
+  @Override
   public int getPlayerArmiesInHand ()
   {
     return getAttackingPlayerArmiesInHand ();
