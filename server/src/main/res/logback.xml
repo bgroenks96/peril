@@ -51,15 +51,27 @@
   </appender>
 
   <logger name="com.forerunnergames.peril" level="TRACE">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="com.forerunnergames.peril.core.model.InternalCommunicationHandler" level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="com.forerunnergames.peril.server.controllers" level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="com.forerunnergames.peril.server.kryonet" level="WARN">
+    <appender-ref ref="STDOUT"/>
   </logger>
 
   <logger name="com.forerunnergames.tools" level="TRACE">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
   </logger>
 
   <root level="ERROR">
-    <appender-ref ref="SIFT" /> <!-- Write to file only for errors. -->
+    <appender-ref ref="SIFT"/> <!-- Write to file only for errors. -->
   </root>
 </configuration>
 
