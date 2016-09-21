@@ -151,7 +151,7 @@
                 type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent"/>
       </event>
       <event id="onEndGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.EndGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent" name="event"/>
       </event>
       <event id="onDestroyGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.DestroyGameEvent" name="event"/>

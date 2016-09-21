@@ -55,6 +55,7 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
@@ -63,6 +64,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Deter
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
@@ -150,7 +152,6 @@ import com.forerunnergames.peril.core.model.state.events.BattleResultContinueEve
 import com.forerunnergames.peril.core.model.state.events.BattleResultDefeatEvent;
 import com.forerunnergames.peril.core.model.state.events.BattleResultVictoryEvent;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
-import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
@@ -280,6 +281,8 @@ public final class GameModel
     countryOwnerModel.unassignAllCountries ();
     countryArmyModel.resetAllCountries ();
     playerTurnModel.reset ();
+
+    publish (new BeginGameEvent ());
 
     // TODO Reset entire game state.
   }

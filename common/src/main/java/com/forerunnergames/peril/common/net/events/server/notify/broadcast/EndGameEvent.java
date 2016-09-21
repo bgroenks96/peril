@@ -1,5 +1,4 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
  * Copyright © 2013 - 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model.state.events;
+package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-public final class EndGameEvent implements StateEvent
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
+
+public final class EndGameEvent implements BroadcastNotificationEvent
 {
+  @RequiredForNetworkSerialization
+  public EndGameEvent ()
+  {
+  }
 }

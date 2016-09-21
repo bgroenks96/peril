@@ -51,7 +51,7 @@ import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
-import com.forerunnergames.peril.core.model.state.events.EndGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
 import com.forerunnergames.tools.common.Arguments;
 
