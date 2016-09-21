@@ -60,6 +60,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Begin
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
@@ -68,6 +69,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGa
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
@@ -177,6 +179,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -201,6 +204,7 @@ public final class GameModel
   private final EventFactory eventFactory;
   private final InternalCommunicationHandler internalCommHandler;
   private final MBassador <Event> eventBus;
+  private AtomicInteger currentRound = new AtomicInteger ();
 
   private enum CacheKey
   {
@@ -281,6 +285,7 @@ public final class GameModel
     countryOwnerModel.unassignAllCountries ();
     countryArmyModel.resetAllCountries ();
     playerTurnModel.reset ();
+    currentRound.set (0);
 
     publish (new BeginGameEvent ());
 
@@ -308,6 +313,7 @@ public final class GameModel
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
+    if (isFirstTurn ()) publish (new BeginRoundEvent (currentRound.incrementAndGet ()));
     publish (new BeginPlayerTurnEvent (currentPlayer));
     publish (new ActivePlayerChangedEvent (currentPlayer));
   }
@@ -337,6 +343,7 @@ public final class GameModel
     }
 
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket (), newPlayerCard));
+    if (isLastTurn ()) publish (new EndRoundEvent (currentRound.get ()));
   }
 
   @StateTransitionAction
@@ -1560,6 +1567,16 @@ public final class GameModel
     Arguments.checkIsNotNull (turn, "turn");
 
     return playerTurnModel.getTurnOrder ().is (turn);
+  }
+
+  public boolean isFirstTurn ()
+  {
+    return playerTurnModel.isFirstTurn ();
+  }
+
+  public boolean isLastTurn ()
+  {
+    return playerTurnModel.isLastTurn ();
   }
 
   public boolean playerLimitIsAtLeast (final int limit)
