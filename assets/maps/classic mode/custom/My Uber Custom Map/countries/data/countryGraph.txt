@@ -2,7 +2,7 @@
 
 "Alaska", "Northwest Territory", "Alberta"
 "Northwest Territory", "Alaska", "Alberta", "Ontario", "Greenland"
-"Greenland", "Northwest Territory", "Ontario", "Quebec", "Iceland"
+"Greenland", "Northwest Territory", "Ontario", "Quebec"
 "Alberta", "Northwest Territory", "Alaska", "Ontario", "Western United States"
 "Ontario", "Northwest Territory", "Alberta", "Quebec", "Greenland", "Western United States", "Eastern United States"
 "Quebec", "Ontario", "Greenland", "Eastern United States"
