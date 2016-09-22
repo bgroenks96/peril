@@ -146,7 +146,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
           "Are you sure you want to quit?\nIf you are the host, quitting will shut down the server for everyone.");
   private static final String QUIT_DIALOG_TITLE_GAME_IN_PROGRESS = "Surrender & Quit?";
   private static final Message QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS = new DefaultMessage (
-          "Are you sure you want to surrender & quit?\nIf you are the host, quitting shut down the server for everyone.");
+          "Are you sure you want to surrender & quit?\nIf you are the host, quitting will shut down the server for everyone.");
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
