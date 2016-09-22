@@ -158,8 +158,7 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     players.add (event.getPlayer ());
 
-    assert playerName != null;
-    if (event.getPlayer ().has (PersonIdentity.NON_SELF) || !event.getPlayer ().hasName (playerName))
+    if (event.getIdentity () == PersonIdentity.NON_SELF)
     {
       log.debug ("Collecting [{}] for non-self player.", event);
       return;

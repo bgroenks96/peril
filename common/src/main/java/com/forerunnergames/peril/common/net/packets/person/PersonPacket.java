@@ -23,12 +23,6 @@ import com.forerunnergames.tools.common.Author;
 
 public interface PersonPacket extends AssetPacket, Author
 {
-  PersonIdentity getIdentity ();
-
-  void setIdentity (final PersonIdentity identity);
-
-  boolean has (final PersonIdentity identity);
-
   PersonSentience getSentience ();
 
   void setSentience (final PersonSentience sentience);

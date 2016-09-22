@@ -27,7 +27,6 @@ import java.util.UUID;
 
 public abstract class AbstractPersonPacket extends AbstractAssetPacket implements PersonPacket
 {
-  private PersonIdentity identity = PersonIdentity.UNKNOWN;
   private PersonSentience sentience = PersonSentience.HUMAN;
 
   protected AbstractPersonPacket (final String name, final UUID id)
@@ -38,30 +37,7 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   @RequiredForNetworkSerialization
   protected AbstractPersonPacket ()
   {
-    identity = null;
     sentience = null;
-  }
-
-  @Override
-  public PersonIdentity getIdentity ()
-  {
-    return identity;
-  }
-
-  @Override
-  public void setIdentity (final PersonIdentity identity)
-  {
-    Arguments.checkIsNotNull (identity, "identity");
-
-    this.identity = identity;
-  }
-
-  @Override
-  public boolean has (final PersonIdentity identity)
-  {
-    Arguments.checkIsNotNull (identity, "identity");
-
-    return this.identity == identity;
   }
 
   @Override
@@ -89,6 +65,6 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Identity: {} | Sentience: {}", super.toString (), identity, sentience);
+    return Strings.format ("{} | Sentience: {}", super.toString (), sentience);
   }
 }
