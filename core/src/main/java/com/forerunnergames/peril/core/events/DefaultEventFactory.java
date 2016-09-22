@@ -72,6 +72,24 @@ public final class DefaultEventFactory implements EventFactory
   }
 
   @Override
+  public PlayerCardTradeInAvailableEvent createCardTradeInEventFor (final Id playerId,
+                                                                    final ImmutableSet <CardSet.Match> matches,
+                                                                    final TurnPhase turnPhase)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (matches, "matches");
+    Arguments.checkHasNoNullElements (matches, "matches");
+    Arguments.checkIsNotNull (turnPhase, "turnPhase");
+
+    final int cardCount = cardModel.countCardsInHand (playerId);
+    final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
+
+    return new PlayerCardTradeInAvailableEvent (playerModel.playerPacketWith (playerId),
+            cardModel.getNextTradeInBonus (), matchPackets,
+            cardCount >= rules.getMinCardsInHandToRequireTradeIn (turnPhase));
+  }
+
+  @Override
   public PlayerBeginReinforcementEvent createReinforcementEventFor (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -90,16 +108,5 @@ public final class DefaultEventFactory implements EventFactory
 
     return new PlayerBeginReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
             playerOwnedContinents, rules.getMaxArmiesOnCountry ());
-  }
-
-  @Override
-  public PlayerCardTradeInAvailableEvent createCardTradeInEventFor (final Id playerId,
-                                                                    final ImmutableSet <CardSet.Match> matches,
-                                                                    final TurnPhase turnPhase)
-  {
-    final int cardCount = cardModel.countCardsInHand (playerId);
-    final ImmutableSet <CardSetPacket> matchPackets = CardPackets.fromCardMatchSet (matches);
-    return new PlayerCardTradeInAvailableEvent (playerModel.playerPacketWith (playerId),
-            cardModel.getNextTradeInBonus (), matchPackets, cardCount > rules.getMaxCardsInHand (turnPhase));
   }
 }

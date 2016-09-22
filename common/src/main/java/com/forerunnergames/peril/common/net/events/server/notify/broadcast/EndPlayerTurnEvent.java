@@ -21,18 +21,18 @@ package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 
 public final class EndPlayerTurnEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
 {
-  private final Optional <CardPacket> card;
+  @Nullable
+  private final CardPacket card;
 
-  public EndPlayerTurnEvent (final PlayerPacket player, final Optional <CardPacket> card)
+  public EndPlayerTurnEvent (final PlayerPacket player, @Nullable final CardPacket card)
   {
     super (player);
 
@@ -41,25 +41,23 @@ public final class EndPlayerTurnEvent extends AbstractPlayerEvent implements Bro
 
   public boolean wasCardReceived ()
   {
-    return card.isPresent ();
+    return card != null;
   }
 
+  @Nullable
   public CardPacket getCard ()
   {
-    Preconditions.checkIsTrue (card.isPresent (),
-                               Strings.format ("Cannot get card: {} not present.", CardPacket.class.getSimpleName ()));
-
-    return card.get ();
+    return card;
   }
 
   public String getCardName ()
   {
-    return getCard ().getName ();
+    return card != null ? card.getName () : "";
   }
 
   public int getCardType ()
   {
-    return getCard ().getType ();
+    return card != null ? card.getType () : -1;
   }
 
   @Override

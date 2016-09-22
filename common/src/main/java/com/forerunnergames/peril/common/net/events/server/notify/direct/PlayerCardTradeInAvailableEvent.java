@@ -29,29 +29,29 @@ import com.google.common.collect.ImmutableSet;
 
 public class PlayerCardTradeInAvailableEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
-  private final int nextCardTradeInBonus;
+  private final int nextTradeInBonus;
   private final ImmutableSet <CardSetPacket> tradeInMatches;
   private final boolean tradeInRequired;
 
   public PlayerCardTradeInAvailableEvent (final PlayerPacket player,
-                                          final int nextCardTradeInBonus,
+                                          final int nextTradeInBonus,
                                           final ImmutableSet <CardSetPacket> tradeInMatches,
                                           final boolean tradeInRequired)
   {
     super (player);
 
-    Arguments.checkIsNotNegative (nextCardTradeInBonus, "nextCardTradeInBonus");
+    Arguments.checkIsNotNegative (nextTradeInBonus, "nextTradeInBonus");
     Arguments.checkIsNotNull (tradeInMatches, "tradeInMatches");
     Arguments.checkHasNoNullElements (tradeInMatches, "tradeInMatches");
 
-    this.nextCardTradeInBonus = nextCardTradeInBonus;
+    this.nextTradeInBonus = nextTradeInBonus;
     this.tradeInMatches = tradeInMatches;
     this.tradeInRequired = tradeInRequired;
   }
 
-  public int getNextCardTradeInBonus ()
+  public int getNextTradeInBonus ()
   {
-    return nextCardTradeInBonus;
+    return nextTradeInBonus;
   }
 
   public ImmutableSet <CardSetPacket> getMatches ()
@@ -67,14 +67,14 @@ public class PlayerCardTradeInAvailableEvent extends AbstractPlayerEvent impleme
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | NextCardTradeInBonus: {} | TradeInMatches: [{}] | TradeInRequired: {}",
-                           super.toString (), nextCardTradeInBonus, tradeInMatches, tradeInRequired);
+    return Strings.format ("{} | NextTradeInBonus: {} | TradeInMatches: [{}] | TradeInRequired: {}", super.toString (),
+                           nextTradeInBonus, tradeInMatches, tradeInRequired);
   }
 
   @RequiredForNetworkSerialization
   private PlayerCardTradeInAvailableEvent ()
   {
-    nextCardTradeInBonus = 0;
+    nextTradeInBonus = 0;
     tradeInMatches = null;
     tradeInRequired = false;
   }

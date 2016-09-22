@@ -181,6 +181,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nullable;
+
 import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
@@ -333,18 +335,20 @@ public final class GameModel
     // check if player should draw card
     final Optional <Boolean> playerOccupiedCountry = turnDataCache.checkAndGet (CacheKey.PLAYER_OCCUPIED_COUNTRY,
                                                                                 Boolean.class);
-    Optional <CardPacket> newPlayerCard = Optional.absent ();
+    CardPacket newPlayerCard = null;
     if (playerOccupiedCountry.isPresent () && playerOccupiedCountry.get ())
     {
       // use fortify phase for rule check since card count should never exceed 6 at the end of a turn
       // TODO: Attack phase trade-ins; for the prior statement to be true, attack-phase trade-ins must be implemented
       final Card card = cardModel.giveCard (getCurrentPlayerId (), TurnPhase.FORTIFY);
       log.debug ("Distributing card [{}] to player [{}]...", card, getCurrentPlayerPacket ());
-      newPlayerCard = Optional.of (CardPackets.from (card));
+      newPlayerCard = CardPackets.from (card);
     }
 
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket (), newPlayerCard));
     if (isLastTurn ()) publish (new EndRoundEvent (currentRound.get ()));
+
+    if (turnDataCache.isSet (CacheKey.PLAYER_OCCUPIED_COUNTRY)) clearCacheValues (CacheKey.PLAYER_OCCUPIED_COUNTRY);
   }
 
   @StateTransitionAction
@@ -353,8 +357,6 @@ public final class GameModel
     Arguments.checkIsNotNull (event, "event");
 
     log.info ("Skipping turn for player [{}].", event.getPlayerName ());
-
-    turnDataCache.clearAll ();
   }
 
   @StateTransitionCondition
@@ -373,8 +375,6 @@ public final class GameModel
     }
 
     publish (new EndPlayerTurnSuccessEvent (player));
-
-    turnDataCache.clearAll ();
 
     return true;
   }
@@ -898,7 +898,7 @@ public final class GameModel
     }
 
     publish (new PlayerTradeInCardsResponseSuccessEvent (getCurrentPlayerPacket (), event.getTradeIn (),
-            cardTradeInBonus));
+            cardTradeInBonus, cardModel.getNextTradeInBonus ()));
 
     final boolean shouldWaitForNextTradeIn = publishTradeInEventIfNecessary ();
     return !shouldWaitForNextTradeIn;
