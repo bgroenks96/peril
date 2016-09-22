@@ -36,7 +36,7 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
@@ -634,7 +634,7 @@ public final class GameModel
 
     final Id countryId = countryMapGraphModel.idOf (claimedCountryName);
 
-    final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res1;
+    final MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> res1;
     res1 = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
     if (res1.failed ())
     {
@@ -643,7 +643,7 @@ public final class GameModel
       return false;
     }
 
-    final MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> res2;
+    final MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> res2;
     res2 = countryArmyModel.requestToAddArmiesToCountry (countryId, 1);
     if (res2.failed ())
     {
@@ -1258,7 +1258,8 @@ public final class GameModel
     if (deltaArmyCount < minDeltaArmyCount)
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
-              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW));
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW,
+              getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
       republishRequestFor (event);
       return false;
     }
@@ -1266,7 +1267,8 @@ public final class GameModel
     if (deltaArmyCount > rules.getMaxOccupyArmyCount (sourceCountry.getArmyCount ()))
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
-              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW,
+              getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
       republishRequestFor (event);
       return false;
     }
@@ -1281,7 +1283,8 @@ public final class GameModel
     failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2));
     if (failure.isPresent ())
     {
-      publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason ()));
+      publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason (),
+              getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
       republishRequestFor (event);
       return false;
     }
@@ -1693,6 +1696,20 @@ public final class GameModel
   {
     log.trace ("Publishing event [{}]", event);
     eventBus.publish (event);
+  }
+
+  @Nullable
+  private <T extends PlayerInputRequestEvent> T getOriginalRequestFor (final ResponseRequestEvent event,
+                                                                       final Class <T> originalRequestType)
+  {
+    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.requestFor (event);
+    if (!originalRequest.isPresent ())
+    {
+      log.warn ("Unable to find request event matching response [{}].", event);
+      return null;
+    }
+
+    return originalRequestType.cast (originalRequest.get ());
   }
 
   private void republishRequestFor (final ResponseRequestEvent event)

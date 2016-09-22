@@ -43,19 +43,19 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   }
 
   @Override
-  public PlayerPacket getPlayer ()
+  public final PlayerPacket getPlayer ()
   {
     return player;
   }
 
   @Override
-  public String getPlayerName ()
+  public final String getPlayerName ()
   {
     return player.getName ();
   }
 
   @Override
-  public PlayerColor getPlayerColor ()
+  public final PlayerColor getPlayerColor ()
   {
     return player.getColor ();
   }

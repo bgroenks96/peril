@@ -18,51 +18,29 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountryDeniedEvent extends AbstractCountryStateChangeDeniedEvent
+public final class PlayerReinforceCountryDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
         implements PlayerResponseDeniedEvent <Reason>
 {
-  private final PlayerPacket player;
   private final PlayerReinforceCountryRequestEvent originalRequest;
 
   public PlayerReinforceCountryDeniedEvent (final PlayerPacket player,
                                             final Reason reason,
                                             final PlayerReinforceCountryRequestEvent originalRequest)
   {
-    super (reason);
+    super (player, reason);
 
-    Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (originalRequest, "originalRequest");
 
-    this.player = player;
     this.originalRequest = originalRequest;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return player.getColor ();
   }
 
   public PlayerReinforceCountryRequestEvent getOriginalRequest ()
@@ -73,13 +51,12 @@ public final class PlayerReinforceCountryDeniedEvent extends AbstractCountryStat
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Player: [{}] | OriginalRequest: [{}]", super.toString (), player, originalRequest);
+    return Strings.format ("{} | OriginalRequest: [{}]", super.toString (), originalRequest);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountryDeniedEvent ()
   {
-    player = null;
     originalRequest = null;
   }
 }

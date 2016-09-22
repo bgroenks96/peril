@@ -18,20 +18,13 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerSelectFortifyVectorDeniedEvent extends AbstractDeniedEvent <Reason>
-        implements PlayerDeniedEvent <Reason>
+public class PlayerSelectFortifyVectorDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
 {
-  private final PlayerPacket player;
-
   public enum Reason
   {
     SOURCE_COUNTRY_DOES_NOT_EXIST,
@@ -44,40 +37,11 @@ public class PlayerSelectFortifyVectorDeniedEvent extends AbstractDeniedEvent <R
 
   public PlayerSelectFortifyVectorDeniedEvent (final PlayerPacket player, final Reason reason)
   {
-    super (reason);
-
-    Arguments.checkIsNotNull (player, "player");
-
-    this.player = player;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return player.getColor ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | Player: [{}]", super.toString (), player);
+    super (player, reason);
   }
 
   @RequiredForNetworkSerialization
   private PlayerSelectFortifyVectorDeniedEvent ()
   {
-    player = null;
   }
 }

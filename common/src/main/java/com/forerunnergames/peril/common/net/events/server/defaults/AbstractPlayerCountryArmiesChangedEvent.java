@@ -18,7 +18,6 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -28,10 +27,9 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractPlayerCountryArmiesChangedEvent implements PlayerArmiesChangedEvent,
-        CountryArmiesChangedEvent
+public abstract class AbstractPlayerCountryArmiesChangedEvent extends AbstractPlayerEvent
+        implements PlayerArmiesChangedEvent, CountryArmiesChangedEvent
 {
-  private final PlayerPacket player;
   private final CountryPacket country;
   private final int playerDeltaArmyCount;
   private final int countryDeltaArmyCount;
@@ -41,10 +39,10 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent implements PlayerA
                                                      @AllowNegative final int playerDeltaArmyCount,
                                                      @AllowNegative final int countryDeltaArmyCount)
   {
-    Arguments.checkIsNotNull (player, "player");
+    super (player);
+
     Arguments.checkIsNotNull (country, "country");
 
-    this.player = player;
     this.country = country;
     this.playerDeltaArmyCount = playerDeltaArmyCount;
     this.countryDeltaArmyCount = countryDeltaArmyCount;
@@ -53,28 +51,9 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent implements PlayerA
   @RequiredForNetworkSerialization
   protected AbstractPlayerCountryArmiesChangedEvent ()
   {
-    player = null;
     country = null;
     playerDeltaArmyCount = 0;
     countryDeltaArmyCount = 0;
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return player.getColor ();
   }
 
   @Override
@@ -110,8 +89,7 @@ public abstract class AbstractPlayerCountryArmiesChangedEvent implements PlayerA
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: Player: [{}] | Country: [{}] | PlayerDeltaArmyCount: [{}] | CountryDeltaArmyCount: [{}]",
-                     getClass ().getSimpleName (), player, country, playerDeltaArmyCount, countryDeltaArmyCount);
+    return Strings.format ("{} | Country: [{}] | PlayerDeltaArmyCount: [{}] | CountryDeltaArmyCount: [{}]",
+                           super.toString (), country, playerDeltaArmyCount, countryDeltaArmyCount);
   }
 }

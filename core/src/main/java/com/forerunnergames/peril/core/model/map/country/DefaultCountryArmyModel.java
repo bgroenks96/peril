@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.core.model.map.country;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
 import com.forerunnergames.tools.common.Preconditions;

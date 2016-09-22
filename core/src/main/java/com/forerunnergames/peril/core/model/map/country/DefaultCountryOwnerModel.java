@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.core.model.map.country;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -118,8 +118,8 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
    * @return success/failure Result with reason
    */
   @Override
-  public MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
-                                                                                                   final Id ownerId)
+  public MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
+                                                                                                    final Id ownerId)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
     Arguments.checkIsNotNull (countryId, "countryId");
@@ -172,7 +172,7 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
    * @return success/failure Result
    */
   @Override
-  public MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> requestToUnassignCountry (final Id countryId)
+  public MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> requestToUnassignCountry (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
 

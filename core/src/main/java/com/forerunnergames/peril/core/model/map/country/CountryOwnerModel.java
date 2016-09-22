@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.core.model.map.country;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.MutatorResult;
 import com.forerunnergames.tools.common.id.Id;
@@ -46,18 +46,18 @@ public interface CountryOwnerModel
    *
    * @return success/failure Result with reason
    */
-  MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
-                                                                                            final Id ownerId);
+  MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> requestToAssignCountryOwner (final Id countryId,
+                                                                                             final Id ownerId);
 
-  MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
-                                                                                              final Id newOwner);
+  MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> requestToReassignCountryOwner (final Id countryId,
+                                                                                               final Id newOwner);
 
   /**
    * Unassigns the Country specified by the given id from its current owner.
    *
    * @return success/failure Result
    */
-  MutatorResult <AbstractCountryStateChangeDeniedEvent.Reason> requestToUnassignCountry (final Id countryId);
+  MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> requestToUnassignCountry (final Id countryId);
 
   Id ownerOf (final Id countryId);
 

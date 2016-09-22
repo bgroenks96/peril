@@ -18,53 +18,75 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractCountryStateChangeDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractCountryStateChangeDeniedEvent
+import javax.annotation.Nullable;
+
+public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
         implements PlayerResponseDeniedEvent <Reason>
 {
-  private final PlayerPacket player;
+  private final PlayerOccupyCountryResponseRequestEvent originalResponse;
+  @Nullable
+  private PlayerOccupyCountryRequestEvent originalRequest;
 
-  public PlayerOccupyCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerOccupyCountryResponseDeniedEvent (final PlayerPacket player,
+                                                 final Reason reason,
+                                                 @Nullable final PlayerOccupyCountryRequestEvent originalRequest,
+                                                 final PlayerOccupyCountryResponseRequestEvent originalResponse)
   {
-    super (reason);
+    super (player, reason);
 
-    this.player = player;
+    Arguments.checkIsNotNull (originalResponse, "originalResponse");
+
+    this.originalRequest = originalRequest;
+    this.originalResponse = originalResponse;
   }
 
-  @Override
-  public PlayerPacket getPlayer ()
+  public boolean hasOriginalRequest ()
   {
-    return player;
+    return originalRequest != null;
   }
 
-  @Override
-  public String getPlayerName ()
+  @Nullable
+  public PlayerOccupyCountryRequestEvent getOriginalRequest ()
   {
-    return player.getName ();
+    return originalRequest;
   }
 
-  @Override
-  public PlayerColor getPlayerColor ()
+  public PlayerOccupyCountryResponseRequestEvent getOriginalResponse ()
   {
-    return player.getColor ();
+    return originalResponse;
+  }
+
+  public String getSourceCountryName ()
+  {
+    return originalRequest != null ? originalRequest.getSourceCountryName () : "";
+  }
+
+  public String getTargetCountryName ()
+  {
+    return originalRequest != null ? originalRequest.getTargetCountryName () : "";
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Player: [{}]", super.toString (), player);
+    return Strings.format ("{} | OriginalRequest: [{}] | OriginalResponse: [{}]", super.toString (), originalRequest,
+                           originalResponse);
   }
 
   @RequiredForNetworkSerialization
   private PlayerOccupyCountryResponseDeniedEvent ()
   {
-    player = null;
+    originalRequest = null;
+    originalResponse = null;
   }
 }

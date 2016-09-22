@@ -18,59 +18,26 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOrderAttackDeniedEvent extends AbstractDeniedEvent <Reason>
-        implements PlayerDeniedEvent <Reason>
+public final class PlayerOrderAttackDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
 {
-  private final PlayerPacket player;
-
-  public PlayerOrderAttackDeniedEvent (final PlayerPacket player, final Reason reason)
-  {
-    super (reason);
-
-    this.player = player;
-  }
-
   public enum Reason
   {
     INSUFFICIENT_ARMY_COUNT,
     INVALID_DIE_COUNT;
   }
 
-  @Override
-  public PlayerPacket getPlayer ()
+  public PlayerOrderAttackDeniedEvent (final PlayerPacket player, final Reason reason)
   {
-    return player;
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return player.getColor ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | Player: [{}]", super.toString (), player);
+    super (player, reason);
   }
 
   @RequiredForNetworkSerialization
   private PlayerOrderAttackDeniedEvent ()
   {
-    player = null;
   }
 }
