@@ -22,6 +22,8 @@ public interface IntelBox
 
   void setGamePhaseName (final String phaseName);
 
+  void setGameRound (final int round);
+
   void setOwnedCountries (final ImmutableSet <CountryPacket> ownedCountries);
 
   void clear ();

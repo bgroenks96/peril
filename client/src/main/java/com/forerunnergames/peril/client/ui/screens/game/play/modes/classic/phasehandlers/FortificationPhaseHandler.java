@@ -17,21 +17,23 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
+import com.badlogic.gdx.Gdx;
+
+import com.forerunnergames.peril.client.events.SelectCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectFortifySourceCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.LetterCase;
-import com.forerunnergames.tools.common.Strings;
-
-import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -39,87 +41,66 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class FortificationPhaseHandler
+public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (FortificationPhaseHandler.class);
   private final CountryVectorSelectionHandler countryVectorSelectionHandler;
   private final FortificationDialog fortificationDialog;
-  private final MBassador <Event> eventBus;
-  private PlayMap playMap;
-  @Nullable
-  private PlayerBeginFortificationEvent request = null;
-  @Nullable
-  private PlayerSelectFortifyVectorRequestEvent response = null;
 
   public FortificationPhaseHandler (final PlayMap playMap,
                                     final FortificationDialog fortificationDialog,
                                     final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
+    super (playMap, eventBus);
+
     Arguments.checkIsNotNull (fortificationDialog, "fortificationDialog");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.playMap = playMap;
     this.fortificationDialog = fortificationDialog;
-    this.eventBus = eventBus;
-
-    countryVectorSelectionHandler = new AbstractCountryVectorSelectionHandler ("maneuver", eventBus)
-    {
-      @Override
-      public void onEnd (final String sourceCountryName, final String targetCountryName)
-      {
-        showFortificationDialog (sourceCountryName, targetCountryName);
-      }
-    };
+    countryVectorSelectionHandler = new FortificationPhaseCountryVectorSelectionHandler (playMap, eventBus);
   }
 
-  public void onFortify ()
-  {
-    if (request == null)
-    {
-      log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
-                PlayerSelectFortifyVectorRequestEvent.class.getSimpleName (),
-                PlayerBeginFortificationEvent.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventGenerator
-              .create ("Whoops, it looks like you aren't authorized to perform a post-combat maneuver."));
-      softReset ();
-      return;
-    }
-
-    // FIXME ?
-    response = new PlayerSelectFortifyVectorRequestEvent (fortificationDialog.getSourceCountryName (),
-            fortificationDialog.getTargetCountryName ());
-
-    eventBus.publish (response);
-  }
-
-  public void onCancel ()
-  {
-    eventBus.publish (StatusMessageEventGenerator.create ("You cancelled your post-combat maneuver from {} to {}.",
-                                                          fortificationDialog.getSourceCountryName (),
-                                                          fortificationDialog.getTargetCountryName ()));
-    softReset ();
-  }
-
-  public void reset ()
-  {
-    request = null;
-    response = null;
-    countryVectorSelectionHandler.reset ();
-    eventBus.unsubscribe (countryVectorSelectionHandler);
-  }
-
+  @Override
   public void setPlayMap (final PlayMap playMap)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
 
-    this.playMap = playMap;
+    super.setPlayMap (playMap);
+    countryVectorSelectionHandler.setPlayMap (playMap);
   }
 
-  public void onEndFortificationPhase ()
+  @Override
+  public void reset ()
   {
-    eventBus.publish (new EndPlayerTurnRequestEvent ());
-    reset ();
+    super.reset ();
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        fortificationDialog.hide ();
+      }
+    });
+
+    countryVectorSelectionHandler.reset ();
+  }
+
+  public void onFortify ()
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        publish (new PlayerFortifyCountryResponseRequestEvent (fortificationDialog.getDeltaArmyCount ()));
+      }
+    });
+  }
+
+  public void onCancel ()
+  {
+    countryVectorSelectionHandler.reset ();
+    countryVectorSelectionHandler.restart ();
   }
 
   @Handler
@@ -129,24 +110,48 @@ public final class FortificationPhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    if (request != null)
+    reset ();
+    countryVectorSelectionHandler.start (event);
+  }
+
+  @Handler
+  void onEvent (final PlayerSelectFortifyVectorSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+  }
+
+  @Handler
+  void onEvent (final PlayerSelectFortifyVectorDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+    log.error ("Could not maneuver. Reason: {}", event.getReason ());
+
+    reset ();
+    countryVectorSelectionHandler.restart ();
+  }
+
+  @Handler
+  void onEvent (final PlayerFortifyCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
     {
-      log.warn ("Ignoring [{}] because another fortification is still in progress [{}].", event, request);
-      return;
-    }
-
-    if (event.getValidVectors ().isEmpty ())
-    {
-      eventBus.publish (StatusMessageEventGenerator
-              .create ("Skipping Post-Combat Maneuver Phase because you have no valid maneuvers."));
-      onEndFortificationPhase ();
-      return;
-    }
-
-    request = event;
-
-    eventBus.subscribe (countryVectorSelectionHandler);
-    softReset ();
+      @Override
+      public void run ()
+      {
+        fortificationDialog.show (event.getMinTargetCountryArmyCount (), event.getTargetCountryArmyCount (),
+                                  event.getMaxTargetCountryArmyCount (), event.getTotalArmyCount (),
+                                  getCountryWithName (event.getSourceCountryName ()),
+                                  getCountryWithName (event.getTargetCountryName ()));
+      }
+    });
   }
 
   @Handler
@@ -156,89 +161,49 @@ public final class FortificationPhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    final String sourceCountryName = event.getSourceCountryName ();
-    final String targetCountryName = event.getTargetCountryName ();
-    final int deltaArmyCount = event.getDeltaArmyCount ();
-
-    if (!fortificationDialog.getSourceCountryName ().equals (sourceCountryName))
-    {
-      log.error ("{} source country name [{}] does not match source country name [{}] from event [{}].",
-                 FortificationDialog.class.getSimpleName (), fortificationDialog.getSourceCountryName (),
-                 sourceCountryName, event);
-    }
-
-    if (!fortificationDialog.getTargetCountryName ().equals (targetCountryName))
-    {
-      log.error ("{} target country name [{}] does not match target country name [{}] from event [{}].",
-                 FortificationDialog.class.getSimpleName (), fortificationDialog.getTargetCountryName (),
-                 targetCountryName, event);
-    }
-
-    if (fortificationDialog.getDeltaArmyCount () != deltaArmyCount)
-    {
-      log.error ("{} delta army count [{}] does not match delta army count [{}] from event [{}].",
-                 FortificationDialog.class.getSimpleName (), fortificationDialog.getDeltaArmyCount (), deltaArmyCount,
-                 event);
-    }
-
     reset ();
   }
 
   @Handler
-  void onEvent (final PlayerSelectFortifyVectorDeniedEvent event)
+  void onEvent (final PlayerFortifyCountryResponseDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-    log.error ("Could not fortify country. Reason: {}", event.getReason ());
-
-    eventBus.publish (StatusMessageEventGenerator
-            .create ("Whoops, it looks like you aren't authorized to maneuver from {} to {}. Reason: {}",
-                     fortificationDialog.getSourceCountryName (), fortificationDialog.getTargetCountryName (),
-                     Strings.toCase (event.getReason ().toString ().replaceAll ("_", " "), LetterCase.LOWER)));
+    log.error ("Could not maneuver. Reason: {}", event.getReason ());
 
     reset ();
   }
 
-  private void softReset ()
+  private static class FortificationPhaseCountryVectorSelectionHandler extends AbstractCountryVectorSelectionHandler
   {
-    response = null;
-    countryVectorSelectionHandler.reset ();
-    // FIXME: countryVectorSelectionHandler.start (request);
-  }
+    private final MBassador <Event> eventBus;
 
-  private void showFortificationDialog (final String sourceCountryName, final String targetCountryName)
-  {
-    if (!playMap.existsCountryWithName (sourceCountryName))
+    FortificationPhaseCountryVectorSelectionHandler (final PlayMap playMap, final MBassador <Event> eventBus)
     {
-      log.error ("Not showing {} for request [{}] because source country [{}] does not exist.",
-                 fortificationDialog.getClass ().getSimpleName (), request, sourceCountryName);
-      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like {} doesn't exist on this map.",
-                                                            sourceCountryName));
-      softReset ();
-      return;
+      super (playMap, eventBus);
+
+      this.eventBus = eventBus;
     }
 
-    if (!playMap.existsCountryWithName (targetCountryName))
+    @Override
+    SelectCountryRequestEvent createSourceCountrySelectionRequest ()
     {
-      log.error ("Not showing {} for request [{}] because target country [{}] does not exist.",
-                 fortificationDialog.getClass ().getSimpleName (), request, targetCountryName);
-      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like {} doesn't exist on this map.",
-                                                            targetCountryName));
-      softReset ();
-      return;
+      return new SelectFortifySourceCountryRequestEvent ();
     }
 
-    final Country sourceCountry = playMap.getCountryWithName (sourceCountryName);
-    final Country targetCountry = playMap.getCountryWithName (targetCountryName);
+    @Override
+    SelectCountryRequestEvent createTargetCountrySelectionRequest (final String sourceCountryName)
+    {
+      Arguments.checkIsNotNull (sourceCountryName, "sourceCountryName");
 
-    // TODO This is a hack until the core fortification API redesign is complete.
-    final int currentTargetCountryArmies = targetCountry.getArmies ();
-    final int totalArmies = currentTargetCountryArmies + sourceCountry.getArmies ();
-    final int minTargetCountryArmies = currentTargetCountryArmies;
-    final int maxTargetCountryArmies = totalArmies - 1;
+      return new SelectFortifyTargetCountryRequestEvent (sourceCountryName);
+    }
 
-    fortificationDialog.show (minTargetCountryArmies, currentTargetCountryArmies, maxTargetCountryArmies, totalArmies,
-                              sourceCountry, targetCountry);
+    @Override
+    public void onEnd (final String sourceCountryName, final String targetCountryName)
+    {
+      eventBus.publish (new PlayerSelectFortifyVectorRequestEvent (sourceCountryName, targetCountryName));
+    }
   }
 }

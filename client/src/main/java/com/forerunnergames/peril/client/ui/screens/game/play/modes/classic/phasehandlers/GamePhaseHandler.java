@@ -15,19 +15,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.common.game.BattleOutcome;
-import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
-public interface BattleResultDialog extends Dialog
+public interface GamePhaseHandler
 {
-  void show (final BattleResultPacket result);
+  void activate ();
 
-  boolean battleOutcomeIs (final BattleOutcome outcome);
+  void activateForSelf (final PlayerPacket player);
 
-  String getAttackingCountryName ();
+  void activateForEveryoneElse (final PlayerPacket player);
 
-  String getDefendingCountryName ();
+  void deactivate ();
+
+  void deactivateForSelf (final PlayerPacket player);
+
+  void deactivateForEveryoneElse (final PlayerPacket player);
+
+  void setPlayMap (final PlayMap playMap);
+
+  void setSelfPlayer (final PlayerPacket player);
+
+  void reset ();
 }

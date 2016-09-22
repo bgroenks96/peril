@@ -29,6 +29,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
@@ -43,6 +44,7 @@ import net.engio.mbassy.bus.MBassador;
 public final class DebugInputProcessor extends InputAdapter
 {
   private final DebugEventGenerator eventGenerator;
+  private final WidgetFactory widgetFactory;
   private final MouseInput mouseInput;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
@@ -54,6 +56,7 @@ public final class DebugInputProcessor extends InputAdapter
   private PlayMap playMap;
 
   public DebugInputProcessor (final DebugEventGenerator eventGenerator,
+                              final WidgetFactory widgetFactory,
                               final MouseInput mouseInput,
                               final PlayMap playMap,
                               final MessageBox <StatusBoxRow> statusBox,
@@ -66,6 +69,7 @@ public final class DebugInputProcessor extends InputAdapter
                               final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (eventGenerator, "eventGenerator");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (playMap, "playMap");
     Arguments.checkIsNotNull (statusBox, "statusBox");
@@ -78,6 +82,7 @@ public final class DebugInputProcessor extends InputAdapter
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.eventGenerator = eventGenerator;
+    this.widgetFactory = widgetFactory;
     this.mouseInput = mouseInput;
     this.playMap = playMap;
     this.statusBox = statusBox;
@@ -319,7 +324,7 @@ public final class DebugInputProcessor extends InputAdapter
     {
       case 's':
       {
-        eventGenerator.generateStatusMessageEvent ();
+        statusBox.addRow (widgetFactory.createStatusMessageBoxRow (eventGenerator.createRandomStatusMessage ()));
 
         return true;
       }

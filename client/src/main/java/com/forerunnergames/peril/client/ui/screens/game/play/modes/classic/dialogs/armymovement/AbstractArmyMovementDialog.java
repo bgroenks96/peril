@@ -366,6 +366,15 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     setCountries (sourceCountry, targetCountry);
   }
 
+  public void updateCountries (final Country sourceCountry, final Country targetCountry)
+
+  {
+    Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
+    Arguments.checkIsNotNull (targetCountry, "targetCountry");
+
+    setCountries (sourceCountry, targetCountry);
+  }
+
   public void show (final int minTargetCountryArmies,
                     final int currentTargetCountryArmies,
                     final int maxTargetCountryArmies,

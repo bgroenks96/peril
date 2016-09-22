@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.map.MapMetadata;
 
 import com.google.common.collect.ImmutableSet;
@@ -38,6 +39,10 @@ public interface PlayMap
   boolean touchDown (final Vector2 touchDownCoordinate, final int button);
 
   boolean touchUp (final Vector2 touchUpCoordinate);
+
+  void addListener (final PlayMapInputListener listener);
+
+  void removeListener (final PlayMapInputListener listener);
 
   void setCountriesTo (final CountryPrimaryImageState state);
 
@@ -56,6 +61,8 @@ public interface PlayMap
   void setArmies (final int armies, final String countryName);
 
   void changeArmiesBy (final int deltaArmies, final String countryName);
+
+  boolean countryArmyCountIs (final int armies, final String countryName);
 
   void setCountryState (final String countryName, final CountryPrimaryImageState state);
 

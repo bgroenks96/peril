@@ -46,18 +46,14 @@ import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
 
 import com.google.common.collect.ImmutableMap;
-
-import net.engio.mbassy.bus.MBassador;
 
 public final class DefaultPlayMapFactory implements PlayMapFactory
 {
   // @formatter:off
   private final AssetManager assetManager;
   private final MouseInput mouseInput;
-  private final MBassador <Event> eventBus;
   private final CountryAtlasesLoader countryAtlasesLoader;
   private final PlayMapInputDetectionFactory playMapInputDetectionFactory;
   private final PlayMapBackgroundImageLoader playMapBackgroundImageLoader;
@@ -69,17 +65,14 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
 
   public DefaultPlayMapFactory (final AssetManager assetManager,
                                 final ScreenSize screenSize,
-                                final MouseInput mouseInput,
-                                final MBassador <Event> eventBus)
+                                final MouseInput mouseInput)
   {
     Arguments.checkIsNotNull (assetManager, "assetManager");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.assetManager = assetManager;
     this.mouseInput = mouseInput;
-    this.eventBus = eventBus;
     countryAtlasesLoader = new DefaultCountryAtlasesLoader (assetManager);
     playMapInputDetectionFactory = new DefaultPlayMapInputDetectionFactory (assetManager, screenSize);
     playMapBackgroundImageLoader = new DefaultPlayMapBackgroundImageLoader (assetManager);
@@ -139,7 +132,7 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
     }
 
     final PlayMap playMap = new DefaultPlayMap (countryNamesToActorsBuilder.build (), playMapInputDetection,
-            hoveredTerritoryText, backgroundImage, mapMetadata, eventBus);
+            hoveredTerritoryText, backgroundImage, mapMetadata);
 
     hoveredTerritoryText.setPlayMap (playMap);
 

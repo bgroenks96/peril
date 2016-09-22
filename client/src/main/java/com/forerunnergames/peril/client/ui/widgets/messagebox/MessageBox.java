@@ -24,7 +24,7 @@ import com.forerunnergames.tools.common.Message;
 
 import com.google.common.collect.ImmutableList;
 
-public interface MessageBox <T extends MessageBoxRow<? extends Message>>
+public interface MessageBox <T extends MessageBoxRow <? extends Message>>
 {
   void addRow (final T row);
 

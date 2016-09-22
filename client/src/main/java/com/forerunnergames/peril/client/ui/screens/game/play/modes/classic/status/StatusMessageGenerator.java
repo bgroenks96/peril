@@ -17,24 +17,42 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status;
 
-import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.StringBuilder;
+
 import com.forerunnergames.peril.client.events.PlayGameEvent;
-import com.forerunnergames.peril.client.events.StatusMessageEvent;
+import com.forerunnergames.peril.client.events.SelectAttackSourceCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectAttackTargetCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectFortifySourceCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequestEvent;
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
@@ -46,7 +64,11 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
@@ -54,46 +76,37 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAtt
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 
-import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class StatusMessageEventGenerator
+public final class StatusMessageGenerator
 {
-  private static final Logger log = LoggerFactory.getLogger (StatusMessageEventGenerator.class);
-  private final MBassador <Event> eventBus;
+  private static final Logger log = LoggerFactory.getLogger (StatusMessageGenerator.class);
+  private static final int EVENT_HANDLER_PRIORITY_LAST = -1;
+  private final MessageBox <StatusBoxRow> statusBox;
+  private final WidgetFactory widgetFactory;
   @Nullable
   private PlayerPacket selfPlayer;
 
-  public StatusMessageEventGenerator (final MBassador <Event> eventBus)
+  public StatusMessageGenerator (final MessageBox <StatusBoxRow> statusBox, final WidgetFactory widgetFactory)
   {
-    Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (statusBox, "statusBox");
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
 
-    this.eventBus = eventBus;
-  }
-
-  public static StatusMessageEvent create (final String messageText)
-  {
-    Arguments.checkIsNotNull (messageText, "messageText");
-
-    return new DefaultStatusMessageEvent (new DefaultStatusMessage (messageText));
-  }
-
-  public static StatusMessageEvent create (final String messageText, final Object... args)
-  {
-    Arguments.checkIsNotNull (args, "args");
-
-    return create (Strings.format (messageText, args));
+    this.statusBox = statusBox;
+    this.widgetFactory = widgetFactory;
   }
 
   @Handler
@@ -112,13 +125,23 @@ public final class StatusMessageEventGenerator
 
     youIf (event.isFirstPlayerInGame (), event.getSelfPlayer (), "It looks like you're the first one here.");
 
-    youIf (nMorePlayers > 0, event.getSelfPlayer (), "The game will begin when {}.",
-           Strings.pluralize (nMorePlayers, "more player joins", "more players join"));
-
     youIf (nMorePlayers > 0, event.getSelfPlayer (),
            "This is a {} player {} Mode game. You must conquer {}% of the map to achieve victory.",
            config.getPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
            config.getWinPercentage ());
+
+    youIf (nMorePlayers > 0, event.getSelfPlayer (), "The game will begin when {}.",
+           Strings.pluralize (nMorePlayers, "more player joins", "more players join"));
+  }
+
+  @Handler
+  void onEvent (final BeginGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("The game has started!");
   }
 
   @Handler
@@ -129,17 +152,6 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     everyoneElse (event.getPlayer (), "{} joined the game.", event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final CountryOwnerChangedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    everyone ("{} now {} {}.", nameify (event.getNewOwner (), LetterCase.PROPER),
-              verbifyS (event.getNewOwner (), "own"), event.getCountryName ());
   }
 
   @Handler
@@ -154,7 +166,7 @@ public final class StatusMessageEventGenerator
     for (final PlayerPacket player : event.getPlayersSortedByTurnOrder ())
     {
       final String turn = Strings.toMixedOrdinal (player.getTurnOrder ());
-      everyone ("{} going {}.", nameifyVerb (player, LetterCase.PROPER), turn);
+      everyone ("{} going {}.", nameifyVerbBe (player, LetterCase.PROPER), turn);
     }
   }
 
@@ -169,6 +181,16 @@ public final class StatusMessageEventGenerator
   }
 
   @Handler
+  void onEvent (final PlayerClaimCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (), "General, claim any unowned country.", event.getPlayerName ());
+  }
+
+  @Handler
   void onEvent (final PlayerClaimCountryWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -179,13 +201,43 @@ public final class StatusMessageEventGenerator
   }
 
   @Handler
+  void onEvent (final PlayerClaimCountryResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("{} claimed {}.", nameify (event.getPlayer (), LetterCase.PROPER), event.getCountryName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerClaimCountryResponseDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (), "General, something went wrong! We were unable to claim {}.", event.getCountryName ());
+  }
+
+  @Handler
   void onEvent (final BeginInitialReinforcementPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "Initial Reinforcement phase.");
+    everyone ("Initial Reinforcement phase.");
+  }
+
+  @Handler
+  void onEvent (final PlayerBeginReinforcementEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (), "General, choose a country to reinforce.", event.getPlayerName ());
   }
 
   @Handler
@@ -195,7 +247,7 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is placing reinforcements...", event.getPlayerName ());
+    everyoneElse (event.getPlayer (), "{} is reinforcing...", event.getPlayerName ());
   }
 
   @Handler
@@ -205,9 +257,41 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} placed {} on {}.", nameify (event.getPlayer (), LetterCase.PROPER),
-              Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"),
-              event.getCountryName ());
+    everyone ("{} reinforced {} with {}.", nameify (event.getPlayer (), LetterCase.PROPER), event.getCountryName (),
+              Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"));
+  }
+
+  @Handler
+  void onEvent (final PlayerReinforceCountryDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (), "General, something went wrong! We were unable to reinforce {}.",
+         event.getOriginalRequest ().getCountryName ());
+
+    you (event.getPlayer (), "General, choose a country to reinforce.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final EndInitialReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("All initial reinforcements have been placed.");
+  }
+
+  @Handler
+  void onEvent (final BeginRoundEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("Round {}.", event.getRound ());
   }
 
   @Handler
@@ -217,7 +301,7 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("It is {} turn.", nameifyPossessive (event.getPlayer (), LetterCase.LOWER));
+    everyone ("It is {} turn.", nameifyPossessiveYour (event.getPlayer (), LetterCase.LOWER));
   }
 
   @Handler
@@ -228,6 +312,8 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     you (event.getPlayer (), "Reinforcement phase.");
+    everyone ("{} {}.", nameifyVerbHave (event.getPlayer (), LetterCase.PROPER),
+              Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
   }
 
   @Handler
@@ -237,7 +323,21 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    // TODO Implement trade-in status messages.
+    final String reinforcementsPhrase = Strings.pluralizeS (event.getNextTradeInBonus (), "additional reinforcement");
+
+    youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () == 3, event.getPlayer (),
+           "Congratulations, General, you have just enough matching cards to purchase {}! If you so desire, that is, "
+                   + "sir. Good things come to those who wait, General.",
+           reinforcementsPhrase);
+
+    youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3, event.getPlayer (),
+           "General, you may now use 3 of your {} matching cards to purchase {}! If you so desire, that is, sir. "
+                   + "Fortune rewards the patient, General.",
+           event.getPlayerCardsInHand (), reinforcementsPhrase);
+
+    youIf (event.isTradeInRequired (), event.getPlayer (),
+           "General, you now have so many matching cards that you must now use some of them to purchase {}!",
+           reinforcementsPhrase);
   }
 
   @Handler
@@ -247,8 +347,14 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} purchased {} reinforcements!", nameify (event.getPlayer (), LetterCase.PROPER),
-              event.getTradeInBonus ());
+    everyone ("{} used 3 cards ({}) to purchase {}!", nameify (event.getPlayer (), LetterCase.PROPER),
+              toString (event.getTradeInCards ()),
+              Strings.pluralizeS (event.getTradeInBonus (), "additional reinforcement"));
+
+    everyone ("{} now {} {} remaining.", nameify (event.getPlayer (), LetterCase.PROPER),
+              verbifyHave (event.getPlayer ()), Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
+
+    everyone ("The next purchase will yield {}.", Strings.pluralizeS (event.getNextTradeInBonus (), "reinforcement"));
   }
 
   @Handler
@@ -258,7 +364,7 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is finished reinforcing.", event.getPlayerName ());
+    everyoneElse (event.getPlayer (), "{} has finished reinforcing.", event.getPlayerName ());
   }
 
   @Handler
@@ -279,6 +385,26 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     everyoneElse (event.getPlayer (), "{} is deciding where to attack...", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final SelectAttackSourceCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    status ("General, choose a country from which to attack.");
+  }
+
+  @Handler
+  void onEvent (final SelectAttackTargetCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    status ("General, choose a country to attack from {}.", event.getSourceCountryName ());
   }
 
   @Handler
@@ -347,7 +473,7 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} stopped attacking {} in {} from {}.", nameify (event.getAttackingPlayer (), LetterCase.PROPER),
+    everyone ("{} retreated from attacking {} in {} from {}.", nameify (event.getAttackingPlayer (), LetterCase.PROPER),
               nameify (event.getDefendingPlayer (), LetterCase.LOWER), event.getDefendingCountryName (),
               event.getAttackingCountryName ());
   }
@@ -370,7 +496,7 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, we won the war!");
+    you (event.getPlayer (), "General, you have won the war!");
     everyoneElse (event.getPlayer (), "{} won the war.", event.getPlayerName ());
   }
 
@@ -399,6 +525,21 @@ public final class StatusMessageEventGenerator
               Strings.pluralize (armies, "army", "armies"));
 
     everyoneIf (armies == 1, "Looks like an easy target...");
+  }
+
+  @Handler
+  void onEvent (final PlayerOccupyCountryResponseDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    youIf (event.hasOriginalRequest (), event.getPlayer (),
+           "General, something went wrong! We were unable to occupy {} from {}.", event.getTargetCountryName (),
+           event.getSourceCountryName ());
+
+    youIf (!event.hasOriginalRequest (), event.getPlayer (),
+           "General, something went wrong! We were unable to occupy.");
   }
 
   @Handler
@@ -432,13 +573,33 @@ public final class StatusMessageEventGenerator
   }
 
   @Handler
+  void onEvent (final SelectFortifySourceCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    status ("General, choose a country from which to maneuver armies.");
+  }
+
+  @Handler
+  void onEvent (final SelectFortifyTargetCountryRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    status ("General, choose a country to maneuver armies into from {}.", event.getSourceCountryName ());
+  }
+
+  @Handler
   void onEvent (final PlayerFortifyCountryWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is maneuvering troops into {} from {}...", event.getPlayerName (),
+    everyoneElse (event.getPlayer (), "{} is maneuvering armies into {} from {}...", event.getPlayerName (),
                   event.getTargetCountryName (), event.getSourceCountryName ());
   }
 
@@ -449,12 +610,9 @@ public final class StatusMessageEventGenerator
 
     log.debug ("Event received [{}].", event);
 
-    final String sourceCountry = event.getSourceCountryName ();
-    final String targetCountry = event.getTargetCountryName ();
-    final String armies = Strings.pluralize (event.getDeltaArmyCount (), "army", "armies");
-
-    everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPlayer (), LetterCase.PROPER), armies,
-              event.getTargetCountryName (), sourceCountry);
+    everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPlayer (), LetterCase.PROPER),
+              Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"), event.getTargetCountryName (),
+              event.getSourceCountryName ());
   }
 
   @Handler
@@ -468,6 +626,26 @@ public final class StatusMessageEventGenerator
   }
 
   @Handler
+  void onEvent (final EndPlayerTurnSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (), "You ended you turn.");
+  }
+
+  @Handler
+  void onEvent (final EndPlayerTurnDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (), "General, something went wrong! You cannot end your turn at this time.");
+  }
+
+  @Handler
   void onEvent (final EndPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -475,15 +653,26 @@ public final class StatusMessageEventGenerator
     log.debug ("Event received [{}].", event);
 
     youIf (event.wasCardReceived (), event.getPlayer (),
-           "General, you earned a card as a reward for your military genius!\n\nCard: [ Country: {}, MSV: {} ]\n",
-           event.getCardName (), event.getCardType ());
+           "General, you earned a card ({}) as a reward for your military genius!", toString (event.getCard ()));
 
     youIf (!event.wasCardReceived (), event.getPlayer (),
-           "General, we failed to earn you a card, sir. We will try harder next time, sir.");
+           "General, we failed to earn you a card, sir. We will try harder next time, sir...");
 
-    everyone ("{} turn is over.", nameifyPossessive (event.getPlayer (), LetterCase.PROPER));
+    everyone ("{} turn is over.", nameifyPossessiveYour (event.getPlayer (), LetterCase.PROPER));
     everyoneElseIf (event.wasCardReceived (), event.getPlayer (), "{} earned a card.", event.getPlayerName ());
     everyoneElseIf (!event.wasCardReceived (), event.getPlayer (), "{} did not earn a card.", event.getPlayerName ());
+    everyoneIf (event.wasCardReceived (), "{} now {} {}.", nameify (event.getPlayer (), LetterCase.PROPER),
+                verbifyHave (event.getPlayer ()), Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
+  }
+
+  @Handler
+  void onEvent (final EndRoundEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("End of round {}.", event.getRound ());
   }
 
   @Handler
@@ -496,9 +685,51 @@ public final class StatusMessageEventGenerator
     everyoneElse (event.getPlayer (), "{} left the game.", event.getPlayerName ());
   }
 
+  @Handler
+  void onEvent (final EndGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("The game has ended.");
+  }
+
+  @Handler (priority = EVENT_HANDLER_PRIORITY_LAST)
+  void onEvent (final CountryOwnerChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
+
+    everyone ("{} now {} {}.", nameify (event.getNewOwner (), LetterCase.PROPER),
+              verbifyS (event.getNewOwner (), "own"), event.getCountryName ());
+  }
+
+  @Handler (priority = EVENT_HANDLER_PRIORITY_LAST)
+  void onEvent (final PlayerArmiesChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
+
+    if (event.getPlayerDeltaArmyCount () <= 0) return;
+
+    everyone ("{} received {}.", nameify (event.getPlayer (), LetterCase.PROPER),
+              Strings.pluralize (event.getPlayerDeltaArmyCount (), "army", "armies"));
+  }
+
   private void status (final String statusMessageText)
   {
-    eventBus.publish (new DefaultStatusMessageEvent (new DefaultStatusMessage (statusMessageText)));
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        statusBox.addRow (widgetFactory.createStatusMessageBoxRow (new DefaultStatusMessage (statusMessageText)));
+        statusBox.showLastRow ();
+      }
+    });
   }
 
   private void status (final String statusMessageText, final Object... args)
@@ -571,39 +802,88 @@ public final class StatusMessageEventGenerator
 
   private String nameify (final PlayerPacket player, final LetterCase letterCase)
   {
-    if (letterCase == LetterCase.NONE)
-    {
-      throw new IllegalStateException (
-              Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (), LetterCase.NONE));
-    }
+    checkLetterCase (letterCase);
 
     return isSelf (player) ? Strings.toCase ("you", letterCase) : player.getName ();
   }
 
-  private String nameifyVerb (final PlayerPacket player, final LetterCase letterCase)
+  private String nameifyVerbBe (final PlayerPacket player, final LetterCase letterCase)
   {
-    if (letterCase == LetterCase.NONE)
-    {
-      throw new IllegalStateException (
-              Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (), LetterCase.NONE));
-    }
+    checkLetterCase (letterCase);
 
     return isSelf (player) ? Strings.toCase ("you", letterCase) + " are" : player.getName () + " is";
   }
 
-  private String nameifyPossessive (final PlayerPacket player, final LetterCase letterCase)
+  private String nameifyVerbHave (final PlayerPacket player, final LetterCase letterCase)
   {
-    if (letterCase == LetterCase.NONE)
-    {
-      throw new IllegalStateException (
-              Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (), LetterCase.NONE));
-    }
+    checkLetterCase (letterCase);
+
+    return isSelf (player) ? Strings.toCase ("you", letterCase) + " have" : player.getName () + " has";
+  }
+
+  private String nameifyVerb (final PlayerPacket player,
+                              final String secondPersonVerb,
+                              final String thirdPersonVerb,
+                              final LetterCase letterCase)
+  {
+    checkLetterCase (letterCase);
+
+    return isSelf (player) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb
+            : player.getName () + " " + thirdPersonVerb;
+  }
+
+  private String nameifyPossessiveYour (final PlayerPacket player, final LetterCase letterCase)
+  {
+    checkLetterCase (letterCase);
 
     return isSelf (player) ? Strings.toCase ("your", letterCase) : player.getName () + "'s";
+  }
+
+  private String verbify (final PlayerPacket player, final String secondPersonVerb, final String thirdPersonVerb)
+  {
+    return isSelf (player) ? secondPersonVerb : thirdPersonVerb;
+  }
+
+  private String verbifyHave (final PlayerPacket player)
+  {
+    return isSelf (player) ? "have" : "has";
   }
 
   private String verbifyS (final PlayerPacket player, final String baseVerb)
   {
     return isSelf (player) ? baseVerb : baseVerb + "s";
+  }
+
+  private String possessify (final PlayerPacket player, final LetterCase letterCase)
+  {
+    return Strings.toCase (isSelf (player) ? "your" : "their", letterCase);
+  }
+
+  private String toString (@Nullable final CardPacket card)
+  {
+    return card != null ? toString (ImmutableSet.of (card)) : "";
+  }
+
+  private String toString (final Iterable <CardPacket> cards)
+  {
+    final StringBuilder cardsDescription = new StringBuilder ();
+
+    for (final CardPacket card : cards)
+    {
+      cardsDescription.append (card.getName ()).append (" (MSV: ").append (card.getType ()).append (")").append (", ");
+    }
+
+    cardsDescription.replace (cardsDescription.lastIndexOf (", "), cardsDescription.length, "");
+
+    return cardsDescription.toString ();
+  }
+
+  private void checkLetterCase (final LetterCase letterCase)
+  {
+    if (letterCase == null || letterCase == LetterCase.NONE)
+    {
+      throw new IllegalStateException (
+              Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (), letterCase));
+    }
   }
 }

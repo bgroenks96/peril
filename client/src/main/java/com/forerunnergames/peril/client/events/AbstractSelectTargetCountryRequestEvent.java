@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +19,26 @@ package com.forerunnergames.peril.client.events;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.events.local.LocalEvent;
 
-public final class SelectCountryEvent implements LocalEvent
+abstract class AbstractSelectTargetCountryRequestEvent implements SelectCountryRequestEvent
 {
-  private final String countryName;
+  private final String sourceCountryName;
 
-  public SelectCountryEvent (final String countryName)
+  AbstractSelectTargetCountryRequestEvent (final String sourceCountryName)
   {
-    Arguments.checkIsNotNull (countryName, "countryName");
+    Arguments.checkIsNotNull (sourceCountryName, "sourceCountryName");
 
-    this.countryName = countryName;
+    this.sourceCountryName = sourceCountryName;
   }
 
-  public String getCountryName ()
+  public final String getSourceCountryName ()
   {
-    return countryName;
+    return sourceCountryName;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Country Name: {}", getClass ().getSimpleName (), countryName);
+    return Strings.format ("{}: SourceCountryName: [{}]", getClass ().getSimpleName (), sourceCountryName);
   }
 }

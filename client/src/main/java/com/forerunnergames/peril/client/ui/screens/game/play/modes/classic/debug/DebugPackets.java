@@ -81,7 +81,8 @@ public final class DebugPackets
     Arguments.checkIsNotNull (playerName, "playerName");
 
     return new DefaultPlayerPacket (idFor (playerName), playerName, DebugEventGenerator.getRandomPlayerColor (),
-            DebugEventGenerator.getRandomPlayerTurnOrder (), DebugEventGenerator.getRandomCountryDeltaArmyCount ());
+            DebugEventGenerator.getRandomPlayerTurnOrder (), DebugEventGenerator.getRandomArmiesInHand (),
+            DebugEventGenerator.getRandomCardsInHand ());
   }
 
   private static UUID idFor (final String str)

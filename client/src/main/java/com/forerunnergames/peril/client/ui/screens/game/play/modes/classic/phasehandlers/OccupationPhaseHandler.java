@@ -19,7 +19,6 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
@@ -35,12 +34,10 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class OccupationPhaseHandler
+public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (OccupationPhaseHandler.class);
   private final OccupationDialog occupationDialog;
-  private final MBassador <Event> eventBus;
-  private PlayMap playMap;
   @Nullable
   private PlayerOccupyCountryRequestEvent request = null;
   @Nullable
@@ -54,23 +51,31 @@ public final class OccupationPhaseHandler
                                  final OccupationDialog occupationDialog,
                                  final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
-    Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
+    super (playMap, eventBus);
 
-    this.playMap = playMap;
+    Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
+
     this.occupationDialog = occupationDialog;
-    this.eventBus = eventBus;
+  }
+
+  @Override
+  public void reset ()
+  {
+    super.reset ();
+
+    request = null;
+    response = null;
+    sourceCountryName = null;
+    targetCountryName = null;
   }
 
   public void onOccupy ()
   {
     if (request == null)
     {
-      log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
-                PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
-                PlayerOccupyCountryRequestEvent.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy."));
+      log.error ("Not sending response [{}] because no prior corresponding {} was received.",
+                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
+                 PlayerOccupyCountryRequestEvent.class.getSimpleName ());
       return;
     }
 
@@ -78,12 +83,10 @@ public final class OccupationPhaseHandler
 
     if (!sourceCountryName.equals (this.sourceCountryName))
     {
-      log.warn ("Not sending response [{}] because specified source country name [{}] does not match the "
+      log.error ("Not sending response [{}] because specified source country name [{}] does not match the "
               + "source country name [{}] of the original request [{}].",
-                PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), sourceCountryName,
-                this.sourceCountryName, request);
-      eventBus.publish (StatusMessageEventGenerator
-              .create ("Whoops, it looks like you aren't authorized to occupy from {}.", sourceCountryName));
+                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), sourceCountryName,
+                 this.sourceCountryName, request);
       return;
     }
 
@@ -91,33 +94,16 @@ public final class OccupationPhaseHandler
 
     if (!targetCountryName.equals (this.targetCountryName))
     {
-      log.warn ("Not sending response [{}] because specified target country name [{}] does not match the "
+      log.error ("Not sending response [{}] because specified target country name [{}] does not match the "
               + "target country name [{}] of the original request [{}].",
-                PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), targetCountryName, this.targetCountryName,
-                request);
-      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy {}.",
-                                                            targetCountryName));
+                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), targetCountryName,
+                 this.targetCountryName, request);
       return;
     }
 
     response = new PlayerOccupyCountryResponseRequestEvent (occupationDialog.getDeltaArmyCount ());
 
-    eventBus.publish (response);
-  }
-
-  public void reset ()
-  {
-    request = null;
-    response = null;
-    sourceCountryName = null;
-    targetCountryName = null;
-  }
-
-  public void setPlayMap (final PlayMap playMap)
-  {
-    Arguments.checkIsNotNull (playMap, "playMap");
-
-    this.playMap = playMap;
+    publish (response);
   }
 
   @Handler
@@ -139,35 +125,25 @@ public final class OccupationPhaseHandler
 
     final String sourceCountryName = event.getSourceCountryName ();
 
-    if (!playMap.existsCountryWithName (sourceCountryName))
+    if (!existsCountryWithName (sourceCountryName))
     {
       log.error ("Not showing {} for request [{}] because source country [{}] does not exist in {}.",
                  OccupationDialog.class.getSimpleName (), event, sourceCountryName, PlayMap.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventGenerator.create (
-                                                            "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied",
-                                                            sourceCountryName));
       return;
     }
 
     final String targetCountryName = event.getTargetCountryName ();
 
-    if (!playMap.existsCountryWithName (targetCountryName))
+    if (!existsCountryWithName (targetCountryName))
     {
       log.error ("Not showing {} for request [{}] because target country [{}] does not exist in {}.",
-                 OccupationDialog.class.getSimpleName (), event, targetCountryName,
-                 PlayMap.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventGenerator.create (
-                                                            "Whoops, it looks like {} doesn't exist on this map, so it can't be occupied.",
-                                                            targetCountryName));
+                 OccupationDialog.class.getSimpleName (), event, targetCountryName, PlayMap.class.getSimpleName ());
       return;
     }
 
-    playMap.setCountryState (targetCountryName, playMap.getPrimaryImageStateOf (sourceCountryName));
-
     occupationDialog.set (event.getMinOccupationArmyCount (), event.getTargetCountryArmyCount (),
                           event.getMaxOccupationArmyCount (), event.getTotalArmyCount (),
-                          playMap.getCountryWithName (sourceCountryName),
-                          playMap.getCountryWithName (targetCountryName));
+                          getCountryWithName (sourceCountryName), getCountryWithName (targetCountryName));
   }
 
   @Handler
@@ -182,7 +158,6 @@ public final class OccupationPhaseHandler
       log.warn ("Not sending response [{}] because no prior corresponding {} was received.",
                 PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (),
                 PlayerOccupyCountryRequestEvent.class.getSimpleName ());
-      eventBus.publish (StatusMessageEventGenerator.create ("Whoops, it looks like you aren't authorized to occupy."));
       return;
     }
 
@@ -200,8 +175,8 @@ public final class OccupationPhaseHandler
     if (!occupationDialog.getTargetCountryName ().equals (targetCountryName))
     {
       log.error ("{} target country name [{}] does not match target country name [{}] from event [{}].",
-                 OccupationDialog.class.getSimpleName (), occupationDialog.getTargetCountryName (),
-                 targetCountryName, event);
+                 OccupationDialog.class.getSimpleName (), occupationDialog.getTargetCountryName (), targetCountryName,
+                 event);
     }
 
     if (occupationDialog.getDeltaArmyCount () != deltaArmyCount)
@@ -220,10 +195,6 @@ public final class OccupationPhaseHandler
 
     log.debug ("Event received [{}].", event);
     log.error ("Could not occupy country. Reason: {}", event.getReason ());
-
-    eventBus.publish (StatusMessageEventGenerator.create (
-                                                          "Whoops, it looks like you aren't authorized to occupy {} from {}.",
-                                                          sourceCountryName, targetCountryName));
 
     reset ();
   }

@@ -32,7 +32,7 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class FortificationDialog extends AbstractArmyMovementDialog
 {
-  private static final String TITLE = "FORTIFICATION";
+  private static final String TITLE = "POST-COMBAT MANEUVER";
   private static final String CANCEL_BUTTON_TEXT = "CANCEL";
   private final CancellableDialogListener listener;
   private TextButton cancelButton;

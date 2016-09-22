@@ -221,6 +221,14 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
+  public void setGameRound (final int round)
+  {
+    Arguments.checkIsNotNegative (round, "round");
+
+    gameRoundTextLabel.setText (String.valueOf (round));
+  }
+
+  @Override
   public void setOwnedCountries (final ImmutableSet <CountryPacket> ownedCountries)
   {
     Arguments.checkIsNotNull (ownedCountries, "ownedCountries");

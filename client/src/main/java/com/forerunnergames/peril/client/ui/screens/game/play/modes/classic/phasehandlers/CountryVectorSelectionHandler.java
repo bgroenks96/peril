@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
 
 /**
@@ -28,6 +29,12 @@ import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountr
  */
 public interface CountryVectorSelectionHandler
 {
+  /**
+   * Sets the {@link PlayMap} that will be used to listen for country selection via
+   * {@link com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener}
+   */
+  void setPlayMap (final PlayMap playMap);
+
   /**
    * Start requesting a country selection. Should not be called more than once in a row - {@link #reset()} should be
    * called in between each invocation.

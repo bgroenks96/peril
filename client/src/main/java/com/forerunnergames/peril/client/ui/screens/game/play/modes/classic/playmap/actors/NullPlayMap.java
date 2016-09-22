@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -57,6 +58,18 @@ final class NullPlayMap implements PlayMap
     Arguments.checkIsNotNull (touchUpCoordinate, "touchUpCoordinate");
 
     return false;
+  }
+
+  @Override
+  public void addListener (final PlayMapInputListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+  }
+
+  @Override
+  public void removeListener (final PlayMapInputListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
   }
 
   @Override
@@ -110,6 +123,15 @@ final class NullPlayMap implements PlayMap
   public void changeArmiesBy (final int deltaArmies, final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
+  }
+
+  @Override
+  public boolean countryArmyCountIs (final int armies, final String countryName)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return false;
   }
 
   @Override

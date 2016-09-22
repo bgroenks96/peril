@@ -24,14 +24,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.PlayMapInputDetection;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
 import com.google.common.collect.ImmutableCollection;
@@ -45,20 +44,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import net.engio.mbassy.bus.MBassador;
-
 public final class DefaultPlayMap implements PlayMap
 {
   private final Group group = new Group ();
+  private final List <PlayMapInputListener> listeners = new ArrayList<> ();
+  private final ListIterator <PlayMapInputListener> listenersIterator = listeners.listIterator ();
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
   private final HoveredTerritoryText hoveredTerritoryText;
   private final MapMetadata mapMetadata;
-  private final MBassador <Event> eventBus;
   @Nullable
   private Country hoveredCountry = null;
   @Nullable
@@ -69,8 +68,7 @@ public final class DefaultPlayMap implements PlayMap
                          final PlayMapInputDetection inputDetection,
                          final HoveredTerritoryText hoveredTerritoryText,
                          final Image backgroundImage,
-                         final MapMetadata mapMetadata,
-                         final MBassador <Event> eventBus)
+                         final MapMetadata mapMetadata)
   {
     Arguments.checkIsNotNull (countryNamesToCountries, "countryNamesToCountries");
     Arguments.checkHasNoNullKeysOrValues (countryNamesToCountries, "countryNamesToCountries");
@@ -78,13 +76,11 @@ public final class DefaultPlayMap implements PlayMap
     Arguments.checkIsNotNull (hoveredTerritoryText, "hoveredTerritoryText");
     Arguments.checkIsNotNull (backgroundImage, "backgroundImage");
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.countryNamesToCountries = countryNamesToCountries;
     this.inputDetection = inputDetection;
     this.hoveredTerritoryText = hoveredTerritoryText;
     this.mapMetadata = mapMetadata;
-    this.eventBus = eventBus;
 
     group.setTransform (false);
 
@@ -92,7 +88,7 @@ public final class DefaultPlayMap implements PlayMap
 
     group.addActor (backgroundImage);
 
-    final List <Country> countriesSortedByAtlasIndex = new ArrayList <> (countryNamesToCountries.values ());
+    final List <Country> countriesSortedByAtlasIndex = new ArrayList<> (countryNamesToCountries.values ());
 
     Collections.sort (countriesSortedByAtlasIndex, new Comparator <Country> ()
     {
@@ -230,18 +226,94 @@ public final class DefaultPlayMap implements PlayMap
 
     if (touchedCountry == null) return true;
 
-    if (!touchedCountry.hasName (touchedUpCountry.getName ()))
+    if (touchedCountry.hasName (touchedUpCountry.getName ()))
     {
-      touchedCountry.onTouchUp ();
+      // Rewind first so that all listeners get called.
+      while (listenersIterator.hasPrevious ())
+      {
+        listenersIterator.previous ();
+      }
+
+      // Iterate through all listeners, invoking the callback on each one. Note that #addListener or #removeListener can
+      // be called during a listener callback. This is accounted for in those methods, and is safe because we are using
+      // a shared ListIterator.
+      while (listenersIterator.hasNext ())
+      {
+        listenersIterator.next ().onCountryClicked (touchedUpCountry.getName ());
+      }
     }
     else
     {
-      eventBus.publish (new SelectCountryEvent (touchedUpCountry.getName ()));
+      touchedCountry.onTouchUp ();
     }
 
     touchedCountry = null;
 
     return true;
+  }
+
+  @Override
+  public void addListener (final PlayMapInputListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    listenersIterator.add (listener);
+
+    // Rewind so that the new listener's callback gets invoked in case we are already iterating.
+    final PlayMapInputListener newListener = listenersIterator.previous ();
+    assert newListener.equals (listener);
+  }
+
+  @Override
+  public void removeListener (final PlayMapInputListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    // Remember the iterator's original position.
+    final PlayMapInputListener currentListener = listenersIterator.hasNext () ? listenersIterator.next () : null;
+
+    // Rewind the iterator.
+    while (listenersIterator.hasPrevious ())
+    {
+      listenersIterator.previous ();
+    }
+
+    // Iterate forward and remove the specified listener.
+    while (listenersIterator.hasNext ())
+    {
+      if (listener.equals (listenersIterator.next ()))
+      {
+        listenersIterator.remove ();
+        break;
+      }
+    }
+
+    // If the original position is null, it was at the end, so fast forward to the end.
+    if (currentListener == null)
+    {
+      while (listenersIterator.hasNext ())
+      {
+        listenersIterator.next ();
+      }
+      return;
+    }
+
+    // If the original position is not null, first rewind...
+    while (listenersIterator.hasPrevious ())
+    {
+      listenersIterator.previous ();
+    }
+
+    // ...then iterate forward to the original position, and rewind by one element so that the next call to #next
+    // returns the original position.
+    while (listenersIterator.hasNext ())
+    {
+      if (currentListener.equals (listenersIterator.next ()))
+      {
+        listenersIterator.previous ();
+        break;
+      }
+    }
   }
 
   @Override
@@ -330,6 +402,15 @@ public final class DefaultPlayMap implements PlayMap
     if (!existsCountryWithName (countryName)) return;
 
     getCountryWithName (countryName).changeArmiesBy (deltaArmies);
+  }
+
+  @Override
+  public boolean countryArmyCountIs (final int armies, final String countryName)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    return getCountryWithName (countryName).armyCountIs (armies);
   }
 
   @Override
@@ -469,8 +550,8 @@ public final class DefaultPlayMap implements PlayMap
 
     if (country == null)
     {
-      throw new IllegalStateException ("Cannot find " + DefaultCountry.class.getSimpleName () + " at "
-              + inputCoordinate + ".");
+      throw new IllegalStateException (
+              "Cannot find " + DefaultCountry.class.getSimpleName () + " at " + inputCoordinate + ".");
 
     }
 

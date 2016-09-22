@@ -41,10 +41,10 @@ abstract class AbstractBattleResultDialog extends OkDialog implements BattleResu
   @Nullable
   private BattleResultPacket result;
 
-  public AbstractBattleResultDialog (final WidgetFactory widgetFactory,
-                                     final DialogStyle style,
-                                     final Stage stage,
-                                     final DialogListener listener)
+  AbstractBattleResultDialog (final WidgetFactory widgetFactory,
+                              final DialogStyle style,
+                              final Stage stage,
+                              final DialogListener listener)
   {
     super (widgetFactory, style, stage, listener);
   }
@@ -70,6 +70,18 @@ abstract class AbstractBattleResultDialog extends OkDialog implements BattleResu
   public boolean battleOutcomeIs (final BattleOutcome outcome)
   {
     return result != null && result.outcomeIs (outcome);
+  }
+
+  @Override
+  public String getAttackingCountryName ()
+  {
+    return result != null ? result.getAttackingCountryName () : "";
+  }
+
+  @Override
+  public String getDefendingCountryName ()
+  {
+    return result != null ? result.getDefendingCountryName () : "";
   }
 
   protected abstract String getTitleText (final BattleResultPacket result);

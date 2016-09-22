@@ -62,7 +62,7 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-    log.warn ("Could not defend. Reason: {}", event.getReason ());
+    log.error ("Could not defend. Reason: {}", event.getReason ());
 
     reset ();
   }

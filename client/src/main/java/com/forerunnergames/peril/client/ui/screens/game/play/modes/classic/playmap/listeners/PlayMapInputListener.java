@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +15,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.events;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners;
 
-import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.common.net.events.interfaces.MessageEvent;
-import com.forerunnergames.tools.net.events.local.LocalEvent;
-
-public interface StatusMessageEvent extends MessageEvent <StatusMessage>, LocalEvent
+public interface PlayMapInputListener
 {
+  void onCountryClicked (final String countryName);
 }

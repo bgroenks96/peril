@@ -38,13 +38,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
-import com.forerunnergames.peril.client.events.StatusMessageEvent;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -69,14 +69,16 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.AttackingBattlePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattlePhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.CompositeGamePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.DefendingBattlePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.FortificationPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.GamePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ManualCountryAssignmentPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.OccupationPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageGenerator;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
@@ -89,6 +91,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBo
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
@@ -96,28 +99,35 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmie
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nullable;
 
@@ -131,10 +141,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 {
   private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
   private static final boolean DEBUG = false;
-  private static final Message QUIT_MESSAGE = new DefaultMessage (
-          "Are you sure you want to quit the current game?\nIf you are the host, quitting will end the game for everyone.");
-  private static final Message SURRENDER_AND_QUIT_MESSAGE = new DefaultMessage (
-          "Are you sure you want to surrender & quit the current game?\nIf you are the host, quitting will end the game for everyone.");
+  private static final String QUIT_DIALOG_TITLE_GAME_NOT_IN_PROGRESS = "Quit?";
+  private static final Message QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS = new DefaultMessage (
+          "Are you sure you want to quit?\nIf you are the host, quitting will shut down the server for everyone.");
+  private static final String QUIT_DIALOG_TITLE_GAME_IN_PROGRESS = "Surrender & Quit?";
+  private static final Message QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS = new DefaultMessage (
+          "Are you sure you want to surrender & quit?\nIf you are the host, quitting shut down the server for everyone.");
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final MouseInput mouseInput;
@@ -144,7 +156,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final DebugInputProcessor debugInputProcessor;
   private final Stage stage;
   private final Image playMapTableForegroundImage;
-  private final Table playMapTable;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
@@ -159,7 +170,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final BattleResultDialog attackerBattleResultDialog;
   private final BattleResultDialog defenderBattleResultDialog;
   private final Dialog quitDialog;
-  private final Vector2 tempPosition = new Vector2 ();
   private final Cell <Actor> playMapCell;
   private final ReinforcementPhaseHandler reinforcementPhaseHandler;
   private final ManualCountryAssignmentPhaseHandler manualCountryAssignmentPhaseHandler;
@@ -167,14 +177,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final BattlePhaseHandler defendingBattlePhaseHandler;
   private final OccupationPhaseHandler occupationPhaseHandler;
   private final FortificationPhaseHandler fortificationPhaseHandler;
-  private final StatusMessageEventGenerator statusMessageEventGenerator;
+  private final StatusMessageGenerator statusMessageGenerator;
   private final CompositeDialog allDialogs;
+  private final GamePhaseHandler allGamePhaseHandlers;
+  private final AtomicBoolean isGameInProgress = new AtomicBoolean ();
+  private final Vector2 tempPosition = new Vector2 ();
   private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
-  private boolean endTurnFromAttackPhase;
-  private boolean isSelfBattlePhase;
-  private boolean isSelfFortificationPhase;
   @Nullable
-  private PlayerPacket selfPlayer;
+  private PlayerCardTradeInAvailableEvent tradeInEvent; // TODO Production: Remove.
 
   public ClassicModePlayScreen (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
@@ -204,95 +214,112 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
 
-    intelBox = widgetFactory.createIntelBox (new ClickListener ()
+    intelBox = widgetFactory.createIntelBox (new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y) // Detailed Report Button
+      public void changed (final ChangeEvent event, final Actor actor)
       {
         // TODO Implement detailed report button.
+
+        log.debug ("Clicked detailed report button");
       }
     });
 
-    controlRoomBox = widgetFactory.createControlRoomBox (new ClickListener ()
+    controlRoomBox = widgetFactory.createControlRoomBox (new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y) // Trade In Button
+      public void changed (final ChangeEvent event, final Actor actor)
       {
-        // TODO Implement trade-in button.
-      }
-    }, new ClickListener ()
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y) // Fortify Button
-      {
-        if (isSelfBattlePhase) attackingBattlePhaseHandler.onEndBattlePhase ();
-      }
-    }, new ClickListener ()
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y) // End Turn Button
-      {
-        if (isSelfBattlePhase)
-        {
-          attackingBattlePhaseHandler.onEndBattlePhase ();
-          endTurnFromAttackPhase = true;
-        }
+        // TODO Implement TradeInDialog & TradeInPhaseHandler.
 
-        if (isSelfFortificationPhase) fortificationPhaseHandler.onEndFortificationPhase ();
+        log.debug ("Clicked trade-in button");
+
+        if (tradeInEvent == null) return; // TODO Production: Remove.
+
+        eventBus.publish (new PlayerTradeInCardsRequestEvent (tradeInEvent.getMatches ().iterator ().next ()));
+        controlRoomBox.disableButton (ControlRoomBox.Button.TRADE_IN);
+        tradeInEvent = null; // TODO Production: Remove.
       }
-    }, new ClickListener ()
+    }, new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y) // My Settings Button
+      public void changed (final ChangeEvent event, final Actor actor)
       {
-        // TODO Implement my settings button.
+        log.debug ("Clicked fortify button");
+
+        attackingBattlePhaseHandler.onEndBattlePhase ();
+        controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
+        controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
       }
-    }, new ClickListener ()
+    }, new ChangeListener ()
     {
       @Override
-      public void clicked (final InputEvent event, final float x, final float y) // Surrender Button
+      public void changed (final ChangeEvent event, final Actor actor)
       {
-        quitDialog.setTitle ("Surrender & Quit?");
-        quitDialog.setMessage (SURRENDER_AND_QUIT_MESSAGE);
+        log.debug ("Clicked end turn button");
+
+        eventBus.publish (new EndPlayerTurnRequestEvent ());
+        controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
+        controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
+      }
+    }, new ChangeListener ()
+    {
+      @Override
+      public void changed (final ChangeEvent event, final Actor actor)
+      {
+        log.debug ("Clicked my settings button");
+
+        // TODO Implement My Settings button.
+      }
+    }, new ChangeListener ()
+    {
+      @Override
+      public void changed (final ChangeEvent event, final Actor actor)
+      {
+        log.debug ("Clicked surrender & quit button");
+
+        quitDialog.setTitle (getQuitDialogTitle ());
+        quitDialog.setMessage (getQuitDialogMessage ());
         quitDialog.show ();
       }
     });
 
     final Stack rootStack = new Stack ();
     rootStack.setFillParent (true);
+    rootStack.setDebug (DEBUG, true);
 
-    // @formatter:off
     final Stack playMapTableStack = new Stack ();
-    playMapTable = new Table ().top ().left ().pad (4);
+    final Table playMapTable = new Table ().top ().left ().pad (4);
     playMapCell = playMapTable.add (playMap.asActor ()).expand ().fill ();
     playMapTableStack.add (playMapTable);
     playMapTableStack.add (playMapTableForegroundImage);
-    // @formatter:on
+    playMapTableStack.setDebug (DEBUG, true);
+    playMapTable.setDebug (DEBUG, true);
 
     final Table sideBarTable = new Table ().top ().left ();
     sideBarTable.add (intelBox.asActor ()).size (296, 484).spaceBottom (6).fill ();
     sideBarTable.row ();
     sideBarTable.add (controlRoomBox.asActor ()).size (296, 318).spaceTop (6).fill ();
-    // sideBarTable.debugAll ();
+    sideBarTable.setDebug (DEBUG, true);
 
     // @formatter:off
     final Table topTable = new Table ().top ().left ();
     topTable.add (playMapTableStack).size (PlayMapSettings.ACTUAL_WIDTH + 8, PlayMapSettings.ACTUAL_HEIGHT + 8).spaceRight (6).fill ();
     topTable.add (sideBarTable).spaceLeft (6).size (296, PlayMapSettings.ACTUAL_HEIGHT + 8).fill ();
-    //topTable.debugAll ();
+    topTable.setDebug (DEBUG, true);
     // @formatter:on
 
     final Table bottomTable = new Table ().top ().left ();
     bottomTable.add (statusBox.asActor ()).size (700, 256).spaceRight (6).fill ();
     bottomTable.add (chatBox.asActor ()).size (700, 256).spaceLeft (6).spaceRight (6).fill ();
     bottomTable.add (playerBox.asActor ()).size (498, 256).spaceLeft (6).fill ();
-    // bottomTable.debugAll ();
+    bottomTable.setDebug (DEBUG, true);
 
     final Table screenTable = new Table ().top ().left ().pad (5);
     screenTable.add (topTable).height (808).left ().spaceBottom (6).fill ();
     screenTable.row ().spaceTop (6);
     screenTable.add (bottomTable).height (256).fill ();
-    // screenTable.debugAll ();
+    screenTable.setDebug (DEBUG, true);
 
     rootStack.add (screenTable);
 
@@ -316,13 +343,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     allDialogs = new CompositeDialog (attackDialog, defendDialog, attackerBattleResultDialog, defenderBattleResultDialog,
                                       occupationDialog, fortificationDialog, quitDialog);
 
+    statusMessageGenerator = new StatusMessageGenerator (statusBox, widgetFactory);
     reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
     attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog, attackerBattleResultDialog, eventBus);
     defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog, defenderBattleResultDialog, eventBus);
     occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
-    statusMessageEventGenerator = new StatusMessageEventGenerator (eventBus);
+    allGamePhaseHandlers = new CompositeGamePhaseHandler (reinforcementPhaseHandler, manualCountryAssignmentPhaseHandler,
+                                                          attackingBattlePhaseHandler, defendingBattlePhaseHandler,
+                                                          occupationPhaseHandler, fortificationPhaseHandler);
 
     // @formatter:on
 
@@ -339,9 +369,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
           {
             if (attackDialog.isShown () || fortificationDialog.isShown ()) return false;
 
-            quitDialog.setTitle ("Quit?");
-            quitDialog.setMessage (QUIT_MESSAGE);
-            quitDialog.show ();
+            controlRoomBox.pressButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
 
             return false;
           }
@@ -402,8 +430,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     final InputMultiplexer inputMultiplexer = new InputMultiplexer (preInputProcessor, stage, this);
 
-    debugInputProcessor = new DebugInputProcessor (debugEventGenerator, mouseInput, playMap, statusBox, chatBox,
-            playerBox, occupationDialog, fortificationDialog, attackDialog, defendDialog, eventBus);
+    debugInputProcessor = new DebugInputProcessor (debugEventGenerator, widgetFactory, mouseInput, playMap, statusBox,
+            chatBox, playerBox, occupationDialog, fortificationDialog, attackDialog, defendDialog, eventBus);
 
     if (DEBUG) inputMultiplexer.addProcessor (debugInputProcessor);
 
@@ -416,7 +444,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     showCursor ();
 
     eventBus.subscribe (this);
-    eventBus.subscribe (statusMessageEventGenerator);
+    eventBus.subscribe (statusMessageGenerator);
 
     Gdx.input.setInputProcessor (inputProcessor);
 
@@ -431,6 +459,12 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
     allDialogs.refreshAssets ();
+
+    controlRoomBox.disableButton (ControlRoomBox.Button.TRADE_IN);
+    controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
+    controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
+    controlRoomBox.enableButton (ControlRoomBox.Button.MY_SETTINGS);
+    controlRoomBox.enableButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
   }
 
   @Override
@@ -467,13 +501,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   public void hide ()
   {
     eventBus.unsubscribe (this);
-    eventBus.unsubscribe (reinforcementPhaseHandler);
-    eventBus.unsubscribe (manualCountryAssignmentPhaseHandler);
-    eventBus.unsubscribe (attackingBattlePhaseHandler);
-    eventBus.unsubscribe (defendingBattlePhaseHandler);
-    eventBus.unsubscribe (occupationPhaseHandler);
-    eventBus.unsubscribe (fortificationPhaseHandler);
-    eventBus.unsubscribe (statusMessageEventGenerator);
+    eventBus.unsubscribe (statusMessageGenerator);
 
     stage.unfocusAll ();
 
@@ -485,13 +513,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     chatBox.clear ();
     statusBox.clear ();
     playerBox.clear ();
-    attackingBattlePhaseHandler.reset ();
-    defendingBattlePhaseHandler.reset ();
-    if (DEBUG) debugInputProcessor.reset ();
 
     clearPlayMap ();
 
+    allGamePhaseHandlers.deactivate ();
     allDialogs.hide (null);
+
+    isGameInProgress.set (false);
+    tradeInEvent = null; // TODO Production: Remove.
+
+    if (DEBUG) debugInputProcessor.reset ();
   }
 
   @Override
@@ -501,30 +532,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     stage.dispose ();
   }
 
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    playMap.touchDown (tempPosition.set (screenX, screenY), button);
-
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    playMap.touchUp (tempPosition.set (screenX, screenY));
-
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    playMap.mouseMoved (tempPosition.set (screenX, screenY));
-
-    return false;
-  }
-
   @Handler
   void onEvent (final PlayGameEvent event)
   {
@@ -532,10 +539,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    selfPlayer = event.getSelfPlayer ();
-
-    attackingBattlePhaseHandler.setSelfPlayer (selfPlayer);
-    defendingBattlePhaseHandler.setSelfPlayer (selfPlayer);
+    allGamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
+    controlRoomBox.setSelfPlayer (event.getSelfPlayer ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -554,21 +559,13 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Handler
-  void onEvent (final StatusMessageEvent event)
+  void onEvent (final BeginGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        statusBox.addRow (widgetFactory.createStatusMessageBoxRow (event.getMessage ()));
-        statusBox.showLastRow ();
-      }
-    });
+    isGameInProgress.set (true);
   }
 
   @Handler
@@ -704,19 +701,15 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (event.getAssignmentMode ().is (InitialCountryAssignment.MANUAL))
-    {
-      eventBus.subscribe (manualCountryAssignmentPhaseHandler);
-    }
-
-    final String mode = Strings.toProperCase (String.valueOf (event.getAssignmentMode ()));
+    if (event.assignmentModeIs (InitialCountryAssignment.MANUAL)) manualCountryAssignmentPhaseHandler.activate ();
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        intelBox.setGamePhaseName (Strings.format ("{} Country Assignment", mode));
+        intelBox.setGamePhaseName (Strings.format ("{} Country Assignment",
+                                                   Strings.toProperCase (String.valueOf (event.getAssignmentMode ()))));
       }
     });
   }
@@ -728,10 +721,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (event.getAssignmentMode ().is (InitialCountryAssignment.MANUAL))
-    {
-      eventBus.unsubscribe (manualCountryAssignmentPhaseHandler);
-    }
+    if (event.assignmentModeIs (InitialCountryAssignment.MANUAL)) manualCountryAssignmentPhaseHandler.deactivate ();
   }
 
   @Handler
@@ -741,7 +731,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    eventBus.subscribe (reinforcementPhaseHandler);
+    reinforcementPhaseHandler.activate ();
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -760,7 +750,24 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    eventBus.unsubscribe (reinforcementPhaseHandler);
+    reinforcementPhaseHandler.deactivate ();
+  }
+
+  @Handler
+  void onEvent (final BeginRoundEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGameRound (event.getRound ());
+      }
+    });
   }
 
   @Handler
@@ -770,7 +777,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    eventBus.subscribe (reinforcementPhaseHandler);
+    reinforcementPhaseHandler.activateForSelf (event.getPlayer ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -789,21 +796,15 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    // TODO Implement trade-in.
-
-    if (!event.isTradeInRequired ()) return;
-
-    eventBus.publish (new PlayerTradeInCardsRequestEvent (event.getMatches ().iterator ().next ()));
-  }
-
-  @Handler
-  void onEvent (final PlayerTradeInCardsResponseSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    // TODO Implement trade-in.
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        tradeInEvent = event; // TODO Production: Remove.
+        controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
+      }
+    });
   }
 
   @Handler
@@ -813,7 +814,17 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    eventBus.unsubscribe (reinforcementPhaseHandler);
+    tradeInEvent = null; // TODO Production: Remove.
+    reinforcementPhaseHandler.deactivateForSelf (event.getPlayer ());
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
+      }
+    });
   }
 
   @Handler
@@ -823,19 +834,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getPlayer ()))
-    {
-      isSelfBattlePhase = true;
-      attackingBattlePhaseHandler.reset ();
-      occupationPhaseHandler.reset ();
-      eventBus.subscribe (attackingBattlePhaseHandler);
-      eventBus.subscribe (occupationPhaseHandler);
-    }
-    else
-    {
-      defendingBattlePhaseHandler.reset ();
-      eventBus.subscribe (defendingBattlePhaseHandler);
-    }
+    defendingBattlePhaseHandler.activateForEveryoneElse (event.getPlayer ());
+    attackingBattlePhaseHandler.activateForSelf (event.getPlayer ());
+    occupationPhaseHandler.activateForSelf (event.getPlayer ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -843,71 +844,46 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         intelBox.setGamePhaseName ("Attack");
+        controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
+        controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
       }
     });
-
-    statusOn (isSelf (event.getPlayer ()), "Attack phase.");
-    statusOn (!isSelf (event.getPlayer ()), "{} is deciding where to attack...", event.getPlayerName ());
   }
 
   @Handler
-  void onEvent (final PlayerAttackOrderResponseSuccessEvent event)
+  void onEvent (final PlayerOccupyCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getDefendingPlayer ())) return;
-
-    final int defenderLoss = Math.abs (event.getDefendingCountryArmyDelta ());
-    final int attackerLoss = Math.abs (event.getAttackingCountryArmyDelta ());
-    final boolean defenderLostArmies = defenderLoss > 0;
-    final boolean attackerLostArmies = attackerLoss > 0;
-    final boolean defenderOnlyLostArmies = defenderLostArmies && !attackerLostArmies;
-    final boolean attackerOnlyLostArmies = !defenderLostArmies && attackerLostArmies;
-    final boolean bothLostArmies = attackerLostArmies && defenderLostArmies;
-    final String attacker = isSelf (event.getAttackingPlayer ()) ? "You" : event.getAttackingPlayerName ();
-    final String defender = event.getDefendingPlayerName ();
-    final String attackerCountry = event.getAttackingCountryName ();
-    final String defenderCountry = event.getDefendingCountryName ();
-    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army",
-                                                              defenderLoss + " armies");
-    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army",
-                                                              defenderLoss + " armies");
-
-    statusOn (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
-              defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
-
-    statusOn (attackerOnlyLostArmies, "{} attacked {} in {} from {} & lost {}!", attacker, defender, defenderCountry,
-              attackerCountry, attackerLossInWords);
-
-    statusOn (defenderOnlyLostArmies, "{} attacked {} in {} from {} & destroyed {}!", attacker, defender,
-              defenderCountry, attackerCountry, defenderLossInWords);
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
+      }
+    });
   }
 
   @Handler
-  void onEvent (final PlayerAttackVictoryEvent event)
+  void onEvent (final PlayerOccupyCountryResponseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
 
-    statusOn (isSelf (event.getPlayer ()), "General, we have conquered {}!",
-              event.getBattleResult ().getDefendingCountryName ());
-
-    statusOn (!isSelf (event.getPlayer ()), "{} conquered {}, defeating {} in battle.", event.getPlayerName (),
-              event.getBattleResult ().getDefendingCountryName (), event.getBattleResult ().getDefendingPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final PlayerLoseGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    statusOn (isSelf (event.getPlayer ()), "General, we lost the war.");
-    statusOn (!isSelf (event.getPlayer ()), "{} was annihilated.", event.getPlayerName ());
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
+        controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
+      }
+    });
   }
 
   @Handler
@@ -923,6 +899,9 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       public void run ()
       {
         intelBox.setGamePhaseName ("Game Over");
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
       }
     });
   }
@@ -934,19 +913,28 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getPlayer ()))
+    defendingBattlePhaseHandler.deactivateForEveryoneElse (event.getPlayer ());
+    attackingBattlePhaseHandler.deactivateForSelf (event.getPlayer ());
+    occupationPhaseHandler.deactivateForSelf (event.getPlayer ());
+
+    Gdx.app.postRunnable (new Runnable ()
     {
-      isSelfBattlePhase = false;
-      attackingBattlePhaseHandler.reset ();
-      occupationPhaseHandler.reset ();
-      eventBus.unsubscribe (attackingBattlePhaseHandler);
-      eventBus.unsubscribe (occupationPhaseHandler);
-    }
-    else
-    {
-      defendingBattlePhaseHandler.reset ();
-      eventBus.unsubscribe (defendingBattlePhaseHandler);
-    }
+      @Override
+      public void run ()
+      {
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
+      }
+    });
+  }
+
+  @Handler
+  void onEvent (final PlayerEndAttackPhaseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
   }
 
   @Handler
@@ -956,19 +944,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (endTurnFromAttackPhase)
-    {
-      endTurnFromAttackPhase = false;
-      fortificationPhaseHandler.onEndFortificationPhase ();
-      return;
-    }
-
-    if (isSelf (event.getPlayer ()))
-    {
-      isSelfFortificationPhase = true;
-      fortificationPhaseHandler.reset ();
-      eventBus.subscribe (fortificationPhaseHandler);
-    }
+    fortificationPhaseHandler.activateForSelf (event.getPlayer ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -987,12 +963,35 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getPlayer ()))
+    fortificationPhaseHandler.deactivateForSelf (event.getPlayer ());
+
+    Gdx.app.postRunnable (new Runnable ()
     {
-      isSelfFortificationPhase = false;
-      fortificationPhaseHandler.reset ();
-      eventBus.unsubscribe (fortificationPhaseHandler);
-    }
+      @Override
+      public void run ()
+      {
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
+      }
+    });
+  }
+
+  @Handler
+  void onEvent (final EndPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
+        controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
+      }
+    });
   }
 
   @Handler
@@ -1030,14 +1029,32 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     });
   }
 
+  @Handler
+  void onEvent (final EndGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    isGameInProgress.set (false);
+
+    tradeInEvent = null; // TODO Production: Remove.
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        controlRoomBox.disableButton (ControlRoomBox.Button.TRADE_IN);
+        controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
+        controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
+      }
+    });
+  }
+
   private static void hideCursor ()
   {
     Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
-  }
-
-  private boolean isSelf (final PlayerPacket player)
-  {
-    return selfPlayer != null && player.is (selfPlayer);
   }
 
   private void showCursor ()
@@ -1050,12 +1067,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     this.playMap = playMap;
     playMapCell.setActor (this.playMap.asActor ());
     intelBox.setMapMetadata (playMap.getMapMetadata ());
-    reinforcementPhaseHandler.setPlayMap (playMap);
-    manualCountryAssignmentPhaseHandler.setPlayMap (playMap);
-    attackingBattlePhaseHandler.setPlayMap (playMap);
-    defendingBattlePhaseHandler.setPlayMap (playMap);
-    occupationPhaseHandler.setPlayMap (playMap);
-    fortificationPhaseHandler.setPlayMap (playMap);
+    allGamePhaseHandlers.setPlayMap (playMap);
     if (DEBUG) debugInputProcessor.setPlayMap (this.playMap);
   }
 
@@ -1067,12 +1079,28 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     updatePlayMap (PlayMap.NULL_PLAY_MAP);
   }
 
+  private String getQuitDialogTitle ()
+  {
+    return isGameInProgress.get () ? QUIT_DIALOG_TITLE_GAME_IN_PROGRESS : QUIT_DIALOG_TITLE_GAME_NOT_IN_PROGRESS;
+  }
+
+  private Message getQuitDialogMessage ()
+  {
+    return isGameInProgress.get () ? QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS : QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS;
+  }
+
   private final class DefaultAttackDialogListener extends AbstractBattleDialogListener implements AttackDialogListener
   {
     @Override
     public void onBattle ()
     {
       attackingBattlePhaseHandler.onBattle ();
+    }
+
+    @Override
+    public void onRetreat ()
+    {
+      attackingBattlePhaseHandler.onRetreat ();
     }
 
     @Override
@@ -1089,12 +1117,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       Arguments.checkIsNotNull (result, "result");
 
       attackingBattlePhaseHandler.onResultAttackerDefeated (result);
-    }
-
-    @Override
-    public void onRetreat ()
-    {
-      attackingBattlePhaseHandler.onRetreat ();
     }
 
     @Override
@@ -1169,7 +1191,26 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     public void onHide ()
     {
       if (!attackDialog.isBattling ()) attackDialog.hide ();
-      if (attackerBattleResultDialog.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS)) occupationDialog.show ();
+
+      if (attackerBattleResultDialog.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS))
+      {
+        // Update occupation dialog to match preemptive play map changes (defending country ownership change).
+        occupationDialog
+                .updateCountries (playMap.getCountryWithName (attackerBattleResultDialog.getAttackingCountryName ()),
+                                  playMap.getCountryWithName (attackerBattleResultDialog.getDefendingCountryName ()));
+
+        // Show the occupation dialog here (rather than immediately after battle, in response to
+        // PlayerOccupyCountryRequestEvent in OccupationPhaseHandler) so that it doesn't appear until the attacker
+        // battle result dialog is closed. This allows the attack dialog with the final battle result to still be seen
+        // underneath the battle result dialog in the meantime.
+        //
+        // OccupationPhaseHandler usually has already set the occupation dialog data by this point. If for some reason
+        // (extreme network latency) the PlayerOccupyCountryRequestEvent hasn't yet arrived, the dialog will still be
+        // shown, but it will not be functional. It's still not a problem because the event will soon arrive and update
+        // the dialog.
+        occupationDialog.show ();
+      }
+
       if (!occupationDialog.isShown () && !quitDialog.isShown ()) playMap.enable (mouseInput.position ());
     }
   }
@@ -1220,15 +1261,24 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private final class FortificationDialogListener implements CancellableDialogListener
   {
     @Override
-    public void onSubmit ()
-    {
-      fortificationPhaseHandler.onFortify ();
-    }
-
-    @Override
     public void onCancel ()
     {
       fortificationPhaseHandler.onCancel ();
+    }
+
+    @Override
+    public void onSubmit ()
+    {
+      fortificationPhaseHandler.onFortify ();
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
+        }
+      });
     }
 
     @Override
@@ -1254,12 +1304,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     }
 
     @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
     public void onCancel ()
     {
       if (!attackDialog.isShown () && !defendDialog.isShown () && !occupationDialog.isShown ()
@@ -1269,5 +1313,35 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         playMap.enable (mouseInput.position ());
       }
     }
+
+    @Override
+    public void onShow ()
+    {
+      playMap.disable ();
+    }
+  }
+
+  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    playMap.touchDown (tempPosition.set (screenX, screenY), button);
+
+    return false;
+  }
+
+  @Override
+  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    playMap.touchUp (tempPosition.set (screenX, screenY));
+
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved (final int screenX, final int screenY)
+  {
+    playMap.mouseMoved (tempPosition.set (screenX, screenY));
+
+    return false;
   }
 }

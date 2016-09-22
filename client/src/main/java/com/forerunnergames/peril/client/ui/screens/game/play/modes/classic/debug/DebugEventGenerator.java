@@ -18,7 +18,6 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
-import com.forerunnergames.peril.client.events.DefaultStatusMessageEvent;
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
@@ -101,6 +100,12 @@ public final class DebugEventGenerator
   private Iterator <Integer> playerTurnOrderIterator;
   private PlayMap playMap;
 
+  private enum NumberSign
+  {
+    NEGATIVE,
+    POSITIVE
+  }
+
   public DebugEventGenerator (final PlayMap playMap, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
@@ -129,7 +134,21 @@ public final class DebugEventGenerator
 
   static int getRandomCountryDeltaArmyCount ()
   {
-    return Randomness.getRandomIntegerFrom (0, ClassicGameRules.MAX_ARMIES_ON_COUNTRY);
+    final int randomDelta = Randomness.getRandomIntegerFrom (0, ClassicGameRules.MAX_ARMIES_ON_COUNTRY);
+    final NumberSign randomSign = Randomness.getRandomElementFrom (NumberSign.values ());
+
+    return randomSign == NumberSign.NEGATIVE ? randomDelta * -1 : randomDelta;
+  }
+
+  public static int getRandomArmiesInHand ()
+  {
+    return Randomness.getRandomIntegerFrom (ClassicGameRules.MIN_ARMIES_IN_HAND, ClassicGameRules.MAX_ARMIES_IN_HAND);
+  }
+
+  public static int getRandomCardsInHand ()
+  {
+    return Randomness.getRandomIntegerFrom (ClassicGameRules.ABSOLUTE_MIN_CARDS_IN_HAND,
+                                            ClassicGameRules.ABSOLUTE_MAX_CARDS_IN_HAND);
   }
 
   public void makePlayersUnavailable (final Collection <PlayerPacket> players)
@@ -180,17 +199,12 @@ public final class DebugEventGenerator
     if (shouldResetPlayers ()) return Optional.absent ();
 
     return Optional.of (new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), nextAvailablePlayerName (),
-            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0));
-  }
-
-  void generateStatusMessageEvent ()
-  {
-    eventBus.publish (new DefaultStatusMessageEvent (createStatusMessage ()));
+            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0, getRandomCardsInHand ()));
   }
 
   void generateChatMessageSuccessEvent ()
   {
-    eventBus.publish (new ChatMessageSuccessEvent (createChatMessage ()));
+    eventBus.publish (new ChatMessageSuccessEvent (createRandomChatMessage ()));
   }
 
   void generatePlayerJoinGameSuccessEvent ()
@@ -235,10 +249,15 @@ public final class DebugEventGenerator
     this.playMap = playMap;
   }
 
+  StatusMessage createRandomStatusMessage ()
+  {
+    return new DefaultStatusMessage (createRandomMessageText ());
+  }
+
   private static PlayerPacket createRandomPlayer ()
   {
     return new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), getRandomPlayerName (),
-            getRandomPlayerColor (), getRandomPlayerTurnOrder (), 0);
+            getRandomPlayerColor (), getRandomPlayerTurnOrder (), 0, 0);
   }
 
   private void resetPlayersKeepUnavailable ()
@@ -275,18 +294,13 @@ public final class DebugEventGenerator
     playerTurnOrderIterator = availablePlayerTurnOrders.iterator ();
   }
 
-  private StatusMessage createStatusMessage ()
-  {
-    return new DefaultStatusMessage (createMessageText ());
-  }
-
-  private ChatMessage createChatMessage ()
+  private ChatMessage createRandomChatMessage ()
   {
     final Author author = new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (),
             Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES),
-            Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES), 0, 0);
+            Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES), 0, 0, 0);
 
-    return new DefaultChatMessage (author, createMessageText ());
+    return new DefaultChatMessage (author, createRandomMessageText ());
   }
 
   private boolean shouldResetPlayers ()
@@ -313,7 +327,7 @@ public final class DebugEventGenerator
     return playerTurnOrderIterator.next ();
   }
 
-  private String createMessageText ()
+  private String createRandomMessageText ()
   {
     final ImmutableList <String> randomSubsetWordList = RANDOM_WORDS.subList (0,
                                                                               Randomness.getRandomIntegerFrom (1, 30));

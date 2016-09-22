@@ -17,6 +17,9 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
+import com.forerunnergames.peril.client.events.SelectAttackSourceCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectAttackTargetCountryRequestEvent;
+import com.forerunnergames.peril.client.events.SelectCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
@@ -44,14 +47,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   {
     super (playMap, attackDialog, resultDialog, eventBus);
 
-    countryVectorSelectionHandler = new AbstractCountryVectorSelectionHandler ("attack", eventBus)
-    {
-      @Override
-      public void onEnd (final String sourceCountryName, final String targetCountryName)
-      {
-        eventBus.publish (new PlayerSelectAttackVectorRequestEvent (sourceCountryName, targetCountryName));
-      }
-    };
+    countryVectorSelectionHandler = new AttackingBattlePhaseCountryVectorSelectionHandler (playMap, eventBus);
   }
 
   @Override
@@ -59,6 +55,15 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   {
     super.reset ();
     countryVectorSelectionHandler.reset ();
+  }
+
+  @Override
+  public void setPlayMap (final PlayMap playMap)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
+
+    super.setPlayMap (playMap);
+    countryVectorSelectionHandler.setPlayMap (playMap);
   }
 
   @Override
@@ -108,5 +113,37 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
 
     reset ();
     countryVectorSelectionHandler.restart ();
+  }
+
+  private static class AttackingBattlePhaseCountryVectorSelectionHandler extends AbstractCountryVectorSelectionHandler
+  {
+    private final MBassador <Event> eventBus;
+
+    public AttackingBattlePhaseCountryVectorSelectionHandler (final PlayMap playMap, final MBassador <Event> eventBus)
+    {
+      super (playMap, eventBus);
+
+      this.eventBus = eventBus;
+    }
+
+    @Override
+    SelectCountryRequestEvent createSourceCountrySelectionRequest ()
+    {
+      return new SelectAttackSourceCountryRequestEvent ();
+    }
+
+    @Override
+    SelectCountryRequestEvent createTargetCountrySelectionRequest (final String sourceCountryName)
+    {
+      Arguments.checkIsNotNull (sourceCountryName, "sourceCountryName");
+
+      return new SelectAttackTargetCountryRequestEvent (sourceCountryName);
+    }
+
+    @Override
+    public void onEnd (final String sourceCountryName, final String targetCountryName)
+    {
+      eventBus.publish (new PlayerSelectAttackVectorRequestEvent (sourceCountryName, targetCountryName));
+    }
   }
 }

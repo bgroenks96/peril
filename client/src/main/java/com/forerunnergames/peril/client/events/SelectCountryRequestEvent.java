@@ -15,19 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result;
+package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.common.game.BattleOutcome;
-import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.tools.net.events.local.LocalEvent;
 
-public interface BattleResultDialog extends Dialog
+public interface SelectCountryRequestEvent extends LocalEvent
 {
-  void show (final BattleResultPacket result);
-
-  boolean battleOutcomeIs (final BattleOutcome outcome);
-
-  String getAttackingCountryName ();
-
-  String getDefendingCountryName ();
 }

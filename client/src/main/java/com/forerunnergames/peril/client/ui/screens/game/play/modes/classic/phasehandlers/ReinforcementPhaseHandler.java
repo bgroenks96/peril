@@ -19,9 +19,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 
 import com.badlogic.gdx.Gdx;
 
-import com.forerunnergames.peril.client.events.SelectCountryEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
@@ -39,28 +37,34 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ReinforcementPhaseHandler
+public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandler.class);
-  private final MBassador <Event> eventBus;
-  private PlayMap playMap;
   @Nullable
-  private PlayerBeginReinforcementEvent beginReinforcementEvent;
+  private PlayerBeginReinforcementEvent serverInformEvent;
 
   public ReinforcementPhaseHandler (final PlayMap playMap, final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
-
-    this.playMap = playMap;
-    this.eventBus = eventBus;
+    super (playMap, eventBus);
   }
 
-  public void setPlayMap (final PlayMap playMap)
+  @Override
+  protected void onCountryClicked (final String countryName)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
+    if (checkServerInformEventExistsForCountryClick (countryName).failed ()) return;
+    if (checkPlayerOwnsClickedCountry (countryName).failed ()) return;
+    if (checkCanReinforceCountry (countryName).failed ()) return;
 
-    this.playMap = playMap;
+    preemptivelyUpdatePlayMap (countryName);
+    publish (new PlayerReinforceCountryRequestEvent (countryName, 1));
+    reset ();
+  }
+
+  @Override
+  public void reset ()
+  {
+    super.reset ();
+    serverInformEvent = null;
   }
 
   @Handler
@@ -70,35 +74,9 @@ public final class ReinforcementPhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    beginReinforcementEvent = event;
+    serverInformEvent = event;
 
-    askPlayerToChooseACountry (event.getPlayerName ());
-  }
-
-  @Handler
-  void onEvent (final SelectCountryEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    final String countryName = event.getCountryName ();
-
-    if (checkRequestExistsFor (event).failed ()) return;
-    if (checkContainsPlayerOwnedCountry (event).failed ()) return;
-    if (checkCanReinforceCountry (countryName).failed ()) return;
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        // Preemptively update the play map for responsive UI (assume success from server).
-        playMap.changeArmiesBy (1, countryName);
-      }
-    });
-
-    eventBus.publish (new PlayerReinforceCountryRequestEvent (countryName, 1));
+    listenForPlayMapCountryClicks ();
   }
 
   @Handler
@@ -108,7 +86,7 @@ public final class ReinforcementPhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    beginReinforcementEvent = null;
+    if (isSelf (event.getPlayer ())) verifyPreemptivePlayMapUpdates (event);
   }
 
   @Handler
@@ -117,38 +95,23 @@ public final class ReinforcementPhaseHandler
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-    log.warn ("Error. Could not reinforce {} with {}. Reason: {}.", event.getOriginalRequest ().getCountryName (),
-              Strings.pluralize (event.getOriginalRequest ().getReinforcementCount (), "army", "armies"),
-              event.getReason ());
+    log.error ("Error. Could not reinforce {} with {}. Reason: {}.", event.getOriginalRequest ().getCountryName (),
+               Strings.pluralize (event.getOriginalRequest ().getReinforcementCount (), "army", "armies"),
+               event.getReason ());
 
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        // Roll back preemptive play map changes (server denied request).
-        playMap.changeArmiesBy (-1, event.getOriginalRequest ().getCountryName ());
-      }
-    });
-
-    eventBus.publish (StatusMessageEventGenerator.create (Strings
-            .format ("Whoops, you aren't authorized to reinforce {}.", event.getOriginalRequest ().getCountryName ())));
-
-    askPlayerToChooseACountry (event.getPlayerName ());
+    rollBackPreemptivePlayMapUpdates (event.getOriginalRequest ().getCountryName ());
+    reset ();
   }
 
-  private void askPlayerToChooseACountry (final String playerName)
+  private Result <String> checkServerInformEventExistsForCountryClick (final String countryName)
   {
-    eventBus.publish (StatusMessageEventGenerator
-            .create (Strings.format ("{}, choose a country to reinforce.", playerName)));
-  }
-
-  private Result <String> checkRequestExistsFor (final SelectCountryEvent event)
-  {
-    if (beginReinforcementEvent == null)
+    if (serverInformEvent == null)
     {
-      final String failureMessage = Strings
-              .format ("Ignoring [{}] because no prior corresponding reinforcement request was received.", event);
+      // @formatter:off
+      final String failureMessage =
+              Strings.format ("Ignoring click on country [{}] because did not receive server inform event [{}].",
+                              countryName, PlayerBeginReinforcementEvent.class.getSimpleName ());
+      // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -156,15 +119,17 @@ public final class ReinforcementPhaseHandler
     return Result.success ();
   }
 
-  private Result <String> checkContainsPlayerOwnedCountry (final SelectCountryEvent event)
+  private Result <String> checkPlayerOwnsClickedCountry (final String countryName)
   {
-    assert beginReinforcementEvent != null;
+    assert serverInformEvent != null;
 
-    if (beginReinforcementEvent.isNotPlayerOwnedCountry (event.getCountryName ()))
+    if (serverInformEvent.isNotPlayerOwnedCountry (countryName))
     {
-      final String failureMessage = Strings
-              .format ("Ignoring [{}] because not a valid response to [{}] (Player [{}] does not own country [{}].)",
-                       event, beginReinforcementEvent, beginReinforcementEvent.getPlayer (), event.getCountryName ());
+      // @formatter:off
+      final String failureMessage =
+              Strings.format ("Ignoring click on country [{}] because not a valid response to [{}] (Player [{}] does not own country.)",
+                              countryName, serverInformEvent, serverInformEvent.getPlayer ());
+      // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -174,18 +139,55 @@ public final class ReinforcementPhaseHandler
 
   private Result <String> checkCanReinforceCountry (final String countryName)
   {
-    assert beginReinforcementEvent != null;
+    assert serverInformEvent != null;
 
-    if (!beginReinforcementEvent.canReinforceCountryWithSingleArmy (countryName))
+    if (!serverInformEvent.canReinforceCountryWithSingleArmy (countryName))
     {
-      final String failureMessage = Strings.format (
-                                                    "Cannot reinforce country [{}] because it already contains the "
-                                                            + "maximum number of armies: [{}].",
-                                                    countryName, beginReinforcementEvent.getMaxArmiesPerCountry ());
+      // @formatter:off
+      final String failureMessage =
+              Strings.format ("Cannot reinforce country [{}] because it already contains the maximum number of armies: [{}].",
+                              countryName, serverInformEvent.getMaxArmiesPerCountry ());
+      // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
 
     return Result.success ();
+  }
+
+  private void preemptivelyUpdatePlayMap (final String countryName)
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        changeCountryArmiesBy (1, countryName);
+      }
+    });
+  }
+
+  private void verifyPreemptivePlayMapUpdates (final PlayerReinforceCountrySuccessEvent event)
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
+      }
+    });
+  }
+
+  private void rollBackPreemptivePlayMapUpdates (final String countryName)
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        changeCountryArmiesBy (-1, countryName);
+      }
+    });
   }
 }

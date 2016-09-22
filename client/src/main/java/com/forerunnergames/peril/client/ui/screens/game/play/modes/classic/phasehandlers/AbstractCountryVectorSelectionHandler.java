@@ -17,8 +17,11 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.events.SelectCountryEvent;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
+import com.badlogic.gdx.Gdx;
+
+import com.forerunnergames.peril.client.events.SelectCountryRequestEvent;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -30,7 +33,6 @@ import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
-import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * {@inheritDoc}
  *
  * Framework for asynchronous selection of server-request-validated source & target countries via
- * {@link SelectCountryEvent}.
+ * {@link PlayMapInputListener}
  *
  * Concrete implementations are only *required* to implement {@link #onEnd(String, String)}, which is the callback for
  * what should happen after the player successfully selects a source & target country.
@@ -49,29 +51,58 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSelectionHandler
 {
   protected final Logger log = LoggerFactory.getLogger (getClass ());
-  private final String gamePhaseAsVerb;
   private final MBassador <Event> eventBus;
+  private PlayMap playMap;
   private boolean isStarted;
   private PlayerSelectCountryVectorEvent event;
   @Nullable
   private String sourceCountryName;
   @Nullable
   private String targetCountryName;
-
-  AbstractCountryVectorSelectionHandler (final String gamePhaseAsVerb, final MBassador <Event> eventBus)
+  private final PlayMapInputListener listener = new PlayMapInputListener ()
   {
-    Arguments.checkIsNotNull (gamePhaseAsVerb, "gamePhaseAsVerb");
+    @Override
+    public void onCountryClicked (final String countryName)
+    {
+      Arguments.checkIsNotNull (countryName, "countryName");
+
+      handleCountryClicked (countryName);
+    }
+  };
+
+  AbstractCountryVectorSelectionHandler (final PlayMap playMap, final MBassador <Event> eventBus)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.gamePhaseAsVerb = gamePhaseAsVerb;
     this.eventBus = eventBus;
+    this.playMap = playMap;
+  }
+
+  @Override
+  public void setPlayMap (final PlayMap playMap)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
+
+    final PlayMap oldPlayMap = this.playMap;
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        oldPlayMap.removeListener (listener);
+      }
+    });
+
+    this.playMap = playMap;
   }
 
   /**
    * {@inheritDoc}
    *
-   * Begins accepting {@link SelectCountryEvent}'s & asks the player in the {@link PlayerSelectCountryVectorEvent} to
-   * choose a source country.
+   * Begins listening to current {@link PlayMap} via {@link PlayMapInputListener} for country clicks & asks the player
+   * in the {@link PlayerSelectCountryVectorEvent} to choose a source country.
    */
   @Override
   @OverridingMethodsMustInvokeSuper
@@ -87,16 +118,24 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
 
     log.debug ("Country selection has started.");
 
-    eventBus.subscribe (this);
-    eventBus.publish (StatusMessageEventGenerator.create ("{}, choose a country to {} from.", event.getPlayerName (),
-                                                          gamePhaseAsVerb));
+    eventBus.publish (createSourceCountrySelectionRequest ());
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playMap.addListener (listener);
+      }
+    });
   }
 
   /**
    * {@inheritDoc}
    *
-   * Begins accepting {@link SelectCountryEvent}'s & asks the player in the {@link PlayerSelectCountryVectorEvent} to
-   * choose a source country.
+   * Begins listening to current {@link PlayMap} via {@link PlayMapInputListener} for country clicks & asks the player
+   * in the {@link PlayerSelectCountryVectorEvent} to choose a source country, re-using the
+   * {@link PlayerSelectCountryVectorEvent} from the previous call to {@link #start(PlayerSelectCountryVectorEvent)}.
    */
   @Override
   public void restart ()
@@ -110,19 +149,28 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
   /**
    * {@inheritDoc}
    *
-   * Stops accepting {@link SelectCountryEvent}'s. Called automatically after {@link #onEnd(String, String)}. Provided
-   * in case the implementor needs to immediately stop any country selection which might be in progress. Saves any
-   * previous event data passed in from {@link #start(PlayerSelectCountryVectorEvent)}, so that {@link #restart()} may
-   * be called immediately after this method.
+   * Stops listening to current {@link PlayMap} via {@link PlayMapInputListener} for country clicks. Called
+   * automatically after {@link #onEnd(String, String)}. Provided in case the implementor needs to immediately stop any
+   * country selection which might be in progress. Saves any previous event data passed in from
+   * {@link #start(PlayerSelectCountryVectorEvent)}, so that {@link #restart()} may be called immediately after this
+   * method.
    */
   @Override
   @OverridingMethodsMustInvokeSuper
   public void reset ()
   {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playMap.removeListener (listener);
+      }
+    });
+
     isStarted = false;
     sourceCountryName = null;
     targetCountryName = null;
-    eventBus.unsubscribe (this);
   }
 
   @Override
@@ -149,18 +197,17 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
     return event.isValidVector (sourceCountryName, targetCountryName);
   }
 
-  @Handler
-  final void onEvent (final SelectCountryEvent event)
+  abstract SelectCountryRequestEvent createSourceCountrySelectionRequest ();
+
+  abstract SelectCountryRequestEvent createTargetCountrySelectionRequest (final String sourceCountryName);
+
+  final void handleCountryClicked (final String countryName)
   {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    final String countryName = event.getCountryName ();
+    Arguments.checkIsNotNull (countryName, "countryName");
 
     if (!isStarted)
     {
-      log.warn ("Ignoring unauthorized [{}].", event);
+      log.warn ("Ignoring unauthorized country click on [{}].", countryName);
       return;
     }
 
@@ -168,8 +215,7 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
     {
       sourceCountryName = countryName;
       log.info ("Selected valid source country [{}].", sourceCountryName);
-      eventBus.publish (StatusMessageEventGenerator.create ("{}, choose a country to {} to.",
-                                                            this.event.getPlayerName (), gamePhaseAsVerb));
+      eventBus.publish (createTargetCountrySelectionRequest (sourceCountryName));
       return;
     }
 
@@ -224,7 +270,6 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
     return Strings.format (
                            "{}: Phase (as verb): {} | Started: {} | Source Country: {} | Target Country: {}"
                                    + " | Server Request: {}",
-                           getClass ().getSimpleName (), gamePhaseAsVerb, isStarted, sourceCountryName,
-                           targetCountryName, event);
+                           getClass ().getSimpleName (), isStarted, sourceCountryName, targetCountryName, event);
   }
 }

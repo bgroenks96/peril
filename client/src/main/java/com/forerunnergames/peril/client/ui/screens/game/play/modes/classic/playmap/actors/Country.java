@@ -66,6 +66,8 @@ public interface Country
 
   void setArmies (final int armies);
 
+  boolean armyCountIs (final int armies);
+
   void incrementArmies ();
 
   void decrementArmies ();

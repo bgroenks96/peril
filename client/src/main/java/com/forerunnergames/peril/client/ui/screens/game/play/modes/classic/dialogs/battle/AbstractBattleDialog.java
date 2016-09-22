@@ -406,6 +406,14 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
+  public void updateCountries (final Country attackingCountry, final Country defendingCountry)
+  {
+    Arguments.checkIsNotNull (attackingCountry, "country");
+
+    setCountries (attackingCountry, defendingCountry);
+  }
+
+  @Override
   public boolean isBattling ()
   {
     return isBattling.get ();

@@ -17,6 +17,8 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
+import com.badlogic.gdx.Gdx;
+
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
@@ -27,7 +29,6 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRet
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleResultEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -40,38 +41,39 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
+abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler implements BattlePhaseHandler
 {
   protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final BattleDialog battleDialog;
   private final BattleResultDialog resultDialog;
-  private final MBassador <Event> eventBus;
-  private PlayMap playMap;
   @Nullable
   private BattleResultEvent lastResultEvent;
-  @Nullable
-  private PlayerPacket selfPlayer;
 
   AbstractBattlePhaseHandler (final PlayMap playMap,
                               final BattleDialog battleDialog,
                               final BattleResultDialog resultDialog,
                               final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
+    super (playMap, eventBus);
+
     Arguments.checkIsNotNull (battleDialog, "battleDialog");
     Arguments.checkIsNotNull (resultDialog, "resultDialog");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.playMap = playMap;
     this.battleDialog = battleDialog;
     this.resultDialog = resultDialog;
-    this.eventBus = eventBus;
   }
 
   @Override
   public final void onBattle ()
   {
-    eventBus.publish (createBattleRequestEvent (battleDialog.getActiveDieCount ()));
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        publish (createBattleRequestEvent (battleDialog.getActiveDieCount ()));
+      }
+    });
   }
 
   @Override
@@ -81,7 +83,18 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
     assert result.outcomeIs (BattleOutcome.ATTACKER_VICTORIOUS);
 
-    resultDialog.show (result);
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        // Preemptively update play map & update battle dialog to match.
+        setCountryOwner (result.getAttackingPlayerColor (), result.getDefendingCountryName ());
+        battleDialog.updateCountries (getCountryWithName (result.getAttackingCountryName ()),
+                                      getCountryWithName (result.getDefendingCountryName ()));
+        resultDialog.show (result);
+      }
+    });
   }
 
   @Override
@@ -91,20 +104,27 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
     assert result.outcomeIs (BattleOutcome.ATTACKER_DEFEATED);
 
-    resultDialog.show (result);
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        resultDialog.show (result);
+      }
+    });
   }
 
   @Override
   public void onRetreat ()
   {
-    eventBus.publish (new PlayerOrderRetreatRequestEvent ());
+    publish (new PlayerOrderRetreatRequestEvent ());
     reset ();
   }
 
   @Override
   public final void onEndBattlePhase ()
   {
-    eventBus.publish (new PlayerEndAttackPhaseRequestEvent ());
+    publish (new PlayerEndAttackPhaseRequestEvent ());
     reset ();
   }
 
@@ -112,24 +132,18 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
   @OverridingMethodsMustInvokeSuper
   public void reset ()
   {
-    battleDialog.hide ();
+    super.reset ();
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        battleDialog.hide ();
+      }
+    });
+
     lastResultEvent = null;
-  }
-
-  @Override
-  public final void setPlayMap (final PlayMap playMap)
-  {
-    Arguments.checkIsNotNull (playMap, "playMap");
-
-    this.playMap = playMap;
-  }
-
-  @Override
-  public void setSelfPlayer (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-
-    selfPlayer = player;
   }
 
   protected abstract BattleRequestEvent createBattleRequestEvent (final int dieCount);
@@ -141,16 +155,23 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    if (isContinuingBattle (event))
+    Gdx.app.postRunnable (new Runnable ()
     {
-      battleDialog.continueBattle (event.getAttackerDieRange (), event.getDefenderDieRange ());
-    }
-    else
-    {
-      battleDialog.startBattle (event.getAttacker (), event.getDefender (),
-                                playMap.getCountryWithName (event.getAttackingCountryName ()),
-                                playMap.getCountryWithName (event.getDefendingCountryName ()));
-    }
+      @Override
+      public void run ()
+      {
+        if (isContinuingBattle (event))
+        {
+          battleDialog.continueBattle (event.getAttackerDieRange (), event.getDefenderDieRange ());
+        }
+        else
+        {
+          battleDialog.startBattle (event.getAttacker (), event.getDefender (),
+                                    getCountryWithName (event.getAttackingCountryName ()),
+                                    getCountryWithName (event.getDefendingCountryName ()));
+        }
+      }
+    });
   }
 
   @Handler
@@ -162,24 +183,33 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
 
     if (!isSelf (event.getPlayer ()))
     {
-      log.debug ("Ignoring event because does not pertain to player [{}]. Event: [{}]", selfPlayer, event);
+      log.debug ("Ignoring event because does not pertain to player [{}]. Event: [{}]", getSelfPlayer (), event);
       return;
     }
 
     lastResultEvent = event;
 
-    battleDialog.showBattleResult (event.getBattleResult ());
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        battleDialog.showBattleResult (event.getBattleResult ());
+      }
+    });
   }
 
+  // @formatter:off
   // TODO Uncomment after PERIL-816 is completed by Brian Groenke.
   // @Handler
   // final void onEvent (final PlayerOrderRetreatDeniedEvent event)
   // {
-  // Arguments.checkIsNotNull (event, "event");
+  //   Arguments.checkIsNotNull (event, "event");
   //
-  // log.debug ("Event received [{}].", event);
-  // log.warn ("Could not retreat. Reason: {}", event.getReason ());
+  //   log.debug ("Event received [{}].", event);
+  //   log.error ("Could not retreat. Reason: {}", event.getReason ());
   // }
+  // @formatter:on
 
   private boolean isContinuingBattle (final BattleSetupEvent event)
   {
@@ -189,10 +219,5 @@ abstract class AbstractBattlePhaseHandler implements BattlePhaseHandler
             && lastResultEvent.getDefendingCountry ().equals (event.getDefendingCountry ())
             && lastResultEvent.getAttackingPlayer ().equals (event.getAttackingPlayer ())
             && lastResultEvent.getDefendingPlayer ().equals (event.getDefendingPlayer ());
-  }
-
-  private boolean isSelf (final PlayerPacket player)
-  {
-    return selfPlayer != null && player.is (selfPlayer);
   }
 }

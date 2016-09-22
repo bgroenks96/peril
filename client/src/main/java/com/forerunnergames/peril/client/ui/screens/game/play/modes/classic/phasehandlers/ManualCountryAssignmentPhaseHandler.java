@@ -1,10 +1,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.events.SelectCountryEvent;
+import com.badlogic.gdx.Gdx;
+
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageEventGenerator;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -20,28 +20,33 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ManualCountryAssignmentPhaseHandler
+public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (ManualCountryAssignmentPhaseHandler.class);
-  private final MBassador <Event> eventBus;
-  private PlayMap playMap;
   @Nullable
   private PlayerClaimCountryRequestEvent request = null;
 
   public ManualCountryAssignmentPhaseHandler (final PlayMap playMap, final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (eventBus, "eventBus");
-    Arguments.checkIsNotNull (playMap, "playMap");
-
-    this.playMap = playMap;
-    this.eventBus = eventBus;
+    super (playMap, eventBus);
   }
 
-  public void setPlayMap (final PlayMap playMap)
+  @Override
+  void onCountryClicked (final String countryName)
   {
-    Arguments.checkIsNotNull (playMap, "playMap");
+    if (checkRequestExistsForCountryClick (countryName).failed ()) return;
+    if (checkClickedCountryIsUnclaimed (countryName).failed ()) return;
 
-    this.playMap = playMap;
+    preemptivelyUpdatePlayMap (countryName);
+    sendResponse (countryName);
+    reset ();
+  }
+
+  @Override
+  public void reset ()
+  {
+    super.reset ();
+    request = null;
   }
 
   @Handler
@@ -49,29 +54,11 @@ public final class ManualCountryAssignmentPhaseHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     request = event;
 
-    eventBus.publish (StatusMessageEventGenerator
-            .create (Strings.format ("{}, claim a country.", event.getPlayerName ())));
-  }
-
-  @Handler
-  void onEvent (final SelectCountryEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    final String countryName = event.getCountryName ();
-
-    if (checkRequestExistsFor (event).failed ()) return;
-    if (checkContainsUnclaimedCountry (event).failed ()) return;
-
-    claimCountry (countryName);
-    sendResponse (countryName);
-    reset ();
+    listenForPlayMapCountryClicks ();
   }
 
   @Handler
@@ -79,21 +66,32 @@ public final class ManualCountryAssignmentPhaseHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
-    playMap.setCountryState (event.getCountryName (),
-                             CountryPrimaryImageState.fromPlayerColor (event.getPlayerColor ()));
-
-    eventBus.publish (StatusMessageEventGenerator
-            .create (Strings.format ("{} claimed {} .", event.getPlayerName (), event.getCountryName ())));
+    if (isSelf (event.getPlayer ())) verifyPreemptivePlayMapUpdates (event);
   }
 
-  private Result <String> checkRequestExistsFor (final SelectCountryEvent event)
+  @Handler
+  void onEvent (final PlayerClaimCountryResponseDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+    log.warn ("Error. Could not claim country [{}]. Reason: {}.", event.getCountryName (), event.getReason ());
+
+    rollBackPreemptivePlayMapUpdates (event.getCountryName ());
+    reset ();
+  }
+
+  private Result <String> checkRequestExistsForCountryClick (final String countryName)
   {
     if (request == null)
     {
-      final String failureMessage = Strings.format ("Ignoring [{}] because no prior corresponding [{}] was received.",
-                                                    event, PlayerClaimCountryRequestEvent.class.getSimpleName ());
+      // @formatter:off
+      final String failureMessage =
+              Strings.format ("Ignoring click on country [{}] because no prior corresponding [{}] was received.",
+                              countryName, PlayerClaimCountryRequestEvent.class.getSimpleName ());
+      // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -101,12 +99,15 @@ public final class ManualCountryAssignmentPhaseHandler
     return Result.success ();
   }
 
-  private Result <String> checkContainsUnclaimedCountry (final SelectCountryEvent event)
+  private Result <String> checkClickedCountryIsUnclaimed (final String countryName)
   {
-    if (isClaimedCountry (event.getCountryName ()))
+    if (isClaimedCountry (countryName))
     {
-      final String failureMessage = Strings.format ("Ignoring local event [{}] because not a valid response to [{}].",
-                                                    event, PlayerClaimCountryRequestEvent.class.getSimpleName ());
+      // @formatter:off
+      final String failureMessage =
+              Strings.format ("Ignoring click on country [{}] because not a valid response to [{}]. (Country is already claimed.)",
+                              countryName, PlayerClaimCountryRequestEvent.class.getSimpleName ());
+      // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -120,19 +121,48 @@ public final class ManualCountryAssignmentPhaseHandler
     return request.isClaimedCountry (countryName);
   }
 
-  private void claimCountry (final String countryName)
-  {
-    assert request != null;
-    playMap.setCountryState (countryName, CountryPrimaryImageState.fromPlayerColor (request.getPlayerColor ()));
-  }
-
   private void sendResponse (final String countryName)
   {
-    eventBus.publish (new PlayerClaimCountryResponseRequestEvent (countryName));
+    publish (new PlayerClaimCountryResponseRequestEvent (countryName));
   }
 
-  private void reset ()
+  private void preemptivelyUpdatePlayMap (final String countryName)
   {
-    request = null;
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        assert request != null;
+        setCountryOwner (request.getPlayerColor (), countryName);
+        changeCountryArmiesBy (1, countryName);
+      }
+    });
+  }
+
+  private void verifyPreemptivePlayMapUpdates (final PlayerClaimCountryResponseSuccessEvent event)
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        assert playerOwnsCountry (event.getPlayerColor (), event.getCountryName ());
+        assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
+      }
+    });
+  }
+
+  private void rollBackPreemptivePlayMapUpdates (final String countryName)
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        setCountryUnowned (countryName);
+        changeCountryArmiesBy (-1, countryName);
+      }
+    });
   }
 }
