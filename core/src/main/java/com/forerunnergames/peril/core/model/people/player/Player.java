@@ -25,6 +25,26 @@ import java.util.Comparator;
 
 interface Player extends Person
 {
+  Comparator <Player> TURN_ORDER_COMPARATOR = new Comparator <Player> ()
+  {
+    @Override
+    public int compare (final Player o1, final Player o2)
+    {
+      if (o1.getTurnOrderPosition () < o2.getTurnOrderPosition ())
+      {
+        return -1;
+      }
+      else if (o1.getTurnOrderPosition () > o2.getTurnOrderPosition ())
+      {
+        return 1;
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  };
+
   void addArmiesToHand (final int armies);
 
   void addArmyToHand ();
@@ -87,24 +107,5 @@ interface Player extends Person
 
   void removeAllArmiesFromHand ();
 
-  Comparator <Player> TURN_ORDER_COMPARATOR = new Comparator <Player> ()
-  {
-    @Override
-    public int compare (final Player o1, final Player o2)
-    {
-      if (o1.getTurnOrderPosition () < o2.getTurnOrderPosition ())
-      {
-        return -1;
-      }
-      else if (o1.getTurnOrderPosition () > o2.getTurnOrderPosition ())
-      {
-        return 1;
-      }
-      else
-      {
-        return 0;
-      }
-    }
-  };
   void removeAllCardsFromHand ();
 }

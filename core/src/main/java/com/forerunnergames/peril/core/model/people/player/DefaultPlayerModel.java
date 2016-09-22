@@ -662,11 +662,6 @@ public final class DefaultPlayerModel implements PlayerModel
     throw new IllegalStateException ("Cannot find any player with turn order: [" + turnOrder + "].");
   }
 
-  Player modelPlayerWithName (final String name)
-  {
-    return modelPlayerWith (name);
-  }
-
   private void add (final Player player)
   {
     if (player.has (PlayerColor.UNKNOWN))

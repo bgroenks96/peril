@@ -1903,7 +1903,7 @@ public final class GameModel
       cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
       battleModel = new DefaultBattleModel (playMapModel);
-      turnDataCache = new PlayerTurnDataCache <CacheKey> ();
+      turnDataCache = new PlayerTurnDataCache<> ();
     }
   }
 }

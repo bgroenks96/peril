@@ -35,7 +35,7 @@ final class DefaultPlayer extends AbstractPerson implements Player
   private int armiesInHand;
   private int cardsInHand;
 
-  public DefaultPlayer (final String name, final Id id, final PlayerColor color, final PlayerTurnOrder turnOrder)
+  DefaultPlayer (final String name, final Id id, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
     super (name, id);
 
@@ -119,17 +119,17 @@ final class DefaultPlayer extends AbstractPerson implements Player
   }
 
   @Override
-  public int getTurnOrderPosition ()
-  {
-    return turnOrder.getPosition ();
-  }
-
-  @Override
   public void setTurnOrder (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
     this.turnOrder = turnOrder;
+  }
+
+  @Override
+  public int getTurnOrderPosition ()
+  {
+    return turnOrder.getPosition ();
   }
 
   @Override
