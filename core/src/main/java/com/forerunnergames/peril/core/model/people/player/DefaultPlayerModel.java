@@ -99,8 +99,8 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    return playerPacketWith (playerId).getArmiesInHand () <= IntMath.checkedSubtract (rules.getMaxArmiesInHand (),
-                                                                                      armies);
+    return modelPlayerWith (playerId).getArmiesInHand () <= IntMath.checkedSubtract (rules.getMaxArmiesInHand (),
+                                                                                     armies);
   }
 
   @Override
@@ -131,7 +131,7 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    return playerPacketWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
+    return modelPlayerWith (playerId).getArmiesInHand () >= IntMath.checkedAdd (rules.getMinArmiesInHand (), armies);
   }
 
   @Override
@@ -237,7 +237,7 @@ public final class DefaultPlayerModel implements PlayerModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    return playerPacketWith (playerId).getArmiesInHand ();
+    return modelPlayerWith (playerId).getArmiesInHand ();
   }
 
   @Override
@@ -297,7 +297,7 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    return playerPacketWith (playerId).hasArmiesInHand (armies);
+    return modelPlayerWith (playerId).hasArmiesInHand (armies);
   }
 
   @Override
