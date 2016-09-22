@@ -531,8 +531,7 @@ public final class GameModel
     playerFactory.newPlayerWith (event.getPlayerName ());
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (playerFactory);
 
-    // for loop is a formality; there should only ever be one result for this
-    // case.
+    // for loop is a formality; there should only ever be one result for this case.
     for (final PlayerJoinGameStatus result : results)
     {
       final PlayerPacket player = result.getPlayer ();
@@ -1745,8 +1744,7 @@ public final class GameModel
     publish (originalRequest.get ());
   }
 
-  // checks whether or not a player has won or lost the game in the current game
-  // state
+  // checks whether or not a player has won or lost the game in the current game state
   private void checkPlayerGameStatus (final Id playerId)
   {
     final int playerCountryCount = countryOwnerModel.countCountriesOwnedBy (playerId);
