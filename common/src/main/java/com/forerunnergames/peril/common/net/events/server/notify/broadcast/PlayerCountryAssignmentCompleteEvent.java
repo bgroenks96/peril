@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -63,16 +62,16 @@ public final class PlayerCountryAssignmentCompleteEvent implements BroadcastNoti
     return countryToPlayerPackets.get (country);
   }
 
-  public PlayerColor getOwnerColor (final CountryPacket country)
-  {
-    Arguments.checkIsNotNull (country, "country");
-
-    return countryToPlayerPackets.get (country).getColor ();
-  }
-
   public InitialCountryAssignment getAssignmentMode ()
   {
     return assignmentMode;
+  }
+
+  public boolean assignmentModeIs (final InitialCountryAssignment assignmentMode)
+  {
+    Arguments.checkIsNotNull (assignmentMode, "assignmentMode");
+
+    return this.assignmentMode == assignmentMode;
   }
 
   @Override

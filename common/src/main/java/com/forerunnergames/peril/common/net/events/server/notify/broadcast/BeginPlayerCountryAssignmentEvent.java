@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
@@ -35,6 +36,13 @@ public final class BeginPlayerCountryAssignmentEvent implements BroadcastNotific
   public InitialCountryAssignment getAssignmentMode ()
   {
     return assignmentMode;
+  }
+
+  public boolean assignmentModeIs (final InitialCountryAssignment assignmentMode)
+  {
+    Arguments.checkIsNotNull (assignmentMode, "assignmentMode");
+
+    return this.assignmentMode == assignmentMode;
   }
 
   @Override
