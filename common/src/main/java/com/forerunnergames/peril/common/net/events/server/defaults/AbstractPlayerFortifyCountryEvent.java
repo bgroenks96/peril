@@ -25,24 +25,44 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 public abstract class AbstractPlayerFortifyCountryEvent extends AbstractPlayerSourceTargetCountryEvent
 {
+  private final int minDeltaArmyCount;
   private final int maxDeltaArmyCount;
 
   public AbstractPlayerFortifyCountryEvent (final PlayerPacket player,
                                             final CountryPacket sourceCountry,
                                             final CountryPacket targetCountry,
+                                            final int minDeltaArmyCount,
                                             final int maxDeltaArmyCount)
   {
     super (player, sourceCountry, targetCountry);
 
+    Arguments.checkIsNotNegative (minDeltaArmyCount, "minDeltaArmyCount");
     Arguments.checkIsNotNegative (maxDeltaArmyCount, "maxDeltaArmyCount");
 
     this.maxDeltaArmyCount = maxDeltaArmyCount;
+    this.minDeltaArmyCount = minDeltaArmyCount;
   }
 
   @RequiredForNetworkSerialization
   protected AbstractPlayerFortifyCountryEvent ()
   {
+    minDeltaArmyCount = 0;
     maxDeltaArmyCount = 0;
+  }
+
+  public final int getMinTargetCountryArmyCount ()
+  {
+    return getTargetCountryArmyCount () + minDeltaArmyCount;
+  }
+
+  public final int getMaxTargetCountryArmyCount ()
+  {
+    return getTargetCountryArmyCount () + maxDeltaArmyCount;
+  }
+
+  public final int getMinDeltaArmyCount ()
+  {
+    return minDeltaArmyCount;
   }
 
   public final int getMaxDeltaArmyCount ()
@@ -50,9 +70,15 @@ public abstract class AbstractPlayerFortifyCountryEvent extends AbstractPlayerSo
     return maxDeltaArmyCount;
   }
 
+  public final int getTotalArmyCount ()
+  {
+    return getSourceCountryArmyCount () + getTargetCountryArmyCount ();
+  }
+
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | MaxDeltaArmyCount: {}", super.toString (), maxDeltaArmyCount);
+    return Strings.format ("{} | MinDeltaArmyCount: {} | MaxDeltaArmyCount: {}", super.toString (), minDeltaArmyCount,
+                           maxDeltaArmyCount);
   }
 }

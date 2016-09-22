@@ -1332,7 +1332,7 @@ public final class GameModel
             .builder ();
     for (final CountryPacket country : ownedCountries)
     {
-      if (!country.hasAtLeastNArmies (rules.getMinArmiesOnCountryForFortify ())) continue;
+      if (!country.hasAtLeastNArmies (rules.getMinArmiesOnSourceCountryForFortify ())) continue;
       final Id countryId = countryMapGraphModel.countryWith (country.getName ());
       final ImmutableSet <Id> adjCountries = countryMapGraphModel.getAdjacentNodes (countryId);
       for (final Id adjCountry : adjCountries)
@@ -1421,22 +1421,37 @@ public final class GameModel
       return false;
     }
 
+    final int sourceCountryArmyCount = countryArmyModel.getArmyCountFor (sourceCountryId);
+    final int targetCountryArmyCount = countryArmyModel.getArmyCountFor (targetCountryId);
+
+    if (sourceCountryArmyCount < rules.getMinArmiesOnSourceCountryForFortify ())
+    {
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.SOURCE_COUNTRY_ARMY_UNDERFLOW));
+      return false;
+    }
+
+    if (targetCountryArmyCount > rules.getMaxArmiesOnTargetCountryForFortify ())
+    {
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+              PlayerSelectFortifyVectorDeniedEvent.Reason.TARGET_COUNTRY_ARMY_OVERFLOW));
+      return false;
+    }
+
     final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
     final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+    final int minDeltaArmyCount = rules.getMinFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
+    final int maxDeltaArmyCount = rules.getMaxFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
+
+    publish (new PlayerSelectFortifyVectorSuccessEvent (playerPacket, sourceCountryPacket, targetCountryPacket));
+    publish (new PlayerFortifyCountryRequestEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
+            minDeltaArmyCount, maxDeltaArmyCount));
+    publish (new PlayerFortifyCountryWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
+            minDeltaArmyCount, maxDeltaArmyCount));
 
     turnDataCache.put (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, sourceCountryId);
     turnDataCache.put (CacheKey.FORTIFY_TARGET_COUNTRY_ID, targetCountryId);
-
-    publish (new PlayerSelectFortifyVectorSuccessEvent (getCurrentPlayerPacket (), sourceCountryPacket,
-            targetCountryPacket));
-
-    final int maxArmyDelta = rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountryId));
-    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
-
-    publish (new PlayerFortifyCountryRequestEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
-            maxArmyDelta));
-    publish (new PlayerFortifyCountryWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
-            maxArmyDelta));
 
     return true;
   }
@@ -1462,18 +1477,22 @@ public final class GameModel
     final Id sourceCountry = turnDataCache.get (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, Id.class);
     final Id targetCountry = turnDataCache.get (CacheKey.FORTIFY_TARGET_COUNTRY_ID, Id.class);
     final int deltaArmyCount = event.getDeltaArmyCount ();
-    final int maxDeltaArmyCount = rules.getMaxFortifyArmyCount (countryArmyModel.getArmyCountFor (sourceCountry));
-    if (deltaArmyCount > maxDeltaArmyCount)
+    final int sourceCountryArmyCount = countryArmyModel.getArmyCountFor (sourceCountry);
+    final int targetCountryArmyCount = countryArmyModel.getArmyCountFor (targetCountry);
+    final int minDeltaArmyCount = rules.getMinFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
+    final int maxDeltaArmyCount = rules.getMaxFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
+
+    if (deltaArmyCount < minDeltaArmyCount)
     {
       publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW));
+              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_UNDERFLOW));
       return false;
     }
 
-    if (deltaArmyCount == 0)
+    if (deltaArmyCount > maxDeltaArmyCount)
     {
       publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_UNDERFLOW));
+              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_OVERFLOW));
       return false;
     }
 
@@ -1493,6 +1512,8 @@ public final class GameModel
 
     final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountry);
     final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
+    publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -deltaArmyCount));
+    publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, deltaArmyCount));
     publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayer, sourceCountryPacket, targetCountryPacket,
             deltaArmyCount));
 

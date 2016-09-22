@@ -16,8 +16,8 @@ public final class PlayerFortifyCountryResponseDeniedEvent extends AbstractPlaye
 
   public enum Reason
   {
-    FORTIFY_ARMY_COUNT_OVERFLOW,
-    FORTIFY_ARMY_COUNT_UNDERFLOW,
+    FORTIFY_DELTA_ARMY_COUNT_OVERFLOW,
+    FORTIFY_DELTA_ARMY_COUNT_UNDERFLOW,
     PLAYER_NOT_IN_TURN
   }
 

@@ -32,6 +32,8 @@ public class PlayerSelectFortifyVectorDeniedEvent extends AbstractPlayerDeniedEv
     COUNTRIES_NOT_ADJACENT,
     NOT_OWNER_OF_SOURCE_COUNTRY,
     NOT_OWNER_OF_TARGET_COUNTRY,
+    SOURCE_COUNTRY_ARMY_UNDERFLOW,
+    TARGET_COUNTRY_ARMY_OVERFLOW,
     PLAYER_NOT_IN_TURN
   }
 

@@ -29,9 +29,10 @@ public final class PlayerFortifyCountryRequestEvent extends AbstractPlayerFortif
   public PlayerFortifyCountryRequestEvent (final PlayerPacket player,
                                            final CountryPacket sourceCountry,
                                            final CountryPacket targetCountry,
+                                           final int minDeltaArmyCount,
                                            final int maxDeltaArmyCount)
   {
-    super (player, sourceCountry, targetCountry, maxDeltaArmyCount);
+    super (player, sourceCountry, targetCountry, minDeltaArmyCount, maxDeltaArmyCount);
   }
 
   @RequiredForNetworkSerialization

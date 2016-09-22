@@ -857,7 +857,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -895,7 +895,7 @@ public class GameModelTest
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
     // make sure country army count is below threshold for fortification
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () - 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () - 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -924,7 +924,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -957,7 +957,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -988,7 +988,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -1019,7 +1019,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -1050,7 +1050,7 @@ public class GameModelTest
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
-    final int countryArmyCount = gameRules.getMinArmiesOnCountryForFortify () + 1;
+    final int countryArmyCount = gameRules.getMinArmiesOnSourceCountryForFortify () + 1;
     final ImmutableList <Integer> ownedCountryIndicesPlayer1 = ImmutableList.of (0, 1, 3);
     final ImmutableList <Integer> ownedCountryIndicesPlayer2 = ImmutableList.of (2, 4, 5);
     final ImmutableList <Id> countryIdsPlayer1 = countryIdsFor (defaultTestCountries, ownedCountryIndicesPlayer1);
@@ -1066,7 +1066,7 @@ public class GameModelTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerFortifyCountryResponseDeniedEvent.class));
-    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_ARMY_COUNT_OVERFLOW,
+    assertEquals (PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_OVERFLOW,
                   eventHandler.lastEventOfType (PlayerFortifyCountryResponseDeniedEvent.class).getReason ());
     assertTrue (eventHandler.wasNeverFired (PlayerFortifyCountryResponseSuccessEvent.class));
   }

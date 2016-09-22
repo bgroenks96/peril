@@ -142,9 +142,15 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getMinArmiesOnCountryForFortify ()
+  public int getMinArmiesOnSourceCountryForFortify ()
   {
-    return MIN_ARMIES_ON_COUNTRY_FOR_FORTIFY;
+    return MIN_ARMIES_ON_SOURCE_COUNTRY_FOR_FORTIFY;
+  }
+
+  @Override
+  public int getMaxArmiesOnTargetCountryForFortify ()
+  {
+    return MAX_ARMIES_ON_TARGET_COUNTRY_FOR_FORTIFY;
   }
 
   @Override
@@ -404,11 +410,27 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getMaxFortifyArmyCount (final int sourceCountryArmyCount)
+  public int getMinFortifyDeltaArmyCount (final int sourceCountryArmyCount, final int targetCountryArmyCount)
   {
     Arguments.checkIsNotNegative (sourceCountryArmyCount, "sourceCountryArmyCount");
+    Arguments.checkIsNotNegative (targetCountryArmyCount, "targetCountryArmyCount");
 
-    return sourceCountryArmyCount - 1;
+    if (sourceCountryArmyCount < MIN_ARMIES_ON_SOURCE_COUNTRY_FOR_FORTIFY) return 0;
+    if (targetCountryArmyCount > MAX_ARMIES_ON_TARGET_COUNTRY_FOR_FORTIFY) return 0;
+
+    return 1;
+  }
+
+  @Override
+  public int getMaxFortifyDeltaArmyCount (final int sourceCountryArmyCount, final int targetCountryArmyCount)
+  {
+    Arguments.checkIsNotNegative (sourceCountryArmyCount, "sourceCountryArmyCount");
+    Arguments.checkIsNotNegative (targetCountryArmyCount, "targetCountryArmyCount");
+
+    if (sourceCountryArmyCount < MIN_ARMIES_ON_SOURCE_COUNTRY_FOR_FORTIFY) return 0;
+    if (targetCountryArmyCount > MAX_ARMIES_ON_TARGET_COUNTRY_FOR_FORTIFY) return 0;
+
+    return Math.min (sourceCountryArmyCount - 1, MAX_ARMIES_ON_COUNTRY - targetCountryArmyCount);
   }
 
   @Override
