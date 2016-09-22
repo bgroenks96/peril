@@ -179,6 +179,11 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerConfig;
   }
 
+  public int getPlayerLimit ()
+  {
+    return gameServerConfig.getPlayerLimit ();
+  }
+
   public boolean isPlayerInGame (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
@@ -671,9 +676,9 @@ public final class MultiplayerController extends ControllerAdapter
   private void sendPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
   {
     final PlayerJoinGameSuccessEvent nonSelfEvent = new PlayerJoinGameSuccessEvent (event.getPlayer (),
-            PersonIdentity.NON_SELF, event.getPlayersInGame ());
+            PersonIdentity.NON_SELF, event.getPlayersInGame (), gameServerConfig.getPlayerLimit ());
     final PlayerJoinGameSuccessEvent selfEvent = new PlayerJoinGameSuccessEvent (event.getPlayer (),
-            PersonIdentity.SELF, event.getPlayersInGame ());
+            PersonIdentity.SELF, event.getPlayersInGame (), gameServerConfig.getPlayerLimit ());
 
     playerCommunicator.sendToAllPlayersExcept (event.getPlayer (), nonSelfEvent, clientsToPlayers);
     playerCommunicator.sendToPlayer (event.getPlayer (), selfEvent, clientsToPlayers);

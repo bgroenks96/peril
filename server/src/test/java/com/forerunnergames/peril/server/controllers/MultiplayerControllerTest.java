@@ -259,8 +259,8 @@ public class MultiplayerControllerTest
         communicateEventFromClient (requestEvent, client);
         eventHandler.wasFiredExactlyOnce (requestEvent);
         players.add (player);
-        final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player, PersonIdentity.UNKNOWN,
-                ImmutableSet.copyOf (players));
+        final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
+                ImmutableSet.copyOf (players), mpc.getPlayerLimit ());
         final BaseMatcher <PlayerJoinGameSuccessEvent> successEventMatcher = new BaseMatcher <PlayerJoinGameSuccessEvent> ()
         {
           @Override
@@ -544,8 +544,8 @@ public class MultiplayerControllerTest
     when (mockPlayerPacket.hasName (eq (playerName2))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName2);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName2), client2);
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, PersonIdentity.UNKNOWN,
-            ImmutableSet.of (mockPlayerPacket)));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket),
+            mpc.getPlayerLimit ()));
     verify (mockClientCommunicator).sendTo (eq (client1),
                                             argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
                                                             new PersonIdentityMatcher (PersonIdentity.NON_SELF))));
@@ -919,8 +919,8 @@ public class MultiplayerControllerTest
     // disconnect client
     eventBus.publish (new ClientDisconnectionEvent (client));
     assertFalse (mpc.isClientInServer (client));
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, PersonIdentity.UNKNOWN,
-            ImmutableSet.of (mockPlayerPacket)));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket),
+            mpc.getPlayerLimit ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (mockPlayerPacket));
   }
 
@@ -950,8 +950,8 @@ public class MultiplayerControllerTest
     when (mockPlayerPacket.hasName (eq (playerName))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName), client);
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, PersonIdentity.UNKNOWN,
-            ImmutableSet.of (mockPlayerPacket)));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket),
+            mpc.getPlayerLimit ()));
     verify (mockClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
 

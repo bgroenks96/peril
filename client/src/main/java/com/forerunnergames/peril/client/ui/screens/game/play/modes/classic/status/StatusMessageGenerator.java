@@ -152,6 +152,9 @@ public final class StatusMessageGenerator
     log.debug ("Event received [{}].", event);
 
     everyoneElse (event.getPlayer (), "{} joined the game.", event.getPlayerName ());
+
+    everyoneElseIf (!event.gameIsFull (), event.getPlayer (), "The game will begin when {}.", Strings
+            .pluralize (event.getPlayersNeededToMakeGameFull (), "more player joins", "more players join"));
   }
 
   @Handler

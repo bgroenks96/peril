@@ -542,7 +542,7 @@ public final class GameModel
         continue;
       }
 
-      publish (new PlayerJoinGameSuccessEvent (player, PersonIdentity.UNKNOWN, playerModel.getPlayerPackets ()));
+      publish (new PlayerJoinGameSuccessEvent (player, playerModel.getPlayerPackets (), rules.getPlayerLimit ()));
     }
   }
 

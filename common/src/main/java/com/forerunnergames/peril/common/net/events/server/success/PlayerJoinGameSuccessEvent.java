@@ -32,20 +32,40 @@ import com.google.common.collect.Sets;
 
 public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implements BroadcastSuccessEvent
 {
+  private final int playerLimit;
   private final PersonIdentity identity;
   private final ImmutableSet <PlayerPacket> playersInGame;
 
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
                                      final PersonIdentity identity,
-                                     final ImmutableSet <PlayerPacket> playersInGame)
+                                     final ImmutableSet <PlayerPacket> playersInGame,
+                                     final int playerLimit)
   {
     super (player);
 
     Arguments.checkIsNotNull (identity, "identity");
     Arguments.checkIsNotNull (playersInGame, "playersInGame");
+    Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
+    Arguments.checkIsNotNegative (playerLimit, "playerLimit");
 
     this.identity = identity;
     this.playersInGame = playersInGame;
+    this.playerLimit = playerLimit;
+  }
+
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player,
+                                     final ImmutableSet <PlayerPacket> playersInGame,
+                                     final int playerLimit)
+  {
+    super (player);
+
+    Arguments.checkIsNotNull (playersInGame, "playersInGame");
+    Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
+    Arguments.checkIsNotNegative (playerLimit, "playerLimit");
+
+    identity = PersonIdentity.UNKNOWN;
+    this.playersInGame = playersInGame;
+    this.playerLimit = playerLimit;
   }
 
   public PersonIdentity getIdentity ()
@@ -56,6 +76,26 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implem
   public ImmutableSet <PlayerPacket> getPlayersInGame ()
   {
     return playersInGame;
+  }
+
+  public boolean gameIsFull ()
+  {
+    return playersInGame.size () == playerLimit;
+  }
+
+  public int getPlayersNeededToMakeGameFull ()
+  {
+    return playerLimit - playersInGame.size ();
+  }
+
+  public int getPlayerCount ()
+  {
+    return playersInGame.size ();
+  }
+
+  public int getPlayerLimit ()
+  {
+    return playerLimit;
   }
 
   public ImmutableSet <PlayerPacket> getOtherPlayersInGame ()
@@ -73,7 +113,8 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implem
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | PersonIdenity: {} | PlayersInGame: {}", super.toString (), identity, playersInGame);
+    return Strings.format ("{} | PersonIdentity: {} | PlayersInGame: {} | PlayerLimit: {}", super.toString (), identity,
+                           playersInGame, playerLimit);
   }
 
   @RequiredForNetworkSerialization
@@ -81,5 +122,6 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implem
   {
     identity = null;
     playersInGame = null;
+    playerLimit = 0;
   }
 }

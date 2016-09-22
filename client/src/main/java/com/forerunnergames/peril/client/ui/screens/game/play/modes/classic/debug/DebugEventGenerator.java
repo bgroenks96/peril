@@ -30,7 +30,6 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -217,8 +216,8 @@ public final class DebugEventGenerator
       return;
     }
 
-    eventBus.publish (new PlayerJoinGameSuccessEvent (player.get (), PersonIdentity.UNKNOWN,
-            ImmutableSet.copyOf (unavailablePlayers)));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (player.get (), ImmutableSet.copyOf (unavailablePlayers),
+            ClassicGameRules.MAX_PLAYER_LIMIT));
   }
 
   void generateCountryArmiesChangedEvent ()
