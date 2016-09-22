@@ -39,23 +39,6 @@ public class CardModelDataLoaderTest extends DataLoaderTest <ImmutableBiMap <Id,
   private static final int[] EXPECTED_CARD_TYPES_FROM_FILE = { 3, 3, 2, 1, 1, 2, 0 };
   private static ImmutableSet <Card> mockCards;
 
-  @BeforeClass
-  public static void setupClass ()
-  {
-    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
-    for (int i = 1; i <= EXPECTED_CARD_COUNT_FROM_FILE; ++i)
-    {
-      final Card expectedCard = mock (Card.class);
-      final String expectedCardName = "Test-Card-" + i;
-
-      when (expectedCard.getName ()).thenReturn (expectedCardName);
-      when (expectedCard.getType ()).thenReturn (CardType.fromValue (EXPECTED_CARD_TYPES_FROM_FILE [i - 1]));
-
-      cardSetBuilder.add (expectedCard);
-    }
-    mockCards = cardSetBuilder.build ();
-  }
-
   @Override
   protected BiMapDataLoader <Id, Card> createDataLoader ()
   {
@@ -87,5 +70,22 @@ public class CardModelDataLoaderTest extends DataLoaderTest <ImmutableBiMap <Id,
   protected String getTestDataFileName ()
   {
     return TEST_CARDS_FILENAME;
+  }
+
+  @BeforeClass
+  public static void setupClass ()
+  {
+    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
+    for (int i = 1; i <= EXPECTED_CARD_COUNT_FROM_FILE; ++i)
+    {
+      final Card expectedCard = mock (Card.class);
+      final String expectedCardName = "Test-Card-" + i;
+
+      when (expectedCard.getName ()).thenReturn (expectedCardName);
+      when (expectedCard.getType ()).thenReturn (CardType.fromValue (EXPECTED_CARD_TYPES_FROM_FILE [i - 1]));
+
+      cardSetBuilder.add (expectedCard);
+    }
+    mockCards = cardSetBuilder.build ();
   }
 }

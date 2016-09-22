@@ -44,8 +44,7 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
   private final Cell <Button> iconCell;
   private PlayerColor activeColor;
 
-  public DefaultPlayerColorIcon (final PlayerColor activeColor,
-                                 final PlayerColorIconWidgetFactory widgetFactory)
+  public DefaultPlayerColorIcon (final PlayerColor activeColor, final PlayerColorIconWidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (activeColor, "activeColor");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");

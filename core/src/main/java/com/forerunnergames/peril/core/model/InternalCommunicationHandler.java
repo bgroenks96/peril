@@ -272,17 +272,17 @@ class InternalCommunicationHandler
     }
 
     @Override
+    public int hashCode ()
+    {
+      return type.hashCode () ^ sender.hashCode ();
+    }
+
+    @Override
     public boolean equals (final Object obj)
     {
       if (!(obj instanceof EventListener)) return false;
       final EventListener event = (EventListener) obj;
       return event.type.equals (this.type) && event.sender.is (this.sender);
-    }
-
-    @Override
-    public int hashCode ()
-    {
-      return type.hashCode () ^ sender.hashCode ();
     }
   }
 }

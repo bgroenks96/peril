@@ -63,6 +63,108 @@ public final class CardSet implements Collection <Card>
     isMatch = validateMatch ();
   }
 
+  @Override
+  public int size ()
+  {
+    return cards.size ();
+  }
+
+  @Override
+  public boolean isEmpty ()
+  {
+    return cards.isEmpty ();
+  }
+
+  @Override
+  public boolean contains (final Object card)
+  {
+    Arguments.checkIsNotNull (card, "card");
+
+    return cards.contains (card);
+  }
+
+  @Override
+  public UnmodifiableIterator <Card> iterator ()
+  {
+    return cards.iterator ();
+  }
+
+  @Override
+  public Object[] toArray ()
+  {
+    return cards.toArray ();
+  }
+
+  @Override
+  public <T> T[] toArray (final T[] a)
+  {
+    Arguments.checkIsNotNull (a, "a");
+
+    return cards.toArray (a);
+  }
+
+  @Override
+  @Deprecated
+  public boolean add (final Card e) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (e, "e");
+
+    return cards.add (e);
+  }
+
+  @Override
+  @Deprecated
+  public boolean remove (final Object o) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (o, "o");
+
+    return cards.remove (o);
+  }
+
+  // --- delegated methods --- //
+
+  @Override
+  public boolean containsAll (final Collection <?> cardSet)
+  {
+    Arguments.checkIsNotNull (cardSet, "cardSet");
+
+    return cards.containsAll (cardSet);
+  }
+
+  @Override
+  @Deprecated
+  public boolean addAll (final Collection <? extends Card> c) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (c, "c");
+
+    return cards.addAll (c);
+  }
+
+  @Override
+  @Deprecated
+  public boolean removeAll (final Collection <?> c) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (c, "c");
+
+    return cards.removeAll (c);
+  }
+
+  @Override
+  @Deprecated
+  public boolean retainAll (final Collection <?> c) throws UnsupportedOperationException
+  {
+    Arguments.checkIsNotNull (c, "c");
+
+    return cards.retainAll (c);
+  }
+
+  @Override
+  @Deprecated
+  public void clear () throws UnsupportedOperationException
+  {
+    cards.clear ();
+  }
+
   /**
    * A CardSet is a tradeable match if and only if: 1) The size of the CardSet is equal to the value returned by the
    * trade-in count value specified by GameRules. 2) The combination of card types is verified as a match by GameRules.
@@ -93,6 +195,8 @@ public final class CardSet implements Collection <Card>
 
     return new CardSet (rules, Sets.union (cardSet.cards, cards).immutableCopy ());
   }
+
+  // --- unsupported collection methods --- //
 
   public CardSet difference (final CardSet cardSet)
   {
@@ -131,6 +235,12 @@ public final class CardSet implements Collection <Card>
     return rules.isValidCardSet (typeSetBuilder.build ());
   }
 
+  @Override
+  public String toString ()
+  {
+    return cards.toString ();
+  }
+
   /**
    * Immutable view of a validated CardSet.
    */
@@ -149,115 +259,5 @@ public final class CardSet implements Collection <Card>
     private Match ()
     {
     }
-  }
-
-  // --- delegated methods --- //
-
-  @Override
-  public boolean contains (final Object card)
-  {
-    Arguments.checkIsNotNull (card, "card");
-
-    return cards.contains (card);
-  }
-
-  @Override
-  public boolean containsAll (final Collection <?> cardSet)
-  {
-    Arguments.checkIsNotNull (cardSet, "cardSet");
-
-    return cards.containsAll (cardSet);
-  }
-
-  @Override
-  public int size ()
-  {
-    return cards.size ();
-  }
-
-  @Override
-  public UnmodifiableIterator <Card> iterator ()
-  {
-    return cards.iterator ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return cards.toString ();
-  }
-
-  @Override
-  public boolean isEmpty ()
-  {
-    return cards.isEmpty ();
-  }
-
-  @Override
-  public Object[] toArray ()
-  {
-    return cards.toArray ();
-  }
-
-  @Override
-  public <T> T[] toArray (final T[] a)
-  {
-    Arguments.checkIsNotNull (a, "a");
-
-    return cards.toArray (a);
-  }
-
-  // --- unsupported collection methods --- //
-
-  @Override
-  @Deprecated
-  public boolean add (final Card e) throws UnsupportedOperationException
-  {
-    Arguments.checkIsNotNull (e, "e");
-
-    return cards.add (e);
-  }
-
-  @Override
-  @Deprecated
-  public boolean addAll (final Collection <? extends Card> c) throws UnsupportedOperationException
-  {
-    Arguments.checkIsNotNull (c, "c");
-
-    return cards.addAll (c);
-  }
-
-  @Override
-  @Deprecated
-  public void clear () throws UnsupportedOperationException
-  {
-    cards.clear ();
-  }
-
-  @Override
-  @Deprecated
-  public boolean remove (final Object o) throws UnsupportedOperationException
-  {
-    Arguments.checkIsNotNull (o, "o");
-
-    return cards.remove (o);
-  }
-
-  @Override
-  @Deprecated
-  public boolean removeAll (final Collection <?> c) throws UnsupportedOperationException
-  {
-    Arguments.checkIsNotNull (c, "c");
-
-    return cards.removeAll (c);
-  }
-
-  @Override
-  @Deprecated
-  public boolean retainAll (final Collection <?> c) throws UnsupportedOperationException
-  {
-    Arguments.checkIsNotNull (c, "c");
-
-    return cards.retainAll (c);
   }
 }

@@ -141,14 +141,6 @@ public class DedicatedGameSession implements TestSession
     return clientPool.count ();
   }
 
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
-                           getClass ().getSimpleName (), sessionName, internalServerAddress, serverPort,
-                           gameRules.getInitialCountryAssignment ());
-  }
-
   private void initializeServer ()
   {
     gameModel = GameModel.builder (gameRules).eventBus (eventBus).build ();
@@ -165,5 +157,13 @@ public class DedicatedGameSession implements TestSession
   {
     log.trace ("Connecting {} clients to server [{}]", gameRules.getPlayerLimit (), serverPort);
     clientPool.connectNew (internalServerAddress, serverPort, gameRules.getPlayerLimit ());
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
+                           getClass ().getSimpleName (), sessionName, internalServerAddress, serverPort,
+                           gameRules.getInitialCountryAssignment ());
   }
 }

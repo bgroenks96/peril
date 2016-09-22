@@ -41,10 +41,9 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
 {
   public static final int DEFAULT_TEST_TIMEOUT = 5000;
   public static final int DEFAULT_STATE_CHANGE_TIMOUT = 3000;
+  final Logger log;
   private final StateMachineEventHandler stateMachine;
   private final Queue <String> stateChangeHistory = Queues.newLinkedBlockingQueue ();
-
-  final Logger log;
 
   public StateMachineMonitor (final StateMachineEventHandler stateMachine, final Logger log)
   {
@@ -55,6 +54,14 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
     this.log = log;
 
     stateMachine.addStateMachineListener (this);
+  }
+
+  @Override
+  public void onEntry (final String context, final String state)
+  {
+    super.onEntry (context, state);
+
+    stateChangeHistory.add (state);
   }
 
   /**
@@ -133,13 +140,5 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
   public Optional <Throwable> checkError ()
   {
     return stateMachine.checkError ();
-  }
-
-  @Override
-  public void onEntry (final String context, final String state)
-  {
-    super.onEntry (context, state);
-
-    stateChangeHistory.add (state);
   }
 }

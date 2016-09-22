@@ -50,9 +50,9 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   }
 
   @Override
-  public void reset ()
+  public int getTurn ()
   {
-    turn = FIRST;
+    return turn;
   }
 
   /**
@@ -65,12 +65,6 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   }
 
   @Override
-  public int getTurn ()
-  {
-    return turn;
-  }
-
-  @Override
   public boolean isFirstTurn ()
   {
     return getTurnOrder ().is (PlayerTurnOrder.FIRST);
@@ -80,6 +74,12 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   public boolean isLastTurn ()
   {
     return turn == turnCount - 1;
+  }
+
+  @Override
+  public void reset ()
+  {
+    turn = FIRST;
   }
 
   @Override
@@ -99,14 +99,14 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
     if (newTurnCount >= turn) reset ();
   }
 
+  private int getNextTurnValue ()
+  {
+    return (turn + 1) % turnCount;
+  }
+
   @Override
   public String toString ()
   {
     return Strings.format ("{}: At turn {} / {}", getClass ().getSimpleName (), turn + 1, turnCount);
-  }
-
-  private int getNextTurnValue ()
-  {
-    return (turn + 1) % turnCount;
   }
 }

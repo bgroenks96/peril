@@ -57,6 +57,12 @@ public class TestClientPool implements Iterable <TestClient>
   {
   }
 
+  @Override
+  public Iterator <TestClient> iterator ()
+  {
+    return clients.iterator ();
+  }
+
   public synchronized void connectNew (final String serverAddress, final int serverPort)
   {
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
@@ -288,22 +294,16 @@ public class TestClientPool implements Iterable <TestClient>
     return new TestClientPool (copy);
   }
 
-  @Override
-  public Iterator <TestClient> iterator ()
-  {
-    return clients.iterator ();
-  }
-
-  public interface ClientEventCallback <T extends Event>
-  {
-    void onEventReceived (Optional <T> event, TestClient client);
-  }
-
   private TestClientPool (final Collection <TestClient> clients)
   {
     Arguments.checkIsNotNull (clients, "clients");
     Arguments.checkHasNoNullElements (clients, "clients");
 
     this.clients.addAll (clients);
+  }
+
+  public interface ClientEventCallback <T extends Event>
+  {
+    void onEventReceived (Optional <T> event, TestClient client);
   }
 }

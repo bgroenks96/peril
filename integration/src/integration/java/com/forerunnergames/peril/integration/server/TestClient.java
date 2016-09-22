@@ -60,7 +60,7 @@ public class TestClient extends AbstractClientController
   private static final AtomicInteger clientCount = new AtomicInteger ();
   private final int clientId = clientCount.getAndIncrement ();
   private final ExecutorService exec = Executors.newCachedThreadPool ();
-  private final BlockingQueue <Event> inboundEventQueue = new LinkedBlockingQueue <> ();
+  private final BlockingQueue <Event> inboundEventQueue = new LinkedBlockingQueue<> ();
   private final Multimap <Class <?>, ClientEventCallback <?>> callbacks;
   private PlayerPacket player;
 
@@ -68,7 +68,30 @@ public class TestClient extends AbstractClientController
   {
     super (client, KryonetRegistration.CLASSES);
 
-    callbacks = Multimaps.synchronizedListMultimap (ArrayListMultimap. <Class <?>, ClientEventCallback <?>> create ());
+    callbacks = Multimaps.synchronizedListMultimap (ArrayListMultimap.<Class <?>, ClientEventCallback <?>> create ());
+  }
+
+  @Override
+  protected void onConnectionTo (final Remote server)
+  {
+    Arguments.checkIsNotNull (server, "server");
+  }
+
+  @Override
+  protected void onDisconnectionFrom (final Remote server)
+  {
+    Arguments.checkIsNotNull (server, "server");
+  }
+
+  @Override
+  protected void onCommunication (final Object object, final Remote server)
+  {
+    Arguments.checkIsNotNull (object, "object");
+    Arguments.checkIsNotNull (server, "server");
+
+    final Event event = (Event) object;
+    log.trace ("[{}] Event received: [{}]", this, event);
+    inboundEventQueue.add (event);
   }
 
   public Result <String> connect (final String addr, final int tcpPort)
@@ -148,7 +171,7 @@ public class TestClient extends AbstractClientController
     Arguments.checkIsNotNull (type, "type");
     Arguments.checkIsNotNegative (waitTimeoutMillis, "waitTimeoutMillis");
 
-    final Exchanger <T> exchanger = new Exchanger <> ();
+    final Exchanger <T> exchanger = new Exchanger<> ();
     final AtomicBoolean keepAlive = new AtomicBoolean (true);
     exec.execute (new Runnable ()
     {
@@ -249,17 +272,17 @@ public class TestClient extends AbstractClientController
     return clientId;
   }
 
+  public PlayerPacket getPlayer ()
+  {
+    if (player == null) Exceptions.throwIllegalState ("Player has not been set.");
+    return player;
+  }
+
   public void setPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
     this.player = player;
-  }
-
-  public PlayerPacket getPlayer ()
-  {
-    if (player == null) Exceptions.throwIllegalState ("Player has not been set.");
-    return player;
   }
 
   public void flushEventQueue ()
@@ -275,12 +298,6 @@ public class TestClient extends AbstractClientController
         e.printStackTrace ();
       }
     }
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}-{}", getClass ().getSimpleName (), clientId);
   }
 
   @SuppressWarnings ({ "unchecked", "rawtypes" })
@@ -307,25 +324,8 @@ public class TestClient extends AbstractClientController
   }
 
   @Override
-  protected void onConnectionTo (final Remote server)
+  public String toString ()
   {
-    Arguments.checkIsNotNull (server, "server");
-  }
-
-  @Override
-  protected void onDisconnectionFrom (final Remote server)
-  {
-    Arguments.checkIsNotNull (server, "server");
-  }
-
-  @Override
-  protected void onCommunication (final Object object, final Remote server)
-  {
-    Arguments.checkIsNotNull (object, "object");
-    Arguments.checkIsNotNull (server, "server");
-
-    final Event event = (Event) object;
-    log.trace ("[{}] Event received: [{}]", this, event);
-    inboundEventQueue.add (event);
+    return Strings.format ("{}-{}", getClass ().getSimpleName (), clientId);
   }
 }

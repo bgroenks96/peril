@@ -49,7 +49,7 @@ public interface AssetManager
 
   void unload (final String fileName);
 
-  void finishLoading (final AssetDescriptor<?> descriptor);
+  void finishLoading (final AssetDescriptor <?> descriptor);
 
   void dispose ();
 }

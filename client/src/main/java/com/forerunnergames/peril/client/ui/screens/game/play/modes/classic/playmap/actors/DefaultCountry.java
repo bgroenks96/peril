@@ -243,19 +243,19 @@ public final class DefaultCountry implements Country
   }
 
   @Override
-  public boolean armyCountIs (final int armies)
-  {
-    Arguments.checkIsNotNegative (armies, "armies");
-
-    return getArmies () == armies;
-  }
-
-  @Override
   public void setArmies (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
 
     armyText.changeArmiesTo (armies);
+  }
+
+  @Override
+  public boolean armyCountIs (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    return getArmies () == armies;
   }
 
   @Override

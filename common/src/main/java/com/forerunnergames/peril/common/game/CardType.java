@@ -32,7 +32,7 @@ public enum CardType
   TYPE3 (3),
   WILDCARD (0);
 
-  private static final Map <Integer, CardType> valueMap = new HashMap <> ();
+  private static final Map <Integer, CardType> valueMap = new HashMap<> ();
 
   static
   {
@@ -43,11 +43,6 @@ public enum CardType
   }
 
   private final int typeValue;
-
-  CardType (final int typeValue)
-  {
-    this.typeValue = typeValue;
-  }
 
   public static CardType fromValue (final int typeValue)
   {
@@ -73,5 +68,10 @@ public enum CardType
   public String toString ()
   {
     return Strings.format ("{}: Type: {} Value: {}", getClass ().getSimpleName (), name (), typeValue);
+  }
+
+  CardType (final int typeValue)
+  {
+    this.typeValue = typeValue;
   }
 }

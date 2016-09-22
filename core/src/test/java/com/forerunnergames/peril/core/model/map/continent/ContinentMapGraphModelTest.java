@@ -39,6 +39,29 @@ public class ContinentMapGraphModelTest
   private static final int TEST_CONTINENT_COUNT = 20;
   private ImmutableSet <Continent> defaultTestContinents;
 
+  static ContinentMapGraphModel createContinentMapGraphModelWith (final ImmutableSet <Continent> continents,
+                                                                  final CountryMapGraphModel countryMapGraphModel)
+  {
+    final DefaultGraphModel.Builder <Continent> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
+    for (final Continent Continent : continents)
+    {
+      nonConnectedGraphBuilder.addNode (Continent);
+    }
+    return new ContinentMapGraphModel (nonConnectedGraphBuilder.build (), countryMapGraphModel);
+  }
+
+  static ContinentMapGraphModel createContinentMapGraphModelWith (final ImmutableSet <Continent> continents)
+  {
+    return createContinentMapGraphModelWith (continents, CountryMapGraphModel.disjointCountryGraphFrom (CountryFactory
+            .generateDefaultCountries (ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT)));
+  }
+
+  public static ContinentMapGraphModel createContinentMapGraphModelWith (final ContinentFactory continents,
+                                                                         final CountryMapGraphModel countryMapGraphModel)
+  {
+    return createContinentMapGraphModelWith (continents.getContinents (), countryMapGraphModel);
+  }
+
   @Before
   public void init ()
   {
@@ -110,28 +133,5 @@ public class ContinentMapGraphModelTest
     final ContinentMapGraphModel modelTest = createContinentMapGraphModelWith (defaultTestContinents);
 
     assertEquals (defaultTestContinents.size (), modelTest.getContinentCount ());
-  }
-
-  public static ContinentMapGraphModel createContinentMapGraphModelWith (final ContinentFactory continents,
-                                                                         final CountryMapGraphModel countryMapGraphModel)
-  {
-    return createContinentMapGraphModelWith (continents.getContinents (), countryMapGraphModel);
-  }
-
-  static ContinentMapGraphModel createContinentMapGraphModelWith (final ImmutableSet <Continent> continents,
-                                                                  final CountryMapGraphModel countryMapGraphModel)
-  {
-    final DefaultGraphModel.Builder <Continent> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
-    for (final Continent Continent : continents)
-    {
-      nonConnectedGraphBuilder.addNode (Continent);
-    }
-    return new ContinentMapGraphModel (nonConnectedGraphBuilder.build (), countryMapGraphModel);
-  }
-
-  static ContinentMapGraphModel createContinentMapGraphModelWith (final ImmutableSet <Continent> continents)
-  {
-    return createContinentMapGraphModelWith (continents, CountryMapGraphModel.disjointCountryGraphFrom (CountryFactory
-            .generateDefaultCountries (ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT)));
   }
 }

@@ -44,7 +44,7 @@ public final class MultiSourceAssetManager implements AssetManager
 {
   private static final Logger log = LoggerFactory.getLogger (MultiSourceAssetManager.class);
   private final ImmutableSet <com.badlogic.gdx.assets.AssetManager> libGdxAssetManagers;
-  private final Map <String, com.badlogic.gdx.assets.AssetManager> fileNamesToManagers = new HashMap <> ();
+  private final Map <String, com.badlogic.gdx.assets.AssetManager> fileNamesToManagers = new HashMap<> ();
 
   public MultiSourceAssetManager (final com.badlogic.gdx.assets.AssetManager... libGdxAssetManagers)
   {

@@ -197,16 +197,16 @@ public class OkDialog implements Dialog
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void setSubmissionDisabled (final boolean isDisabled)
+  public boolean isSubmissionDisabled ()
   {
-    delegate.setSubmissionDisabled (isDisabled);
+    return delegate.isSubmissionDisabled ();
   }
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public boolean isSubmissionDisabled ()
+  public void setSubmissionDisabled (final boolean isDisabled)
   {
-    return delegate.isSubmissionDisabled ();
+    delegate.setSubmissionDisabled (isDisabled);
   }
 
   @Override

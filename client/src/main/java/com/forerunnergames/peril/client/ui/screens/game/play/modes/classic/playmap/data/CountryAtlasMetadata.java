@@ -25,10 +25,6 @@ import com.forerunnergames.peril.common.map.MapMetadata;
 
 public interface CountryAtlasMetadata
 {
-  AssetDescriptor <TextureAtlas> getAssetDescriptor ();
-
-  MapMetadata getMapMetadata ();
-
   @Override
   int hashCode ();
 
@@ -37,4 +33,8 @@ public interface CountryAtlasMetadata
 
   @Override
   String toString ();
+
+  AssetDescriptor <TextureAtlas> getAssetDescriptor ();
+
+  MapMetadata getMapMetadata ();
 }

@@ -37,6 +37,13 @@ public abstract class AbstractAssetPacket implements AssetPacket
     this.id = id;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractAssetPacket ()
+  {
+    name = null;
+    id = null;
+  }
+
   @Override
   public String getName ()
   {
@@ -44,11 +51,9 @@ public abstract class AbstractAssetPacket implements AssetPacket
   }
 
   @Override
-  public boolean hasName (final String name)
+  public boolean doesNotHaveId (final UUID id)
   {
-    Arguments.checkIsNotNull (name, "name");
-
-    return this.name.equals (name);
+    return !hasId (id);
   }
 
   @Override
@@ -60,15 +65,17 @@ public abstract class AbstractAssetPacket implements AssetPacket
   }
 
   @Override
-  public boolean hasId (final UUID id)
+  public boolean hasName (final String name)
   {
-    return this.id.equals (id);
+    Arguments.checkIsNotNull (name, "name");
+
+    return this.name.equals (name);
   }
 
   @Override
-  public boolean doesNotHaveId (final UUID id)
+  public boolean hasId (final UUID id)
   {
-    return !hasId (id);
+    return this.id.equals (id);
   }
 
   @Override
@@ -88,6 +95,12 @@ public abstract class AbstractAssetPacket implements AssetPacket
   }
 
   @Override
+  public int hashCode ()
+  {
+    return id.hashCode ();
+  }
+
+  @Override
   public boolean equals (final Object obj)
   {
     if (this == obj) return true;
@@ -95,21 +108,8 @@ public abstract class AbstractAssetPacket implements AssetPacket
   }
 
   @Override
-  public int hashCode ()
-  {
-    return id.hashCode ();
-  }
-
-  @Override
   public String toString ()
   {
     return Strings.format ("{}: Name: {} | Id: {}", getClass ().getSimpleName (), name, id);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractAssetPacket ()
-  {
-    name = null;
-    id = null;
   }
 }

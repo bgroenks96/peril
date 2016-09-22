@@ -97,310 +97,144 @@ public final class Tank extends Actor implements Unit
   {
     switch (keycode)
     {
-    case Input.Keys.LEFT:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
+      case Input.Keys.LEFT:
       {
-        switch (turnDirection)
+        if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
         {
-        case RIGHT:
+          switch (turnDirection)
+          {
+            case RIGHT:
+            {
+              setTurning (Unit.TurnDirection.NONE);
+              break;
+            }
+            case NONE:
+            {
+              setTurning (Unit.TurnDirection.LEFT);
+              break;
+            }
+          }
+        }
+        else
         {
-          setTurning (Unit.TurnDirection.NONE);
-          break;
+          turnLeft ();
         }
-        case NONE:
-        {
-          setTurning (Unit.TurnDirection.LEFT);
-          break;
-        }
-        }
+
+        return true;
       }
-      else
+      case Input.Keys.RIGHT:
       {
-        turnLeft ();
-      }
+        if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
+        {
+          switch (turnDirection)
+          {
+            case LEFT:
+            {
+              setTurning (Unit.TurnDirection.NONE);
+              break;
+            }
+            case NONE:
+            {
+              setTurning (Unit.TurnDirection.RIGHT);
+              break;
+            }
+          }
+        }
+        else
+        {
+          turnRight ();
+        }
 
-      return true;
-    }
-    case Input.Keys.RIGHT:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
+        return true;
+      }
+      case Input.Keys.U:
       {
-        switch (turnDirection)
+        if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
         {
-        case LEFT:
+          if (!isTurning ()) setTurning (Unit.TurnDirection.U_TURN);
+        }
+        else
         {
-          setTurning (Unit.TurnDirection.NONE);
-          break;
+          turnAround ();
         }
-        case NONE:
-        {
-          setTurning (Unit.TurnDirection.RIGHT);
-          break;
-        }
-        }
+
+        return true;
       }
-      else
+      case Input.Keys.UP:
       {
-        turnRight ();
-      }
-
-      return true;
-    }
-    case Input.Keys.U:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
-      {
-        if (! isTurning ()) setTurning (Unit.TurnDirection.U_TURN);
-      }
-      else
-      {
-        turnAround ();
-      }
-
-      return true;
-    }
-    case Input.Keys.UP:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
-      {
-        switch (movementDirection)
+        if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
         {
-        case REVERSE:
+          switch (movementDirection)
+          {
+            case REVERSE:
+            {
+              setMoving (Unit.MovementDirection.NONE);
+              break;
+            }
+            case NONE:
+            {
+              setMoving (Unit.MovementDirection.FORWARD);
+              break;
+            }
+          }
+        }
+        else
         {
-          setMoving (Unit.MovementDirection.NONE);
-          break;
+          moveForward ();
         }
-        case NONE:
-        {
-          setMoving (Unit.MovementDirection.FORWARD);
-          break;
-        }
-        }
+
+        return true;
       }
-      else
+      case Input.Keys.DOWN:
       {
-        moveForward ();
-      }
+        if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
+        {
+          switch (movementDirection)
+          {
+            case FORWARD:
+            {
+              setMoving (Unit.MovementDirection.NONE);
+              break;
+            }
+            case NONE:
+            {
+              setMoving (Unit.MovementDirection.REVERSE);
+              break;
+            }
+          }
+        }
+        else
+        {
+          moveReverse ();
+        }
 
-      return true;
-    }
-    case Input.Keys.DOWN:
-    {
-      if (BattleGridSettings.CONTINUOUS_UNIT_MOVEMENT)
+        return true;
+      }
+      case Input.Keys.A:
       {
-        switch (movementDirection)
-        {
-        case FORWARD:
-        {
-          setMoving (Unit.MovementDirection.NONE);
-          break;
-        }
-        case NONE:
-        {
-          setMoving (Unit.MovementDirection.REVERSE);
-          break;
-        }
-        }
+        setTurretTurning (TurnDirection.LEFT);
+        turretActive = true;
+
+        return true;
       }
-      else
+      case Input.Keys.S:
       {
-        moveReverse ();
+        setTurretTurning (TurnDirection.RIGHT);
+        turretActive = true;
+
+        return true;
       }
+      case Input.Keys.W:
+      {
+        deactivateTurret ();
 
-      return true;
+        return true;
+      }
+      default:
+      {
+        return false;
+      }
     }
-    case Input.Keys.A:
-    {
-      setTurretTurning (TurnDirection.LEFT);
-      turretActive = true;
-
-      return true;
-    }
-    case Input.Keys.S:
-    {
-      setTurretTurning (TurnDirection.RIGHT);
-      turretActive = true;
-
-      return true;
-    }
-    case Input.Keys.W:
-    {
-      deactivateTurret ();
-
-      return true;
-    }
-    default:
-    {
-      return false;
-    }
-    }
-  }
-
-  @Override
-  public void turnRight ()
-  {
-    bodySprite.rotate (- 90);
-
-    if (! turretActive)
-    {
-      turretSprite.rotate (- 90);
-      turretForwardVector.rotate90 (1);
-    }
-
-    bodyForwardVector.rotate90 (1);
-
-    turnDirection = TurnDirection.NONE;
-  }
-
-  @Override
-  public void turnLeft ()
-  {
-    bodySprite.rotate (90);
-    bodyForwardVector.rotate90 (- 1);
-
-    if (! turretActive)
-    {
-      turretSprite.rotate (90);
-      turretForwardVector.rotate90 (- 1);
-    }
-
-    turnDirection = TurnDirection.NONE;
-  }
-
-  @Override
-  public void turnAround ()
-  {
-    bodySprite.rotate (- 90);
-    bodyForwardVector.rotate90 (1);
-
-    if (! turretActive)
-    {
-      turretSprite.rotate (- 90);
-      turretForwardVector.rotate90 (1);
-    }
-
-    if (completedTurningAround) turnDirection = TurnDirection.NONE;
-
-    completedTurningAround = ! completedTurningAround;
-  }
-
-  @Override
-  public void moveForward ()
-  {
-    previousPosition.set (currentPosition);
-    currentPosition.sub (bodyForwardVector);
-
-    clampPosition ();
-  }
-
-  @Override
-  public void moveReverse ()
-  {
-    previousPosition.set (currentPosition);
-    currentPosition.add (bodyForwardVector);
-
-    clampPosition ();
-  }
-
-  @Override
-  public void setMoving (final MovementDirection movementDirection)
-  {
-    Arguments.checkIsNotNull (movementDirection, "movementDirection");
-
-    this.movementDirection = movementDirection;
-  }
-
-  @Override
-  public void setTurning (final TurnDirection turnDirection)
-  {
-    Arguments.checkIsNotNull (turnDirection, "turnDirection");
-
-    this.turnDirection = turnDirection;
-  }
-
-  public void turnTurretRight ()
-  {
-    turretSprite.rotate (- 90);
-    turretForwardVector.rotate90 (1);
-
-    turretTurnDirection = TurnDirection.NONE;
-    turretActive = true;
-  }
-
-  public void turnTurretLeft ()
-  {
-    turretSprite.rotate (90);
-    turretForwardVector.rotate90 (- 1);
-
-    turretTurnDirection = TurnDirection.NONE;
-    turretActive = true;
-  }
-
-  public void turnTurretAround ()
-  {
-    turretSprite.rotate (- 90);
-    turretForwardVector.rotate90 (1);
-
-    if (completedTurningTurretAround) turretTurnDirection = TurnDirection.NONE;
-
-    completedTurningTurretAround = ! completedTurningTurretAround;
-    turretActive = true;
-  }
-
-  public void setTurretTurning (final TurnDirection turnDirection)
-  {
-    Arguments.checkIsNotNull (turnDirection, "turnDirection");
-
-    turretTurnDirection = turnDirection;
-  }
-
-  public void deactivateTurret ()
-  {
-    if (! turretActive) return;
-
-    final int degrees = Math.round (turretForwardVector.angle (bodyForwardVector));
-
-    if (degrees == 0) return;
-
-    if (degrees == 90)
-    {
-      setTurretTurning (TurnDirection.RIGHT);
-    }
-    else if (degrees == - 90)
-    {
-      setTurretTurning (TurnDirection.LEFT);
-    }
-    else if (Math.abs (degrees) == 180)
-    {
-      setTurretTurning (TurnDirection.U_TURN);
-    }
-
-    turretActive = false;
-  }
-
-  @Override
-  public Vector2 getPreviousPosition ()
-  {
-    return previousPosition;
-  }
-
-  @Override
-  public Vector2 getCurrentPosition ()
-  {
-    return currentPosition;
-  }
-
-  @Override
-  public Actor asActor ()
-  {
-    return this;
-  }
-
-  @Override
-  public boolean is (final Actor actor)
-  {
-    return equals (actor);
   }
 
   @Override
@@ -445,9 +279,136 @@ public final class Tank extends Actor implements Unit
     return false;
   }
 
+  @Override
+  public void turnRight ()
+  {
+    bodySprite.rotate (-90);
+
+    if (!turretActive)
+    {
+      turretSprite.rotate (-90);
+      turretForwardVector.rotate90 (1);
+    }
+
+    bodyForwardVector.rotate90 (1);
+
+    turnDirection = TurnDirection.NONE;
+  }
+
+  @Override
+  public void turnLeft ()
+  {
+    bodySprite.rotate (90);
+    bodyForwardVector.rotate90 (-1);
+
+    if (!turretActive)
+    {
+      turretSprite.rotate (90);
+      turretForwardVector.rotate90 (-1);
+    }
+
+    turnDirection = TurnDirection.NONE;
+  }
+
+  @Override
+  public void turnAround ()
+  {
+    bodySprite.rotate (-90);
+    bodyForwardVector.rotate90 (1);
+
+    if (!turretActive)
+    {
+      turretSprite.rotate (-90);
+      turretForwardVector.rotate90 (1);
+    }
+
+    if (completedTurningAround) turnDirection = TurnDirection.NONE;
+
+    completedTurningAround = !completedTurningAround;
+  }
+
+  @Override
+  public void moveForward ()
+  {
+    previousPosition.set (currentPosition);
+    currentPosition.sub (bodyForwardVector);
+
+    clampPosition ();
+  }
+
+  @Override
+  public void moveReverse ()
+  {
+    previousPosition.set (currentPosition);
+    currentPosition.add (bodyForwardVector);
+
+    clampPosition ();
+  }
+
+  public void turnTurretRight ()
+  {
+    turretSprite.rotate (-90);
+    turretForwardVector.rotate90 (1);
+
+    turretTurnDirection = TurnDirection.NONE;
+    turretActive = true;
+  }
+
+  public void turnTurretLeft ()
+  {
+    turretSprite.rotate (90);
+    turretForwardVector.rotate90 (-1);
+
+    turretTurnDirection = TurnDirection.NONE;
+    turretActive = true;
+  }
+
+  public void turnTurretAround ()
+  {
+    turretSprite.rotate (-90);
+    turretForwardVector.rotate90 (1);
+
+    if (completedTurningTurretAround) turretTurnDirection = TurnDirection.NONE;
+
+    completedTurningTurretAround = !completedTurningTurretAround;
+    turretActive = true;
+  }
+
+  public void deactivateTurret ()
+  {
+    if (!turretActive) return;
+
+    final int degrees = Math.round (turretForwardVector.angle (bodyForwardVector));
+
+    if (degrees == 0) return;
+
+    if (degrees == 90)
+    {
+      setTurretTurning (TurnDirection.RIGHT);
+    }
+    else if (degrees == -90)
+    {
+      setTurretTurning (TurnDirection.LEFT);
+    }
+    else if (Math.abs (degrees) == 180)
+    {
+      setTurretTurning (TurnDirection.U_TURN);
+    }
+
+    turretActive = false;
+  }
+
   private boolean isMoving ()
   {
     return movementDirection != MovementDirection.NONE;
+  }
+
+  @Override
+  public void setMoving (final MovementDirection movementDirection)
+  {
+    Arguments.checkIsNotNull (movementDirection, "movementDirection");
+
+    this.movementDirection = movementDirection;
   }
 
   private boolean isTurning ()
@@ -455,30 +416,69 @@ public final class Tank extends Actor implements Unit
     return turnDirection != TurnDirection.NONE;
   }
 
+  @Override
+  public void setTurning (final TurnDirection turnDirection)
+  {
+    Arguments.checkIsNotNull (turnDirection, "turnDirection");
+
+    this.turnDirection = turnDirection;
+  }
+
+  @Override
+  public Vector2 getPreviousPosition ()
+  {
+    return previousPosition;
+  }
+
+  @Override
+  public Vector2 getCurrentPosition ()
+  {
+    return currentPosition;
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return this;
+  }
+
+  @Override
+  public boolean is (final Actor actor)
+  {
+    return equals (actor);
+  }
+
   private boolean isTurretTurning ()
   {
     return turretTurnDirection != TurnDirection.NONE;
+  }
+
+  public void setTurretTurning (final TurnDirection turnDirection)
+  {
+    Arguments.checkIsNotNull (turnDirection, "turnDirection");
+
+    turretTurnDirection = turnDirection;
   }
 
   private void executeTurn ()
   {
     switch (turnDirection)
     {
-    case RIGHT:
-    {
-      turnRight ();
-      break;
-    }
-    case LEFT:
-    {
-      turnLeft ();
-      break;
-    }
-    case U_TURN:
-    {
-      turnAround ();
-      break;
-    }
+      case RIGHT:
+      {
+        turnRight ();
+        break;
+      }
+      case LEFT:
+      {
+        turnLeft ();
+        break;
+      }
+      case U_TURN:
+      {
+        turnAround ();
+        break;
+      }
     }
   }
 
@@ -486,21 +486,21 @@ public final class Tank extends Actor implements Unit
   {
     switch (turretTurnDirection)
     {
-    case RIGHT:
-    {
-      turnTurretRight ();
-      break;
-    }
-    case LEFT:
-    {
-      turnTurretLeft ();
-      break;
-    }
-    case U_TURN:
-    {
-      turnTurretAround ();
-      break;
-    }
+      case RIGHT:
+      {
+        turnTurretRight ();
+        break;
+      }
+      case LEFT:
+      {
+        turnTurretLeft ();
+        break;
+      }
+      case U_TURN:
+      {
+        turnTurretAround ();
+        break;
+      }
     }
   }
 
@@ -508,28 +508,32 @@ public final class Tank extends Actor implements Unit
   {
     switch (movementDirection)
     {
-    case FORWARD:
-    {
-      moveForward ();
-      return;
-    }
-    case REVERSE:
-    {
-      moveReverse ();
-      return;
-    }
-    default:
-    {
-      break;
-    }
+      case FORWARD:
+      {
+        moveForward ();
+        return;
+      }
+      case REVERSE:
+      {
+        moveReverse ();
+        return;
+      }
+      default:
+      {
+        break;
+      }
     }
   }
 
   private void clampPosition ()
   {
-    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
-    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
-    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
-    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
+    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX)
+      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
+    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX)
+      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
+    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX)
+      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
+    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX)
+      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
   }
 }

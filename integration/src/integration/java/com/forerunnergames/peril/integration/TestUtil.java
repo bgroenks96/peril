@@ -37,8 +37,8 @@ import org.testng.Assert;
 
 public class TestUtil
 {
-  private static final TestClientTurnOrderComparator clientTurnOrderComparator = new TestClientTurnOrderComparator ();
   public static final int DEFAULT_TEST_TIMEOUT = 45000;
+  private static final TestClientTurnOrderComparator clientTurnOrderComparator = new TestClientTurnOrderComparator ();
 
   public static ImmutableSortedSet <TestClient> sortClientsByPlayerTurnOrder (final Iterable <TestClient> clients)
   {
@@ -50,7 +50,7 @@ public class TestUtil
 
   public static Iterable <IPublicationErrorHandler> withDefaultHandler ()
   {
-    return ImmutableSet. <IPublicationErrorHandler> of (new DefaultTestNGErrorHandler ());
+    return ImmutableSet.<IPublicationErrorHandler> of (new DefaultTestNGErrorHandler ());
   }
 
   public static void pause (final long millis)

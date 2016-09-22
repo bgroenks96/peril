@@ -27,15 +27,6 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
 {
   private final String playerName;
 
-  public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)
-  {
-    super (reason);
-
-    Arguments.checkIsNotNull (playerName, "playerName");
-
-    this.playerName = playerName;
-  }
-
   public enum Reason
   {
     GAME_IS_FULL,
@@ -43,6 +34,15 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     DUPLICATE_COLOR,
     DUPLICATE_TURN_ORDER,
     INVALID_NAME
+  }
+
+  public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)
+  {
+    super (reason);
+
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    this.playerName = playerName;
   }
 
   public String getPlayerName ()

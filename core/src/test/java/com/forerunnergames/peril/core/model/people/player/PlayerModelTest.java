@@ -807,7 +807,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {
@@ -833,7 +833,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {
@@ -868,7 +868,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {

@@ -35,7 +35,7 @@ public final class LoadingScreenWidgetFactory extends AbstractWidgetFactory
   }
 
   @Override
-  protected AssetDescriptor<Skin> getSkinAssetDescriptor ()
+  protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
   {
     return AssetSettings.LOADING_SCREEN_SKIN_ASSET_DESCRIPTOR;
   }

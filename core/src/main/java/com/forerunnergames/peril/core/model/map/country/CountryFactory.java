@@ -30,28 +30,6 @@ public final class CountryFactory
 
   private int countryCount = 0;
 
-  public void newCountryWith (final String name)
-  {
-    countries.add (create (name));
-    countryCount++;
-  }
-
-  public void newCountryWith (final String name, final int armyCount)
-  {
-    countries.add (create (name, armyCount));
-    countryCount++;
-  }
-
-  public int getCountryCount ()
-  {
-    return countryCount;
-  }
-
-  ImmutableSet <Country> getCountries ()
-  {
-    return countries.build ();
-  }
-
   static CountryBuilder builder (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
@@ -72,6 +50,40 @@ public final class CountryFactory
     Arguments.checkIsNotNegative (armyCount, "armyCount");
 
     return builder (name).armies (armyCount).build ();
+  }
+
+  public static CountryFactory generateDefaultCountries (final int count)
+  {
+    Arguments.checkIsNotNegative (count, "count");
+
+    final CountryFactory countryFactory = new CountryFactory ();
+    for (int i = 0; i < count; ++i)
+    {
+      countryFactory.newCountryWith ("Country-" + i);
+    }
+    return countryFactory;
+  }
+
+  public void newCountryWith (final String name)
+  {
+    countries.add (create (name));
+    countryCount++;
+  }
+
+  public void newCountryWith (final String name, final int armyCount)
+  {
+    countries.add (create (name, armyCount));
+    countryCount++;
+  }
+
+  public int getCountryCount ()
+  {
+    return countryCount;
+  }
+
+  ImmutableSet <Country> getCountries ()
+  {
+    return countries.build ();
   }
 
   static class CountryBuilder
@@ -100,17 +112,5 @@ public final class CountryFactory
     {
       return new DefaultCountry (name, id, armyCount);
     }
-  }
-
-  public static CountryFactory generateDefaultCountries (final int count)
-  {
-    Arguments.checkIsNotNegative (count, "count");
-
-    final CountryFactory countryFactory = new CountryFactory ();
-    for (int i = 0; i < count; ++i)
-    {
-      countryFactory.newCountryWith ("Country-" + i);
-    }
-    return countryFactory;
   }
 }

@@ -36,15 +36,15 @@ public class PlayerOccupyCountryResponseRequestEvent implements ResponseRequestE
     this.deltaArmyCount = deltaArmyCount;
   }
 
-  public int getDeltaArmyCount ()
-  {
-    return deltaArmyCount;
-  }
-
   @Override
   public Class <? extends ServerRequestEvent> getRequestType ()
   {
     return PlayerOccupyCountryRequestEvent.class;
+  }
+
+  public int getDeltaArmyCount ()
+  {
+    return deltaArmyCount;
   }
 
   @Override

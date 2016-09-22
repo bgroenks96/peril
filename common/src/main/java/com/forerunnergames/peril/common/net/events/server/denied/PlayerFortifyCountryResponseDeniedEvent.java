@@ -9,16 +9,16 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class PlayerFortifyCountryResponseDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
         implements PlayerResponseDeniedEvent <Reason>
 {
-  public PlayerFortifyCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
-  {
-    super (player, reason);
-  }
-
   public enum Reason
   {
     FORTIFY_DELTA_ARMY_COUNT_OVERFLOW,
     FORTIFY_DELTA_ARMY_COUNT_UNDERFLOW,
     PLAYER_NOT_IN_TURN
+  }
+
+  public PlayerFortifyCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  {
+    super (player, reason);
   }
 
   @RequiredForNetworkSerialization

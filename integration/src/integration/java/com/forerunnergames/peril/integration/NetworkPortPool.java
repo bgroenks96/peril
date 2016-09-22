@@ -40,6 +40,16 @@ public final class NetworkPortPool
   private static NetworkPortPool provider;
   private final RecyclableObjectPool <Integer> portNumberPool;
 
+  public static NetworkPortPool getInstance ()
+  {
+    // lazy initialize of singleton instance
+    if (provider == null)
+    {
+      provider = new NetworkPortPool ();
+    }
+    return provider;
+  }
+
   public int getAvailablePort ()
   {
     try
@@ -63,14 +73,23 @@ public final class NetworkPortPool
     portNumberPool.release (value);
   }
 
-  public static NetworkPortPool getInstance ()
+  private static int findAvailablePortFrom (final int initialValue)
   {
-    // lazy initialize of singleton instance
-    if (provider == null)
+    boolean found = false;
+    int nextPort = initialValue;
+    while (!found && nextPort < NetworkConstants.MAX_PORT)
     {
-      provider = new NetworkPortPool ();
+      try (final ServerSocket serv = new ServerSocket (nextPort))
+      {
+        log.trace ("Found available port {}", nextPort);
+        found = true;
+      }
+      catch (final IOException e)
+      {
+        log.debug ("Port {} not available! Checking {}...", nextPort, ++nextPort);
+      }
     }
-    return provider;
+    return nextPort;
   }
 
   private NetworkPortPool ()
@@ -89,24 +108,5 @@ public final class NetworkPortPool
     portNumberPool.allocate (PORT_POOL_SIZE);
 
     provider = this;
-  }
-
-  private static int findAvailablePortFrom (final int initialValue)
-  {
-    boolean found = false;
-    int nextPort = initialValue;
-    while (!found && nextPort < NetworkConstants.MAX_PORT)
-    {
-      try (final ServerSocket serv = new ServerSocket (nextPort))
-      {
-        log.trace ("Found available port {}", nextPort);
-        found = true;
-      }
-      catch (final IOException e)
-      {
-        log.debug ("Port {} not available! Checking {}...", nextPort, ++nextPort);
-      }
-    }
-    return nextPort;
   }
 }

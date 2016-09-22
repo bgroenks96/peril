@@ -32,8 +32,8 @@ public final class PlayerNameParameterValidator implements IParameterValidator
     if (!GameSettings.isValidPlayerNameWithoutClanTag (value))
     {
       throw new ParameterException (
-              Strings.format ("Invalid value \"{}\" for parameter \"{}\".\n\nValid player name rules:\n\n{}", value, name,
-                              GameSettings.VALID_PLAYER_NAME_DESCRIPTION));
+              Strings.format ("Invalid value \"{}\" for parameter \"{}\".\n\nValid player name rules:\n\n{}", value,
+                              name, GameSettings.VALID_PLAYER_NAME_DESCRIPTION));
 
     }
   }

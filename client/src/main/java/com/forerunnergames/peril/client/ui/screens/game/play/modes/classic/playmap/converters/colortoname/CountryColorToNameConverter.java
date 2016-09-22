@@ -22,8 +22,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 
 import com.google.common.collect.ImmutableMap;
 
-public final class CountryColorToNameConverter extends
-        AbstractTerritoryColorToNameConverter <CountryColor>
+public final class CountryColorToNameConverter extends AbstractTerritoryColorToNameConverter <CountryColor>
 {
   public CountryColorToNameConverter (final ImmutableMap <CountryColor, String> countryColorsToNames)
   {

@@ -38,6 +38,41 @@ public class CountryMapGraphModelTest
   private static final int TEST_COUNTRY_COUNT = 20;
   private ImmutableSet <Country> defaultTestCountries;
 
+  static CountryMapGraphModel createDisjointCountryMapGraphModelWith (final ImmutableSet <Country> countries)
+  {
+    final DefaultGraphModel.Builder <Country> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
+    for (final Country country : countries)
+    {
+      nonConnectedGraphBuilder.addNode (country);
+    }
+    return new CountryMapGraphModel (nonConnectedGraphBuilder.build ());
+  }
+
+  public static CountryMapGraphModel createDisjointCountryMapGraphModelWith (final CountryFactory countries)
+  {
+    return createDisjointCountryMapGraphModelWith (countries.getCountries ());
+  }
+
+  public static CountryMapGraphModel createCountryMapGraphModelFrom (final GraphModel <String> countryNameGraph)
+  {
+    final DefaultGraphModel.Builder <Country> graphBuilder = DefaultGraphModel.builder ();
+    final Map <String, Country> namesToCountries = Maps.newHashMap ();
+    for (final String node : countryNameGraph)
+    {
+      namesToCountries.put (node, CountryFactory.create (node));
+    }
+    for (final String node : countryNameGraph)
+    {
+      final Country countryNode = namesToCountries.get (node);
+      for (final String adj : countryNameGraph.getAdjacentNodes (node))
+      {
+        final Country adjCountryNode = namesToCountries.get (adj);
+        graphBuilder.setAdjacent (countryNode, adjCountryNode);
+      }
+    }
+    return new CountryMapGraphModel (graphBuilder.build ());
+  }
+
   @Before
   public void init ()
   {
@@ -147,40 +182,5 @@ public class CountryMapGraphModelTest
     final CountryMapGraphModel modelTest = createDisjointCountryMapGraphModelWith (defaultTestCountries);
 
     assertFalse (modelTest.countryCountIsAtLeast (defaultTestCountries.size () + 1));
-  }
-
-  public static CountryMapGraphModel createDisjointCountryMapGraphModelWith (final CountryFactory countries)
-  {
-    return createDisjointCountryMapGraphModelWith (countries.getCountries ());
-  }
-
-  public static CountryMapGraphModel createCountryMapGraphModelFrom (final GraphModel <String> countryNameGraph)
-  {
-    final DefaultGraphModel.Builder <Country> graphBuilder = DefaultGraphModel.builder ();
-    final Map <String, Country> namesToCountries = Maps.newHashMap ();
-    for (final String node : countryNameGraph)
-    {
-      namesToCountries.put (node, CountryFactory.create (node));
-    }
-    for (final String node : countryNameGraph)
-    {
-      final Country countryNode = namesToCountries.get (node);
-      for (final String adj : countryNameGraph.getAdjacentNodes (node))
-      {
-        final Country adjCountryNode = namesToCountries.get (adj);
-        graphBuilder.setAdjacent (countryNode, adjCountryNode);
-      }
-    }
-    return new CountryMapGraphModel (graphBuilder.build ());
-  }
-
-  static CountryMapGraphModel createDisjointCountryMapGraphModelWith (final ImmutableSet <Country> countries)
-  {
-    final DefaultGraphModel.Builder <Country> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
-    for (final Country country : countries)
-    {
-      nonConnectedGraphBuilder.addNode (country);
-    }
-    return new CountryMapGraphModel (nonConnectedGraphBuilder.build ());
   }
 }

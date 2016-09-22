@@ -121,7 +121,9 @@ public final class PlayToMenuLoadingScreen extends InputAdapter implements Scree
     final Table foregroundTable = new Table ().top ();
     foregroundTable.add ().height (870);
     foregroundTable.row ();
-    foregroundTable.add (widgetFactory.createLabel (LOADING_LABEL_TEXT, Align.center, StyleSettings.LOADING_SCREEN_LOADING_TEXT_LABEL_STYLE)).size (700, 62);
+    foregroundTable.add (widgetFactory.createLabel (LOADING_LABEL_TEXT, Align.center,
+                                                    StyleSettings.LOADING_SCREEN_LOADING_TEXT_LABEL_STYLE))
+            .size (700, 62);
     foregroundTable.row ().bottom ();
     foregroundTable.add (progressBar).size (700, 20).padBottom (128);
 

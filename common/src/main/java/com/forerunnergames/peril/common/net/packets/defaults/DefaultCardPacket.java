@@ -45,14 +45,14 @@ public class DefaultCardPacket extends AbstractAssetPacket implements CardPacket
   }
 
   @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | Type: {}", super.toString (), type);
-  }
-
-  @Override
   public boolean typeIs (final int type)
   {
     return this.type == type;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Type: {}", super.toString (), type);
   }
 }

@@ -41,7 +41,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerBox.class);
   private final WidgetFactory widgetFactory;
-  private final Collection <PlayerPacket> turnOrderedPlayers = new TreeSet <> (PlayerPacket.TURN_ORDER_COMPARATOR);
+  private final Collection <PlayerPacket> turnOrderedPlayers = new TreeSet<> (PlayerPacket.TURN_ORDER_COMPARATOR);
   @Nullable
   private PlayerPacket highlightedPlayer;
 
@@ -99,8 +99,8 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 
     if (!turnOrderedPlayers.remove (player))
     {
-      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player,
-                PlayerBox.class.getSimpleName (), PlayerBox.class.getSimpleName ());
+      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player, PlayerBox.class.getSimpleName (),
+                PlayerBox.class.getSimpleName ());
       return;
     }
 

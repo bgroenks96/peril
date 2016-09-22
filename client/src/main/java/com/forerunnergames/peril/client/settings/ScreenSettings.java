@@ -38,6 +38,8 @@ public final class ScreenSettings
   public static final boolean SPLASH_SCREEN_WINDOW_IS_RESIZABLE = false;
   public static final boolean SPLASH_SCREEN_WINDOW_IS_DECORATED = false;
   private static final EnumSet <ScreenId> FILTERED_SCREEN_IDS = EnumSet.allOf (ScreenId.class);
+  public static final ImmutableSet <ScreenId> VALID_START_SCREENS = ImmutableSet.copyOf (FILTERED_SCREEN_IDS);
+  public static ScreenId START_SCREEN = ScreenId.MAIN_MENU;
 
   static
   {
@@ -46,9 +48,6 @@ public final class ScreenSettings
     FILTERED_SCREEN_IDS.remove (ScreenId.MENU_TO_PLAY_LOADING);
     FILTERED_SCREEN_IDS.remove (ScreenId.PLAY_TO_MENU_LOADING);
   }
-
-  public static final ImmutableSet <ScreenId> VALID_START_SCREENS = ImmutableSet.copyOf (FILTERED_SCREEN_IDS);
-  public static ScreenId START_SCREEN = ScreenId.MAIN_MENU;
 
   public static boolean isValidStartScreen (final ScreenId screenId)
   {

@@ -34,21 +34,6 @@ public class CountryModelDataLoaderTest extends DataLoaderTest <CountryFactory>
   private static ImmutableSet <String> expectedCountryNames;
   private static CountryNameMatcher countryNameMatcher;
 
-  @BeforeClass
-  public static void setupClass ()
-  {
-    final ImmutableSet.Builder <String> countryNames = ImmutableSet.builder ();
-    for (int i = 1; i <= EXPECTED_COUNTRY_COUNT_FROM_FILE; ++i)
-    {
-      final String expectedCountryName = "Test Country " + i;
-
-      countryNames.add (expectedCountryName);
-    }
-
-    expectedCountryNames = countryNames.build ();
-    countryNameMatcher = new CountryNameMatcher (expectedCountryNames);
-  }
-
   @Override
   public DataLoader <CountryFactory> createDataLoader ()
   {
@@ -65,5 +50,20 @@ public class CountryModelDataLoaderTest extends DataLoaderTest <CountryFactory>
   public String getTestDataFileName ()
   {
     return TEST_COUNTRIES_FILENAME;
+  }
+
+  @BeforeClass
+  public static void setupClass ()
+  {
+    final ImmutableSet.Builder <String> countryNames = ImmutableSet.builder ();
+    for (int i = 1; i <= EXPECTED_COUNTRY_COUNT_FROM_FILE; ++i)
+    {
+      final String expectedCountryName = "Test Country " + i;
+
+      countryNames.add (expectedCountryName);
+    }
+
+    expectedCountryNames = countryNames.build ();
+    countryNameMatcher = new CountryNameMatcher (expectedCountryNames);
   }
 }

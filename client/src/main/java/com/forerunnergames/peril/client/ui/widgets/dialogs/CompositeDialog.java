@@ -167,15 +167,6 @@ public final class CompositeDialog implements Dialog
   }
 
   @Override
-  public void setSubmissionDisabled (final boolean isDisabled)
-  {
-    for (final Dialog dialog : dialogs)
-    {
-      dialog.setSubmissionDisabled (isDisabled);
-    }
-  }
-
-  @Override
   public boolean isSubmissionDisabled ()
   {
     for (final Dialog dialog : dialogs)
@@ -184,6 +175,15 @@ public final class CompositeDialog implements Dialog
     }
 
     return true;
+  }
+
+  @Override
+  public void setSubmissionDisabled (final boolean isDisabled)
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.setSubmissionDisabled (isDisabled);
+    }
   }
 
   @Override

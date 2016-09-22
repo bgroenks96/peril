@@ -32,8 +32,8 @@ import javax.annotation.Nullable;
 public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMessage>
         implements ChatMessageEvent, DeniedEvent <String>
 {
-  private ChatMessage message;
   private final String reason;
+  private ChatMessage message;
 
   public ChatMessageDeniedEvent (final ChatMessage message, final String reason)
   {

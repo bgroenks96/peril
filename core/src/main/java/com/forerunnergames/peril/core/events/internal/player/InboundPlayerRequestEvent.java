@@ -18,8 +18,8 @@
 
 package com.forerunnergames.peril.core.events.internal.player;
 
-import com.forerunnergames.peril.core.events.internal.interfaces.InternalRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.events.internal.interfaces.InternalRequestEvent;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
 
 public interface InboundPlayerRequestEvent <T extends RequestEvent> extends InternalRequestEvent

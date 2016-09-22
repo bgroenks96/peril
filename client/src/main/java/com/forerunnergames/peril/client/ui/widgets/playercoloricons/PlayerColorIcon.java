@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+
 import com.forerunnergames.peril.common.game.PlayerColor;
 
 public interface PlayerColorIcon

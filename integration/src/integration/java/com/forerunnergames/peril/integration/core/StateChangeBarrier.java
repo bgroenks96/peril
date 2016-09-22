@@ -18,18 +18,18 @@ class StateChangeBarrier extends StateMachineEventAdapter
     this.newStateName = newStateName;
   }
 
-  void waitForNewStateEntry (final long timeout) throws InterruptedException, TimeoutException
-  {
-    Arguments.checkIsNotNegative (timeout, "timeout");
-
-    barrier.awaitAdvanceInterruptibly (barrier.arrive (), timeout, TimeUnit.MILLISECONDS);
-  }
-
   @Override
   public void onEntry (final String context, final String state)
   {
     super.onEntry (context, state);
 
     if (state.equals (newStateName)) barrier.arrive ();
+  }
+
+  void waitForNewStateEntry (final long timeout) throws InterruptedException, TimeoutException
+  {
+    Arguments.checkIsNotNegative (timeout, "timeout");
+
+    barrier.awaitAdvanceInterruptibly (barrier.arrive (), timeout, TimeUnit.MILLISECONDS);
   }
 }

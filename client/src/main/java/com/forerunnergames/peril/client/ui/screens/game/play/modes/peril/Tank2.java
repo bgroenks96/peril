@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
 import com.forerunnergames.tools.common.Arguments;
 
 public final class Tank2 extends Actor implements Unit
@@ -215,6 +216,48 @@ public final class Tank2 extends Actor implements Unit
   }
 
   @Override
+  public boolean keyUp (final int keycode)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean keyTyped (final char character)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean touchDragged (final int screenX, final int screenY, final int pointer)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved (final int screenX, final int screenY)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean scrolled (final int amount)
+  {
+    return false;
+  }
+
+  @Override
   public void turnRight ()
   {
   }
@@ -258,38 +301,39 @@ public final class Tank2 extends Actor implements Unit
     {
       case FORWARD:
       {
-        body.addAction (Actions.sequence (Actions.moveBy (bodyForwardVector.x
-                * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, -bodyForwardVector.y
-                * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1), Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            Tank2.this.movementDirection = MovementDirection.NONE;
-          }
-        })));
+        body.addAction (Actions
+                .sequence (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                           -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                           Actions.run (new Runnable ()
+                           {
+                             @Override
+                             public void run ()
+                             {
+                               Tank2.this.movementDirection = MovementDirection.NONE;
+                             }
+                           })));
 
         turret.addAction (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
-                                               -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
+                                          -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
 
         break;
       }
       case REVERSE:
       {
-        body.addAction (Actions.sequence (Actions.moveBy (-bodyForwardVector.x
-                                                       * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, bodyForwardVector.y
-                                                       * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
-                                               Actions.run (new Runnable ()
-                                               {
-                                                 @Override
-                                                 public void run ()
-                                                 {
-                                                   Tank2.this.movementDirection = MovementDirection.NONE;
-                                                 }
-                                               })));
+        body.addAction (Actions
+                .sequence (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                           bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                           Actions.run (new Runnable ()
+                           {
+                             @Override
+                             public void run ()
+                             {
+                               Tank2.this.movementDirection = MovementDirection.NONE;
+                             }
+                           })));
 
         turret.addAction (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
-                                               bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
+                                          bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
 
         break;
       }
@@ -355,6 +399,30 @@ public final class Tank2 extends Actor implements Unit
     }
 
     this.turnDirection = turnDirection;
+  }
+
+  @Override
+  public Vector2 getPreviousPosition ()
+  {
+    return previousPosition;
+  }
+
+  @Override
+  public Vector2 getCurrentPosition ()
+  {
+    return currentPosition;
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return this;
+  }
+
+  @Override
+  public boolean is (final Actor actor)
+  {
+    return equals (actor);
   }
 
   public void setTurretTurning (final TurnDirection turnDirection)
@@ -437,77 +505,15 @@ public final class Tank2 extends Actor implements Unit
     turretActive = false;
   }
 
-  @Override
-  public Vector2 getPreviousPosition ()
-  {
-    return previousPosition;
-  }
-
-  @Override
-  public Vector2 getCurrentPosition ()
-  {
-    return currentPosition;
-  }
-
-  @Override
-  public Actor asActor ()
-  {
-    return this;
-  }
-
-  @Override
-  public boolean is (final Actor actor)
-  {
-    return equals (actor);
-  }
-
-  @Override
-  public boolean keyUp (final int keycode)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean keyTyped (final char character)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean touchDragged (final int screenX, final int screenY, final int pointer)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean scrolled (final int amount)
-  {
-    return false;
-  }
-
   private void clampPosition ()
   {
-    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
-    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
-    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
-    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
+    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX)
+      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
+    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX)
+      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
+    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX)
+      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
+    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX)
+      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
   }
 }

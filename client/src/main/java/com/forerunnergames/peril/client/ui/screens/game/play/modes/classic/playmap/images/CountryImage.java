@@ -26,6 +26,15 @@ import javax.annotation.Nullable;
 
 public interface CountryImage <E extends Enum <E> & CountryImageState <E>>
 {
+  @Override
+  int hashCode ();
+
+  @Override
+  boolean equals (final Object o);
+
+  @Override
+  String toString ();
+
   String getCountryName ();
 
   CountryImageState <E> getState ();
@@ -40,13 +49,4 @@ public interface CountryImage <E extends Enum <E> & CountryImageState <E>>
   void setScale (final Vector2 scaling);
 
   Actor asActor ();
-
-  @Override
-  int hashCode ();
-
-  @Override
-  boolean equals (final Object o);
-
-  @Override
-  String toString ();
 }

@@ -60,7 +60,7 @@ public class GdxKeyRepeatSystem
     this.input = input;
     this.listener = listener;
     keyRepeatTimer = new Timer ();
-    keyRepeatTasks = new IntMap <> ();
+    keyRepeatTasks = new IntMap<> ();
     repeatingKeys = new IntArray ();
     keyRepeatRates = new IntFloatMap ();
     keyRepeatStartDelays = new IntFloatMap ();
@@ -75,8 +75,8 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link Input.Keys} keyCode of the key to get the repeat rate of. Must be a
-   *          NON-PRINTABLE key (See above).
+   *          The {@link Input.Keys} keyCode of the key to get the repeat rate of. Must be a NON-PRINTABLE key (See
+   *          above).
    * @return The key repeat rate of the specified key in milliseconds. If no repeat rate was set for that specific key,
    *         then the default value will be returned, see {@link #DEFAULT_KEY_REPEAT_RATE_MILLIS}. The value will always
    *         be greater than 0.
@@ -93,8 +93,8 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link Input.Keys} keyCode of the key to get the repeat start delay of. Must be a
-   *          NON-PRINTABLE key (See above).
+   *          The {@link Input.Keys} keyCode of the key to get the repeat start delay of. Must be a NON-PRINTABLE key
+   *          (See above).
    * @return The key repeat start delay of the specified key in milliseconds. If no repeat start delay was set for that
    *         specific key, then the default value will be returned, see {@link #DEFAULT_KEY_REPEAT_START_DELAY_MILLIS}.
    *         The value will always be non-negative (may be 0).
@@ -111,8 +111,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link Input.Keys} keyCode of the key to check. Must be a NON-PRINTABLE key (See
-   *          above).
+   *          The {@link Input.Keys} keyCode of the key to check. Must be a NON-PRINTABLE key (See above).
    * @return The repeat status of the specified key.
    */
   public boolean isRepeatingKey (final int gdxKeyCode)
@@ -127,8 +126,7 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link Input.Keys} keyCode of the key to repeat. Must be a NON-PRINTABLE key (See
-   *          above).
+   *          The {@link Input.Keys} keyCode of the key to repeat. Must be a NON-PRINTABLE key (See above).
    * @param isEnabled
    *          Whether to enable or disable key repeat for the specified key.
    */
@@ -152,8 +150,8 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link Input.Keys} keyCode of the key to set the repeat rate of. Must be a
-   *          NON-PRINTABLE key (See above).
+   *          The {@link Input.Keys} keyCode of the key to set the repeat rate of. Must be a NON-PRINTABLE key (See
+   *          above).
    * @param repeatRateMillis
    *          The repeat rate in milliseconds, must be greater than 0.
    */
@@ -170,8 +168,8 @@ public class GdxKeyRepeatSystem
    * characters for you automatically.
    *
    * @param gdxKeyCode
-   *          The {@link Input.Keys} keyCode of the key to set the repeat start delay of. Must be a
-   *          NON-PRINTABLE key (See above).
+   *          The {@link Input.Keys} keyCode of the key to set the repeat start delay of. Must be a NON-PRINTABLE key
+   *          (See above).
    * @param repeatStartDelayMillis
    *          The repeat start delay in milliseconds, must be non-negative.
    */
@@ -223,65 +221,6 @@ public class GdxKeyRepeatSystem
   private static int secondsToMillis (final float seconds)
   {
     return Math.round (seconds * 1000);
-  }
-
-  private void updateCurrentRepeatingKey ()
-  {
-    currentRepeatingGdxKeyCode = repeatingKeys.get (currentRepeatingKeyIndex);
-  }
-
-  private void updateCurrentRepeatingKeyTask ()
-  {
-    currentRepeatingKeyTask = keyRepeatTasks.get (currentRepeatingGdxKeyCode);
-  }
-
-  private void updateCurrentRepeatingKeySchedule ()
-  {
-    if (input.isKeyPressed (currentRepeatingGdxKeyCode))
-    {
-      scheduleCurrentRepeatingKeyTask ();
-    }
-    else
-    {
-      cancelCurrentRepeatingKeyTask ();
-    }
-  }
-
-  private void scheduleCurrentRepeatingKeyTask ()
-  {
-    if (currentRepeatingKeyTask != null && !currentRepeatingKeyTask.isScheduled ())
-    {
-      keyRepeatTimer.scheduleTask (currentRepeatingKeyTask, keyRepeatStartDelays
-              .get (currentRepeatingGdxKeyCode, DEFAULT_KEY_REPEAT_START_DELAY_SECONDS), keyRepeatRates
-              .get (currentRepeatingGdxKeyCode, DEFAULT_KEY_REPEAT_RATE_SECONDS));
-    }
-  }
-
-  private void cancelCurrentRepeatingKeyTask ()
-  {
-    if (currentRepeatingKeyTask != null && currentRepeatingKeyTask.isScheduled ())
-    {
-      currentRepeatingKeyTask.cancel ();
-      listener.keyUp (currentRepeatingGdxKeyCode);
-    }
-  }
-
-  private void registerKeyRepeatTask (final int gdxKeyCode)
-  {
-    if (!keyRepeatTasks.containsKey (gdxKeyCode))
-    {
-      keyRepeatTasks.put (gdxKeyCode, new Timer.Task ()
-      {
-        @Override
-        public void run ()
-        {
-          if (input.isKeyPressed (gdxKeyCode))
-          {
-            listener.keyDownRepeating (gdxKeyCode);
-          }
-        }
-      });
-    }
   }
 
   private static void checkKeyCode (final int gdxKeyCode) throws GdxRuntimeException
@@ -577,5 +516,65 @@ public class GdxKeyRepeatSystem
             + "Character.isISOControl() are allowed.\nThe reason why is that LibGDX already repeats printable "
             + "characters for you automatically.\nOffending key code: " + gdxKeyCode + ", which represents the "
             + "printable character: " + temp);
+  }
+
+  private void updateCurrentRepeatingKey ()
+  {
+    currentRepeatingGdxKeyCode = repeatingKeys.get (currentRepeatingKeyIndex);
+  }
+
+  private void updateCurrentRepeatingKeyTask ()
+  {
+    currentRepeatingKeyTask = keyRepeatTasks.get (currentRepeatingGdxKeyCode);
+  }
+
+  private void updateCurrentRepeatingKeySchedule ()
+  {
+    if (input.isKeyPressed (currentRepeatingGdxKeyCode))
+    {
+      scheduleCurrentRepeatingKeyTask ();
+    }
+    else
+    {
+      cancelCurrentRepeatingKeyTask ();
+    }
+  }
+
+  private void scheduleCurrentRepeatingKeyTask ()
+  {
+    if (currentRepeatingKeyTask != null && !currentRepeatingKeyTask.isScheduled ())
+    {
+      keyRepeatTimer.scheduleTask (currentRepeatingKeyTask,
+                                   keyRepeatStartDelays.get (currentRepeatingGdxKeyCode,
+                                                             DEFAULT_KEY_REPEAT_START_DELAY_SECONDS),
+                                   keyRepeatRates.get (currentRepeatingGdxKeyCode, DEFAULT_KEY_REPEAT_RATE_SECONDS));
+    }
+  }
+
+  private void cancelCurrentRepeatingKeyTask ()
+  {
+    if (currentRepeatingKeyTask != null && currentRepeatingKeyTask.isScheduled ())
+    {
+      currentRepeatingKeyTask.cancel ();
+      listener.keyUp (currentRepeatingGdxKeyCode);
+    }
+  }
+
+  private void registerKeyRepeatTask (final int gdxKeyCode)
+  {
+    if (!keyRepeatTasks.containsKey (gdxKeyCode))
+    {
+      keyRepeatTasks.put (gdxKeyCode, new Timer.Task ()
+      {
+        @Override
+        public void run ()
+        {
+          if (input.isKeyPressed (gdxKeyCode))
+          {
+            listener.keyDownRepeating (gdxKeyCode);
+          }
+        }
+      });
+    }
   }
 }

@@ -26,5 +26,5 @@ public interface CountryImageDataRepository
 
   CountryImageData get (String name);
 
-  ImmutableSet<String> getCountryNames ();
+  ImmutableSet <String> getCountryNames ();
 }

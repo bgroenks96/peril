@@ -41,6 +41,24 @@ public class ContinentModelDataLoaderTest extends DataLoaderTest <ContinentFacto
   private static CountryIdResolver countryIdResolver;
   private static ContinentDataMatcher continentDataMatcher;
 
+  @Override
+  public DataLoader <ContinentFactory> createDataLoader ()
+  {
+    return new ContinentModelDataLoader (new InternalStreamParserFactory (), countryIdResolver);
+  }
+
+  @Override
+  public boolean verifyData (final ContinentFactory data)
+  {
+    return continentDataMatcher.continentDataMatch (data);
+  }
+
+  @Override
+  public String getTestDataFileName ()
+  {
+    return TEST_CONTINENTS_FILENAME;
+  }
+
   @BeforeClass
   public static void setupClass ()
   {
@@ -61,23 +79,5 @@ public class ContinentModelDataLoaderTest extends DataLoaderTest <ContinentFacto
       continentDataBuilder.add (new ContinentData (expectedContinentName, j, j));
     }
     continentDataMatcher = new ContinentDataMatcher (continentDataBuilder.build ());
-  }
-
-  @Override
-  public DataLoader <ContinentFactory> createDataLoader ()
-  {
-    return new ContinentModelDataLoader (new InternalStreamParserFactory (), countryIdResolver);
-  }
-
-  @Override
-  public boolean verifyData (final ContinentFactory data)
-  {
-    return continentDataMatcher.continentDataMatch (data);
-  }
-
-  @Override
-  public String getTestDataFileName ()
-  {
-    return TEST_CONTINENTS_FILENAME;
   }
 }

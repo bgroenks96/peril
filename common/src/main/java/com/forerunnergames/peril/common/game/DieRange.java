@@ -43,6 +43,30 @@ public final class DieRange
     maxDieCount = 0;
   }
 
+  @Override
+  public int hashCode ()
+  {
+    int result = minDieCount;
+    result = 31 * result + maxDieCount;
+    return result;
+  }
+
+  @Override
+  public boolean equals (Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass () != o.getClass ()) return false;
+    final DieRange dieRange = (DieRange) o;
+    return minDieCount == dieRange.minDieCount && maxDieCount == dieRange.maxDieCount;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: MinDieCount: [{}] | MaxDieCount: [{}]", getClass ().getSimpleName (), minDieCount,
+                           maxDieCount);
+  }
+
   public boolean includes (final int dieCount)
   {
     return dieCount >= minDieCount && dieCount <= maxDieCount;
@@ -66,29 +90,5 @@ public final class DieRange
   public int max ()
   {
     return maxDieCount;
-  }
-
-  @Override
-  public boolean equals (Object o)
-  {
-    if (this == o) return true;
-    if (o == null || getClass () != o.getClass ()) return false;
-    final DieRange dieRange = (DieRange) o;
-    return minDieCount == dieRange.minDieCount && maxDieCount == dieRange.maxDieCount;
-  }
-
-  @Override
-  public int hashCode ()
-  {
-    int result = minDieCount;
-    result = 31 * result + maxDieCount;
-    return result;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: MinDieCount: [{}] | MaxDieCount: [{}]", getClass ().getSimpleName (), minDieCount,
-            maxDieCount);
   }
 }

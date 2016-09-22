@@ -26,6 +26,12 @@ public final class ScrollbarStyle
   private final int horizontalHeight;
   private final int verticalWidth;
 
+  public enum Scrollbars
+  {
+    OPTIONAL,
+    REQUIRED
+  }
+
   public ScrollbarStyle (final Scrollbars scrollbars, final int horizontalHeight, final int verticalWidth)
   {
     Arguments.checkIsNotNull (scrollbars, "scrollbars");
@@ -35,12 +41,6 @@ public final class ScrollbarStyle
     this.scrollbars = scrollbars;
     this.horizontalHeight = horizontalHeight;
     this.verticalWidth = verticalWidth;
-  }
-
-  public enum Scrollbars
-  {
-    OPTIONAL,
-    REQUIRED
   }
 
   public boolean areScrollbarsRequired ()

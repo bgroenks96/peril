@@ -50,6 +50,16 @@ public final class CountryMapGraphModel extends TerritoryGraphModel <Country>
     countryIdsToCountries = countryMapBuilder.build ();
   }
 
+  public static CountryMapGraphModel disjointCountryGraphFrom (final CountryFactory countries)
+  {
+    final DefaultGraphModel.Builder <Country> builder = DefaultGraphModel.builder ();
+    for (final Country country : countries.getCountries ())
+    {
+      builder.addNode (country);
+    }
+    return new CountryMapGraphModel (builder.build ());
+  }
+
   public boolean existsCountryWith (final Id countryId)
   {
     Arguments.checkIsNotNull (countryId, "countryId");
@@ -176,15 +186,5 @@ public final class CountryMapGraphModel extends TerritoryGraphModel <Country>
     }
 
     return Optional.absent ();
-  }
-
-  public static CountryMapGraphModel disjointCountryGraphFrom (final CountryFactory countries)
-  {
-    final DefaultGraphModel.Builder <Country> builder = DefaultGraphModel.builder ();
-    for (final Country country : countries.getCountries ())
-    {
-      builder.addNode (country);
-    }
-    return new CountryMapGraphModel (builder.build ());
   }
 }

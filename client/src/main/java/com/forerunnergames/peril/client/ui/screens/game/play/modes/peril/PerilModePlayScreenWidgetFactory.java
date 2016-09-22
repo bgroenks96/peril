@@ -34,7 +34,7 @@ public final class PerilModePlayScreenWidgetFactory extends AbstractWidgetFactor
   }
 
   @Override
-  protected AssetDescriptor<Skin> getSkinAssetDescriptor ()
+  protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
   {
     // TODO Create Peril Mode Skin
     return AssetSettings.CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR;
@@ -42,8 +42,7 @@ public final class PerilModePlayScreenWidgetFactory extends AbstractWidgetFactor
 
   public Tank2 createTank2 ()
   {
-    return new Tank2 (new TankBody (getTextureRegion ("tankBody")),
-            new TankTurret (getTextureRegion ("tankTurret")));
+    return new Tank2 (new TankBody (getTextureRegion ("tankBody")), new TankTurret (getTextureRegion ("tankTurret")));
   }
 
   private TextureRegion getTextureRegion (final String regionName)

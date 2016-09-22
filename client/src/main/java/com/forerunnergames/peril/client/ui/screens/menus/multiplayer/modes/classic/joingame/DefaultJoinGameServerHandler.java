@@ -59,7 +59,7 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultJoinGameServerHandler.class);
   private final MBassador <Event> eventBus;
-  private final Set <PlayerPacket> players = new HashSet <> ();
+  private final Set <PlayerPacket> players = new HashSet<> ();
   @Nullable
   private String playerName = null;
   @Nullable
@@ -90,8 +90,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     eventBus.subscribe (this);
 
-    final ConnectToServerRequestEvent event = new ConnectToServerRequestEvent (new DefaultServerConfiguration (
-            serverAddress, NetworkSettings.DEFAULT_TCP_PORT));
+    final ConnectToServerRequestEvent event = new ConnectToServerRequestEvent (
+            new DefaultServerConfiguration (serverAddress, NetworkSettings.DEFAULT_TCP_PORT));
 
     log.info ("Attempting to connect to server... [{}]", event);
 
@@ -107,9 +107,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   void onEvent (final ConnectToServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (joinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                     JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.info ("Successfully connected to server [{}]", event);
@@ -125,9 +124,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   void onEvent (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (joinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                     JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.info ("Successfully joined game server [{}]", event);
@@ -150,9 +148,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (joinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                     JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
 
@@ -180,9 +177,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   void onEvent (final ConnectToServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (joinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                     JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.error ("Could not connect to server: [{}]", event);
@@ -199,9 +195,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   void onEvent (final JoinGameServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (joinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                     JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.error ("Could not join game server: [{}]", event);
@@ -218,9 +213,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   void onEvent (final PlayerJoinGameDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (joinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                     JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
 

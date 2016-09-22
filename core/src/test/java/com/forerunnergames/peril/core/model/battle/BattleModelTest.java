@@ -411,6 +411,16 @@ public class BattleModelTest
     assertEquals (targetCountry, battleResult.getDefender ().getCountryId ());
   }
 
+  private static final ImmutableList <String> generateCountryNameList (final int count)
+  {
+    final ImmutableList.Builder <String> builder = ImmutableList.builder ();
+    for (int i = 0; i < count; i++)
+    {
+      builder.add ("Country-" + i);
+    }
+    return builder.build ();
+  }
+
   private PlayMapModel mockPlayMapModel ()
   {
     final PlayMapModel playMapModelMock = mock (PlayMapModel.class);
@@ -428,16 +438,6 @@ public class BattleModelTest
     for (final String name : countryNames)
     {
       builder.add (countryMapGraphModel.countryWith (name));
-    }
-    return builder.build ();
-  }
-
-  private static final ImmutableList <String> generateCountryNameList (final int count)
-  {
-    final ImmutableList.Builder <String> builder = ImmutableList.builder ();
-    for (int i = 0; i < count; i++)
-    {
-      builder.add ("Country-" + i);
     }
     return builder.build ();
   }

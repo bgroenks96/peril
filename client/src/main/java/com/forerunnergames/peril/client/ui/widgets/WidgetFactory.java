@@ -45,13 +45,13 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogList
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;

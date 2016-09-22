@@ -111,27 +111,25 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
 
     for (final String countryName : countryNamesAndPrimaryImageStatesToPrimaryImages.rowKeySet ())
     {
-      countryNamesToPrimaryImages.put (countryName,
-                                       new CountryPrimaryImages (ImmutableMap
-                                               .copyOf (countryNamesAndPrimaryImageStatesToPrimaryImages
-                                                       .row (countryName)), countryNamesToAtlasIndices
-                                               .get (countryName)));
+      countryNamesToPrimaryImages
+              .put (countryName,
+                    new CountryPrimaryImages (
+                            ImmutableMap.copyOf (countryNamesAndPrimaryImageStatesToPrimaryImages.row (countryName)),
+                            countryNamesToAtlasIndices.get (countryName)));
     }
 
     for (final String countryName : countryNamesAndSecondaryImageStatesToSecondaryImages.rowKeySet ())
     {
-      countryNamesAndSecondaryImageStatesToSecondaryImages.put (countryName, CountrySecondaryImageState.NONE,
-                                                                new CountrySecondaryImage (null, countryName,
-                                                                        CountrySecondaryImageState.NONE));
+      countryNamesAndSecondaryImageStatesToSecondaryImages
+              .put (countryName, CountrySecondaryImageState.NONE,
+                    new CountrySecondaryImage (null, countryName, CountrySecondaryImageState.NONE));
     }
 
     for (final String countryName : countryNamesAndSecondaryImageStatesToSecondaryImages.rowKeySet ())
     {
-      countryNamesToSecondaryImages.put (countryName,
-                                         new CountrySecondaryImages (ImmutableMap
-                                                 .copyOf (countryNamesAndSecondaryImageStatesToSecondaryImages
-                                                         .row (countryName)), countryNamesToAtlasIndices
-                                                 .get (countryName)));
+      countryNamesToSecondaryImages.put (countryName, new CountrySecondaryImages (
+              ImmutableMap.copyOf (countryNamesAndSecondaryImageStatesToSecondaryImages.row (countryName)),
+              countryNamesToAtlasIndices.get (countryName)));
     }
 
     loadedMapMetadata = mapMetadata;
@@ -189,10 +187,8 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   private static <E extends Enum <E> & CountryImageState <E>> E createCountryImageStateFrom (final Class <E> countryImageStateClass,
                                                                                              final ImmutableList <String> countryAtlasRegionNameSegments)
   {
-    final E countryImageState = Enum.valueOf (countryImageStateClass,
-                                              countryAtlasRegionNameSegments
-                                                      .get (countryAtlasRegionNameSegments.size () - 1).toUpperCase ()
-                                                      .replace (" ", "_"));
+    final E countryImageState = Enum.valueOf (countryImageStateClass, countryAtlasRegionNameSegments
+            .get (countryAtlasRegionNameSegments.size () - 1).toUpperCase ().replace (" ", "_"));
 
     log.trace ("Created country image state [{}] from country atlas region name segments [{}]", countryImageState,
                countryAtlasRegionNameSegments);
@@ -206,8 +202,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
     for (final E countryImageState : EnumSet.allOf (countryImageStateClass))
     {
       if (countryImageState.name ().equalsIgnoreCase (countryAtlasRegionNameSegments
-                                                              .get (countryAtlasRegionNameSegments.size () - 1)
-                                                              .replace (" ", "_")))
+              .get (countryAtlasRegionNameSegments.size () - 1).replace (" ", "_")))
       {
         return true;
       }
@@ -221,8 +216,8 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   {
     if (countryAtlasRegion.name == null)
     {
-      throw new PlayMapLoadingException (Strings.format ("Empty country atlas region name detected for map [{}].",
-                                                         mapMetadata));
+      throw new PlayMapLoadingException (
+              Strings.format ("Empty country atlas region name detected for map [{}].", mapMetadata));
     }
 
     final ImmutableList <String> regionNameSegments = ImmutableList.copyOf (countryAtlasRegion.name.split (" - "));
@@ -251,7 +246,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
 
     throw new PlayMapLoadingException (
             Strings.format ("Invalid country image state [{}] in country texture atlas region [{}] for map [{}].\n"
-                                    + "Valid country image states: {}'s [{}], {}'s [{}].",
+                    + "Valid country image states: {}'s [{}], {}'s [{}].",
                             invalidCountryImageStateAtlasRegionNameSegment, countryAtlasRegion, mapMetadata,
                             CountryPrimaryImageState.class.getSimpleName (),
                             getValidCountryImageStateAtlasRegionNameSegments (CountryPrimaryImageState.class),
@@ -278,9 +273,11 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
 
     if (oldAtlasIndex != null && atlasIndex != oldAtlasIndex)
     {
-      throw new PlayMapLoadingException (Strings.format ("Atlas mismatch detected for country images with name [{}].\n"
-              + "Expected atlas index [{}], but found atlas index [{}].\n"
-              + "All images of a country must be in the same texture atlas.", countryName, oldAtlasIndex, atlasIndex));
+      throw new PlayMapLoadingException (Strings.format (
+                                                         "Atlas mismatch detected for country images with name [{}].\n"
+                                                                 + "Expected atlas index [{}], but found atlas index [{}].\n"
+                                                                 + "All images of a country must be in the same texture atlas.",
+                                                         countryName, oldAtlasIndex, atlasIndex));
     }
   }
 }

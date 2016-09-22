@@ -20,8 +20,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.CountryNamesDataLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsoluteMapResourcesPathParser;
-import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 

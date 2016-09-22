@@ -11,8 +11,8 @@ import java.util.Queue;
 
 public final class OngoingStateCheck
 {
-  Optional <String> state = Optional.absent ();
   final Queue <String> priorStates = Queues.newArrayDeque ();
+  Optional <String> state = Optional.absent ();
 
   public boolean after (final String stateName)
   {

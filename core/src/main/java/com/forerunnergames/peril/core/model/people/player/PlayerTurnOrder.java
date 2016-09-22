@@ -131,6 +131,14 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
     return validSortedValues;
   }
 
+  public static PlayerTurnOrder getNthValidTurnOrder (final int nthPlayerTurnOrder)
+  {
+    Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
+    Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");
+
+    return PlayerTurnOrder.values () [nthPlayerTurnOrder];
+  }
+
   public boolean hasNextValid ()
   {
     return IterableEnumHelper.hasNextValid (this, values (), validSortedValues);
@@ -154,14 +162,6 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   public String toProperCase ()
   {
     return IterableEnumHelper.toProperCase (this);
-  }
-
-  public static PlayerTurnOrder getNthValidTurnOrder (final int nthPlayerTurnOrder)
-  {
-    Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
-    Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");
-
-    return PlayerTurnOrder.values () [nthPlayerTurnOrder];
   }
 
   public String toMixedOrdinal ()

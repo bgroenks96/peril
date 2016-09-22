@@ -33,11 +33,11 @@ import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.music.NullMusic;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultCountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.CountryArmyTextEffects.HorizontalMoveDirection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceArrow;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceArrows;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultCountryArmyText;
 import com.forerunnergames.peril.client.ui.sound.NullSound;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.common.game.DieOutcome;
@@ -119,8 +119,8 @@ public class DefaultBattleDialogWidgetFactory extends AbstractWidgetFactory impl
 
     if (attackerDieOutcome == DieOutcome.NONE) return null;
 
-    return new TextureRegionDrawable (createTextureRegion (DICE_ARROW_OUTCOME_TEXTURE_REGION_NAME_PREFIX
-            + attackerDieOutcome.lowerCaseName ()));
+    return new TextureRegionDrawable (
+            createTextureRegion (DICE_ARROW_OUTCOME_TEXTURE_REGION_NAME_PREFIX + attackerDieOutcome.lowerCaseName ()));
   }
 
   @Override

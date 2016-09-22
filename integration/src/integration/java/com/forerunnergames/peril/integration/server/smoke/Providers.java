@@ -61,7 +61,7 @@ public class Providers
                                                                          FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
     return new Object [] { eventBus, server, client,
-                          new DefaultServerConfiguration (INTERNAL_ADDRESS_RESOLVER.resolveIp (), port) };
+                           new DefaultServerConfiguration (INTERNAL_ADDRESS_RESOLVER.resolveIp (), port) };
   }
 
   private static Object[] genParamsHostNPlay ()

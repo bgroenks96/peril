@@ -32,7 +32,30 @@ public abstract class CardDealerTest
 {
   private static final ImmutableSet <Card> defaultCards = generateTestCards ();
 
-  protected abstract CardDealer createCardDealer (final ImmutableSet <Card> cards);
+  static ImmutableSet <Card> generateCards (final CardType type, final int count)
+  {
+    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
+    for (int i = 0; i < count; i++)
+    {
+      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, type));
+    }
+    return cardSetBuilder.build ();
+  }
+
+  public static ImmutableSet <Card> generateTestCards ()
+  {
+    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
+    for (int i = 0; i < CardModelTest.DEFAULT_CARD_COUNT; i++)
+    {
+      final int type = i % 3 + 1; // cycle over values 1, 2, and 3.
+      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, CardType.fromValue (type)));
+    }
+    for (int i = 0; i < CardModelTest.DEFAULT_WILDCARD_COUNT; i++)
+    {
+      cardSetBuilder.add (CardFactory.create ("Test-Wildcard-" + i, CardType.WILDCARD));
+    }
+    return cardSetBuilder.build ();
+  }
 
   @Test
   public void testIsInDeckNotInDiscardPile ()
@@ -93,28 +116,5 @@ public abstract class CardDealerTest
     deckHandler.cardWith ("");
   }
 
-  public static ImmutableSet <Card> generateTestCards ()
-  {
-    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
-    for (int i = 0; i < CardModelTest.DEFAULT_CARD_COUNT; i++)
-    {
-      final int type = i % 3 + 1; // cycle over values 1, 2, and 3.
-      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, CardType.fromValue (type)));
-    }
-    for (int i = 0; i < CardModelTest.DEFAULT_WILDCARD_COUNT; i++)
-    {
-      cardSetBuilder.add (CardFactory.create ("Test-Wildcard-" + i, CardType.WILDCARD));
-    }
-    return cardSetBuilder.build ();
-  }
-
-  static ImmutableSet <Card> generateCards (final CardType type, final int count)
-  {
-    final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
-    for (int i = 0; i < count; i++)
-    {
-      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, type));
-    }
-    return cardSetBuilder.build ();
-  }
+  protected abstract CardDealer createCardDealer (final ImmutableSet <Card> cards);
 }

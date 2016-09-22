@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public final class KryonetServer extends com.esotericsoftware.kryonet.Server implements Server
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetServer.class);
-  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
+  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap<> ();
   private final Kryo kryo;
   private boolean isRunning = false;
 

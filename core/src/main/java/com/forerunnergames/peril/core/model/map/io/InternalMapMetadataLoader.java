@@ -75,7 +75,7 @@ public final class InternalMapMetadataLoader implements MapMetadataLoader
       return ImmutableSet.of ();
     }
 
-    final Set <MapMetadata> mapMetadatas = new HashSet <> ();
+    final Set <MapMetadata> mapMetadatas = new HashSet<> ();
 
     for (final String rawMapDirectoryName : rawMapDirectoryNames)
     {

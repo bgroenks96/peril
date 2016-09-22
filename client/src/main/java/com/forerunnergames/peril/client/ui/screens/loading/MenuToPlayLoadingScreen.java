@@ -121,8 +121,8 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   private final ProgressBar progressBar;
   private final Dialog quitDialog;
   private final Dialog errorDialog;
-  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList <> ();
-  private final Set <PlayerPacket> players = new HashSet <> ();
+  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList<> ();
+  private final Set <PlayerPacket> players = new HashSet<> ();
   private boolean isLoading = false;
   @Nullable
   private PlayerPacket selfPlayer;
@@ -634,8 +634,6 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     Gdx.app.postRunnable (new Runnable ()
     {
 
-
-
       @Override
       public void run ()
       {
@@ -770,9 +768,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
           }
           default:
           {
-            throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].",
-                                                                     GameMode.class.getSimpleName (),
-                                                                     gameServerConfiguration.getGameMode ()));
+            throw new UnsupportedOperationException (
+                    Strings.format ("Unsupported {}: [{}].", GameMode.class.getSimpleName (),
+                                    gameServerConfiguration.getGameMode ()));
           }
         }
 
@@ -870,8 +868,9 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
 
-    currentLoadingProgressPercent = (playMapFactory.getAssetLoadingProgressPercent (gameServerConfiguration
-            .getMapMetadata ()) + assetManager.getProgressLoading ()) / 2.0f;
+    currentLoadingProgressPercent = (playMapFactory
+            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
+            + assetManager.getProgressLoading ()) / 2.0f;
   }
 
   private boolean loadingProgressIncreased ()

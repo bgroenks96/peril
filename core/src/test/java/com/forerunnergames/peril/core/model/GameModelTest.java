@@ -156,6 +156,25 @@ public class GameModelTest
   private ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
   private GameRules gameRules;
 
+  public static CountryMapGraphModel createDefaultTestCountryMapGraph (final ImmutableList <String> countryNames)
+  {
+    final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
+    // set every node adjacent to country 0
+    for (int i = 1; i < countryNames.size (); i++)
+    {
+      countryNameGraphBuilder.setAdjacent (countryNames.get (0), countryNames.get (i));
+    }
+    // set each country 1-4 adjacent to its sequential neighbors
+    for (int i = 2; i < countryNames.size (); i++)
+    {
+      countryNameGraphBuilder.setAdjacent (countryNames.get (i - 1), countryNames.get (i));
+    }
+    // complete the cycle by setting country 1 adjacent to last country
+    countryNameGraphBuilder.setAdjacent (countryNames.get (countryNames.size () - 1), countryNames.get (1));
+    final GraphModel <String> countryNameGraph = countryNameGraphBuilder.build ();
+    return CountryMapGraphModelTest.createCountryMapGraphModelFrom (countryNameGraph);
+  }
+
   @Before
   public void setup ()
   {
@@ -625,7 +644,7 @@ public class GameModelTest
     final int armiesInHand = testPlayerPacket.getArmiesInHand ();
 
     final PlayerTradeInCardsRequestEvent tradeInRequest = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet. <CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
     gameModel.verifyPlayerCardTradeIn (tradeInRequest);
 
     final int count = armiesInHand;
@@ -798,7 +817,7 @@ public class GameModelTest
     final int armyCount = playerModel.getArmiesInHand (testPlayer);
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet. <CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
     gameModel.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
@@ -830,7 +849,7 @@ public class GameModelTest
     final int reinforcementCount = playerModel.getArmiesInHand (testPlayer) + 1;
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet. <CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
     gameModel.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
@@ -1134,6 +1153,8 @@ public class GameModelTest
     assertFalse (gameModel.isEmpty ());
   }
 
+  // --- private test utility methods --- //
+
   @Test
   public void testIsFull ()
   {
@@ -1142,7 +1163,15 @@ public class GameModelTest
     assertTrue (gameModel.isFull ());
   }
 
-  // --- private test utility methods --- //
+  private static ImmutableList <String> generateTestCountryNames (final int totalCountryCount)
+  {
+    final ImmutableList.Builder <String> countryNames = ImmutableList.builder ();
+    for (int i = 0; i < totalCountryCount; i++)
+    {
+      countryNames.add ("TestCountry-" + i);
+    }
+    return countryNames.build ();
+  }
 
   private void verifyPlayerCountryAssignmentCompleteEvent ()
   {
@@ -1298,35 +1327,6 @@ public class GameModelTest
             .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
     playMapModel = new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
     return playMapModel;
-  }
-
-  public static CountryMapGraphModel createDefaultTestCountryMapGraph (final ImmutableList <String> countryNames)
-  {
-    final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
-    // set every node adjacent to country 0
-    for (int i = 1; i < countryNames.size (); i++)
-    {
-      countryNameGraphBuilder.setAdjacent (countryNames.get (0), countryNames.get (i));
-    }
-    // set each country 1-4 adjacent to its sequential neighbors
-    for (int i = 2; i < countryNames.size (); i++)
-    {
-      countryNameGraphBuilder.setAdjacent (countryNames.get (i - 1), countryNames.get (i));
-    }
-    // complete the cycle by setting country 1 adjacent to last country
-    countryNameGraphBuilder.setAdjacent (countryNames.get (countryNames.size () - 1), countryNames.get (1));
-    final GraphModel <String> countryNameGraph = countryNameGraphBuilder.build ();
-    return CountryMapGraphModelTest.createCountryMapGraphModelFrom (countryNameGraph);
-  }
-
-  private static ImmutableList <String> generateTestCountryNames (final int totalCountryCount)
-  {
-    final ImmutableList.Builder <String> countryNames = ImmutableList.builder ();
-    for (int i = 0; i < totalCountryCount; i++)
-    {
-      countryNames.add ("TestCountry-" + i);
-    }
-    return countryNames.build ();
   }
 
   private class CountryAdjacencyIndices

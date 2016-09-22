@@ -80,7 +80,7 @@ public final class MultiAtlasSkinLoader extends AsynchronousAssetLoader <Skin, M
     Arguments.checkIsNotNull (fileName, "fileName");
     Arguments.checkIsNotNull (file, "file");
 
-    final Array <AssetDescriptor> dependencies = new Array <> ();
+    final Array <AssetDescriptor> dependencies = new Array<> ();
 
     for (final AssetDescriptor <TextureAtlas> descriptor : parameter.getTextureAtlasAssetDescriptors ())
     {

@@ -251,7 +251,7 @@ public final class KryonetRegistration
     public ImmutableSet <Class <?>> apply (final Class <?> input)
     {
       // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <Class <?>> type.
-      return ImmutableSet. <Class <?>> builder ().add (input).add (input.getDeclaredClasses ()).build ();
+      return ImmutableSet.<Class <?>> builder ().add (input).add (input.getDeclaredClasses ()).build ();
     }
   }
 

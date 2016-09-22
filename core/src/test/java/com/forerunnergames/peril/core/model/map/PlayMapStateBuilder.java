@@ -58,13 +58,6 @@ public final class PlayMapStateBuilder
   {
     private final ImmutableSet <Id> countryIds;
 
-    private OngoingCountryConfiguration (final ImmutableSet <Id> countryIds)
-    {
-      assert countryIds != null;
-
-      this.countryIds = countryIds;
-    }
-
     public OngoingCountryConfiguration setOwner (final Id ownerId)
     {
       final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
@@ -97,6 +90,13 @@ public final class PlayMapStateBuilder
         result.commitIfSuccessful ();
       }
       return this;
+    }
+
+    private OngoingCountryConfiguration (final ImmutableSet <Id> countryIds)
+    {
+      assert countryIds != null;
+
+      this.countryIds = countryIds;
     }
   }
 }

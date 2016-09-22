@@ -36,15 +36,15 @@ public final class PlayerClaimCountryResponseRequestEvent implements ResponseReq
     this.claimedCountryName = claimedCountryName;
   }
 
-  public String getClaimedCountryName ()
-  {
-    return claimedCountryName;
-  }
-
   @Override
   public Class <? extends ServerRequestEvent> getRequestType ()
   {
     return PlayerClaimCountryRequestEvent.class;
+  }
+
+  public String getClaimedCountryName ()
+  {
+    return claimedCountryName;
   }
 
   @Override

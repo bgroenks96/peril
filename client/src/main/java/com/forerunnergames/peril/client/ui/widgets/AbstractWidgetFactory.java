@@ -61,7 +61,11 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.ErrorDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBox;
@@ -70,10 +74,6 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxSty
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.TextFieldStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighlighting;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.padding.HorizontalPadding;
 import com.forerunnergames.peril.client.ui.widgets.padding.VerticalPadding;
@@ -145,12 +145,12 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   private static final MessageBoxStyle STATUS_BOX_STYLE = new MessageBoxStyle (
           StyleSettings.STATUS_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, STATUS_BOX_ROW_STYLE,
           DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING);
-  private static final ChatBoxStyle CHAT_BOX_STYLE = new ChatBoxStyle (new MessageBoxStyle (
-          StyleSettings.CHAT_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, CHATBOX_ROW_STYLE,
-          CHAT_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING), CHAT_BOX_SCROLLPANE_HEIGHT,
-          CHAT_BOX_SCROLLPANE_TEXTFIELD_SPACING, new TextFieldStyle (StyleSettings.CHAT_BOX_TEXTFIELD_STYLE,
-                  DEFAULT_TEXTFIELD_HEIGHT, DEFAULT_TEXTFIELD_H_PADDING, DEFAULT_TEXTFIELD_MAX_CHARS,
-                  DEFAULT_TEXTFIELD_FILTER_ALLOW_EVERYTHING));
+  private static final ChatBoxStyle CHAT_BOX_STYLE = new ChatBoxStyle (
+          new MessageBoxStyle (StyleSettings.CHAT_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE,
+                  CHATBOX_ROW_STYLE, CHAT_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING),
+          CHAT_BOX_SCROLLPANE_HEIGHT, CHAT_BOX_SCROLLPANE_TEXTFIELD_SPACING,
+          new TextFieldStyle (StyleSettings.CHAT_BOX_TEXTFIELD_STYLE, DEFAULT_TEXTFIELD_HEIGHT,
+                  DEFAULT_TEXTFIELD_H_PADDING, DEFAULT_TEXTFIELD_MAX_CHARS, DEFAULT_TEXTFIELD_FILTER_ALLOW_EVERYTHING));
   private static final VerticalPadding PLAYER_BOX_ABSOLUTE_V_PADDING = new VerticalPadding (
           PLAYER_BOX_ABSOLUTE_PADDING_TOP, PLAYER_BOX_ABSOLUTE_PADDING_BOTTOM);
   private static final MessageBoxStyle PLAYER_BOX_STYLE = new MessageBoxStyle (
@@ -439,7 +439,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (style, "style");
 
-    return new SelectBox <> (style);
+    return new SelectBox<> (style);
   }
 
   @Override
@@ -500,16 +500,16 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (rowLabelAlignment, "rowLabelAlignment");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollbarStyle");
 
-    return new DefaultMessageBox <> (new MessageBoxStyle (scrollPaneStyle, scrollbarStyle, new MessageBoxRowStyle (
-            rowLabelStyle, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
-            DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING), DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING,
-            DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING), this);
+    return new DefaultMessageBox<> (new MessageBoxStyle (scrollPaneStyle, scrollbarStyle,
+            new MessageBoxRowStyle (rowLabelStyle, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
+                    DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING),
+            DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING), this);
   }
 
   @Override
   public MessageBox <StatusBoxRow> createStatusBox ()
   {
-    return new DefaultMessageBox <> (STATUS_BOX_STYLE, this);
+    return new DefaultMessageBox<> (STATUS_BOX_STYLE, this);
   }
 
   @Override
@@ -686,7 +686,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
 
-    return new LabelMessageBoxRow <> (message, rowStyle, this);
+    return new LabelMessageBoxRow<> (message, rowStyle, this);
   }
 
   @Override

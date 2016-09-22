@@ -585,7 +585,7 @@ public class MultiplayerControllerTest
 
     eventBus.publish (new ClientDisconnectionEvent (clientPlayer.client ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (clientPlayer.player ()));
-    eventBus.publish (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet. <PlayerPacket> of ()));
+    eventBus.publish (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet.<PlayerPacket> of ()));
 
     // make sure nothing was sent to the disconnecting player
     verify (mockClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), isA (PlayerLeaveGameEvent.class));
@@ -730,7 +730,7 @@ public class MultiplayerControllerTest
     mockCoreCommunicatorPlayersWith (clientPlayer.player ());
 
     // Request that the player/client claim an available country.
-    eventBus.publish (new PlayerClaimCountryRequestEvent (clientPlayer.player (), ImmutableSet. <CountryPacket> of ()));
+    eventBus.publish (new PlayerClaimCountryRequestEvent (clientPlayer.player (), ImmutableSet.<CountryPacket> of ()));
     verify (mockClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
     // Simulate player/client claiming a country.
@@ -771,7 +771,7 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple second = addClientAndMockPlayerToGameServer ("Test Player 2", mpc);
 
     // Request that the player/client claim an available country.
-    eventBus.publish (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet. <CountryPacket> of ()));
+    eventBus.publish (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet.<CountryPacket> of ()));
     verify (mockClientCommunicator).sendTo (eq (first.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
@@ -798,7 +798,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent1 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet. <CountryPacket> of ());
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent1);
     verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent1);
     // Make sure that the request was not sent to the second player/client.
@@ -811,7 +811,7 @@ public class MultiplayerControllerTest
 
     // Request that the second player/client claim an available country.
     final Event claimCountryRequestEvent2 = new PlayerClaimCountryRequestEvent (second.player (),
-            ImmutableSet. <CountryPacket> of ());
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent2);
     verify (mockClientCommunicator).sendTo (second.client (), claimCountryRequestEvent2);
     // Make sure that the request was not sent to the first player/client.
@@ -824,7 +824,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent3 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet. <CountryPacket> of ());
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent3);
     verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent3);
     // Make sure that the request was not sent to the second player/client.
@@ -837,7 +837,7 @@ public class MultiplayerControllerTest
 
     // Request that the second player/client claim an available country.
     final Event claimCountryRequestEvent4 = new PlayerClaimCountryRequestEvent (second.player (),
-            ImmutableSet. <CountryPacket> of ());
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent4);
     verify (mockClientCommunicator).sendTo (second.client (), claimCountryRequestEvent4);
     // Make sure that the request was not sent to the first player/client.
@@ -850,7 +850,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent5 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet. <CountryPacket> of ());
+            ImmutableSet.<CountryPacket> of ());
     eventBus.publish (claimCountryRequestEvent5);
     verify (mockClientCommunicator).sendTo (first.client (), claimCountryRequestEvent5);
     // Make sure that the request was not sent to the second player/client.

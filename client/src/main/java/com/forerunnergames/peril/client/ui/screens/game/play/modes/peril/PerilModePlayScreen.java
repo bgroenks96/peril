@@ -198,13 +198,13 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
   private void showCursor ()
   {
     Gdx.graphics.setCursor (normalCursor);
-  }  @Override
+  }
+
+  @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
     return false;
   }
-
-
 
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)

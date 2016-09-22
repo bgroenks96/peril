@@ -18,8 +18,8 @@
 
 package com.forerunnergames.peril.core.events.internal.player;
 
-import com.forerunnergames.peril.core.events.internal.defaults.AbstractInternalCommunicationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.events.internal.defaults.AbstractInternalCommunicationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;

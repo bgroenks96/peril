@@ -22,9 +22,9 @@ import com.forerunnergames.tools.common.id.Id;
 
 public interface AttackOrder
 {
-  Id getId();
-  
-  AttackVector getAttackVector();
-  
+  Id getId ();
+
+  AttackVector getAttackVector ();
+
   int getDieCount ();
 }

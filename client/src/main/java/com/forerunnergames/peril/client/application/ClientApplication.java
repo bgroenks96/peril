@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.client.application;
 
 import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.utils.TimerUtils;
+
 import com.forerunnergames.peril.common.application.DefaultApplication;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.Controller;

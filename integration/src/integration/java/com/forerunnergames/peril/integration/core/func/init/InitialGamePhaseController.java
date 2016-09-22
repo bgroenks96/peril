@@ -90,17 +90,6 @@ public final class InitialGamePhaseController implements TestPhaseController
     return clientPool.waitForAllClientsToReceive (JoinGameServerSuccessEvent.class).isEmpty ();
   }
 
-  private void sendForAllClientsJoinGameRequest ()
-  {
-    final TestClientPool clientPool = session.getTestClientPool ();
-    for (int i = 0; i < clientPool.count (); i++)
-    {
-      final TestClient client = clientPool.get (i);
-      final String playerName = Strings.format ("{}{}", PLAYER_NAME_BASE, client.getClientId ());
-      clientPool.send (i, new PlayerJoinGameRequestEvent (playerName));
-    }
-  }
-
   public WaitForCommunicationActionResult waitForAllClientsToJoinGame ()
   {
     sendForAllClientsJoinGameRequest ();
@@ -242,5 +231,16 @@ public final class InitialGamePhaseController implements TestPhaseController
     processor.start (EndInitialReinforcementPhaseEvent.class, monitor);
 
     monitor.awaitCompletion ();
+  }
+
+  private void sendForAllClientsJoinGameRequest ()
+  {
+    final TestClientPool clientPool = session.getTestClientPool ();
+    for (int i = 0; i < clientPool.count (); i++)
+    {
+      final TestClient client = clientPool.get (i);
+      final String playerName = Strings.format ("{}{}", PLAYER_NAME_BASE, client.getClientId ());
+      clientPool.send (i, new PlayerJoinGameRequestEvent (playerName));
+    }
   }
 }

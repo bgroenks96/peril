@@ -43,7 +43,7 @@ import java.util.Map;
 
 public final class DefaultPlayerModel implements PlayerModel
 {
-  private final Map <Id, Player> players = new HashMap <> ();
+  private final Map <Id, Player> players = new HashMap<> ();
   private final GameRules rules;
 
   public DefaultPlayerModel (final GameRules rules)
@@ -146,7 +146,8 @@ public final class DefaultPlayerModel implements PlayerModel
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNegative (cards, "cards");
 
-    return modelPlayerWith (playerId).getCardsInHand () >= IntMath.checkedAdd (rules.getAbsoluteMinCardsInHand (), cards);
+    return modelPlayerWith (playerId).getCardsInHand () >= IntMath.checkedAdd (rules.getAbsoluteMinCardsInHand (),
+                                                                               cards);
   }
 
   @Override
@@ -259,6 +260,12 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
+  public ImmutableSet <PlayerPacket> getPlayerPackets ()
+  {
+    return PlayerPackets.fromPlayers (players ());
+  }
+
+  @Override
   public ImmutableSet <Id> getPlayerIds ()
   {
     final ImmutableSet.Builder <Id> playerIds = ImmutableSet.builder ();
@@ -267,12 +274,6 @@ public final class DefaultPlayerModel implements PlayerModel
       playerIds.add (player.getId ());
     }
     return playerIds.build ();
-  }
-
-  @Override
-  public ImmutableSet <PlayerPacket> getPlayerPackets ()
-  {
-    return PlayerPackets.fromPlayers (players ());
   }
 
   @Override

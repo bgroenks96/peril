@@ -52,9 +52,9 @@ public abstract class AbstractDiceFactory implements DiceFactory
 
     for (int dieIndex = 0; dieIndex < absoluteDieRange.max (); ++dieIndex)
     {
-      dieBuilder.add (new AttackerDie (dieIndex, createAttackerDieImageButton (Die.DEFAULT_STATE,
-                                                                               GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                                                               Die.DEFAULT_OUTCOME))
+      dieBuilder.add (new AttackerDie (dieIndex,
+              createAttackerDieImageButton (Die.DEFAULT_STATE, GameSettings.DEFAULT_DIE_FACE_VALUE,
+                                            Die.DEFAULT_OUTCOME))
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -82,9 +82,9 @@ public abstract class AbstractDiceFactory implements DiceFactory
 
     for (int dieIndex = 0; dieIndex < absoluteDieRange.max (); ++dieIndex)
     {
-      dieBuilder.add (new DefenderDie (dieIndex, createDefenderDieImageButton (Die.DEFAULT_STATE,
-                                                                               GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                                                               Die.DEFAULT_OUTCOME))
+      dieBuilder.add (new DefenderDie (dieIndex,
+              createDefenderDieImageButton (Die.DEFAULT_STATE, GameSettings.DEFAULT_DIE_FACE_VALUE,
+                                            Die.DEFAULT_OUTCOME))
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,

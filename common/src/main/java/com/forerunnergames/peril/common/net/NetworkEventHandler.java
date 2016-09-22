@@ -46,8 +46,6 @@ public abstract class NetworkEventHandler
     internalEventBus = EventBusFactory.create (internalBusErrorHandlers);
   }
 
-  protected abstract void subscribe (final MBassador <Event> eventBus);
-
   public final void handle (final Event event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -56,6 +54,8 @@ public abstract class NetworkEventHandler
     eventClientCache.put (event, client);
     internalEventBus.publish (event);
   }
+
+  protected abstract void subscribe (final MBassador <Event> eventBus);
 
   protected final void initialize ()
   {

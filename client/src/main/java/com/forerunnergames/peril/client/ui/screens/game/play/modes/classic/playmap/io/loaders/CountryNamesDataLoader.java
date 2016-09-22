@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 public final class CountryNamesDataLoader extends AbstractBiMapDataLoader <Id, String>
 {
   private static final Logger log = LoggerFactory.getLogger (CountryNamesDataLoader.class);
-  private ImmutableBiMap.Builder <Id, String> countryNamesBuilder;
   private final StreamParserFactory streamParserFactory;
+  private ImmutableBiMap.Builder <Id, String> countryNamesBuilder;
   private StreamParser streamParser;
   private String fileName;
   private String countryName;
@@ -62,7 +62,7 @@ public final class CountryNamesDataLoader extends AbstractBiMapDataLoader <Id, S
 
     this.fileName = fileName;
     streamParser = streamParserFactory.create (fileName);
-    countryNamesBuilder = new ImmutableBiMap.Builder <> ();
+    countryNamesBuilder = new ImmutableBiMap.Builder<> ();
   }
 
   @Override

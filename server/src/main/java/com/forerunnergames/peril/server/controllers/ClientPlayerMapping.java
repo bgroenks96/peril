@@ -126,12 +126,6 @@ public final class ClientPlayerMapping
     return Optional.fromNullable (clientsToPlayers.remove (client));
   }
 
-  @Override
-  public String toString ()
-  {
-    return clientsToPlayers.toString ();
-  }
-
   private void syncPlayerData ()
   {
     final ImmutableSet <PlayerPacket> updatedPlayerData = coreCommunicator.fetchCurrentPlayerData ();
@@ -147,6 +141,12 @@ public final class ClientPlayerMapping
       }
       clientsToPlayers.forcePut (client.get (), current);
     }
+  }
+
+  @Override
+  public String toString ()
+  {
+    return clientsToPlayers.toString ();
   }
 
   /**

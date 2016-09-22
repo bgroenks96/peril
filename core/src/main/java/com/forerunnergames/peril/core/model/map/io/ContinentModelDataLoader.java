@@ -40,7 +40,7 @@ public final class ContinentModelDataLoader extends AbstractDataLoader <Continen
   private final ContinentFactory continentFactory = new ContinentFactory ();
   private final StreamParserFactory streamParserFactory;
   private final CountryIdResolver countryIdResolver;
-  private final Set <Id> countryIds = new HashSet <> ();
+  private final Set <Id> countryIds = new HashSet<> ();
   private String fileName;
   private StreamParser streamParser;
   private String continentName;

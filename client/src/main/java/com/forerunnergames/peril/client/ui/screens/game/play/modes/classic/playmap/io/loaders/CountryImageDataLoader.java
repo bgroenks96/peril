@@ -62,7 +62,7 @@ public final class CountryImageDataLoader extends AbstractBiMapDataLoader <Strin
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    countryImageDataBuilder = new ImmutableBiMap.Builder <> ();
+    countryImageDataBuilder = new ImmutableBiMap.Builder<> ();
     streamParser = streamParserFactory.create (fileName);
   }
 

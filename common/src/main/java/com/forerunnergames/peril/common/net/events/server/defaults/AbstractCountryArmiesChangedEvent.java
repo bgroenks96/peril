@@ -41,6 +41,12 @@ public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryE
     this.deltaArmyCount = deltaArmyCount;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractCountryArmiesChangedEvent ()
+  {
+    deltaArmyCount = 0;
+  }
+
   @Override
   public int getCountryDeltaArmyCount ()
   {
@@ -51,11 +57,5 @@ public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryE
   public String toString ()
   {
     return Strings.format ("{} | DeltaArmyCount: {}", super.toString (), deltaArmyCount);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractCountryArmiesChangedEvent ()
-  {
-    deltaArmyCount = 0;
   }
 }

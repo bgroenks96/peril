@@ -229,7 +229,7 @@ public final class ClientApplicationProperties
   {
     final Properties intersection = new Properties ();
 
-    final Collection <Object> keys = new HashSet <> (propertiesUseValues.keySet ());
+    final Collection <Object> keys = new HashSet<> (propertiesUseValues.keySet ());
     keys.retainAll (propertiesDontUseValues.keySet ());
 
     for (final Object key : keys)

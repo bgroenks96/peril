@@ -53,9 +53,9 @@ public interface Dialog
 
   void disableSubmission ();
 
-  void setSubmissionDisabled (final boolean isDisabled);
-
   boolean isSubmissionDisabled ();
+
+  void setSubmissionDisabled (final boolean isDisabled);
 
   void enableTextButton (final String buttonText);
 

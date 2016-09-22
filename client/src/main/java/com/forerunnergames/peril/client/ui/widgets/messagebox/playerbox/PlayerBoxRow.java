@@ -172,8 +172,7 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   public String toString ()
   {
     return Strings.format ("{} | Player: {} | Highlighting: {} | Player Color Icon: {} | Message: {} | "
-                                   + " Message Row Left: {} | Message Row Right: {} | Row Style: {} | Table: {} | "
-                                   + "Stack: {}",
+            + " Message Row Left: {} | Message Row Right: {} | Row Style: {} | Table: {} | " + "Stack: {}",
                            super.toString (), player, highlighting, playerColorIcon, message, messageRowLeft,
                            messageRowRight, rowStyle, table, stack);
   }

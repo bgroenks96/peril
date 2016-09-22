@@ -26,6 +26,15 @@ import java.util.UUID;
  */
 public interface AssetPacket
 {
+  @Override
+  int hashCode ();
+
+  @Override
+  boolean equals (final Object obj);
+
+  @Override
+  String toString ();
+
   String getName ();
 
   boolean doesNotHaveId (final UUID id);
@@ -39,13 +48,4 @@ public interface AssetPacket
   boolean is (final AssetPacket asset);
 
   boolean isNot (final AssetPacket asset);
-
-  @Override
-  int hashCode ();
-
-  @Override
-  boolean equals (final Object obj);
-
-  @Override
-  String toString ();
 }

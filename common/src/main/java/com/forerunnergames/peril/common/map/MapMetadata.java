@@ -24,12 +24,6 @@ public interface MapMetadata
 {
   MapMetadata NULL_MAP_METADATA = new NullMapMetadata ();
 
-  String getName ();
-
-  MapType getType ();
-
-  GameMode getMode ();
-
   @Override
   int hashCode ();
 
@@ -38,4 +32,10 @@ public interface MapMetadata
 
   @Override
   String toString ();
+
+  String getName ();
+
+  MapType getType ();
+
+  GameMode getMode ();
 }

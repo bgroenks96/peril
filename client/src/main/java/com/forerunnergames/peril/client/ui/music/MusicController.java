@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.client.ui.music;
 
 import com.badlogic.gdx.audio.Music;
-
 import com.badlogic.gdx.utils.Timer;
+
 import com.forerunnergames.peril.client.settings.MusicSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.tools.common.Arguments;
@@ -86,7 +86,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
       @Override
       public void run ()
       {
-        if (! music.isPlaying ())
+        if (!music.isPlaying ())
         {
           cancel ();
           log.trace ("Stopping fading out music [{}] because it isn't playing anymore.", music);
@@ -122,7 +122,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
       @Override
       public void run ()
       {
-        if (! music.isPlaying ())
+        if (!music.isPlaying ())
         {
           cancel ();
           log.trace ("Stopping fading in music [{}] because it isn't playing anymore.", music);

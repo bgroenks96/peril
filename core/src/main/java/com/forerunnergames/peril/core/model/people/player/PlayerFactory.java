@@ -31,42 +31,6 @@ public final class PlayerFactory
   private final ImmutableSet.Builder <Player> playerSetBuilder = ImmutableSet.builder ();
   private int playerCount = 0;
 
-  public void newPlayerWith (final String name)
-  {
-    Arguments.checkIsNotNull (name, "name");
-
-    playerSetBuilder.add (create (name));
-    playerCount++;
-  }
-
-  public void newPlayerWith (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
-  {
-    Arguments.checkIsNotNull (name, "name");
-    Arguments.checkIsNotNull (color, "color");
-    Arguments.checkIsNotNull (turnOrder, "turnOrder");
-
-    playerSetBuilder.add (create (name, color, turnOrder));
-    playerCount++;
-  }
-
-  public void newPlayerFrom (final PlayerBuilder builder)
-  {
-    Arguments.checkIsNotNull (builder, "builder");
-
-    playerSetBuilder.add (builder.build ());
-    playerCount++;
-  }
-
-  public int getPlayerCount ()
-  {
-    return playerCount;
-  }
-
-  ImmutableSet <Player> getPlayers ()
-  {
-    return playerSetBuilder.build ();
-  }
-
   static Player create (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
@@ -102,6 +66,42 @@ public final class PlayerFactory
     Arguments.checkIsNotNull (playerName, "playerName");
 
     return new PlayerBuilder (playerName);
+  }
+
+  public void newPlayerWith (final String name)
+  {
+    Arguments.checkIsNotNull (name, "name");
+
+    playerSetBuilder.add (create (name));
+    playerCount++;
+  }
+
+  public void newPlayerWith (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
+  {
+    Arguments.checkIsNotNull (name, "name");
+    Arguments.checkIsNotNull (color, "color");
+    Arguments.checkIsNotNull (turnOrder, "turnOrder");
+
+    playerSetBuilder.add (create (name, color, turnOrder));
+    playerCount++;
+  }
+
+  public void newPlayerFrom (final PlayerBuilder builder)
+  {
+    Arguments.checkIsNotNull (builder, "builder");
+
+    playerSetBuilder.add (builder.build ());
+    playerCount++;
+  }
+
+  public int getPlayerCount ()
+  {
+    return playerCount;
+  }
+
+  ImmutableSet <Player> getPlayers ()
+  {
+    return playerSetBuilder.build ();
   }
 
   /*

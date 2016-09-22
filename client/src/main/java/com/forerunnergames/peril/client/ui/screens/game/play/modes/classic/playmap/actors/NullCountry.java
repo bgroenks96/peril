@@ -126,17 +126,17 @@ final class NullCountry implements Country
   }
 
   @Override
+  public void setArmies (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+  }
+
+  @Override
   public boolean armyCountIs (final int armies)
   {
     Arguments.checkIsNotNull (armies, "armies");
 
     return false;
-  }
-
-  @Override
-  public void setArmies (final int armies)
-  {
-    Arguments.checkIsNotNegative (armies, "armies");
   }
 
   @Override

@@ -37,8 +37,8 @@ public final class TurnPhaseTest
   public Object[][] generateSessionName (final Method method)
   {
     final String fullMethodName = Strings.format ("{}_{}", getClass ().getSimpleName (), method.getName ());
-    return new Object [] [] {
-            { TestSessions.createUniqueNameFrom (fullMethodName), LoggerFactory.getLogger (fullMethodName) } };
+    return new Object [] [] { { TestSessions.createUniqueNameFrom (fullMethodName),
+                                LoggerFactory.getLogger (fullMethodName) } };
   }
 
   @AfterClass

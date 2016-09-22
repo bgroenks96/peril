@@ -26,12 +26,6 @@ import org.junit.Test;
 
 public abstract class DataLoaderTest <T>
 {
-  protected abstract DataLoader <T> createDataLoader ();
-
-  protected abstract boolean verifyData (final T data);
-
-  protected abstract String getTestDataFileName ();
-
   @Test
   public void testLoadSuccessful ()
   {
@@ -47,4 +41,10 @@ public abstract class DataLoaderTest <T>
     final DataLoader <T> loader = createDataLoader ();
     loader.load ("non-existent-file");
   }
+
+  protected abstract DataLoader <T> createDataLoader ();
+
+  protected abstract boolean verifyData (final T data);
+
+  protected abstract String getTestDataFileName ();
 }

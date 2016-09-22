@@ -39,7 +39,7 @@ import java.util.Map;
 public final class DefaultCountryOwnerModel implements CountryOwnerModel
 {
   private final CountryMapGraphModel countryMapGraphModel;
-  private final Map <Id, Id> countryIdsToOwnerIds = new HashMap <> ();
+  private final Map <Id, Id> countryIdsToOwnerIds = new HashMap<> ();
 
   public DefaultCountryOwnerModel (final CountryMapGraphModel countryMapGraphModel, final GameRules rules)
   {
@@ -225,6 +225,17 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   }
 
   @Override
+  public ImmutableSet <CountryPacket> getUnownedCountries ()
+  {
+    final ImmutableSet.Builder <CountryPacket> unownedCountries = ImmutableSet.builder ();
+    for (final Id countryId : countryMapGraphModel)
+    {
+      if (!isCountryOwned (countryId)) unownedCountries.add (countryMapGraphModel.countryPacketWith (countryId));
+    }
+    return unownedCountries.build ();
+  }
+
+  @Override
   public ImmutableSet <String> getCountryNamesOwnedBy (final Id ownerId)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
@@ -243,17 +254,6 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
     }
 
     return countryNameBuilder.build ();
-  }
-
-  @Override
-  public ImmutableSet <CountryPacket> getUnownedCountries ()
-  {
-    final ImmutableSet.Builder <CountryPacket> unownedCountries = ImmutableSet.builder ();
-    for (final Id countryId : countryMapGraphModel)
-    {
-      if (!isCountryOwned (countryId)) unownedCountries.add (countryMapGraphModel.countryPacketWith (countryId));
-    }
-    return unownedCountries.build ();
   }
 
   @Override
@@ -306,13 +306,6 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
     return getOwnedCountryCount () >= n;
   }
 
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Countries [{}] | CountryIdsToOwnerIds [{}]", getClass ().getSimpleName (),
-                           countryMapGraphModel, countryIdsToOwnerIds);
-  }
-
   public static ImmutableSet <Country> generateDefaultCountries (final GameRules gameRules)
   {
     Arguments.checkIsNotNull (gameRules, "gameRules");
@@ -354,5 +347,12 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   private void checkValidCountryId (final Id countryId)
   {
     Preconditions.checkIsTrue (countryMapGraphModel.existsCountryWith (countryId), "Unrecognized country id.");
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: Countries [{}] | CountryIdsToOwnerIds [{}]", getClass ().getSimpleName (),
+                           countryMapGraphModel, countryIdsToOwnerIds);
   }
 }

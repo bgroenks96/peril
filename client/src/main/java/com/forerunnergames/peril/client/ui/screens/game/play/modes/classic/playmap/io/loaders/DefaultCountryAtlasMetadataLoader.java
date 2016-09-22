@@ -132,7 +132,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         }
 
         final CountryAtlasMetadata countryAtlasMetadata = new DefaultCountryAtlasMetadata (
-                new AssetDescriptor <> (relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class),
+                new AssetDescriptor<> (relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class),
                 mapMetadata);
 
         if (!countryAtlasMetadatas.add (countryAtlasMetadata))

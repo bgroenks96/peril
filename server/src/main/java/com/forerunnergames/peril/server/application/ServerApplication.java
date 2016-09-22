@@ -18,8 +18,8 @@
 
 package com.forerunnergames.peril.server.application;
 
-import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.common.application.DefaultApplication;
+import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.controllers.Controller;

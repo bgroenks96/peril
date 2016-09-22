@@ -34,15 +34,6 @@ public final class CountryArmyTextEffects extends DefaultCountryArmyText
   private static final float MOVE_TIME_SECONDS = 1.5f;
   private final HorizontalMoveDirection direction;
 
-  public CountryArmyTextEffects (final BitmapFont font, final HorizontalMoveDirection direction)
-  {
-    super (font);
-
-    Arguments.checkIsNotNull (direction, "direction");
-
-    this.direction = direction;
-  }
-
   enum HorizontalMoveDirection
   {
     LEFT (1.0f),
@@ -59,6 +50,15 @@ public final class CountryArmyTextEffects extends DefaultCountryArmyText
     {
       this.sign = sign;
     }
+  }
+
+  public CountryArmyTextEffects (final BitmapFont font, final HorizontalMoveDirection direction)
+  {
+    super (font);
+
+    Arguments.checkIsNotNull (direction, "direction");
+
+    this.direction = direction;
   }
 
   @Override

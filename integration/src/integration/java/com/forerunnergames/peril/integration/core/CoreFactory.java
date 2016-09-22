@@ -51,9 +51,19 @@ public final class CoreFactory
     return countryFactory;
   }
 
+  private CoreFactory ()
+  {
+    Classes.instantiationNotAllowed ();
+  }
+
   public static final class GameStateMachineConfig
   {
     private GameModel gameModel;
+
+    public GameModel getGameModel ()
+    {
+      return gameModel;
+    }
 
     public GameStateMachineConfig setGameModel (final GameModel gameModel)
     {
@@ -62,15 +72,5 @@ public final class CoreFactory
       this.gameModel = gameModel;
       return this;
     }
-
-    public GameModel getGameModel ()
-    {
-      return gameModel;
-    }
-  }
-
-  private CoreFactory ()
-  {
-    Classes.instantiationNotAllowed ();
   }
 }

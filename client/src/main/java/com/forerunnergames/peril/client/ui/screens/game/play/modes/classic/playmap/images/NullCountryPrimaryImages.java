@@ -70,7 +70,7 @@ public final class NullCountryPrimaryImages implements CountryImages <CountryPri
   @Override
   public boolean doesNotHave (final CountryPrimaryImageState state)
   {
-    return ! has (state);
+    return !has (state);
   }
 
   @Override

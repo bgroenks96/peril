@@ -71,7 +71,7 @@ public final class NullCountrySecondaryImages
   @Override
   public boolean doesNotHave (final CountrySecondaryImageState state)
   {
-    return ! has (state);
+    return !has (state);
   }
 
   @Override

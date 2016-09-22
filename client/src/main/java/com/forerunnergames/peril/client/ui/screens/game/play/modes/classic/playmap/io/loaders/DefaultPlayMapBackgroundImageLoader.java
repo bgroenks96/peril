@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgroundImageLoader
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultPlayMapBackgroundImageLoader.class);
-  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap <> ();
+  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap<> ();
   private final AssetManager assetManager;
 
   public DefaultPlayMapBackgroundImageLoader (final AssetManager assetManager)

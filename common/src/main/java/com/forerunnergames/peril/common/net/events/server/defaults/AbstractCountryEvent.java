@@ -35,6 +35,12 @@ public abstract class AbstractCountryEvent implements CountryEvent
     this.country = country;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractCountryEvent ()
+  {
+    country = null;
+  }
+
   @Override
   public CountryPacket getCountry ()
   {
@@ -57,11 +63,5 @@ public abstract class AbstractCountryEvent implements CountryEvent
   public String toString ()
   {
     return Strings.format ("{}: Country: [{}]", getClass ().getSimpleName (), country);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractCountryEvent ()
-  {
-    country = null;
   }
 }

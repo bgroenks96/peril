@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TestSessions
 {
   private static final BiMap <String, TestSession> sessionMap = Maps
-          .synchronizedBiMap (HashBiMap. <String, TestSession> create ());
+          .synchronizedBiMap (HashBiMap.<String, TestSession> create ());
   private static final AtomicInteger counter = new AtomicInteger ();
 
   public static synchronized void start (final String name, final TestSession testSession)

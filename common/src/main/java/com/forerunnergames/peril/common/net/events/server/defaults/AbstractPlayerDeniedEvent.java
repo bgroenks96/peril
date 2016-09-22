@@ -19,6 +19,12 @@ public abstract class AbstractPlayerDeniedEvent <T> extends AbstractPlayerEvent 
     this.reason = reason;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractPlayerDeniedEvent ()
+  {
+    reason = null;
+  }
+
   @Override
   public T getReason ()
   {
@@ -29,11 +35,5 @@ public abstract class AbstractPlayerDeniedEvent <T> extends AbstractPlayerEvent 
   public String toString ()
   {
     return Strings.format ("{} | Reason: {}", super.toString (), reason);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractPlayerDeniedEvent ()
-  {
-    reason = null;
   }
 }

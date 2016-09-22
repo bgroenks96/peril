@@ -58,18 +58,18 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Override
+  protected BattleRequestEvent createBattleRequestEvent (final int dieCount)
+  {
+    return new PlayerOrderAttackRequestEvent (dieCount);
+  }
+
+  @Override
   public void setPlayMap (final PlayMap playMap)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
 
     super.setPlayMap (playMap);
     countryVectorSelectionHandler.setPlayMap (playMap);
-  }
-
-  @Override
-  protected BattleRequestEvent createBattleRequestEvent (final int dieCount)
-  {
-    return new PlayerOrderAttackRequestEvent (dieCount);
   }
 
   @Handler

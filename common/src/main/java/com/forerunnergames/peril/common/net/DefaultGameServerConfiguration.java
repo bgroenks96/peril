@@ -125,10 +125,10 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Game Server Name: %2$s | Game Server Type: %3$s | Game Configuration: %4$s"
-                                  + " | Server Configuration: %5$s", getClass ().getSimpleName (), gameServerName,
-                          gameServerType,
-                          gameConfig, serverConfig);
+    return String.format (
+                          "%1$s: Game Server Name: %2$s | Game Server Type: %3$s | Game Configuration: %4$s"
+                                  + " | Server Configuration: %5$s",
+                          getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig);
   }
 
   @RequiredForNetworkSerialization

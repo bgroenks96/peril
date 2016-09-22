@@ -102,7 +102,7 @@ public class ServerMultiplayerControllerSmokeTest
   @Test (dependsOnMethods = "testJoinGame")
   public void testSendingNetworkSerializableClasses ()
   {
-    final Collection <Class <?>> failedClasses = new HashSet <> ();
+    final Collection <Class <?>> failedClasses = new HashSet<> ();
 
     for (final Class <?> registeredClass : KryonetRegistration.CLASSES)
     {

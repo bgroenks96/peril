@@ -62,8 +62,6 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory, U extends
     this.streamParserFactory = streamParserFactory;
   }
 
-  protected abstract U createGraphModel (final GraphModel <T> internalGraphModel);
-
   @Override
   protected U finalizeData ()
   {
@@ -84,7 +82,7 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory, U extends
   @Override
   protected boolean readData ()
   {
-    lineData = new ArrayList <> (streamParser.getNextRemainingQuotedStringsOnLine ());
+    lineData = new ArrayList<> (streamParser.getNextRemainingQuotedStringsOnLine ());
     return !streamParser.isEndOfFile ();
   }
 
@@ -115,4 +113,6 @@ public abstract class AbstractMapGraphDataLoader <T extends Territory, U extends
 
     log.debug ("Successfully loaded graph data for {}: {}", firstName, lineData);
   }
+
+  protected abstract U createGraphModel (final GraphModel <T> internalGraphModel);
 }

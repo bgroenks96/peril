@@ -28,7 +28,7 @@ import com.forerunnergames.tools.common.color.RgbaColor;
 public final class DefaultPlayMapCoordinateToRgbaColorConverter implements PlayMapCoordinateToRgbaColorConverter
 {
   private final Pixmap rawPlayMapTerritoryColorsImage;
-  private final IntMap <RgbaColor> rawToRgbaColors = new IntMap <> ();
+  private final IntMap <RgbaColor> rawToRgbaColors = new IntMap<> ();
 
   public DefaultPlayMapCoordinateToRgbaColorConverter (final Pixmap rawPlayMapTerritoryColorsImage)
   {

@@ -63,6 +63,17 @@ public final class ContinentMapGraphModel extends TerritoryGraphModel <Continent
     this.countryMapGraphModel = countryMapGraphModel;
   }
 
+  public static ContinentMapGraphModel disjointContinentGraphFrom (final ContinentFactory continents,
+                                                                   final CountryMapGraphModel countryMapGraphModel)
+  {
+    final DefaultGraphModel.Builder <Continent> builder = DefaultGraphModel.builder ();
+    for (final Continent continent : continents.getContinents ())
+    {
+      builder.addNode (continent);
+    }
+    return new ContinentMapGraphModel (builder.build (), countryMapGraphModel);
+  }
+
   public boolean existsContinentWith (final Id continentId)
   {
     Arguments.checkIsNotNull (continentId, "continentId");
@@ -190,16 +201,5 @@ public final class ContinentMapGraphModel extends TerritoryGraphModel <Continent
       countrySetBuilder.add (countryMapGraphModel.countryPacketWith (countryId));
     }
     return countrySetBuilder.build ();
-  }
-
-  public static ContinentMapGraphModel disjointContinentGraphFrom (final ContinentFactory continents,
-                                                                   final CountryMapGraphModel countryMapGraphModel)
-  {
-    final DefaultGraphModel.Builder <Continent> builder = DefaultGraphModel.builder ();
-    for (final Continent continent : continents.getContinents ())
-    {
-      builder.addNode (continent);
-    }
-    return new ContinentMapGraphModel (builder.build (), countryMapGraphModel);
   }
 }

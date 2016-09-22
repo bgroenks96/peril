@@ -345,7 +345,8 @@ public final class SplashScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        handleErrorDuringLoading (Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem "
+        handleErrorDuringLoading (Strings.format (
+                                                  "A crash file has been created in \"{}\".\n\nThere was a problem "
                                                           + "loading a game resource.\n\nResource Name: {}\n"
                                                           + "Resource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                                                   CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
@@ -396,7 +397,7 @@ public final class SplashScreen extends InputAdapter implements Screen
   private void configureDisplayMode ()
   {
     final Graphics.DisplayMode currentMonitorMode = Gdx.graphics.getDisplayMode ();
-    
+
     log.info ("Current monitor display mode: {}", currentMonitorMode);
 
     if (GraphicsSettings.IS_FULLSCREEN && Gdx.graphics.setFullscreenMode (currentMonitorMode))
@@ -431,12 +432,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     {
       if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
       {
-        throw new IllegalStateException (
-                Strings.format ("Cannot auto-join & auto-create a multiplayer game simultaneously.\n\n"
-                                        + "Please disable either '{}', '{}', or both in:\n\n{}.",
-                                ClientApplicationProperties.AUTO_JOIN_MULTIPLAYER_GAME_KEY,
-                                ClientApplicationProperties.AUTO_CREATE_MULTIPLAYER_GAME_KEY,
-                                ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
+        throw new IllegalStateException (Strings.format (
+                                                         "Cannot auto-join & auto-create a multiplayer game simultaneously.\n\n"
+                                                                 + "Please disable either '{}', '{}', or both in:\n\n{}.",
+                                                         ClientApplicationProperties.AUTO_JOIN_MULTIPLAYER_GAME_KEY,
+                                                         ClientApplicationProperties.AUTO_CREATE_MULTIPLAYER_GAME_KEY,
+                                                         ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
       }
       else if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
       {
@@ -457,11 +458,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final GdxRuntimeException e)
     {
-      handleErrorDuringLoading (Strings.format ("A crash file has been created in \"{}\".\n\nThe application "
+      handleErrorDuringLoading (Strings.format (
+                                                "A crash file has been created in \"{}\".\n\nThe application "
                                                         + "encountered a problem.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
-                                                        .getRootCause (e).getMessage (), Throwables
-                                                        .getStackTraceAsString (e)));
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                Throwables.getRootCause (e).getMessage (),
+                                                Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -501,11 +503,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final RuntimeException e)
     {
-      handleErrorDuringLoading (Strings
-              .format ("A crash file has been created in \"{}\".\n\nThere was a problem "
-                               + "updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings.format (
+                                                "A crash file has been created in \"{}\".\n\nThere was a problem "
+                                                        + "updating a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                Throwables.getRootCause (e).getMessage (),
+                                                Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -525,11 +528,12 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
     catch (final RuntimeException e)
     {
-      handleErrorDuringLoading (Strings
-              .format ("A crash file has been created in \"{}\".\n\nThere was a problem "
-                               + "loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                       CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                       Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e)));
+      handleErrorDuringLoading (Strings.format (
+                                                "A crash file has been created in \"{}\".\n\nThere was a problem "
+                                                        + "loading a game resource.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                                                CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                Throwables.getRootCause (e).getMessage (),
+                                                Throwables.getStackTraceAsString (e)));
     }
   }
 
@@ -568,8 +572,7 @@ public final class SplashScreen extends InputAdapter implements Screen
     }
 
     previousLoadingProgressPercent = currentLoadingProgressPercent;
-    currentLoadingProgressPercent = assetUpdater.getProgressPercent ()
-            * ASSET_UPDATING_PROGRESS_WEIGHT
+    currentLoadingProgressPercent = assetUpdater.getProgressPercent () * ASSET_UPDATING_PROGRESS_WEIGHT
             + (isLoadingUpdatedAssets ? assetManager.getProgressLoading () * UPDATED_ASSET_LOADING_PROGRESS_WEIGHT
                     : 0.0f);
 

@@ -32,28 +32,6 @@ public final class ContinentFactory
   private final ImmutableSet.Builder <Continent> continents = ImmutableSet.builder ();
   private int continentCount = 0;
 
-  public void newContinentWith (final String name, final ImmutableSet <Id> countries)
-  {
-    continents.add (create (name, countries));
-    continentCount++;
-  }
-
-  public void newContinentWith (final String name, final int reinforcementBonus, final ImmutableSet <Id> countries)
-  {
-    continents.add (create (name, reinforcementBonus, countries));
-    continentCount++;
-  }
-
-  public int getContinentCount ()
-  {
-    return continentCount;
-  }
-
-  ImmutableSet <Continent> getContinents ()
-  {
-    return continents.build ();
-  }
-
   static ContinentBuilder builder (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
@@ -80,6 +58,28 @@ public final class ContinentFactory
     return builder (name).reinforcementBonus (reinforcementBonus).countries (countries).build ();
   }
 
+  public void newContinentWith (final String name, final ImmutableSet <Id> countries)
+  {
+    continents.add (create (name, countries));
+    continentCount++;
+  }
+
+  public void newContinentWith (final String name, final int reinforcementBonus, final ImmutableSet <Id> countries)
+  {
+    continents.add (create (name, reinforcementBonus, countries));
+    continentCount++;
+  }
+
+  public int getContinentCount ()
+  {
+    return continentCount;
+  }
+
+  ImmutableSet <Continent> getContinents ()
+  {
+    return continents.build ();
+  }
+
   @Override
   public String toString ()
   {
@@ -90,9 +90,8 @@ public final class ContinentFactory
   {
     private final String continentName;
     private final Id id;
-
+    private final Set <Id> countries = new HashSet<> ();
     private int reinforcementBonus;
-    private final Set <Id> countries = new HashSet <> ();
 
     public ContinentBuilder (final String continentName)
     {

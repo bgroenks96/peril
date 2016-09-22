@@ -39,6 +39,12 @@ public abstract class AbstractPlayerArmiesChangedEvent extends AbstractPlayerEve
     this.deltaArmyCount = deltaArmyCount;
   }
 
+  @RequiredForNetworkSerialization
+  protected AbstractPlayerArmiesChangedEvent ()
+  {
+    deltaArmyCount = 0;
+  }
+
   @Override
   public int getPlayerDeltaArmyCount ()
   {
@@ -49,11 +55,5 @@ public abstract class AbstractPlayerArmiesChangedEvent extends AbstractPlayerEve
   public String toString ()
   {
     return Strings.format ("{} | DeltaArmyCount: {}", super.toString (), deltaArmyCount);
-  }
-
-  @RequiredForNetworkSerialization
-  protected AbstractPlayerArmiesChangedEvent ()
-  {
-    deltaArmyCount = 0;
   }
 }
