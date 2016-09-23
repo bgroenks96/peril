@@ -255,7 +255,7 @@ class InternalCommunicationHandler
 
     countryOwnerModel.unassignAllCountriesOwnedBy (player);
     playerModel.remove (player);
-    playerTurnModel.setTurnCount (playerModel.getPlayerLimit ());
+    playerTurnModel.decrementTurnCount ();
 
     eventBus.publish (new PlayerLeaveGameEvent (event.getPlayer (), playerModel.getPlayerPackets ()));
   }

@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.turn;
 
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -27,86 +28,77 @@ import com.forerunnergames.tools.common.Strings;
  */
 public final class DefaultPlayerTurnModel implements PlayerTurnModel
 {
-  private static final int FIRST = 0;
-  private int turnCount;
-  private int turn = FIRST;
+  private final GameRules rules;
+  private PlayerTurnOrder currentTurn = PlayerTurnOrder.FIRST;
+  private PlayerTurnOrder lastTurn;
 
-  /**
-   * @param turnCount
-   *          the number of turns in this PlayerTurnModel's turn cycle
-   */
-  public DefaultPlayerTurnModel (final int turnCount)
+  public DefaultPlayerTurnModel (final GameRules rules)
   {
-    Arguments.checkIsNotNegative (turnCount, "turnCount");
-    Arguments.checkUpperInclusiveBound (turnCount, PlayerTurnOrder.validCount (), "turnCount");
+    Arguments.checkIsNotNull (rules, "rules");
 
-    this.turnCount = turnCount;
+    this.rules = rules;
+    resetTurnCount ();
   }
 
   @Override
   public void advance ()
   {
-    turn = getNextTurnValue ();
+    currentTurn = currentTurn.is (lastTurn) ? PlayerTurnOrder.FIRST : currentTurn.nextValid ();
   }
 
   @Override
-  public int getTurn ()
+  public PlayerTurnOrder getCurrentTurn ()
   {
-    return turn;
+    return currentTurn;
   }
 
-  /**
-   * @return the PlayerTurnOrder value corresponding to the current turn.
-   */
   @Override
-  public PlayerTurnOrder getTurnOrder ()
+  public PlayerTurnOrder getLastTurn ()
   {
-    return PlayerTurnOrder.getNthValidTurnOrder (turn + 1);
+    return lastTurn;
   }
 
   @Override
   public boolean isFirstTurn ()
   {
-    return getTurnOrder ().is (PlayerTurnOrder.FIRST);
+    return currentTurn.is (PlayerTurnOrder.FIRST);
   }
 
   @Override
   public boolean isLastTurn ()
   {
-    return turn == turnCount - 1;
+    return currentTurn.is (lastTurn);
   }
 
   @Override
-  public void reset ()
+  public void decrementTurnCount ()
   {
-    turn = FIRST;
+    lastTurn = lastTurn.hasPreviousValid () ? lastTurn.previousValid () : PlayerTurnOrder.FIRST;
+
+    if (isCurrentTurnInvalid ()) resetCurrentTurn ();
   }
 
   @Override
-  public int getTurnCount ()
+  public void resetCurrentTurn ()
   {
-    return turnCount;
+    currentTurn = PlayerTurnOrder.FIRST;
   }
 
   @Override
-  public void setTurnCount (final int newTurnCount)
+  public void resetTurnCount ()
   {
-    Arguments.checkIsNotNegative (newTurnCount, "newTurnCount");
-    Arguments.checkUpperInclusiveBound (newTurnCount, PlayerTurnOrder.validCount (), "newTurnCount");
-
-    turnCount = newTurnCount;
-
-    if (newTurnCount >= turn) reset ();
+    lastTurn = PlayerTurnOrder.getNthValidTurnOrder (rules.getPlayerLimit ());
   }
 
-  private int getNextTurnValue ()
+  private boolean isCurrentTurnInvalid ()
   {
-    return (turn + 1) % turnCount;
+    return currentTurn.getPosition () > lastTurn.getPosition ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: At turn {} / {}", getClass ().getSimpleName (), turn + 1, turnCount);
+    return Strings.format ("{}: CurrentTurn: [{}] | LastTurn: [{}] | Rules: [{}]", getClass ().getSimpleName (),
+                           currentTurn, lastTurn, rules);
   }
 }

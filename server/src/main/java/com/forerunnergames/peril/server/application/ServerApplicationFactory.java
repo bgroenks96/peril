@@ -120,7 +120,7 @@ public final class ServerApplicationFactory
     final PlayMapModel playMapModel = playMapModelFactory.create (countryMapGraphModel, continentMapGraphModel);
     final CardModel cardModel = new DefaultCardModel (gameRules, playerModel, cards);
     final BattleModel battleModel = new DefaultBattleModel (playMapModel);
-    final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (args.playerLimit);
+    final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (gameRules);
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
             .cardModel (cardModel).battleModel (battleModel).playerTurnModel (playerTurnModel).eventBus (eventBus)
             .build ();

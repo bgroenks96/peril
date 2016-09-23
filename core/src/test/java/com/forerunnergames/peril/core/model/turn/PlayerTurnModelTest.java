@@ -21,58 +21,169 @@ package com.forerunnergames.peril.core.model.turn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class PlayerTurnModelTest
 {
-  private static final int DEFAULT_TURN_COUNT = 10;
-  private static final PlayerTurnOrder DEFAULT_LAST_TURN = PlayerTurnOrder.TENTH;
+  private static final int PLAYER_LIMIT = ClassicGameRules.MAX_PLAYER_LIMIT;
+  private static final int TURN_COUNT = PLAYER_LIMIT;
+  private static final PlayerTurnOrder LAST_TURN = PlayerTurnOrder.getNthValidTurnOrder (TURN_COUNT);
+  private static final GameRules RULES = new ClassicGameRules.Builder ().playerLimit (PLAYER_LIMIT).build ();
+  private PlayerTurnModel turnModel;
+
+  @Before
+  public void beforeTest ()
+  {
+    turnModel = new DefaultPlayerTurnModel (RULES);
+  }
 
   @Test
   public void testStartsAtFirstTurn ()
   {
-    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
     assertTrue (turnModel.isFirstTurn ());
-    assertTrue (turnModel.getTurn () == 0);
-    assertEquals (PlayerTurnOrder.FIRST, turnModel.getTurnOrder ());
+    assertEquals (PlayerTurnOrder.FIRST, turnModel.getCurrentTurn ());
   }
 
   @Test
   public void testAdvanceFromFirstToSecondTurn ()
   {
-    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
     turnModel.advance ();
-    assertTrue (turnModel.getTurn () == 1);
-    assertEquals (PlayerTurnOrder.SECOND, turnModel.getTurnOrder ());
+    assertEquals (PlayerTurnOrder.SECOND, turnModel.getCurrentTurn ());
   }
 
   @Test
   public void testAdvanceFromLastToFirstTurn ()
   {
-    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
-    for (int i = 0; i < DEFAULT_TURN_COUNT - 1; i++)
-    {
-      turnModel.advance ();
-    }
-    assertTrue (turnModel.isLastTurn ());
-
+    advanceToLastTurn ();
     turnModel.advance ();
-
     assertTrue (turnModel.isFirstTurn ());
-    assertEquals (PlayerTurnOrder.FIRST, turnModel.getTurnOrder ());
+    assertEquals (PlayerTurnOrder.FIRST, turnModel.getCurrentTurn ());
   }
 
   @Test
   public void testGetTurnOrderAtLastTurn ()
   {
-    final PlayerTurnModel turnModel = new DefaultPlayerTurnModel (DEFAULT_TURN_COUNT);
-    for (int i = 0; i < DEFAULT_TURN_COUNT - 1; i++)
+    advanceToLastTurn ();
+    assertTrue (turnModel.isLastTurn ());
+    assertEquals (LAST_TURN, turnModel.getCurrentTurn ());
+  }
+
+  @Test
+  public void testDecrementTurnCount ()
+  {
+    turnModel.decrementTurnCount ();
+    assertEquals (LAST_TURN.previousValid (), turnModel.getLastTurn ());
+  }
+
+  @Test
+  public void testDecrementTurnCountAtLastTurn ()
+  {
+    advanceToLastTurn ();
+    turnModel.decrementTurnCount ();
+    assertTrue (turnModel.isFirstTurn ());
+  }
+
+  @Test
+  public void testDecrementTurnCountAtFirstTurn ()
+  {
+    turnModel.decrementTurnCount ();
+    assertTrue (turnModel.isFirstTurn ());
+  }
+
+  @Test
+  public void testDecrementTurnCountAtSecondTurn ()
+  {
+    turnModel.advance ();
+    turnModel.decrementTurnCount ();
+    assertEquals (PlayerTurnOrder.SECOND, turnModel.getCurrentTurn ());
+  }
+
+  @Test
+  public void testDecrementTurnCountAtSecondToLastTurn ()
+  {
+    advanceToTurn (LAST_TURN.previousValid ());
+    turnModel.decrementTurnCount ();
+    assertEquals (LAST_TURN.previousValid (), turnModel.getCurrentTurn ());
+  }
+
+  @Test
+  public void testDecrementTurnCountTwiceAtSecondToLastTurn ()
+  {
+    advanceToTurn (LAST_TURN.previousValid ());
+    turnModel.decrementTurnCount ();
+    turnModel.decrementTurnCount ();
+    assertEquals (PlayerTurnOrder.FIRST, turnModel.getCurrentTurn ());
+  }
+
+  @Test
+  public void testResetCurrentTurnFromLastTurn ()
+  {
+    advanceToLastTurn ();
+    turnModel.resetCurrentTurn ();
+    assertEquals (PlayerTurnOrder.FIRST, turnModel.getCurrentTurn ());
+  }
+
+  @Test
+  public void testResetCurrentTurnFromFirstTurn ()
+  {
+    turnModel.resetCurrentTurn ();
+    assertEquals (PlayerTurnOrder.FIRST, turnModel.getCurrentTurn ());
+  }
+
+  @Test
+  public void testResetTurnCount ()
+  {
+    turnModel.resetTurnCount ();
+    assertEquals (LAST_TURN, turnModel.getLastTurn ());
+  }
+
+  @Test
+  public void testResetTurnCountAfterDecrement ()
+  {
+    turnModel.decrementTurnCount ();
+    turnModel.resetTurnCount ();
+    assertEquals (LAST_TURN, turnModel.getLastTurn ());
+  }
+
+  @Test
+  public void testResetTurnCountAfterDecrementTwice ()
+  {
+    turnModel.decrementTurnCount ();
+    turnModel.decrementTurnCount ();
+    turnModel.resetTurnCount ();
+    assertEquals (LAST_TURN, turnModel.getLastTurn ());
+  }
+
+  @Test
+  public void testGetLastTurn ()
+  {
+    assertEquals (LAST_TURN, turnModel.getLastTurn ());
+  }
+
+  @Test
+  public void testGetLastTurnAfterDecrement ()
+  {
+    turnModel.decrementTurnCount ();
+    assertEquals (LAST_TURN.previousValid (), turnModel.getLastTurn ());
+  }
+
+  private void advanceToTurn (final PlayerTurnOrder turn)
+  {
+    for (int i = 0; i < turn.getPosition () - 1; i++)
     {
       turnModel.advance ();
     }
-    assertTrue (turnModel.isLastTurn ());
-    assertEquals (DEFAULT_LAST_TURN, turnModel.getTurnOrder ());
+
+    assertEquals (turn, turnModel.getCurrentTurn ());
+  }
+
+  private void advanceToLastTurn ()
+  {
+    advanceToTurn (LAST_TURN);
   }
 }

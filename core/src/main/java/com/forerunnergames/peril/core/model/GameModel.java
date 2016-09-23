@@ -286,7 +286,8 @@ public final class GameModel
     playerModel.removeAllCardsFromHandsOfAllPlayers ();
     countryOwnerModel.unassignAllCountries ();
     countryArmyModel.resetAllCountries ();
-    playerTurnModel.reset ();
+    playerTurnModel.resetCurrentTurn ();
+    playerTurnModel.resetTurnCount ();
     currentRound.set (0);
 
     publish (new BeginGameEvent ());
@@ -1529,7 +1530,7 @@ public final class GameModel
   @StateExitAction
   public void resetTurn ()
   {
-    playerTurnModel.reset ();
+    playerTurnModel.resetCurrentTurn ();
   }
 
   @StateTransitionCondition
@@ -1611,7 +1612,7 @@ public final class GameModel
 
   public PlayerPacket getCurrentPlayerPacket ()
   {
-    return playerModel.playerPacketWith (playerTurnModel.getTurnOrder ());
+    return playerModel.playerPacketWith (playerTurnModel.getCurrentTurn ());
   }
 
   public String getCurrentPlayerName ()
@@ -1621,12 +1622,12 @@ public final class GameModel
 
   public Id getCurrentPlayerId ()
   {
-    return playerModel.playerWith (playerTurnModel.getTurnOrder ());
+    return playerModel.playerWith (playerTurnModel.getCurrentTurn ());
   }
 
   public void dumpDataCacheToLog ()
   {
-    log.debug ("Turn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getTurn (), getCurrentPlayerId (),
+    log.debug ("Turn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getCurrentTurn (), getCurrentPlayerId (),
                turnDataCache);
   }
 
@@ -1751,6 +1752,7 @@ public final class GameModel
     {
       publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
       playerModel.remove (playerId);
+      playerTurnModel.decrementTurnCount ();
       return;
     }
 
@@ -1898,7 +1900,7 @@ public final class GameModel
                        ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
       cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());
-      playerTurnModel = new DefaultPlayerTurnModel (gameRules.getPlayerLimit ());
+      playerTurnModel = new DefaultPlayerTurnModel (gameRules);
       battleModel = new DefaultBattleModel (playMapModel);
       turnDataCache = new PlayerTurnDataCache<> ();
     }

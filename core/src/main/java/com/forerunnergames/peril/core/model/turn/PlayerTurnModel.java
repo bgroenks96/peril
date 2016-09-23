@@ -27,19 +27,19 @@ public interface PlayerTurnModel
 {
   void advance ();
 
-  int getTurn ();
+  PlayerTurnOrder getCurrentTurn ();
 
-  PlayerTurnOrder getTurnOrder ();
+  PlayerTurnOrder getLastTurn ();
 
   boolean isFirstTurn ();
 
   boolean isLastTurn ();
 
-  void reset ();
+  void decrementTurnCount ();
 
-  int getTurnCount ();
+  void resetCurrentTurn ();
 
-  void setTurnCount (final int turnCount);
+  void resetTurnCount ();
 
   @Override
   String toString ();

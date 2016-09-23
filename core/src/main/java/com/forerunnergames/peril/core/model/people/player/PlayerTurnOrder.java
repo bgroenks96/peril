@@ -149,6 +149,16 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
     return IterableEnumHelper.nextValid (this, values (), validSortedValues);
   }
 
+  public boolean hasPreviousValid ()
+  {
+    return IterableEnumHelper.hasPreviousValid (this, values (), validSortedValues);
+  }
+
+  public PlayerTurnOrder previousValid ()
+  {
+    return IterableEnumHelper.previousValid (this, values (), validSortedValues);
+  }
+
   public String toLowerCase ()
   {
     return IterableEnumHelper.toLowerCase (this);
