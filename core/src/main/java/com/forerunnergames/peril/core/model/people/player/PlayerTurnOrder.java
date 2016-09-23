@@ -104,14 +104,16 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   @Override
   public int getPosition ()
   {
-    // UNKNOWN is position 1, FIRST is position 2, etc, so we must subtract 1.
+    // UNKNOWN is position 1, FIRST is position 2, etc, so we must subtract 1, to get
+    // UNKNOWN is position 0, FIRST is position 1, etc.
     return IterableEnumHelper.getPosition (this) - 1;
   }
 
   @Override
   public String toMixedOrdinalPosition ()
   {
-    // UNKNOWN is position 1, FIRST is position 2, etc, so we must subtract 1, so we can't use
+    // UNKNOWN is position 1, FIRST is position 2, etc, so we must subtract 1, to get
+    // UNKNOWN is position 0, FIRST is position 1, etc., so we can't use
     // IterableEnumHelper#toMixedOrdinalPosition(Enum) or we would be off by 1.
     return Strings.toMixedOrdinal (getPosition ());
   }

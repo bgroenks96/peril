@@ -1601,8 +1601,8 @@ public final class GameModel
 
   public void dumpDataCacheToLog ()
   {
-    log.debug ("Turn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getCurrentTurn (), getCurrentPlayerId (),
-               turnDataCache);
+    log.debug ("CurrentTurn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getCurrentTurn (),
+               getCurrentPlayerId (), turnDataCache);
   }
 
   private static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
