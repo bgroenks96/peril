@@ -1557,13 +1557,6 @@ public final class GameModel
     return playerModel.playerCountIs (count);
   }
 
-  public boolean playerCountIsNot (final int count)
-  {
-    Arguments.checkIsNotNegative (count, "count");
-
-    return playerModel.playerCountIsNot (count);
-  }
-
   public boolean playerLimitIs (final int limit)
   {
     Arguments.checkIsNotNegative (limit, "limit");
@@ -1581,18 +1574,6 @@ public final class GameModel
     return playerModel.getPlayerLimit ();
   }
 
-  public PlayerTurnOrder getTurn ()
-  {
-    return playerTurnModel.getTurnOrder ();
-  }
-
-  public boolean turnIs (final PlayerTurnOrder turn)
-  {
-    Arguments.checkIsNotNull (turn, "turn");
-
-    return playerTurnModel.getTurnOrder ().is (turn);
-  }
-
   public boolean isFirstTurn ()
   {
     return playerTurnModel.isFirstTurn ();
@@ -1601,13 +1582,6 @@ public final class GameModel
   public boolean isLastTurn ()
   {
     return playerTurnModel.isLastTurn ();
-  }
-
-  public boolean playerLimitIsAtLeast (final int limit)
-  {
-    Arguments.checkIsNotNegative (limit, "limit");
-
-    return playerModel.playerLimitIsAtLeast (limit);
   }
 
   public PlayerPacket getCurrentPlayerPacket ()

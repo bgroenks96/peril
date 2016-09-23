@@ -871,7 +871,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
@@ -908,7 +908,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
@@ -938,7 +938,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
@@ -971,7 +971,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
@@ -1002,7 +1002,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
@@ -1033,7 +1033,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
@@ -1064,7 +1064,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     // sanity checks
-    assertTrue (gameModel.turnIs (PlayerTurnOrder.FIRST));
+    assertTrue (gameModel.isFirstTurn ());
     assertTrue (gameModel.getCurrentPlayerId ().is (playerModel.playerWith (PlayerTurnOrder.FIRST)));
 
     final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
