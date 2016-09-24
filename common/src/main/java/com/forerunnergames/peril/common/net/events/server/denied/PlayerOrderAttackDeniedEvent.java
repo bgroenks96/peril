@@ -28,7 +28,7 @@ public final class PlayerOrderAttackDeniedEvent extends AbstractPlayerDeniedEven
   public enum Reason
   {
     INSUFFICIENT_ARMY_COUNT,
-    INVALID_DIE_COUNT;
+    INVALID_DIE_COUNT
   }
 
   public PlayerOrderAttackDeniedEvent (final PlayerPacket player, final Reason reason)

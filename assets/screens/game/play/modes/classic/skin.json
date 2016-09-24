@@ -127,7 +127,7 @@
     "default":    { "background": "list-background", "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
     "status-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
     "chat-box":   { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
-    "player-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
+    "player-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {

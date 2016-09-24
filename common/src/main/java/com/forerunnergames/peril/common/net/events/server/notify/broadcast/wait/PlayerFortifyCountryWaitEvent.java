@@ -28,7 +28,7 @@ public final class PlayerFortifyCountryWaitEvent extends AbstractPlayerFortifyCo
   public PlayerFortifyCountryWaitEvent (final PlayerPacket player,
                                         final CountryPacket sourceCountry,
                                         final CountryPacket targetCountry,
-                                        int minDeltaArmyCount,
+                                        final int minDeltaArmyCount,
                                         final int maxDeltaArmyCount)
   {
     super (player, sourceCountry, targetCountry, minDeltaArmyCount, maxDeltaArmyCount);

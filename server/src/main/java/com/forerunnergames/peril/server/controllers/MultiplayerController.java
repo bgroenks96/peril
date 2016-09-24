@@ -542,7 +542,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.debug ("Event received [{}]", event);
 
-    Optional <PlayerPacket> playerQuery;
+    final Optional <PlayerPacket> playerQuery;
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);
@@ -570,7 +570,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    Optional <PlayerPacket> playerQuery;
+    final Optional <PlayerPacket> playerQuery;
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);
@@ -599,7 +599,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}]", event);
 
-    Optional <PlayerPacket> playerQuery;
+    final Optional <PlayerPacket> playerQuery;
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);

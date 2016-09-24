@@ -26,7 +26,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
 public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryEvent
-        implements CountryArmiesChangedEvent, ServerNotificationEvent
+        implements CountryArmiesChangedEvent
 {
   private final int deltaArmyCount;
 

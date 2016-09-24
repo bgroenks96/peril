@@ -62,6 +62,6 @@ public final class CommandLineArgs
               validateWith = InitialCountryAssignmentParameterValidator.class, required = false)
   public InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
 
-  @Parameter (names = { "--help" }, help = true, description = "Show usage", required = false)
+  @Parameter (names = "--help", help = true, description = "Show usage", required = false)
   public boolean help = false;
 }

@@ -54,7 +54,7 @@ public final class ClientSpectatorMapping
    * Looks up the SpectatorPacket mapped to the given client. This method will query Core for updated spectator data
    * before returning mapped SpectatorPacket.
    *
-   * @throws RegisteredClientPlayerNotFoundException
+   * @throws RegisteredClientSpectatorNotFoundException
    *           if the spectator no longer exists in the core spectator model
    */
   public Optional <SpectatorPacket> spectatorFor (final Remote client) throws RegisteredClientSpectatorNotFoundException

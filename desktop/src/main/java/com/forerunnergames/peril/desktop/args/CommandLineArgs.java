@@ -30,6 +30,6 @@ public final class CommandLineArgs
               validateWith = ClanTagParameterValidator.class)
   public String clanName = "";
 
-  @Parameter (names = { "--help" }, help = true, description = "Show usage", required = false)
+  @Parameter (names = "--help", help = true, description = "Show usage", required = false)
   public boolean help = false;
 }

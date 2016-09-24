@@ -43,7 +43,7 @@ public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implem
 
   public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
   {
-    return this.playerOwnedCountries;
+    return playerOwnedCountries;
   }
 
   @Override
@@ -55,6 +55,6 @@ public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implem
   @RequiredForNetworkSerialization
   private EndReinforcementPhaseEvent ()
   {
-    this.playerOwnedCountries = null;
+    playerOwnedCountries = null;
   }
 }

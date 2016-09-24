@@ -220,7 +220,7 @@ public final class CardSet implements Collection <Card>
   {
     Arguments.checkIsNotNull (cardSet, "cardSet");
 
-    return Sets.intersection (cardSet.cards, cards).size () > 0;
+    return !Sets.intersection (cardSet.cards, cards).isEmpty ();
   }
 
   private boolean validateMatch ()

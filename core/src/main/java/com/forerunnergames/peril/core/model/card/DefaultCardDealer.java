@@ -58,7 +58,7 @@ final class DefaultCardDealer implements CardDealer
   @Override
   public Card take ()
   {
-    Preconditions.checkIsTrue (liveDeck.size () > 0 || discardPile.size () > 0, "No cards available!");
+    Preconditions.checkIsTrue (!liveDeck.isEmpty () || !discardPile.isEmpty (), "No cards available!");
 
     if (needsReshuffle ())
     {
@@ -149,7 +149,7 @@ final class DefaultCardDealer implements CardDealer
 
     // in case reshuffle is called early for any reason, add any remaining cards in liveDeck to discard pile
     // and log a warning message
-    if (liveDeck.size () > 0)
+    if (!liveDeck.isEmpty ())
     {
       log.warn ("Early call to reshuffle; moving {} cards from deck to discard pile...", liveDeck.size ());
       discardPile.addAll (liveDeck);

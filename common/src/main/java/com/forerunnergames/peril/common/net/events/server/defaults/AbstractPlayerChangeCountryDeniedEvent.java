@@ -36,7 +36,7 @@ public abstract class AbstractPlayerChangeCountryDeniedEvent extends AbstractPla
     INSUFFICIENT_ARMIES_IN_HAND,
     REINFORCEMENT_NOT_ALLOWED,
     COUNTRY_ALREADY_OWNED,
-    COUNTRY_DISABLED;
+    COUNTRY_DISABLED
   }
 
   protected AbstractPlayerChangeCountryDeniedEvent (final PlayerPacket player, final Reason reason)

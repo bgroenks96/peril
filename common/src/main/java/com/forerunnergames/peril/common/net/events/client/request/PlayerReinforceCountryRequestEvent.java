@@ -40,19 +40,19 @@ public final class PlayerReinforceCountryRequestEvent implements PlayerRequestEv
 
   public String getCountryName ()
   {
-    return this.countryName;
+    return countryName;
   }
 
   public int getReinforcementCount ()
   {
-    return this.reinforcementCount;
+    return reinforcementCount;
   }
 
   @Override
   public String toString ()
   {
     return Strings.format ("{}: CountryName: {} | ReinforcementCount: {}", getClass ().getSimpleName (),
-                           this.countryName, this.reinforcementCount);
+            countryName, reinforcementCount);
   }
 
   @RequiredForNetworkSerialization

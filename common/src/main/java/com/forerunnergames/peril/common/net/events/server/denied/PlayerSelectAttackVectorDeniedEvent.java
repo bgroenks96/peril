@@ -7,7 +7,6 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerSelectAttackVectorDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
-        implements PlayerDeniedEvent <Reason>
 {
   public enum Reason
   {
@@ -16,7 +15,7 @@ public final class PlayerSelectAttackVectorDeniedEvent extends AbstractPlayerDen
     NOT_OWNER_OF_SOURCE_COUNTRY,
     ALREADY_OWNER_OF_TARGET_COUNTRY,
     COUNTRIES_NOT_ADJACENT,
-    INSUFFICIENT_ARMY_COUNT;
+    INSUFFICIENT_ARMY_COUNT
   }
 
   public PlayerSelectAttackVectorDeniedEvent (final PlayerPacket player, final Reason reason)

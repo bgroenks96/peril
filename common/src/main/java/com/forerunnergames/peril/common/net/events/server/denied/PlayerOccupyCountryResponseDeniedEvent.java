@@ -35,7 +35,7 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayer
 {
   private final PlayerOccupyCountryResponseRequestEvent originalResponse;
   @Nullable
-  private PlayerOccupyCountryRequestEvent originalRequest;
+  private final PlayerOccupyCountryRequestEvent originalRequest;
 
   public PlayerOccupyCountryResponseDeniedEvent (final PlayerPacket player,
                                                  final Reason reason,

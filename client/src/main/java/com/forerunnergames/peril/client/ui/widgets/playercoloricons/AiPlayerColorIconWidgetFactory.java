@@ -25,7 +25,6 @@ import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 
 abstract class AiPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory
-        implements PlayerColorIconWidgetFactory
 {
   AiPlayerColorIconWidgetFactory (final AssetManager assetManager)
   {

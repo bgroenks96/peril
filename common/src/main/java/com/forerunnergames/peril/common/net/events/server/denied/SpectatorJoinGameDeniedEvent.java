@@ -33,7 +33,7 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
     GAME_IS_FULL,
     SPECTATING_DISABLED,
     INVALID_NAME,
-    DUPLICATE_NAME;
+    DUPLICATE_NAME
   }
 
   public SpectatorJoinGameDeniedEvent (final String deniedName, final Reason reason)
@@ -42,7 +42,7 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
 
     Arguments.checkIsNotNull (deniedName, "deniedName");
 
-    this.spectatorName = deniedName;
+    spectatorName = deniedName;
   }
 
   public String getSpectatorName ()

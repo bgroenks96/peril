@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.events.client.request;
 
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
@@ -43,7 +44,7 @@ public final class KickPlayerFromGameRequestEvent implements KickEvent, ClientRe
   @Override
   public String toString ()
   {
-    return String.format ("{}: ReasonForKick: {}", getClass ().getSimpleName (), reasonForKick);
+    return Strings.format ("{}: ReasonForKick: {}", getClass ().getSimpleName (), reasonForKick);
   }
 
   @RequiredForNetworkSerialization

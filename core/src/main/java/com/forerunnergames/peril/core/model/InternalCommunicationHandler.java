@@ -123,7 +123,7 @@ class InternalCommunicationHandler
   {
     final Deque <ServerEvent> tempDeque = Queues.newArrayDeque ();
     Optional <T> maybe = Optional.absent ();
-    while (!maybe.isPresent () && outboundEventCache.size () > 0)
+    while (!maybe.isPresent () && !outboundEventCache.isEmpty ())
     {
       final ServerEvent next = outboundEventCache.poll ();
       tempDeque.push (next);
@@ -147,8 +147,8 @@ class InternalCommunicationHandler
     log.debug ("Clearing internal event caches [{} RequestEvents] [{} ResponseRequestEvents].", requestEvents.size (),
                responseRequests.size ());
 
-    this.requestEvents.clear ();
-    this.responseRequests.clear ();
+    requestEvents.clear ();
+    responseRequests.clear ();
   }
 
   void startTimerFor (final Class <? extends ClientRequestEvent> eventType,
@@ -282,7 +282,7 @@ class InternalCommunicationHandler
     {
       if (!(obj instanceof EventListener)) return false;
       final EventListener event = (EventListener) obj;
-      return event.type.equals (this.type) && event.sender.is (this.sender);
+      return event.type.equals (type) && event.sender.is (sender);
     }
   }
 }

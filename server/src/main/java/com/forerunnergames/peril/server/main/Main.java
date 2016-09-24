@@ -28,6 +28,8 @@ import com.forerunnergames.peril.server.main.args.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 
+import com.google.common.base.Throwables;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +44,8 @@ public final class Main
       @Override
       public void uncaughtException (final Thread t, final Throwable e)
       {
-        log.error ("The server application has crashed!\n\nA crash file has been created in \""
-                + CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY + "\".\n", e);
+        log.error ("The server application has crashed!\n\nA crash file has been created in \"{}\".\n\n{}",
+                   CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables.getStackTraceAsString (e));
 
         System.exit (1);
       }

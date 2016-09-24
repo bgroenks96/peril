@@ -78,7 +78,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
 
     if (!clientQuery.isPresent ())
     {
-      log.warn ("Ignoring attempt to send [{}] to disconnected spectator [{}].");
+      log.warn ("Ignoring attempt to send [{}] to disconnected spectator [{}].", msg, spectator);
       return;
     }
 

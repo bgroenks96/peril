@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public final class DefaultPlayerCommunicator implements PlayerCommunicator
 {
-  private static final Logger log = LoggerFactory.getLogger (PlayerCommunicator.class);
+  private static final Logger log = LoggerFactory.getLogger (DefaultPlayerCommunicator.class);
   private final ClientCommunicator clientCommunicator;
 
   public DefaultPlayerCommunicator (final ClientCommunicator clientCommunicator)

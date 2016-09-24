@@ -38,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@inheritDoc}
- *
  * Framework for asynchronous selection of server-request-validated source & target countries via
  * {@link PlayMapInputListener}
  *

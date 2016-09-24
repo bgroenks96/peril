@@ -32,7 +32,7 @@ public enum DieFaceValue implements IterableEnum <DieFaceValue>
   FIVE (5),
   SIX (6);
 
-  public static Comparator <DieFaceValue> DESCENDING_ORDER = new Comparator <DieFaceValue> ()
+  public static final Comparator <DieFaceValue> DESCENDING_ORDER = new Comparator <DieFaceValue> ()
   {
     @Override
     public int compare (final DieFaceValue o1, final DieFaceValue o2)

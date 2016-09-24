@@ -205,7 +205,7 @@ public final class GameModel
   private final EventFactory eventFactory;
   private final InternalCommunicationHandler internalCommHandler;
   private final MBassador <Event> eventBus;
-  private AtomicInteger currentRound = new AtomicInteger ();
+  private final AtomicInteger currentRound = new AtomicInteger ();
 
   private enum CacheKey
   {
