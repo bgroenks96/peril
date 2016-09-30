@@ -70,17 +70,18 @@ public class GameStateMachineSmokeTest
     stateTest.checkCurrentStateIs ("WaitForGameToBegin");
   }
 
-  @Test (dependsOnMethods = "testCreateGame", timeOut = StateMachineMonitor.DEFAULT_TEST_TIMEOUT)
+  @Test (dependsOnMethods = "testCreateGame", timeOut = 10000)
   public void testPlayersJoinGame ()
   {
     final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
+    final long stateChangeTimeoutMs = 10000;
     // Simulate many players attempting to join the game.
     for (int i = 0; i < 50; ++i)
     {
       log.trace ("Adding player {}", i);
       eventBus.publish (new PlayerJoinGameRequestEvent (getRandomPlayerName ()));
     }
-    stateTest.waitForStateChange ("PlayingGame", StateMachineMonitor.DEFAULT_STATE_CHANGE_TIMOUT);
+    stateTest.waitForStateChange ("PlayingGame", stateChangeTimeoutMs);
   }
 
   private static String getRandomPlayerName ()
