@@ -24,20 +24,26 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
+import com.forerunnergames.tools.common.Event;
+
+import net.engio.mbassy.bus.MBassador;
 
 public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScreen
 {
   public MultiplayerClassicGameModeMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                final ScreenChanger screenChanger,
                                                final ScreenSize screenSize,
-                                               final Batch batch)
+                                               final MouseInput mouseInput,
+                                               final Batch batch,
+                                               final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize, batch);
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
     addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE");
@@ -75,8 +81,9 @@ public final class MultiplayerClassicGameModeMenuScreen extends AbstractMenuScre
   }
 
   @Override
-  protected void onEscape ()
+  protected boolean onEscape ()
   {
-    toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
+    if (!super.onEscape ()) toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
+    return true;
   }
 }

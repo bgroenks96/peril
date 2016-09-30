@@ -19,39 +19,18 @@
 package com.forerunnergames.peril.client.ui.screens.loading;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
-import com.forerunnergames.peril.client.events.AssetLoadingErrorEvent;
 import com.forerunnergames.peril.client.events.CreateGameEvent;
 import com.forerunnergames.peril.client.events.JoinGameEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
+import com.forerunnergames.peril.client.events.UnloadPlayMapRequestEvent;
+import com.forerunnergames.peril.client.events.UnloadPlayScreenAssetsRequestEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
-import com.forerunnergames.peril.client.settings.InputSettings;
-import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -62,9 +41,6 @@ import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.class
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.DefaultCreateGameServerHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.DefaultJoinGameServerHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.JoinGameServerHandler;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
@@ -73,7 +49,6 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.settings.CrashSettings;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
@@ -81,6 +56,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
@@ -97,494 +73,108 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MenuToPlayLoadingScreen extends InputAdapter implements Screen
+public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
 {
   private static final Logger log = LoggerFactory.getLogger (MenuToPlayLoadingScreen.class);
-  private static final String LOADING_LABEL_TEXT = "LOADING";
-  private static final float ONE_HALF = 1.0f / 2.0f;
-  private static final float ONE_THIRD = 1.0f / 3.0f;
-  private static final float ONE_SIXTH = 1.0f / 6.0f;
-  private static final float ONE_NINTH = 1.0f / 9.0f;
-  private static final float PROGRESS_BAR_ANIMATION_DURATION_SECONDS = 1.0f;
-  private static final float PROGRESS_BAR_STEP_SIZE = 0.1f;
+  private static final String QUIT_DIALOG_MESSAGE = "Are you sure you want to quit the current game?";
+  private final ResetProgressListener goToPlayToMenuLoadingScreenListener = new GoToPlayToMenuLoadingScreenListener ();
+  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList<> ();
+  private final Set <PlayerPacket> players = new HashSet<> ();
   private final PlayMapFactory playMapFactory;
-  private final ScreenChanger screenChanger;
-  private final MouseInput mouseInput;
-  private final AssetManager assetManager;
-  private final MBassador <Event> eventBus;
-  private final Cursor normalCursor;
-  private final Stage stage;
-  private final InputProcessor inputProcessor;
   private final JoinGameServerHandler joinGameServerHandler;
   private final CreateGameServerHandler createGameServerHandler;
   private final CreateGameServerListener createGameServerListener;
-  private final ProgressBar progressBar;
-  private final Dialog quitDialog;
-  private final Dialog errorDialog;
-  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList<> ();
-  private final Set <PlayerPacket> players = new HashSet<> ();
-  private boolean isLoading = false;
+  private MapMetadata mapMetadata = MapMetadata.NULL_MAP_METADATA;
+  private boolean createdGameFirst;
+  private boolean isLoadingPlayMapAssets;
+  @Nullable
+  private GameServerConfiguration gameServerConfiguration;
+  @Nullable
+  private ClientConfiguration clientConfiguration;
   @Nullable
   private PlayerPacket selfPlayer;
-  @Nullable
-  private GameServerConfiguration gameServerConfiguration = null;
-  @Nullable
-  private ClientConfiguration clientConfiguration = null;
-  private float overallLoadingProgressPercent = 0.0f;
-  private float currentLoadingProgressPercent = 0.0f;
-  private float previousLoadingProgressPercent = 0.0f;
-  private boolean createdGameFirst = false;
-  private boolean isResettingLoadingProgress = false;
-  @Nullable
-  private Runnable resetLoadingProgressCompletionRunnable = null;
 
   public MenuToPlayLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
-                                  final PlayMapFactory playMapFactory,
                                   final ScreenChanger screenChanger,
                                   final ScreenSize screenSize,
                                   final MouseInput mouseInput,
                                   final Batch batch,
                                   final AssetManager assetManager,
-                                  final MBassador <Event> eventBus)
+                                  final MBassador <Event> eventBus,
+                                  final PlayMapFactory playMapFactory)
   {
-    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
-    Arguments.checkIsNotNull (screenChanger, "screenChanger");
-    Arguments.checkIsNotNull (screenSize, "screenSize");
-    Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (batch, "batch");
-    Arguments.checkIsNotNull (assetManager, "assetManager");
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager,
+           LoadingScreenStyle.builder ().quitDialogMessageText (QUIT_DIALOG_MESSAGE).build ());
+
     Arguments.checkIsNotNull (eventBus, "eventBus");
+    Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
 
     this.playMapFactory = playMapFactory;
-    this.screenChanger = screenChanger;
-    this.mouseInput = mouseInput;
-    this.assetManager = assetManager;
-    this.eventBus = eventBus;
 
     joinGameServerHandler = new DefaultJoinGameServerHandler (eventBus);
     createGameServerHandler = new DefaultCreateGameServerHandler (joinGameServerHandler, eventBus);
-
-    normalCursor = widgetFactory.createNormalCursor ();
-    progressBar = widgetFactory.createProgressBar (PROGRESS_BAR_STEP_SIZE);
-    progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
-
-    final Stack rootStack = new Stack ();
-    rootStack.setFillParent (true);
-    rootStack.add (widgetFactory.createBackground ());
-
-    // @formatter:off
-    final Table foregroundTable = new Table ().top ();
-    foregroundTable.add ().height (870);
-    foregroundTable.row ();
-    foregroundTable.add (widgetFactory.createLabel (LOADING_LABEL_TEXT, Align.center, StyleSettings.LOADING_SCREEN_LOADING_TEXT_LABEL_STYLE)).size (700, 62);
-    foregroundTable.row ().bottom ();
-    foregroundTable.add (progressBar).size (700, 20).padBottom (128);
-    // @formatter:on
-
-    rootStack.add (foregroundTable);
-
-    final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
-            screenSize.referenceHeight (), camera);
-
-    stage = new Stage (viewport, batch);
-
-    // @formatter:off
-    quitDialog = widgetFactory.createQuitDialog ("Are you sure you want to quit the current game?", stage,
-            new CancellableDialogListenerAdapter ()
-            {
-              @Override
-              public void onSubmit ()
-              {
-                isLoading = false;
-                eventBus.publishAsync (new QuitGameEvent ());
-                unloadPlayMapAssets ();
-                resetLoadingProgress (new Runnable ()
-                {
-                  @Override
-                  public void run ()
-                  {
-                    screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
-                  }
-                });
-              }
-            });
-    // @formatter:on
-
-    errorDialog = widgetFactory.createErrorDialog (stage, new DialogListenerAdapter ()
-    {
-      @Override
-      public void onShow ()
-      {
-        isLoading = false;
-        unloadPlayMapAssets ();
-        eventBus.publishAsync (new QuitGameEvent ());
-      }
-
-      @Override
-      public void onSubmit ()
-      {
-        resetLoadingProgress (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
-          }
-        });
-      }
-    });
-
-    createGameServerListener = new CreateGameServerListener ()
-    {
-      @Override
-      public void onCreateStart (final GameServerConfiguration configuration, final String playerName)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-        Arguments.checkIsNotNull (playerName, "playerName");
-
-        log.trace ("onCreateStart: {} [{}], Player Name [{}]", GameServerConfiguration.class.getSimpleName (),
-                   configuration, playerName);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            resetLoadingProgress ();
-          }
-        });
-      }
-
-      @Override
-      public void onCreateFinish (final GameServerConfiguration configuration)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-
-        log.trace ("onCreateFinish: {} [{}]", GameServerConfiguration.class.getSimpleName (), configuration);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            increaseLoadingProgressBy (ONE_THIRD);
-          }
-        });
-      }
-
-      @Override
-      public void onCreateFailure (final GameServerConfiguration configuration, final String reason)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-        Arguments.checkIsNotNull (reason, "reason");
-
-        log.trace ("onCreateFailure: {} [{}], Reason [{}]", GameServerConfiguration.class.getSimpleName (),
-                   configuration, reason);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            handleError (Strings.format ("{}", reason));
-          }
-        });
-      }
-
-      @Override
-      public void onJoinStart (final String playerName, final ServerConfiguration configuration)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-
-        log.trace ("onJoinStart: Player Name [{}], {} [{}] ", playerName, ServerConfiguration.class.getSimpleName (),
-                   configuration);
-
-        if (createdGameFirst) return;
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            resetLoadingProgress ();
-          }
-        });
-      }
-
-      @Override
-      public void onConnectToServerSuccess (final ServerConfiguration configuration)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-
-        log.trace ("onConnectToServerSuccess: {} [{}]", ServerConfiguration.class.getSimpleName (), configuration);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
-          }
-        });
-      }
-
-      @Override
-      public void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfiguration,
-                                           final ClientConfiguration clientConfiguration)
-      {
-        Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
-        Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
-
-        log.trace ("onJoinGameServerSuccess: {} [{}], {} [{}]", GameServerConfiguration.class.getSimpleName (),
-                   gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
-          }
-        });
-      }
-
-      @Override
-      public void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
-      {
-        Arguments.checkIsNotNull (player, "player");
-        Arguments.checkIsNotNull (playersInGame, "playersInGame");
-        Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
-
-        log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
-
-        selfPlayer = player;
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            increaseLoadingProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
-          }
-        });
-      }
-
-      @Override
-      public void onConnectToServerFailure (final ServerConfiguration configuration, final String reason)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-        Arguments.checkIsNotNull (reason, "reason");
-
-        log.trace ("onConnectToServerFailure: {} [{}], Reason [{}]", ServerConfiguration.class.getSimpleName (),
-                   configuration, reason);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            handleError (Strings.format ("{}", reason));
-          }
-        });
-      }
-
-      @Override
-      public void onJoinGameServerFailure (final ClientConfiguration configuration, final String reason)
-      {
-        Arguments.checkIsNotNull (configuration, "configuration");
-        Arguments.checkIsNotNull (reason, "reason");
-
-        log.trace ("onJoinGameServerFailure: {} [{}], Reason [{}]", ClientConfiguration.class.getSimpleName (),
-                   configuration, reason);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            handleError (Strings.format ("{}", reason));
-          }
-        });
-      }
-
-      @Override
-      public void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason)
-      {
-        Arguments.checkIsNotNull (playerName, "playerName");
-        Arguments.checkIsNotNull (reason, "reason");
-
-        log.trace ("onPlayerJoinGameFailure: Player Name [{}], Reason [{}]", playerName, reason);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            handleError (Strings.format ("{}", asText (reason, playerName)));
-          }
-        });
-      }
-
-      @Override
-      public void onJoinFinish (final GameServerConfiguration gameServerConfiguration,
-                                final ClientConfiguration clientConfiguration,
-                                final ImmutableSet <PlayerPacket> players)
-      {
-        Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
-        Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
-        Arguments.checkIsNotNull (players, "players");
-
-        log.trace ("onJoinFinish: {} [{}], {} [{}], Players [{}]", GameServerConfiguration.class.getSimpleName (),
-                   gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration, players);
-
-        MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
-        MenuToPlayLoadingScreen.this.clientConfiguration = clientConfiguration;
-        MenuToPlayLoadingScreen.this.players.addAll (players);
-
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            startLoading (gameServerConfiguration.getMapMetadata ());
-          }
-        });
-      }
-    };
-
-    stage.addActor (rootStack);
-
-    stage.addListener (new ClickListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        stage.setKeyboardFocus (event.getTarget ());
-
-        return false;
-      }
-    });
-
-    stage.addCaptureListener (new InputListener ()
-    {
-      @Override
-      public boolean keyDown (final InputEvent event, final int keycode)
-      {
-        switch (keycode)
-        {
-          case Input.Keys.ESCAPE:
-          {
-            quitDialog.show ();
-
-            return false;
-          }
-          default:
-          {
-            return false;
-          }
-        }
-      }
-    });
-
-    final InputProcessor preInputProcessor = new InputAdapter ()
-    {
-      @Override
-      public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-      {
-        stage.setKeyboardFocus (null);
-
-        return false;
-      }
-    };
-
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this);
-  }
-
-  @Override
-  public void show ()
-  {
-    showCursor ();
-
-    eventBus.subscribe (this);
-
-    Gdx.input.setInputProcessor (inputProcessor);
-
-    stage.mouseMoved (mouseInput.x (), mouseInput.y ());
-
-    quitDialog.refreshAssets ();
-    errorDialog.refreshAssets ();
-  }
-
-  @Override
-  public void render (final float delta)
-  {
-    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
-
-    quitDialog.update (delta);
-    errorDialog.update (delta);
-
-    stage.act (delta);
-    stage.draw ();
-
-    if (resettingLoadingProgress () && resetLoadingProgressCompleted ()) endResetLoadingProgress ();
-    if (!loading ()) return;
-
-    updateLoadingProgress ();
-
-    if (loadingProgressIncreased ()) increaseLoadingProgressBy (convert (getLoadingProgressIncrease ()));
-    if (isFinishedLoading ()) goToPlayScreen ();
-  }
-
-  @Override
-  public void resize (final int width, final int height)
-  {
-    stage.getViewport ().update (width, height, true);
-    stage.getViewport ().setScreenPosition (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
-                                            InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
-  }
-
-  @Override
-  public void pause ()
-  {
-  }
-
-  @Override
-  public void resume ()
-  {
+    createGameServerListener = new DefaultCreateGameServerListener ();
   }
 
   @Override
   public void hide ()
   {
-    eventBus.unsubscribe (this);
+    super.hide ();
 
-    stage.unfocusAll ();
-
-    Gdx.input.setInputProcessor (null);
-
-    hideCursor ();
-
-    quitDialog.hide (null);
-    errorDialog.hide (null);
-
-    isLoading = false;
+    mapMetadata = MapMetadata.NULL_MAP_METADATA;
     gameServerConfiguration = null;
     clientConfiguration = null;
+    createdGameFirst = false;
+    isLoadingPlayMapAssets = false;
+    selfPlayer = null;
+    unhandledServerEvents.clear ();
     players.clear ();
   }
 
   @Override
-  public void dispose ()
+  protected void onProgressFinished ()
   {
-    eventBus.unsubscribe (this);
-    stage.dispose ();
+    status ("Unloading menu assets...");
+    unloadAssetsSync (AssetSettings.MENU_SCREEN_ASSET_DESCRIPTORS);
+    status ("Ready!");
+    resetProgress (new GoToPlayScreenListener (createPlayMap ()));
+  }
+
+  @Override
+  protected void onQuitDialogSubmit ()
+  {
+    publishAsync (new QuitGameEvent ());
+    resetProgress (goToPlayToMenuLoadingScreenListener);
+  }
+
+  @Override
+  protected void onErrorDialogSubmit ()
+  {
+    resetProgress (goToPlayToMenuLoadingScreenListener);
+  }
+
+  @Override
+  protected void onAssetLoadingFinished ()
+  {
+    if (!isLoadingPlayMapAssets)
+    {
+      loadPlayMapAssetsAsync ();
+      return;
+    }
+
+    isLoadingPlayMapAssets = !isFinishedLoadingPlayMapAssets ();
+  }
+
+  @Override
+  protected void onErrorDialogShow ()
+  {
+    publishAsync (new QuitGameEvent ());
+  }
+
+  @Override
+  protected float normalize (final float assetLoadingProgressIncrease)
+  {
+    return assetLoadingProgressIncrease * (createdGameFirst ? ONE_SIXTH : ONE_FOURTH);
   }
 
   @Handler
@@ -592,7 +182,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -611,7 +201,7 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -620,32 +210,6 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
       {
         createdGameFirst = false;
         joinGameServerHandler.join (event.getPlayerName (), event.getServerAddress (), createGameServerListener);
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final AssetLoadingErrorEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-
-      @Override
-      public void run ()
-      {
-        // @formatter:off
-        handleError (
-                Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading a game " +
-                        "resource.\n\nResource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                        CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, event.getFileName (),
-                        event.getFileType ().getSimpleName (),
-                        Throwables.getRootCause (event.getThrowable ()).getMessage (),
-                        Strings.toString (event.getThrowable ())));
-        // @formatter:on
       }
     });
   }
@@ -673,267 +237,390 @@ public final class MenuToPlayLoadingScreen extends InputAdapter implements Scree
     unhandledServerEvents.add (event);
   }
 
-  private static void hideCursor ()
+  private void loadPlayMapAssetsAsync ()
   {
-    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
-  }
+    isLoadingPlayMapAssets = true;
 
-  private static String asText (final PlayerJoinGameDeniedEvent.Reason reason, final String playerName)
-  {
-    switch (reason)
-    {
-      case GAME_IS_FULL:
-      {
-        return "This game is already full.";
-      }
-      case DUPLICATE_NAME:
-      {
-        return "Your name, " + playerName + ", is already taken by another player.";
-      }
-      case DUPLICATE_COLOR:
-      {
-        return "Your color is already taken by another player.";
-      }
-      case DUPLICATE_TURN_ORDER:
-      {
-        return "Your turn order is already taken by another player.";
-      }
-      case INVALID_NAME:
-      {
-        return "Your player name is invalid.";
-      }
-      default:
-      {
-        return "Unknown";
-      }
-    }
-  }
+    statusWithProgressPercent ("Loading map \"{}\"...", Strings.toProperCase (mapMetadata.getName ()));
 
-  private boolean loading ()
-  {
-    return isLoading;
-  }
-
-  private void goToPlayScreen ()
-  {
-    assert selfPlayer != null;
-    assert gameServerConfiguration != null;
-    assert clientConfiguration != null;
-
-    final PlayMap playMap;
-
-    try
-    {
-      playMap = playMapFactory.create (gameServerConfiguration.getMapMetadata ());
-    }
-    catch (final PlayMapLoadingException e)
-    {
-      // @formatter:off
-      handleError (
-              Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources " +
-                      "for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                      CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                      gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
-                      gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
-                      Throwables.getRootCause (e).getMessage (), Strings.toString (e)));
-      // @formatter:on
-      return;
-    }
-
-    final Event playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, selfPlayer,
-            ImmutableSet.copyOf (players), playMap);
-
-    unloadMenuAssets ();
-
-    final GameMode mode = gameServerConfiguration.getGameMode ();
-
-    isLoading = false;
-
-    resetLoadingProgress (new Runnable ()
+    loadAssetsAsync (new Runnable ()
     {
       @Override
       public void run ()
       {
-        switch (mode)
+        try
         {
-          case CLASSIC:
-          {
-            screenChanger.toScreen (ScreenId.PLAY_CLASSIC);
-            break;
-          }
-          case PERIL:
-          {
-            screenChanger.toScreen (ScreenId.PLAY_PERIL);
-            break;
-          }
-          default:
-          {
-            throw new UnsupportedOperationException (
-                    Strings.format ("Unsupported {}: [{}].", GameMode.class.getSimpleName (),
-                                    gameServerConfiguration.getGameMode ()));
-          }
+          playMapFactory.loadAssets (mapMetadata);
         }
-
-        // The play screen is now active & can therefore receive events.
-
-        eventBus.publish (playGameEvent);
-
-        for (final ServerEvent event : unhandledServerEvents)
+        catch (final PlayMapLoadingException e)
         {
-          eventBus.publish (event);
+          handlePlayMapLoadingException (e);
         }
       }
     });
   }
 
-  private void startLoading (final MapMetadata mapMetadata)
+  private PlayMap createPlayMap ()
   {
-    isLoading = true;
-    currentLoadingProgressPercent = 0.0f;
+    assert isFinishedLoadingPlayMapAssets ();
 
-    loadPlayMapAssetsAsync (mapMetadata);
-    loadPlayScreenAssetsAsync ();
-  }
-
-  private void handleError (final String message)
-  {
-    log.error (message);
-
-    errorDialog.setMessage (new DefaultMessage (message));
-    errorDialog.show ();
-  }
-
-  private void unloadMenuAssets ()
-  {
-    for (final AssetDescriptor <?> descriptor : AssetSettings.MENU_SCREEN_ASSET_DESCRIPTORS)
-    {
-      if (!assetManager.isLoaded (descriptor)) continue;
-      assetManager.unload (descriptor);
-    }
-  }
-
-  private void unloadPlayMapAssets ()
-  {
-    if (gameServerConfiguration == null)
-    {
-      log.warn ("Not unloading {} assets (null {}).", PlayMap.class.getSimpleName (),
-                GameServerConfiguration.class.getSimpleName ());
-      return;
-    }
-
-    playMapFactory.destroy (gameServerConfiguration.getMapMetadata ());
-  }
-
-  private void loadPlayScreenAssetsAsync ()
-  {
-    for (final AssetDescriptor <?> descriptor : AssetSettings.CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS)
-    {
-      assetManager.load (descriptor);
-    }
-  }
-
-  private void loadPlayMapAssetsAsync (final MapMetadata mapMetadata)
-  {
     try
     {
-      playMapFactory.loadAssets (mapMetadata);
+      return playMapFactory.create (mapMetadata);
     }
     catch (final PlayMapLoadingException e)
     {
-      // @formatter:off
-      handleError (
-              Strings.format ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources " +
-                      "for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                      CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                      gameServerConfiguration != null ? gameServerConfiguration.getMapType ().name ().toLowerCase () : "",
-                      gameServerConfiguration != null ? Strings.toProperCase (gameServerConfiguration.getMapName ()) : "",
-                      Throwables.getRootCause (e).getMessage (), Strings.toString (e)));
-      // @formatter:on
+      handlePlayMapLoadingException (e);
+      log.warn ("Could not create {}: [{}]. Returning [{}] instead.", PlayMap.class.getSimpleName (), mapMetadata,
+                PlayMap.NULL_PLAY_MAP.getClass ().getSimpleName ());
+      return PlayMap.NULL_PLAY_MAP;
     }
   }
 
-  private boolean isFinishedLoading ()
+  private boolean isFinishedLoadingPlayMapAssets ()
   {
-    assert isLoading;
-    assert gameServerConfiguration != null;
-
-    return progressBar.getVisualPercent () >= 1.0f && assetManager.getProgressLoading () >= 1.0f
-            && playMapFactory.isFinishedLoadingAssets (gameServerConfiguration.getMapMetadata ());
+    return playMapFactory.isFinishedLoadingAssets (mapMetadata);
   }
 
-  private void updateLoadingProgress ()
+  private void handlePlayMapLoadingException (final PlayMapLoadingException e)
   {
-    assert isLoading;
-    assert gameServerConfiguration != null;
+    assert mapMetadata != null;
 
-    previousLoadingProgressPercent = currentLoadingProgressPercent;
-
-    currentLoadingProgressPercent = (playMapFactory
-            .getAssetLoadingProgressPercent (gameServerConfiguration.getMapMetadata ())
-            + assetManager.getProgressLoading ()) / 2.0f;
+    handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources for {} map \'{}\'."
+            + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                 mapMetadata.getType ().name ().toLowerCase (), Strings.toProperCase (mapMetadata.getName ()),
+                 Throwables.getRootCause (e).getMessage (), Strings.toString (e));
   }
 
-  private boolean loadingProgressIncreased ()
+  private final class DefaultCreateGameServerListener implements CreateGameServerListener
   {
-    return currentLoadingProgressPercent > previousLoadingProgressPercent;
+    @Override
+    public void onCreateStart (final GameServerConfiguration configuration, final String playerName)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+      Arguments.checkIsNotNull (playerName, "playerName");
+
+      log.trace ("onCreateStart: {} [{}], Player Name [{}]", GameServerConfiguration.class.getSimpleName (),
+                 configuration, playerName);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          resetProgress ();
+          statusWithProgressPercent ("Creating server...");
+        }
+      });
+    }
+
+    @Override
+    public void onCreateFinish (final GameServerConfiguration configuration)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+
+      log.trace ("onCreateFinish: {} [{}]", GameServerConfiguration.class.getSimpleName (), configuration);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          increaseProgressBy (ONE_THIRD);
+        }
+      });
+    }
+
+    @Override
+    public void onCreateFailure (final GameServerConfiguration configuration, final String reason)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+      Arguments.checkIsNotNull (reason, "reason");
+
+      log.trace ("onCreateFailure: {} [{}], Reason [{}]", GameServerConfiguration.class.getSimpleName (), configuration,
+                 reason);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          handleError ("{}", reason);
+        }
+      });
+    }
+
+    @Override
+    public void onJoinStart (final String playerName, final ServerConfiguration configuration)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+
+      log.trace ("onJoinStart: Player Name [{}], {} [{}] ", playerName, ServerConfiguration.class.getSimpleName (),
+                 configuration);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          if (!createdGameFirst) resetProgress ();
+          statusWithProgressPercent ("Connecting to server...");
+        }
+      });
+    }
+
+    @Override
+    public void onConnectToServerSuccess (final ServerConfiguration configuration)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+
+      log.trace ("onConnectToServerSuccess: {} [{}]", ServerConfiguration.class.getSimpleName (), configuration);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          increaseProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+          statusWithProgressPercent ("Joining game...");
+        }
+      });
+    }
+
+    @Override
+    public void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfiguration,
+                                         final ClientConfiguration clientConfiguration)
+    {
+      Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
+      Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
+
+      log.trace ("onJoinGameServerSuccess: {} [{}], {} [{}]", GameServerConfiguration.class.getSimpleName (),
+                 gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          increaseProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+        }
+      });
+    }
+
+    @Override
+    public void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
+    {
+      Arguments.checkIsNotNull (player, "player");
+      Arguments.checkIsNotNull (playersInGame, "playersInGame");
+      Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
+
+      log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
+
+      selfPlayer = player;
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          increaseProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
+        }
+      });
+    }
+
+    @Override
+    public void onConnectToServerFailure (final ServerConfiguration configuration, final String reason)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+      Arguments.checkIsNotNull (reason, "reason");
+
+      log.trace ("onConnectToServerFailure: {} [{}], Reason [{}]", ServerConfiguration.class.getSimpleName (),
+                 configuration, reason);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          handleError ("{}", reason);
+        }
+      });
+    }
+
+    @Override
+    public void onJoinGameServerFailure (final ClientConfiguration configuration, final String reason)
+    {
+      Arguments.checkIsNotNull (configuration, "configuration");
+      Arguments.checkIsNotNull (reason, "reason");
+
+      log.trace ("onJoinGameServerFailure: {} [{}], Reason [{}]", ClientConfiguration.class.getSimpleName (),
+                 configuration, reason);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          handleError ("{}", reason);
+        }
+      });
+    }
+
+    @Override
+    public void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason)
+    {
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (reason, "reason");
+
+      log.trace ("onPlayerJoinGameFailure: Player Name [{}], Reason [{}]", playerName, reason);
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          handleError ("{}", asText (reason, playerName));
+        }
+      });
+    }
+
+    @Override
+    public void onJoinFinish (final GameServerConfiguration gameServerConfiguration,
+                              final ClientConfiguration clientConfiguration,
+                              final ImmutableSet <PlayerPacket> players)
+    {
+      Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
+      Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
+      Arguments.checkIsNotNull (players, "players");
+
+      log.trace ("onJoinFinish: {} [{}], {} [{}], Players [{}]", GameServerConfiguration.class.getSimpleName (),
+                 gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration, players);
+
+      MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
+      MenuToPlayLoadingScreen.this.clientConfiguration = clientConfiguration;
+      MenuToPlayLoadingScreen.this.players.addAll (players);
+      mapMetadata = gameServerConfiguration.getMapMetadata ();
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          loadPlayScreenAssetsAsync (gameServerConfiguration.getGameMode ());
+        }
+      });
+    }
+
+    private void loadPlayScreenAssetsAsync (final GameMode gameMode)
+    {
+      statusWithProgressPercent ("Loading assets...");
+      loadAssetsAsync (getPlayScreenAssetDescriptorsForGameMode (gameMode));
+    }
+
+    private ImmutableList <AssetDescriptor <?>> getPlayScreenAssetDescriptorsForGameMode (final GameMode mode)
+    {
+      return AssetSettings.fromGameMode (mode);
+    }
+
+    private String asText (final PlayerJoinGameDeniedEvent.Reason reason, final String playerName)
+    {
+      switch (reason)
+      {
+        case GAME_IS_FULL:
+        {
+          return "This game is already full.";
+        }
+        case DUPLICATE_NAME:
+        {
+          return "Your name, " + playerName + ", is already taken by another player.";
+        }
+        case DUPLICATE_COLOR:
+        {
+          return "Your color is already taken by another player.";
+        }
+        case DUPLICATE_TURN_ORDER:
+        {
+          return "Your turn order is already taken by another player.";
+        }
+        case INVALID_NAME:
+        {
+          return "Your player name is invalid.";
+        }
+        default:
+        {
+          return "Unknown";
+        }
+      }
+    }
   }
 
-  private float getLoadingProgressIncrease ()
+  private final class GoToPlayScreenListener implements ResetProgressListener
   {
-    return currentLoadingProgressPercent - previousLoadingProgressPercent;
+    private final PlayMap playMap;
+
+    GoToPlayScreenListener (final PlayMap playMap)
+    {
+      Arguments.checkIsNotNull (playMap, "playMap");
+
+      this.playMap = playMap;
+    }
+
+    @Override
+    public void onResetProgressComplete ()
+    {
+      if (playMap.equals (PlayMap.NULL_PLAY_MAP))
+      {
+        log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (),
+                  playMap.getClass ().getSimpleName ());
+        return;
+      }
+
+      assert gameServerConfiguration != null;
+      assert clientConfiguration != null;
+      assert selfPlayer != null;
+
+      // gameServerConfiguration, clientConfiguration, selfPlayer must be used here because
+      // they will be made null in #hide during the call to #toScreen.
+      // unhandledServerEvents will also be cleared, so make a defensive copy.
+      final PlayGameEvent playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, selfPlayer,
+              ImmutableSet.copyOf (players), playMap);
+      final ScreenId playScreen = ScreenId.fromGameMode (gameServerConfiguration.getGameMode ());
+      final ImmutableList <ServerEvent> unhandledServerEventsCopy = ImmutableList.copyOf (unhandledServerEvents);
+
+      toScreen (playScreen);
+
+      // The play screen is now active & can therefore receive events.
+
+      publish (playGameEvent);
+
+      for (final ServerEvent event : unhandledServerEventsCopy)
+      {
+        publish (event);
+      }
+    }
   }
 
-  private float convert (final float loadingProgressIncrease)
+  private final class GoToPlayToMenuLoadingScreenListener implements ResetProgressListener
   {
-    return loadingProgressIncrease * (createdGameFirst ? ONE_THIRD : ONE_HALF);
-  }
+    @Override
+    public void onResetProgressComplete ()
+    {
+      // mapMetadata & gameServerConfiguration must be used / copied here because
+      // they will be made null in #hide during the call to #toScreen.
+      final UnloadPlayMapRequestEvent unloadPlayMapRequestEvent = new UnloadPlayMapRequestEvent (mapMetadata);
+      @Nullable
+      final GameServerConfiguration gameServerConfiguration = MenuToPlayLoadingScreen.this.gameServerConfiguration;
 
-  private void increaseLoadingProgressBy (final float percent)
-  {
-    overallLoadingProgressPercent += percent;
+      toScreen (ScreenId.PLAY_TO_MENU_LOADING);
 
-    progressBar.setValue (overallLoadingProgressPercent);
+      // The play-to-menu loading screen is now active & can therefore receive events.
 
-    log.debug ("Overall loading progress: {} (increased by {}).", overallLoadingProgressPercent, percent);
-  }
+      publishAsync (unloadPlayMapRequestEvent);
 
-  private boolean resettingLoadingProgress ()
-  {
-    return isResettingLoadingProgress;
-  }
-
-  private boolean resetLoadingProgressCompleted ()
-  {
-    return progressBar.getVisualValue () <= 0.0f;
-  }
-
-  private void endResetLoadingProgress ()
-  {
-    isResettingLoadingProgress = false;
-    progressBar.setAnimateDuration (PROGRESS_BAR_ANIMATION_DURATION_SECONDS);
-
-    if (resetLoadingProgressCompletionRunnable == null) return;
-
-    resetLoadingProgressCompletionRunnable.run ();
-    resetLoadingProgressCompletionRunnable = null;
-  }
-
-  private void resetLoadingProgress ()
-  {
-    resetLoadingProgress (null);
-  }
-
-  private void resetLoadingProgress (@Nullable final Runnable completionRunnable)
-  {
-    overallLoadingProgressPercent = 0.0f;
-    progressBar.setAnimateDuration (0.0f);
-    progressBar.setValue (0.0f);
-    isResettingLoadingProgress = true;
-    resetLoadingProgressCompletionRunnable = completionRunnable;
-  }
-
-  private void showCursor ()
-  {
-    Gdx.graphics.setCursor (normalCursor);
+      if (gameServerConfiguration != null)
+      {
+        publishAsync (new UnloadPlayScreenAssetsRequestEvent (gameServerConfiguration.getGameMode ()));
+      }
+    }
   }
 }

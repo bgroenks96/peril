@@ -30,8 +30,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.io.MultiAtlasSkinLoader;
 import com.forerunnergames.peril.client.io.ShaderProgramLoader;
+import com.forerunnergames.peril.client.ui.screens.ScreenId;
+import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkConstants;
 
 import com.google.common.collect.ImmutableList;
@@ -217,6 +220,30 @@ public final class AssetSettings
     Arguments.checkIsNotNull (bucketPath, "bucketPath");
 
     return S3_BUCKET_PATH_PREFIX_PATTERN.matcher (bucketPath).replaceAll ("");
+  }
+
+  public static ImmutableList <AssetDescriptor <?>> fromGameMode (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    final ScreenId playScreenId = ScreenId.fromGameMode (mode);
+
+    switch (playScreenId)
+    {
+      case PLAY_CLASSIC:
+      {
+        return CLASSIC_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS;
+      }
+      case PLAY_PERIL:
+      {
+        return PERIL_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS;
+      }
+      default:
+      {
+        throw new UnsupportedOperationException (
+                Strings.format ("Unsupported {}: [{}].", playScreenId.getClass ().getSimpleName (), playScreenId));
+      }
+    }
   }
 
   private AssetSettings ()

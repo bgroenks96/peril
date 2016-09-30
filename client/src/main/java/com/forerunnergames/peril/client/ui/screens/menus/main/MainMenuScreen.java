@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -32,6 +33,9 @@ import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.tools.common.Event;
+
+import net.engio.mbassy.bus.MBassador;
 
 public final class MainMenuScreen extends AbstractMenuScreen
 {
@@ -40,9 +44,11 @@ public final class MainMenuScreen extends AbstractMenuScreen
   public MainMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                          final ScreenChanger screenChanger,
                          final ScreenSize screenSize,
-                         final Batch batch)
+                         final MouseInput mouseInput,
+                         final Batch batch,
+                         final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize, batch);
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
     quitDialog = createQuitDialog ("Are you sure you want to quit Peril?", new CancellableDialogListenerAdapter ()
     {
@@ -104,13 +110,13 @@ public final class MainMenuScreen extends AbstractMenuScreen
   protected void update (final float delta)
   {
     super.update (delta);
-
     quitDialog.update (delta);
   }
 
   @Override
-  protected void onEscape ()
+  protected boolean onEscape ()
   {
-    quitDialog.show ();
+    if (!super.onEscape ()) quitDialog.show ();
+    return true;
   }
 }

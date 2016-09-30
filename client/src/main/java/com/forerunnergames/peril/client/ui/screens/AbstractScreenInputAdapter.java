@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +17,43 @@
 
 package com.forerunnergames.peril.client.ui.screens;
 
-public interface ScreenChanger
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.Screen;
+
+abstract class AbstractScreenInputAdapter extends InputAdapter implements Screen
 {
-  void toPreviousScreenOrSkipping (final ScreenId defaultScreenId, final ScreenId... skipScreenIds);
+  @Override
+  public void show ()
+  {
+  }
 
-  void toScreen (final ScreenId id);
+  @Override
+  public void render (final float delta)
+  {
+  }
 
-  boolean isScreenTransitionInProgress ();
+  @Override
+  public void resize (final int width, final int height)
+  {
+  }
+
+  @Override
+  public void pause ()
+  {
+  }
+
+  @Override
+  public void resume ()
+  {
+  }
+
+  @Override
+  public void hide ()
+  {
+  }
+
+  @Override
+  public void dispose ()
+  {
+  }
 }

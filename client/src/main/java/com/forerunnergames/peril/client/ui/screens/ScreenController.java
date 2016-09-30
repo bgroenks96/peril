@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   private static final int SCREEN_HISTORY_DEPTH = 10;
   private final Deque <ScreenId> screenIdHistory = new ArrayDeque<> (SCREEN_HISTORY_DEPTH);
   private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
+  private final AtomicBoolean isScreenTransitionInProgress = new AtomicBoolean ();
   private final Game game;
   private final MusicChanger musicChanger;
   private final ScreenFactoryCreator screenFactoryCreator;
@@ -87,6 +89,12 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
     Arguments.checkIsNotNull (skipScreenIds, "skipScreenIds");
     Arguments.checkHasNoNullElements (skipScreenIds, "skipScreenIds");
 
+    if (isScreenTransitionInProgress.get ())
+    {
+      log.warn ("Not going to previous screen because screen transition already in progress.");
+      return;
+    }
+
     final ImmutableCollection <ScreenId> skipScreenIdsCopy = ImmutableList.copyOf (skipScreenIds);
 
     log.debug ("Attempting to go to previous screen from [{}], while avoiding the following screens: {}...",
@@ -122,6 +130,14 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   {
     Arguments.checkIsNotNull (id, "id");
 
+    if (isScreenTransitionInProgress.get ())
+    {
+      log.warn ("Not going to screen [{}] because screen transition already in progress.", id);
+      return;
+    }
+
+    isScreenTransitionInProgress.set (true);
+
     if (id == getCurrentScreenId ()) return;
     if (!screens.containsKey (id)) screens.put (id, screenFactory.create (id));
     if (screenIdHistory.size () == SCREEN_HISTORY_DEPTH) screenIdHistory.remove ();
@@ -133,6 +149,14 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
 
     log.info ("Changed from {} [{}] to {} [{}].", Screen.class.getSimpleName (), previousScreenId,
               Screen.class.getSimpleName (), id);
+
+    isScreenTransitionInProgress.set (false);
+  }
+
+  @Override
+  public boolean isScreenTransitionInProgress ()
+  {
+    return isScreenTransitionInProgress.get ();
   }
 
   private ScreenId getCurrentScreenId ()

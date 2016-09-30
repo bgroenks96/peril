@@ -18,22 +18,10 @@
 
 package com.forerunnergames.peril.client.ui.screens.menus;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -44,21 +32,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
-import com.forerunnergames.peril.client.settings.InputSettings;
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.screens.AbstractScreen;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
-import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -66,10 +48,13 @@ import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
-public abstract class AbstractMenuScreen extends InputAdapter implements Screen
+import net.engio.mbassy.bus.MBassador;
+
+public abstract class AbstractMenuScreen extends AbstractScreen
 {
   private static final Interpolation MENU_BAR_TRANSITION_INTERPOLATION = Interpolation.pow2;
   private static final float MENU_BAR_TRANSITION_TIME_SECONDS = 0.5f;
@@ -78,8 +63,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private final Collection <ImageTextButton> menuChoices = new ArrayList<> ();
   private final Multimap <String, TextButton> textButtonStyleNameToTextButtons = HashMultimap.create ();
   private final MenuScreenWidgetFactory widgetFactory;
-  private final ScreenChanger screenChanger;
-  private final Cursor normalCursor;
   private final Image screenBackgroundLeft;
   private final Image screenBackgroundRight;
   private final Image menuBar;
@@ -91,8 +74,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private final Image rightMenuBarShadow;
   private final Label titleLabel;
   private final Label subTitleLabel;
-  private final Stage stage;
-  private final InputProcessor inputProcessor;
   private final Stack rootStack;
   private final Table tableL0;
   private final Table tableL1;
@@ -106,8 +87,7 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   private final Cell <Image> titleBackgroundCell;
   private final Cell <Actor> contentActorCell;
   private final Cell <Table> titlesTableCell;
-  private boolean screenTransitionInProgress = false;
-  private boolean menuBarTransitionInProgress = false;
+  private final AtomicBoolean menuBarTransitionInProgress = new AtomicBoolean ();
   private MenuBarState currentMenuBarState = MenuBarState.CONTRACTED;
 
   private enum MenuBarState
@@ -136,17 +116,19 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   protected AbstractMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                 final ScreenChanger screenChanger,
                                 final ScreenSize screenSize,
-                                final Batch batch)
+                                final MouseInput mouseInput,
+                                final Batch batch,
+                                final MBassador <Event> eventBus)
   {
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
+
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
     Arguments.checkIsNotNull (batch, "batch");
 
     this.widgetFactory = widgetFactory;
-    this.screenChanger = screenChanger;
 
-    normalCursor = widgetFactory.createNormalCursor ();
     screenBackgroundLeft = widgetFactory.createScreenBackgroundLeft ();
     screenBackgroundRight = widgetFactory.createScreenBackgroundRight ();
     menuBar = widgetFactory.createMenuBar ();
@@ -158,12 +140,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     rightMenuBarShadow = widgetFactory.createRightMenuBarShadow ();
     titleLabel = widgetFactory.createTitle ("", Align.left);
     subTitleLabel = widgetFactory.createSubTitle ("", Align.left);
-
-    final Camera camera = new OrthographicCamera (Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
-            screenSize.referenceHeight (), camera);
-
-    stage = new Stage (viewport, batch);
 
     // Layer 0 - screen background
     rootStack = new Stack ();
@@ -230,55 +206,13 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     tableL5.setTouchable (Touchable.disabled);
     rootStack.add (tableL5);
 
-    stage.addActor (rootStack);
-
-    stage.addListener (new ClickListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        stage.setKeyboardFocus (event.getTarget ());
-
-        return false;
-      }
-    });
-
-    inputProcessor = new InputMultiplexer (stage, new InputAdapter ()
-    {
-      @Override
-      public boolean keyDown (final int keycode)
-      {
-        switch (keycode)
-        {
-          case Input.Keys.ESCAPE:
-          {
-            if (screenTransitionInProgress || menuBarTransitionInProgress) return true;
-
-            onEscape ();
-
-            return true;
-          }
-          default:
-          {
-            return false;
-          }
-        }
-      }
-    });
+    addRootActor (rootStack);
   }
 
   @Override
   public void show ()
   {
-    showCursor ();
-
-    Gdx.input.setInputProcessor (inputProcessor);
-
-    stage.mouseMoved (Gdx.input.getX (), Gdx.input.getY ());
+    super.show ();
 
     screenBackgroundLeft.setDrawable (widgetFactory.createScreenBackgroundLeftDrawable ());
     screenBackgroundRight.setDrawable (widgetFactory.createScreenBackgroundRightDrawable ());
@@ -302,53 +236,10 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
   }
 
   @Override
-  public void render (final float delta)
-  {
-    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
-
-    update (delta);
-    stage.draw ();
-  }
-
-  @Override
-  public void resize (final int width, final int height)
-  {
-    stage.getViewport ().update (width, height, true);
-    stage.getViewport ().setScreenPosition (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
-                                            InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
-  }
-
-  @Override
-  public void pause ()
-  {
-  }
-
-  @Override
-  public void resume ()
-  {
-  }
-
-  @Override
-  public void hide ()
-  {
-    stage.unfocusAll ();
-
-    Gdx.input.setInputProcessor (null);
-
-    hideCursor ();
-  }
-
-  @Override
-  public void dispose ()
-  {
-    stage.dispose ();
-  }
-
   @OverridingMethodsMustInvokeSuper
-  protected void update (final float delta)
+  protected boolean onEscape ()
   {
-    stage.act (delta);
+    return menuBarTransitionInProgress.get ();
   }
 
   protected final void addTitle (final String text, final int alignment, final int height)
@@ -393,8 +284,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     contentActorCell.setActor (content);
   }
 
-  protected abstract void onEscape ();
-
   protected final void addMenuChoiceSpacer (final int height)
   {
     Arguments.checkIsNotNegative (height, "height");
@@ -416,17 +305,6 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     menuChoiceCells.add (menuChoicesTable.add (menuChoice).size (currentMenuBarState.getWidth (), 40).left ().fill ());
   }
 
-  protected final void toScreen (final ScreenId id)
-  {
-    Arguments.checkIsNotNull (id, "id");
-
-    if (screenTransitionInProgress) return;
-
-    screenTransitionInProgress = true;
-    screenChanger.toScreen (id);
-    screenTransitionInProgress = false;
-  }
-
   protected final void expandMenuBar ()
   {
     expandMenuBar (new Runnable ()
@@ -438,15 +316,27 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     });
   }
 
+  protected final void contractMenuBar ()
+  {
+    contractMenuBar (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+      }
+    });
+  }
+
   // @formatter:off
+
   protected final void expandMenuBar (final Runnable completionRunnable)
   {
     Arguments.checkIsNotNull (completionRunnable, "completionRunnable");
 
-    if (currentMenuBarState.is (MenuBarState.EXPANDED) || menuBarTransitionInProgress) return;
+    if (currentMenuBarState.is (MenuBarState.EXPANDED) || menuBarTransitionInProgress.get ()) return;
 
     currentMenuBarState = MenuBarState.EXPANDED;
-    menuBarTransitionInProgress = true;
+    menuBarTransitionInProgress.set (true);
 
     interactionTable.setTouchable (Touchable.disabled);
     interactionTable.setVisible (false);
@@ -496,33 +386,20 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
                       {
                         interactionTable.setVisible (true);
                         interactionTable.setTouchable (Touchable.enabled);
-                        menuBarTransitionInProgress = false;
+                        menuBarTransitionInProgress.set (false);
                       }
                     }),
                     Actions.run (completionRunnable)));
   }
-  // @formatter:on
 
-  protected final void contractMenuBar ()
-  {
-    contractMenuBar (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-      }
-    });
-  }
-
-  // @formatter:off
   protected final void contractMenuBar (final Runnable completionRunnable)
   {
     Arguments.checkIsNotNull (completionRunnable, "completionRunnable");
 
-    if (currentMenuBarState.is (MenuBarState.CONTRACTED) || menuBarTransitionInProgress) return;
+    if (currentMenuBarState.is (MenuBarState.CONTRACTED) || menuBarTransitionInProgress.get ()) return;
 
     currentMenuBarState = MenuBarState.CONTRACTED;
-    menuBarTransitionInProgress = true;
+    menuBarTransitionInProgress.set (true);
 
     interactionTable.setTouchable (Touchable.disabled);
     interactionTable.setVisible (false);
@@ -552,27 +429,13 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
                       @Override
                       public void run ()
                       {
-                        menuBarTransitionInProgress = false;
+                        menuBarTransitionInProgress.set (false);
                       }
                     }),
                     Actions.run (completionRunnable)));
   }
+
   // @formatter:on
-
-  protected final Dialog createQuitDialog (final String message, final CancellableDialogListener listener)
-  {
-    Arguments.checkIsNotNull (message, "message");
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return widgetFactory.createQuitDialog (message, stage, listener);
-  }
-
-  protected final Dialog createErrorDialog (final DialogListener listener)
-  {
-    Arguments.checkIsNotNull (listener, "listener");
-
-    return widgetFactory.createErrorDialog (stage, listener);
-  }
 
   protected final Button addBackButton (final EventListener listener)
   {
@@ -598,15 +461,5 @@ public abstract class AbstractMenuScreen extends InputAdapter implements Screen
     textButtonStyleNameToTextButtons.put (buttonStyleName, button);
 
     return button;
-  }
-
-  private void showCursor ()
-  {
-    Gdx.graphics.setCursor (normalCursor);
-  }
-
-  private void hideCursor ()
-  {
-    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
   }
 }

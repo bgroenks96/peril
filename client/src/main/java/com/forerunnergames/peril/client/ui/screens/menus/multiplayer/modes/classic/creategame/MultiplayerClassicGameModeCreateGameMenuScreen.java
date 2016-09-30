@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -36,6 +37,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import com.forerunnergames.peril.client.events.CreateGameEvent;
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -45,7 +47,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
@@ -80,6 +81,7 @@ import org.slf4j.LoggerFactory;
 
 public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
+  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
   private static final String TITLE_TEXT = "CREATE MULTIPLAYER GAME";
   private static final String SUBTITLE_TEXT = "CLASSIC MODE";
   private static final String FORWARD_BUTTON_TEXT = "CREATE GAME";
@@ -89,7 +91,6 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private static final String MAP_SETTING_LABEL_TEXT = "Map";
   private static final String WIN_PERCENT_SETTING_LABEL_TEXT = "Win Percent";
   private static final String INITIAL_COUNTRY_ASSIGNMENT_SETTING_LABEL_TEXT = "Initial Countries";
-  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
   private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC)
           .create (MapType.STOCK, MapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
@@ -128,21 +129,21 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                          final ScreenChanger screenChanger,
                                                          final ScreenSize screenSize,
+                                                         final MouseInput mouseInput,
                                                          final Batch batch,
                                                          final CountryCounter countryCounter,
                                                          final MBassador <Event> eventBus)
 
   {
-    super (widgetFactory, screenChanger, screenSize, batch);
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (countryCounter, "countryCounter");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
     this.countryCounter = countryCounter;
 
-    errorDialog = createErrorDialog (new DialogListenerAdapter ());
+    errorDialog = createErrorDialog ();
 
     addTitle (TITLE_TEXT, Align.bottomLeft, 40);
     addSubTitle (SUBTITLE_TEXT);
@@ -399,7 +400,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
         toScreen (ScreenId.MENU_TO_PLAY_LOADING);
 
-        eventBus.publish (new CreateGameEvent (serverName, gameConfig, playerNameWithOptionalClanTag));
+        // The menu-to-play loading screen is now active & can therefore receive events.
+
+        publishAsync (new CreateGameEvent (serverName, gameConfig, playerNameWithOptionalClanTag));
       }
     });
   }
@@ -453,22 +456,34 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     if (isFirstTimeOnScreen && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
     {
-      forwardButton.toggle ();
+      // Execute next frame because a screen transition is still in progress.
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          forwardButton.toggle ();
+        }
+      });
       isFirstTimeOnScreen = false;
     }
   }
 
   @Override
-  protected void onEscape ()
+  protected boolean onEscape ()
   {
-    contractMenuBar (new Runnable ()
+    if (!super.onEscape ())
     {
-      @Override
-      public void run ()
+      contractMenuBar (new Runnable ()
       {
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
-      }
-    });
+        @Override
+        public void run ()
+        {
+          toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+        }
+      });
+    }
+    return true;
   }
 
   private static String asMapNameLabelText (final MapMetadata map)

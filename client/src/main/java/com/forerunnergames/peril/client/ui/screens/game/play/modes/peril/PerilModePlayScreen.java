@@ -18,25 +18,10 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.peril;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
+import com.forerunnergames.peril.client.ui.screens.AbstractScreen;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -45,14 +30,8 @@ import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class PerilModePlayScreen extends InputAdapter implements Screen
+public final class PerilModePlayScreen extends AbstractScreen
 {
-  private final ScreenChanger screenChanger;
-  private final Cursor normalCursor;
-  private final MBassador <Event> eventBus;
-  private final Stage stage;
-  private final InputProcessor inputProcessor;
-
   public PerilModePlayScreen (final PerilModePlayScreenWidgetFactory widgetFactory,
                               final ScreenChanger screenChanger,
                               final ScreenSize screenSize,
@@ -60,6 +39,8 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
                               final Batch batch,
                               final MBassador <Event> eventBus)
   {
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
+
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
@@ -67,155 +48,16 @@ public final class PerilModePlayScreen extends InputAdapter implements Screen
     Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.screenChanger = screenChanger;
-    this.eventBus = eventBus;
-
-    normalCursor = widgetFactory.createNormalCursor ();
-
-    final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
-            screenSize.referenceWidth (), camera);
-
-    stage = new Stage (viewport, batch)
-    {
-      @Override
-      public boolean keyDown (final int keyCode)
-      {
-        return keyCode != Input.Keys.ESCAPE && super.keyDown (keyCode);
-      }
-    };
-
     final Tank2 tank2 = widgetFactory.createTank2 ();
 
-    stage.addActor (tank2);
-
-    stage.addListener (new ClickListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        stage.setKeyboardFocus (event.getTarget ());
-
-        return false;
-      }
-    });
-
-    final InputProcessor preInputProcessor = new InputAdapter ()
-    {
-      @Override
-      public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-      {
-        stage.setKeyboardFocus (null);
-
-        return false;
-      }
-    };
-
-    inputProcessor = new InputMultiplexer (preInputProcessor, stage, this, tank2);
+    addRootActor (tank2);
+    addInputProcessor (tank2);
   }
 
   @Override
-  public boolean keyDown (final int keycode)
+  protected boolean onEscape ()
   {
-    switch (keycode)
-    {
-      case Input.Keys.ESCAPE:
-      {
-        screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
-
-        return false;
-      }
-      default:
-      {
-        return false;
-      }
-    }
+    toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+    return true;
   }
-
-  @Override
-  public void show ()
-  {
-    showCursor ();
-
-    eventBus.subscribe (this);
-
-    Gdx.input.setInputProcessor (inputProcessor);
-  }
-
-  @Override
-  public void render (final float delta)
-  {
-    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
-
-    stage.act (delta);
-    stage.draw ();
-  }
-
-  @Override
-  public void resize (final int width, final int height)
-  {
-    stage.getViewport ().update (width, height, true);
-  }
-
-  @Override
-  public void pause ()
-  {
-  }
-
-  @Override
-  public void resume ()
-  {
-  }
-
-  @Override
-  public void hide ()
-  {
-    eventBus.unsubscribe (this);
-
-    Gdx.input.setInputProcessor (null);
-
-    hideCursor ();
-  }
-
-  @Override
-  public void dispose ()
-  {
-    eventBus.unsubscribe (this);
-
-    stage.dispose ();
-  }
-
-  private static void hideCursor ()
-  {
-    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
-  }
-
-  private void showCursor ()
-  {
-    Gdx.graphics.setCursor (normalCursor);
-  }
-
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    return false;
-  }
-
 }

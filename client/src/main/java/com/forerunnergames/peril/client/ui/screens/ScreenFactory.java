@@ -116,39 +116,42 @@ public final class ScreenFactory
       }
       case MAIN_MENU:
       {
-        return new MainMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, batch);
+        return new MainMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
       }
       case MULTIPLAYER_GAME_MODES_MENU:
       {
-        return new MultiplayerGameModesMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, batch);
+        return new MultiplayerGameModesMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
+                batch, eventBus);
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
       {
-        return new MultiplayerClassicGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, batch);
+        return new MultiplayerClassicGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
+                batch, eventBus);
       }
       case MULTIPLAYER_PERIL_GAME_MODE_MENU:
       {
-        return new MultiplayerPerilGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, batch);
+        return new MultiplayerPerilGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
+                batch, eventBus);
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
       {
         return new MultiplayerClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, CountryCounterFactory.create (GameMode.CLASSIC), eventBus);
+                mouseInput, batch, CountryCounterFactory.create (GameMode.CLASSIC), eventBus);
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       {
         return new MultiplayerClassicGameModeJoinGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                batch, eventBus);
+                mouseInput, batch, eventBus);
       }
       case MENU_TO_PLAY_LOADING:
       {
-        return new MenuToPlayLoadingScreen (new LoadingScreenWidgetFactory (assetManager), playMapFactory,
-                screenChanger, screenSize, mouseInput, batch, assetManager, eventBus);
+        return new MenuToPlayLoadingScreen (new LoadingScreenWidgetFactory (assetManager), screenChanger, screenSize,
+                mouseInput, batch, assetManager, eventBus, playMapFactory);
       }
       case PLAY_CLASSIC:
       {
         return new ClassicModePlayScreen (
-                new ClassicModePlayScreenWidgetFactory (assetManager, playMapFactory,
+                new ClassicModePlayScreenWidgetFactory (assetManager,
                         new DefaultBattleDialogWidgetFactory (assetManager)),
                 screenChanger, screenSize, mouseInput, batch, eventBus, debugEventGenerator);
       }
@@ -160,7 +163,7 @@ public final class ScreenFactory
       case PLAY_TO_MENU_LOADING:
       {
         return new PlayToMenuLoadingScreen (new LoadingScreenWidgetFactory (assetManager), screenChanger, screenSize,
-                mouseInput, batch, assetManager, eventBus);
+                mouseInput, batch, assetManager, eventBus, playMapFactory);
       }
       default:
       {

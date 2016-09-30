@@ -20,14 +20,16 @@ package com.forerunnergames.peril.client.ui.screens.loading;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
+import com.forerunnergames.tools.common.Arguments;
 
-public final class LoadingScreenWidgetFactory extends AbstractWidgetFactory
+public class LoadingScreenWidgetFactory extends AbstractWidgetFactory
 {
   public LoadingScreenWidgetFactory (final AssetManager assetManager)
   {
@@ -45,8 +47,33 @@ public final class LoadingScreenWidgetFactory extends AbstractWidgetFactory
     return new Image (getSkin (), "background");
   }
 
-  public ProgressBar createProgressBar (final float stepSize)
+  public ProgressBar createProgressBar (final LoadingScreenStyle style)
   {
-    return createHorizontalProgressBar (0.0f, 1.0f, stepSize, "default-horizontal");
+    Arguments.checkIsNotNull (style, "style");
+
+    final ProgressBar progressBar = createHorizontalProgressBar (style.getProgressBarMinValue (),
+                                                                 style.getProgressBarMaxValue (),
+                                                                 style.getProgressBarStepSize (),
+                                                                 style.getProgressBarStyleName ());
+
+    progressBar.setAnimateDuration (style.getProgressBarAnimationDurationSeconds ());
+
+    return progressBar;
+  }
+
+  public Label createLoadingTitleLabel (final LoadingScreenStyle style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return createLabel (style.getLoadingTitleText (), style.getLoadingTitleTextAlignment (),
+                        style.getLoadingTitleTextLabelStyleName ());
+  }
+
+  public Label createLoadingStatusLabel (final LoadingScreenStyle style)
+  {
+    Arguments.checkIsNotNull (style, "style");
+
+    return createLabel (style.getLoadingStatusInitialText (), style.getLoadingStatusTextAlignment (),
+                        style.getLoadingStatusLabelStyleName ());
   }
 }

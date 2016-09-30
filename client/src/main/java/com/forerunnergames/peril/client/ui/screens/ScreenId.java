@@ -18,6 +18,10 @@
 
 package com.forerunnergames.peril.client.ui.screens;
 
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
+
 public enum ScreenId
 {
   NONE,
@@ -31,5 +35,27 @@ public enum ScreenId
   MENU_TO_PLAY_LOADING,
   PLAY_CLASSIC,
   PLAY_PERIL,
-  PLAY_TO_MENU_LOADING
+  PLAY_TO_MENU_LOADING;
+
+  public static ScreenId fromGameMode (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    switch (mode)
+    {
+      case CLASSIC:
+      {
+        return PLAY_CLASSIC;
+      }
+      case PERIL:
+      {
+        return PLAY_PERIL;
+      }
+      default:
+      {
+        throw new UnsupportedOperationException (
+                Strings.format ("Unsupported {}: [{}].", mode.getClass ().getSimpleName (), mode));
+      }
+    }
+  }
 }

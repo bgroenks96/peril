@@ -19,38 +19,22 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
-import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
-import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
+import com.forerunnergames.peril.client.events.UnloadPlayMapRequestEvent;
+import com.forerunnergames.peril.client.events.UnloadPlayScreenAssetsRequestEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.settings.GraphicsSettings;
-import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
+import com.forerunnergames.peril.client.ui.screens.AbstractScreen;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
@@ -90,7 +74,9 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
+import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
@@ -137,7 +123,7 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ClassicModePlayScreen extends InputAdapter implements Screen
+public final class ClassicModePlayScreen extends AbstractScreen
 {
   private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
   private static final boolean DEBUG = false;
@@ -148,21 +134,14 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private static final Message QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS = new DefaultMessage (
           "Are you sure you want to surrender & quit?\nIf you are the host, quitting will shut down the server for everyone.");
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
-  private final ScreenChanger screenChanger;
-  private final MouseInput mouseInput;
-  private final Cursor normalCursor;
-  private final MBassador <Event> eventBus;
   private final DebugEventGenerator debugEventGenerator;
   private final DebugInputProcessor debugInputProcessor;
-  private final Stage stage;
   private final Image playMapTableForegroundImage;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
   private final IntelBox intelBox;
   private final ControlRoomBox controlRoomBox;
-  private final InputProcessor inputProcessor;
-  private final GdxKeyRepeatSystem keyRepeat;
   private final OccupationDialog occupationDialog;
   private final FortificationDialog fortificationDialog;
   private final AttackDialog attackDialog;
@@ -194,21 +173,16 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
                                 final MBassador <Event> eventBus,
                                 final DebugEventGenerator debugEventGenerator)
   {
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
+
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (screenChanger, "screenChanger");
     Arguments.checkIsNotNull (screenSize, "screenSize");
-    Arguments.checkIsNotNull (mouseInput, "mouseInput");
-    Arguments.checkIsNotNull (batch, "batch");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (debugEventGenerator, "debugEventGenerator");
 
     this.widgetFactory = widgetFactory;
-    this.screenChanger = screenChanger;
-    this.mouseInput = mouseInput;
-    this.eventBus = eventBus;
     this.debugEventGenerator = debugEventGenerator;
 
-    normalCursor = widgetFactory.createNormalCursor ();
     playMapTableForegroundImage = widgetFactory.createPlayMapTableForegroundImage ();
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
@@ -236,7 +210,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
         if (tradeInEvent == null) return; // TODO Production: Remove.
 
-        eventBus.publish (new PlayerTradeInCardsRequestEvent (tradeInEvent.getMatches ().iterator ().next ()));
+        publish (new PlayerTradeInCardsRequestEvent (tradeInEvent.getMatches ().iterator ().next ()));
         controlRoomBox.disableButton (ControlRoomBox.Button.TRADE_IN);
         tradeInEvent = null; // TODO Production: Remove.
       }
@@ -258,7 +232,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       {
         log.debug ("Clicked end turn button");
 
-        eventBus.publish (new EndPlayerTurnRequestEvent ());
+        publish (new EndPlayerTurnRequestEvent ());
         controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
         controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
       }
@@ -322,24 +296,19 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     screenTable.setDebug (DEBUG, true);
 
     rootStack.add (screenTable);
+    addRootActor (rootStack);
 
-    final Camera camera = new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ());
-    final Viewport viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
-            screenSize.referenceHeight (), camera);
-
-    final ScreenShaker screenShaker = new ScreenShaker (viewport, screenSize);
-
-    stage = new Stage (viewport, batch);
+    final ScreenShaker screenShaker = new ScreenShaker (getViewport (), screenSize);
 
     // @formatter:off
 
-    attackDialog = widgetFactory.createAttackDialog (stage, screenShaker, new DefaultAttackDialogListener ());
-    defendDialog = widgetFactory.createDefendDialog (stage, screenShaker, new DefaultDefendDialogListener ());
-    attackerBattleResultDialog = widgetFactory.createAttackerBattleResultDialog (stage, new AttackerBattleResultDialogListener ());
-    defenderBattleResultDialog = widgetFactory.createDefenderBattleResultDialog (stage, new DefenderBattleResultDialogListener ());
-    occupationDialog = widgetFactory.createOccupationDialog (stage, new OccupationDialogListener ());
-    fortificationDialog = widgetFactory.createFortificationDialog (stage, new FortificationDialogListener ());
-    quitDialog = widgetFactory.createQuitDialog (stage, new QuitDialogListener ());
+    attackDialog = widgetFactory.createAttackDialog (getStage (), screenShaker, new DefaultAttackDialogListener ());
+    defendDialog = widgetFactory.createDefendDialog (getStage (), screenShaker, new DefaultDefendDialogListener ());
+    attackerBattleResultDialog = widgetFactory.createAttackerBattleResultDialog (getStage (), new AttackerBattleResultDialogListener ());
+    defenderBattleResultDialog = widgetFactory.createDefenderBattleResultDialog (getStage (), new DefenderBattleResultDialogListener ());
+    occupationDialog = widgetFactory.createOccupationDialog (getStage (), new OccupationDialogListener ());
+    fortificationDialog = widgetFactory.createFortificationDialog (getStage (), new FortificationDialogListener ());
+    quitDialog = widgetFactory.createQuitDialog (getQuitDialogMessageText (), getStage (), new QuitDialogListener ());
     allDialogs = new CompositeDialog (attackDialog, defendDialog, attackerBattleResultDialog, defenderBattleResultDialog,
                                       occupationDialog, fortificationDialog, quitDialog);
 
@@ -356,100 +325,20 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
 
     // @formatter:on
 
-    stage.addActor (rootStack);
-
-    stage.addCaptureListener (new InputListener ()
-    {
-      @Override
-      public boolean keyDown (final InputEvent event, final int keycode)
-      {
-        switch (keycode)
-        {
-          case Input.Keys.ESCAPE:
-          {
-            if (attackDialog.isShown () || fortificationDialog.isShown ()) return false;
-
-            controlRoomBox.pressButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
-
-            return false;
-          }
-          default:
-          {
-            return false;
-          }
-        }
-      }
-    });
-
-    stage.addListener (new ClickListener ()
-    {
-      @Override
-      public boolean touchDown (final InputEvent event,
-                                final float x,
-                                final float y,
-                                final int pointer,
-                                final int button)
-      {
-        stage.setKeyboardFocus (event.getTarget ());
-
-        return false;
-      }
-    });
-
-    final InputProcessor preInputProcessor = new InputAdapter ()
-    {
-      @Override
-      public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-      {
-        stage.setKeyboardFocus (null);
-
-        return false;
-      }
-    };
-
-    keyRepeat = new GdxKeyRepeatSystem (Gdx.input, new GdxKeyRepeatListenerAdapter ()
-    {
-      @Override
-      public void keyDownRepeating (final int keyCode)
-      {
-        occupationDialog.keyDownRepeating (keyCode);
-        fortificationDialog.keyDownRepeating (keyCode);
-      }
-    });
-
-    keyRepeat.setKeyRepeatRate (Input.Keys.LEFT, 50);
-    keyRepeat.setKeyRepeatRate (Input.Keys.RIGHT, 50);
-    keyRepeat.setKeyRepeatRate (Input.Keys.UP, 50);
-    keyRepeat.setKeyRepeatRate (Input.Keys.DOWN, 50);
-    keyRepeat.setKeyRepeat (Input.Keys.LEFT, true);
-    keyRepeat.setKeyRepeat (Input.Keys.RIGHT, true);
-    keyRepeat.setKeyRepeat (Input.Keys.UP, true);
-    keyRepeat.setKeyRepeat (Input.Keys.DOWN, true);
-    keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
-    keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
-
-    final InputMultiplexer inputMultiplexer = new InputMultiplexer (preInputProcessor, stage, this);
-
     debugInputProcessor = new DebugInputProcessor (debugEventGenerator, widgetFactory, mouseInput, playMap, statusBox,
             chatBox, playerBox, occupationDialog, fortificationDialog, attackDialog, defendDialog, eventBus);
 
-    if (DEBUG) inputMultiplexer.addProcessor (debugInputProcessor);
-
-    inputProcessor = inputMultiplexer;
+    if (DEBUG) addInputProcessor (debugInputProcessor);
   }
 
   @Override
   public void show ()
   {
-    showCursor ();
+    super.show ();
 
-    eventBus.subscribe (this);
-    eventBus.subscribe (statusMessageGenerator);
+    subscribe (statusMessageGenerator);
 
-    Gdx.input.setInputProcessor (inputProcessor);
-
-    stage.mouseMoved (mouseInput.x (), mouseInput.y ());
-    playMap.mouseMoved (mouseInput.position ());
+    playMap.mouseMoved (getMousePosition ());
 
     playMapTableForegroundImage.setDrawable (widgetFactory.createPlayMapTableForegroundImageDrawable ());
 
@@ -468,53 +357,18 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Override
-  public void render (final float delta)
-  {
-    Gdx.gl.glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-    Gdx.gl.glClear (GL20.GL_COLOR_BUFFER_BIT);
-
-    keyRepeat.update ();
-    stage.act (delta);
-    allDialogs.update (delta);
-    stage.draw ();
-  }
-
-  @Override
-  public void resize (final int width, final int height)
-  {
-    stage.getViewport ().update (width, height, true);
-    stage.getViewport ().setScreenPosition (InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_X,
-                                            InputSettings.ACTUAL_INPUT_SPACE_TO_ACTUAL_SCREEN_SPACE_TRANSLATION_Y);
-  }
-
-  @Override
-  public void pause ()
-  {
-  }
-
-  @Override
-  public void resume ()
-  {
-  }
-
-  @Override
   public void hide ()
   {
-    eventBus.unsubscribe (this);
-    eventBus.unsubscribe (statusMessageGenerator);
+    super.hide ();
 
-    stage.unfocusAll ();
-
-    Gdx.input.setInputProcessor (null);
-
-    hideCursor ();
+    unsubscribe (statusMessageGenerator);
 
     intelBox.clear ();
     chatBox.clear ();
     statusBox.clear ();
     playerBox.clear ();
 
-    clearPlayMap ();
+    updatePlayMap (PlayMap.NULL_PLAY_MAP);
 
     allGamePhaseHandlers.deactivate ();
     allDialogs.hide (null);
@@ -526,10 +380,48 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   }
 
   @Override
-  public void dispose ()
+  protected void update (final float delta)
   {
-    eventBus.unsubscribe (this);
-    stage.dispose ();
+    super.update (delta);
+    allDialogs.update (delta);
+  }
+
+  @Override
+  protected boolean onEscape ()
+  {
+    if (!attackDialog.isShown () && !fortificationDialog.isShown ())
+    {
+      controlRoomBox.pressButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
+    }
+    return false;
+  }
+
+  @Override
+  protected void onKeyDownRepeating (final int keyCode)
+  {
+    occupationDialog.keyDownRepeating (keyCode);
+    fortificationDialog.keyDownRepeating (keyCode);
+  }
+
+  @Override
+  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    playMap.touchDown (tempPosition.set (screenX, screenY), button);
+    return false;
+  }
+
+  @Override
+  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
+  {
+    playMap.touchUp (tempPosition.set (screenX, screenY));
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved (final int screenX, final int screenY)
+  {
+    playMap.mouseMoved (tempPosition.set (screenX, screenY));
+    return false;
   }
 
   @Handler
@@ -1024,7 +916,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
       @Override
       public void run ()
       {
-        screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+        quitGame ();
       }
     });
   }
@@ -1052,16 +944,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     });
   }
 
-  private static void hideCursor ()
-  {
-    Gdx.graphics.setSystemCursor (Cursor.SystemCursor.Arrow);
-  }
-
-  private void showCursor ()
-  {
-    Gdx.graphics.setCursor (normalCursor);
-  }
-
   private void updatePlayMap (final PlayMap playMap)
   {
     this.playMap = playMap;
@@ -1069,14 +951,6 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     intelBox.setMapMetadata (playMap.getMapMetadata ());
     allGamePhaseHandlers.setPlayMap (playMap);
     if (DEBUG) debugInputProcessor.setPlayMap (this.playMap);
-  }
-
-  private void clearPlayMap ()
-  {
-    playMap.reset ();
-    playMapCell.clearActor ();
-    widgetFactory.destroyPlayMap (playMap.getMapMetadata ());
-    updatePlayMap (PlayMap.NULL_PLAY_MAP);
   }
 
   private String getQuitDialogTitle ()
@@ -1087,6 +961,25 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
   private Message getQuitDialogMessage ()
   {
     return isGameInProgress.get () ? QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS : QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS;
+  }
+
+  private String getQuitDialogMessageText ()
+  {
+    return getQuitDialogMessage ().getText ();
+  }
+
+  private void quitGame ()
+  {
+    // playMap must be used here because it will be reset to
+    // PlayMap#NULL_PLAY_MAP in #hide during the call to #toScreen.
+    final MapMetadata mapMetadata = playMap.getMapMetadata ();
+
+    toScreen (ScreenId.PLAY_TO_MENU_LOADING);
+
+    // The play-to-menu loading screen is now active & can therefore receive events.
+
+    publishAsync (new UnloadPlayScreenAssetsRequestEvent (GameMode.CLASSIC));
+    publishAsync (new UnloadPlayMapRequestEvent (mapMetadata));
   }
 
   private final class DefaultAttackDialogListener extends AbstractBattleDialogListener implements AttackDialogListener
@@ -1130,7 +1023,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       if (occupationDialog.isShown () || attackerBattleResultDialog.isShown () || quitDialog.isShown ()) return;
 
-      playMap.enable (mouseInput.position ());
+      playMap.enable (getMousePosition ());
     }
   }
 
@@ -1169,7 +1062,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       if (attackerBattleResultDialog.isShown () || quitDialog.isShown ()) return;
 
-      playMap.enable (mouseInput.position ());
+      playMap.enable (getMousePosition ());
     }
   }
 
@@ -1211,7 +1104,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
         occupationDialog.show ();
       }
 
-      if (!occupationDialog.isShown () && !quitDialog.isShown ()) playMap.enable (mouseInput.position ());
+      if (!occupationDialog.isShown () && !quitDialog.isShown ()) playMap.enable (getMousePosition ());
     }
   }
 
@@ -1233,7 +1126,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     public void onHide ()
     {
       if (!defendDialog.isBattling ()) defendDialog.hide ();
-      if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
+      if (!quitDialog.isShown ()) playMap.enable (getMousePosition ());
     }
   }
 
@@ -1254,7 +1147,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onHide ()
     {
-      if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
+      if (!quitDialog.isShown ()) playMap.enable (getMousePosition ());
     }
   }
 
@@ -1290,7 +1183,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onHide ()
     {
-      if (!quitDialog.isShown ()) playMap.enable (mouseInput.position ());
+      if (!quitDialog.isShown ()) playMap.enable (getMousePosition ());
     }
   }
 
@@ -1299,8 +1192,8 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     @Override
     public void onSubmit ()
     {
-      screenChanger.toScreen (ScreenId.PLAY_TO_MENU_LOADING);
-      eventBus.publishAsync (new QuitGameEvent ());
+      quitGame ();
+      publishAsync (new QuitGameEvent ());
     }
 
     @Override
@@ -1310,7 +1203,7 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
               && !fortificationDialog.isShown () && !attackerBattleResultDialog.isShown ()
               && !defenderBattleResultDialog.isShown ())
       {
-        playMap.enable (mouseInput.position ());
+        playMap.enable (getMousePosition ());
       }
     }
 
@@ -1319,29 +1212,5 @@ public final class ClassicModePlayScreen extends InputAdapter implements Screen
     {
       playMap.disable ();
     }
-  }
-
-  @Override
-  public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    playMap.touchDown (tempPosition.set (screenX, screenY), button);
-
-    return false;
-  }
-
-  @Override
-  public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
-  {
-    playMap.touchUp (tempPosition.set (screenX, screenY));
-
-    return false;
-  }
-
-  @Override
-  public boolean mouseMoved (final int screenX, final int screenY)
-  {
-    playMap.mouseMoved (tempPosition.set (screenX, screenY));
-
-    return false;
   }
 }

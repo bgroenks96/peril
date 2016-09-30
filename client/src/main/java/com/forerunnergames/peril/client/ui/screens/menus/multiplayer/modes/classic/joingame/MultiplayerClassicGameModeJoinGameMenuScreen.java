@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.events.JoinGameEvent;
+import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
@@ -40,7 +42,6 @@ import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -69,17 +70,17 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
   public MultiplayerClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                                                        final ScreenChanger screenChanger,
                                                        final ScreenSize screenSize,
+                                                       final MouseInput mouseInput,
                                                        final Batch batch,
                                                        final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize, batch);
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.widgetFactory = widgetFactory;
 
-    errorDialog = createErrorDialog (new DialogListenerAdapter ());
+    errorDialog = createErrorDialog ();
 
     addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE");
@@ -201,7 +202,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         toScreen (ScreenId.MENU_TO_PLAY_LOADING);
 
-        eventBus.publish (new JoinGameEvent (playerNameWithOptionalClanTag, serverAddress));
+        // The menu-to-play loading screen is now active & can therefore receive events.
+
+        publishAsync (new JoinGameEvent (playerNameWithOptionalClanTag, serverAddress));
       }
     });
   }
@@ -225,21 +228,34 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
     if (isFirstTimeOnScreen && InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
     {
-      forwardButton.toggle ();
+      // Execute next frame because a screen transition is still in progress.
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          forwardButton.toggle ();
+        }
+      });
+
       isFirstTimeOnScreen = false;
     }
   }
 
   @Override
-  protected void onEscape ()
+  protected boolean onEscape ()
   {
-    contractMenuBar (new Runnable ()
+    if (!super.onEscape ())
     {
-      @Override
-      public void run ()
+      contractMenuBar (new Runnable ()
       {
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
-      }
-    });
+        @Override
+        public void run ()
+        {
+          toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+        }
+      });
+    }
+    return true;
   }
 }

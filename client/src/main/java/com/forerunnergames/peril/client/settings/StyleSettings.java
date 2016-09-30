@@ -33,6 +33,8 @@ public final class StyleSettings
   public static final String DEFAULT_TEXT_BUTTON_STYLE = "default";
   public static final String DEFAULT_CHECK_BOX_STYLE = "default";
   public static final String DEFAULT_SELECT_BOX_STYLE = "default";
+  public static final String DEFAULT_HORIZONTAL_PROGRESS_BAR_STYLE = "default-horizontal";
+  public static final String DEFAULT_VERTICAL_PROGRESS_BAR_STYLE = "default-vertical";
 
   // Menus
   public static final String MENU_BACK_TEXT_BUTTON_STYLE = DEFAULT_TEXT_BUTTON_STYLE;
@@ -56,7 +58,8 @@ public final class StyleSettings
   public static final String MENU_SERVER_ADDRESS_TEXTFIELD_STYLE = DEFAULT_TEXTFIELD_STYLE;
 
   // Loading Screens
-  public static final String LOADING_SCREEN_LOADING_TEXT_LABEL_STYLE = "loading-text";
+  public static final String LOADING_SCREEN_PROGRESS_BAR_STYLE = DEFAULT_HORIZONTAL_PROGRESS_BAR_STYLE;
+  public static final String LOADING_SCREEN_LOADING_TITLE_TEXT_LABEL_STYLE = "loading-title-text";
   public static final String LOADING_SCREEN_LOADING_STATUS_TEXT_LABEL_STYLE = "loading-status-text";
 
   // Status Box

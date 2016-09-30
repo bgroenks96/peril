@@ -52,14 +52,12 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
-import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFactory
@@ -70,20 +68,26 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   private static final String INTEL_BOX_TITLE_BACKGROUND_DRAWABLE_NAME = "side-bar-title-background";
   private static final String CONTROL_ROOM_BOX_BACKGROUND_DRAWABLE_NAME = "side-bar-borders";
   private static final String CONTROL_ROOM_BOX_TITLE_BACKGROUND_DRAWABLE_NAME = "side-bar-title-background";
-  private final PlayMapFactory playMapFactory;
   private final BattleDialogWidgetFactory battleDialogWidgetFactory;
 
   public ClassicModePlayScreenWidgetFactory (final AssetManager assetManager,
-                                             final PlayMapFactory playMapFactory,
                                              final BattleDialogWidgetFactory battleDialogWidgetFactory)
   {
     super (assetManager);
 
-    Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
     Arguments.checkIsNotNull (battleDialogWidgetFactory, "battleDialogWidgetFactory");
 
-    this.playMapFactory = playMapFactory;
     this.battleDialogWidgetFactory = battleDialogWidgetFactory;
+  }
+
+  @Override
+  public Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener)
+  {
+    Arguments.checkIsNotNull (message, "message");
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new QuitDialog (this, message, 587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
   }
 
   @Override
@@ -258,13 +262,6 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return new DefendDialog (battleDialogWidgetFactory, stage, screenShaker, listener);
   }
 
-  public void destroyPlayMap (final MapMetadata mapMetadata)
-  {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-
-    playMapFactory.destroy (mapMetadata);
-  }
-
   public BattleResultDialog createAttackerBattleResultDialog (final Stage stage, final DialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
@@ -289,13 +286,6 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
                     .titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2)
                     .textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4).build (),
             stage, listener);
-  }
-
-  public Dialog createQuitDialog (final Stage stage, final CancellableDialogListener listener)
-  {
-    return new QuitDialog (this,
-            "Are you sure you want to quit?\nIf you are the host, quitting will end the game for everyone.", 587,
-            ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
   }
 
   public Sound createBattleSingleExplosionSound ()
