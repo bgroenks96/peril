@@ -24,7 +24,12 @@ THIS_DIR="${BASH_SOURCE%/*}"
 if [[ $TRAVIS = true && $TRAVIS_BRANCH = "master" && $TRAVIS_PULL_REQUEST = false && $TRAVIS_REPO_SLUG = "$PROJECT_REPO_OWNER/$ROOT_PROJECT" ]]
 then
   ./scripts/collect-assets.sh &&
-  ./scripts/upload-assets.sh
+  ./scripts/upload-assets.sh "$PRODUCTION_ASSETS_S3_BUCKET_NAME"
+  ./scripts/remove-collected-assets.sh
+elif [[ $TRAVIS = true && $TRAVIS_BRANCH = "develop" && $TRAVIS_PULL_REQUEST = false && $TRAVIS_REPO_SLUG = "$PROJECT_REPO_OWNER/$ROOT_PROJECT" ]]
+then
+  ./scripts/collect-assets.sh &&
+  ./scripts/upload-assets.sh "$DEV_ASSETS_S3_BUCKET_NAME"
   ./scripts/remove-collected-assets.sh
 else
   printf "\n"

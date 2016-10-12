@@ -151,7 +151,7 @@ public final class AssetSettings
   private static final TextureLoader.TextureParameter FONT_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final String S3_BUCKET_PATH_PREFIX = "s3://";
   // Amazon S3
-  public static final String DEFAULT_S3_BUCKET_PATH = S3_BUCKET_PATH_PREFIX + "assets.perilgame.com";
+  public static final String DEFAULT_S3_BUCKET_PATH = S3_BUCKET_PATH_PREFIX + "assets.peril.forerunner.games";
   public static final String VALID_S3_BUCKET_PATH_DESCRIPTION = "1) Must begin with " + S3_BUCKET_PATH_PREFIX + "\n"
           + "2) Must be 3 to 63 characters in length.\n" + "3) Must be all lowercase.\n"
           + "4) Can contain letters, numbers, and hypens.\n"

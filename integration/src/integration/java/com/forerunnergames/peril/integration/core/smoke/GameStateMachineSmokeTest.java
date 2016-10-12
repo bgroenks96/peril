@@ -31,6 +31,10 @@ import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
@@ -73,15 +77,34 @@ public class GameStateMachineSmokeTest
   @Test (dependsOnMethods = "testCreateGame", timeOut = 10000)
   public void testPlayersJoinGame ()
   {
-    final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
-    final long stateChangeTimeoutMs = 10000;
-    // Simulate many players attempting to join the game.
-    for (int i = 0; i < 50; ++i)
+    final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor ();
+
+    try
     {
-      log.trace ("Adding player {}", i);
-      eventBus.publish (new PlayerJoinGameRequestEvent (getRandomPlayerName ()));
+      final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
+      final int initialDelaySeconds = 1;
+
+      executor.schedule (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          // Simulate many players attempting to join the game.
+          for (int i = 0; i < 50; ++i)
+          {
+            log.trace ("Adding player {}", i);
+            eventBus.publish (new PlayerJoinGameRequestEvent (getRandomPlayerName ()));
+          }
+        }
+      }, initialDelaySeconds, TimeUnit.SECONDS);
+
+      final long stateChangeTimeoutMs = 10000;
+      stateTest.waitForStateChange ("PlayingGame", stateChangeTimeoutMs);
     }
-    stateTest.waitForStateChange ("PlayingGame", stateChangeTimeoutMs);
+    finally
+    {
+      executor.shutdown ();
+    }
   }
 
   private static String getRandomPlayerName ()
