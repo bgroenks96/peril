@@ -266,7 +266,7 @@ public final class SplashScreen extends AbstractLoadingScreen
     }
     catch (final SecurityException e)
     {
-      log.warn ("Couldn't enable high DPI.\nCause:\n{}", Throwables.getStackTraceAsString (e));
+      log.warn ("Couldn't enable high DPI.\nCause:\n\n", e);
     }
   }
 

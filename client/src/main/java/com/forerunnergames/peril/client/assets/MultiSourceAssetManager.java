@@ -142,8 +142,7 @@ public final class MultiSourceAssetManager implements AssetManager
       }
       catch (final GdxRuntimeException e)
       {
-        log.error ("Cannot queue asset [{}] for loading as [{}]. Reason:\n\n{}", fileName, resolvedPathDescription,
-                   Throwables.getStackTraceAsString (e));
+        log.error ("Cannot queue asset [{}] for loading as [{}]. Reason:\n\n{}", fileName, resolvedPathDescription, e);
       }
     }
 

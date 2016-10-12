@@ -97,7 +97,7 @@ public final class DesktopLauncher
     }
     catch (final SecurityException e)
     {
-      log.warn ("Couldn't make splash screen window undecorated.\nCause:\n{}", Throwables.getStackTraceAsString (e));
+      log.warn ("Couldn't make splash screen window undecorated.\nCause:\n\n", e);
     }
 
     config.width = ScreenSettings.SPLASH_SCREEN_WINDOW_WIDTH;

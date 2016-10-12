@@ -217,9 +217,7 @@ public final class ClientApplicationProperties
     }
     catch (final IOException | NumberFormatException e)
     {
-      log.warn ("Failed to read settings version from \"{}\".\n\nDetails:\n\n{}", VERSION_FILE_PATH_AND_NAME,
-                Throwables.getStackTraceAsString (e));
-
+      log.warn ("Failed to read settings version from \"{}\".\n\nDetails:\n\n", VERSION_FILE_PATH_AND_NAME, e);
       return Optional.absent ();
     }
   }
@@ -264,8 +262,8 @@ public final class ClientApplicationProperties
     }
     catch (final IOException e)
     {
-      log.error ("Failed to create \"{}\". Falling back to internal default values.\n\nDetails:\n\n{}",
-                 PROPERTIES_FILE_PATH_AND_NAME, Throwables.getStackTraceAsString (e));
+      log.error ("Failed to create \"{}\". Falling back to internal default values.\n\nDetails:\n\n",
+                 PROPERTIES_FILE_PATH_AND_NAME, e);
     }
 
     fixUrisInPropertiesFile ();
@@ -289,8 +287,7 @@ public final class ClientApplicationProperties
     }
     catch (final IOException e)
     {
-      log.error ("Failed to fix URI's in \"{}\".\n\nDetails:\n\n{}", PROPERTIES_FILE_PATH_AND_NAME,
-                 Throwables.getStackTraceAsString (e));
+      log.error ("Failed to fix URI's in \"{}\".\n\nDetails:\n\n", PROPERTIES_FILE_PATH_AND_NAME, e);
       return;
     }
 
@@ -301,8 +298,7 @@ public final class ClientApplicationProperties
     }
     catch (final IOException e)
     {
-      log.error ("Failed to fix URI's in \"{}\".\n\nDetails:\n\n{}", PROPERTIES_FILE_PATH_AND_NAME,
-                 Throwables.getStackTraceAsString (e));
+      log.error ("Failed to fix URI's in \"{}\".\n\nDetails:\n\n", PROPERTIES_FILE_PATH_AND_NAME, e);
     }
   }
 
@@ -318,8 +314,7 @@ public final class ClientApplicationProperties
     }
     catch (final IOException e)
     {
-      log.warn ("Failed to delete your old settings file \"{}\".\n\nDetails:\n\n{}", PROPERTIES_FILE_PATH_AND_NAME,
-                Throwables.getStackTraceAsString (e));
+      log.warn ("Failed to delete your old settings file \"{}\".\n\nDetails:\n\n", PROPERTIES_FILE_PATH_AND_NAME, e);
     }
   }
 
@@ -339,8 +334,8 @@ public final class ClientApplicationProperties
     catch (final IOException e)
     {
       log.error ("Failed to create (or update) \"{}\".\nIf \"{}\" exists, it will be upgraded "
-              + "because we couldn't determine its version!\n\nDetails:\n\n{}", VERSION_FILE_PATH_AND_NAME,
-                 PROPERTIES_FILE_PATH_AND_NAME, Throwables.getStackTraceAsString (e));
+              + "because we couldn't determine its version!\n\nDetails:\n\n", VERSION_FILE_PATH_AND_NAME,
+                 PROPERTIES_FILE_PATH_AND_NAME, e);
     }
   }
 

@@ -44,8 +44,8 @@ public final class Main
       @Override
       public void uncaughtException (final Thread t, final Throwable e)
       {
-        log.error ("The server application has crashed!\n\nA crash file has been created in \"{}\".\n\n{}",
-                   CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables.getStackTraceAsString (e));
+        log.error ("The server application has crashed!\n\nA crash file has been created in \"{}\".\n\n",
+                   CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, e);
 
         System.exit (1);
       }
