@@ -556,7 +556,7 @@ public class GdxKeyRepeatSystem
     if (currentRepeatingKeyTask != null && currentRepeatingKeyTask.isScheduled ())
     {
       currentRepeatingKeyTask.cancel ();
-      listener.keyUp (currentRepeatingGdxKeyCode);
+      listener.onKeyUp (currentRepeatingGdxKeyCode);
     }
   }
 
@@ -571,7 +571,7 @@ public class GdxKeyRepeatSystem
         {
           if (input.isKeyPressed (gdxKeyCode))
           {
-            listener.keyDownRepeating (gdxKeyCode);
+            listener.onKeyDownRepeating (gdxKeyCode);
           }
         }
       });

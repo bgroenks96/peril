@@ -354,9 +354,9 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
   private final class KeyRepeatListener extends GdxKeyRepeatListenerAdapter
   {
     @Override
-    public void keyDownRepeating (final int keyCode)
+    public void onKeyDownRepeating (final int keyCode)
     {
-      onKeyDownRepeating (keyCode);
+      AbstractScreen.this.onKeyDownRepeating (keyCode);
     }
   }
 }

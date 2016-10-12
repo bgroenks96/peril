@@ -245,6 +245,7 @@ public abstract class AbstractMenuScreen extends AbstractScreen
   protected final void addTitle (final String text, final int alignment, final int height)
   {
     Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNegative (alignment, "alignment");
     Arguments.checkIsNotNegative (height, "height");
 
     titleLabel.setText (text);

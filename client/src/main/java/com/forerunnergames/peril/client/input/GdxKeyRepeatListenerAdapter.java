@@ -21,12 +21,12 @@ package com.forerunnergames.peril.client.input;
 public class GdxKeyRepeatListenerAdapter implements GdxKeyRepeatListener
 {
   @Override
-  public void keyUp (final int keyCode)
+  public void onKeyUp (final int keyCode)
   {
   }
 
   @Override
-  public void keyDownRepeating (final int keyCode)
+  public void onKeyDownRepeating (final int keyCode)
   {
   }
 }

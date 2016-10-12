@@ -52,7 +52,7 @@ public final class S3AssetUpdater implements AssetUpdater
   private final String bucketName;
   private final TransferManager transferManager;
   @Nullable
-  private volatile MultipleFileDownload downloadInProgress = null;
+  private volatile MultipleFileDownload downloadInProgress;
 
   S3AssetUpdater (final String bucketPath)
   {

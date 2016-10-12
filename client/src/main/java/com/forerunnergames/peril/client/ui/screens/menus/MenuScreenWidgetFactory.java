@@ -170,6 +170,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
   public Label createTitle (final String titleText, final int alignment)
   {
     Arguments.checkIsNotNull (titleText, "titleText");
+    Arguments.checkIsNotNegative (alignment, "alignment");
 
     return createLabel (titleText, alignment, createTitleStyle ());
   }
@@ -182,6 +183,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
   public Label createSubTitle (final String titleText, final int alignment)
   {
     Arguments.checkIsNotNull (titleText, "titleText");
+    Arguments.checkIsNotNegative (alignment, "alignment");
 
     return createLabel (titleText, alignment, createSubTitleStyle ());
   }
@@ -252,7 +254,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
   public TextField createClanNameTextField ()
   {
     return createTextField (InputSettings.INITIAL_CLAN_NAME, GameSettings.MAX_CLAN_NAME_LENGTH,
-                            InputSettings.VALID_CLAN_NAME_TEXTFIELD_PATTERN, createClanNameTextFieldStyle ());
+                            InputSettings.VALID_CLAN_NAME_TEXTFIELD_INPUT_PATTERN, createClanNameTextFieldStyle ());
   }
 
   public TextField.TextFieldStyle createClanNameTextFieldStyle ()

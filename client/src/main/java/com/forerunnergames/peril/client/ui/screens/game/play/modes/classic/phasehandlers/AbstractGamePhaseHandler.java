@@ -64,7 +64,7 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public void activate ()
   {
-    eventBus.subscribe (getClass ().cast (this));
+    eventBus.subscribe (this);
     reset ();
   }
 
@@ -87,7 +87,7 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public void deactivate ()
   {
-    eventBus.unsubscribe (getClass ().cast (this));
+    eventBus.unsubscribe (this);
     reset ();
   }
 

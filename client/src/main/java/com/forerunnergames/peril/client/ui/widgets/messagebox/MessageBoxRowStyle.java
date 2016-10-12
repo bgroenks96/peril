@@ -35,6 +35,7 @@ public final class MessageBoxRowStyle
                              final HorizontalPadding hPadding)
   {
     Arguments.checkIsNotNull (labelStyle, "labelStyle");
+    Arguments.checkIsNotNegative (labelAlignment, "labelAlignment");
     Arguments.checkIsNotNegative (height, "height");
     Arguments.checkIsNotNull (hPadding, "hPadding");
 

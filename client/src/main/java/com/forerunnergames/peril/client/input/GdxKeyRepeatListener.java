@@ -20,7 +20,7 @@ package com.forerunnergames.peril.client.input;
 
 public interface GdxKeyRepeatListener
 {
-  void keyUp (final int keyCode);
+  void onKeyUp (final int keyCode);
 
-  void keyDownRepeating (final int keyCode);
+  void onKeyDownRepeating (final int keyCode);
 }

@@ -299,6 +299,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   public Label createLabel (final String text, final int alignment, final Label.LabelStyle labelStyle)
   {
     Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNegative (alignment, "alignment");
     Arguments.checkIsNotNull (labelStyle, "labelStyle");
 
     final Label label = new Label (text, labelStyle);
@@ -311,6 +312,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   public final Label createWrappingLabel (final String text, final int alignment, final String labelStyle)
   {
     Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNegative (alignment, "alignment");
     Arguments.checkIsNotNull (labelStyle, "labelStyle");
 
     return createWrappingLabel (text, alignment, getSkinResource (labelStyle, Label.LabelStyle.class));
@@ -320,6 +322,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   public final Label createWrappingLabel (final String text, final int alignment, final Label.LabelStyle labelStyle)
   {
     Arguments.checkIsNotNull (text, "text");
+    Arguments.checkIsNotNegative (alignment, "alignment");
     Arguments.checkIsNotNull (labelStyle, "labelStyle");
 
     final Label label = createLabel (text, alignment, labelStyle);
@@ -497,7 +500,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (scrollPaneStyle, "scrollPaneStyleName");
     Arguments.checkIsNotNull (rowLabelStyle, "rowLabelStyleName");
-    Arguments.checkIsNotNull (rowLabelAlignment, "rowLabelAlignment");
+    Arguments.checkIsNotNegative (rowLabelAlignment, "rowLabelAlignment");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollbarStyle");
 
     return new DefaultMessageBox<> (new MessageBoxStyle (scrollPaneStyle, scrollbarStyle,

@@ -443,7 +443,7 @@ public final class DialogStyle
 
     public DialogStyleBuilder messageBoxRowLabelAlignment (final int messageBoxRowLabelAlignment)
     {
-      Arguments.checkIsNotNull (messageBoxRowLabelAlignment, "messageBoxRowLabelAlignment");
+      Arguments.checkIsNotNegative (messageBoxRowLabelAlignment, "messageBoxRowLabelAlignment");
 
       this.messageBoxRowLabelAlignment = messageBoxRowLabelAlignment;
 
@@ -853,6 +853,10 @@ public final class DialogStyle
       this.isDebug = isDebug;
 
       return this;
+    }
+
+    private DialogStyleBuilder ()
+    {
     }
   }
 }

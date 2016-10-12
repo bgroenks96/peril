@@ -315,6 +315,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public Label createIntelBoxSettingNameLabel (final String settingNameText, final int alignment)
   {
     Arguments.checkIsNotNull (settingNameText, "settingNameText");
+    Arguments.checkIsNotNegative (alignment, "alignment");
 
     return createLabel (settingNameText, alignment, createIntelBoxSettingNameLabelStyle ());
   }
@@ -334,6 +335,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public Label createIntelBoxSettingTextLabel (final String settingText, final int alignment)
   {
     Arguments.checkIsNotNull (settingText, "settingText");
+    Arguments.checkIsNotNegative (alignment, "alignment");
 
     return createLabel (settingText, alignment, createIntelBoxSettingTextLabelStyle ());
   }
