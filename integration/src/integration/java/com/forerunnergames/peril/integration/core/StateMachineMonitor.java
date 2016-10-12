@@ -97,21 +97,22 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
     return ImmutableList.copyOf (stateChangeHistory);
   }
 
-  public boolean waitForStateChange (final String newStateName, final long timeout)
+  public boolean waitForStateChange (final String newStateName, final long timeoutMs)
   {
     Arguments.checkIsNotNull (newStateName, "newStateName");
-    Arguments.checkIsNotNegative (timeout, "timeout");
+    Arguments.checkIsNotNegative (timeoutMs, "timeoutMs");
 
     final StateChangeBarrier barrier = new StateChangeBarrier (newStateName);
     stateMachine.addStateMachineListener (barrier);
     try
     {
-      barrier.waitForNewStateEntry (timeout);
+      log.debug ("Waiting {} seconds for state change to {}.", newStateName, timeoutMs / 1000.0f);
+      barrier.waitForNewStateEntry (timeoutMs);
       return true;
     }
     catch (final InterruptedException | TimeoutException e)
     {
-      log.error ("Reached state change timeout.", e);
+      log.error ("Reached state change timeoutMs.", e);
       return false;
     }
     finally
