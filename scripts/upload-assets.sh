@@ -21,7 +21,7 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-if [[ ! -v "$1" ]]
+if [[ -z $1 ]]
 then
   printf "\n"
   printf "Skipping asset uploading. Amazon S3 bucket name was not specified as the first argument to upload-assets.sh."
