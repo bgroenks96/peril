@@ -460,7 +460,7 @@ public final class GameModel
       return;
     }
 
-    final List <Id> countries = Randomness.shuffle (new HashSet<> (countryMapGraphModel.getCountryIds ()));
+    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryMapGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules
             .getInitialPlayerCountryDistribution (players.size ());
@@ -983,6 +983,9 @@ public final class GameModel
 
     publish (new PlayerIssueAttackOrderEvent (attacker, defender));
     publish (new PlayerIssueAttackOrderWaitEvent (attacker.getPlayer ()));
+
+    publish (new PlayerDefendCountryRequestEvent (attacker, defender));
+    publish (new PlayerDefendCountryWaitEvent (defender.getPlayer ()));
   }
 
   @StateTransitionCondition
@@ -1028,7 +1031,7 @@ public final class GameModel
     turnDataCache.put (CacheKey.BATTLE_ATTACK_ORDER, result.getReturnValue ());
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, attacker);
 
-    return true;
+    return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER);
   }
 
   @StateEntryAction
@@ -1113,7 +1116,7 @@ public final class GameModel
 
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, createFinalDefender (attackVector, dieCount));
 
-    return true;
+    return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER);
   }
 
   @StateTransitionAction
@@ -1873,10 +1876,10 @@ public final class GameModel
               .create (disjointCountryGraph,
                        ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
-      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());
+      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet. <Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules);
       battleModel = new DefaultBattleModel (playMapModel);
-      turnDataCache = new PlayerTurnDataCache<> ();
+      turnDataCache = new PlayerTurnDataCache <> ();
     }
   }
 }

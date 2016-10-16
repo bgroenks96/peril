@@ -314,12 +314,10 @@
                     <onEntry action="gameModel.waitForPlayerAttackOrder()"/>
                     <transition event="onPlayerOrderAttackRequestEvent"
                                 condition="gameModel.verifyPlayerAttackOrder(event)"
-                                nextState="WaitForDefenderResponse"/>
+                                nextState="ProcessBattle"/>
                     <transition event="onPlayerOrderRetreatRequestEvent"
                                 action="gameModel.processPlayerRetreat(event)"
                                 nextState="WaitForPlayerToSelectAttackVector"/>
-                  </state>
-                  <state name="WaitForDefenderResponse">
                     <transition event="onPlayerDefendCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerDefendCountryResponseRequest(event)"
                                 nextState="ProcessBattle"/>
