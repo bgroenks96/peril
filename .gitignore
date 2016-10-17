@@ -50,6 +50,7 @@ android/gen/
 out/
 com_crashlytics_export_strings.xml
 project.properties
+android/libs/
 
 ## Eclipse
 .classpath
