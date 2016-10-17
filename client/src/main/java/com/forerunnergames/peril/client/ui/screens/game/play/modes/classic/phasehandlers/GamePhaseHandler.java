@@ -22,6 +22,8 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
 public interface GamePhaseHandler
 {
+  GamePhaseHandler NULL = new NullGamePhaseHandler ();
+
   void activate ();
 
   void activateForSelf (final PlayerPacket player);

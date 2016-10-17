@@ -53,6 +53,7 @@ import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
@@ -385,8 +386,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final int winPercent = winPercentSelectBox.getSelected ();
         final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment
                 .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
+        final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, playerLimit, winPercent,
+                                                             totalCountryCount, initialCountryAssignment);
         final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit,
-                spectatorLimit, winPercent, initialCountryAssignment, currentMap);
+                spectatorLimit, winPercent, initialCountryAssignment, currentMap, gameRules);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))

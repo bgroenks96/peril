@@ -21,11 +21,14 @@ package com.forerunnergames.peril.common.net.events.server.interfaces;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 
 public interface CountryOwnerChangedEvent extends CountryEvent, BroadcastNotificationEvent
 {
-  Optional <PlayerPacket> getPreviousOwner ();
+  boolean hasPreviousOwner ();
+
+  @Nullable
+  PlayerPacket getPreviousOwner ();
 
   PlayerPacket getNewOwner ();
 

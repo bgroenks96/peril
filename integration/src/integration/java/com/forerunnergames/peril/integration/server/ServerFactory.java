@@ -142,7 +142,8 @@ public class ServerFactory
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
-            SPECTATOR_LIMIT, gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata);
+            SPECTATOR_LIMIT, gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata,
+            gameRules);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

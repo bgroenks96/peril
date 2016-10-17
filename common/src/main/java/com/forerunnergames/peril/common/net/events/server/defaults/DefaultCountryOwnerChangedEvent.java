@@ -25,12 +25,13 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 
 public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent implements CountryOwnerChangedEvent
 {
   private final PlayerPacket newOwner;
-  private final Optional <PlayerPacket> previousOwner;
+  @Nullable
+  private final PlayerPacket previousOwner;
 
   public DefaultCountryOwnerChangedEvent (final CountryPacket country,
                                           final PlayerPacket newOwner,
@@ -42,7 +43,7 @@ public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent 
     Arguments.checkIsNotNull (previousOwner, "previousOwner");
 
     this.newOwner = newOwner;
-    this.previousOwner = Optional.of (previousOwner);
+    this.previousOwner = previousOwner;
   }
 
   public DefaultCountryOwnerChangedEvent (final CountryPacket country, final PlayerPacket newOwner)
@@ -52,12 +53,18 @@ public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent 
     Arguments.checkIsNotNull (newOwner, "newOwner");
 
     this.newOwner = newOwner;
-
-    previousOwner = Optional.absent ();
+    previousOwner = null;
   }
 
   @Override
-  public Optional <PlayerPacket> getPreviousOwner ()
+  public boolean hasPreviousOwner ()
+  {
+    return previousOwner != null;
+  }
+
+  @Override
+  @Nullable
+  public PlayerPacket getPreviousOwner ()
   {
     return previousOwner;
   }

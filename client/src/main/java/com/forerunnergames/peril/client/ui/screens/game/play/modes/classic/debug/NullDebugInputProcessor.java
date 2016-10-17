@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +15,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug;
 
-import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.badlogic.gdx.InputAdapter;
 
-public interface DiceFactory
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.tools.common.Arguments;
+
+public final class NullDebugInputProcessor extends InputAdapter implements DebugInputProcessor
 {
-  Dice createAttackerDice (final GameRules rules);
+  @Override
+  public void setPlayMap (final PlayMap playMap)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
+  }
 
-  Dice createDefenderDice (final GameRules rules);
+  @Override
+  public void reset ()
+  {
+  }
 }

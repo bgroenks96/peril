@@ -27,6 +27,8 @@ import javax.annotation.Nullable;
 
 public interface Dialog
 {
+  Dialog NULL = new NullDialog ();
+
   void show ();
 
   void show (@Nullable final Action action);

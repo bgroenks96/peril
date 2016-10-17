@@ -29,7 +29,6 @@ import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreen;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.DefaultBattleDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultPlayMapFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
@@ -150,10 +149,8 @@ public final class ScreenFactory
       }
       case PLAY_CLASSIC:
       {
-        return new ClassicModePlayScreen (
-                new ClassicModePlayScreenWidgetFactory (assetManager,
-                        new DefaultBattleDialogWidgetFactory (assetManager)),
-                screenChanger, screenSize, mouseInput, batch, eventBus, debugEventGenerator);
+        return new ClassicModePlayScreen (new ClassicModePlayScreenWidgetFactory (assetManager), screenChanger,
+                screenSize, mouseInput, batch, eventBus, debugEventGenerator);
       }
       case PLAY_PERIL:
       {

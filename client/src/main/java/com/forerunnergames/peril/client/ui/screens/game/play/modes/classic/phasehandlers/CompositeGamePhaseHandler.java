@@ -21,18 +21,20 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
-public class CompositeGamePhaseHandler implements GamePhaseHandler
+public final class CompositeGamePhaseHandler implements GamePhaseHandler
 {
-  private final ImmutableSet <GamePhaseHandler> handlers;
+  private final Collection <GamePhaseHandler> handlers = new HashSet <> ();
 
   public CompositeGamePhaseHandler (final GamePhaseHandler... handlers)
   {
     Arguments.checkIsNotNull (handlers, "handlers");
     Arguments.checkHasNoNullElements (handlers, "handlers");
 
-    this.handlers = ImmutableSet.copyOf (handlers);
+    this.handlers.addAll (Arrays.asList (handlers));
   }
 
   @Override
@@ -126,5 +128,35 @@ public class CompositeGamePhaseHandler implements GamePhaseHandler
     {
       handler.reset ();
     }
+  }
+
+  public void add (final GamePhaseHandler dialog)
+  {
+    Arguments.checkIsNotNull (dialog, "dialog");
+
+    handlers.add (dialog);
+  }
+
+  public void add (final GamePhaseHandler... handlers)
+  {
+    Arguments.checkIsNotNull (handlers, "handlers");
+    Arguments.checkHasNoNullElements (handlers, "handlers");
+
+    this.handlers.addAll (Arrays.asList (handlers));
+  }
+
+  public void remove (final GamePhaseHandler dialog)
+  {
+    Arguments.checkIsNotNull (dialog, "dialog");
+
+    handlers.remove (dialog);
+  }
+
+  public void remove (final GamePhaseHandler... handlers)
+  {
+    Arguments.checkIsNotNull (handlers, "handlers");
+    Arguments.checkHasNoNullElements (handlers, "handlers");
+
+    this.handlers.removeAll (Arrays.asList (handlers));
   }
 }

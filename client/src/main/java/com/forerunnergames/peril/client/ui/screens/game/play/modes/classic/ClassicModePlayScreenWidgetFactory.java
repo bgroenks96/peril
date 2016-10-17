@@ -42,11 +42,13 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.contr
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.DefaultControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialogWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.AttackerBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
@@ -58,6 +60,7 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFactory
@@ -68,16 +71,10 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   private static final String INTEL_BOX_TITLE_BACKGROUND_DRAWABLE_NAME = "side-bar-title-background";
   private static final String CONTROL_ROOM_BOX_BACKGROUND_DRAWABLE_NAME = "side-bar-borders";
   private static final String CONTROL_ROOM_BOX_TITLE_BACKGROUND_DRAWABLE_NAME = "side-bar-title-background";
-  private final BattleDialogWidgetFactory battleDialogWidgetFactory;
 
-  public ClassicModePlayScreenWidgetFactory (final AssetManager assetManager,
-                                             final BattleDialogWidgetFactory battleDialogWidgetFactory)
+  public ClassicModePlayScreenWidgetFactory (final AssetManager assetManager)
   {
     super (assetManager);
-
-    Arguments.checkIsNotNull (battleDialogWidgetFactory, "battleDialogWidgetFactory");
-
-    this.battleDialogWidgetFactory = battleDialogWidgetFactory;
   }
 
   @Override
@@ -240,26 +237,32 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
                             ImageButton.ImageButtonStyle.class);
   }
 
-  public AttackDialog createAttackDialog (final Stage stage,
+  public BattleDialog createAttackDialog (final Stage stage,
+                                          final GameRules rules,
                                           final ScreenShaker screenShaker,
                                           final AttackDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new AttackDialog (battleDialogWidgetFactory, stage, screenShaker, listener);
+    return new AttackDialog (new AttackDialogWidgetFactory (getAssetManager (), rules.getAbsoluteAttackerDieRange (),
+            rules.getAbsoluteDefenderDieRange ()), stage, screenShaker, listener);
   }
 
-  public DefendDialog createDefendDialog (final Stage stage,
+  public BattleDialog createDefendDialog (final Stage stage,
+                                          final GameRules rules,
                                           final ScreenShaker screenShaker,
                                           final DefendDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new DefendDialog (battleDialogWidgetFactory, stage, screenShaker, listener);
+    return new DefendDialog (new DefendDialogWidgetFactory (getAssetManager (), rules.getAbsoluteAttackerDieRange (),
+            rules.getAbsoluteDefenderDieRange ()), stage, screenShaker, listener);
   }
 
   public BattleResultDialog createAttackerBattleResultDialog (final Stage stage, final DialogListener listener)

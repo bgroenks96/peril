@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.events;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -63,6 +64,11 @@ public final class PlayGameEvent implements LocalEvent
     return gameServerConfig;
   }
 
+  public GameRules getGameRules ()
+  {
+    return gameServerConfig.getGameRules ();
+  }
+
   public ClientConfiguration getClientConfiguration ()
   {
     return clientConfig;
@@ -101,6 +107,11 @@ public final class PlayGameEvent implements LocalEvent
   public PlayMap getPlayMap ()
   {
     return playMap;
+  }
+
+  public int getWinningCountryCount ()
+  {
+    return gameServerConfig.getWinningCountryCount ();
   }
 
   @Override

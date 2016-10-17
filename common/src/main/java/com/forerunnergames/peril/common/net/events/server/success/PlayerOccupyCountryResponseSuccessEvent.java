@@ -27,7 +27,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 
 public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent
         implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
@@ -75,9 +75,16 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
   }
 
   @Override
-  public Optional <PlayerPacket> getPreviousOwner ()
+  public boolean hasPreviousOwner ()
   {
-    return Optional.of (previousTargetCountryOwner);
+    return true;
+  }
+
+  @Override
+  @Nullable
+  public PlayerPacket getPreviousOwner ()
+  {
+    return previousTargetCountryOwner;
   }
 
   /**

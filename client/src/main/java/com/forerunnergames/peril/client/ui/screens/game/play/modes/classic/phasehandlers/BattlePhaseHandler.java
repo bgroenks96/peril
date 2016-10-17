@@ -4,6 +4,8 @@ import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 
 public interface BattlePhaseHandler extends GamePhaseHandler
 {
+  BattlePhaseHandler NULL = new NullBattlePhaseHandler ();
+
   void onBattle ();
 
   void onResultAttackerVictorious (final BattleResultPacket result);

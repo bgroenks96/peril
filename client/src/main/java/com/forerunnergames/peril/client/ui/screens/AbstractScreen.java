@@ -184,6 +184,11 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
     // Empty base implementation.
   }
 
+  protected final MBassador <Event> getEventBus ()
+  {
+    return eventBus;
+  }
+
   protected final Stage getStage ()
   {
     return stage;
@@ -192,6 +197,16 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
   protected final Viewport getViewport ()
   {
     return viewport;
+  }
+
+  protected final ScreenSize getScreenSize ()
+  {
+    return screenSize;
+  }
+
+  protected final MouseInput getMouseInput ()
+  {
+    return mouseInput;
   }
 
   protected final Vector2 getMousePosition ()

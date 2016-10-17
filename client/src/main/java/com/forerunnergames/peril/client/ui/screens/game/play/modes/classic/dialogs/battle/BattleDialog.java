@@ -23,9 +23,12 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 
 public interface BattleDialog extends Dialog
 {
+  BattleDialog NULL = new NullBattleDialog ();
+
   void startBattle (final PendingBattleActorPacket attacker,
                     final PendingBattleActorPacket defender,
                     final Country attackingCountry,
@@ -35,7 +38,8 @@ public interface BattleDialog extends Dialog
 
   void showBattleResult (final BattleResultPacket result);
 
-  void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies);
+  void playBattleEffects (@AllowNegative final int attackingCountryDeltaArmies,
+                          @AllowNegative final int defendingCountryDeltaArmies);
 
   void updateCountries (final Country attackingCountry, final Country defendingCountry);
 

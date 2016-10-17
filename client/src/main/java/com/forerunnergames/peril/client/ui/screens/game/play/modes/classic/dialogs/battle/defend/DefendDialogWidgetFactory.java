@@ -16,27 +16,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.AbstractDiceFactory;
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.assets.AssetManager;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialogWidgetFactory;
+import com.forerunnergames.peril.common.game.DieRange;
 
-final class AttackDialogDiceFactory extends AbstractDiceFactory
+public final class DefendDialogWidgetFactory extends AbstractBattleDialogWidgetFactory
 {
-  AttackDialogDiceFactory (final WidgetFactory widgetFactory)
+  public DefendDialogWidgetFactory (final AssetManager assetManager,
+                                    final DieRange absoluteAttackerDieRange,
+                                    final DieRange absoluteDefenderDieRange)
   {
-    super (widgetFactory);
+    super (assetManager, absoluteAttackerDieRange, absoluteDefenderDieRange);
   }
 
   @Override
   protected boolean areAttackerDiceTouchable ()
   {
-    return true;
+    return false;
   }
 
   @Override
   protected boolean areDefenderDiceTouchable ()
   {
-    return false;
+    return true;
   }
 }

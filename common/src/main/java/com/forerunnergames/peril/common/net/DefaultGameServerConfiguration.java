@@ -21,9 +21,11 @@ package com.forerunnergames.peril.common.net;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
@@ -72,6 +74,24 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   public int getWinPercentage ()
   {
     return gameConfig.getWinPercentage ();
+  }
+
+  @Override
+  public GameRules getGameRules ()
+  {
+    return gameConfig.getGameRules ();
+  }
+
+  @Override
+  public int getWinningCountryCount ()
+  {
+    return gameConfig.getWinningCountryCount ();
+  }
+
+  @Override
+  public int getTotalCountryCount ()
+  {
+    return gameConfig.getTotalCountryCount ();
   }
 
   @Override
@@ -125,10 +145,8 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   @Override
   public String toString ()
   {
-    return String.format (
-                          "%1$s: Game Server Name: %2$s | Game Server Type: %3$s | Game Configuration: %4$s"
-                                  + " | Server Configuration: %5$s",
-                          getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig);
+    return Strings.format ("{}: GameServerName: {} | GameServerType: {} | GameConfig: {} | ServerConfig: {}",
+                           getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig);
   }
 
   @RequiredForNetworkSerialization

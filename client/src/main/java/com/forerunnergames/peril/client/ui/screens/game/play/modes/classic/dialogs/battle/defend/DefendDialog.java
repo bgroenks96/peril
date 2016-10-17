@@ -33,7 +33,7 @@ public final class DefendDialog extends AbstractBattleDialog
                        final ScreenShaker screenShaker,
                        final DefendDialogListener listener)
   {
-    super (widgetFactory, new DefendDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, listener);
+    super (widgetFactory, TITLE_TEXT, stage, screenShaker, listener);
   }
 
   @Override

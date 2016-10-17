@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
 
+import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
 import com.forerunnergames.peril.common.net.events.EventFluency;
@@ -106,7 +107,6 @@ public final class KryonetRegistration
    * Packages whose classes should be excluded non-recursively from auto-registration.
    */
   private static final ImmutableSet <String> EXCLUDED_PACKAGES = ImmutableSet.of (
-          "com.forerunnergames.peril.common.game.rules",
           "com.forerunnergames.peril.common.map.io",
           "com.forerunnergames.peril.common.net.kryonet");
 
@@ -118,6 +118,7 @@ public final class KryonetRegistration
    *       Non-concrete classes will be filtered out.
    */
   private static final ImmutableSet <Class <?>> EXCLUDED_CLASSES = ImmutableSet.of (
+          GameRulesFactory.class,
           EventFluency.class,
           LocalGameServerCreator.class,
           PlayMapLoadingException.class);

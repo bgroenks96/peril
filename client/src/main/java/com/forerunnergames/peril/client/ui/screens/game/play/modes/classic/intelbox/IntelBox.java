@@ -5,14 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 
-import com.google.common.collect.ImmutableSet;
+import javax.annotation.Nullable;
 
 public interface IntelBox
 {
-  void setPlayer (final PlayerPacket player);
+  void setSelfPlayer (final PlayerPacket player);
 
   void setGameServerConfiguration (final GameServerConfiguration config);
 
@@ -24,7 +23,11 @@ public interface IntelBox
 
   void setGameRound (final int round);
 
-  void setOwnedCountries (final ImmutableSet <CountryPacket> ownedCountries);
+  void setOwnedCountriesForSelf (final int countries, @Nullable final PlayerPacket player);
+
+  void addOwnedCountryForSelf (@Nullable final PlayerPacket player);
+
+  void removeOwnedCountryForSelf (@Nullable final PlayerPacket player);
 
   void clear ();
 

@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.game;
 
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.tools.common.Arguments;
@@ -32,13 +33,15 @@ public final class DefaultGameConfiguration implements GameConfiguration
   private final int winPercentage;
   private final InitialCountryAssignment initialCountryAssignment;
   private final MapMetadata mapMetadata;
+  private final GameRules rules;
 
   public DefaultGameConfiguration (final GameMode gameMode,
                                    final int playerLimit,
                                    final int spectatorLimit,
                                    final int winPercentage,
                                    final InitialCountryAssignment initialCountryAssignment,
-                                   final MapMetadata mapMetadata)
+                                   final MapMetadata mapMetadata,
+                                   final GameRules rules)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
     Arguments.checkIsNotNegative (playerLimit, "playerLimit");
@@ -46,6 +49,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
     Arguments.checkIsNotNegative (winPercentage, "winPercentage");
     Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (rules, "rules");
 
     this.gameMode = gameMode;
     this.playerLimit = playerLimit;
@@ -53,6 +57,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
     this.winPercentage = winPercentage;
     this.initialCountryAssignment = initialCountryAssignment;
     this.mapMetadata = mapMetadata;
+    this.rules = rules;
   }
 
   @Override
@@ -77,6 +82,24 @@ public final class DefaultGameConfiguration implements GameConfiguration
   public int getWinPercentage ()
   {
     return winPercentage;
+  }
+
+  @Override
+  public GameRules getGameRules ()
+  {
+    return rules;
+  }
+
+  @Override
+  public int getWinningCountryCount ()
+  {
+    return rules.getWinningCountryCount ();
+  }
+
+  @Override
+  public int getTotalCountryCount ()
+  {
+    return rules.getTotalCountryCount ();
   }
 
   @Override
@@ -107,10 +130,10 @@ public final class DefaultGameConfiguration implements GameConfiguration
   public String toString ()
   {
     return Strings.format (
-                           "{}: Game mode: {} | Player limit: {} | Spectator Limit: {} | Win Percentage: {}"
-                                   + " | Initial Country Assignment: {} | Map: {}",
+                           "{}: GameMode: {} | PlayerLimit: {} | SpectatorLimit: {} | WinPercentage: {} | "
+                                   + "InitialCountryAssignment: {} | MapMetadata: {} | " + "GameRules: {}",
                            getClass ().getSimpleName (), gameMode, playerLimit, spectatorLimit, winPercentage,
-                           initialCountryAssignment, mapMetadata);
+                           initialCountryAssignment, mapMetadata, rules);
   }
 
   @RequiredForNetworkSerialization
@@ -122,5 +145,6 @@ public final class DefaultGameConfiguration implements GameConfiguration
     winPercentage = 0;
     initialCountryAssignment = null;
     mapMetadata = null;
+    rules = null;
   }
 }

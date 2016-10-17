@@ -739,6 +739,11 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     return getAsset (getSkinAssetDescriptor ());
   }
 
+  protected final AssetManager getAssetManager ()
+  {
+    return assetManager;
+  }
+
   private PlayerColorIconWidgetFactory createPlayerColorIconWidgetFactory (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");

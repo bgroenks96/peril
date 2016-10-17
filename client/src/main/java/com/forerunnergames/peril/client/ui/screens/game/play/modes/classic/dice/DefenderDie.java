@@ -22,9 +22,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 
 import com.forerunnergames.peril.common.settings.GameSettings;
 
-abstract class DefenderDie extends AbstractDie
+public abstract class DefenderDie extends AbstractDie
 {
-  protected DefenderDie (final int index, final ImageButton button)
+  public DefenderDie (final int index, final ImageButton button)
   {
     super (index, GameSettings.DEFAULT_DIE_FACE_VALUE, button);
   }

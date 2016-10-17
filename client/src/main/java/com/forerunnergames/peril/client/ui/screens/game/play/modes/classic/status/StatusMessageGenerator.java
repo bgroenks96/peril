@@ -126,9 +126,9 @@ public final class StatusMessageGenerator
     youIf (event.isFirstPlayerInGame (), event.getSelfPlayer (), "It looks like you're the first one here.");
 
     youIf (nMorePlayers > 0, event.getSelfPlayer (),
-           "This is a {} player {} Mode game. You must conquer {}% of the map to achieve victory.",
+           "This is a {} player {} Mode game. You must conquer {}% of the map (at least {}) to achieve victory.",
            config.getPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
-           config.getWinPercentage ());
+           config.getWinPercentage (), Strings.pluralize (event.getWinningCountryCount (), "country", "countries"));
 
     youIf (nMorePlayers > 0, event.getSelfPlayer (), "The game will begin when {}.",
            Strings.pluralize (nMorePlayers, "more player joins", "more players join"));

@@ -23,20 +23,22 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.annotation.Nullable;
 
 public final class CompositeDialog implements Dialog
 {
-  private final ImmutableSet <Dialog> dialogs;
+  private final Collection <Dialog> dialogs = new HashSet <> ();
 
   public CompositeDialog (final Dialog... dialogs)
   {
     Arguments.checkIsNotNull (dialogs, "dialogs");
     Arguments.checkHasNoNullElements (dialogs, "dialogs");
 
-    this.dialogs = ImmutableSet.copyOf (dialogs);
+    this.dialogs.addAll (Arrays.asList (dialogs));
   }
 
   @Override
@@ -244,5 +246,35 @@ public final class CompositeDialog implements Dialog
     {
       dialog.refreshAssets ();
     }
+  }
+
+  public void add (final Dialog dialog)
+  {
+    Arguments.checkIsNotNull (dialog, "dialog");
+
+    dialogs.add (dialog);
+  }
+
+  public void add (final Dialog... dialogs)
+  {
+    Arguments.checkIsNotNull (dialogs, "dialogs");
+    Arguments.checkHasNoNullElements (dialogs, "dialogs");
+
+    this.dialogs.addAll (Arrays.asList (dialogs));
+  }
+
+  public void remove (final Dialog dialog)
+  {
+    Arguments.checkIsNotNull (dialog, "dialog");
+
+    dialogs.remove (dialog);
+  }
+
+  public void remove (final Dialog... dialogs)
+  {
+    Arguments.checkIsNotNull (dialogs, "dialogs");
+    Arguments.checkHasNoNullElements (dialogs, "dialogs");
+
+    this.dialogs.removeAll (Arrays.asList (dialogs));
   }
 }

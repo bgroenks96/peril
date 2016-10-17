@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.game;
 
+import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
 
@@ -30,6 +31,12 @@ public interface GameConfiguration
   int getSpectatorLimit ();
 
   int getWinPercentage ();
+
+  GameRules getGameRules ();
+
+  int getWinningCountryCount ();
+
+  int getTotalCountryCount ();
 
   InitialCountryAssignment getInitialCountryAssignment ();
 

@@ -25,7 +25,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 
 public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayerCountryArmiesChangedEvent
         implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
@@ -38,9 +38,16 @@ public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayer
   }
 
   @Override
-  public Optional <PlayerPacket> getPreviousOwner ()
+  public boolean hasPreviousOwner ()
   {
-    return Optional.absent ();
+    return false;
+  }
+
+  @Override
+  @Nullable
+  public PlayerPacket getPreviousOwner ()
+  {
+    return null;
   }
 
   @Override

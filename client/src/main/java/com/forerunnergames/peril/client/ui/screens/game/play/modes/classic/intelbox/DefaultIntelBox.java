@@ -13,12 +13,11 @@ import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorI
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 
-import com.google.common.collect.ImmutableSet;
+import javax.annotation.Nullable;
 
 public final class DefaultIntelBox implements IntelBox
 {
@@ -55,6 +54,11 @@ public final class DefaultIntelBox implements IntelBox
   private final Cell <Actor> playerColorIconCell;
   private final Table playerNameTable;
   private PlayerColorIcon playerColorIcon = PlayerColorIcon.NULL_PLAYER_COLOR_ICON;
+  private int ownedCountries;
+  @Nullable
+  private GameServerConfiguration gameServerConfig;
+  @Nullable
+  private PlayerPacket selfPlayer;
 
   public DefaultIntelBox (final ClassicModePlayScreenWidgetFactory widgetFactory,
                           final EventListener detailedReportButtonListener)
@@ -74,7 +78,7 @@ public final class DefaultIntelBox implements IntelBox
     gameRoundTextLabel = widgetFactory.createIntelBoxSettingTextLabel ("?");
     gamePhaseSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Phase: ");
     gamePhaseTextLabel = widgetFactory.createIntelBoxSettingTextLabel ("?");
-    conquerSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("You Conquered: ");
+    conquerSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Ownership: ");
     conquerWinPercentTextLabel = widgetFactory.createIntelBoxSettingTextLabel ("? of ? %");
     conquerCountryCountTextLabel = widgetFactory.createIntelBoxSettingTextLabel ("* Conquer ? more countries to win");
     reinforcementsSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Estimated Reinforcements:");
@@ -179,9 +183,11 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void setPlayer (final PlayerPacket player)
+  public void setSelfPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
+
+    selfPlayer = player;
 
     playerNameTextLabel.setText (player.getName ());
     playerColorIcon = widgetFactory.createPlayerColorIcon (player);
@@ -194,8 +200,11 @@ public final class DefaultIntelBox implements IntelBox
   {
     Arguments.checkIsNotNull (config, "config");
 
+    gameServerConfig = config;
+
     setMapMetadata (config.getMapMetadata ());
-    serverNameTextLabel.setText (config.getGameServerName ());
+    setServerName (config.getGameServerName ());
+    setWinConditions (ownedCountries, config);
   }
 
   @Override
@@ -229,10 +238,31 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void setOwnedCountries (final ImmutableSet <CountryPacket> ownedCountries)
+  public void setOwnedCountriesForSelf (final int countries, @Nullable final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (ownedCountries, "ownedCountries");
-    Arguments.checkHasNoNullElements (ownedCountries, "ownedCountries");
+    Arguments.checkIsNotNegative (countries, "countries");
+
+    if (gameServerConfig == null || !isSelf (player)) return;
+
+    ownedCountries = countries;
+
+    setWinConditions (countries, gameServerConfig);
+  }
+
+  @Override
+  public void addOwnedCountryForSelf (@Nullable final PlayerPacket player)
+  {
+    if (gameServerConfig == null || !isSelf (player)) return;
+
+    setWinConditions (++ownedCountries, gameServerConfig);
+  }
+
+  @Override
+  public void removeOwnedCountryForSelf (@Nullable final PlayerPacket player)
+  {
+    if (gameServerConfig == null || !isSelf (player)) return;
+
+    setWinConditions (--ownedCountries, gameServerConfig);
   }
 
   @Override
@@ -294,5 +324,25 @@ public final class DefaultIntelBox implements IntelBox
     detailedReportButtonLabel.setStyle (widgetFactory.createIntelBoxButtonTextLabelStyle ());
     detailedReportButton.setStyle (widgetFactory.createIntelBoxDetailedReportButtonStyle ());
     playerColorIcon.refreshAssets ();
+  }
+
+  private boolean isSelf (@Nullable final PlayerPacket player)
+  {
+    return selfPlayer != null && player != null && player.is (selfPlayer);
+  }
+
+  private void setServerName (final String serverName)
+  {
+    serverNameTextLabel.setText (serverName);
+  }
+
+  private void setWinConditions (final int ownedCountryCount, final GameServerConfiguration config)
+  {
+    final int currentWinPercent = Math.round (ownedCountryCount / (float) config.getTotalCountryCount () * 100.0f);
+    final int nMoreCountriesToWin = config.getWinningCountryCount () - ownedCountryCount;
+
+    conquerWinPercentTextLabel.setText (Strings.format ("{} of {} %", currentWinPercent, config.getWinPercentage ()));
+    conquerCountryCountTextLabel.setText (Strings
+            .format ("* Conquer {} to win", Strings.pluralize (nMoreCountriesToWin, "more country", "more countries")));
   }
 }

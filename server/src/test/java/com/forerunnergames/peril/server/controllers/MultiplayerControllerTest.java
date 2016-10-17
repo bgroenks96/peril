@@ -49,6 +49,8 @@ import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.common.map.DefaultMapMetadata;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.MapType;
@@ -1103,6 +1105,7 @@ public class MultiplayerControllerTest
     private int playerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
     private int spectatorLimit = GameSettings.DEFAULT_SPECTATOR_LIMIT;
     private int winPercent = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
+    private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
 
     MultiplayerControllerBuilder gameServerName (final String gameServerName)
     {
@@ -1162,6 +1165,14 @@ public class MultiplayerControllerTest
       return this;
     }
 
+    MultiplayerControllerBuilder totalCountryCount (final int totalCountryCount)
+    {
+      Arguments.checkIsNotNegative (totalCountryCount, "totalCountryCount");
+
+      this.totalCountryCount = totalCountryCount;
+      return this;
+    }
+
     MultiplayerControllerBuilder initialCountryAssignment (final InitialCountryAssignment initialCountryAssignment)
     {
       Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
@@ -1174,8 +1185,11 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
 
+      final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercent, totalCountryCount,
+                                                           initialCountryAssignment);
+
       final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playerLimit, spectatorLimit,
-              winPercent, initialCountryAssignment, mapMetadata);
+              winPercent, initialCountryAssignment, mapMetadata, gameRules);
 
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

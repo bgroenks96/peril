@@ -30,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.NonDelayingTimer;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
-
 import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
@@ -38,7 +37,6 @@ import com.forerunnergames.peril.client.ui.EmptyTimerTask;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.Dice;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceArrows;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
@@ -46,17 +44,14 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
-import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
-import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
-
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.google.common.collect.ImmutableList;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
@@ -78,7 +73,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   private final BattleDialogWidgetFactory widgetFactory;
   private final ScreenShaker screenShaker;
   private final BattleDialogListener listener;
-  private final GameRules gameRules;
   private final Vector2 tempPosition = new Vector2 ();
   private final Vector2 tempScaling = new Vector2 ();
   private final Vector2 tempSize = new Vector2 ();
@@ -105,7 +99,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   private Timer.Task showBattleResultCompleteTask = new EmptyTimerTask ();
 
   protected AbstractBattleDialog (final BattleDialogWidgetFactory widgetFactory,
-                                  final DiceFactory diceFactory,
                                   final String title,
                                   final Stage stage,
                                   final ScreenShaker screenShaker,
@@ -131,7 +124,6 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     // @formatter:on
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
-    Arguments.checkIsNotNull (diceFactory, "diceFactory");
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (screenShaker, "screenShaker");
     Arguments.checkIsNotNull (listener, "listener");
@@ -140,16 +132,14 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
     this.screenShaker = screenShaker;
     this.listener = listener;
 
-    gameRules = new ClassicGameRules.Builder ().build ();
-
     attackingPlayerNameLabel = widgetFactory.createBattleDialogPlayerNameLabel ();
     defendingPlayerNameLabel = widgetFactory.createBattleDialogPlayerNameLabel ();
     attackingCountryNameLabel = widgetFactory.createBattleDialogCountryNameLabel ();
     defendingCountryNameLabel = widgetFactory.createBattleDialogCountryNameLabel ();
     battlingArrowLabel = widgetFactory.createBattleDialogBattlingArrowLabel ();
-    attackerDice = diceFactory.createAttackerDice (gameRules);
-    defenderDice = diceFactory.createDefenderDice (gameRules);
-    diceArrows = widgetFactory.createBattleDialogDiceArrows (gameRules);
+    attackerDice = widgetFactory.createAttackerDice ();
+    defenderDice = widgetFactory.createDefenderDice ();
+    diceArrows = widgetFactory.createBattleDialogDiceArrows ();
     attackingCountryArmyText = widgetFactory.createCountryArmyText ();
     attackingCountryArmyTextEffects = widgetFactory.createAttackingCountryArmyTextEffects ();
     defendingCountryArmyText = widgetFactory.createCountryArmyText ();
@@ -377,7 +367,8 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public final void playBattleEffects (final int attackingCountryDeltaArmies, final int defendingCountryDeltaArmies)
+  public final void playBattleEffects (@AllowNegative final int attackingCountryDeltaArmies,
+                                       @AllowNegative final int defendingCountryDeltaArmies)
   {
     if (attackingCountryDeltaArmies == 0 && defendingCountryDeltaArmies == 0) return;
 

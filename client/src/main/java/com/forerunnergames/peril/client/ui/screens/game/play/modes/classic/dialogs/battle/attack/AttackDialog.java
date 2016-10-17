@@ -42,7 +42,7 @@ public final class AttackDialog extends AbstractBattleDialog
                        final ScreenShaker screenShaker,
                        final AttackDialogListener listener)
   {
-    super (widgetFactory, new AttackDialogDiceFactory (widgetFactory), TITLE_TEXT, stage, screenShaker, listener);
+    super (widgetFactory, TITLE_TEXT, stage, screenShaker, listener);
 
     Arguments.checkIsNotNull (listener, "listener");
 
