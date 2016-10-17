@@ -15,28 +15,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.request;
+package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerFortifyCountryEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerFortifyCountryRequestEvent extends AbstractPlayerFortifyCountryEvent
-        implements PlayerInputRequestEvent
+public final class PlayerIssueFortifyOrderEvent extends AbstractPlayerFortifyCountryEvent
+        implements DirectPlayerNotificationEvent
 {
-  public PlayerFortifyCountryRequestEvent (final PlayerPacket player,
-                                           final CountryPacket sourceCountry,
-                                           final CountryPacket targetCountry,
-                                           final int minDeltaArmyCount,
-                                           final int maxDeltaArmyCount)
+  public PlayerIssueFortifyOrderEvent (final PlayerPacket player,
+                                       final CountryPacket sourceCountry,
+                                       final CountryPacket targetCountry,
+                                       final int minDeltaArmyCount,
+                                       final int maxDeltaArmyCount)
   {
     super (player, sourceCountry, targetCountry, minDeltaArmyCount, maxDeltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerFortifyCountryRequestEvent ()
+  private PlayerIssueFortifyOrderEvent ()
   {
   }
 }

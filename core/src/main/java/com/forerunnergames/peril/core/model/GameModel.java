@@ -19,14 +19,17 @@
 package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
@@ -34,7 +37,6 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFo
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
@@ -43,10 +45,10 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayer
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
@@ -88,18 +90,18 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
@@ -220,6 +222,7 @@ public final class GameModel
     OCCUPY_MIN_ARMY_COUNT,
     OCCUPY_MAX_ARMY_COUNT,
     PLAYER_OCCUPIED_COUNTRY,
+    FORTIFY_VALID_VECTORS,
     FORTIFY_SOURCE_COUNTRY_ID,
     FORTIFY_TARGET_COUNTRY_ID
   }
@@ -1198,23 +1201,20 @@ public final class GameModel
     publish (new PlayerOrderAttackSuccessEvent (resultPacket));
     publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket));
 
+    final BattleOutcome outcome = result.getOutcome ();
     switch (result.getOutcome ())
     {
       case CONTINUE:
-      {
         publish (new BattleResultContinueEvent ());
         return;
-      }
       case ATTACKER_DEFEATED:
-      {
         publish (new BattleResultDefeatEvent ());
         break;
-      }
       case ATTACKER_VICTORIOUS:
-      {
         publish (new BattleResultVictoryEvent ());
         break;
-      }
+      default:
+        Exceptions.throwIllegalState ("Unrecognized battle outcome: {}", outcome);
     }
 
     clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
@@ -1326,8 +1326,6 @@ public final class GameModel
   {
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    log.info ("Begin fortify phase for player [{}].", currentPlayer);
-
     final Id currentPlayerId = getCurrentPlayerId ();
     final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectorBuilder = ImmutableSetMultimap
@@ -1347,15 +1345,16 @@ public final class GameModel
     final ImmutableMultimap <CountryPacket, CountryPacket> validFortifyVectors = validFortifyVectorBuilder.build ();
     if (validFortifyVectors.isEmpty ())
     {
-      publish (new SkipFortifyPhaseEvent (currentPlayer));
+      publish (new SkipFortifyPhaseEvent (this.getCurrentPlayerPacket ()));
       return;
     }
 
-    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+    turnDataCache.put (CacheKey.FORTIFY_VALID_VECTORS, validFortifyVectors);
+
+    log.info ("Begin fortify phase for player [{}].", currentPlayer);
 
     publish (new BeginFortifyPhaseEvent (currentPlayer));
-    publish (new PlayerBeginFortificationEvent (playerPacket, validFortifyVectors));
-    publish (new PlayerBeginFortificationWaitEvent (playerPacket));
+    publish (new PlayerBeginFortificationWaitEvent (currentPlayer));
   }
 
   @StateExitAction
@@ -1366,6 +1365,20 @@ public final class GameModel
     log.info ("End fortify phase for player [{}].", player);
 
     publish (new EndFortifyPhaseEvent (player));
+  }
+
+  @StateEntryAction
+  @SuppressWarnings ("unchecked")
+  public void waitForPlayerToSelectFortifyVector ()
+  {
+    final PlayerPacket player = getCurrentPlayerPacket ();
+
+    log.info ("Waiting for player [{}] to select a fortification vector...", player);
+
+    final ImmutableMultimap <CountryPacket, CountryPacket> validFortifyVectors;
+    validFortifyVectors = turnDataCache.get (CacheKey.FORTIFY_VALID_VECTORS, ImmutableMultimap.class);
+
+    publish (new PlayerBeginFortificationEvent (player, validFortifyVectors));
   }
 
   @StateTransitionCondition
@@ -1447,7 +1460,7 @@ public final class GameModel
     final int maxDeltaArmyCount = rules.getMaxFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
 
     publish (new PlayerSelectFortifyVectorSuccessEvent (playerPacket, sourceCountryPacket, targetCountryPacket));
-    publish (new PlayerFortifyCountryRequestEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
+    publish (new PlayerIssueFortifyOrderEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
             minDeltaArmyCount, maxDeltaArmyCount));
     publish (new PlayerFortifyCountryWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
             minDeltaArmyCount, maxDeltaArmyCount));
@@ -1459,7 +1472,7 @@ public final class GameModel
   }
 
   @StateTransitionCondition
-  public boolean verifyPlayerFortifyCountryResponse (final PlayerFortifyCountryResponseRequestEvent event)
+  public boolean verifyPlayerFortifyOrder (final PlayerOrderFortifyRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -1471,8 +1484,8 @@ public final class GameModel
 
     if (internalCommHandler.isNotSenderOf (event, currentPlayer))
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
+      publish (new PlayerOrderFortifyDeniedEvent (currentPlayer,
+              PlayerOrderFortifyDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
       return false;
     }
 
@@ -1486,15 +1499,15 @@ public final class GameModel
 
     if (deltaArmyCount < minDeltaArmyCount)
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_UNDERFLOW));
+      publish (new PlayerOrderFortifyDeniedEvent (currentPlayer,
+              PlayerOrderFortifyDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_UNDERFLOW));
       return false;
     }
 
     if (deltaArmyCount > maxDeltaArmyCount)
     {
-      publish (new PlayerFortifyCountryResponseDeniedEvent (currentPlayer,
-              PlayerFortifyCountryResponseDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_OVERFLOW));
+      publish (new PlayerOrderFortifyDeniedEvent (currentPlayer,
+              PlayerOrderFortifyDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_OVERFLOW));
       return false;
     }
 
@@ -1516,8 +1529,17 @@ public final class GameModel
     final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
     publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -deltaArmyCount));
     publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, deltaArmyCount));
-    publish (new PlayerFortifyCountryResponseSuccessEvent (currentPlayer, sourceCountryPacket, targetCountryPacket,
+    publish (new PlayerOrderFortifySuccessEvent (currentPlayer, sourceCountryPacket, targetCountryPacket,
             deltaArmyCount));
+
+    clearCacheValues (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, CacheKey.FORTIFY_TARGET_COUNTRY_ID);
+
+    return true;
+  }
+
+  public boolean verifyPlayerCancelFortifyVector (final PlayerCancelFortifyRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
 
     clearCacheValues (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, CacheKey.FORTIFY_TARGET_COUNTRY_ID);
 

@@ -19,9 +19,11 @@
 package com.forerunnergames.peril.core.model.state;
 
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
@@ -29,7 +31,6 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFo
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
@@ -389,13 +390,23 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerFortifyCountryResponseRequestEvent event)
+  public void onEvent (final PlayerOrderFortifyRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerFortifyCountryResponseRequestEvent (event);
+    context.onPlayerOrderFortifyRequestEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final PlayerCancelFortifyRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onPlayerCancelFortifyRequestEvent (event);
   }
 
   @Handler
@@ -480,7 +491,7 @@ public final class StateMachineEventHandler
 
   private class CompositeStateMachineListener implements StateMachineListener
   {
-    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList<> ();
+    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList <> ();
 
     CompositeStateMachineListener ()
     {

@@ -24,13 +24,13 @@ import com.forerunnergames.peril.client.events.SelectFortifySourceCountryRequest
 import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.response.PlayerFortifyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
-import com.forerunnergames.peril.common.net.events.server.request.PlayerFortifyCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -92,7 +92,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
       @Override
       public void run ()
       {
-        publish (new PlayerFortifyCountryResponseRequestEvent (fortificationDialog.getDeltaArmyCount ()));
+        publish (new PlayerOrderFortifyRequestEvent (fortificationDialog.getDeltaArmyCount ()));
       }
     });
   }
@@ -135,7 +135,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryRequestEvent event)
+  void onEvent (final PlayerIssueFortifyOrderEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -155,7 +155,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryResponseSuccessEvent event)
+  void onEvent (final PlayerOrderFortifySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -165,7 +165,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryResponseDeniedEvent event)
+  void onEvent (final PlayerOrderFortifyDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

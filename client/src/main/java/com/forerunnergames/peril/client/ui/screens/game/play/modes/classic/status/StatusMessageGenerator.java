@@ -69,7 +69,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCa
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
@@ -607,7 +607,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryResponseSuccessEvent event)
+  void onEvent (final PlayerOrderFortifySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
