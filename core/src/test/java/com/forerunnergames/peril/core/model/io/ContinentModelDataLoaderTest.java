@@ -23,8 +23,8 @@ import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.common.io.DataLoader;
 import com.forerunnergames.peril.core.model.map.continent.ContinentDataMatcher;
-import com.forerunnergames.peril.core.model.map.continent.ContinentDataMatcher.ContinentData;
 import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.map.continent.ContinentDataMatcher.ContinentData;
 import com.forerunnergames.peril.core.model.map.io.ContinentModelDataLoader;
 import com.forerunnergames.peril.core.model.map.io.CountryIdResolver;
 import com.forerunnergames.tools.common.id.IdGenerator;

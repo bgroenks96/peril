@@ -42,32 +42,6 @@ public final class DefaultPlayerCommunicator implements PlayerCommunicator
   }
 
   @Override
-  public void sendTo (final Remote client, final Object object)
-  {
-    Arguments.checkIsNotNull (client, "client");
-    Arguments.checkIsNotNull (object, "object");
-
-    clientCommunicator.sendTo (client, object);
-  }
-
-  @Override
-  public void sendToAll (final Object object)
-  {
-    Arguments.checkIsNotNull (object, "object");
-
-    clientCommunicator.sendToAll (object);
-  }
-
-  @Override
-  public void sendToAllExcept (final Remote client, final Object object)
-  {
-    Arguments.checkIsNotNull (client, "client");
-    Arguments.checkIsNotNull (object, "object");
-
-    clientCommunicator.sendToAllExcept (client, object);
-  }
-
-  @Override
   public void sendToPlayer (final PlayerPacket player,
                             final Object object,
                             final ClientPlayerMapping clientPlayerMapping)
@@ -112,5 +86,31 @@ public final class DefaultPlayerCommunicator implements PlayerCommunicator
     {
       sendToPlayer (targetPlayer, object, clientPlayerMapping);
     }
+  }
+
+  @Override
+  public void sendTo (final Remote client, final Object object)
+  {
+    Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (object, "object");
+
+    clientCommunicator.sendTo (client, object);
+  }
+
+  @Override
+  public void sendToAll (final Object object)
+  {
+    Arguments.checkIsNotNull (object, "object");
+
+    clientCommunicator.sendToAll (object);
+  }
+
+  @Override
+  public void sendToAllExcept (final Remote client, final Object object)
+  {
+    Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (object, "object");
+
+    clientCommunicator.sendToAllExcept (client, object);
   }
 }

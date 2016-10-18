@@ -22,9 +22,9 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
-import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.math.IntMath;

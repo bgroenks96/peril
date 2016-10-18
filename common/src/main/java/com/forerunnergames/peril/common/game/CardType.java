@@ -32,7 +32,7 @@ public enum CardType
   TYPE3 (3),
   WILDCARD (0);
 
-  private static final Map <Integer, CardType> valueMap = new HashMap<> ();
+  private static final Map <Integer, CardType> valueMap = new HashMap <> ();
 
   static
   {

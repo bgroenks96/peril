@@ -165,12 +165,11 @@ public final class LibGdxScreenSize implements ScreenSize
   {
     update ();
 
-    return Strings.format (
-                           "{}: Current Width: {} | Current Height: {} | Previous Width: {}"
+    return Strings.format ("{}: Current Width: {} | Current Height: {} | Previous Width: {}"
                                    + " | Previous Height: {} | Reference Width: {} | Reference Height: {}"
                                    + " | Reference to Actual Scaling: {} | Actual to Reference Scaling: {}",
-                           getClass ().getSimpleName (), currentWidth, currentHeight, previousWidth, previousHeight,
-                           referenceScreenWidth, referenceScreenHeight, referenceToActualScaling,
-                           actualToReferenceScaling);
+                           getClass ().getSimpleName (),
+                           currentWidth, currentHeight, previousWidth, previousHeight, referenceScreenWidth,
+                           referenceScreenHeight, referenceToActualScaling, actualToReferenceScaling);
   }
 }

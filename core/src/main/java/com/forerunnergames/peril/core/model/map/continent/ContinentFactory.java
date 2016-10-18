@@ -90,7 +90,7 @@ public final class ContinentFactory
   {
     private final String continentName;
     private final Id id;
-    private final Set <Id> countries = new HashSet<> ();
+    private final Set <Id> countries = new HashSet <> ();
     private int reinforcementBonus;
 
     public ContinentBuilder (final String continentName)

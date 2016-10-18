@@ -43,7 +43,7 @@ import java.util.Map;
 
 public final class DefaultPlayerModel implements PlayerModel
 {
-  private final Map <Id, Player> players = new HashMap<> ();
+  private final Map <Id, Player> players = new HashMap <> ();
   private final GameRules rules;
 
   public DefaultPlayerModel (final GameRules rules)
@@ -285,8 +285,8 @@ public final class DefaultPlayerModel implements PlayerModel
   @Override
   public ImmutableSet <PlayerPacket> getAllPlayersExcept (final Id playerId)
   {
-    Preconditions.checkIsTrue (existsPlayerWith (playerId),
-                               Strings.format ("No player with id [{}] exists.", playerId));
+    Preconditions
+            .checkIsTrue (existsPlayerWith (playerId), Strings.format ("No player with id [{}] exists.", playerId));
 
     final Player player = modelPlayerWith (playerId);
     return PlayerPackets.fromPlayers (Collections2.filter (players.values (), not (equalTo (player))));

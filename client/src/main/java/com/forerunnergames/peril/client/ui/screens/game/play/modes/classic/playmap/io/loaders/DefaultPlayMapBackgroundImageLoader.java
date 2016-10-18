@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgroundImageLoader
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultPlayMapBackgroundImageLoader.class);
-  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap<> ();
+  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap <> ();
   private final AssetManager assetManager;
 
   public DefaultPlayMapBackgroundImageLoader (final AssetManager assetManager)
@@ -86,8 +86,8 @@ public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgro
 
     if (!assetManager.isLoaded (imageFileNamePath, AssetSettings.MAP_BACKGROUND_IMAGE_TYPE))
     {
-      throw new PlayMapLoadingException (
-              Strings.format ("Background image [{}] for map [{}] is not loaded.", imageFileNamePath, mapMetadata));
+      throw new PlayMapLoadingException (Strings.format ("Background image [{}] for map [{}] is not loaded.",
+                                                         imageFileNamePath, mapMetadata));
     }
 
     return new Image (assetManager.get (imageFileNamePath, AssetSettings.MAP_BACKGROUND_IMAGE_TYPE));

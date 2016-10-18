@@ -176,8 +176,8 @@ public final class GameSettings
 
   private static void invalidClanName (final String clanName)
   {
-    throw new IllegalStateException (
-            Strings.format ("Invalid clan name [{}]. Valid clan name rules:\n\n{}", clanName, VALID_CLAN_NAME_PATTERN));
+    throw new IllegalStateException (Strings.format ("Invalid clan name [{}]. Valid clan name rules:\n\n{}", clanName,
+                                                     VALID_CLAN_NAME_PATTERN));
   }
 
   private GameSettings ()

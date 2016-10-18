@@ -35,8 +35,8 @@ public final class InitialCountryAssignmentParameterValidator implements IParame
     }
     catch (final IllegalArgumentException e)
     {
-      throw new ParameterException (
-              new RuntimeException (Strings.format ("Invalid value \"{}\" for parameter \"{}\".", value, name, e)));
+      throw new ParameterException (new RuntimeException (Strings.format ("Invalid value \"{}\" for parameter \"{}\".",
+                                                                          value, name, e)));
     }
   }
 }

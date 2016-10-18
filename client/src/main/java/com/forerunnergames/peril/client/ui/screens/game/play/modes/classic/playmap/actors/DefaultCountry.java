@@ -352,9 +352,10 @@ public final class DefaultCountry implements Country
   public String toString ()
   {
     return String.format ("%1$s | Name: %2$s | Primary Image State: %3$s | Secondary Image State: %4$s"
-            + " | Primary Image: %5$s  | Secondary Image: %6$s | Enabled: %7$s | "
-            + "Image Data: %8$s | Army Text: %9$s | Primary Images: %10$s " + "| Secondary Images: %11$s",
-                          getClass ().getSimpleName (), group.getName (), primaryImageState, secondaryImageState,
-                          primaryImage, secondaryImage, isEnabled, imageData, armyText, primaryImages, secondaryImages);
+                                  + " | Primary Image: %5$s  | Secondary Image: %6$s | Enabled: %7$s | "
+                                  + "Image Data: %8$s | Army Text: %9$s | Primary Images: %10$s "
+                                  + "| Secondary Images: %11$s", getClass ().getSimpleName (), group.getName (),
+                          primaryImageState, secondaryImageState, primaryImage, secondaryImage,
+                          isEnabled, imageData, armyText, primaryImages, secondaryImages);
   }
 }

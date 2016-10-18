@@ -75,7 +75,7 @@ public final class InternalMapMetadataLoader implements MapMetadataLoader
       return ImmutableSet.of ();
     }
 
-    final Set <MapMetadata> mapMetadatas = new HashSet<> ();
+    final Set <MapMetadata> mapMetadatas = new HashSet <> ();
 
     for (final String rawMapDirectoryName : rawMapDirectoryNames)
     {
@@ -96,8 +96,8 @@ public final class InternalMapMetadataLoader implements MapMetadataLoader
 
   private void mapNameError (final String prependedMessage, final String mapName, final String internalMapsDirectory)
   {
-    throw new PlayMapLoadingException (
-            Strings.format ("{} {} map name \'{}\'\n\nLocation:\n\n{}", prependedMessage,
-                            mapType.name ().toLowerCase (), Strings.toProperCase (mapName), internalMapsDirectory));
+    throw new PlayMapLoadingException (Strings.format ("{} {} map name \'{}\'\n\nLocation:\n\n{}", prependedMessage,
+                                                       mapType.name ().toLowerCase (), Strings.toProperCase (mapName),
+                                                       internalMapsDirectory));
   }
 }

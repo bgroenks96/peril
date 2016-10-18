@@ -79,8 +79,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
         if (childPathFile.isDirectory ())
         {
-          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is a directory", childPathFile,
-                     mapMetadata);
+          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is a directory",
+                     childPathFile, mapMetadata);
           continue;
         }
 
@@ -100,7 +100,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex))
         {
           log.trace ("Ignoring potential country atlas file [{}] for map [{}] because although it's a valid country "
-                  + "atlas *image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
+                             + "atlas *image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
                      childPathFile, mapMetadata, expectedAtlasIndex);
           continue;
         }
@@ -112,7 +112,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex - 1))
         {
           log.trace ("Ignoring child path file [{}] for map [{}] because although it's a valid country atlas "
-                  + "*image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
+                             + "*image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
                      childPathFile, mapMetadata, expectedAtlasIndex);
           continue;
         }
@@ -131,9 +131,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
                                     externalCountryAtlasesDirectory, mapMetadata, expectedAtlasIndex);
         }
 
-        final CountryAtlasMetadata countryAtlasMetadata = new DefaultCountryAtlasMetadata (
-                new AssetDescriptor<> (relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class),
-                mapMetadata);
+        final CountryAtlasMetadata countryAtlasMetadata = new DefaultCountryAtlasMetadata (new AssetDescriptor <> (
+                relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class), mapMetadata);
 
         if (!countryAtlasMetadatas.add (countryAtlasMetadata))
         {

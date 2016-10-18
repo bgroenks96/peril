@@ -42,7 +42,7 @@ public final class DefaultCountryImageDataRepositoryFactory implements CountryIm
 
     final MapResourcesPathParser mapResourcesPathParser = new AbsoluteMapResourcesPathParser (mapMetadata.getMode ());
 
-    return new DefaultCountryImageDataRepository (
-            countryImageDataLoader.load (mapResourcesPathParser.parseCountryImageDataFileNamePath (mapMetadata)));
+    return new DefaultCountryImageDataRepository (countryImageDataLoader.load (mapResourcesPathParser
+            .parseCountryImageDataFileNamePath (mapMetadata)));
   }
 }

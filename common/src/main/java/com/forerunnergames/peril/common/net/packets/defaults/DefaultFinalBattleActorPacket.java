@@ -26,8 +26,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultFinalBattleActorPacket extends DefaultPendingBattleActorPacket
-        implements FinalBattleActorPacket
+public final class DefaultFinalBattleActorPacket extends DefaultPendingBattleActorPacket implements
+        FinalBattleActorPacket
 {
   private final int dieCount;
 

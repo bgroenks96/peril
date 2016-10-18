@@ -23,7 +23,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlaye
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerIssueAttackOrderEvent extends AbstractBattleSetupEvent implements DirectPlayerNotificationEvent
+public final class PlayerIssueAttackOrderEvent extends AbstractBattleSetupEvent implements
+        DirectPlayerNotificationEvent
 {
   public PlayerIssueAttackOrderEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {

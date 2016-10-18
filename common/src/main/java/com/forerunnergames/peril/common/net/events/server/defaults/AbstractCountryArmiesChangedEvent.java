@@ -23,10 +23,9 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerNotificationEvent;
 
-public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryEvent
-        implements CountryArmiesChangedEvent
+public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryEvent implements
+        CountryArmiesChangedEvent
 {
   private final int deltaArmyCount;
 

@@ -25,8 +25,8 @@ import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryResponseSuccessEvent extends AbstractBattleResultEvent
-        implements PlayerResponseSuccessEvent
+public final class PlayerDefendCountryResponseSuccessEvent extends AbstractBattleResultEvent implements
+        PlayerResponseSuccessEvent
 {
   public PlayerDefendCountryResponseSuccessEvent (final BattleResultPacket result)
   {

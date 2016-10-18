@@ -23,8 +23,8 @@ import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableMap;
 
-public abstract class AbstractTerritoryColorToNameConverter <T extends TerritoryColor <?>>
-        implements TerritoryColorToNameConverter <T>
+public abstract class AbstractTerritoryColorToNameConverter <T extends TerritoryColor <?>> implements
+        TerritoryColorToNameConverter <T>
 {
   private static final String UNKNOWN_TERRITORY_NAME = "";
   private final ImmutableMap <T, String> territoryColorsToNames;

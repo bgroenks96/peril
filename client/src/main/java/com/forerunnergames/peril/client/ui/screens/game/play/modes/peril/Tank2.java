@@ -54,6 +54,174 @@ public final class Tank2 extends Actor implements Unit
   }
 
   @Override
+  public void turnRight ()
+  {
+  }
+
+  @Override
+  public void turnLeft ()
+  {
+  }
+
+  @Override
+  public void turnAround ()
+  {
+  }
+
+  @Override
+  public void moveForward ()
+  {
+    previousPosition.set (currentPosition);
+    currentPosition.sub (bodyForwardVector);
+
+    clampPosition ();
+  }
+
+  @Override
+  public void moveReverse ()
+  {
+    previousPosition.set (currentPosition);
+    currentPosition.add (bodyForwardVector);
+
+    clampPosition ();
+  }
+
+  @Override
+  public void setMoving (final MovementDirection movementDirection)
+  {
+    Arguments.checkIsNotNull (movementDirection, "movementDirection");
+
+    if (turnDirection != TurnDirection.NONE || this.movementDirection != MovementDirection.NONE) return;
+
+    switch (movementDirection)
+    {
+      case FORWARD:
+      {
+        body.addAction (Actions.sequence (Actions.moveBy (bodyForwardVector.x
+                                                  * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, -bodyForwardVector.y
+                                                  * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                                          Actions.run (new Runnable ()
+                                          {
+                                            @Override
+                                            public void run ()
+                                            {
+                                              Tank2.this.movementDirection = MovementDirection.NONE;
+                                            }
+                                          })));
+
+        turret.addAction (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                          -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
+
+        break;
+      }
+      case REVERSE:
+      {
+        body.addAction (Actions.sequence (Actions.moveBy (-bodyForwardVector.x
+                                                  * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, bodyForwardVector.y
+                                                  * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                                          Actions.run (new Runnable ()
+                                          {
+                                            @Override
+                                            public void run ()
+                                            {
+                                              Tank2.this.movementDirection = MovementDirection.NONE;
+                                            }
+                                          })));
+
+        turret.addAction (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                          bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
+
+        break;
+      }
+    }
+
+    this.movementDirection = movementDirection;
+  }
+
+  @Override
+  public void setTurning (final TurnDirection turnDirection)
+  {
+    Arguments.checkIsNotNull (turnDirection, "turnDirection");
+
+    if (movementDirection != MovementDirection.NONE || this.turnDirection != TurnDirection.NONE) return;
+
+    switch (turnDirection)
+    {
+      case RIGHT:
+      {
+        body.addAction (Actions.sequence (Actions.rotateBy (-90, 1), Actions.run (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            Tank2.this.turnDirection = TurnDirection.NONE;
+
+            bodyForwardVector.rotate (-90);
+          }
+        })));
+
+        break;
+      }
+      case LEFT:
+      {
+        body.addAction (Actions.sequence (Actions.rotateBy (90, 1), Actions.run (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            Tank2.this.turnDirection = TurnDirection.NONE;
+
+            bodyForwardVector.rotate (90);
+          }
+        })));
+
+        break;
+      }
+      case U_TURN:
+      {
+        body.addAction (Actions.sequence (Actions.rotateBy (-180, 2), Actions.run (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            Tank2.this.turnDirection = TurnDirection.NONE;
+
+            bodyForwardVector.rotate (-180);
+          }
+        })));
+
+        break;
+      }
+    }
+
+    this.turnDirection = turnDirection;
+  }
+
+  @Override
+  public Vector2 getPreviousPosition ()
+  {
+    return previousPosition;
+  }
+
+  @Override
+  public Vector2 getCurrentPosition ()
+  {
+    return currentPosition;
+  }
+
+  @Override
+  public Actor asActor ()
+  {
+    return this;
+  }
+
+  @Override
+  public boolean is (final Actor actor)
+  {
+    return equals (actor);
+  }
+
+  @Override
   public void draw (final Batch batch, final float parentAlpha)
   {
     body.draw (batch, parentAlpha);
@@ -257,174 +425,6 @@ public final class Tank2 extends Actor implements Unit
     return false;
   }
 
-  @Override
-  public void turnRight ()
-  {
-  }
-
-  @Override
-  public void turnLeft ()
-  {
-  }
-
-  @Override
-  public void turnAround ()
-  {
-  }
-
-  @Override
-  public void moveForward ()
-  {
-    previousPosition.set (currentPosition);
-    currentPosition.sub (bodyForwardVector);
-
-    clampPosition ();
-  }
-
-  @Override
-  public void moveReverse ()
-  {
-    previousPosition.set (currentPosition);
-    currentPosition.add (bodyForwardVector);
-
-    clampPosition ();
-  }
-
-  @Override
-  public void setMoving (final MovementDirection movementDirection)
-  {
-    Arguments.checkIsNotNull (movementDirection, "movementDirection");
-
-    if (turnDirection != TurnDirection.NONE || this.movementDirection != MovementDirection.NONE) return;
-
-    switch (movementDirection)
-    {
-      case FORWARD:
-      {
-        body.addAction (Actions
-                .sequence (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
-                                           -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
-                           Actions.run (new Runnable ()
-                           {
-                             @Override
-                             public void run ()
-                             {
-                               Tank2.this.movementDirection = MovementDirection.NONE;
-                             }
-                           })));
-
-        turret.addAction (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
-                                          -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
-
-        break;
-      }
-      case REVERSE:
-      {
-        body.addAction (Actions
-                .sequence (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
-                                           bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
-                           Actions.run (new Runnable ()
-                           {
-                             @Override
-                             public void run ()
-                             {
-                               Tank2.this.movementDirection = MovementDirection.NONE;
-                             }
-                           })));
-
-        turret.addAction (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
-                                          bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
-
-        break;
-      }
-    }
-
-    this.movementDirection = movementDirection;
-  }
-
-  @Override
-  public void setTurning (final TurnDirection turnDirection)
-  {
-    Arguments.checkIsNotNull (turnDirection, "turnDirection");
-
-    if (movementDirection != MovementDirection.NONE || this.turnDirection != TurnDirection.NONE) return;
-
-    switch (turnDirection)
-    {
-      case RIGHT:
-      {
-        body.addAction (Actions.sequence (Actions.rotateBy (-90, 1), Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            Tank2.this.turnDirection = TurnDirection.NONE;
-
-            bodyForwardVector.rotate (-90);
-          }
-        })));
-
-        break;
-      }
-      case LEFT:
-      {
-        body.addAction (Actions.sequence (Actions.rotateBy (90, 1), Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            Tank2.this.turnDirection = TurnDirection.NONE;
-
-            bodyForwardVector.rotate (90);
-          }
-        })));
-
-        break;
-      }
-      case U_TURN:
-      {
-        body.addAction (Actions.sequence (Actions.rotateBy (-180, 2), Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            Tank2.this.turnDirection = TurnDirection.NONE;
-
-            bodyForwardVector.rotate (-180);
-          }
-        })));
-
-        break;
-      }
-    }
-
-    this.turnDirection = turnDirection;
-  }
-
-  @Override
-  public Vector2 getPreviousPosition ()
-  {
-    return previousPosition;
-  }
-
-  @Override
-  public Vector2 getCurrentPosition ()
-  {
-    return currentPosition;
-  }
-
-  @Override
-  public Actor asActor ()
-  {
-    return this;
-  }
-
-  @Override
-  public boolean is (final Actor actor)
-  {
-    return equals (actor);
-  }
-
   public void setTurretTurning (final TurnDirection turnDirection)
   {
     Arguments.checkIsNotNull (turnDirection, "turnDirection");
@@ -507,13 +507,9 @@ public final class Tank2 extends Actor implements Unit
 
   private void clampPosition ()
   {
-    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX)
-      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
-    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX)
-      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
-    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX)
-      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
-    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX)
-      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
+    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
+    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
+    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
+    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
   }
 }

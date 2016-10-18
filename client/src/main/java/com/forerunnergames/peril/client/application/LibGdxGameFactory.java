@@ -64,9 +64,9 @@ public final class LibGdxGameFactory
   public static ApplicationListener create ()
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type casts.
-    final MBassador <Event> eventBus = EventBusFactory
-            .create (ImmutableSet.<IPublicationErrorHandler> of (new ThrowingPublicationErrorHandler ()),
-                     ImmutableSet.<UnhandledEventHandler> of (new AssetLoadingErrorUnhandledEventHandler ()));
+    final MBassador <Event> eventBus = EventBusFactory.create (ImmutableSet
+            .<IPublicationErrorHandler> of (new ThrowingPublicationErrorHandler ()), ImmutableSet
+            .<UnhandledEventHandler> of (new AssetLoadingErrorUnhandledEventHandler ()));
     final Client client = new KryonetClient ();
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
     final ClientController clientController = new EventBasedClientController (client, KryonetRegistration.CLASSES,
@@ -77,8 +77,7 @@ public final class LibGdxGameFactory
     final AssetManager assetManager = AssetManagerFactory.create (eventBus);
     final Controller assetController = new AssetController (assetManager);
     final MusicVolumeController musicVolumeController = new MusicVolumeController ();
-    final MusicController musicController = new MusicController (new MusicFactory (assetManager),
-            musicVolumeController);
+    final MusicController musicController = new MusicController (new MusicFactory (assetManager), musicVolumeController);
     final Application application = new ClientApplication (mainThreadExecutor, assetController, clientController,
             multiplayerController, musicController, musicVolumeController);
     final Game libGdxGame = new LibGdxGameWrapper (application);

@@ -38,8 +38,8 @@ specify a parent suite that will run all tests in the stage (standalone et ceter
  -->
 
 <suite name="Peril Full Integration Test Suite">
-    <suite-files>
-        <suite-file path="smoke/smoke-tests-all.xml" />
-        <suite-file path="functionality/classic-mode/func-tests-all.xml" />
-    </suite-files>
+  <suite-files>
+    <suite-file path="smoke/smoke-tests-all.xml"/>
+    <suite-file path="functionality/classic-mode/func-tests-all.xml"/>
+  </suite-files>
 </suite>

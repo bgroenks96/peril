@@ -568,8 +568,8 @@ public class PlayerModelTest
 
     addNPlayersTo (playerModel, MAX_PLAYERS);
 
-    final ImmutableSet <PlayerJoinGameStatus> results = playerModel
-            .requestToAdd (PlayerFactory.builder ("TestPlayerX").toFactory ());
+    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (PlayerFactory.builder ("TestPlayerX")
+            .toFactory ());
     assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL));
   }
 
@@ -807,7 +807,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {
@@ -833,7 +833,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {
@@ -868,7 +868,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {

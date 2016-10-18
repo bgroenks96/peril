@@ -22,12 +22,12 @@
 <suite name="Peril Classic Mode Core Functionality Tests" parallel="methods">
   <test name="Initial Game Phase Test" time-out="45000">
     <classes>
-      <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTest" />
+      <class name="com.forerunnergames.peril.integration.core.func.init.InitialGamePhaseTest"/>
     </classes>
   </test>
   <test name="Turn Phase Test" time-out="45000">
     <classes>
-      <class name="com.forerunnergames.peril.integration.core.func.turn.TurnPhaseTest" />
+      <class name="com.forerunnergames.peril.integration.core.func.turn.TurnPhaseTest"/>
     </classes>
   </test>
 </suite>

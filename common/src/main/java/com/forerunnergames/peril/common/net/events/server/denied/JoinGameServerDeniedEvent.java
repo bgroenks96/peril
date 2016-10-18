@@ -53,8 +53,8 @@ public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig,
-                           deniedEvent);
+    return Strings
+            .format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig, deniedEvent);
   }
 
   @RequiredForNetworkSerialization

@@ -29,8 +29,8 @@ import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMessage>
-        implements ChatMessageEvent, DeniedEvent <String>
+public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMessage> implements ChatMessageEvent,
+        DeniedEvent <String>
 {
   private final String reason;
   private ChatMessage message;

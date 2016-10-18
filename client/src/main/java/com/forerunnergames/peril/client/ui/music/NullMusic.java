@@ -46,18 +46,13 @@ public final class NullMusic implements Music
   }
 
   @Override
-  public void setLooping (final boolean isLooping)
-  {
-  }
-
-  @Override
   public boolean isLooping ()
   {
     return false;
   }
 
   @Override
-  public void setVolume (final float volume)
+  public void setLooping (final boolean isLooping)
   {
   }
 
@@ -68,12 +63,12 @@ public final class NullMusic implements Music
   }
 
   @Override
-  public void setPan (final float pan, final float volume)
+  public void setVolume (final float volume)
   {
   }
 
   @Override
-  public void setPosition (final float position)
+  public void setPan (final float pan, final float volume)
   {
   }
 
@@ -81,6 +76,11 @@ public final class NullMusic implements Music
   public float getPosition ()
   {
     return 0.0f;
+  }
+
+  @Override
+  public void setPosition (final float position)
+  {
   }
 
   @Override

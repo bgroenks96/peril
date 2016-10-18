@@ -23,8 +23,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
-public final class NullCountrySecondaryImages
-        implements CountryImages <CountrySecondaryImageState, CountrySecondaryImage>
+public final class NullCountrySecondaryImages implements
+        CountryImages <CountrySecondaryImageState, CountrySecondaryImage>
 {
   private final ImmutableMap <CountrySecondaryImageState, CountrySecondaryImage> imageStatesToImages;
 

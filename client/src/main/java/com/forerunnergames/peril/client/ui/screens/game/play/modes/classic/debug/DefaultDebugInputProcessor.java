@@ -94,6 +94,26 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
   }
 
   @Override
+  public void setPlayMap (final PlayMap playMap)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
+
+    this.playMap = playMap;
+
+    eventGenerator.setPlayMap (playMap);
+  }
+
+  @Override
+  public void reset ()
+  {
+    playMap.reset ();
+    statusBox.clear ();
+    chatBox.clear ();
+    playerBox.clear ();
+    eventGenerator.resetPlayers ();
+  }
+
+  @Override
   public boolean keyDown (final int keycode)
   {
     switch (keycode)
@@ -549,25 +569,5 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
         return false;
       }
     }
-  }
-
-  @Override
-  public void setPlayMap (final PlayMap playMap)
-  {
-    Arguments.checkIsNotNull (playMap, "playMap");
-
-    this.playMap = playMap;
-
-    eventGenerator.setPlayMap (playMap);
-  }
-
-  @Override
-  public void reset ()
-  {
-    playMap.reset ();
-    statusBox.clear ();
-    chatBox.clear ();
-    playerBox.clear ();
-    eventGenerator.resetPlayers ();
   }
 }

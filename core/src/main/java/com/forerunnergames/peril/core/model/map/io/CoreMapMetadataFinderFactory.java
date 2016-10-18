@@ -31,8 +31,9 @@ public final class CoreMapMetadataFinderFactory
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
 
-    return new DefaultMapMetadataFinder (gameMode,
-            new CoreMapMetadataLoaderFactory (gameMode).create (MapType.STOCK, MapType.CUSTOM).load ());
+    return new DefaultMapMetadataFinder (gameMode, new CoreMapMetadataLoaderFactory (gameMode).create (MapType.STOCK,
+                                                                                                       MapType.CUSTOM)
+            .load ());
   }
 
   private CoreMapMetadataFinderFactory ()

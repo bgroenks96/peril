@@ -145,8 +145,8 @@ import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAction;
@@ -465,8 +465,8 @@ public final class GameModel
 
     final List <Id> countries = Randomness.shuffle (new HashSet <> (countryMapGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
-    final ImmutableList <Integer> playerCountryDistribution = rules
-            .getInitialPlayerCountryDistribution (players.size ());
+    final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
+            .size ());
 
     log.info ("Randomly assigning {} countries to {} players...", countries.size (), players.size ());
 
@@ -749,8 +749,8 @@ public final class GameModel
     log.info ("Begin reinforcement phase for player [{}].", getCurrentPlayerPacket ());
 
     // add country reinforcements and publish event
-    final int countryReinforcementBonus = rules
-            .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
+    final int countryReinforcementBonus = rules.calculateCountryReinforcements (countryOwnerModel
+            .countCountriesOwnedBy (playerId));
     int continentReinforcementBonus = 0;
     final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
     for (final ContinentPacket cont : playerOwnedContinents)
@@ -835,8 +835,8 @@ public final class GameModel
 
     if (firstFailure.isPresent ())
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              firstFailure.get ().getFailureReason (), event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), firstFailure.get ()
+              .getFailureReason (), event));
       return;
     }
 
@@ -1070,10 +1070,10 @@ public final class GameModel
 
     publish (new PlayerEndAttackPhaseSuccessEvent (currentPlayer));
 
-    clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR, CacheKey.BATTLE_ATTACK_ORDER, CacheKey.FINAL_BATTLE_ACTOR_ATTACKER,
-                      CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, CacheKey.OCCUPY_SOURCE_COUNTRY,
-                      CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_PREV_OWNER, CacheKey.OCCUPY_NEW_OWNER,
-                      CacheKey.OCCUPY_MIN_ARMY_COUNT, CacheKey.OCCUPY_MAX_ARMY_COUNT);
+    clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR, CacheKey.BATTLE_ATTACK_ORDER,
+                      CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, CacheKey.FINAL_BATTLE_ACTOR_DEFENDER,
+                      CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
+                      CacheKey.OCCUPY_NEW_OWNER, CacheKey.OCCUPY_MIN_ARMY_COUNT, CacheKey.OCCUPY_MAX_ARMY_COUNT);
   }
 
   @StateTransitionCondition
@@ -1102,8 +1102,7 @@ public final class GameModel
 
     if (!defendingPlayer.equals (sender.get ()))
     {
-      log.warn ("Sender of event [{}] does not match registered defending player [{}].", sender.get (),
-                defendingPlayer);
+      log.warn ("Sender of event [{}] does not match registered defending player [{}].", sender.get (), defendingPlayer);
       return false;
     }
 
@@ -1519,8 +1518,8 @@ public final class GameModel
     if (failed.isPresent ())
     {
       // failure result from model class suggests some kind of serious state inconsistency
-      Exceptions.throwIllegalState ("Failed to change country army states [Reason: {}].",
-                                    failed.get ().getFailureReason ());
+      Exceptions.throwIllegalState ("Failed to change country army states [Reason: {}].", failed.get ()
+              .getFailureReason ());
     }
 
     MutatorResult.commitAllSuccessful (res1, res2);
@@ -1889,16 +1888,15 @@ public final class GameModel
       Arguments.checkIsNotNull (gameRules, "gameRules");
 
       this.gameRules = gameRules;
-      final CountryFactory defaultCountryFactory = CountryFactory
-              .generateDefaultCountries (gameRules.getTotalCountryCount ());
+      final CountryFactory defaultCountryFactory = CountryFactory.generateDefaultCountries (gameRules
+              .getTotalCountryCount ());
       final ContinentFactory emptyContinentFactory = new ContinentFactory ();
       final CountryMapGraphModel disjointCountryGraph = CountryMapGraphModel
               .disjointCountryGraphFrom (defaultCountryFactory);
-      playMapModel = new DefaultPlayMapModelFactory (gameRules)
-              .create (disjointCountryGraph,
-                       ContinentMapGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
+      playMapModel = new DefaultPlayMapModelFactory (gameRules).create (disjointCountryGraph, ContinentMapGraphModel
+              .disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
-      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet. <Card> of ());
+      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules);
       battleModel = new DefaultBattleModel (playMapModel);
       turnDataCache = new PlayerTurnDataCache <> ();

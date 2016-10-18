@@ -28,8 +28,8 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEv
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageRequestEvent extends AbstractMessageEvent <ChatMessage>
-        implements ChatMessageEvent, ClientRequestEvent
+public final class ChatMessageRequestEvent extends AbstractMessageEvent <ChatMessage> implements ChatMessageEvent,
+        ClientRequestEvent
 {
   private final ChatMessage chatMessage;
 

@@ -129,11 +129,11 @@ public final class DefaultGameConfiguration implements GameConfiguration
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: GameMode: {} | PlayerLimit: {} | SpectatorLimit: {} | WinPercentage: {} | "
-                                   + "InitialCountryAssignment: {} | MapMetadata: {} | " + "GameRules: {}",
-                           getClass ().getSimpleName (), gameMode, playerLimit, spectatorLimit, winPercentage,
-                           initialCountryAssignment, mapMetadata, rules);
+    return Strings.format ("{}: GameMode: {} | PlayerLimit: {} | SpectatorLimit: {} | WinPercentage: {} | "
+                                   + "InitialCountryAssignment: {} | MapMetadata: {} | " + "GameRules: {}", getClass ()
+                                   .getSimpleName (),
+                           gameMode, playerLimit, spectatorLimit, winPercentage, initialCountryAssignment, mapMetadata,
+                           rules);
   }
 
   @RequiredForNetworkSerialization

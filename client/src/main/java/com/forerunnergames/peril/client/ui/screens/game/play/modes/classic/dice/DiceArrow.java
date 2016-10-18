@@ -36,7 +36,7 @@ public final class DiceArrow implements Comparable <DiceArrow>
   private final int index;
   private final Image image;
   private final BattleDialogWidgetFactory widgetFactory;
-  private final Map <DieOutcome, Drawable> attackerOutcomesToDrawables = new EnumMap<> (DieOutcome.class);
+  private final Map <DieOutcome, Drawable> attackerOutcomesToDrawables = new EnumMap <> (DieOutcome.class);
   private DieOutcome attackerOutcome = DEFAULT_ATTACKER_OUTCOME;
 
   public DiceArrow (final int index, final Image image, final BattleDialogWidgetFactory widgetFactory)

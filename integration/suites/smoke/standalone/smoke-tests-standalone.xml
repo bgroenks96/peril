@@ -22,13 +22,13 @@
 <suite name="Peril Smoke Tests (Standalone)">
   <test name="Core Smoke Tests (Standalone)">
     <packages>
-      <package name="com.forerunnergames.peril.integration.core.smoke" />
+      <package name="com.forerunnergames.peril.integration.core.smoke"/>
     </packages>
   </test>
 
   <test name="Server Smoke Tests (Standalone)">
     <packages>
-      <package name="com.forerunnergames.peril.integration.server.smoke" />
+      <package name="com.forerunnergames.peril.integration.server.smoke"/>
     </packages>
   </test>
 </suite>

@@ -169,9 +169,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
         {
-          errorDialog.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
-                                  GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
+          errorDialog.setMessage (new DefaultMessage (Strings
+                  .format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
+                           GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
@@ -180,9 +180,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
         {
-          errorDialog.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
-                                  GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
+          errorDialog.setMessage (new DefaultMessage (Strings
+                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
+                           GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
@@ -193,9 +193,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
         if (!NetworkSettings.isValidServerAddress (serverAddress))
         {
-          errorDialog.setMessage (new DefaultMessage (
-                  Strings.format ("Invalid server address: \'{}\'\n\nValid server address rules:\n\n{}", serverAddress,
-                                  NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION)));
+          errorDialog.setMessage (new DefaultMessage (Strings
+                  .format ("Invalid server address: \'{}\'\n\nValid server address rules:\n\n{}", serverAddress,
+                           NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION)));
           errorDialog.show ();
           return;
         }

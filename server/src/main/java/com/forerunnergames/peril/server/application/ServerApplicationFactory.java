@@ -99,8 +99,8 @@ public final class ServerApplicationFactory
 
     final CountryFactory countryFactory = dataFactory.createCountries (mapMetadata);
 
-    final ContinentFactory continentFactory = dataFactory
-            .createContinents (mapMetadata, new DefaultCountryIdResolver (countryFactory));
+    final ContinentFactory continentFactory = dataFactory.createContinents (mapMetadata, new DefaultCountryIdResolver (
+            countryFactory));
 
     final CountryMapGraphModel countryMapGraphModel = dataFactory.createCountryMapGraphModel (mapMetadata,
                                                                                               countryFactory);
@@ -127,8 +127,7 @@ public final class ServerApplicationFactory
     final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, args.playerLimit,
-            args.spectatorLimit, args.winPercentage, args.initialCountryAssignment,
-            mapMetadata, gameRules);
+            args.spectatorLimit, args.winPercentage, args.initialCountryAssignment, mapMetadata, gameRules);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL);

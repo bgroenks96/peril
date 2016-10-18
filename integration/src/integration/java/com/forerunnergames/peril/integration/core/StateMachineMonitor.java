@@ -1,4 +1,3 @@
-
 /*
  * Copyright © 2011 - 2013 Aaron Mahan.
  * Copyright © 2013 - 2016 Forerunner Games, LLC.

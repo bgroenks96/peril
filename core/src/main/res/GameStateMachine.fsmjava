@@ -103,7 +103,7 @@
       <event id="onPlayerOrderRetreatRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent" />
+                type="com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent"/>
       </event>
       <event id="onPlayerEndAttackPhaseRequestEvent">
         <parameter
@@ -156,7 +156,8 @@
                 type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent"/>
       </event>
       <event id="onEndGameEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent" name="event"/>
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent"
+                   name="event"/>
       </event>
       <event id="onDestroyGameEvent">
         <parameter type="com.forerunnergames.peril.core.model.state.events.DestroyGameEvent" name="event"/>
@@ -306,14 +307,14 @@
                 <state name="AttackPhase">
                   <onEntry action="gameModel.beginAttackPhase()"/>
                   <onExit action="gameModel.endAttackPhase()"/>
-                  <state name="WaitForPlayerToSelectAttackVector" >
-                    <onEntry action="gameModel.waitForPlayerToSelectAttackVector()" />
+                  <state name="WaitForPlayerToSelectAttackVector">
+                    <onEntry action="gameModel.waitForPlayerToSelectAttackVector()"/>
                     <transition event="onPlayerSelectAttackVectorRequestEvent"
                                 condition="gameModel.verifyPlayerAttackVector(event)"
-                                nextState="WaitForPlayerAttackOrder" />
+                                nextState="WaitForPlayerAttackOrder"/>
                     <transition event="onPlayerEndAttackPhaseRequestEvent"
                                 action="gameModel.processPlayerEndAttackPhase(event)"
-                                nextState="FortifyPhase" />
+                                nextState="FortifyPhase"/>
                   </state>
                   <state name="WaitForPlayerAttackOrder">
                     <onEntry action="gameModel.waitForPlayerAttackOrder()"/>
@@ -335,9 +336,9 @@
                     <transition event="onBattleResultVictoryEvent"
                                 nextState="WaitForPlayerToOccupyCountry"/>
                     <transition event="onBattleResultDefeatEvent"
-                                nextState="WaitForPlayerToSelectAttackVector" />
+                                nextState="WaitForPlayerToSelectAttackVector"/>
                     <transition event="onBattleResultContinueEvent"
-                                nextState="WaitForPlayerAttackOrder" />
+                                nextState="WaitForPlayerAttackOrder"/>
                   </state>
                   <state name="WaitForPlayerToOccupyCountry">
                     <onEntry action="gameModel.waitForPlayerToOccupyCountry()"/>
@@ -352,7 +353,7 @@
                   <transition event="onSkipFortifyPhaseEvent"
                               nextState="AdvancePlayerTurn"/>
                   <state name="WaitForPlayerToSelectFortifyVector">
-                    <onEntry action="gameModel.waitForPlayerToSelectFortifyVector()" />
+                    <onEntry action="gameModel.waitForPlayerToSelectFortifyVector()"/>
                     <transition event="onPlayerSelectFortifyVectorRequestEvent"
                                 condition="gameModel.verifyPlayerFortifyVectorSelection(event)"
                                 nextState="WaitForPlayerToFortifyCountry"/>
@@ -360,7 +361,7 @@
                   <state name="WaitForPlayerToFortifyCountry">
                     <transition event="onPlayerOrderFortifyRequestEvent"
                                 condition="gameModel.verifyPlayerFortifyOrder(event)"
-                                nextState="AdvancePlayerTurn" />
+                                nextState="AdvancePlayerTurn"/>
                     <transition event="onPlayerCancelFortifyRequestEvent"
                                 condition="gameModel.verifyPlayerCancelFortifyVector(event)"
                                 nextState="WaitForPlayerToSelectFortifyVector"/>

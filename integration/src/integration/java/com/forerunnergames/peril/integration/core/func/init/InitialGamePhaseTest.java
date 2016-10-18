@@ -36,8 +36,8 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCou
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.integration.TestSessions;
-import com.forerunnergames.peril.integration.TestSessions.TestSession;
 import com.forerunnergames.peril.integration.TestUtil;
+import com.forerunnergames.peril.integration.TestSessions.TestSession;
 import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
@@ -73,7 +73,7 @@ public final class InitialGamePhaseTest
   {
     final String fullMethodName = Strings.format ("{}_{}", getClass ().getSimpleName (), method.getName ());
     return new Object [] [] { { TestSessions.createUniqueNameFrom (fullMethodName),
-                                LoggerFactory.getLogger (fullMethodName) } };
+                               LoggerFactory.getLogger (fullMethodName) } };
   }
 
   @AfterClass
@@ -180,8 +180,7 @@ public final class InitialGamePhaseTest
   }
 
   @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
-  public void testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest (final String sessionName,
-                                                                              final Logger log)
+  public void testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.MANUAL);
     final InitialGamePhaseController controller = new InitialGamePhaseController (session);

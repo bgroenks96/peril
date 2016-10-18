@@ -18,7 +18,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.StringBuilder;
 
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.SelectAttackSourceCountryRequestEvent;
@@ -69,10 +68,10 @@ import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCa
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
@@ -153,8 +152,8 @@ public final class StatusMessageGenerator
 
     everyoneElse (event.getPlayer (), "{} joined the game.", event.getPlayerName ());
 
-    everyoneElseIf (!event.gameIsFull (), event.getPlayer (), "The game will begin when {}.", Strings
-            .pluralize (event.getPlayersNeededToMakeGameFull (), "more player joins", "more players join"));
+    everyoneElseIf (!event.gameIsFull (), event.getPlayer (), "The game will begin when {}.", Strings.pluralize (event
+            .getPlayersNeededToMakeGameFull (), "more player joins", "more players join"));
   }
 
   @Handler
@@ -271,8 +270,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, something went wrong! We were unable to reinforce {}.",
-         event.getOriginalRequest ().getCountryName ());
+    you (event.getPlayer (), "General, something went wrong! We were unable to reinforce {}.", event
+            .getOriginalRequest ().getCountryName ());
 
     you (event.getPlayer (), "General, choose a country to reinforce.", event.getPlayerName ());
   }
@@ -330,13 +329,11 @@ public final class StatusMessageGenerator
 
     youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () == 3, event.getPlayer (),
            "Congratulations, General, you have just enough matching cards to purchase {}! If you so desire, that is, "
-                   + "sir. Good things come to those who wait, General.",
-           reinforcementsPhrase);
+                   + "sir. Good things come to those who wait, General.", reinforcementsPhrase);
 
     youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3, event.getPlayer (),
            "General, you may now use 3 of your {} matching cards to purchase {}! If you so desire, that is, sir. "
-                   + "Fortune rewards the patient, General.",
-           event.getPlayerCardsInHand (), reinforcementsPhrase);
+                   + "Fortune rewards the patient, General.", event.getPlayerCardsInHand (), reinforcementsPhrase);
 
     youIf (event.isTradeInRequired (), event.getPlayer (),
            "General, you now have so many matching cards that you must now use some of them to purchase {}!",
@@ -448,10 +445,10 @@ public final class StatusMessageGenerator
     final String defender = nameify (event.getDefendingPlayer (), LetterCase.LOWER);
     final String attackerCountry = event.getAttackingCountryName ();
     final String defenderCountry = event.getDefendingCountryName ();
-    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army",
-                                                              defenderLoss + " armies");
-    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army",
-                                                              defenderLoss + " armies");
+    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army", defenderLoss
+            + " armies");
+    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army", defenderLoss
+            + " armies");
 
     everyoneIf (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
                 defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
@@ -476,7 +473,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} retreated from attacking {} in {} from {}.", nameify (event.getAttackingPlayer (), LetterCase.PROPER),
+    everyone ("{} retreated from attacking {} in {} from {}.",
+              nameify (event.getAttackingPlayer (), LetterCase.PROPER),
               nameify (event.getDefendingPlayer (), LetterCase.LOWER), event.getDefendingCountryName (),
               event.getAttackingCountryName ());
   }
@@ -541,8 +539,7 @@ public final class StatusMessageGenerator
            "General, something went wrong! We were unable to occupy {} from {}.", event.getTargetCountryName (),
            event.getSourceCountryName ());
 
-    youIf (!event.hasOriginalRequest (), event.getPlayer (),
-           "General, something went wrong! We were unable to occupy.");
+    youIf (!event.hasOriginalRequest (), event.getPlayer (), "General, something went wrong! We were unable to occupy.");
   }
 
   @Handler
@@ -831,8 +828,8 @@ public final class StatusMessageGenerator
   {
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb
-            : player.getName () + " " + thirdPersonVerb;
+    return isSelf (player) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb : player.getName () + " "
+            + thirdPersonVerb;
   }
 
   private String nameifyPossessiveYour (final PlayerPacket player, final LetterCase letterCase)
@@ -885,8 +882,8 @@ public final class StatusMessageGenerator
   {
     if (letterCase == null || letterCase == LetterCase.NONE)
     {
-      throw new IllegalStateException (
-              Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (), letterCase));
+      throw new IllegalStateException (Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (),
+                                                       letterCase));
     }
   }
 }

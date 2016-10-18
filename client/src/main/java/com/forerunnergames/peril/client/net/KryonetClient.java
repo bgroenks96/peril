@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public final class KryonetClient extends com.esotericsoftware.kryonet.Client implements Client
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
-  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap<> ();
+  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
   private final ExecutorService executorService = Executors.newSingleThreadExecutor ();
   private final Kryo kryo;
   private boolean isRunning = false;
@@ -60,6 +60,28 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 
     KryonetRegistration.initialize (kryo);
     KryonetRegistration.registerCustomSerializers (kryo);
+  }
+
+  @Override
+  public void start ()
+  {
+    super.start ();
+
+    isRunning = true;
+
+    log.info ("Started the client");
+  }
+
+  @Override
+  public void stop ()
+  {
+    if (!isRunning) return;
+
+    super.stop ();
+
+    isRunning = false;
+
+    log.info ("Stopped the client");
   }
 
   @Override
@@ -121,10 +143,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
   }
 
   @Override
-  public Result <String> connectNow (final String address,
-                                     final int tcpPort,
-                                     final int timeoutMs,
-                                     final int maxAttempts)
+  public Result <String> connectNow (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
   {
     Arguments.checkIsNotNull (address, "address");
     Arguments.checkIsNotNegative (tcpPort, "tcpPort");
@@ -201,28 +220,6 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
     sendTCP (object);
 
     log.debug ("Sent object [{}] to the server", object);
-  }
-
-  @Override
-  public void start ()
-  {
-    super.start ();
-
-    isRunning = true;
-
-    log.info ("Started the client");
-  }
-
-  @Override
-  public void stop ()
-  {
-    if (!isRunning) return;
-
-    super.stop ();
-
-    isRunning = false;
-
-    log.info ("Stopped the client");
   }
 
   private Result <String> connectNow (final String address, final int tcpPort, final int timeoutMs)

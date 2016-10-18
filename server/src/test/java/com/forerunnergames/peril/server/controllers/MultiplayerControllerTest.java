@@ -128,8 +128,7 @@ public class MultiplayerControllerTest
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
   private final EventBusHandler eventHandler = new EventBusHandler ();
   private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
-  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class,
-                                                                  Mockito.RETURNS_SMART_NULLS);
+  private final ClientCommunicator mockClientCommunicator = mock (ClientCommunicator.class, Mockito.RETURNS_SMART_NULLS);
   private final PlayerCommunicator defaultPlayerCommunicator = new DefaultPlayerCommunicator (mockClientCommunicator);
   private final SpectatorCommunicator defaultSpectatorCommunicator = new DefaultSpectatorCommunicator (
           mockClientCommunicator);
@@ -546,8 +545,8 @@ public class MultiplayerControllerTest
     when (mockPlayerPacket.hasName (eq (playerName2))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName2);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName2), client2);
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket),
-            mpc.getPlayerLimit ()));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket), mpc
+            .getPlayerLimit ()));
     verify (mockClientCommunicator).sendTo (eq (client1),
                                             argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
                                                             new PersonIdentityMatcher (PersonIdentity.NON_SELF))));
@@ -921,13 +920,12 @@ public class MultiplayerControllerTest
     // disconnect client
     eventBus.publish (new ClientDisconnectionEvent (client));
     assertFalse (mpc.isClientInServer (client));
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket),
-            mpc.getPlayerLimit ()));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket), mpc
+            .getPlayerLimit ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (mockPlayerPacket));
   }
 
-  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName,
-                                                                final MultiplayerController mpc)
+  private ClientPlayerTuple addClientAndMockPlayerToGameServer (final String playerName, final MultiplayerController mpc)
   {
     final Remote client = joinClientToGameServer ();
     final PlayerPacket player = addMockPlayerToGameWithName (playerName, client, mpc);
@@ -952,8 +950,8 @@ public class MultiplayerControllerTest
     when (mockPlayerPacket.hasName (eq (playerName))).thenReturn (true);
     when (mockPlayerPacket.toString ()).thenReturn (playerName);
     communicateEventFromClient (new PlayerJoinGameRequestEvent (playerName), client);
-    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket),
-            mpc.getPlayerLimit ()));
+    eventBus.publish (new PlayerJoinGameSuccessEvent (mockPlayerPacket, ImmutableSet.of (mockPlayerPacket), mpc
+            .getPlayerLimit ()));
     verify (mockClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (mockPlayerPacket));
 
@@ -1004,29 +1002,29 @@ public class MultiplayerControllerTest
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
-            + eventHandler.lastEventType () + "] All events (newest to oldest): [" + eventHandler.getAllEvents ()
-            + "].", eventHandler.lastEventWasType (eventType));
+                        + eventHandler.lastEventType () + "] All events (newest to oldest): ["
+                        + eventHandler.getAllEvents () + "].", eventHandler.lastEventWasType (eventType));
   }
 
   private void assertLastEventWas (final Event event)
   {
     assertEquals ("Expected last event was [" + event + "], but was [" + eventHandler.lastEvent ()
-            + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
+                          + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
                   eventHandler.lastEvent ());
   }
 
   private void assertEventFiredExactlyOnce (final Class <?> eventType)
   {
     assertTrue ("Expected event type [" + eventType.getSimpleName () + "] was fired exactly once, but was fired ["
-            + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
-            + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
+                        + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
+                        + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
   }
 
   private void assertEventFiredExactlyOnce (final Event event)
   {
     assertTrue ("Expected event type [" + event.getClass ().getSimpleName ()
-            + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
-            + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
+                        + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
+                        + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
                 eventHandler.wasFiredExactlyOnce (event));
   }
 

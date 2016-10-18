@@ -43,7 +43,7 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
 {
   private static final Logger log = LoggerFactory.getLogger (ScreenController.class);
   private static final int SCREEN_HISTORY_DEPTH = 10;
-  private final Deque <ScreenId> screenIdHistory = new ArrayDeque<> (SCREEN_HISTORY_DEPTH);
+  private final Deque <ScreenId> screenIdHistory = new ArrayDeque <> (SCREEN_HISTORY_DEPTH);
   private final BiMap <ScreenId, Screen> screens = HashBiMap.create (ScreenId.values ().length);
   private final AtomicBoolean isScreenTransitionInProgress = new AtomicBoolean ();
   private final Game game;
@@ -62,24 +62,6 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
     this.game = game;
     this.musicChanger = musicChanger;
     this.screenFactoryCreator = screenFactoryCreator;
-  }
-
-  @Override
-  public void initialize ()
-  {
-    screenFactory = screenFactoryCreator.create (this);
-    toScreen (ScreenId.SPLASH);
-  }
-
-  @Override
-  public void shutDown ()
-  {
-    for (final Screen screen : screens.values ())
-    {
-      screen.dispose ();
-    }
-
-    screens.clear ();
   }
 
   @Override
@@ -157,6 +139,24 @@ public final class ScreenController extends ControllerAdapter implements ScreenC
   public boolean isScreenTransitionInProgress ()
   {
     return isScreenTransitionInProgress.get ();
+  }
+
+  @Override
+  public void initialize ()
+  {
+    screenFactory = screenFactoryCreator.create (this);
+    toScreen (ScreenId.SPLASH);
+  }
+
+  @Override
+  public void shutDown ()
+  {
+    for (final Screen screen : screens.values ())
+    {
+      screen.dispose ();
+    }
+
+    screens.clear ();
   }
 
   private ScreenId getCurrentScreenId ()

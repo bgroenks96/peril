@@ -439,23 +439,23 @@ public abstract class AbstractLoadingScreen extends AbstractScreen
   private void handleAssetLoadingException (final RuntimeException e)
   {
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading a game resource.\n\n"
-            + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                 Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
+            + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
+            .getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
   }
 
   private void handleAssetUnloadingException (final RuntimeException e)
   {
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem unloading a game resource.\n\n"
-            + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                 Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
+            + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
+            .getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
   }
 
   private void handleAssetLoadingErrorEvent (final AssetLoadingErrorEvent event)
   {
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading a game resource.\n\n"
-            + "Resource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                 CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, event.getFileName (),
-                 event.getFileType ().getSimpleName (), Throwables.getRootCause (event.getThrowable ()).getMessage (),
+                         + "Resource Name: {}\nResource Type: {}\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                 CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, event.getFileName (), event.getFileType ()
+                         .getSimpleName (), Throwables.getRootCause (event.getThrowable ()).getMessage (),
                  Strings.toString (event.getThrowable ()));
   }
 

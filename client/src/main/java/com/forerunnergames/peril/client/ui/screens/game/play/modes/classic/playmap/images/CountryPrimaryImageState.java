@@ -43,6 +43,18 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
     return name ();
   }
 
+  public static int count ()
+  {
+    return IterableEnumHelper.count (values ());
+  }
+
+  public static CountryPrimaryImageState fromPlayerColor (final PlayerColor playerColor)
+  {
+    Arguments.checkIsNotNull (playerColor, "playerColor");
+
+    return valueOf (playerColor.toUpperCase ());
+  }
+
   @Override
   public boolean hasNext ()
   {
@@ -101,17 +113,5 @@ public enum CountryPrimaryImageState implements CountryImageState <CountryPrimar
   public String toMixedOrdinalPosition ()
   {
     return IterableEnumHelper.toMixedOrdinalPosition (this);
-  }
-
-  public static int count ()
-  {
-    return IterableEnumHelper.count (values ());
-  }
-
-  public static CountryPrimaryImageState fromPlayerColor (final PlayerColor playerColor)
-  {
-    Arguments.checkIsNotNull (playerColor, "playerColor");
-
-    return valueOf (playerColor.toUpperCase ());
   }
 }

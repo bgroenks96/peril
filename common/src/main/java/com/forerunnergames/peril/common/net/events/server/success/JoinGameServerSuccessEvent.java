@@ -54,8 +54,8 @@ public final class JoinGameServerSuccessEvent implements BroadcastSuccessEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}", getClass ().getSimpleName (),
-                           gameServerConfig, clientConfig);
+    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}",
+                           getClass ().getSimpleName (), gameServerConfig, clientConfig);
   }
 
   @RequiredForNetworkSerialization

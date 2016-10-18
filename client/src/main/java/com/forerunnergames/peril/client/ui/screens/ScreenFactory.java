@@ -108,10 +108,9 @@ public final class ScreenFactory
       }
       case SPLASH:
       {
-        return new SplashScreen (new SplashScreenWidgetFactory (assetManager), screenChanger,
-                new LibGdxScreenSize (Gdx.graphics, ScreenSettings.SPLASH_SCREEN_REFERENCE_WIDTH,
-                        ScreenSettings.SPLASH_SCREEN_REFERENCE_HEIGHT),
-                mouseInput, batch, assetUpdater, assetManager, eventBus);
+        return new SplashScreen (new SplashScreenWidgetFactory (assetManager), screenChanger, new LibGdxScreenSize (
+                Gdx.graphics, ScreenSettings.SPLASH_SCREEN_REFERENCE_WIDTH,
+                ScreenSettings.SPLASH_SCREEN_REFERENCE_HEIGHT), mouseInput, batch, assetUpdater, assetManager, eventBus);
       }
       case MAIN_MENU:
       {
@@ -124,8 +123,8 @@ public final class ScreenFactory
       }
       case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
       {
-        return new MultiplayerClassicGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
-                batch, eventBus);
+        return new MultiplayerClassicGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
+                mouseInput, batch, eventBus);
       }
       case MULTIPLAYER_PERIL_GAME_MODE_MENU:
       {

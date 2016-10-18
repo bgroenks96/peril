@@ -52,7 +52,7 @@ import javax.annotation.Nullable;
 public final class DefaultPlayMap implements PlayMap
 {
   private final Group group = new Group ();
-  private final List <PlayMapInputListener> listeners = new ArrayList<> ();
+  private final List <PlayMapInputListener> listeners = new ArrayList <> ();
   private final ListIterator <PlayMapInputListener> listenersIterator = listeners.listIterator ();
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
@@ -88,7 +88,7 @@ public final class DefaultPlayMap implements PlayMap
 
     group.addActor (backgroundImage);
 
-    final List <Country> countriesSortedByAtlasIndex = new ArrayList<> (countryNamesToCountries.values ());
+    final List <Country> countriesSortedByAtlasIndex = new ArrayList <> (countryNamesToCountries.values ());
 
     Collections.sort (countriesSortedByAtlasIndex, new Comparator <Country> ()
     {
@@ -550,8 +550,8 @@ public final class DefaultPlayMap implements PlayMap
 
     if (country == null)
     {
-      throw new IllegalStateException (
-              "Cannot find " + DefaultCountry.class.getSimpleName () + " at " + inputCoordinate + ".");
+      throw new IllegalStateException ("Cannot find " + DefaultCountry.class.getSimpleName () + " at "
+              + inputCoordinate + ".");
 
     }
 

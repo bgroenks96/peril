@@ -28,7 +28,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 
 import java.io.File;
@@ -44,7 +43,7 @@ public final class MultiSourceAssetManager implements AssetManager
 {
   private static final Logger log = LoggerFactory.getLogger (MultiSourceAssetManager.class);
   private final ImmutableSet <com.badlogic.gdx.assets.AssetManager> libGdxAssetManagers;
-  private final Map <String, com.badlogic.gdx.assets.AssetManager> fileNamesToManagers = new HashMap<> ();
+  private final Map <String, com.badlogic.gdx.assets.AssetManager> fileNamesToManagers = new HashMap <> ();
 
   public MultiSourceAssetManager (final com.badlogic.gdx.assets.AssetManager... libGdxAssetManagers)
   {

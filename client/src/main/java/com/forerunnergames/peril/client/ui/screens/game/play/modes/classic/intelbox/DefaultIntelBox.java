@@ -342,7 +342,7 @@ public final class DefaultIntelBox implements IntelBox
     final int nMoreCountriesToWin = config.getWinningCountryCount () - ownedCountryCount;
 
     conquerWinPercentTextLabel.setText (Strings.format ("{} of {} %", currentWinPercent, config.getWinPercentage ()));
-    conquerCountryCountTextLabel.setText (Strings
-            .format ("* Conquer {} to win", Strings.pluralize (nMoreCountriesToWin, "more country", "more countries")));
+    conquerCountryCountTextLabel.setText (Strings.format ("* Conquer {} to win", Strings
+            .pluralize (nMoreCountriesToWin, "more country", "more countries")));
   }
 }

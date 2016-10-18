@@ -30,8 +30,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import javax.annotation.Nullable;
 
-public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent implements
+        PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerOccupyCountryResponseRequestEvent originalResponse;
   @Nullable

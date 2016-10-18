@@ -150,11 +150,10 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Current Music: [{}] | Is Playing: [{}] | Is Looping: [{}] | "
-                                   + "Volume: [{}] | Position: [{}] | Master Volume: [{}]",
-                           getClass ().getSimpleName (), currentMusic, currentMusic.isPlaying (),
-                           currentMusic.isLooping (), currentMusic.getVolume (), currentMusic.getPosition (),
-                           masterVolume);
+    return Strings.format ("{}: Current Music: [{}] | Is Playing: [{}] | Is Looping: [{}] | "
+                                   + "Volume: [{}] | Position: [{}] | Master Volume: [{}]", getClass ()
+                                   .getSimpleName (), currentMusic,
+                           currentMusic.isPlaying (), currentMusic.isLooping (), currentMusic.getVolume (),
+                           currentMusic.getPosition (), masterVolume);
   }
 }

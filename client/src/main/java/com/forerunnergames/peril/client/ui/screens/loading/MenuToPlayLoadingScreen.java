@@ -78,8 +78,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private static final Logger log = LoggerFactory.getLogger (MenuToPlayLoadingScreen.class);
   private static final String QUIT_DIALOG_MESSAGE = "Are you sure you want to quit the current game?";
   private final ResetProgressListener goToPlayToMenuLoadingScreenListener = new GoToPlayToMenuLoadingScreenListener ();
-  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList<> ();
-  private final Set <PlayerPacket> players = new HashSet<> ();
+  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList <> ();
+  private final Set <PlayerPacket> players = new HashSet <> ();
   private final PlayMapFactory playMapFactory;
   private final JoinGameServerHandler joinGameServerHandler;
   private final CreateGameServerHandler createGameServerHandler;
@@ -103,8 +103,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
                                   final MBassador <Event> eventBus,
                                   final PlayMapFactory playMapFactory)
   {
-    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager,
-           LoadingScreenStyle.builder ().quitDialogMessageText (QUIT_DIALOG_MESSAGE).build ());
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager, LoadingScreenStyle
+            .builder ().quitDialogMessageText (QUIT_DIALOG_MESSAGE).build ());
 
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
@@ -287,7 +287,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     assert mapMetadata != null;
 
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources for {} map \'{}\'."
-            + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                         + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
+                 CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
                  mapMetadata.getType ().name ().toLowerCase (), Strings.toProperCase (mapMetadata.getName ()),
                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
   }
@@ -337,8 +338,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       Arguments.checkIsNotNull (configuration, "configuration");
       Arguments.checkIsNotNull (reason, "reason");
 
-      log.trace ("onCreateFailure: {} [{}], Reason [{}]", GameServerConfiguration.class.getSimpleName (), configuration,
-                 reason);
+      log.trace ("onCreateFailure: {} [{}], Reason [{}]", GameServerConfiguration.class.getSimpleName (),
+                 configuration, reason);
 
       Gdx.app.postRunnable (new Runnable ()
       {
@@ -570,8 +571,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     {
       if (playMap.equals (PlayMap.NULL_PLAY_MAP))
       {
-        log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (),
-                  playMap.getClass ().getSimpleName ());
+        log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (), playMap.getClass ()
+                .getSimpleName ());
         return;
       }
 

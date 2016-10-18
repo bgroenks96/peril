@@ -57,11 +57,10 @@ public final class DesktopLauncher
       @Override
       public void uncaughtException (final Thread t, final Throwable e)
       {
-        final String errorMessage = Strings.format (
-                                                    "The client application has crashed!\n\nA crash file has been "
+        final String errorMessage = Strings.format ("The client application has crashed!\n\nA crash file has been "
                                                             + "created in \"{}\".\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                                                    CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                                                    Throwables.getRootCause (e).getMessage (), Strings.toString (e));
+                                                    CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
+                                                            .getRootCause (e).getMessage (), Strings.toString (e));
 
         log.error (errorMessage);
 

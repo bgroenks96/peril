@@ -24,8 +24,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerRespo
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractPlayerDeniedEvent <Reason> implements
+        PlayerResponseDeniedEvent <Reason>
 {
   public enum Reason
   {

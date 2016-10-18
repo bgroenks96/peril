@@ -87,8 +87,8 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
     normalCursor = widgetFactory.createNormalCursor ();
 
     viewport = new ScalingViewport (GraphicsSettings.VIEWPORT_SCALING, screenSize.referenceWidth (),
-            screenSize.referenceHeight (),
-            new OrthographicCamera (screenSize.actualWidth (), screenSize.actualHeight ()));
+            screenSize.referenceHeight (), new OrthographicCamera (screenSize.actualWidth (),
+                    screenSize.actualHeight ()));
 
     stage = new Stage (viewport, batch);
     stage.addListener (new AddKeyboardFocusListener (stage));

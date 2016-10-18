@@ -39,13 +39,11 @@ public final class QuitDialog extends OkCancelDialog
                      final Stage stage,
                      final CancellableDialogListener listener)
   {
-    super (widgetFactory,
-           DialogStyle.builder ()
-                   .position (positionUpperLeftReferenceScreenSpaceX, positionUpperLeftReferenceScreenSpacey)
-                   .size (650, 244).title ("QUIT?").titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90)
-                   .message (message).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21).textPaddingHorizontal (4)
-                   .textPaddingBottom (4).build (),
-           stage, listener);
+    super (widgetFactory, DialogStyle.builder ()
+            .position (positionUpperLeftReferenceScreenSpaceX, positionUpperLeftReferenceScreenSpacey).size (650, 244)
+            .title ("QUIT?").titleHeight (51).border (28).buttonSpacing (16).buttonWidth (90).message (message)
+            .textBoxPaddingHorizontal (2).textBoxPaddingBottom (21).textPaddingHorizontal (4).textPaddingBottom (4)
+            .build (), stage, listener);
 
     changeButtonText ("OK", "QUIT");
   }

@@ -29,8 +29,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import javax.annotation.Nullable;
 
-public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent
-        implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
+public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent implements
+        PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
   private final PlayerPacket previousTargetCountryOwner;
   private final int deltaArmyCount;

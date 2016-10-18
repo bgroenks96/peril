@@ -58,6 +58,72 @@ public final class Tank extends Actor implements Unit
   }
 
   @Override
+  public void turnRight ()
+  {
+    bodySprite.rotate (-90);
+
+    if (!turretActive)
+    {
+      turretSprite.rotate (-90);
+      turretForwardVector.rotate90 (1);
+    }
+
+    bodyForwardVector.rotate90 (1);
+
+    turnDirection = TurnDirection.NONE;
+  }
+
+  @Override
+  public void turnLeft ()
+  {
+    bodySprite.rotate (90);
+    bodyForwardVector.rotate90 (-1);
+
+    if (!turretActive)
+    {
+      turretSprite.rotate (90);
+      turretForwardVector.rotate90 (-1);
+    }
+
+    turnDirection = TurnDirection.NONE;
+  }
+
+  @Override
+  public void turnAround ()
+  {
+    bodySprite.rotate (-90);
+    bodyForwardVector.rotate90 (1);
+
+    if (!turretActive)
+    {
+      turretSprite.rotate (-90);
+      turretForwardVector.rotate90 (1);
+    }
+
+    if (completedTurningAround) turnDirection = TurnDirection.NONE;
+
+    completedTurningAround = !completedTurningAround;
+  }
+
+  @Override
+  public void moveForward ()
+  {
+    previousPosition.set (currentPosition);
+    currentPosition.sub (bodyForwardVector);
+
+    clampPosition ();
+  }
+
+  @Override
+  public void moveReverse ()
+  {
+    previousPosition.set (currentPosition);
+    currentPosition.add (bodyForwardVector);
+
+    clampPosition ();
+  }
+
+  @Override
   public void draw (final Batch batch, final float parentAlpha)
   {
     spritePosition.set ((BattleGridSettings.BATTLE_GRID_CELL_WIDTH - bodySprite.getWidth ()) / 2.0f,
@@ -279,72 +345,6 @@ public final class Tank extends Actor implements Unit
     return false;
   }
 
-  @Override
-  public void turnRight ()
-  {
-    bodySprite.rotate (-90);
-
-    if (!turretActive)
-    {
-      turretSprite.rotate (-90);
-      turretForwardVector.rotate90 (1);
-    }
-
-    bodyForwardVector.rotate90 (1);
-
-    turnDirection = TurnDirection.NONE;
-  }
-
-  @Override
-  public void turnLeft ()
-  {
-    bodySprite.rotate (90);
-    bodyForwardVector.rotate90 (-1);
-
-    if (!turretActive)
-    {
-      turretSprite.rotate (90);
-      turretForwardVector.rotate90 (-1);
-    }
-
-    turnDirection = TurnDirection.NONE;
-  }
-
-  @Override
-  public void turnAround ()
-  {
-    bodySprite.rotate (-90);
-    bodyForwardVector.rotate90 (1);
-
-    if (!turretActive)
-    {
-      turretSprite.rotate (-90);
-      turretForwardVector.rotate90 (1);
-    }
-
-    if (completedTurningAround) turnDirection = TurnDirection.NONE;
-
-    completedTurningAround = !completedTurningAround;
-  }
-
-  @Override
-  public void moveForward ()
-  {
-    previousPosition.set (currentPosition);
-    currentPosition.sub (bodyForwardVector);
-
-    clampPosition ();
-  }
-
-  @Override
-  public void moveReverse ()
-  {
-    previousPosition.set (currentPosition);
-    currentPosition.add (bodyForwardVector);
-
-    clampPosition ();
-  }
-
   public void turnTurretRight ()
   {
     turretSprite.rotate (-90);
@@ -527,13 +527,9 @@ public final class Tank extends Actor implements Unit
 
   private void clampPosition ()
   {
-    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX)
-      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
-    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX)
-      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
-    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX)
-      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
-    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX)
-      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
+    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
+    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
+    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
+    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
   }
 }

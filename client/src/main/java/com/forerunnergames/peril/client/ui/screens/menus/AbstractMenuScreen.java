@@ -59,8 +59,8 @@ public abstract class AbstractMenuScreen extends AbstractScreen
   private static final Interpolation MENU_BAR_TRANSITION_INTERPOLATION = Interpolation.pow2;
   private static final float MENU_BAR_TRANSITION_TIME_SECONDS = 0.5f;
   private static final String BACK_BUTTON_TEXT = "BACK";
-  private final Collection <Cell <ImageTextButton>> menuChoiceCells = new ArrayList<> ();
-  private final Collection <ImageTextButton> menuChoices = new ArrayList<> ();
+  private final Collection <Cell <ImageTextButton>> menuChoiceCells = new ArrayList <> ();
+  private final Collection <ImageTextButton> menuChoices = new ArrayList <> ();
   private final Multimap <String, TextButton> textButtonStyleNameToTextButtons = HashMultimap.create ();
   private final MenuScreenWidgetFactory widgetFactory;
   private final Image screenBackgroundLeft;

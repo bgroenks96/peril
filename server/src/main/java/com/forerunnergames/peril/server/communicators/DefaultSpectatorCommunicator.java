@@ -42,32 +42,6 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   }
 
   @Override
-  public void sendTo (final Remote client, final Object msg)
-  {
-    Arguments.checkIsNotNull (client, "client");
-    Arguments.checkIsNotNull (msg, "msg");
-
-    clientCommunicator.sendTo (client, msg);
-  }
-
-  @Override
-  public void sendToAll (final Object msg)
-  {
-    Arguments.checkIsNotNull (msg, "msg");
-
-    clientCommunicator.sendToAll (msg);
-  }
-
-  @Override
-  public void sendToAllExcept (final Remote client, final Object msg)
-  {
-    Arguments.checkIsNotNull (client, "client");
-    Arguments.checkIsNotNull (msg, "msg");
-
-    clientCommunicator.sendToAllExcept (client, msg);
-  }
-
-  @Override
   public void sendToSpectator (final SpectatorPacket spectator, final Object msg, final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (spectator, "spectator");
@@ -110,5 +84,31 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
     {
       sendToSpectator (next, msg, mapping);
     }
+  }
+
+  @Override
+  public void sendTo (final Remote client, final Object msg)
+  {
+    Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (msg, "msg");
+
+    clientCommunicator.sendTo (client, msg);
+  }
+
+  @Override
+  public void sendToAll (final Object msg)
+  {
+    Arguments.checkIsNotNull (msg, "msg");
+
+    clientCommunicator.sendToAll (msg);
+  }
+
+  @Override
+  public void sendToAllExcept (final Remote client, final Object msg)
+  {
+    Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (msg, "msg");
+
+    clientCommunicator.sendToAllExcept (client, msg);
   }
 }

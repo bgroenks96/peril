@@ -44,7 +44,7 @@ public final class DefaultScreenCoordinateToTerritoryNameConverter implements Sc
   {
     Arguments.checkIsNotNull (screenCoordinate, "screenCoordinate");
 
-    return playMapCoordinateToTerritoryNameConverter
-            .convert (screenToPlayMapCoordinateConverter.convert (screenCoordinate));
+    return playMapCoordinateToTerritoryNameConverter.convert (screenToPlayMapCoordinateConverter
+            .convert (screenCoordinate));
   }
 }

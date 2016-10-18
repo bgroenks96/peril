@@ -26,8 +26,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableMultimap;
 
-public final class PlayerBeginFortificationEvent extends AbstractPlayerSelectCountryVectorEvent
-        implements DirectPlayerNotificationEvent
+public final class PlayerBeginFortificationEvent extends AbstractPlayerSelectCountryVectorEvent implements
+        DirectPlayerNotificationEvent
 {
   public PlayerBeginFortificationEvent (final PlayerPacket player,
                                         final ImmutableMultimap <CountryPacket, CountryPacket> fortifyVectors)

@@ -28,8 +28,8 @@ import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSucces
 
 import javax.annotation.Nullable;
 
-public final class ChatMessageSuccessEvent extends AbstractMessageEvent <ChatMessage>
-        implements ChatMessageEvent, BroadcastSuccessEvent
+public final class ChatMessageSuccessEvent extends AbstractMessageEvent <ChatMessage> implements ChatMessageEvent,
+        BroadcastSuccessEvent
 {
   private final ChatMessage message;
 

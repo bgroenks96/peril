@@ -28,8 +28,6 @@ import com.forerunnergames.peril.server.main.args.CommandLineArgs;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
 
-import com.google.common.base.Throwables;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

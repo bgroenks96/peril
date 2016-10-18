@@ -419,8 +419,10 @@ public final class MultiplayerController extends ControllerAdapter
     // is required for LAN clients to join using the server's internal network address, which circumvents this problem.
     if (serverHasAddress () && client.getAddress ().equals (getServerAddress ()))
     {
-      sendJoinGameServerDenied (client, "You cannot join this game having the same IP address [" + client.getAddress ()
-              + "] as the game server.\nIf you are on the same network as the server, you can join using the game server's internal IP address to play a LAN game.");
+      sendJoinGameServerDenied (client,
+                                "You cannot join this game having the same IP address ["
+                                        + client.getAddress ()
+                                        + "] as the game server.\nIf you are on the same network as the server, you can join using the game server's internal IP address to play a LAN game.");
       return;
     }
 
@@ -477,9 +479,10 @@ public final class MultiplayerController extends ControllerAdapter
     if (clientsToSpectators.existsSpectatorWith (event.getPlayerName ()))
     {
       final SpectatorPacket nameConflictSpectator = clientsToSpectators.spectatorWith (event.getPlayerName ()).get ();
-      log.warn ("Rejecting {} from [{}] because an spectator client [{}] => [{}] already exists with that name.",
-                event.getClass ().getSimpleName (), client,
-                clientsToSpectators.clientFor (nameConflictSpectator).get (), nameConflictSpectator);
+      log.warn ("Rejecting {} from [{}] because an spectator client [{}] => [{}] already exists with that name.", event
+                        .getClass ().getSimpleName (), client, clientsToSpectators.clientFor (nameConflictSpectator)
+                        .get (),
+                nameConflictSpectator);
       // this will bypass core and immediately publish the event using the existing event handler in this class
       eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
               PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME));
@@ -559,8 +562,8 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    sendToAllPlayersAndSpectators (new ChatMessageSuccessEvent (
-            new DefaultChatMessage (playerQuery.get (), event.getMessageText ())));
+    sendToAllPlayersAndSpectators (new ChatMessageSuccessEvent (new DefaultChatMessage (playerQuery.get (),
+            event.getMessageText ())));
   }
 
   void handleEvent (final PlayerRequestEvent event, final Remote client)
@@ -705,8 +708,9 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void sendJoinGameServerDenied (final Remote client, final String reason)
   {
-    playerCommunicator.sendTo (client, new JoinGameServerDeniedEvent (
-            new DefaultClientConfiguration (client.getAddress (), client.getPort ()), reason));
+    playerCommunicator.sendTo (client,
+                               new JoinGameServerDeniedEvent (new DefaultClientConfiguration (client.getAddress (),
+                                       client.getPort ()), reason));
 
     clientConnector.disconnect (client);
 

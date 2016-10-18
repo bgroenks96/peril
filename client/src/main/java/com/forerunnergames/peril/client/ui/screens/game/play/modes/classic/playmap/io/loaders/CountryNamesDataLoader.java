@@ -62,7 +62,7 @@ public final class CountryNamesDataLoader extends AbstractBiMapDataLoader <Id, S
 
     this.fileName = fileName;
     streamParser = streamParserFactory.create (fileName);
-    countryNamesBuilder = new ImmutableBiMap.Builder<> ();
+    countryNamesBuilder = new ImmutableBiMap.Builder <> ();
   }
 
   @Override

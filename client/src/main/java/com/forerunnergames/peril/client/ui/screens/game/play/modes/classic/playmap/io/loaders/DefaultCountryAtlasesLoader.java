@@ -93,8 +93,8 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
     {
       if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ()))
       {
-        throw new PlayMapLoadingException (
-                Strings.format ("Country atlas [{}] for map [{}] is not loaded.", countryAtlasMetadata, mapMetadata));
+        throw new PlayMapLoadingException (Strings.format ("Country atlas [{}] for map [{}] is not loaded.",
+                                                           countryAtlasMetadata, mapMetadata));
       }
 
       countryAtlasesBuilder.add (assetManager.get (countryAtlasMetadata.getAssetDescriptor ()));

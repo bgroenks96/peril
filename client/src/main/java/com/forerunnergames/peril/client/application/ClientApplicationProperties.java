@@ -222,12 +222,11 @@ public final class ClientApplicationProperties
     }
   }
 
-  private static Properties intersection (final Properties propertiesUseValues,
-                                          final Properties propertiesDontUseValues)
+  private static Properties intersection (final Properties propertiesUseValues, final Properties propertiesDontUseValues)
   {
     final Properties intersection = new Properties ();
 
-    final Collection <Object> keys = new HashSet<> (propertiesUseValues.keySet ());
+    final Collection <Object> keys = new HashSet <> (propertiesUseValues.keySet ());
     keys.retainAll (propertiesDontUseValues.keySet ());
 
     for (final Object key : keys)
@@ -238,8 +237,7 @@ public final class ClientApplicationProperties
     return intersection;
   }
 
-  private static String getParseErrorMessageFor (final String propertyKey, final String propertyValue)
-          throws RuntimeException
+  private static String getParseErrorMessageFor (final String propertyKey, final String propertyValue) throws RuntimeException
   {
     return "Oops! Looks like your " + PROPERTIES_FILE_NAME + " (located in: \"" + PROPERTIES_FILE_PATH
             + "\") has an invalid setting:\n\n" + propertyKey + "=" + propertyValue
@@ -334,7 +332,7 @@ public final class ClientApplicationProperties
     catch (final IOException e)
     {
       log.error ("Failed to create (or update) \"{}\".\nIf \"{}\" exists, it will be upgraded "
-              + "because we couldn't determine its version!\n\nDetails:\n\n", VERSION_FILE_PATH_AND_NAME,
+                         + "because we couldn't determine its version!\n\nDetails:\n\n", VERSION_FILE_PATH_AND_NAME,
                  PROPERTIES_FILE_PATH_AND_NAME, e);
     }
   }

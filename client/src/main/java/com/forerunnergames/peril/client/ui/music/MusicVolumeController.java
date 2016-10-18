@@ -36,36 +36,6 @@ public final class MusicVolumeController extends ControllerAdapter implements Mu
   private MusicVolumeListener listener = new NullMusicVolumeListener ();
 
   @Override
-  public void update ()
-  {
-    if (Gdx.input.isKeyPressed (Input.Keys.COMMA))
-    {
-      if (Gdx.input.isKeyPressed (Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed (Input.Keys.SHIFT_RIGHT))
-      {
-        setVolume (MusicSettings.MIN_VOLUME);
-      }
-      else
-      {
-        changeVolumeBy (-MusicSettings.VOLUME_INCREMENT);
-      }
-    }
-
-    if (Gdx.input.isKeyPressed (Input.Keys.PERIOD))
-    {
-      if (Gdx.input.isKeyPressed (Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed (Input.Keys.SHIFT_RIGHT))
-      {
-        setVolume (MusicSettings.MAX_VOLUME);
-      }
-      else
-      {
-        changeVolumeBy (MusicSettings.VOLUME_INCREMENT);
-      }
-    }
-
-    if (Gdx.input.isKeyPressed (Input.Keys.SLASH)) setVolume (MusicSettings.INITIAL_VOLUME);
-  }
-
-  @Override
   public float getVolume ()
   {
     return volume;
@@ -102,6 +72,36 @@ public final class MusicVolumeController extends ControllerAdapter implements Mu
     Arguments.checkIsNotNull (listener, "listener");
 
     this.listener = listener;
+  }
+
+  @Override
+  public void update ()
+  {
+    if (Gdx.input.isKeyPressed (Input.Keys.COMMA))
+    {
+      if (Gdx.input.isKeyPressed (Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed (Input.Keys.SHIFT_RIGHT))
+      {
+        setVolume (MusicSettings.MIN_VOLUME);
+      }
+      else
+      {
+        changeVolumeBy (-MusicSettings.VOLUME_INCREMENT);
+      }
+    }
+
+    if (Gdx.input.isKeyPressed (Input.Keys.PERIOD))
+    {
+      if (Gdx.input.isKeyPressed (Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed (Input.Keys.SHIFT_RIGHT))
+      {
+        setVolume (MusicSettings.MAX_VOLUME);
+      }
+      else
+      {
+        changeVolumeBy (MusicSettings.VOLUME_INCREMENT);
+      }
+    }
+
+    if (Gdx.input.isKeyPressed (Input.Keys.SLASH)) setVolume (MusicSettings.INITIAL_VOLUME);
   }
 
   @Override

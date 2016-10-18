@@ -31,8 +31,8 @@ import com.google.common.collect.ImmutableMultimap;
 
 import java.util.Map;
 
-public abstract class AbstractPlayerSelectCountryVectorEvent extends AbstractPlayerEvent
-        implements PlayerSelectCountryVectorEvent
+public abstract class AbstractPlayerSelectCountryVectorEvent extends AbstractPlayerEvent implements
+        PlayerSelectCountryVectorEvent
 {
   private final ImmutableMultimap <CountryPacket, CountryPacket> validVectors;
 

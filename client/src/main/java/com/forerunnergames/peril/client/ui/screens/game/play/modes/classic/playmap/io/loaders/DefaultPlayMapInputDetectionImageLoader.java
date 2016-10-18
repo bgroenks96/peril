@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public final class DefaultPlayMapInputDetectionImageLoader implements PlayMapInputDetectionImageLoader
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultPlayMapInputDetectionImageLoader.class);
-  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap<> ();
+  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap <> ();
   private final AssetManager assetManager;
 
   public DefaultPlayMapInputDetectionImageLoader (final AssetManager assetManager)

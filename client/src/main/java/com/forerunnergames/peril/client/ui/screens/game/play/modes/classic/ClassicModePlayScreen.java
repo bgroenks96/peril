@@ -308,14 +308,14 @@ public final class ClassicModePlayScreen extends AbstractScreen
     fortificationDialog = widgetFactory.createFortificationDialog (getStage (), new FortificationDialogListener ());
     quitDialog = widgetFactory.createQuitDialog (getQuitDialogMessageText (), getStage (), new QuitDialogListener ());
     dialogs.add (attackerBattleResultDialog, defenderBattleResultDialog, occupationDialog, fortificationDialog,
-                    quitDialog);
+                 quitDialog);
 
     reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
     occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
     gamePhaseHandlers.add (reinforcementPhaseHandler, manualCountryAssignmentPhaseHandler, occupationPhaseHandler,
-                              fortificationPhaseHandler);
+                           fortificationPhaseHandler);
   }
 
   @Override

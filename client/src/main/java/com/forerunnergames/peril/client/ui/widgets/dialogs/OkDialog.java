@@ -312,7 +312,7 @@ public class OkDialog implements Dialog
 
   private final class DelegateDialog extends com.badlogic.gdx.scenes.scene2d.ui.Dialog
   {
-    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap<> ();
+    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap <> ();
     private final WidgetFactory widgetFactory;
     private final DialogStyle dialogStyle;
     private final Stage stage;
@@ -401,15 +401,16 @@ public class OkDialog implements Dialog
       setPosition ();
       clearActions ();
 
-      super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade),
-                                           Actions.run (new Runnable ()
-                                           {
-                                             @Override
-                                             public void run ()
-                                             {
-                                               listener.onShow ();
-                                             }
-                                           })));
+      super.show (stage,
+                  Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade),
+                                    Actions.run (new Runnable ()
+                                    {
+                                      @Override
+                                      public void run ()
+                                      {
+                                        listener.onShow ();
+                                      }
+                                    })));
 
       return this;
     }
@@ -451,50 +452,6 @@ public class OkDialog implements Dialog
         public void run ()
         {
           listener.onHide ();
-        }
-      })));
-    }
-
-    @Override
-    protected void result (@Nullable final Object object)
-    {
-      // Cancels call to DelegateDialog#hide from the button table's ChangeListener in
-      // com.badlogic.gdx.scenes.scene2d.ui.Dialog#initialize when a DialogAction#Submit result is triggered via a
-      // button click (or a key press from the InputListener in com.badlogic.gdx.scenes.scene2d.ui.Dialog#key).
-      //
-      // BUGFIX: This must be called even for HIDE-able DialogAction's because otherwise DelegateDialog#hide() would be
-      // called in addition to DelegateDialog#hide(Action) already called in this method, subsequently clearing all
-      // actions passed to DelegateDialog#hide(Action) via this method - i.e., they will never be run.
-      cancel ();
-
-      if (isInputDisabled || !(object instanceof DialogAction)) return;
-
-      final DialogAction action = (DialogAction) object;
-
-      if (action == DialogAction.NONE) return;
-      if (action.isSubmittable () && isSubmissionDisabled) return;
-
-      if (action == DialogAction.SUBMIT)
-      {
-        addAction (Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            listener.onSubmit ();
-          }
-        }));
-
-        return;
-      }
-
-      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
-      {
-        @Override
-        public void run ()
-        {
-          remove ();
-          if (action.isSubmittable ()) listener.onSubmit ();
         }
       })));
     }
@@ -578,9 +535,7 @@ public class OkDialog implements Dialog
       return button;
     }
 
-    public ImageButton addImageButton (final String style,
-                                       final DialogAction dialogAction,
-                                       final EventListener listener)
+    public ImageButton addImageButton (final String style, final DialogAction dialogAction, final EventListener listener)
     {
       Arguments.checkIsNotNull (style, "style");
       Arguments.checkIsNotNull (dialogAction, "dialogAction");
@@ -766,6 +721,50 @@ public class OkDialog implements Dialog
       Arguments.checkIsNotNull (buttonText, "buttonText");
 
       return getTextButton (buttonText).isDisabled ();
+    }
+
+    @Override
+    protected void result (@Nullable final Object object)
+    {
+      // Cancels call to DelegateDialog#hide from the button table's ChangeListener in
+      // com.badlogic.gdx.scenes.scene2d.ui.Dialog#initialize when a DialogAction#Submit result is triggered via a
+      // button click (or a key press from the InputListener in com.badlogic.gdx.scenes.scene2d.ui.Dialog#key).
+      //
+      // BUGFIX: This must be called even for HIDE-able DialogAction's because otherwise DelegateDialog#hide() would be
+      // called in addition to DelegateDialog#hide(Action) already called in this method, subsequently clearing all
+      // actions passed to DelegateDialog#hide(Action) via this method - i.e., they will never be run.
+      cancel ();
+
+      if (isInputDisabled || !(object instanceof DialogAction)) return;
+
+      final DialogAction action = (DialogAction) object;
+
+      if (action == DialogAction.NONE) return;
+      if (action.isSubmittable () && isSubmissionDisabled) return;
+
+      if (action == DialogAction.SUBMIT)
+      {
+        addAction (Actions.run (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            listener.onSubmit ();
+          }
+        }));
+
+        return;
+      }
+
+      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          remove ();
+          if (action.isSubmittable ()) listener.onSubmit ();
+        }
+      })));
     }
 
     private <T extends Button> void addButton (final String style, final T button, final DialogAction dialogAction)

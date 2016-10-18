@@ -22,9 +22,9 @@ package com.forerunnergames.peril.common.net.packets.battle;
  * A battle actor (player + country) that has a final die count. The final die count is guaranteed to be within the
  * range of {@link #getDieRange()}, which represents the valid die range BEFORE the attack / die-roll occurred.
  *
- * {@see com.forerunnergames.peril.core.model.battle.FinalBattleActor}
- * {@see com.forerunnergames.peril.core.model.battle.PendingBattleActor}
- * {@see com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket}
+ * {@see com.forerunnergames.peril.core.model.battle.FinalBattleActor} {@see
+ * com.forerunnergames.peril.core.model.battle.PendingBattleActor} {@see
+ * com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket}
  */
 public interface FinalBattleActorPacket extends PendingBattleActorPacket
 {

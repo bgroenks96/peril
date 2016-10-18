@@ -24,7 +24,8 @@ import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.map.io.AbstractMapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class AbstractMapResourcesPathParser extends AbstractMapDataPathParser implements MapResourcesPathParser
+public abstract class AbstractMapResourcesPathParser extends AbstractMapDataPathParser implements
+        MapResourcesPathParser
 {
   protected AbstractMapResourcesPathParser (final GameMode gameMode)
   {

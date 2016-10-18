@@ -230,9 +230,8 @@ final class DefaultPlayer extends AbstractPerson implements Player
   public void removeCardsFromHand (final int cards)
   {
     Arguments.checkIsNotNegative (cards, "cards");
-    Preconditions
-            .checkIsTrue (cards <= cardsInHand,
-                          "Cannot remove more cards [" + cards + "] than are currently in hand [" + cardsInHand + "].");
+    Preconditions.checkIsTrue (cards <= cardsInHand, "Cannot remove more cards [" + cards
+            + "] than are currently in hand [" + cardsInHand + "].");
 
     cardsInHand = IntMath.checkedSubtract (cardsInHand, cards);
   }

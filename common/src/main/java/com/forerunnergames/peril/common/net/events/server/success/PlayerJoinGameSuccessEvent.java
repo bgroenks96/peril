@@ -113,8 +113,8 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implem
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | PersonIdentity: {} | PlayersInGame: {} | PlayerLimit: {}", super.toString (), identity,
-                           playersInGame, playerLimit);
+    return Strings.format ("{} | PersonIdentity: {} | PlayersInGame: {} | PlayerLimit: {}", super.toString (),
+                           identity, playersInGame, playerLimit);
   }
 
   @RequiredForNetworkSerialization

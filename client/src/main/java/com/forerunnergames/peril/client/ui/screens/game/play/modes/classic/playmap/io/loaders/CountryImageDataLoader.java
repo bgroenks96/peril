@@ -62,7 +62,7 @@ public final class CountryImageDataLoader extends AbstractBiMapDataLoader <Strin
   {
     Arguments.checkIsNotNull (fileName, "fileName");
 
-    countryImageDataBuilder = new ImmutableBiMap.Builder<> ();
+    countryImageDataBuilder = new ImmutableBiMap.Builder <> ();
     streamParser = streamParserFactory.create (fileName);
   }
 
@@ -87,8 +87,7 @@ public final class CountryImageDataLoader extends AbstractBiMapDataLoader <Strin
     final Vector2 referenceDestination = new Vector2 (referenceDestinationX, referenceDestinationY);
     final Vector2 referenceTextUpperLeft = new Vector2 (referenceTextUpperLeftX, referenceTextUpperLeftY);
 
-    countryImageDataBuilder
-            .put (nameValue,
-                  new CountryImageData (nameValue, referenceDestination, referenceTextUpperLeft, referenceSize));
+    countryImageDataBuilder.put (nameValue, new CountryImageData (nameValue, referenceDestination,
+            referenceTextUpperLeft, referenceSize));
   }
 }

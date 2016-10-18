@@ -24,8 +24,8 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectFortifyVectorSuccessEvent extends AbstractPlayerSourceTargetCountryEvent
-        implements PlayerSuccessEvent
+public final class PlayerSelectFortifyVectorSuccessEvent extends AbstractPlayerSourceTargetCountryEvent implements
+        PlayerSuccessEvent
 {
   public PlayerSelectFortifyVectorSuccessEvent (final PlayerPacket player,
                                                 final CountryPacket sourceCountry,

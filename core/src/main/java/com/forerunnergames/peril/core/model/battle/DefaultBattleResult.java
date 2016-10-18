@@ -96,10 +96,9 @@ public final class DefaultBattleResult implements BattleResult
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Outcome: [{}] | Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
-                                   + "AttackerRolls: [{}] | DefenderRollsults: [{}]",
-                           getClass ().getSimpleName (), outcome, attacker, defender, defendingCountryOwner,
-                           attackerRolls, defenderRolls);
+    return Strings.format ("{}: Outcome: [{}] | Attacker: [{}] | Defender: [{}] | DefendingCountryOwner: [{}] | "
+                                   + "AttackerRolls: [{}] | DefenderRollsults: [{}]", getClass ().getSimpleName (),
+                           outcome, attacker,
+                           defender, defendingCountryOwner, attackerRolls, defenderRolls);
   }
 }

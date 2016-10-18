@@ -21,6 +21,6 @@
 
 <suite name="Peril Smoke Tests">
   <suite-files>
-    <suite-file path="standalone/smoke-tests-standalone.xml" />
+    <suite-file path="standalone/smoke-tests-standalone.xml"/>
   </suite-files>
 </suite>

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public final class KryonetServer extends com.esotericsoftware.kryonet.Server implements Server
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetServer.class);
-  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap<> ();
+  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
   private final Kryo kryo;
   private boolean isRunning = false;
 
@@ -56,6 +56,18 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
     KryonetRegistration.initialize (kryo);
     KryonetRegistration.registerCustomSerializers (kryo);
+  }
+
+  @Override
+  public void stop ()
+  {
+    if (!isRunning) return;
+
+    super.stop ();
+
+    isRunning = false;
+
+    log.info ("Stopped the server.");
   }
 
   @Override
@@ -262,18 +274,6 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
     sendToAllExceptTCP (client.getConnectionId (), object);
 
     log.debug ("Sent object [{}] to all clients except [{}].", object, client);
-  }
-
-  @Override
-  public void stop ()
-  {
-    if (!isRunning) return;
-
-    super.stop ();
-
-    isRunning = false;
-
-    log.info ("Stopped the server.");
   }
 
   private static boolean addressMatches (final Connection connection, final Remote client)

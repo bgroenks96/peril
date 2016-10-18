@@ -22,8 +22,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.converters.colortoname.TerritoryColorToNameConverter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.converters.coordinatetocolor.PlayMapCoordinateToTerritoryColorConverter;
 
-public final class PlayMapCoordinateToContinentNameConverter
-        extends AbstractPlayMapCoordinateToTerritoryNameConverter <ContinentColor>
+public final class PlayMapCoordinateToContinentNameConverter extends
+        AbstractPlayMapCoordinateToTerritoryNameConverter <ContinentColor>
 {
   public PlayMapCoordinateToContinentNameConverter (final PlayMapCoordinateToTerritoryColorConverter <ContinentColor> playMapCoordinateToContinentColorConverter,
                                                     final TerritoryColorToNameConverter <ContinentColor> continentColorToContinentNameConverter)

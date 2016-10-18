@@ -119,18 +119,6 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
-  public String getServerAddress ()
-  {
-    return serverConfig.getServerAddress ();
-  }
-
-  @Override
-  public int getServerTcpPort ()
-  {
-    return serverConfig.getServerTcpPort ();
-  }
-
-  @Override
   public String getGameServerName ()
   {
     return gameServerName;
@@ -140,6 +128,18 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   public GameServerType getGameServerType ()
   {
     return gameServerType;
+  }
+
+  @Override
+  public String getServerAddress ()
+  {
+    return serverConfig.getServerAddress ();
+  }
+
+  @Override
+  public int getServerTcpPort ()
+  {
+    return serverConfig.getServerTcpPort ();
   }
 
   @Override

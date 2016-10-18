@@ -84,7 +84,7 @@ public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
     if (!sourceCountryName.equals (this.sourceCountryName))
     {
       log.error ("Not sending response [{}] because specified source country name [{}] does not match the "
-              + "source country name [{}] of the original request [{}].",
+                         + "source country name [{}] of the original request [{}].",
                  PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), sourceCountryName,
                  this.sourceCountryName, request);
       return;
@@ -95,7 +95,7 @@ public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
     if (!targetCountryName.equals (this.targetCountryName))
     {
       log.error ("Not sending response [{}] because specified target country name [{}] does not match the "
-              + "target country name [{}] of the original request [{}].",
+                         + "target country name [{}] of the original request [{}].",
                  PlayerOccupyCountryResponseRequestEvent.class.getSimpleName (), targetCountryName,
                  this.targetCountryName, request);
       return;

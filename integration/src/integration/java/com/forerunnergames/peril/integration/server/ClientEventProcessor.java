@@ -97,7 +97,7 @@ public final class ClientEventProcessor
   {
     // add end processing type to registered type set
     registeredTypes.add (endProcessingEventType);
-    final ConcurrentLinkedQueue <TestClient> clientProcessingQueue = new ConcurrentLinkedQueue<> (orderedClients);
+    final ConcurrentLinkedQueue <TestClient> clientProcessingQueue = new ConcurrentLinkedQueue <> (orderedClients);
     while (!clientProcessingQueue.isEmpty ())
     {
       final TestClient nextClient = clientProcessingQueue.poll ();

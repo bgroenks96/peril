@@ -26,8 +26,8 @@ import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.integration.core.CoreFactory;
-import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.integration.core.StateMachineMonitor;
+import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -109,7 +109,7 @@ public class GameStateMachineSmokeTest
 
   private static String getRandomPlayerName ()
   {
-    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy",
-                                            "Brittany", "Jonathan", "Adam", "Brian");
+    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron",
+                                            "Maddy", "Brittany", "Jonathan", "Adam", "Brian");
   }
 }

@@ -23,7 +23,8 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class BeginInitialReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class BeginInitialReinforcementPhaseEvent extends AbstractPlayerEvent implements
+        BroadcastNotificationEvent
 {
   public BeginInitialReinforcementPhaseEvent (final PlayerPacket currentPlayer)
   {

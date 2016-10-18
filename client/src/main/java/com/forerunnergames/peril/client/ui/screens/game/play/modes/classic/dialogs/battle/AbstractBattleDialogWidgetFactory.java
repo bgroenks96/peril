@@ -58,8 +58,8 @@ import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractBattleDialogWidgetFactory extends AbstractWidgetFactory
-        implements BattleDialogWidgetFactory
+public abstract class AbstractBattleDialogWidgetFactory extends AbstractWidgetFactory implements
+        BattleDialogWidgetFactory
 {
   private static final String BATTLING_ARROW_LABEL_TEXT = "ATTACKING";
   private static final String COUNTRY_ARMY_TEXT_EFFECTS_FONT_NAME = "dejaVu-22";
@@ -135,9 +135,9 @@ public abstract class AbstractBattleDialogWidgetFactory extends AbstractWidgetFa
 
     for (int dieIndex = 0; dieIndex < absoluteAttackerDieRange.max (); ++dieIndex)
     {
-      dieBuilder.add (new AttackerDie (dieIndex,
-              createAttackerDieImageButton (Die.DEFAULT_STATE, GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                            Die.DEFAULT_OUTCOME))
+      dieBuilder.add (new AttackerDie (dieIndex, createAttackerDieImageButton (Die.DEFAULT_STATE,
+                                                                               GameSettings.DEFAULT_DIE_FACE_VALUE,
+                                                                               Die.DEFAULT_OUTCOME))
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -162,9 +162,9 @@ public abstract class AbstractBattleDialogWidgetFactory extends AbstractWidgetFa
 
     for (int dieIndex = 0; dieIndex < absoluteDefenderDieRange.max (); ++dieIndex)
     {
-      dieBuilder.add (new DefenderDie (dieIndex,
-              createDefenderDieImageButton (Die.DEFAULT_STATE, GameSettings.DEFAULT_DIE_FACE_VALUE,
-                                            Die.DEFAULT_OUTCOME))
+      dieBuilder.add (new DefenderDie (dieIndex, createDefenderDieImageButton (Die.DEFAULT_STATE,
+                                                                               GameSettings.DEFAULT_DIE_FACE_VALUE,
+                                                                               Die.DEFAULT_OUTCOME))
       {
         @Override
         protected ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -204,8 +204,8 @@ public abstract class AbstractBattleDialogWidgetFactory extends AbstractWidgetFa
 
     if (attackerDieOutcome == DieOutcome.NONE) return null;
 
-    return new TextureRegionDrawable (
-            createTextureRegion (DICE_ARROW_OUTCOME_TEXTURE_REGION_NAME_PREFIX + attackerDieOutcome.lowerCaseName ()));
+    return new TextureRegionDrawable (createTextureRegion (DICE_ARROW_OUTCOME_TEXTURE_REGION_NAME_PREFIX
+            + attackerDieOutcome.lowerCaseName ()));
   }
 
   @Override

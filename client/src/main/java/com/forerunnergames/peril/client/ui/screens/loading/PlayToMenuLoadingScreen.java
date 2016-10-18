@@ -35,8 +35,8 @@ import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-
 import com.forerunnergames.tools.common.Strings;
+
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
@@ -59,8 +59,8 @@ public final class PlayToMenuLoadingScreen extends AbstractLoadingScreen
                                   final MBassador <Event> eventBus,
                                   final PlayMapFactory playMapFactory)
   {
-    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager,
-           LoadingScreenStyle.builder ().build ());
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager, LoadingScreenStyle
+            .builder ().build ());
 
     Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
 

@@ -80,7 +80,7 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   @Override
   public <T extends PlayerRequestEvent> void publishPlayerRequestEvent (final PlayerPacket player, final T event)
   {
-    eventBus.publish (new DefaultInboundPlayerRequestEvent<> (player, event));
+    eventBus.publish (new DefaultInboundPlayerRequestEvent <> (player, event));
   }
 
   @Override
@@ -88,7 +88,7 @@ public class DefaultCoreCommunicator implements CoreCommunicator
                                                                                                                      final T responseRequestEvent,
                                                                                                                      final R inputRequestEvent)
   {
-    eventBus.publish (new DefaultInboundPlayerResponseRequestEvent<> (player, responseRequestEvent, inputRequestEvent));
+    eventBus.publish (new DefaultInboundPlayerResponseRequestEvent <> (player, responseRequestEvent, inputRequestEvent));
   }
 
   // --- response handlers --- //

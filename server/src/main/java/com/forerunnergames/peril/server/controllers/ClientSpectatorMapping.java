@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.server.controllers;
 
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
-import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.Remote;

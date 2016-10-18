@@ -29,8 +29,8 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerTradeInCardsResponseSuccessEvent extends AbstractPlayerArmiesChangedEvent
-        implements PlayerResponseSuccessEvent
+public final class PlayerTradeInCardsResponseSuccessEvent extends AbstractPlayerArmiesChangedEvent implements
+        PlayerResponseSuccessEvent
 {
   private final CardSetPacket tradeIn;
   private final int tradeInBonus;

@@ -265,9 +265,9 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
   @Override
   public String toString ()
   {
-    return Strings.format (
-                           "{}: Phase (as verb): {} | Started: {} | Source Country: {} | Target Country: {}"
-                                   + " | Server Request: {}",
-                           getClass ().getSimpleName (), isStarted, sourceCountryName, targetCountryName, event);
+    return Strings.format ("{}: Phase (as verb): {} | Started: {} | Source Country: {} | Target Country: {}"
+                                   + " | Server Request: {}", getClass ().getSimpleName (), isStarted,
+                           sourceCountryName, targetCountryName,
+                           event);
   }
 }

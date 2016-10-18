@@ -33,9 +33,9 @@ public class LabelMessageBoxRow <T extends Message> implements MessageBoxRow <T>
 {
   private final MessageBoxRowStyle rowStyle;
   private final WidgetFactory widgetFactory;
+  private final T message;
   @Nullable
   private Label label;
-  private final T message;
 
   public LabelMessageBoxRow (final T message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
   {

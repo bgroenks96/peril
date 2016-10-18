@@ -53,7 +53,7 @@ public final class ExternalMapMetadataLoader implements MapMetadataLoader
   @Override
   public ImmutableSet <MapMetadata> load ()
   {
-    final Set <MapMetadata> mapMetadatas = new HashSet<> ();
+    final Set <MapMetadata> mapMetadatas = new HashSet <> ();
     final File externalMapsDirectory = new File (mapDataPathParser.parseMapTypePath (mapType));
     final File[] childPathFiles = externalMapsDirectory.listFiles ();
 

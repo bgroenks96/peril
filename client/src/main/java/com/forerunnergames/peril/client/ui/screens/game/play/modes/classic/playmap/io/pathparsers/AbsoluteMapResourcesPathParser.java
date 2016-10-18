@@ -52,8 +52,8 @@ public final class AbsoluteMapResourcesPathParser extends AbstractMapResourcesPa
       }
       default:
       {
-        throw new PlayMapLoadingException (
-                Strings.format ("Unsupported {}: [{}].", MapType.class.getSimpleName (), mapType));
+        throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", MapType.class.getSimpleName (),
+                                                           mapType));
       }
     }
   }

@@ -162,8 +162,8 @@ public class DedicatedGameSession implements TestSession
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
-                           getClass ().getSimpleName (), sessionName, internalServerAddress, serverPort,
-                           gameRules.getInitialCountryAssignment ());
+    return Strings
+            .format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}", getClass ().getSimpleName (),
+                     sessionName, internalServerAddress, serverPort, gameRules.getInitialCountryAssignment ());
   }
 }

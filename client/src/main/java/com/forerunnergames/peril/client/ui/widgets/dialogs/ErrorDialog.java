@@ -26,11 +26,9 @@ public final class ErrorDialog extends OkDialog
 {
   public ErrorDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener)
   {
-    super (widgetFactory,
-           DialogStyle.builder ().size (650, 388).title ("ERROR").titleHeight (51).border (28).buttonSpacing (16)
-                   .buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21).textPaddingHorizontal (4)
-                   .textPaddingBottom (4).build (),
-           stage, listener);
+    super (widgetFactory, DialogStyle.builder ().size (650, 388).title ("ERROR").titleHeight (51).border (28)
+            .buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21)
+            .textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
   }
 
   public ErrorDialog (final WidgetFactory widgetFactory,

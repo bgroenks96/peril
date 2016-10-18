@@ -50,8 +50,8 @@ public final class PlayerSelectAttackVectorRequestEvent implements PlayerRequest
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {}", getClass ().getSimpleName (), sourceCountryName,
-                           targetCountryName);
+    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {}", getClass ().getSimpleName (),
+                           sourceCountryName, targetCountryName);
   }
 
   @RequiredForNetworkSerialization

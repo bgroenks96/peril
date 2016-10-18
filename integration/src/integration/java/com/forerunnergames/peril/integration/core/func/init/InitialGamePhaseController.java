@@ -122,8 +122,7 @@ public final class InitialGamePhaseController implements TestPhaseController
     final ClientEventCallback <DeterminePlayerTurnOrderCompleteEvent> determineTurnOrderCallback = new ClientEventCallback <DeterminePlayerTurnOrderCompleteEvent> ()
     {
       @Override
-      public void onEventReceived (final Optional <DeterminePlayerTurnOrderCompleteEvent> event,
-                                   final TestClient client)
+      public void onEventReceived (final Optional <DeterminePlayerTurnOrderCompleteEvent> event, final TestClient client)
       {
         Arguments.checkIsNotNull (event, "event");
         Arguments.checkIsNotNull (client, "client");

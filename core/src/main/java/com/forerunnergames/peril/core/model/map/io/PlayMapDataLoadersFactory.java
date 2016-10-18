@@ -89,9 +89,9 @@ public final class PlayMapDataLoadersFactory
       }
       default:
       {
-        throw new PlayMapLoadingException (
-                Strings.format ("Cannot create {} for {}: [{}].", PlayMapDataLoadersFactory.class.getSimpleName (),
-                                MapType.class.getSimpleName (), mapType));
+        throw new PlayMapLoadingException (Strings.format ("Cannot create {} for {}: [{}].",
+                                                           PlayMapDataLoadersFactory.class.getSimpleName (),
+                                                           MapType.class.getSimpleName (), mapType));
       }
     }
 

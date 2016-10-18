@@ -88,6 +88,15 @@ public final class MultiplayerController extends ControllerAdapter
     this.eventBus = eventBus;
   }
 
+  @Handler
+  public static void onEvent (final ServerConnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
+    log.info ("Successfully connected to server [{}].", serverFrom (event));
+  }
+
   @Override
   public void initialize ()
   {
@@ -100,15 +109,6 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.unsubscribe (this);
     disconnectFromServer ();
     destroyGameServer ();
-  }
-
-  @Handler
-  public static void onEvent (final ServerConnectionEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-    log.info ("Successfully connected to server [{}].", serverFrom (event));
   }
 
   @Handler

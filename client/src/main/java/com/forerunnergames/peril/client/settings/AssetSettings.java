@@ -69,48 +69,48 @@ public final class AssetSettings
           + "Examples of valid .atlas filenames: countries1.atlas, countries2.atlas, countries3.atlas\n"
           + "Examples of valid .png filenames: countries1.png, countries2.png, countries3.png\n";
   // Splash Screen
-  public static final AssetDescriptor <TextureAtlas> SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <TextureAtlas> SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/splash/skin.atlas", TextureAtlas.class);
-  public static final AssetDescriptor <Skin> SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor<> (
-          "screens/splash/skin.json", Skin.class,
-          new MultiAtlasSkinLoader.SkinParameter (SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
+  public static final AssetDescriptor <Skin> SPLASH_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/splash/skin.json", Skin.class, new MultiAtlasSkinLoader.SkinParameter (
+                  SPLASH_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
   // General
-  public static final AssetDescriptor <ShaderProgram> SPRITE_BATCH_SHADER_PROGRAM_ASSET_DESCRIPTOR = new AssetDescriptor<> (
-          "shaders/spriteBatch.vert", ShaderProgram.class,
-          new ShaderProgramLoader.FragmentShaderParameter ("shaders/spriteBatch.frag"));
-  public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <ShaderProgram> SPRITE_BATCH_SHADER_PROGRAM_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "shaders/spriteBatch.vert", ShaderProgram.class, new ShaderProgramLoader.FragmentShaderParameter (
+                  "shaders/spriteBatch.frag"));
+  public static final AssetDescriptor <Pixmap> NORMAL_CURSOR_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "cursors/normalCursor.png", Pixmap.class);
   // Menu Screens
-  public static final AssetDescriptor <TextureAtlas> MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <TextureAtlas> MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/skin1.atlas", TextureAtlas.class);
-  public static final AssetDescriptor <TextureAtlas> MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <TextureAtlas> MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/skin2.atlas", TextureAtlas.class);
-  public static final AssetDescriptor <Skin> MENU_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <Skin> MENU_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/skin.json", Skin.class, new MultiAtlasSkinLoader.SkinParameter (
                   MENU_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR, MENU_SCREEN_SKIN_ATLAS_2_ASSET_DESCRIPTOR));
-  public static final AssetDescriptor <Music> MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <Music> MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/menus/shared/music/peril.ogg", Music.class);
   // Loading Screen
-  public static final AssetDescriptor <TextureAtlas> LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <TextureAtlas> LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/loading/skin.atlas", TextureAtlas.class);
-  public static final AssetDescriptor <Skin> LOADING_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor<> (
-          "screens/loading/skin.json", Skin.class,
-          new MultiAtlasSkinLoader.SkinParameter (LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
+  public static final AssetDescriptor <Skin> LOADING_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/loading/skin.json", Skin.class, new MultiAtlasSkinLoader.SkinParameter (
+                  LOADING_SCREEN_SKIN_ATLAS_ASSET_DESCRIPTOR));
   // Play Screen
-  public static final AssetDescriptor <Music> PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <Music> PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/shared/music/escalation.ogg", Music.class);
   // Classic Mode Play Screen
-  public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <TextureAtlas> CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/skin.atlas", TextureAtlas.class);
-  public static final AssetDescriptor <Skin> CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor<> (
-          "screens/game/play/modes/classic/skin.json", Skin.class,
-          new MultiAtlasSkinLoader.SkinParameter (CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR));
-  public static final AssetDescriptor <Sound> CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <Skin> CLASSIC_MODE_PLAY_SCREEN_SKIN_ASSET_DESCRIPTOR = new AssetDescriptor <> (
+          "screens/game/play/modes/classic/skin.json", Skin.class, new MultiAtlasSkinLoader.SkinParameter (
+                  CLASSIC_MODE_PLAY_SCREEN_SKIN_ATLAS_1_ASSET_DESCRIPTOR));
+  public static final AssetDescriptor <Sound> CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/sounds/artillery_explosion07_48k.wav", Sound.class);
-  public static final AssetDescriptor <Music> CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <Music> CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/classic/sounds/war_ambience_distant_01_120_48k_eq.ogg", Music.class);
   // Peril Mode Play Screen
-  public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor<> (
+  public static final AssetDescriptor <TextureAtlas> PERIL_MODE_ATLAS_ASSET_DESCRIPTOR = new AssetDescriptor <> (
           "screens/game/play/modes/peril/atlases/skin.atlas", TextureAtlas.class);
   public static final String PERIL_MODE_GRIDLINES_ATLAS_NINEPATCH_NAME = "gridMiddle";
   // Distance Field Font Shaders
@@ -240,8 +240,8 @@ public final class AssetSettings
       }
       default:
       {
-        throw new UnsupportedOperationException (
-                Strings.format ("Unsupported {}: [{}].", playScreenId.getClass ().getSimpleName (), playScreenId));
+        throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].", playScreenId.getClass ()
+                .getSimpleName (), playScreenId));
       }
     }
   }

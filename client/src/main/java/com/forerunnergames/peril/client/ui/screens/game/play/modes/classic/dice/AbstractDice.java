@@ -272,7 +272,7 @@ abstract class AbstractDice implements Dice
 
   private Iterator <DieRoll> sortDescendingByFaceValue (final ImmutableList <DieRoll> dieRolls)
   {
-    final List <DieRoll> sortedDieRolls = new ArrayList<> (dieRolls);
+    final List <DieRoll> sortedDieRolls = new ArrayList <> (dieRolls);
 
     Collections.sort (sortedDieRolls, DieRoll.DESCENDING_BY_FACE_VALUE);
 

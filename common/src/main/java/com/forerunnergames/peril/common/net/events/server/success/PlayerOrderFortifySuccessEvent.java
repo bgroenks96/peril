@@ -8,8 +8,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOrderFortifySuccessEvent extends AbstractPlayerSourceTargetCountryEvent
-        implements PlayerSuccessEvent
+public final class PlayerOrderFortifySuccessEvent extends AbstractPlayerSourceTargetCountryEvent implements
+        PlayerSuccessEvent
 {
   private final int deltaArmyCount;
 
