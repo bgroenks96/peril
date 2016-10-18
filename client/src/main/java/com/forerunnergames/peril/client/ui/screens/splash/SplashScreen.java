@@ -274,23 +274,23 @@ public final class SplashScreen extends AbstractLoadingScreen
   {
     final Graphics.DisplayMode currentMonitorMode = Gdx.graphics.getDisplayMode ();
 
-    log.info ("Current monitor display mode: {}", currentMonitorMode);
+    log.info ("Current monitor display mode: [{}]", currentMonitorMode);
 
     if (GraphicsSettings.IS_FULLSCREEN && Gdx.graphics.setFullscreenMode (currentMonitorMode))
     {
-      log.info ("Successfully set fullscreen mode [{}].", Gdx.graphics.getDisplayMode ());
+      log.info ("Successfully set fullscreen mode [{}x{}].", getActualScreenWidth (), getActualScreenHeight ());
       return;
     }
 
     if (Gdx.graphics.setWindowedMode (GraphicsSettings.INITIAL_WINDOW_WIDTH, GraphicsSettings.INITIAL_WINDOW_HEIGHT))
     {
-      log.info ("Successfully set windowed mode [{}].", Gdx.graphics.getDisplayMode ());
+      log.info ("Successfully set windowed mode [{}x{}].", getActualScreenWidth (), getActualScreenHeight ());
       return;
     }
 
     if (Gdx.graphics.setWindowedMode (currentMonitorMode.width, currentMonitorMode.height))
     {
-      log.info ("Successfully set windowed mode [{}].", Gdx.graphics.getDisplayMode ());
+      log.info ("Successfully set windowed mode [{}x{}].", getActualScreenWidth (), getActualScreenHeight ());
       return;
     }
 
