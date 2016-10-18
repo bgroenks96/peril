@@ -873,7 +873,7 @@ public final class StatusMessageGenerator
       cardsDescription.append (card.getName ()).append (" (MSV: ").append (card.getType ()).append (")").append (", ");
     }
 
-    cardsDescription.replace (cardsDescription.lastIndexOf (", "), cardsDescription.length, "");
+    cardsDescription.replace (cardsDescription.lastIndexOf (", "), cardsDescription.length (), "");
 
     return cardsDescription.toString ();
   }
