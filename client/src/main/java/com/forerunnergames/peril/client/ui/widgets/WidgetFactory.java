@@ -91,6 +91,8 @@ public interface WidgetFactory
 
   ImageButton.ImageButtonStyle createImageButtonStyle (final String styleName);
 
+  Dialog createMessageDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener);
+
   Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener);
 
   Label createLabel (final String text, final int alignment, final String labelStyle);

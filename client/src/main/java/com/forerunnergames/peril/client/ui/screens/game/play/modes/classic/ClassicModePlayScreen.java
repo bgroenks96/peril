@@ -21,6 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -43,6 +44,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.contr
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DefaultDebugInputProcessor;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayerNotificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialogListener;
@@ -99,13 +101,16 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPl
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
@@ -149,6 +154,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final FortificationDialog fortificationDialog;
   private final BattleResultDialog attackerBattleResultDialog;
   private final BattleResultDialog defenderBattleResultDialog;
+  private final PlayerNotificationDialog notificationDialog;
   private final GamePhaseHandler reinforcementPhaseHandler;
   private final GamePhaseHandler manualCountryAssignmentPhaseHandler;
   private final GamePhaseHandler occupationPhaseHandler;
@@ -307,6 +313,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
     occupationDialog = widgetFactory.createOccupationDialog (getStage (), new OccupationDialogListener ());
     fortificationDialog = widgetFactory.createFortificationDialog (getStage (), new FortificationDialogListener ());
     quitDialog = widgetFactory.createQuitDialog (getQuitDialogMessageText (), getStage (), new QuitDialogListener ());
+    notificationDialog = widgetFactory.createPlayerNotificationDialog (widgetFactory, getStage (),
+                                                                       new PlayerNotificationDialogListener ());
     dialogs.add (attackerBattleResultDialog, defenderBattleResultDialog, occupationDialog, fortificationDialog,
                  quitDialog);
 
@@ -389,6 +397,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     {
       controlRoomBox.pressButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
     }
+
     return false;
   }
 
@@ -468,6 +477,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
         controlRoomBox.setSelfPlayer (event.getSelfPlayer ());
         playerBox.setPlayers (event.getAllPlayers ());
         gamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
+        notificationDialog.setSelfPlayer (event.getSelfPlayer ());
         debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
       }
     });
@@ -700,6 +710,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
       public void run ()
       {
         intelBox.setGamePhaseName ("Reinforcement");
+        notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+        notificationDialog.showForSelf (event.getPlayer (), "It is your turn, sir. What are your orders?");
       }
     });
   }
@@ -718,6 +730,66 @@ public final class ClassicModePlayScreen extends AbstractScreen
       {
         tradeInEvent = event; // TODO Production: Remove.
         controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
+
+        final String reinforcementsPhrase = Strings.pluralizeS (event.getNextTradeInBonus (),
+                                                                "additional reinforcement");
+
+        if (!event.isTradeInRequired () && event.getPlayerCardsInHand () == 3)
+        {
+          notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+          notificationDialog.showForSelf (event.getPlayer (),
+                                          "Congratulations, sir, you have just enough matching cards to "
+                                                  + "purchase {}! If you so desire, that is, sir. Good things come to "
+                                                  + "those who wait, General.", reinforcementsPhrase);
+        }
+        else if (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3)
+        {
+          notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+          notificationDialog.showForSelf (event.getPlayer (),
+                                          "You may now use 3 of your {} matching cards to purchase {}! If "
+                                                  + "you so desire, that is, sir. Fortune rewards the patient, General.",
+                                          event.getPlayerCardsInHand (), reinforcementsPhrase);
+        }
+        else if (event.isTradeInRequired ())
+        {
+          notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+          notificationDialog.showForSelf (event.getPlayer (),
+                                          "You now have so many matching cards that you must now use some of them to "
+                                                  + "purchase {}!", reinforcementsPhrase);
+        }
+      }
+    });
+  }
+
+  @Handler
+  void onEvent (final PlayerTradeInCardsResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        notificationDialog.setTitle ("Ahem, General");
+
+        notificationDialog.showForSelf (event.getPlayer (),
+                                        "You used 3 cards to purchase {}!\n\nYou now have {} remaining.\n\nThe next "
+                                                + "purchase will yield {}.",
+                                        Strings.pluralizeS (event.getTradeInBonus (), "additional reinforcement"),
+                                        Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"),
+                                        Strings.pluralizeS (event.getNextTradeInBonus (), "reinforcement"));
+
+        notificationDialog.showForEveryoneElse (event.getPlayer (),
+                                                "{} used 3 cards to purchase {}!\n\n{} has {} remaining.\n\nThe next "
+                                                        + "purchase will yield {}.", event.getPlayerName (), Strings
+                                                        .pluralizeS (event.getTradeInBonus (),
+                                                                     "additional reinforcement"), event
+                                                        .getPlayerName (), Strings.pluralizeSZeroIsNo (event
+                                                        .getPlayerCardsInHand (), "card"), Strings.pluralizeS (event
+                                                        .getNextTradeInBonus (), "reinforcement"));
       }
     });
   }
@@ -802,6 +874,18 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
+  void onEvent (final PlayerLoseGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    notificationDialog.setTitle ("Ahem, General");
+    notificationDialog.showForSelf (event.getPlayer (), "We have been annihilated.", event.getPlayerName ());
+    notificationDialog.showForEveryoneElse (event.getPlayer (), "{} has been annihilated.", event.getPlayerName ());
+  }
+
+  @Handler
   void onEvent (final PlayerWinGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -817,6 +901,10 @@ public final class ClassicModePlayScreen extends AbstractScreen
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
+        notificationDialog.setTitle ("Ahem, General");
+        notificationDialog.showForSelf (event.getPlayer (),
+                                        "You have won the war! Let the celebrations begin, in your honor, sir!");
+        notificationDialog.showForSelf (event.getPlayer (), "We have lost the war for you, sir... *gulp*");
       }
     });
   }
@@ -857,6 +945,17 @@ public final class ClassicModePlayScreen extends AbstractScreen
         controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
       }
     });
+  }
+
+  @Handler
+  void onEvent (final SkipFortifyPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+    notificationDialog.showForSelf (event.getPlayer (), "We do not have any valid post-combat maneuvers.");
   }
 
   @Handler
@@ -912,6 +1011,20 @@ public final class ClassicModePlayScreen extends AbstractScreen
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPlayer ());
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPlayer ());
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPlayer ());
+
+        if (event.wasCardReceived ())
+        {
+          notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+          notificationDialog.showForSelf (event.getPlayer (),
+                                          "You earned a card ({} (MSV: {})) as a reward for your military genius!",
+                                          event.getCardName (), event.getCardType ());
+        }
+        else
+        {
+          notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
+          notificationDialog.showForSelf (event.getPlayer (),
+                                          "We failed to earn you a card, sir. We will try harder next time, sir...");
+        }
       }
     });
   }
@@ -1104,7 +1217,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
       if (quitDialog.isShown ())
       {
         quitDialog.hide (null);
-        quitDialog.show (null);
+        quitDialog.show ((Action) null);
       }
 
       playMap.disable ();
@@ -1146,7 +1259,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
       if (quitDialog.isShown ())
       {
         quitDialog.hide (null);
-        quitDialog.show (null);
+        quitDialog.show ((Action) null);
       }
 
       playMap.disable ();
@@ -1241,6 +1354,31 @@ public final class ClassicModePlayScreen extends AbstractScreen
     public void onShow ()
     {
       playMap.disable ();
+    }
+  }
+
+  private final class PlayerNotificationDialogListener implements DialogListener
+  {
+    @Override
+    public void onSubmit ()
+    {
+    }
+
+    @Override
+    public void onShow ()
+    {
+      playMap.disable ();
+    }
+
+    @Override
+    public void onHide ()
+    {
+      if (!attackDialog.isShown () && !defendDialog.isShown () && !occupationDialog.isShown ()
+              && !fortificationDialog.isShown () && !attackerBattleResultDialog.isShown ()
+              && !defenderBattleResultDialog.isShown () && !quitDialog.isShown ())
+      {
+        playMap.enable (getMousePosition ());
+      }
     }
   }
 }

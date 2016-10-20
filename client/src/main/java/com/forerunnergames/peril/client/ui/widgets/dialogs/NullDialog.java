@@ -38,6 +38,18 @@ public class NullDialog implements Dialog
   }
 
   @Override
+  public void show (final String message)
+  {
+    Arguments.checkIsNotNull (message, "message");
+  }
+
+  @Override
+  public void show (final String message, @Nullable final Action action)
+  {
+    Arguments.checkIsNotNull (message, "message");
+  }
+
+  @Override
   public void hide ()
   {
   }

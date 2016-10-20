@@ -40,6 +40,7 @@ import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.ControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.DefaultControlRoomBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayerNotificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
@@ -55,6 +56,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
@@ -287,6 +289,17 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
             .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51).border (28)
             .buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21)
             .textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
+  }
+
+  public PlayerNotificationDialog createPlayerNotificationDialog (final WidgetFactory widgetFactory,
+                                                                  final Stage stage,
+                                                                  final DialogListener listener)
+  {
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new PlayerNotificationDialog (widgetFactory, stage, listener);
   }
 
   public Sound createBattleSingleExplosionSound ()

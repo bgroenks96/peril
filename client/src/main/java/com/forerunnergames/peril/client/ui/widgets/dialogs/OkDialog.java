@@ -116,6 +116,20 @@ public class OkDialog implements Dialog
 
   @Override
   @OverridingMethodsMustInvokeSuper
+  public void show (final String message)
+  {
+    delegate.show (message);
+  }
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void show (final String message, @Nullable final Action action)
+  {
+    delegate.show (message, action);
+  }
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
   public void hide ()
   {
     delegate.hide ();
@@ -603,6 +617,22 @@ public class OkDialog implements Dialog
     public void show (@Nullable final Action action)
     {
       show (stage, action);
+    }
+
+    public void show (final String message)
+    {
+      Arguments.checkIsNotNull (message, "message");
+
+      setMessage (new DefaultMessage (message));
+      show ();
+    }
+
+    public void show (final String message, @Nullable final Action action)
+    {
+      Arguments.checkIsNotNull (message, "message");
+
+      setMessage (new DefaultMessage (message));
+      show (action);
     }
 
     public boolean isShown ()

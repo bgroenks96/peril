@@ -33,6 +33,10 @@ public interface Dialog
 
   void show (@Nullable final Action action);
 
+  void show (final String message);
+
+  void show (final String message, @Nullable final Action action);
+
   void hide ();
 
   void hide (@Nullable final Action action);

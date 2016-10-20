@@ -57,6 +57,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
@@ -580,6 +581,16 @@ public final class StatusMessageGenerator
   }
 
   @Handler
+  void onEvent (final SkipFortifyPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("{} not have any valid post-combat maneuvers.", nameifyVerbDo (event.getPlayer (), LetterCase.LOWER));
+  }
+
+  @Handler
   void onEvent (final BeginFortifyPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -868,6 +879,13 @@ public final class StatusMessageGenerator
     checkLetterCase (letterCase);
 
     return isSelf (player) ? Strings.toCase ("you", letterCase) + " have" : player.getName () + " has";
+  }
+
+  private String nameifyVerbDo (final PlayerPacket player, final LetterCase letterCase)
+  {
+    checkLetterCase (letterCase);
+
+    return isSelf (player) ? Strings.toCase ("you", letterCase) + " do" : player.getName () + " does";
   }
 
   private String nameifyVerb (final PlayerPacket player,

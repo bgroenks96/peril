@@ -59,6 +59,7 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogList
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.ErrorDialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.MessageDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.LabelMessageBoxRow;
@@ -281,6 +282,16 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (styleName, "styleName");
 
     return getSkinResource (styleName, ImageButton.ImageButtonStyle.class);
+  }
+
+  @Override
+  public Dialog createMessageDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener)
+  {
+    Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new MessageDialog (widgetFactory, stage, listener);
   }
 
   @Override

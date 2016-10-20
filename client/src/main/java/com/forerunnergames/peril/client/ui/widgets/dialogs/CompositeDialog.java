@@ -60,6 +60,28 @@ public final class CompositeDialog implements Dialog
   }
 
   @Override
+  public void show (final String message)
+  {
+    Arguments.checkIsNotNull (message, "message");
+
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.show (message);
+    }
+  }
+
+  @Override
+  public void show (final String message, @Nullable final Action action)
+  {
+    Arguments.checkIsNotNull (message, "message");
+
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.show (message, action);
+    }
+  }
+
+  @Override
   public void hide ()
   {
     for (final Dialog dialog : dialogs)
