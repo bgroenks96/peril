@@ -41,7 +41,7 @@ public final class HoveredTerritoryText extends Actor
   private final Vector2 mousePosition = new Vector2 ();
   private final Vector2 textPosition = new Vector2 ();
   private String text = "";
-  private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
+  private PlayMap playMap = PlayMap.NULL;
   @Nullable
   private CountryPrimaryImageState countryPrimaryImageState;
 

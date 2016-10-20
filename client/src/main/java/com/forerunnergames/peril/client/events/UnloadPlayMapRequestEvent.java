@@ -40,7 +40,7 @@ public final class UnloadPlayMapRequestEvent implements LocalEvent
 
   public boolean isNullMapMetadata ()
   {
-    return mapMetadata.equals (MapMetadata.NULL_MAP_METADATA);
+    return mapMetadata.equals (MapMetadata.NULL);
   }
 
   @Override

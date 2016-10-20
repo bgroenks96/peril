@@ -53,7 +53,7 @@ public final class DefaultIntelBox implements IntelBox
   private final ImageButton detailedReportButton;
   private final Cell <Actor> playerColorIconCell;
   private final Table playerNameTable;
-  private PlayerColorIcon playerColorIcon = PlayerColorIcon.NULL_PLAYER_COLOR_ICON;
+  private PlayerColorIcon playerColorIcon = PlayerColorIcon.NULL;
   private int ownedCountries;
   @Nullable
   private GameServerConfiguration gameServerConfig;
@@ -280,7 +280,7 @@ public final class DefaultIntelBox implements IntelBox
     subtotalReinforcementsTextLabel.setText ("?");
     tradeInReinforcementsTextLabel.setText ("?");
     totalReinforcementsTextLabel.setText ("?");
-    playerColorIcon = PlayerColorIcon.NULL_PLAYER_COLOR_ICON;
+    playerColorIcon = PlayerColorIcon.NULL;
     playerColorIconCell.setActor (playerColorIcon.asActor ());
     playerNameTable.invalidateHierarchy ();
   }

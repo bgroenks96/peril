@@ -23,7 +23,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 
 public interface DebugInputProcessor extends InputProcessor
 {
-  DebugInputProcessor NULL_DEBUG_INPUT_PROCESSOR = new NullDebugInputProcessor ();
+  DebugInputProcessor NULL = new NullDebugInputProcessor ();
 
   void setPlayMap (final PlayMap playMap);
 

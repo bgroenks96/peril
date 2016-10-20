@@ -26,7 +26,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 
 public interface CountryArmyText
 {
-  CountryArmyText NULL_COUNTRY_ARMY_TEXT = new NullCountryArmyText ();
+  CountryArmyText NULL = new NullCountryArmyText ();
 
   void setCircleTopLeft (final Vector2 topLeft);
 

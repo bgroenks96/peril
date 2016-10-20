@@ -43,7 +43,6 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.contr
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DefaultDebugInputProcessor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.NullDebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialogListener;
@@ -156,12 +155,12 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final StatusMessageGenerator statusMessageGenerator;
   private final CompositeGamePhaseHandler gamePhaseHandlers = new CompositeGamePhaseHandler ();
   private final CompositeDialog dialogs = new CompositeDialog ();
-  private PlayMap playMap = PlayMap.NULL_PLAY_MAP;
+  private PlayMap playMap = PlayMap.NULL;
   private BattlePhaseHandler attackingBattlePhaseHandler = BattlePhaseHandler.NULL;
   private BattlePhaseHandler defendingBattlePhaseHandler = BattlePhaseHandler.NULL;
   private BattleDialog attackDialog = BattleDialog.NULL;
   private BattleDialog defendDialog = BattleDialog.NULL;
-  private DebugInputProcessor debugInputProcessor = new NullDebugInputProcessor ();
+  private DebugInputProcessor debugInputProcessor = DebugInputProcessor.NULL;
   @Nullable
   private PlayerCardTradeInAvailableEvent tradeInEvent; // TODO Production: Remove.
 
@@ -355,7 +354,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     statusBox.clear ();
     playerBox.clear ();
 
-    updatePlayMap (PlayMap.NULL_PLAY_MAP);
+    updatePlayMap (PlayMap.NULL);
 
     gamePhaseHandlers.deactivate ();
     gamePhaseHandlers.remove (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
@@ -994,7 +993,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private void quitGame ()
   {
     // playMap must be used here because it will be reset to
-    // PlayMap#NULL_PLAY_MAP in #hide during the call to #toScreen.
+    // PlayMap#NULL in #hide during the call to #toScreen.
     final MapMetadata mapMetadata = playMap.getMapMetadata ();
 
     toScreen (ScreenId.PLAY_TO_MENU_LOADING);

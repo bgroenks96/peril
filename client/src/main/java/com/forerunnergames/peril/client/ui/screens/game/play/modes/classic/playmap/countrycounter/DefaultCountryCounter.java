@@ -44,7 +44,7 @@ public final class DefaultCountryCounter implements CountryCounter
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return 0;
+    if (mapMetadata.equals (MapMetadata.NULL)) return 0;
 
     try
     {

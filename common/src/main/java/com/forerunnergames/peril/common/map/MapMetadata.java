@@ -22,7 +22,7 @@ import com.forerunnergames.peril.common.game.GameMode;
 
 public interface MapMetadata
 {
-  MapMetadata NULL_MAP_METADATA = new NullMapMetadata ();
+  MapMetadata NULL = new NullMapMetadata ();
 
   @Override
   int hashCode ();

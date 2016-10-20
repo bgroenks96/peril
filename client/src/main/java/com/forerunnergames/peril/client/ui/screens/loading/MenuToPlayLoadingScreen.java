@@ -84,7 +84,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private final JoinGameServerHandler joinGameServerHandler;
   private final CreateGameServerHandler createGameServerHandler;
   private final CreateGameServerListener createGameServerListener;
-  private MapMetadata mapMetadata = MapMetadata.NULL_MAP_METADATA;
+  private MapMetadata mapMetadata = MapMetadata.NULL;
   private boolean createdGameFirst;
   private boolean isLoadingPlayMapAssets;
   @Nullable
@@ -121,7 +121,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   {
     super.hide ();
 
-    mapMetadata = MapMetadata.NULL_MAP_METADATA;
+    mapMetadata = MapMetadata.NULL;
     gameServerConfiguration = null;
     clientConfiguration = null;
     createdGameFirst = false;
@@ -272,8 +272,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     {
       handlePlayMapLoadingException (e);
       log.warn ("Could not create {}: [{}]. Returning [{}] instead.", PlayMap.class.getSimpleName (), mapMetadata,
-                PlayMap.NULL_PLAY_MAP.getClass ().getSimpleName ());
-      return PlayMap.NULL_PLAY_MAP;
+                PlayMap.NULL.getClass ().getSimpleName ());
+      return PlayMap.NULL;
     }
   }
 
@@ -569,7 +569,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     @Override
     public void onResetProgressComplete ()
     {
-      if (playMap.equals (PlayMap.NULL_PLAY_MAP))
+      if (playMap.equals (PlayMap.NULL))
       {
         log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (), playMap.getClass ()
                 .getSimpleName ());

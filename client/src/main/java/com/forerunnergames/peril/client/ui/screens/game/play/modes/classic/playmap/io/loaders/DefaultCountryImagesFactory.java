@@ -56,7 +56,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   private final Map <String, CountrySecondaryImages> countryNamesToSecondaryImages = new HashMap <> ();
   private final Table <String, CountryPrimaryImageState, CountryPrimaryImage> countryNamesAndPrimaryImageStatesToPrimaryImages = TreeBasedTable.create ();
   private final Table <String, CountrySecondaryImageState, CountrySecondaryImage> countryNamesAndSecondaryImageStatesToSecondaryImages = TreeBasedTable.create ();
-  private MapMetadata loadedMapMetadata = MapMetadata.NULL_MAP_METADATA;
+  private MapMetadata loadedMapMetadata = MapMetadata.NULL;
   // @formatter:on
 
   @Override
@@ -173,7 +173,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
     countryNamesToSecondaryImages.clear ();
     countryNamesAndPrimaryImageStatesToPrimaryImages.clear ();
     countryNamesAndSecondaryImageStatesToSecondaryImages.clear ();
-    loadedMapMetadata = MapMetadata.NULL_MAP_METADATA;
+    loadedMapMetadata = MapMetadata.NULL;
   }
 
   private static String createCountryNameFrom (final ImmutableList <String> countryAtlasRegionNameSegments)

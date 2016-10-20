@@ -450,7 +450,7 @@ public final class DefaultPlayMap implements PlayMap
 
     final Country country = countryNamesToCountries.get (countryName);
 
-    return country == null ? Country.NULL_COUNTRY : country;
+    return country == null ? Country.NULL : country;
   }
 
   @Override

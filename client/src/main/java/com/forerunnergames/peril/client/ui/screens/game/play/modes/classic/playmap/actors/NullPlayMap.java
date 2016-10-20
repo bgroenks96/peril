@@ -161,7 +161,7 @@ final class NullPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return Country.NULL_COUNTRY;
+    return Country.NULL;
   }
 
   @Override
@@ -220,7 +220,7 @@ final class NullPlayMap implements PlayMap
   @Override
   public MapMetadata getMapMetadata ()
   {
-    return MapMetadata.NULL_MAP_METADATA;
+    return MapMetadata.NULL;
   }
 
   @Override

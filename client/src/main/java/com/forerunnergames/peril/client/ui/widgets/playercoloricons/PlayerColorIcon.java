@@ -23,7 +23,7 @@ import com.forerunnergames.peril.common.game.PlayerColor;
 
 public interface PlayerColorIcon
 {
-  PlayerColorIcon NULL_PLAYER_COLOR_ICON = new NullPlayerColorIcon ();
+  PlayerColorIcon NULL = new NullPlayerColorIcon ();
 
   void setColor (final PlayerColor color);
 

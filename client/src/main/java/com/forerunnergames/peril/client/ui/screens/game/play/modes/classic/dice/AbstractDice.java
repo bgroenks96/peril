@@ -295,7 +295,7 @@ abstract class AbstractDice implements Dice
 
   private Die lastDie ()
   {
-    return dice.isEmpty () ? Die.NULL_DIE : dice.last ();
+    return dice.isEmpty () ? Die.NULL : dice.last ();
   }
 
   private boolean canEnableMoreDice ()
@@ -314,7 +314,7 @@ abstract class AbstractDice implements Dice
 
     final Die previousDie = dice.lower (die);
 
-    return previousDie != null ? previousDie : Die.NULL_DIE;
+    return previousDie != null ? previousDie : Die.NULL;
   }
 
   private Die nextDieFrom (final Die die)
@@ -323,7 +323,7 @@ abstract class AbstractDice implements Dice
 
     final Die nextDie = dice.higher (die);
 
-    return nextDie != null ? nextDie : Die.NULL_DIE;
+    return nextDie != null ? nextDie : Die.NULL;
   }
 
   @Override

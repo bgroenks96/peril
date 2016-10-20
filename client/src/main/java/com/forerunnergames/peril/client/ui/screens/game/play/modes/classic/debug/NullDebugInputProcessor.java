@@ -22,7 +22,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class NullDebugInputProcessor extends InputAdapter implements DebugInputProcessor
+final class NullDebugInputProcessor extends InputAdapter implements DebugInputProcessor
 {
   @Override
   public void setPlayMap (final PlayMap playMap)

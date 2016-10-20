@@ -29,7 +29,7 @@ public interface Die extends Comparable <Die>
   DieState DEFAULT_STATE = DieState.ENABLED;
   DieOutcome DEFAULT_OUTCOME = DieOutcome.NONE;
   Touchable DEFAULT_TOUCHABLE = Touchable.disabled;
-  Die NULL_DIE = new NullDie ();
+  Die NULL = new NullDie ();
 
   @Override
   int hashCode ();

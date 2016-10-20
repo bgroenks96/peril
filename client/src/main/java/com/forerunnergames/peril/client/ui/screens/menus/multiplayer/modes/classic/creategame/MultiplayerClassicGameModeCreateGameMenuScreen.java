@@ -124,7 +124,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private int totalCountryCount;
   @Nullable
   private Iterator <MapMetadata> mapIterator = null;
-  private MapMetadata currentMap = MapMetadata.NULL_MAP_METADATA;
+  private MapMetadata currentMap = MapMetadata.NULL;
   private boolean isFirstTimeOnScreen = true;
 
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
@@ -350,7 +350,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        if (currentMap.equals (MapMetadata.NULL_MAP_METADATA))
+        if (currentMap.equals (MapMetadata.NULL))
         {
           errorDialog.setMessage (new DefaultMessage ("Please select a valid map before continuing."));
           errorDialog.show ();
@@ -511,7 +511,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       errorDialog.setMessage (new DefaultMessage (errorMessage));
       errorDialog.show ();
 
-      return ImmutableSet.of (MapMetadata.NULL_MAP_METADATA);
+      return ImmutableSet.of (MapMetadata.NULL);
     }
   }
 
@@ -539,7 +539,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
   private void updateWinPercentSelectBoxItems ()
   {
-    if (currentMap.equals (MapMetadata.NULL_MAP_METADATA))
+    if (currentMap.equals (MapMetadata.NULL))
     {
       winPercentSelectBox.setItems (ClassicGameRules.MAX_WIN_PERCENTAGE);
       return;
@@ -590,7 +590,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     {
       errorDialog.setMessage (new DefaultMessage (Strings.format ("No maps could be found.")));
       errorDialog.show ();
-      return MapMetadata.NULL_MAP_METADATA;
+      return MapMetadata.NULL;
     }
 
     return mapIterator.next ();

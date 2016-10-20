@@ -93,7 +93,7 @@ public final class ScreenFactory
 
     menuScreenWidgetFactory = new MenuScreenWidgetFactory (assetManager);
     playMapFactory = new DefaultPlayMapFactory (assetManager, screenSize, mouseInput);
-    debugEventGenerator = new DebugEventGenerator (PlayMap.NULL_PLAY_MAP, eventBus);
+    debugEventGenerator = new DebugEventGenerator (PlayMap.NULL, eventBus);
   }
 
   public Screen create (final ScreenId screenId)

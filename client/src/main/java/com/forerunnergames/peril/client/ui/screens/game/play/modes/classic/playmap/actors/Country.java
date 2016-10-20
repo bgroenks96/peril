@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 public interface Country
 {
-  Country NULL_COUNTRY = new NullCountry ();
+  Country NULL = new NullCountry ();
 
   CountryPrimaryImageState getPrimaryImageState ();
 

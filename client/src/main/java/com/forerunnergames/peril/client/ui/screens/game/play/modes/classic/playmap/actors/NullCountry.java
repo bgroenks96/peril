@@ -33,7 +33,7 @@ final class NullCountry implements Country
   private final Group group = new Group ();
   private final Vector2 vector2 = new Vector2 ();
   private final Drawable drawable = new NullDrawable ();
-  private final CountryArmyText countryArmyText = CountryArmyText.NULL_COUNTRY_ARMY_TEXT;
+  private final CountryArmyText countryArmyText = CountryArmyText.NULL;
 
   @Override
   public CountryPrimaryImageState getPrimaryImageState ()

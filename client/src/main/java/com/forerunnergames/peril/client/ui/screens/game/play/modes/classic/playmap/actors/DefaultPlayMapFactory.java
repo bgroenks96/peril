@@ -83,7 +83,7 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return;
+    if (mapMetadata.equals (MapMetadata.NULL)) return;
 
     countryAtlasesLoader.load (mapMetadata);
     playMapBackgroundImageLoader.load (mapMetadata);
@@ -95,7 +95,7 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return true;
+    if (mapMetadata.equals (MapMetadata.NULL)) return true;
 
     return countryAtlasesLoader.isFinishedLoading (mapMetadata)
             && playMapBackgroundImageLoader.isFinishedLoading (mapMetadata)
@@ -107,7 +107,7 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return PlayMap.NULL_PLAY_MAP;
+    if (mapMetadata.equals (MapMetadata.NULL)) return PlayMap.NULL;
 
     // @formatter:off
     final BitmapFont font = new BitmapFont ();
@@ -144,7 +144,7 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
   {
     Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL_MAP_METADATA)) return;
+    if (mapMetadata.equals (MapMetadata.NULL)) return;
 
     countryAtlasesLoader.unload (mapMetadata);
     playMapBackgroundImageLoader.unload (mapMetadata);

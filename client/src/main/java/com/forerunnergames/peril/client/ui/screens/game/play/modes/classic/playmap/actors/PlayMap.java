@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 
 public interface PlayMap
 {
-  PlayMap NULL_PLAY_MAP = new NullPlayMap ();
+  PlayMap NULL = new NullPlayMap ();
 
   boolean mouseMoved (final Vector2 mouseCoordinate);
 
