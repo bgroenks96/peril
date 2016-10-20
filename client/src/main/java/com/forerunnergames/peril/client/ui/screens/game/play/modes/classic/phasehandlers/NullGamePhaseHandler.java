@@ -21,56 +21,61 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-final class NullGamePhaseHandler implements GamePhaseHandler
+class NullGamePhaseHandler implements GamePhaseHandler
 {
   @Override
-  public void activate ()
+  public final void activate ()
   {
   }
 
   @Override
-  public void activateForSelf (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public void activateForEveryoneElse (final PlayerPacket player)
+  public final void activateForSelf (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
   }
 
   @Override
-  public void deactivate ()
-  {
-  }
-
-  @Override
-  public void deactivateForSelf (final PlayerPacket player)
+  public final void activateForEveryoneElse (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
   }
 
   @Override
-  public void deactivateForEveryoneElse (final PlayerPacket player)
+  public final void execute ()
+  {
+  }
+
+  @Override
+  public final void deactivate ()
+  {
+  }
+
+  @Override
+  public final void deactivateForSelf (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
   }
 
   @Override
-  public void setPlayMap (final PlayMap playMap)
+  public final void deactivateForEveryoneElse (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+  }
+
+  @Override
+  public final void setPlayMap (final PlayMap playMap)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
   }
 
   @Override
-  public void setSelfPlayer (final PlayerPacket player)
+  public final void setSelfPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
   }
 
   @Override
-  public void reset ()
+  public final void reset ()
   {
   }
 }

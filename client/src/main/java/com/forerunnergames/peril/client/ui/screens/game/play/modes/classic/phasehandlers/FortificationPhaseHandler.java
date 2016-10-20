@@ -63,6 +63,19 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Override
+  public void execute ()
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        publish (new PlayerOrderFortifyRequestEvent (fortificationDialog.getDeltaArmyCount ()));
+      }
+    });
+  }
+
+  @Override
   public void setPlayMap (final PlayMap playMap)
   {
     Arguments.checkIsNotNull (playMap, "playMap");
@@ -86,18 +99,6 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
     });
 
     countryVectorSelectionHandler.reset ();
-  }
-
-  public void onFortify ()
-  {
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        publish (new PlayerOrderFortifyRequestEvent (fortificationDialog.getDeltaArmyCount ()));
-      }
-    });
   }
 
   public void onCancel ()

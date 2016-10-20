@@ -56,6 +56,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phase
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.CompositeGamePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.DefendingBattlePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.FortificationPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.GamePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ManualCountryAssignmentPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.OccupationPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
@@ -148,9 +149,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final FortificationDialog fortificationDialog;
   private final BattleResultDialog attackerBattleResultDialog;
   private final BattleResultDialog defenderBattleResultDialog;
-  private final ReinforcementPhaseHandler reinforcementPhaseHandler;
-  private final ManualCountryAssignmentPhaseHandler manualCountryAssignmentPhaseHandler;
-  private final OccupationPhaseHandler occupationPhaseHandler;
+  private final GamePhaseHandler reinforcementPhaseHandler;
+  private final GamePhaseHandler manualCountryAssignmentPhaseHandler;
+  private final GamePhaseHandler occupationPhaseHandler;
   private final FortificationPhaseHandler fortificationPhaseHandler;
   private final StatusMessageGenerator statusMessageGenerator;
   private final CompositeGamePhaseHandler gamePhaseHandlers = new CompositeGamePhaseHandler ();
@@ -1009,7 +1010,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     @Override
     public void onBattle ()
     {
-      attackingBattlePhaseHandler.onBattle ();
+      attackingBattlePhaseHandler.execute ();
     }
 
     @Override
@@ -1054,7 +1055,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     @Override
     public void onBattle ()
     {
-      defendingBattlePhaseHandler.onBattle ();
+      defendingBattlePhaseHandler.execute ();
     }
 
     @Override
@@ -1157,7 +1158,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     @Override
     public void onSubmit ()
     {
-      occupationPhaseHandler.onOccupy ();
+      occupationPhaseHandler.execute ();
     }
 
     @Override
@@ -1184,7 +1185,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     @Override
     public void onSubmit ()
     {
-      fortificationPhaseHandler.onFortify ();
+      fortificationPhaseHandler.execute ();
 
       Gdx.app.postRunnable (new Runnable ()
       {

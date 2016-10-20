@@ -69,6 +69,15 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
+  public void execute ()
+  {
+    for (final GamePhaseHandler handler : handlers)
+    {
+      handler.execute ();
+    }
+  }
+
+  @Override
   public void deactivate ()
   {
     for (final GamePhaseHandler handler : handlers)

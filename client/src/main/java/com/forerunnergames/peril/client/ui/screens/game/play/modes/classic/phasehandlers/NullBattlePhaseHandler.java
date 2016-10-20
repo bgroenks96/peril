@@ -17,18 +17,11 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-final class NullBattlePhaseHandler implements BattlePhaseHandler
+final class NullBattlePhaseHandler extends NullGamePhaseHandler implements BattlePhaseHandler
 {
-  @Override
-  public void onBattle ()
-  {
-  }
-
   @Override
   public void onResultAttackerVictorious (final BattleResultPacket result)
   {
@@ -48,57 +41,6 @@ final class NullBattlePhaseHandler implements BattlePhaseHandler
 
   @Override
   public void onEndBattlePhase ()
-  {
-  }
-
-  @Override
-  public void activate ()
-  {
-  }
-
-  @Override
-  public void activateForSelf (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public void activateForEveryoneElse (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public void deactivate ()
-  {
-  }
-
-  @Override
-  public void deactivateForSelf (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public void deactivateForEveryoneElse (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public void setPlayMap (final PlayMap playMap)
-  {
-    Arguments.checkIsNotNull (playMap, "playMap");
-  }
-
-  @Override
-  public void setSelfPlayer (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public void reset ()
   {
   }
 }

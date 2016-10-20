@@ -49,6 +49,12 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
     request = null;
   }
 
+  @Override
+  public void execute ()
+  {
+    // Empty implementation.
+  }
+
   @Handler
   void onEvent (final PlayerClaimCountryRequestEvent event)
   {

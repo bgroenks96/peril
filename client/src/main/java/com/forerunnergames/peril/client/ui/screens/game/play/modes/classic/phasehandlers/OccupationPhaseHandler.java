@@ -59,17 +59,7 @@ public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Override
-  public void reset ()
-  {
-    super.reset ();
-
-    request = null;
-    response = null;
-    sourceCountryName = null;
-    targetCountryName = null;
-  }
-
-  public void onOccupy ()
+  public void execute ()
   {
     if (request == null)
     {
@@ -104,6 +94,17 @@ public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
     response = new PlayerOccupyCountryResponseRequestEvent (occupationDialog.getDeltaArmyCount ());
 
     publish (response);
+  }
+
+  @Override
+  public void reset ()
+  {
+    super.reset ();
+
+    request = null;
+    response = null;
+    sourceCountryName = null;
+    targetCountryName = null;
   }
 
   @Handler

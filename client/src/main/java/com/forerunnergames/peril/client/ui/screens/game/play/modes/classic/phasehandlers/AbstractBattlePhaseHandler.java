@@ -64,7 +64,7 @@ abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler imple
   }
 
   @Override
-  public final void onBattle ()
+  public final void execute ()
   {
     Gdx.app.postRunnable (new Runnable ()
     {

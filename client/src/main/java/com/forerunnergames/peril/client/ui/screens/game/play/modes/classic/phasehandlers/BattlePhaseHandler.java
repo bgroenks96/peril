@@ -6,8 +6,6 @@ public interface BattlePhaseHandler extends GamePhaseHandler
 {
   BattlePhaseHandler NULL = new NullBattlePhaseHandler ();
 
-  void onBattle ();
-
   void onResultAttackerVictorious (final BattleResultPacket result);
 
   void onResultAttackerDefeated (final BattleResultPacket result);

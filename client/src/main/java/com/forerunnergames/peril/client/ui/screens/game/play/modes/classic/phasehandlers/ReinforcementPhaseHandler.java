@@ -61,6 +61,12 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Override
+  public void execute ()
+  {
+    // Empty implementation.
+  }
+
+  @Override
   public void reset ()
   {
     super.reset ();
