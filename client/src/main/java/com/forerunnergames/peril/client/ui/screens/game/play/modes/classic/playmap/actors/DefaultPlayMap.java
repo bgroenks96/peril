@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -52,12 +51,11 @@ import javax.annotation.Nullable;
 public final class DefaultPlayMap implements PlayMap
 {
   private final Group group = new Group ();
-  private final List <PlayMapInputListener> listeners = new ArrayList <> ();
-  private final ListIterator <PlayMapInputListener> listenersIterator = listeners.listIterator ();
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
   private final HoveredTerritoryText hoveredTerritoryText;
   private final MapMetadata mapMetadata;
+  private List <PlayMapInputListener> listeners = new ArrayList <> ();
   @Nullable
   private Country hoveredCountry = null;
   @Nullable
@@ -228,18 +226,9 @@ public final class DefaultPlayMap implements PlayMap
 
     if (touchedCountry.hasName (touchedUpCountry.getName ()))
     {
-      // Rewind first so that all listeners get called.
-      while (listenersIterator.hasPrevious ())
+      for (final PlayMapInputListener listener : listeners)
       {
-        listenersIterator.previous ();
-      }
-
-      // Iterate through all listeners, invoking the callback on each one. Note that #addListener or #removeListener can
-      // be called during a listener callback. This is accounted for in those methods, and is safe because we are using
-      // a shared ListIterator.
-      while (listenersIterator.hasNext ())
-      {
-        listenersIterator.next ().onCountryClicked (touchedUpCountry.getName ());
+        listener.onCountryClicked (touchedUpCountry.getName ());
       }
     }
     else
@@ -257,11 +246,9 @@ public final class DefaultPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    listenersIterator.add (listener);
-
-    // Rewind so that the new listener's callback gets invoked in case we are already iterating.
-    final PlayMapInputListener newListener = listenersIterator.previous ();
-    assert newListener.equals (listener);
+    final List <PlayMapInputListener> listenersCopy = new ArrayList <> (listeners);
+    listenersCopy.add (listener);
+    listeners = listenersCopy;
   }
 
   @Override
@@ -269,51 +256,9 @@ public final class DefaultPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    // Remember the iterator's original position.
-    final PlayMapInputListener currentListener = listenersIterator.hasNext () ? listenersIterator.next () : null;
-
-    // Rewind the iterator.
-    while (listenersIterator.hasPrevious ())
-    {
-      listenersIterator.previous ();
-    }
-
-    // Iterate forward and remove the specified listener.
-    while (listenersIterator.hasNext ())
-    {
-      if (listener.equals (listenersIterator.next ()))
-      {
-        listenersIterator.remove ();
-        break;
-      }
-    }
-
-    // If the original position is null, it was at the end, so fast forward to the end.
-    if (currentListener == null)
-    {
-      while (listenersIterator.hasNext ())
-      {
-        listenersIterator.next ();
-      }
-      return;
-    }
-
-    // If the original position is not null, first rewind...
-    while (listenersIterator.hasPrevious ())
-    {
-      listenersIterator.previous ();
-    }
-
-    // ...then iterate forward to the original position, and rewind by one element so that the next call to #next
-    // returns the original position.
-    while (listenersIterator.hasNext ())
-    {
-      if (currentListener.equals (listenersIterator.next ()))
-      {
-        listenersIterator.previous ();
-        break;
-      }
-    }
+    final List <PlayMapInputListener> listenersCopy = new ArrayList <> (listeners);
+    listenersCopy.remove (listener);
+    listeners = listenersCopy;
   }
 
   @Override
