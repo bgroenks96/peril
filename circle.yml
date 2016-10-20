@@ -23,6 +23,8 @@ dependencies:
 test:
   override:
     - ./scripts/ci-build-command.sh
+        timeout: 1800 # 30 minutes (default is 10 minutes), specified in seconds
+
   post:
     - ./scripts/create-executables.sh
     - ./scripts/upload-coverage-reports.sh || true
