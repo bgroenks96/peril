@@ -1229,19 +1229,27 @@ public final class GameModel
     publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket.getDefendingPlayer (), resultPacket));
 
     final BattleOutcome outcome = result.getOutcome ();
-    switch (result.getOutcome ())
+    switch (outcome)
     {
       case CONTINUE:
+      {
         publish (new BattleResultContinueEvent ());
         return;
+      }
       case ATTACKER_DEFEATED:
+      {
         publish (new BattleResultDefeatEvent ());
         break;
+      }
       case ATTACKER_VICTORIOUS:
+      {
         publish (new BattleResultVictoryEvent ());
         break;
+      }
       default:
-        Exceptions.throwIllegalState ("Unrecognized battle outcome: {}", outcome);
+      {
+        Exceptions.throwIllegalState ("Unrecognized {}: [{}].", BattleOutcome.class.getSimpleName (), outcome);
+      }
     }
 
     clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
@@ -1372,7 +1380,7 @@ public final class GameModel
     final ImmutableMultimap <CountryPacket, CountryPacket> validFortifyVectors = validFortifyVectorBuilder.build ();
     if (validFortifyVectors.isEmpty ())
     {
-      publish (new SkipFortifyPhaseEvent (this.getCurrentPlayerPacket ()));
+      publish (new SkipFortifyPhaseEvent (getCurrentPlayerPacket ()));
       return;
     }
 
