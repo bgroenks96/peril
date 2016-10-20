@@ -24,12 +24,15 @@ import com.forerunnergames.peril.client.events.SelectFortifySourceCountryRequest
 import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -99,8 +102,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
 
   public void onCancel ()
   {
-    countryVectorSelectionHandler.reset ();
-    countryVectorSelectionHandler.restart ();
+    publish (new PlayerCancelFortifyRequestEvent ());
   }
 
   @Handler
@@ -173,6 +175,23 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
     log.error ("Could not maneuver. Reason: {}", event.getReason ());
 
     reset ();
+  }
+
+  @Handler
+  void onEvent (final PlayerCancelFortifySuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+  }
+
+  @Handler
+  void onEvent (final PlayerCancelFortifyDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+    log.error ("Could not cancel maneuver. Reason: {}", event.getReason ());
   }
 
   private static class FortificationPhaseCountryVectorSelectionHandler extends AbstractCountryVectorSelectionHandler

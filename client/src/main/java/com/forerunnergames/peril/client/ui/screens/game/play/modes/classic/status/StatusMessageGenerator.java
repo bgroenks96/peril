@@ -31,6 +31,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBo
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
@@ -67,6 +68,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBe
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
@@ -613,6 +615,28 @@ public final class StatusMessageGenerator
     everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPlayer (), LetterCase.PROPER),
               Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"), event.getTargetCountryName (),
               event.getSourceCountryName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerCancelFortifySuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("{} cancelled the maneuver.", nameify (event.getPlayer (), LetterCase.PROPER));
+  }
+
+  @Handler
+  void onEvent (final PlayerCancelFortifyDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    you (event.getPlayer (),
+         "General, something went wrong! You cannot cancel your post-combat maneuver from {} to {} at this time.",
+         event.getSourceCountryName (), event.getTargetCountryName ());
   }
 
   @Handler

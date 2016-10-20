@@ -43,6 +43,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountr
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -95,6 +96,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCou
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
@@ -1539,6 +1541,22 @@ public final class GameModel
   public boolean verifyPlayerCancelFortifyVector (final PlayerCancelFortifyRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    final Id sourceCountry = turnDataCache.get (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, Id.class);
+    final Id targetCountry = turnDataCache.get (CacheKey.FORTIFY_TARGET_COUNTRY_ID, Id.class);
+    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountry);
+    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent () || player.isNot (sender.get ()))
+    {
+      publish (new PlayerCancelFortifyDeniedEvent (player, sourceCountryPacket, targetCountryPacket,
+              PlayerCancelFortifyDeniedEvent.Reason.NOT_IN_TURN));
+      return false;
+    }
+
+    publish (new PlayerCancelFortifySuccessEvent (player, sourceCountryPacket, targetCountryPacket));
 
     clearCacheValues (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, CacheKey.FORTIFY_TARGET_COUNTRY_ID);
 
