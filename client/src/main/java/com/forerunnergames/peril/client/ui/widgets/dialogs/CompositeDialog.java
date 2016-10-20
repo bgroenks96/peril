@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 
 public final class CompositeDialog implements Dialog
 {
-  private final Collection <Dialog> dialogs = new HashSet <> ();
+  private Collection <Dialog> dialogs = new HashSet <> ();
 
   public CompositeDialog (final Dialog... dialogs)
   {
@@ -252,7 +252,9 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    dialogs.add (dialog);
+    final Collection <Dialog> dialogsCopy = new HashSet <> (dialogs);
+    dialogsCopy.add (dialog);
+    dialogs = dialogsCopy;
   }
 
   public void add (final Dialog... dialogs)
@@ -260,14 +262,18 @@ public final class CompositeDialog implements Dialog
     Arguments.checkIsNotNull (dialogs, "dialogs");
     Arguments.checkHasNoNullElements (dialogs, "dialogs");
 
-    this.dialogs.addAll (Arrays.asList (dialogs));
+    final Collection <Dialog> dialogsCopy = new HashSet <> (this.dialogs);
+    dialogsCopy.addAll (Arrays.asList (dialogs));
+    this.dialogs = dialogsCopy;
   }
 
   public void remove (final Dialog dialog)
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    dialogs.remove (dialog);
+    final Collection <Dialog> dialogsCopy = new HashSet <> (dialogs);
+    dialogsCopy.remove (dialog);
+    dialogs = dialogsCopy;
   }
 
   public void remove (final Dialog... dialogs)
@@ -275,6 +281,8 @@ public final class CompositeDialog implements Dialog
     Arguments.checkIsNotNull (dialogs, "dialogs");
     Arguments.checkHasNoNullElements (dialogs, "dialogs");
 
-    this.dialogs.removeAll (Arrays.asList (dialogs));
+    final Collection <Dialog> dialogsCopy = new HashSet <> (this.dialogs);
+    dialogsCopy.removeAll (Arrays.asList (dialogs));
+    this.dialogs = dialogsCopy;
   }
 }

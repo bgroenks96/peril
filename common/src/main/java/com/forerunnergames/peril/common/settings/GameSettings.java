@@ -42,8 +42,9 @@ public final class GameSettings
   public static final int MIN_MAP_NAME_LENGTH = 2;
   public static final int MAX_MAP_NAME_LENGTH = 30;
   public static final DieFaceValue DEFAULT_DIE_FACE_VALUE = DieFaceValue.SIX;
-  public static final float BATTLE_INTERACTION_TIME_SECONDS = 2.0f;
-  public static final float BATTLE_RESULT_VIEWING_TIME_SECONDS = 1.5f;
+  public static final float BATTLE_INTERACTION_TIME_SECONDS = 1.5f;
+  public static final float BATTLE_RESULT_VIEWING_TIME_SECONDS = 1.0f;
+  public static final float BATTLE_RESPONSE_TIMEOUT_SECONDS = 5.0f;
   public static final float DICE_SPINNING_INTERVAL_SECONDS = 0.05f;
   public static final boolean CAN_ADD_REMOVE_DICE_IN_BATTLE = true;
 

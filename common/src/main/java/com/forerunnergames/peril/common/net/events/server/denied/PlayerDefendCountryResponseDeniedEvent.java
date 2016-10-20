@@ -29,7 +29,8 @@ public final class PlayerDefendCountryResponseDeniedEvent extends AbstractPlayer
 {
   public enum Reason
   {
-    INVALID_DIE_COUNT
+    INVALID_DIE_COUNT,
+    ATTACKER_RETREATED
   }
 
   public PlayerDefendCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)

@@ -18,13 +18,9 @@
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
 import com.forerunnergames.peril.common.game.BattleOutcome;
-import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
-import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 
-public interface BattleResultEvent extends PlayerSuccessEvent
+public interface BattleResultEvent extends BattleEvent, PlayerSuccessEvent
 {
   BattleResultPacket getBattleResult ();
 
@@ -32,49 +28,9 @@ public interface BattleResultEvent extends PlayerSuccessEvent
 
   boolean battleOutcomeIs (final BattleOutcome outcome);
 
-  FinalBattleActorPacket getAttacker ();
-
-  FinalBattleActorPacket getDefender ();
-
   int getAttackerDieCount ();
 
   int getDefenderDieCount ();
-
-  PlayerPacket getAttackingPlayer ();
-
-  PlayerPacket getDefendingPlayer ();
-
-  String getAttackingPlayerName ();
-
-  String getDefendingPlayerName ();
-
-  PlayerColor getAttackingPlayerColor ();
-
-  PlayerColor getDefendingPlayerColor ();
-
-  int getAttackingPlayerTurnOrder ();
-
-  int getDefendingPlayerTurnOrder ();
-
-  int getAttackingPlayerArmiesInHand ();
-
-  int getDefendingPlayerArmiesInHand ();
-
-  int getAttackingPlayerCardsInHand ();
-
-  int getDefendingPlayerCardsInHand ();
-
-  CountryPacket getAttackingCountry ();
-
-  CountryPacket getDefendingCountry ();
-
-  String getAttackingCountryName ();
-
-  String getDefendingCountryName ();
-
-  int getAttackingCountryArmyCount ();
-
-  int getDefendingCountryArmyCount ();
 
   int getAttackingCountryArmyDelta ();
 

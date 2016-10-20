@@ -15,8 +15,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.interfaces;
+package com.forerunnergames.peril.core.model.state.annotations;
 
-public interface BattleSetupEvent extends BattleEvent
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Marks methods in use as a timer duration by a StateForge state machine, specified in a .fsmjava file.
+ */
+@Retention (RetentionPolicy.SOURCE)
+@Target (ElementType.METHOD)
+public @interface StateTimerDuration
 {
 }

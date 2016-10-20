@@ -18,8 +18,8 @@
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
 import com.forerunnergames.peril.common.game.DieRange;
-import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
+import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BattleEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -27,20 +27,18 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent implements BattleSetupEvent
+public abstract class AbstractBattleEvent extends AbstractPlayerEvent implements BattleEvent
 {
   private final PendingBattleActorPacket attacker;
   private final PendingBattleActorPacket defender;
 
   /**
    * @param primaryPlayer
-   *          Attacking player for attack events, defending player for defend events, used for
-   *          {@link PlayerEvent#getPlayer()}, which in turn is used to decide which player's client should receive this
-   *          event.
+   *          Attacking player for attack events, defending player for defend events.
    */
-  protected AbstractBattleSetupEvent (final PlayerPacket primaryPlayer,
-                                      final PendingBattleActorPacket attacker,
-                                      final PendingBattleActorPacket defender)
+  protected AbstractBattleEvent (final PlayerPacket primaryPlayer,
+                                 final PendingBattleActorPacket attacker,
+                                 final PendingBattleActorPacket defender)
   {
     super (primaryPlayer);
 
@@ -52,7 +50,7 @@ public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent imple
   }
 
   @RequiredForNetworkSerialization
-  protected AbstractBattleSetupEvent ()
+  protected AbstractBattleEvent ()
   {
     attacker = null;
     defender = null;
@@ -95,6 +93,66 @@ public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent imple
   }
 
   @Override
+  public PlayerColor getAttackingPlayerColor ()
+  {
+    return attacker.getPlayerColor ();
+  }
+
+  @Override
+  public PlayerColor getDefendingPlayerColor ()
+  {
+    return defender.getPlayerColor ();
+  }
+
+  @Override
+  public int getAttackingPlayerTurnOrder ()
+  {
+    return attacker.getPlayerTurnOrder ();
+  }
+
+  @Override
+  public int getDefendingPlayerTurnOrder ()
+  {
+    return defender.getPlayerTurnOrder ();
+  }
+
+  @Override
+  public int getAttackingPlayerArmiesInHand ()
+  {
+    return attacker.getPlayerArmiesInHand ();
+  }
+
+  @Override
+  public int getDefendingPlayerArmiesInHand ()
+  {
+    return defender.getPlayerArmiesInHand ();
+  }
+
+  @Override
+  public int getAttackingPlayerCardsInHand ()
+  {
+    return attacker.getPlayerCardsInHand ();
+  }
+
+  @Override
+  public int getDefendingPlayerCardsInHand ()
+  {
+    return defender.getPlayerCardsInHand ();
+  }
+
+  @Override
+  public DieRange getAttackerDieRange ()
+  {
+    return attacker.getDieRange ();
+  }
+
+  @Override
+  public DieRange getDefenderDieRange ()
+  {
+    return defender.getDieRange ();
+  }
+
+  @Override
   public CountryPacket getAttackingCountry ()
   {
     return attacker.getCountry ();
@@ -128,18 +186,6 @@ public abstract class AbstractBattleSetupEvent extends AbstractPlayerEvent imple
   public int getDefendingCountryArmyCount ()
   {
     return defender.getCountryArmyCount ();
-  }
-
-  @Override
-  public DieRange getAttackerDieRange ()
-  {
-    return attacker.getDieRange ();
-  }
-
-  @Override
-  public DieRange getDefenderDieRange ()
-  {
-    return defender.getDieRange ();
   }
 
   @Override

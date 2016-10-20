@@ -62,6 +62,9 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
+
+    if (event.getReason () == PlayerDefendCountryResponseDeniedEvent.Reason.ATTACKER_RETREATED) return;
+
     log.error ("Could not defend. Reason: {}", event.getReason ());
 
     reset ();

@@ -33,6 +33,7 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
@@ -76,6 +77,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAtt
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -410,6 +412,18 @@ public final class StatusMessageGenerator
   }
 
   @Handler
+  void onEvent (final PlayerSelectAttackVectorSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyone ("{} attacking {} in {} from {}!", nameifyVerbBe (event.getAttackingPlayer (), LetterCase.PROPER),
+              nameify (event.getDefendingPlayer (), LetterCase.LOWER), event.getDefendingCountryName (),
+              event.getAttackingCountryName ());
+  }
+
+  @Handler
   void onEvent (final PlayerIssueAttackOrderWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -449,7 +463,7 @@ public final class StatusMessageGenerator
     final String defenderCountry = event.getDefendingCountryName ();
     final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army", defenderLoss
             + " armies");
-    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army", defenderLoss
+    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army", attackerLoss
             + " armies");
 
     everyoneIf (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
@@ -479,6 +493,17 @@ public final class StatusMessageGenerator
               nameify (event.getAttackingPlayer (), LetterCase.PROPER),
               nameify (event.getDefendingPlayer (), LetterCase.LOWER), event.getDefendingCountryName (),
               event.getAttackingCountryName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerDefendCountryResponseDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    youIf (event.getReason () != PlayerDefendCountryResponseDeniedEvent.Reason.ATTACKER_RETREATED, event.getPlayer (),
+           "General, something went wrong! You cannot defend at this time.");
   }
 
   @Handler

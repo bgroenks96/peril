@@ -18,7 +18,6 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleResultEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
@@ -28,45 +27,9 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class PlayerDefendCountryResponseSuccessEvent extends AbstractBattleResultEvent implements
         PlayerResponseSuccessEvent
 {
-  public PlayerDefendCountryResponseSuccessEvent (final BattleResultPacket result)
+  public PlayerDefendCountryResponseSuccessEvent (final PlayerPacket player, final BattleResultPacket result)
   {
-    super (result);
-  }
-
-  @Override
-  public PlayerPacket getPlayer ()
-  {
-    return getDefendingPlayer ();
-  }
-
-  @Override
-  public String getPlayerName ()
-  {
-    return getDefendingPlayerName ();
-  }
-
-  @Override
-  public PlayerColor getPlayerColor ()
-  {
-    return getDefendingPlayerColor ();
-  }
-
-  @Override
-  public int getPlayerTurnOrder ()
-  {
-    return getDefendingPlayerTurnOrder ();
-  }
-
-  @Override
-  public int getPlayerArmiesInHand ()
-  {
-    return getDefendingPlayerArmiesInHand ();
-  }
-
-  @Override
-  public int getPlayerCardsInHand ()
-  {
-    return getDefendingPlayerCardsInHand ();
+    super (player, result);
   }
 
   @RequiredForNetworkSerialization

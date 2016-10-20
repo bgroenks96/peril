@@ -27,7 +27,7 @@ import java.util.HashSet;
 
 public final class CompositeGamePhaseHandler implements GamePhaseHandler
 {
-  private final Collection <GamePhaseHandler> handlers = new HashSet <> ();
+  private Collection <GamePhaseHandler> handlers = new HashSet <> ();
 
   public CompositeGamePhaseHandler (final GamePhaseHandler... handlers)
   {
@@ -134,7 +134,9 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    handlers.add (dialog);
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (handlers);
+    handlersCopy.add (dialog);
+    handlers = handlersCopy;
   }
 
   public void add (final GamePhaseHandler... handlers)
@@ -142,14 +144,18 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
     Arguments.checkIsNotNull (handlers, "handlers");
     Arguments.checkHasNoNullElements (handlers, "handlers");
 
-    this.handlers.addAll (Arrays.asList (handlers));
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (this.handlers);
+    handlersCopy.addAll (Arrays.asList (handlers));
+    this.handlers = handlersCopy;
   }
 
   public void remove (final GamePhaseHandler dialog)
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    handlers.remove (dialog);
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (handlers);
+    handlersCopy.remove (dialog);
+    handlers = handlersCopy;
   }
 
   public void remove (final GamePhaseHandler... handlers)
@@ -157,6 +163,8 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
     Arguments.checkIsNotNull (handlers, "handlers");
     Arguments.checkHasNoNullElements (handlers, "handlers");
 
-    this.handlers.removeAll (Arrays.asList (handlers));
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (this.handlers);
+    handlersCopy.removeAll (Arrays.asList (handlers));
+    this.handlers = handlersCopy;
   }
 }

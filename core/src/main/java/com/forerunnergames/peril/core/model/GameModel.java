@@ -76,7 +76,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerResponseTimeoutEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
@@ -117,6 +116,7 @@ import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.core.events.DefaultEventFactory;
 import com.forerunnergames.peril.core.events.EventFactory;
 import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
@@ -151,6 +151,7 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
+import com.forerunnergames.peril.core.model.state.annotations.StateTimerDuration;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.peril.core.model.state.events.BattleResultContinueEvent;
@@ -181,7 +182,6 @@ import com.google.common.collect.ImmutableSortedSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
@@ -194,7 +194,7 @@ import org.slf4j.LoggerFactory;
 public final class GameModel
 {
   private static final Logger log = LoggerFactory.getLogger (GameModel.class);
-  private static final int DEFENDER_TIMEOUT_SECONDS = 5;
+  private static final long BATTLE_RESPONSE_TIMEOUT_MS = (long) GameSettings.BATTLE_RESPONSE_TIMEOUT_SECONDS * 1000;
   private final PlayerModel playerModel;
   private final PlayMapModel playMapModel;
   private final CountryOwnerModel countryOwnerModel;
@@ -970,7 +970,7 @@ public final class GameModel
     }
 
     final AttackVector vector = result.getReturnValue ();
-    publish (new PlayerSelectAttackVectorSuccessEvent (createPendingAttackerPacket (vector),
+    publish (new PlayerSelectAttackVectorSuccessEvent (currentPlayerPacket, createPendingAttackerPacket (vector),
             createPendingDefenderPacket (vector)));
 
     turnDataCache.put (CacheKey.BATTLE_ATTACK_VECTOR, result.getReturnValue ());
@@ -982,15 +982,16 @@ public final class GameModel
   public void waitForPlayerAttackOrder ()
   {
     checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
+
     final AttackVector vector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
     final PendingBattleActorPacket attacker = createPendingAttackerPacket (vector);
     final PendingBattleActorPacket defender = createPendingDefenderPacket (vector);
 
     publish (new PlayerIssueAttackOrderEvent (attacker, defender));
-    publish (new PlayerIssueAttackOrderWaitEvent (attacker.getPlayer ()));
+    publish (new PlayerIssueAttackOrderWaitEvent (attacker.getPlayer (), attacker, defender));
 
     publish (new PlayerDefendCountryRequestEvent (attacker, defender));
-    publish (new PlayerDefendCountryWaitEvent (defender.getPlayer ()));
+    publish (new PlayerDefendCountryWaitEvent (defender.getPlayer (), attacker, defender));
   }
 
   @StateTransitionCondition
@@ -1024,14 +1025,6 @@ public final class GameModel
 
     final AttackOrder order = result.getReturnValue ();
     final FinalBattleActor attacker = createFinalAttacker (attackVector, order.getDieCount ());
-    final PendingBattleActorPacket attackerPacket = asPacket (attacker);
-    final PendingBattleActorPacket defenderPacket = createPendingDefenderPacket (attackVector);
-
-    publish (new PlayerDefendCountryRequestEvent (attackerPacket, defenderPacket));
-    publish (new PlayerDefendCountryWaitEvent (defenderPacket.getPlayer ()));
-
-    internalCommHandler.startTimerFor (PlayerDefendCountryResponseRequestEvent.class, defenderPacket.getPlayer (),
-                                       DEFENDER_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
     turnDataCache.put (CacheKey.BATTLE_ATTACK_ORDER, result.getReturnValue ());
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, attacker);
@@ -1039,7 +1032,51 @@ public final class GameModel
     return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER);
   }
 
-  @StateEntryAction
+  @StateTimerDuration
+  public long getBattleResponseTimeoutMs ()
+  {
+    return BATTLE_RESPONSE_TIMEOUT_MS;
+  }
+
+  @StateTransitionCondition
+  public boolean handleAttackerTimeout ()
+  {
+    checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
+
+    final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
+    final CountryPacket attackingCountry = countryMapGraphModel.countryPacketWith (attackVector.getSourceCountry ());
+
+    // Use the maximum dice since the player did not choose a die count in time.
+    final int dieCount = rules.getMaxAttackerDieCount (attackingCountry.getArmyCount ());
+
+    turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, createFinalAttacker (attackVector, dieCount));
+
+    // TODO: Core needs some mechanism of telling server to clear stale response-request cache entries
+    // fix for this would be related to PERIL-372
+
+    return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER);
+  }
+
+  @StateTransitionCondition
+  public boolean handleDefenderTimeout ()
+  {
+    checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
+
+    final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
+    final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
+
+    // Use the maximum dice since the player did not choose a die count in time.
+    final int dieCount = rules.getMaxDefenderDieCount (defendingCountry.getArmyCount ());
+
+    turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, createFinalDefender (attackVector, dieCount));
+
+    // TODO: Core needs some mechanism of telling server to clear stale response-request cache entries
+    // fix for this would be related to PERIL-372
+
+    return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER);
+  }
+
+  @StateTransitionAction
   public void processPlayerRetreat (final PlayerOrderRetreatRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1057,6 +1094,21 @@ public final class GameModel
     // @formatter:on
 
     publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
+
+    // Handle the corner case where PlayerDefendCountryResponseRequest was received BEFORE
+    // PlayerOrderRetreatRequestEvent. PlayerDefendCountryResponseRequestEvent should always be answered, and the only
+    // appropriate response here is a denial.
+    //
+    // Note: There is another corner case where PlayerDefendCountryResponseRequest could be received AFTER
+    // PlayerOrderRetreatRequestEvent, but there is no sane way to deal with it because we will already be waiting for
+    // the attacking player to select a new attack vector.
+    if (turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER))
+    {
+      publish (new PlayerDefendCountryResponseDeniedEvent (defendingPlayer,
+              PlayerDefendCountryResponseDeniedEvent.Reason.ATTACKER_RETREATED));
+
+      clearCacheValues (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER);
+    }
 
     clearCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
   }
@@ -1092,12 +1144,9 @@ public final class GameModel
       return false;
     }
 
-    // fail if cache values are not set; this would indicate a pretty serious
-    // bug in the state machine logic
-    checkCacheValues (CacheKey.BATTLE_ATTACK_ORDER, CacheKey.FINAL_BATTLE_ACTOR_ATTACKER);
+    checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
 
-    final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_ATTACK_ORDER, AttackOrder.class);
-    final AttackVector attackVector = attackOrder.getAttackVector ();
+    final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
     final Id defendingPlayerId = countryOwnerModel.ownerOf (attackVector.getTargetCountry ());
     final PlayerPacket defendingPlayer = playerModel.playerPacketWith (defendingPlayerId);
     final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
@@ -1121,29 +1170,6 @@ public final class GameModel
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, createFinalDefender (attackVector, dieCount));
 
     return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER);
-  }
-
-  @StateTransitionAction
-  public void handleDefenderTimeout (final PlayerResponseTimeoutEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    // fail if cache values are not set; this would indicate a pretty serious
-    // bug in the state machine logic
-    checkCacheValues (CacheKey.BATTLE_ATTACK_ORDER, CacheKey.FINAL_BATTLE_ACTOR_ATTACKER);
-
-    final AttackOrder attackOrder = turnDataCache.get (CacheKey.BATTLE_ATTACK_ORDER, AttackOrder.class);
-    final AttackVector attackVector = attackOrder.getAttackVector ();
-    final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
-
-    final int dieCount = rules.getMaxDefenderDieCount (defendingCountry.getArmyCount ());
-
-    turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, createFinalDefender (attackVector, dieCount));
-
-    // TODO: Core needs some mechanism of telling server to clear stale response-request cache entries
-    // fix for this would be related to PERIL-372
   }
 
   @StateEntryAction
@@ -1199,8 +1225,8 @@ public final class GameModel
     final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel,
                                                                 attackerArmyCountDelta, defenderArmyCountDelta);
 
-    publish (new PlayerOrderAttackSuccessEvent (resultPacket));
-    publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket));
+    publish (new PlayerOrderAttackSuccessEvent (resultPacket.getAttackingPlayer (), resultPacket));
+    publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket.getDefendingPlayer (), resultPacket));
 
     final BattleOutcome outcome = result.getOutcome ();
     switch (result.getOutcome ())

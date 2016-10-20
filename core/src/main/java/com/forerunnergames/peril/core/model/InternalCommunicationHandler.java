@@ -20,7 +20,6 @@ package com.forerunnergames.peril.core.model;
 
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerResponseTimeoutEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
@@ -33,10 +32,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
@@ -44,14 +41,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import com.google.common.collect.Sets;
 
 import java.util.Deque;
 import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -67,7 +59,6 @@ class InternalCommunicationHandler
   private final PlayMapModel playMapModel;
   private final PlayerTurnModel playerTurnModel;
   private final MBassador <Event> eventBus;
-  private final Set <EventListener> eventTimeoutListeners = Sets.newConcurrentHashSet ();
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
   private final Map <ResponseRequestEvent, PlayerInputRequestEvent> responseRequests = Maps.newHashMap ();
   private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
@@ -151,57 +142,6 @@ class InternalCommunicationHandler
     responseRequests.clear ();
   }
 
-  void startTimerFor (final Class <? extends ClientRequestEvent> eventType,
-                      final PlayerPacket sender,
-                      final long timeout,
-                      final TimeUnit timeUnit)
-  {
-    final EventListener listener = new EventListener (eventType, sender);
-    if (eventTimeoutListeners.contains (listener))
-    {
-      Exceptions.throwIllegalState ("Cannot register duplicate event timer for [Type: {} Sender: [{}]].", eventType,
-                                    sender);
-    }
-
-    final Timer timer = new Timer ();
-    timer.schedule (new TimerTask ()
-    {
-      @Override
-      public void run ()
-      {
-        if (!eventTimeoutListeners.contains (listener))
-        {
-          return;
-        }
-
-        eventTimeoutListeners.remove (listener);
-
-        eventBus.publish (new PlayerResponseTimeoutEvent (sender, eventType.getSimpleName (), timeout, timeUnit));
-      }
-    }, timeUnit.toMillis (timeout));
-  }
-
-  @Handler (priority = Integer.MAX_VALUE)
-  void onEvent (final ClientRequestEvent event)
-  {
-    // efficiency guard clause
-    if (eventTimeoutListeners.isEmpty ()) return;
-
-    Optional <EventListener> toRemove = Optional.absent ();
-    for (final EventListener listener : eventTimeoutListeners)
-    {
-      final Optional <PlayerPacket> sender = senderOf (event);
-      if (!sender.isPresent ()) continue;
-      if (sender.get ().isNot (listener.sender)) continue;
-      if (!listener.type.equals (event.getClass ())) continue;
-
-      toRemove = Optional.of (listener);
-      break;
-    }
-
-    if (toRemove.isPresent ()) eventTimeoutListeners.remove (toRemove.get ());
-  }
-
   @Handler
   void onEvent (final ServerEvent event)
   {
@@ -258,31 +198,5 @@ class InternalCommunicationHandler
     playerTurnModel.decrementTurnCount ();
 
     eventBus.publish (new PlayerLeaveGameEvent (event.getPlayer (), playerModel.getPlayerPackets ()));
-  }
-
-  private class EventListener
-  {
-    final Class <? extends ClientRequestEvent> type;
-    final PlayerPacket sender;
-
-    EventListener (final Class <? extends ClientRequestEvent> type, final PlayerPacket sender)
-    {
-      this.type = type;
-      this.sender = sender;
-    }
-
-    @Override
-    public int hashCode ()
-    {
-      return type.hashCode () ^ sender.hashCode ();
-    }
-
-    @Override
-    public boolean equals (final Object obj)
-    {
-      if (!(obj instanceof EventListener)) return false;
-      final EventListener event = (EventListener) obj;
-      return event.type.equals (type) && event.sender.is (sender);
-    }
   }
 }

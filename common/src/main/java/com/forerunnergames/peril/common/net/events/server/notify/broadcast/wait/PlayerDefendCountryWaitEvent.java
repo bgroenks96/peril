@@ -17,16 +17,19 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerWaitEvent;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryWaitEvent extends AbstractPlayerEvent implements PlayerWaitEvent
+public final class PlayerDefendCountryWaitEvent extends AbstractBattleEvent implements PlayerWaitEvent
 {
-  public PlayerDefendCountryWaitEvent (final PlayerPacket player)
+  public PlayerDefendCountryWaitEvent (final PlayerPacket player,
+                                       final PendingBattleActorPacket attacker,
+                                       final PendingBattleActorPacket defender)
   {
-    super (player);
+    super (player, attacker, defender);
   }
 
   @RequiredForNetworkSerialization

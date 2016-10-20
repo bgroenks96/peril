@@ -184,14 +184,14 @@
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent"
                    name="event"/>
       </event>
-      <event id="onPlayerResponseTimeoutEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerResponseTimeoutEvent"
-                   name="event"/>
-      </event>
       <event id="onPlayerLeaveGameEvent">
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent"
                    name="event"/>
       </event>
+    </eventSource>
+    <eventSource name="Timers">
+      <timer id="onAttackerResponseTimeout" name="AttackerResponseTimer"/>
+      <timer id="onDefenderResponseTimeout" name="DefenderResponseTimer"/>
     </eventSource>
   </events>
 
@@ -317,19 +317,45 @@
                                 nextState="FortifyPhase"/>
                   </state>
                   <state name="WaitForPlayerAttackOrder">
-                    <onEntry action="gameModel.waitForPlayerAttackOrder()"/>
+                    <onEntry action="gameModel.waitForPlayerAttackOrder()">
+                      <timerStart timer="AttackerResponseTimer" duration="gameModel.getBattleResponseTimeoutMs()"/>
+                      <timerStart timer="DefenderResponseTimer" duration="gameModel.getBattleResponseTimeoutMs()"/>
+                    </onEntry>
+                    <onExit>
+                      <timerStop timer="AttackerResponseTimer"/>
+                      <timerStop timer="DefenderResponseTimer"/>
+                    </onExit>
                     <transition event="onPlayerOrderAttackRequestEvent"
                                 condition="gameModel.verifyPlayerAttackOrder(event)"
-                                nextState="ProcessBattle"/>
+                                nextState="ProcessBattle">
+                      <!-- Required to stop timer when condition is false. -->
+                      <!-- Timer will be stopped in onExit when condition is true. -->
+                      <timerStop timer="AttackerResponseTimer"/>
+                    </transition>
                     <transition event="onPlayerOrderRetreatRequestEvent"
                                 action="gameModel.processPlayerRetreat(event)"
                                 nextState="WaitForPlayerToSelectAttackVector"/>
                     <transition event="onPlayerDefendCountryResponseRequestEvent"
                                 condition="gameModel.verifyPlayerDefendCountryResponseRequest(event)"
-                                nextState="ProcessBattle"/>
-                    <transition event="onPlayerResponseTimeoutEvent"
-                                action="gameModel.handleDefenderTimeout(event)"
-                                nextState="ProcessBattle"/>
+                                nextState="ProcessBattle">
+                      <!-- Required to stop timer when condition is false. -->
+                      <!-- Timer will be stopped in onExit when condition is true. -->
+                      <timerStop timer="DefenderResponseTimer"/>
+                    </transition>
+                    <transition event="onAttackerResponseTimeout"
+                                condition="gameModel.handleAttackerTimeout()"
+                                nextState="ProcessBattle">
+                      <!-- Required to stop timer when condition is false. -->
+                      <!-- Timer will be stopped in onExit when condition is true. -->
+                      <timerStop timer="AttackerResponseTimer"/>
+                    </transition>
+                    <transition event="onDefenderResponseTimeout"
+                                condition="gameModel.handleDefenderTimeout()"
+                                nextState="ProcessBattle">
+                      <!-- Required to stop timer when condition is false. -->
+                      <!-- Timer will be stopped in onExit when condition is true. -->
+                      <timerStop timer="DefenderResponseTimer"/>
+                    </transition>
                   </state>
                   <state name="ProcessBattle">
                     <onEntry action="gameModel.processBattle()"/>
