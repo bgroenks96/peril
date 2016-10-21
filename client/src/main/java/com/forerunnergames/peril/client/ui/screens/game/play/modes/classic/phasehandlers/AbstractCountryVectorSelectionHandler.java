@@ -210,7 +210,10 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
       return;
     }
 
-    if (isSelectingSourceCountry () && checkIsValidSourceCountry (countryName).succeeded ())
+    final boolean isValidSourceCountry = checkIsValidSourceCountry (countryName).succeeded ();
+    final boolean isSelectingTargetCountry = isSelectingTargetCountry ();
+
+    if (isSelectingSourceCountry () && isValidSourceCountry)
     {
       sourceCountryName = countryName;
       log.info ("Selected valid source country [{}].", sourceCountryName);
@@ -218,13 +221,21 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
       return;
     }
 
-    if (isSelectingTargetCountry () && checkIsValidTargetCountry (countryName).succeeded ())
+    if (isSelectingTargetCountry && checkIsValidTargetCountry (countryName).succeeded ())
     {
       targetCountryName = countryName;
       log.info ("Selected valid target country [{}].", targetCountryName);
       onEnd (sourceCountryName, targetCountryName);
       reset ();
       log.debug ("Country selection has ended.");
+      return;
+    }
+
+    if (isSelectingTargetCountry && isValidSourceCountry)
+    {
+      sourceCountryName = countryName;
+      log.info ("Re-selected valid source country [{}].", sourceCountryName);
+      eventBus.publish (createTargetCountrySelectionRequest (sourceCountryName));
     }
   }
 
@@ -235,7 +246,7 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
 
   private boolean isSelectingTargetCountry ()
   {
-    return isStarted && sourceCountryName != null && targetCountryName == null;
+    return isStarted && event != null && sourceCountryName != null && targetCountryName == null;
   }
 
   private Result <String> checkIsValidSourceCountry (final String countryName)
