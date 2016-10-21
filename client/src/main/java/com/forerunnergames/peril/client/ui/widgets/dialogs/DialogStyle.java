@@ -33,14 +33,17 @@ public final class DialogStyle
   public static final String DEFAULT_WINDOW_MESSAGE = "";
   public static final int DEFAULT_BORDER_THICKNESS = 0;
   public static final int DEFAULT_BUTTON_SPACING = 20;
+  public static final int DEFAULT_BUTTON_TEXT_PADDING = 0;
   public static final int DEFAULT_BUTTON_TEXT_PADDING_LEFT = 0;
   public static final int DEFAULT_BUTTON_TEXT_PADDING_RIGHT = 0;
   public static final int DEFAULT_BUTTON_TEXT_PADDING_TOP = 0;
   public static final int DEFAULT_BUTTON_TEXT_PADDING_BOTTOM = 0;
+  public static final int DEFAULT_TEXT_PADDING = 0;
   public static final int DEFAULT_TEXT_PADDING_LEFT = 0;
   public static final int DEFAULT_TEXT_PADDING_RIGHT = 0;
   public static final int DEFAULT_TEXT_PADDING_TOP = 0;
   public static final int DEFAULT_TEXT_PADDING_BOTTOM = 0;
+  public static final int DEFAULT_TEXT_BOX_PADDING = 0;
   public static final int DEFAULT_TEXT_BOX_PADDING_LEFT = 0;
   public static final int DEFAULT_TEXT_BOX_PADDING_RIGHT = 0;
   public static final int DEFAULT_TEXT_BOX_PADDING_TOP = 0;

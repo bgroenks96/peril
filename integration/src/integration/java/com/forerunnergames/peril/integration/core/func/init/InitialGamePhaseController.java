@@ -213,7 +213,7 @@ public final class InitialGamePhaseController implements TestPhaseController
       public void onEventReceived (final Optional <PlayerBeginReinforcementEvent> event, final TestClient client)
       {
         monitor.assertTrue (event.isPresent ());
-        final ImmutableSet <CountryPacket> availableCountries = event.get ().getPlayerOwnedCountries ();
+        final ImmutableSet <CountryPacket> availableCountries = event.get ().getReinforceableCountries ();
         monitor.assertFalse (availableCountries.isEmpty ());
         final CountryPacket someCountry = Randomness.getRandomElementFrom (availableCountries);
         client.sendEvent (new PlayerReinforceCountryRequestEvent (someCountry.getName (), 1));

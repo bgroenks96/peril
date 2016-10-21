@@ -23,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.map.MapMetadata;
 
 import com.google.common.collect.ImmutableSet;
@@ -34,11 +34,15 @@ public interface PlayMap
 {
   PlayMap NULL = new NullPlayMap ();
 
-  boolean mouseMoved (final Vector2 mouseCoordinate);
+  boolean onMouseMoved (final Vector2 coordinate);
 
-  boolean touchDown (final Vector2 touchDownCoordinate, final int button);
+  boolean onLeftButtonDown (final Vector2 coordinate);
 
-  boolean touchUp (final Vector2 touchUpCoordinate);
+  boolean onLeftButtonUp (final Vector2 coordinate);
+
+  boolean onRightButtonDown (final Vector2 coordinate);
+
+  boolean onRightButtonUp (final Vector2 coordinate);
 
   void addListener (final PlayMapInputListener listener);
 

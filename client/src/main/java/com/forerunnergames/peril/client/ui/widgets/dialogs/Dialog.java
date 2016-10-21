@@ -71,6 +71,10 @@ public interface Dialog
 
   boolean isDisabledTextButton (final String buttonText);
 
+  void setPosition (final int upperLeftReferenceScreenSpaceX, final int upperLeftReferenceScreenSpaceY);
+
+  void setSize (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace);
+
   void update (final float delta);
 
   void refreshAssets ();

@@ -253,6 +253,24 @@ public final class CompositeDialog implements Dialog
   }
 
   @Override
+  public void setPosition (final int upperLeftReferenceScreenSpaceX, final int upperLeftReferenceScreenSpaceY)
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.setPosition (upperLeftReferenceScreenSpaceX, upperLeftReferenceScreenSpaceY);
+    }
+  }
+
+  @Override
+  public void setSize (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace)
+  {
+    for (final Dialog dialog : dialogs)
+    {
+      dialog.setSize (widthReferenceScreenSpace, heightReferenceScreenSpace);
+    }
+  }
+
+  @Override
   public void update (final float delta)
   {
     for (final Dialog dialog : dialogs)

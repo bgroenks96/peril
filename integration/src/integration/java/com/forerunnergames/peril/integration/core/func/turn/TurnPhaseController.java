@@ -99,7 +99,7 @@ public final class TurnPhaseController implements TestPhaseController
         CountryPacket randomCountry;
         do
         {
-          randomCountry = Randomness.getRandomElementFrom (event.getPlayerOwnedCountries ());
+          randomCountry = Randomness.getRandomElementFrom (event.getReinforceableCountries ());
         }
         while (!event.canReinforceCountryWithArmies (randomCountry.getName (), randomReinforcementCount));
 

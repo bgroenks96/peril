@@ -110,14 +110,14 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return player.isNot (player);
+    return this.player.isNot (player);
   }
 
   public boolean playerTurnOrderDiffersFrom (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return player.doesNotHave (player.getTurnOrder ());
+    return this.player.doesNotHave (player.getTurnOrder ());
   }
 
   public void setPlayer (final PlayerPacket player)
@@ -128,18 +128,28 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
 
     this.player = player;
 
-    final String messageTextLeft = createMessageTextLeft (player);
-    final String messageTextRight = createMessageTextRight (player);
-
-    messageRowLeft = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextLeft), rowStyle);
-    messageRowRight = widgetFactory.createMessageBoxRow (new DefaultMessage (messageTextRight), rowStyle);
-    message = new DefaultMessage (messageRowLeft.getMessageText () + " " + messageRowRight.getMessageText ());
+    messageRowLeft = createMessageRow (createMessageTextLeft (player.getTurnOrder ()));
+    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), player.getArmiesInHand ()));
+    message = createMessage ();
 
     messageRowLeftCell.setActor (messageRowLeft.asActor ());
     messageRowRightCell.setActor (messageRowRight.asActor ());
 
     playerColorIcon = widgetFactory.createPlayerColorIcon (player);
     playerColorIconCell.setActor (playerColorIcon.asActor ());
+
+    table.invalidateHierarchy ();
+  }
+
+  public void setPlayerArmiesInHand (final int armies)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+
+    assert player != null;
+
+    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), armies));
+    messageRowRightCell.setActor (messageRowRight.asActor ());
+    message = createMessage ();
 
     table.invalidateHierarchy ();
   }
@@ -154,18 +164,31 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     highlighting.setVisible (false);
   }
 
-  private static String createMessageTextLeft (final PlayerPacket player)
+  public boolean playerIs (final PlayerPacket player)
   {
-    assert player != null;
+    Arguments.checkIsNotNull (player, "player");
 
-    return Strings.toMixedOrdinal (player.getTurnOrder ());
+    return this.player.is (player);
   }
 
-  private static String createMessageTextRight (final PlayerPacket player)
+  private static String createMessageTextLeft (final int playerTurnOrder)
   {
-    assert player != null;
+    return Strings.toMixedOrdinal (playerTurnOrder);
+  }
 
-    return player.getName () + " " + Strings.pluralize (player.getArmiesInHand (), "army", "armies");
+  private static String createMessageTextRight (final String playerName, final int playerArmiesInHand)
+  {
+    return playerName + " " + Strings.pluralize (playerArmiesInHand, "army", "armies");
+  }
+
+  private MessageBoxRow <Message> createMessageRow (final String messageText)
+  {
+    return widgetFactory.createMessageBoxRow (new DefaultMessage (messageText), rowStyle);
+  }
+
+  private Message createMessage ()
+  {
+    return new DefaultMessage (messageRowLeft.getMessageText () + " " + messageRowRight.getMessageText ());
   }
 
   @Override

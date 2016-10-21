@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -37,25 +37,41 @@ final class NullPlayMap implements PlayMap
   private final Group group = new Group ();
 
   @Override
-  public boolean mouseMoved (final Vector2 mouseCoordinate)
+  public boolean onMouseMoved (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (mouseCoordinate, "mouseCoordinate");
+    Arguments.checkIsNotNull (coordinate, "coordinate");
 
     return false;
   }
 
   @Override
-  public boolean touchDown (final Vector2 touchDownCoordinate, final int button)
+  public boolean onLeftButtonDown (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (touchDownCoordinate, "touchDownCoordinate");
+    Arguments.checkIsNotNull (coordinate, "coordinate");
 
     return false;
   }
 
   @Override
-  public boolean touchUp (final Vector2 touchUpCoordinate)
+  public boolean onLeftButtonUp (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (touchUpCoordinate, "touchUpCoordinate");
+    Arguments.checkIsNotNull (coordinate, "coordinate");
+
+    return false;
+  }
+
+  @Override
+  public boolean onRightButtonDown (final Vector2 coordinate)
+  {
+    Arguments.checkIsNotNull (coordinate, "coordinate");
+
+    return false;
+  }
+
+  @Override
+  public boolean onRightButtonUp (final Vector2 coordinate)
+  {
+    Arguments.checkIsNotNull (coordinate, "coordinate");
 
     return false;
   }

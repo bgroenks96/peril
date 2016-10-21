@@ -594,7 +594,7 @@ public class GameModelTest
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final PlayMapStateBuilder builder = new PlayMapStateBuilder (playMapModel);
     builder.forCountries (countryMapGraphModel.getCountryIds ()).setOwner (testPlayer);
-    final int reinforcementCount = gameRules.getInitialReinforcementArmyCount ();
+    final int reinforcementCount = gameRules.getMinReinforcementsPlacedPerCountry ();
     playerModel.addArmiesToHandOf (testPlayer, reinforcementCount);
 
     gameModel.waitForPlayerToPlaceReinforcements ();
@@ -602,7 +602,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPlayer ()
             .is (playerModel.playerPacketWith (testPlayer)));
-    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPlayerOwnedCountries ()
+    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getReinforceableCountries ()
             .equals (countryMapGraphModel.getCountryPackets ()));
   }
 

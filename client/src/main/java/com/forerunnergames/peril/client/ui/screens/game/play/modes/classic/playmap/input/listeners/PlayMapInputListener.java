@@ -15,9 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners;
 
 public interface PlayMapInputListener
 {
-  void onCountryClicked (final String countryName);
+  void onCountryLeftClicked (final String countryName, final float x, final float y);
+
+  void onCountryRightClicked (final String countryName, final float x, final float y);
+
+  void onNonCountryLeftClicked (final float x, final float y);
+
+  void onNonCountryRightClicked (final float x, final float y);
 }

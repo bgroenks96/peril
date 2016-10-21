@@ -252,6 +252,18 @@ public class OkDialog implements Dialog
   }
 
   @Override
+  public final void setPosition (final int upperLeftReferenceScreenSpaceX, final int upperLeftReferenceScreenSpaceY)
+  {
+    delegate.setPosition (upperLeftReferenceScreenSpaceX, upperLeftReferenceScreenSpaceY);
+  }
+
+  @Override
+  public final void setSize (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace)
+  {
+    delegate.setSize (widthReferenceScreenSpace, heightReferenceScreenSpace);
+  }
+
+  @Override
   @OverridingMethodsMustInvokeSuper
   public void update (final float delta)
   {
@@ -336,6 +348,10 @@ public class OkDialog implements Dialog
     private boolean isShown = false;
     private boolean isInputDisabled = false;
     private boolean isSubmissionDisabled = false;
+    private int positionX;
+    private int positionY;
+    private int width;
+    private int height;
 
     DelegateDialog (final String title,
                     final WidgetFactory widgetFactory,
@@ -356,6 +372,10 @@ public class OkDialog implements Dialog
       this.dialogStyle = dialogStyle;
       this.stage = stage;
       this.listener = listener;
+      positionX = dialogStyle.getPositionUpperLeftReferenceScreenSpaceX ();
+      positionY = dialogStyle.getPositionUpperLeftReferenceScreenSpaceY ();
+      width = dialogStyle.getWidthReferenceScreenSpace ();
+      height = dialogStyle.getHeightReferenceScreenSpace ();
 
       messageBox = widgetFactory.createDialogMessageBox (dialogStyle.getMessageBoxScrollPaneStyleName (),
                                                          dialogStyle.getMessageBoxRowLabelStyleName (),
@@ -379,8 +399,8 @@ public class OkDialog implements Dialog
 
       OkDialog.this.refreshAssets ();
 
-      setSize ();
-      setPosition ();
+      setSize (width, height);
+      setPosition (positionX, positionY);
       clearActions ();
 
       if (action == null)
@@ -411,8 +431,8 @@ public class OkDialog implements Dialog
 
       OkDialog.this.refreshAssets ();
 
-      setSize ();
-      setPosition ();
+      setSize (width, height);
+      setPosition (positionX, positionY);
       clearActions ();
 
       super.show (stage,
@@ -466,6 +486,50 @@ public class OkDialog implements Dialog
         public void run ()
         {
           listener.onHide ();
+        }
+      })));
+    }
+
+    @Override
+    protected void result (@Nullable final Object object)
+    {
+      // Cancels call to DelegateDialog#hide from the button table's ChangeListener in
+      // com.badlogic.gdx.scenes.scene2d.ui.Dialog#initialize when a DialogAction#Submit result is triggered via a
+      // button click (or a key press from the InputListener in com.badlogic.gdx.scenes.scene2d.ui.Dialog#key).
+      //
+      // BUGFIX: This must be called even for HIDE-able DialogAction's because otherwise DelegateDialog#hide() would be
+      // called in addition to DelegateDialog#hide(Action) already called in this method, subsequently clearing all
+      // actions passed to DelegateDialog#hide(Action) via this method - i.e., they will never be run.
+      cancel ();
+
+      if (isInputDisabled || !(object instanceof DialogAction)) return;
+
+      final DialogAction action = (DialogAction) object;
+
+      if (action == DialogAction.NONE) return;
+      if (action.isSubmittable () && isSubmissionDisabled) return;
+
+      if (action == DialogAction.SUBMIT)
+      {
+        addAction (Actions.run (new Runnable ()
+        {
+          @Override
+          public void run ()
+          {
+            listener.onSubmit ();
+          }
+        }));
+
+        return;
+      }
+
+      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          remove ();
+          if (action.isSubmittable ()) listener.onSubmit ();
         }
       })));
     }
@@ -753,48 +817,37 @@ public class OkDialog implements Dialog
       return getTextButton (buttonText).isDisabled ();
     }
 
-    @Override
-    protected void result (@Nullable final Object object)
+    public void setPosition (final int upperLeftReferenceScreenSpaceX, final int upperLeftReferenceScreenSpaceY)
     {
-      // Cancels call to DelegateDialog#hide from the button table's ChangeListener in
-      // com.badlogic.gdx.scenes.scene2d.ui.Dialog#initialize when a DialogAction#Submit result is triggered via a
-      // button click (or a key press from the InputListener in com.badlogic.gdx.scenes.scene2d.ui.Dialog#key).
-      //
-      // BUGFIX: This must be called even for HIDE-able DialogAction's because otherwise DelegateDialog#hide() would be
-      // called in addition to DelegateDialog#hide(Action) already called in this method, subsequently clearing all
-      // actions passed to DelegateDialog#hide(Action) via this method - i.e., they will never be run.
-      cancel ();
+      positionX = upperLeftReferenceScreenSpaceX;
+      positionY = upperLeftReferenceScreenSpaceY;
 
-      if (isInputDisabled || !(object instanceof DialogAction)) return;
-
-      final DialogAction action = (DialogAction) object;
-
-      if (action == DialogAction.NONE) return;
-      if (action.isSubmittable () && isSubmissionDisabled) return;
-
-      if (action == DialogAction.SUBMIT)
+      if (positionX == DialogStyle.AUTO_H_CENTER)
       {
-        addAction (Actions.run (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            listener.onSubmit ();
-          }
-        }));
-
-        return;
+        setX ((stage.getWidth () - getWidth ()) / 2.0f);
+      }
+      else
+      {
+        setX (positionX);
       }
 
-      hide (Actions.sequence (Actions.fadeOut (0.2f, Interpolation.fade), Actions.run (new Runnable ()
+      if (positionY == DialogStyle.AUTO_V_CENTER)
       {
-        @Override
-        public void run ()
-        {
-          remove ();
-          if (action.isSubmittable ()) listener.onSubmit ();
-        }
-      })));
+        setY ((stage.getHeight () - getHeight ()) / 2.0f);
+      }
+      else
+      {
+        setY (positionY - getHeight ());
+      }
+    }
+
+    public void setSize (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace)
+    {
+      width = widthReferenceScreenSpace;
+      height = heightReferenceScreenSpace;
+
+      if (width != DialogStyle.AUTO_WIDTH) setWidth (width);
+      if (height != DialogStyle.AUTO_HEIGHT) setHeight (height);
     }
 
     private <T extends Button> void addButton (final String style, final T button, final DialogAction dialogAction)
@@ -839,40 +892,6 @@ public class OkDialog implements Dialog
     {
       getButtonTable ().defaults ().space (dialogStyle.getButtonSpacing ());
       getCell (getButtonTable ()).right ();
-    }
-
-    private void setPosition ()
-    {
-      if (dialogStyle.getPositionUpperLeftReferenceScreenSpaceX () == DialogStyle.AUTO_H_CENTER)
-      {
-        setX ((stage.getWidth () - getWidth ()) / 2);
-      }
-      else
-      {
-        setX (dialogStyle.getPositionUpperLeftReferenceScreenSpaceX ());
-      }
-
-      if (dialogStyle.getPositionUpperLeftReferenceScreenSpaceY () == DialogStyle.AUTO_V_CENTER)
-      {
-        setY ((stage.getHeight () - getHeight ()) / 2);
-      }
-      else
-      {
-        setY (dialogStyle.getPositionUpperLeftReferenceScreenSpaceY () - getHeight ());
-      }
-    }
-
-    private void setSize ()
-    {
-      if (dialogStyle.getWidthReferenceScreenSpace () != DialogStyle.AUTO_WIDTH)
-      {
-        setWidth (dialogStyle.getWidthReferenceScreenSpace ());
-      }
-
-      if (dialogStyle.getHeightReferenceScreenSpace () != DialogStyle.AUTO_HEIGHT)
-      {
-        setHeight (dialogStyle.getHeightReferenceScreenSpace ());
-      }
     }
   }
 }

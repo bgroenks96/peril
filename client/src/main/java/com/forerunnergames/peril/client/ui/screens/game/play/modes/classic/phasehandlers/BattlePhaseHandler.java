@@ -10,7 +10,5 @@ public interface BattlePhaseHandler extends GamePhaseHandler
 
   void onResultAttackerDefeated (final BattleResultPacket result);
 
-  void onRetreat ();
-
   void onEndBattlePhase ();
 }

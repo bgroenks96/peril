@@ -80,12 +80,22 @@ final class NullCountry implements Country
   }
 
   @Override
-  public void onTouchDown ()
+  public void onLeftButtonDown ()
   {
   }
 
   @Override
-  public void onTouchUp ()
+  public void onLeftButtonUp ()
+  {
+  }
+
+  @Override
+  public void onRightButtonDown ()
+  {
+  }
+
+  @Override
+  public void onRightButtonUp ()
   {
   }
 

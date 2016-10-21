@@ -32,5 +32,5 @@ public interface EventFactory
                                                              final ImmutableSet <CardSet.Match> matches,
                                                              final TurnPhase turnPhase);
 
-  PlayerBeginReinforcementEvent createReinforcementEventFor (Id playerId);
+  PlayerBeginReinforcementEvent createReinforcementEventFor (final Id playerId);
 }

@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -64,6 +65,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phase
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementsPopupMenu;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageGenerator;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
@@ -158,10 +160,11 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final GamePhaseHandler reinforcementPhaseHandler;
   private final GamePhaseHandler manualCountryAssignmentPhaseHandler;
   private final GamePhaseHandler occupationPhaseHandler;
-  private final FortificationPhaseHandler fortificationPhaseHandler;
+  private final GamePhaseHandler fortificationPhaseHandler;
   private final StatusMessageGenerator statusMessageGenerator;
   private final CompositeGamePhaseHandler gamePhaseHandlers = new CompositeGamePhaseHandler ();
   private final CompositeDialog dialogs = new CompositeDialog ();
+  private final ReinforcementsPopupMenu reinforcementsPopupMenu;
   private PlayMap playMap = PlayMap.NULL;
   private BattlePhaseHandler attackingBattlePhaseHandler = BattlePhaseHandler.NULL;
   private BattlePhaseHandler defendingBattlePhaseHandler = BattlePhaseHandler.NULL;
@@ -193,6 +196,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
+    reinforcementsPopupMenu = widgetFactory.createReinforcementsPopupMenu (getStage (), playerBox,
+                                                                           new ReinforcementsPopupMenuListener ());
 
     intelBox = widgetFactory.createIntelBox (new ChangeListener ()
     {
@@ -318,7 +323,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     dialogs.add (attackerBattleResultDialog, defenderBattleResultDialog, occupationDialog, fortificationDialog,
                  quitDialog);
 
-    reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, eventBus);
+    reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, reinforcementsPopupMenu, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
     occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
@@ -333,7 +338,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     subscribe (statusMessageGenerator);
 
-    playMap.mouseMoved (getMousePosition ());
+    playMap.onMouseMoved (getMousePosition ());
 
     playMapTableForegroundImage.setDrawable (widgetFactory.createPlayMapTableForegroundImageDrawable ());
 
@@ -343,6 +348,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
     dialogs.refreshAssets ();
+    reinforcementsPopupMenu.refreshAssets ();
 
     controlRoomBox.disableButton (ControlRoomBox.Button.TRADE_IN);
     controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
@@ -373,6 +379,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     dialogs.hide (null);
     dialogs.remove (attackDialog, defendDialog);
+    reinforcementsPopupMenu.hide (null);
 
     attackDialog = BattleDialog.NULL;
     defendDialog = BattleDialog.NULL;
@@ -388,12 +395,13 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     super.update (delta);
     dialogs.update (delta);
+    reinforcementsPopupMenu.update (delta);
   }
 
   @Override
   protected boolean onEscape ()
   {
-    if (!attackDialog.isShown () && !fortificationDialog.isShown ())
+    if (!attackDialog.isShown () && !fortificationDialog.isShown () && !reinforcementsPopupMenu.isShown ())
     {
       controlRoomBox.pressButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
     }
@@ -406,26 +414,53 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     occupationDialog.keyDownRepeating (keyCode);
     fortificationDialog.keyDownRepeating (keyCode);
+    reinforcementsPopupMenu.keyDownRepeating (keyCode);
   }
 
   @Override
   public boolean touchDown (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMap.touchDown (tempPosition.set (screenX, screenY), button);
+    switch (button)
+    {
+      case Input.Buttons.LEFT:
+      {
+        playMap.onLeftButtonDown (tempPosition.set (screenX, screenY));
+        break;
+      }
+      case Input.Buttons.RIGHT:
+      {
+        playMap.onRightButtonDown (tempPosition.set (screenX, screenY));
+        break;
+      }
+    }
+
     return false;
   }
 
   @Override
   public boolean touchUp (final int screenX, final int screenY, final int pointer, final int button)
   {
-    playMap.touchUp (tempPosition.set (screenX, screenY));
+    switch (button)
+    {
+      case Input.Buttons.LEFT:
+      {
+        playMap.onLeftButtonUp (tempPosition.set (screenX, screenY));
+        break;
+      }
+      case Input.Buttons.RIGHT:
+      {
+        playMap.onRightButtonUp (tempPosition.set (screenX, screenY));
+        break;
+      }
+    }
+
     return false;
   }
 
   @Override
   public boolean mouseMoved (final int screenX, final int screenY)
   {
-    playMap.mouseMoved (tempPosition.set (screenX, screenY));
+    playMap.onMouseMoved (tempPosition.set (screenX, screenY));
     return false;
   }
 
@@ -597,6 +632,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
       public void run ()
       {
         playerBox.updateExisting (event.getPlayer ());
+        gamePhaseHandlers.updatePlayerForSelf (event.getPlayer ());
       }
     });
   }
@@ -1136,7 +1172,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     @Override
     public void onRetreat ()
     {
-      attackingBattlePhaseHandler.onRetreat ();
+      attackingBattlePhaseHandler.cancel ();
     }
 
     @Override
@@ -1299,7 +1335,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     @Override
     public void onCancel ()
     {
-      fortificationPhaseHandler.onCancel ();
+      fortificationPhaseHandler.cancel ();
     }
 
     @Override
@@ -1379,6 +1415,21 @@ public final class ClassicModePlayScreen extends AbstractScreen
       {
         playMap.enable (getMousePosition ());
       }
+    }
+  }
+
+  private final class ReinforcementsPopupMenuListener extends CancellableDialogListenerAdapter
+  {
+    @Override
+    public void onSubmit ()
+    {
+      reinforcementPhaseHandler.execute ();
+    }
+
+    @Override
+    public void onCancel ()
+    {
+      reinforcementPhaseHandler.cancel ();
     }
   }
 }

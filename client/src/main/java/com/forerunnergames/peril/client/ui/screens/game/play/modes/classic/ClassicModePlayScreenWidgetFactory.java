@@ -55,6 +55,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementsPopupMenu;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
@@ -62,6 +63,7 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
+import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -477,5 +479,16 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   public ImageButton.ImageButtonStyle createControlRoomBoxSurrenderButtonStyle ()
   {
     return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_SURRENDER_IMAGE_BUTTON_STYLE);
+  }
+
+  public ReinforcementsPopupMenu createReinforcementsPopupMenu (final Stage stage,
+                                                                final PlayerBox playerBox,
+                                                                final CancellableDialogListener listener)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (playerBox, "playerBox");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new ReinforcementsPopupMenu (this, stage, playerBox, listener);
   }
 }

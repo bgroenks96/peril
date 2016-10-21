@@ -78,6 +78,15 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
+  public void cancel ()
+  {
+    for (final GamePhaseHandler handler : handlers)
+    {
+      handler.cancel ();
+    }
+  }
+
+  @Override
   public void deactivate ()
   {
     for (final GamePhaseHandler handler : handlers)
@@ -127,6 +136,17 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
     for (final GamePhaseHandler handler : handlers)
     {
       handler.setSelfPlayer (player);
+    }
+  }
+
+  @Override
+  public void updatePlayerForSelf (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    for (final GamePhaseHandler handler : handlers)
+    {
+      handler.updatePlayerForSelf (player);
     }
   }
 

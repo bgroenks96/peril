@@ -20,7 +20,6 @@ package com.forerunnergames.peril.common.net.events.server.notify.direct;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -31,39 +30,44 @@ import com.google.common.collect.ImmutableSet;
 
 public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
-  private final ImmutableMap <String, Integer> playerOwnedCountryNamesToCountryArmyCounts;
-  private final ImmutableSet <CountryPacket> playerOwnedCountries;
-  private final ImmutableSet <ContinentPacket> playerOwnedContinents;
+  private final ImmutableMap <String, Integer> reinforceableCountryNamesToCountryArmyCounts;
+  private final ImmutableSet <CountryPacket> reinforceableCountries;
+  private final int minReinforcementsPlacedPerCountry;
   private final int maxArmiesPerCountry;
 
   public PlayerBeginReinforcementEvent (final PlayerPacket player,
-                                        final ImmutableSet <CountryPacket> playerOwnedCountries,
-                                        final ImmutableSet <ContinentPacket> playerOwnedContinents,
+                                        final ImmutableSet <CountryPacket> reinforceableCountries,
+                                        final int minReinforcementsPlacedPerCountry,
                                         final int maxArmiesPerCountry)
   {
     super (player);
 
-    Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
-    Arguments.checkIsNotNull (playerOwnedContinents, "playerOwnedContinents");
+    Arguments.checkIsNotNull (reinforceableCountries, "reinforceableCountries");
     Arguments.checkIsNotNegative (maxArmiesPerCountry, "maxArmiesPerCountry");
+    Arguments.checkIsNotNegative (minReinforcementsPlacedPerCountry, "minReinforcementsPlacedPerCountry");
 
     final ImmutableMap.Builder <String, Integer> builder = ImmutableMap.builder ();
 
-    for (final CountryPacket country : playerOwnedCountries)
+    for (final CountryPacket country : reinforceableCountries)
     {
       builder.put (country.getName (), country.getArmyCount ());
     }
 
-    playerOwnedCountryNamesToCountryArmyCounts = builder.build ();
+    reinforceableCountryNamesToCountryArmyCounts = builder.build ();
 
-    this.playerOwnedCountries = playerOwnedCountries;
-    this.playerOwnedContinents = playerOwnedContinents;
+    this.reinforceableCountries = reinforceableCountries;
+    this.minReinforcementsPlacedPerCountry = minReinforcementsPlacedPerCountry;
     this.maxArmiesPerCountry = maxArmiesPerCountry;
   }
 
   public int getTotalReinforcements ()
   {
-    return getPlayer ().getArmiesInHand ();
+    return getPlayerArmiesInHand ();
+  }
+
+  public int getMinReinforcementsPlacedPerCountry ()
+  {
+    return minReinforcementsPlacedPerCountry;
   }
 
   public int getMaxArmiesPerCountry ()
@@ -71,26 +75,21 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
     return maxArmiesPerCountry;
   }
 
-  public ImmutableSet <CountryPacket> getPlayerOwnedCountries ()
+  public ImmutableSet <CountryPacket> getReinforceableCountries ()
   {
-    return playerOwnedCountries;
+    return reinforceableCountries;
   }
 
-  public boolean isPlayerOwnedCountry (final String countryName)
+  public boolean isReinforceableCountry (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    return playerOwnedCountryNamesToCountryArmyCounts.containsKey (countryName);
+    return reinforceableCountryNamesToCountryArmyCounts.containsKey (countryName);
   }
 
-  public boolean isNotPlayerOwnedCountry (final String countryName)
+  public boolean canReinforceCountryWithMinArmies (final String countryName)
   {
-    return !isPlayerOwnedCountry (countryName);
-  }
-
-  public boolean canReinforceCountryWithSingleArmy (final String countryName)
-  {
-    return canReinforceCountryWithArmies (countryName, 1);
+    return canReinforceCountryWithArmies (countryName, minReinforcementsPlacedPerCountry);
   }
 
   public boolean canReinforceCountryWithArmies (final String countryName, final int armies)
@@ -98,27 +97,27 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNegative (armies, "armies");
 
-    final Integer armyCount = playerOwnedCountryNamesToCountryArmyCounts.get (countryName);
+    final Integer armyCount = reinforceableCountryNamesToCountryArmyCounts.get (countryName);
 
-    return armyCount != null && armyCount + armies <= maxArmiesPerCountry;
+    return armyCount != null && armyCount + armies <= maxArmiesPerCountry && armies <= getPlayerArmiesInHand ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | MaxArmiesPerCountry: {} | PlayerOwnedCountries: [{}] | PlayerOwnedContinents: [{}] "
-                                   + "| PlayerOwnedCountryNamesToCountryArmyCounts: [{}]", super.toString (),
-                           maxArmiesPerCountry,
-                           playerOwnedCountryNamesToCountryArmyCounts, playerOwnedContinents,
-                           playerOwnedCountryNamesToCountryArmyCounts);
+    return Strings.format ("{} | MaxArmiesPerCountry: {} | MinReinforcementsPlacedPerCountry: [{}] | "
+                                   + "ReinforceableCountries: [{}] | PlayerOwnedCountryNamesToCountryArmyCounts: [{}]",
+                           super.toString (),
+                           maxArmiesPerCountry, minReinforcementsPlacedPerCountry,
+                           reinforceableCountryNamesToCountryArmyCounts, reinforceableCountryNamesToCountryArmyCounts);
   }
 
   @RequiredForNetworkSerialization
   private PlayerBeginReinforcementEvent ()
   {
-    playerOwnedCountryNamesToCountryArmyCounts = null;
-    playerOwnedCountries = null;
-    playerOwnedContinents = null;
+    reinforceableCountryNamesToCountryArmyCounts = null;
+    reinforceableCountries = null;
+    minReinforcementsPlacedPerCountry = 0;
     maxArmiesPerCountry = 0;
   }
 }

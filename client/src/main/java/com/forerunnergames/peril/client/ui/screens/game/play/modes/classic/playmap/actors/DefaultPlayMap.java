@@ -18,7 +18,6 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -28,7 +27,7 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.PlayMapInputDetection;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
@@ -59,7 +58,9 @@ public final class DefaultPlayMap implements PlayMap
   @Nullable
   private Country hoveredCountry = null;
   @Nullable
-  private Country touchedCountry = null;
+  private Country leftClickedCountry = null;
+  @Nullable
+  private Country rightClickedCountry = null;
   private boolean isEnabled = true;
 
   public DefaultPlayMap (final ImmutableMap <String, Country> countryNamesToCountries,
@@ -114,18 +115,24 @@ public final class DefaultPlayMap implements PlayMap
   }
 
   @Override
-  public boolean mouseMoved (final Vector2 mouseCoordinate)
+  public boolean onMouseMoved (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (mouseCoordinate, "mouseCoordinate");
+    Arguments.checkIsNotNull (coordinate, "coordinate");
 
     if (!isEnabled) return false;
 
-    if (!existsCountryAt (mouseCoordinate))
+    if (!existsCountryAt (coordinate))
     {
-      if (touchedCountry != null)
+      if (leftClickedCountry != null)
       {
-        touchedCountry.onTouchUp ();
-        touchedCountry = null;
+        leftClickedCountry.onLeftButtonUp ();
+        leftClickedCountry = null;
+      }
+
+      if (rightClickedCountry != null)
+      {
+        rightClickedCountry.onRightButtonUp ();
+        rightClickedCountry = null;
       }
 
       if (hoveredCountry != null)
@@ -137,74 +144,61 @@ public final class DefaultPlayMap implements PlayMap
       return false;
     }
 
-    final Country hoveredCountry = getCountryAt (mouseCoordinate);
-    hoveredCountry.onHoverStart ();
+    final Country country = getCountryAt (coordinate);
+    country.onHoverStart ();
 
-    if (this.hoveredCountry != null && !this.hoveredCountry.hasName (hoveredCountry.getName ()))
-    {
-      this.hoveredCountry.onHoverEnd ();
-    }
+    if (hoveredCountry != null && !hoveredCountry.hasName (country.getName ())) hoveredCountry.onHoverEnd ();
 
-    this.hoveredCountry = hoveredCountry;
+    hoveredCountry = country;
 
     return true;
   }
 
   @Override
-  public boolean touchDown (final Vector2 touchDownCoordinate, final int button)
+  public boolean onLeftButtonDown (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (touchDownCoordinate, "touchDownCoordinate");
+    Arguments.checkIsNotNull (coordinate, "coordinate");
 
     if (!isEnabled) return false;
 
-    if (!existsCountryAt (touchDownCoordinate))
+    if (!existsCountryAt (coordinate))
     {
-      if (touchedCountry != null)
+      if (leftClickedCountry != null)
       {
-        touchedCountry.onTouchUp ();
-        touchedCountry = null;
+        leftClickedCountry.onLeftButtonUp ();
+        leftClickedCountry = null;
       }
 
       return false;
     }
 
-    final Country touchedDownCountry = getCountryAt (touchDownCoordinate);
+    final Country country = getCountryAt (coordinate);
 
-    switch (button)
+    country.onLeftButtonDown ();
+
+    if (leftClickedCountry != null && !leftClickedCountry.hasName (country.getName ()))
     {
-      case Input.Buttons.LEFT:
-      {
-        touchedDownCountry.onTouchDown ();
-
-        if (touchedCountry != null && !touchedCountry.hasName (touchedDownCountry.getName ()))
-        {
-          touchedCountry.onTouchUp ();
-        }
-
-        touchedCountry = touchedDownCountry;
-
-        return true;
-      }
-      default:
-      {
-        return false;
-      }
+      leftClickedCountry.onLeftButtonUp ();
     }
+
+    leftClickedCountry = country;
+
+    return true;
   }
 
   @Override
-  public boolean touchUp (final Vector2 touchUpCoordinate)
+  public boolean onLeftButtonUp (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (touchUpCoordinate, "touchUpCoordinate");
+    Arguments.checkIsNotNull (coordinate, "touchUpCoordinate");
 
     if (!isEnabled) return false;
 
-    if (countryAtPointIsNot (touchUpCoordinate, touchedCountry))
+    if (countryAtPointIsNot (coordinate, leftClickedCountry))
     {
-      if (touchedCountry != null)
+      if (leftClickedCountry != null)
       {
-        touchedCountry.onTouchUp ();
-        touchedCountry = null;
+        leftClickedCountry.onLeftButtonUp ();
+        leftClickedCountry = null;
       }
 
       if (hoveredCountry != null)
@@ -214,29 +208,126 @@ public final class DefaultPlayMap implements PlayMap
       }
     }
 
-    if (!existsCountryAt (touchUpCoordinate)) return false;
-
-    final Country touchedUpCountry = getCountryAt (touchUpCoordinate);
-    touchedUpCountry.onTouchUp ();
-
-    hoveredCountry = touchedUpCountry;
-    hoveredCountry.onHoverStart ();
-
-    if (touchedCountry == null) return true;
-
-    if (touchedCountry.hasName (touchedUpCountry.getName ()))
+    if (!existsCountryAt (coordinate))
     {
       for (final PlayMapInputListener listener : listeners)
       {
-        listener.onCountryClicked (touchedUpCountry.getName ());
+        listener.onNonCountryLeftClicked (coordinate.x, coordinate.y);
+      }
+
+      return false;
+    }
+
+    final Country country = getCountryAt (coordinate);
+    country.onLeftButtonUp ();
+
+    hoveredCountry = country;
+    hoveredCountry.onHoverStart ();
+
+    if (leftClickedCountry == null) return true;
+
+    if (leftClickedCountry.hasName (country.getName ()))
+    {
+      for (final PlayMapInputListener listener : listeners)
+      {
+        listener.onCountryLeftClicked (country.getName (), coordinate.x, coordinate.y);
       }
     }
     else
     {
-      touchedCountry.onTouchUp ();
+      leftClickedCountry.onLeftButtonUp ();
     }
 
-    touchedCountry = null;
+    leftClickedCountry = null;
+
+    return true;
+  }
+
+  @Override
+  public boolean onRightButtonDown (final Vector2 coordinate)
+  {
+    Arguments.checkIsNotNull (coordinate, "coordinate");
+
+    if (!isEnabled) return false;
+
+    if (!existsCountryAt (coordinate))
+    {
+      if (rightClickedCountry != null)
+      {
+        rightClickedCountry.onRightButtonUp ();
+        rightClickedCountry = null;
+      }
+
+      return false;
+    }
+
+    final Country country = getCountryAt (coordinate);
+
+    country.onRightButtonDown ();
+
+    if (rightClickedCountry != null && !rightClickedCountry.hasName (country.getName ()))
+    {
+      rightClickedCountry.onRightButtonUp ();
+    }
+
+    rightClickedCountry = country;
+
+    return true;
+  }
+
+  @Override
+  public boolean onRightButtonUp (final Vector2 coordinate)
+  {
+    Arguments.checkIsNotNull (coordinate, "coordinate");
+
+    if (!isEnabled) return false;
+
+    if (countryAtPointIsNot (coordinate, rightClickedCountry))
+    {
+      if (rightClickedCountry != null)
+      {
+        rightClickedCountry.onRightButtonUp ();
+        rightClickedCountry = null;
+      }
+
+      if (hoveredCountry != null)
+      {
+        hoveredCountry.onHoverEnd ();
+        hoveredCountry = null;
+      }
+    }
+
+    if (!existsCountryAt (coordinate))
+    {
+      for (final PlayMapInputListener listener : listeners)
+      {
+        listener.onNonCountryRightClicked (coordinate.x, coordinate.y);
+      }
+
+      return false;
+    }
+
+    final Country country = getCountryAt (coordinate);
+    country.onRightButtonUp ();
+
+    hoveredCountry = country;
+    hoveredCountry.onHoverStart ();
+
+    if (rightClickedCountry == null) return true;
+
+    if (rightClickedCountry.hasName (country.getName ()))
+    {
+      for (final PlayMapInputListener listener : listeners)
+      {
+        listener.onCountryRightClicked (country.getName (), coordinate.x, coordinate.y);
+      }
+    }
+    else
+    {
+      rightClickedCountry.onRightButtonUp ();
+    }
+
+    rightClickedCountry = null;
 
     return true;
   }
@@ -450,7 +541,8 @@ public final class DefaultPlayMap implements PlayMap
     hoveredTerritoryText.setVisible (false);
 
     if (hoveredCountry != null) hoveredCountry.onHoverEnd ();
-    if (touchedCountry != null) touchedCountry.onTouchUp ();
+    if (leftClickedCountry != null) leftClickedCountry.onLeftButtonUp ();
+    if (rightClickedCountry != null) rightClickedCountry.onRightButtonUp ();
 
     for (final Country country : getCountries ())
     {
@@ -474,7 +566,7 @@ public final class DefaultPlayMap implements PlayMap
 
     isEnabled = true;
 
-    mouseMoved (currentMouseLocation);
+    onMouseMoved (currentMouseLocation);
   }
 
   @Override
@@ -534,7 +626,7 @@ public final class DefaultPlayMap implements PlayMap
             && getCountryAt (inputCoordinate).hasName (country.getName ());
   }
 
-  private boolean countryAtPointIsNot (final Vector2 inputCoordinate, final Country country)
+  private boolean countryAtPointIsNot (final Vector2 inputCoordinate, @Nullable final Country country)
   {
     return !countryAtPointIs (inputCoordinate, country);
   }

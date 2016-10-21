@@ -117,6 +117,9 @@ public final class StyleSettings
   public static final String HUMAN_PLAYER_COLOR_ICON_STYLE_PREFIX = "color-icon-human-player-";
   public static final String AI_PLAYER_COLOR_ICON_STYLE_PREFIX = "color-icon-ai-player-";
 
+  // Reinforcements Popup Menu
+  public static final String REINFORCEMENTS_POPUP_MENU_WINDOW_STYLE = "reinforcements-popup-menu";
+
   private StyleSettings ()
   {
     Classes.instantiationNotAllowed ();

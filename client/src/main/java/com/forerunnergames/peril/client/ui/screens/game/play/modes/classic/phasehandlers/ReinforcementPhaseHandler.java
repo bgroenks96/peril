@@ -40,30 +40,105 @@ import org.slf4j.LoggerFactory;
 public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandler.class);
+  private final ReinforcementsPopupMenu reinforcementsPopupMenu;
   @Nullable
   private PlayerBeginReinforcementEvent serverInformEvent;
 
-  public ReinforcementPhaseHandler (final PlayMap playMap, final MBassador <Event> eventBus)
+  public ReinforcementPhaseHandler (final PlayMap playMap,
+                                    final ReinforcementsPopupMenu reinforcementsPopupMenu,
+                                    final MBassador <Event> eventBus)
   {
     super (playMap, eventBus);
-  }
 
-  @Override
-  protected void onCountryClicked (final String countryName)
-  {
-    if (checkServerInformEventExistsForCountryClick (countryName).failed ()) return;
-    if (checkPlayerOwnsClickedCountry (countryName).failed ()) return;
-    if (checkCanReinforceCountry (countryName).failed ()) return;
+    Arguments.checkIsNotNull (reinforcementsPopupMenu, "reinforcementsPopupMenu");
 
-    preemptivelyUpdatePlayMap (countryName);
-    publish (new PlayerReinforceCountryRequestEvent (countryName, 1));
-    reset ();
+    this.reinforcementsPopupMenu = reinforcementsPopupMenu;
   }
 
   @Override
   public void execute ()
   {
-    // Empty implementation.
+    // This method is only called for ReinforcementsPopupMenu submission.
+
+    final String countryName = reinforcementsPopupMenu.getCountryName ();
+    final int reinforcements = reinforcementsPopupMenu.getReinforcements ();
+
+    if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
+    if (checkCanReinforceCountryWithArmies (countryName, reinforcements).failed ()) return;
+
+    publish (new PlayerReinforceCountryRequestEvent (countryName, reinforcements));
+    reset ();
+  }
+
+  @Override
+  public void cancel ()
+  {
+    // This method is only called for ReinforcementsPopupMenu cancellation.
+
+    reinforcementsPopupMenu.cancel ();
+  }
+
+  @Override
+  void onCountryLeftClicked (final String countryName, final float x, final float y)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    if (reinforcementsPopupMenu.isShown ())
+    {
+      reinforcementsPopupMenu.hide ();
+      reinforcementsPopupMenu.cancel ();
+      return;
+    }
+
+    if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
+    if (checkCountryIsReinforceable (countryName).failed ()) return;
+    if (checkCanReinforceCountryWithMinArmies (countryName).failed ()) return;
+
+    assert serverInformEvent != null;
+
+    preemptivelyUpdatePlayMap (countryName, serverInformEvent.getMinReinforcementsPlacedPerCountry ());
+    publish (new PlayerReinforceCountryRequestEvent (countryName,
+            serverInformEvent.getMinReinforcementsPlacedPerCountry ()));
+    reset ();
+  }
+
+  @Override
+  void onCountryRightClicked (final String countryName, final float x, final float y)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    if (reinforcementsPopupMenu.isShown ())
+    {
+      reinforcementsPopupMenu.hide ();
+      reinforcementsPopupMenu.cancel ();
+    }
+
+    if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
+    if (checkCountryIsReinforceable (countryName).failed ()) return;
+
+    assert serverInformEvent != null;
+
+    reinforcementsPopupMenu.show (serverInformEvent.getMinReinforcementsPlacedPerCountry (),
+                                  serverInformEvent.getTotalReinforcements (), getCountryWithName (countryName), x, y,
+                                  getSelfPlayer ());
+  }
+
+  @Override
+  void onNonCountryLeftClicked (final float x, final float y)
+  {
+    if (!reinforcementsPopupMenu.isShown ()) return;
+
+    reinforcementsPopupMenu.hide ();
+    reinforcementsPopupMenu.cancel ();
+  }
+
+  @Override
+  void onNonCountryRightClicked (final float x, final float y)
+  {
+    if (!reinforcementsPopupMenu.isShown ()) return;
+
+    reinforcementsPopupMenu.hide ();
+    reinforcementsPopupMenu.cancel ();
   }
 
   @Override
@@ -105,17 +180,18 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
                Strings.pluralize (event.getOriginalRequest ().getReinforcementCount (), "army", "armies"),
                event.getReason ());
 
-    rollBackPreemptivePlayMapUpdates (event.getOriginalRequest ().getCountryName ());
+    final PlayerReinforceCountryRequestEvent originalRequest = event.getOriginalRequest ();
+    rollBackPreemptivePlayMapUpdates (originalRequest.getCountryName (), originalRequest.getReinforcementCount ());
     reset ();
   }
 
-  private Result <String> checkServerInformEventExistsForCountryClick (final String countryName)
+  private Result <String> checkServerInformEventExistsForCountry (final String countryName)
   {
     if (serverInformEvent == null)
     {
       // @formatter:off
       final String failureMessage =
-              Strings.format ("Ignoring click on country [{}] because did not receive server inform event [{}].",
+              Strings.format ("Not reinforcing country [{}] because did not receive server inform event [{}].",
                               countryName, PlayerBeginReinforcementEvent.class.getSimpleName ());
       // @formatter:on
       log.warn (failureMessage);
@@ -125,17 +201,15 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     return Result.success ();
   }
 
-  private Result <String> checkPlayerOwnsClickedCountry (final String countryName)
+  private Result <String> checkCountryIsReinforceable (final String countryName)
   {
     assert serverInformEvent != null;
 
-    if (serverInformEvent.isNotPlayerOwnedCountry (countryName))
+    if (!serverInformEvent.isReinforceableCountry (countryName))
     {
-      // @formatter:off
-      final String failureMessage =
-              Strings.format ("Ignoring click on country [{}] because not a valid response to [{}] (Player [{}] does not own country.)",
-                              countryName, serverInformEvent, serverInformEvent.getPlayer ());
-      // @formatter:on
+      final String failureMessage = Strings
+              .format ("Not reinforcing country [{}] because not a valid response to [{}]", countryName,
+                       serverInformEvent);
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -143,17 +217,15 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     return Result.success ();
   }
 
-  private Result <String> checkCanReinforceCountry (final String countryName)
+  private Result <String> checkCanReinforceCountryWithMinArmies (final String countryName)
   {
     assert serverInformEvent != null;
 
-    if (!serverInformEvent.canReinforceCountryWithSingleArmy (countryName))
+    if (!serverInformEvent.canReinforceCountryWithMinArmies (countryName))
     {
-      // @formatter:off
-      final String failureMessage =
-              Strings.format ("Cannot reinforce country [{}] because it already contains the maximum number of armies: [{}].",
-                              countryName, serverInformEvent.getMaxArmiesPerCountry ());
-      // @formatter:on
+      final String failureMessage = Strings
+              .format ("Not reinforcing country [{}] with army count: [{}] because not a valid response to [{}].",
+                       countryName, serverInformEvent.getMinReinforcementsPlacedPerCountry (), serverInformEvent);
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -161,14 +233,30 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     return Result.success ();
   }
 
-  private void preemptivelyUpdatePlayMap (final String countryName)
+  private Result <String> checkCanReinforceCountryWithArmies (final String countryName, final int armies)
+  {
+    assert serverInformEvent != null;
+
+    if (!serverInformEvent.canReinforceCountryWithArmies (countryName, armies))
+    {
+      final String failureMessage = Strings
+              .format ("Not reinforcing country [{}] with army count: [{}] because not a valid response to [{}].",
+                       countryName, serverInformEvent.getMinReinforcementsPlacedPerCountry (), serverInformEvent);
+      log.warn (failureMessage);
+      return Result.failure (failureMessage);
+    }
+
+    return Result.success ();
+  }
+
+  private void preemptivelyUpdatePlayMap (final String countryName, final int reinforcements)
   {
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        changeCountryArmiesBy (1, countryName);
+        changeCountryArmiesBy (reinforcements, countryName);
       }
     });
   }
@@ -185,14 +273,14 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     });
   }
 
-  private void rollBackPreemptivePlayMapUpdates (final String countryName)
+  private void rollBackPreemptivePlayMapUpdates (final String countryName, final int reinforcements)
   {
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        changeCountryArmiesBy (-1, countryName);
+        changeCountryArmiesBy (reinforcements, countryName);
       }
     });
   }

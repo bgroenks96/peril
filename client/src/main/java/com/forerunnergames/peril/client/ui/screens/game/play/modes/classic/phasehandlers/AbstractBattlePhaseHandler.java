@@ -115,16 +115,16 @@ abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler imple
   }
 
   @Override
-  public void onRetreat ()
+  public final void onEndBattlePhase ()
   {
-    publish (new PlayerOrderRetreatRequestEvent ());
+    publish (new PlayerEndAttackPhaseRequestEvent ());
     reset ();
   }
 
   @Override
-  public final void onEndBattlePhase ()
+  public void cancel ()
   {
-    publish (new PlayerEndAttackPhaseRequestEvent ());
+    publish (new PlayerOrderRetreatRequestEvent ());
     reset ();
   }
 

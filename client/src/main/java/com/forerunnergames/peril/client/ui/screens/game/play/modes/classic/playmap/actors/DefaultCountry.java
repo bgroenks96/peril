@@ -189,7 +189,7 @@ public final class DefaultCountry implements Country
   }
 
   @Override
-  public void onTouchDown ()
+  public void onLeftButtonDown ()
   {
     if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
     if (primaryImageState == CountryPrimaryImageState.DISABLED) return;
@@ -198,11 +198,21 @@ public final class DefaultCountry implements Country
   }
 
   @Override
-  public void onTouchUp ()
+  public void onLeftButtonUp ()
   {
     if (!isEnabled || !PlayMapSettings.ENABLE_CLICK_EFFECTS) return;
 
     changeSecondaryStateTo (CountrySecondaryImageState.NONE);
+  }
+
+  @Override
+  public void onRightButtonDown ()
+  {
+  }
+
+  @Override
+  public void onRightButtonUp ()
+  {
   }
 
   @Nullable

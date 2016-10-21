@@ -22,7 +22,7 @@ import com.badlogic.gdx.Gdx;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -41,13 +41,34 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   private final PlayMapInputListener listener = new PlayMapInputListener ()
   {
     @Override
-    public void onCountryClicked (final String countryName)
+    public void onCountryLeftClicked (final String countryName, final float x, final float y)
     {
       Arguments.checkIsNotNull (countryName, "countryName");
 
-      AbstractGamePhaseHandler.this.onCountryClicked (countryName);
+      AbstractGamePhaseHandler.this.onCountryLeftClicked (countryName, x, y);
+    }
+
+    @Override
+    public void onCountryRightClicked (final String countryName, final float x, final float y)
+    {
+      Arguments.checkIsNotNull (countryName, "countryName");
+
+      AbstractGamePhaseHandler.this.onCountryRightClicked (countryName, x, y);
+    }
+
+    @Override
+    public void onNonCountryLeftClicked (final float x, final float y)
+    {
+      AbstractGamePhaseHandler.this.onNonCountryLeftClicked (x, y);
+    }
+
+    @Override
+    public void onNonCountryRightClicked (final float x, final float y)
+    {
+      AbstractGamePhaseHandler.this.onNonCountryRightClicked (x, y);
     }
   };
+
   private PlayMap playMap;
   @Nullable
   private PlayerPacket selfPlayer;
@@ -82,6 +103,12 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     Arguments.checkIsNotNull (player, "player");
 
     if (!isSelf (player)) activate ();
+  }
+
+  @Override
+  public void cancel ()
+  {
+    // Empty base implementation.
   }
 
   @Override
@@ -197,7 +224,26 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     eventBus.publish (event);
   }
 
-  void onCountryClicked (final String countryName)
+  void onCountryLeftClicked (final String countryName, final float x, final float y)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    // Empty base implementation.
+  }
+
+  void onCountryRightClicked (final String countryName, final float x, final float y)
+  {
+    Arguments.checkIsNotNull (countryName, "countryName");
+
+    // Empty base implementation.
+  }
+
+  void onNonCountryLeftClicked (final float x, final float y)
+  {
+    // Empty base implementation.
+  }
+
+  void onNonCountryRightClicked (final float x, final float y)
   {
     // Empty base implementation.
   }
@@ -219,6 +265,14 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   public final void setSelfPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
+
+    selfPlayer = player;
+  }
+
+  @Override
+  public void updatePlayerForSelf (final PlayerPacket player)
+  {
+    if (!isSelf (player)) return;
 
     selfPlayer = player;
   }

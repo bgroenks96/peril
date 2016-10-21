@@ -32,10 +32,10 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
   }
 
   @Override
-  void onCountryClicked (final String countryName)
+  void onCountryLeftClicked (final String countryName, final float x, final float y)
   {
-    if (checkRequestExistsForCountryClick (countryName).failed ()) return;
-    if (checkClickedCountryIsUnclaimed (countryName).failed ()) return;
+    if (checkRequestExistsForCountryLeftClick (countryName).failed ()) return;
+    if (checkLeftClickedCountryIsUnclaimed (countryName).failed ()) return;
 
     preemptivelyUpdatePlayMap (countryName);
     sendResponse (countryName);
@@ -89,13 +89,13 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
     reset ();
   }
 
-  private Result <String> checkRequestExistsForCountryClick (final String countryName)
+  private Result <String> checkRequestExistsForCountryLeftClick (final String countryName)
   {
     if (request == null)
     {
       // @formatter:off
       final String failureMessage =
-              Strings.format ("Ignoring click on country [{}] because no prior corresponding [{}] was received.",
+              Strings.format ("Ignoring left-click on country [{}] because no prior corresponding [{}] was received.",
                               countryName, PlayerClaimCountryRequestEvent.class.getSimpleName ());
       // @formatter:on
       log.warn (failureMessage);
@@ -105,14 +105,14 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
     return Result.success ();
   }
 
-  private Result <String> checkClickedCountryIsUnclaimed (final String countryName)
+  private Result <String> checkLeftClickedCountryIsUnclaimed (final String countryName)
   {
     if (isClaimedCountry (countryName))
     {
       // @formatter:off
       final String failureMessage =
-              Strings.format ("Ignoring click on country [{}] because not a valid response to [{}]. (Country is already claimed.)",
-                              countryName, PlayerClaimCountryRequestEvent.class.getSimpleName ());
+              Strings.format ("Ignoring left-click on country [{}] because not a valid response to [{}]. (Country " +
+                              "is already claimed.)", countryName, PlayerClaimCountryRequestEvent.class.getSimpleName ());
       // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);

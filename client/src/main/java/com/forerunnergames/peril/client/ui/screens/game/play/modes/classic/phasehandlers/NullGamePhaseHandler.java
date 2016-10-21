@@ -46,6 +46,11 @@ class NullGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
+  public void cancel ()
+  {
+  }
+
+  @Override
   public final void deactivate ()
   {
   }
@@ -70,6 +75,12 @@ class NullGamePhaseHandler implements GamePhaseHandler
 
   @Override
   public final void setSelfPlayer (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+  }
+
+  @Override
+  public void updatePlayerForSelf (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
   }

@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 public final class HoveredTerritoryText extends Actor
 {
-  private static final Vector2 TEXT_OFFSET = new Vector2 (35, -17);
+  private static final Vector2 TEXT_OFFSET = new Vector2 (35, -24);
   private final PlayMapInputDetection playMapInputDetection;
   private final MouseInput mouseInput;
   private final BitmapFont font;

@@ -47,9 +47,13 @@ public interface Country
 
   void onHoverEnd ();
 
-  void onTouchDown ();
+  void onLeftButtonDown ();
 
-  void onTouchUp ();
+  void onLeftButtonUp ();
+
+  void onRightButtonDown ();
+
+  void onRightButtonUp ();
 
   @Nullable
   Drawable getPrimaryDrawable ();

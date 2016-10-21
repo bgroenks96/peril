@@ -15,27 +15,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners;
 
-import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-final class NullBattlePhaseHandler extends NullGamePhaseHandler implements BattlePhaseHandler
+public class PlayMapInputListenerAdapter implements PlayMapInputListener
 {
   @Override
-  public void onResultAttackerVictorious (final BattleResultPacket result)
+  public void onCountryLeftClicked (final String countryName, final float x, final float y)
   {
-    Arguments.checkIsNotNull (result, "result");
+    Arguments.checkIsNotNull (countryName, "countryName");
   }
 
   @Override
-  public void onResultAttackerDefeated (final BattleResultPacket result)
+  public void onCountryRightClicked (final String countryName, final float x, final float y)
   {
-    Arguments.checkIsNotNull (result, "result");
+    Arguments.checkIsNotNull (countryName, "countryName");
   }
 
   @Override
-  public void onEndBattlePhase ()
+  public void onNonCountryLeftClicked (final float x, final float y)
+  {
+  }
+
+  @Override
+  public void onNonCountryRightClicked (final float x, final float y)
   {
   }
 }

@@ -30,7 +30,8 @@ public interface GamePhaseHandler
   /**
    * Enable the handler. Call before performing game phase logic via {@link #execute()}, such as when the necessary game
    * phase becomes active, which will allow the handler to begin listening for events, for example. GamePhaseHandler's
-   * can be re-used after activation by calling {@link #reset()}.
+   * can be re-used after activation by calling {@link #reset()}. Or {@link #reset()} can be called from within this
+   * method.
    */
   void activate ();
 
@@ -54,6 +55,12 @@ public interface GamePhaseHandler
    * Perform the game phase logic here, after calling {@link #activate}.
    */
   void execute ();
+
+  /**
+   * Cancels the game phase logic that would have been executed by {@link #execute()}. Does not affect activation. It is
+   * also a good place to call {@link #reset()}.
+   */
+  void cancel ();
 
   /**
    * Disable the handler. Call when finished performing game phase logic via {@link #execute()}, such as when the
@@ -89,6 +96,14 @@ public interface GamePhaseHandler
    *          The player to whom this client / handler belongs.
    */
   void setSelfPlayer (final PlayerPacket player);
+
+  /**
+   * Updates the self player's attributes, if the specified player is the self player.
+   *
+   * @param player
+   *          The updated player, used to update the self player's attributes when player identity matches.
+   */
+  void updatePlayerForSelf (final PlayerPacket player);
 
   /**
    * Return this handler to an initialized state, ready to call {@link #execute()} again. Does not affect activation

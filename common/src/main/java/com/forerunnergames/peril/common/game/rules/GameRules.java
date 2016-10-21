@@ -78,7 +78,7 @@ public interface GameRules
 
   int getWinningCountryCount ();
 
-  int getInitialReinforcementArmyCount ();
+  int getMinReinforcementsPlacedPerCountry ();
 
   int getCardTradeInCount ();
 

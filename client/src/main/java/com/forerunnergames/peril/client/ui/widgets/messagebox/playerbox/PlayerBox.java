@@ -165,6 +165,14 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     return Optional.absent ();
   }
 
+  public void setArmiesInHand (final int armies, final PlayerPacket player)
+  {
+    Arguments.checkIsNotNegative (armies, "armies");
+    Arguments.checkIsNotNull (player, "player");
+
+    getRowWith (player).setPlayerArmiesInHand (armies);
+  }
+
   private boolean existsRowWith (final PlayerPacket player)
   {
     return hasRowWithIndex (player.getTurnOrder () - 1);
@@ -173,13 +181,12 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   private PlayerBoxRow getRowWith (final PlayerPacket player)
   {
     final int index = player.getTurnOrder () - 1;
+    assert hasRowWithIndex (index);
 
-    if (!hasRowWithIndex (index))
-    {
-      throw new IllegalStateException (Strings.format ("Row with index {} does not exist.", index));
-    }
+    final PlayerBoxRow row = getRowByIndex (index);
+    assert row.playerIs (player);
 
-    return getRowByIndex (index);
+    return row;
   }
 
   private boolean isHighlighted (final PlayerPacket player)

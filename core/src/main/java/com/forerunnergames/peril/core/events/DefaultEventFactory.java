@@ -23,7 +23,6 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
-import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardPackets;
@@ -94,7 +93,6 @@ public final class DefaultEventFactory implements EventFactory
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    final ImmutableSet <ContinentPacket> playerOwnedContinents = continentOwnerModel.getContinentsOwnedBy (playerId);
     final ImmutableSet <CountryPacket> validCountries;
     final Predicate <CountryPacket> filter = new Predicate <CountryPacket> ()
     {
@@ -107,6 +105,6 @@ public final class DefaultEventFactory implements EventFactory
     validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountriesOwnedBy (playerId), filter));
 
     return new PlayerBeginReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
-            playerOwnedContinents, rules.getMaxArmiesOnCountry ());
+            rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ());
   }
 }

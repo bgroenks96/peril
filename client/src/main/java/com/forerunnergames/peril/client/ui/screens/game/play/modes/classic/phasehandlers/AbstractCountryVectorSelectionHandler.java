@@ -21,7 +21,8 @@ import com.badlogic.gdx.Gdx;
 
 import com.forerunnergames.peril.client.events.SelectCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.listeners.PlayMapInputListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListenerAdapter;
 import com.forerunnergames.peril.common.net.events.interfaces.PlayerSelectCountryVectorEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -57,14 +58,14 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
   private String sourceCountryName;
   @Nullable
   private String targetCountryName;
-  private final PlayMapInputListener listener = new PlayMapInputListener ()
+  private final PlayMapInputListener listener = new PlayMapInputListenerAdapter ()
   {
     @Override
-    public void onCountryClicked (final String countryName)
+    public void onCountryLeftClicked (final String countryName, final float x, final float y)
     {
       Arguments.checkIsNotNull (countryName, "countryName");
 
-      handleCountryClicked (countryName);
+      handleCountryLeftClicked (countryName);
     }
   };
 
@@ -199,13 +200,13 @@ abstract class AbstractCountryVectorSelectionHandler implements CountryVectorSel
 
   abstract SelectCountryRequestEvent createTargetCountrySelectionRequest (final String sourceCountryName);
 
-  final void handleCountryClicked (final String countryName)
+  final void handleCountryLeftClicked (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
     if (!isStarted)
     {
-      log.warn ("Ignoring unauthorized country click on [{}].", countryName);
+      log.warn ("Ignoring unauthorized country left-click on [{}].", countryName);
       return;
     }
 

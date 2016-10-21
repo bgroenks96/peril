@@ -147,6 +147,20 @@ public class NullDialog implements Dialog
   }
 
   @Override
+  public void setPosition (final int upperLeftReferenceScreenSpaceX, final int upperLeftReferenceScreenSpaceY)
+  {
+    Arguments.checkIsNotNegative (upperLeftReferenceScreenSpaceX, "upperLeftReferenceScreenSpaceX");
+    Arguments.checkIsNotNegative (upperLeftReferenceScreenSpaceY, "upperLeftReferenceScreenSpaceY");
+  }
+
+  @Override
+  public void setSize (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace)
+  {
+    Arguments.checkIsNotNegative (widthReferenceScreenSpace, "widthReferenceScreenSpace");
+    Arguments.checkIsNotNegative (heightReferenceScreenSpace, "heightReferenceScreenSpace");
+  }
+
+  @Override
   public void update (final float delta)
   {
   }

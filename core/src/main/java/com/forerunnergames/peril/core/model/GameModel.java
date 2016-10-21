@@ -703,43 +703,54 @@ public final class GameModel
   {
     log.info ("Event received [{}]", event);
 
-    final PlayerPacket player = getCurrentPlayerPacket ();
     final Id playerId = getCurrentPlayerId ();
+    final int requestedReinforcements = event.getReinforcementCount ();
 
-    final int reinforcementCount = rules.getInitialReinforcementArmyCount ();
-    if (reinforcementCount > player.getArmiesInHand ())
+    if (requestedReinforcements > playerModel.getArmiesInHand (playerId))
     {
-      publish (new PlayerReinforceCountryDeniedEvent (player,
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
               PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND, event));
+      return false;
+    }
+
+    if (requestedReinforcements < rules.getMinReinforcementsPlacedPerCountry ())
+    {
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
+              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_REINFORCEMENTS_PLACED, event));
       return false;
     }
 
     final String countryName = event.getCountryName ();
     if (!countryMapGraphModel.existsCountryWith (countryName))
     {
-      publish (new PlayerReinforceCountryDeniedEvent (player,
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
               PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, event));
       return false;
     }
 
     final Id countryId = countryMapGraphModel.countryWith (countryName);
+    if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
+    {
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
+              PlayerReinforceCountryDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY, event));
+      return false;
+    }
 
     final MutatorResult <PlayerReinforceCountryDeniedEvent.Reason> result;
-    result = countryArmyModel.requestToAddArmiesToCountry (countryId, reinforcementCount);
+    result = countryArmyModel.requestToAddArmiesToCountry (countryId, requestedReinforcements);
 
     if (result.failed ())
     {
-      publish (new PlayerReinforceCountryDeniedEvent (player, result.getFailureReason (), event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), result.getFailureReason (), event));
       return false;
     }
 
     result.commitIfSuccessful ();
-    playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
+    playerModel.removeArmiesFromHandOf (playerId, requestedReinforcements);
 
-    final PlayerPacket updatedPlayer = playerModel.playerPacketWith (playerId);
-    final CountryPacket updatedCountry = countryMapGraphModel.countryPacketWith (countryId);
+    final CountryPacket countryPacket = countryMapGraphModel.countryPacketWith (countryId);
+    publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), countryPacket, requestedReinforcements));
 
-    publish (new PlayerReinforceCountrySuccessEvent (updatedPlayer, updatedCountry, reinforcementCount));
     return true;
   }
 
@@ -814,14 +825,19 @@ public final class GameModel
       resultBuilder.add (result);
     }
 
+    if (reinforcementCount < rules.getMinReinforcementsPlacedPerCountry ())
+    {
+      result = MutatorResult.failure (PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_REINFORCEMENTS_PLACED);
+      resultBuilder.add (result);
+    }
+
     if (!countryMapGraphModel.existsCountryWith (countryName))
     {
       result = MutatorResult.failure (PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
       resultBuilder.add (result);
     }
 
-    final CountryPacket country = countryMapGraphModel.countryPacketWith (countryName);
-    final Id countryId = countryMapGraphModel.idOf (country.getName ());
+    final Id countryId = countryMapGraphModel.idOf (countryName);
     if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
     {
       result = MutatorResult.failure (PlayerReinforceCountryDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
@@ -846,10 +862,8 @@ public final class GameModel
     playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
     MutatorResult.commitAllSuccessful (results.toArray (new MutatorResult <?> [results.size ()]));
 
-    final PlayerPacket updatedPlayer = playerModel.playerPacketWith (playerId);
-    final CountryPacket updatedCountry = countryMapGraphModel.countryPacketWith (countryId);
-
-    publish (new PlayerReinforceCountrySuccessEvent (updatedPlayer, updatedCountry, reinforcementCount));
+    final CountryPacket countryPacket = countryMapGraphModel.countryPacketWith (countryId);
+    publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), countryPacket, reinforcementCount));
   }
 
   @StateExitAction

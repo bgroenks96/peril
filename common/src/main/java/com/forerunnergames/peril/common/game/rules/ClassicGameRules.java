@@ -62,8 +62,8 @@ public final class ClassicGameRules implements GameRules
   public static final int ABSOLUTE_MAX_DEFENDER_DIE_COUNT = 2;
   public static final DieRange ABSOLUTE_ATTACKER_DIE_RANGE = new DieRange (ABSOLUTE_MIN_ATTACKER_DIE_COUNT, ABSOLUTE_MAX_ATTACKER_DIE_COUNT);
   public static final DieRange ABSOLUTE_DEFENDER_DIE_RANGE = new DieRange (ABSOLUTE_MIN_DEFENDER_DIE_COUNT, ABSOLUTE_MAX_DEFENDER_DIE_COUNT);
-  private static final int INITIAL_REINFORCEMENT_ARMY_COUNT = 1;
-  private static final int MIN_REINFORCEMENT_COUNT = 3;
+  private static final int MIN_REINFORCEMENTS_PLACED_PER_COUNTRY = 1;
+  private static final int MIN_COUNTRY_REINFORCEMENTS_RECEIVED = 3;
   private static final int CARD_TRADE_IN_COUNT = 3;
   private static final int MAX_CARDS_IN_HAND_REINFORCE_PHASE = 6;
   private static final int MAX_CARDS_IN_HAND_ATTACK_PHASE = 9;
@@ -226,9 +226,9 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getInitialReinforcementArmyCount ()
+  public int getMinReinforcementsPlacedPerCountry ()
   {
-    return INITIAL_REINFORCEMENT_ARMY_COUNT;
+    return MIN_REINFORCEMENTS_PLACED_PER_COUNTRY;
   }
 
   @Override
@@ -503,7 +503,7 @@ public final class ClassicGameRules implements GameRules
 
     final int reinforcementCount = (int) Math.floor (ownedCountryCount / 3.0f); // floor function included for clarity
 
-    return Math.max (reinforcementCount, MIN_REINFORCEMENT_COUNT);
+    return Math.max (reinforcementCount, MIN_COUNTRY_REINFORCEMENTS_RECEIVED);
   }
 
   // @formatter:off
