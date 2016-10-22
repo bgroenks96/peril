@@ -40,6 +40,7 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayMapBlockingDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.DefaultCountryArmyText;
@@ -50,7 +51,7 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
 import com.forerunnergames.peril.client.ui.widgets.padding.CellPadding;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class AbstractArmyMovementDialog extends OkDialog
+public abstract class AbstractArmyMovementDialog extends OkDialog implements PlayMapBlockingDialog
 {
   private static final boolean DEBUG = false;
   private static final float COUNTRY_NAME_BOX_WIDTH = 400;
@@ -337,6 +338,28 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
     maxButton.setStyle (widgetFactory.createArmyMovementDialogMaxButtonStyle ());
   }
 
+  @Override
+  public void onKeyDownRepeating (final int keyCode)
+  {
+    if (!isShown ()) return;
+
+    switch (keyCode)
+    {
+      case Input.Keys.LEFT:
+      {
+        decrementSlider ();
+
+        break;
+      }
+      case Input.Keys.RIGHT:
+      {
+        incrementSlider ();
+
+        break;
+      }
+    }
+  }
+
   public void set (final int minTargetCountryArmies,
                    final int currentTargetCountryArmies,
                    final int maxTargetCountryArmies,
@@ -386,27 +409,6 @@ public abstract class AbstractArmyMovementDialog extends OkDialog
          targetCountry);
 
     show ();
-  }
-
-  public void keyDownRepeating (final int keyCode)
-  {
-    if (!isShown ()) return;
-
-    switch (keyCode)
-    {
-      case Input.Keys.LEFT:
-      {
-        decrementSlider ();
-
-        break;
-      }
-      case Input.Keys.RIGHT:
-      {
-        incrementSlider ();
-
-        break;
-      }
-    }
   }
 
   public String getSourceCountryName ()

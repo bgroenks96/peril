@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.widgets.dialogs;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -35,6 +36,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
+import com.forerunnergames.peril.client.input.KeyRepeatListener;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRow;
@@ -54,6 +57,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 public class OkDialog implements Dialog
 {
   private final DelegateDialog delegate;
+  private final GdxKeyRepeatSystem keyRepeat;
 
   protected enum DialogAction
   {
@@ -95,6 +99,32 @@ public class OkDialog implements Dialog
     Arguments.checkIsNotNull (listener, "listener");
 
     delegate = new DelegateDialog (dialogStyle.getTitle (), widgetFactory, dialogStyle, stage, listener);
+
+    keyRepeat = new GdxKeyRepeatSystem (Gdx.input, new KeyRepeatListener ()
+    {
+      @Override
+      public void onKeyUp (final int keyCode)
+      {
+        OkDialog.this.onKeyUp (keyCode);
+      }
+
+      @Override
+      public void onKeyDownRepeating (final int keyCode)
+      {
+        OkDialog.this.onKeyDownRepeating (keyCode);
+      }
+    });
+
+    keyRepeat.setKeyRepeatRate (Input.Keys.LEFT, 50);
+    keyRepeat.setKeyRepeatRate (Input.Keys.RIGHT, 50);
+    keyRepeat.setKeyRepeatRate (Input.Keys.UP, 50);
+    keyRepeat.setKeyRepeatRate (Input.Keys.DOWN, 50);
+    keyRepeat.setKeyRepeat (Input.Keys.LEFT, true);
+    keyRepeat.setKeyRepeat (Input.Keys.RIGHT, true);
+    keyRepeat.setKeyRepeat (Input.Keys.UP, true);
+    keyRepeat.setKeyRepeat (Input.Keys.DOWN, true);
+    keyRepeat.setKeyRepeat (Input.Keys.BACKSPACE, true);
+    keyRepeat.setKeyRepeat (Input.Keys.FORWARD_DEL, true);
 
     addKeys ();
     addButtons ();
@@ -268,6 +298,7 @@ public class OkDialog implements Dialog
   public void update (final float delta)
   {
     delegate.update (delta);
+    keyRepeat.update ();
   }
 
   @Override
@@ -275,6 +306,18 @@ public class OkDialog implements Dialog
   public void refreshAssets ()
   {
     delegate.refreshAssets ();
+  }
+
+  @Override
+  public void onKeyUp (final int keyCode)
+  {
+    // Empty base implementation
+  }
+
+  @Override
+  public void onKeyDownRepeating (final int keyCode)
+  {
+    // Empty base implementation
   }
 
   protected void addButtons ()
@@ -657,7 +700,7 @@ public class OkDialog implements Dialog
         {
           if (keyCode != keycode || isInputDisabled) return false;
           listener.keyDown ();
-          return true;
+          return keyCode != Input.Keys.ESCAPE;
         }
       });
 

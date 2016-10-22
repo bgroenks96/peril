@@ -21,11 +21,12 @@ package com.forerunnergames.peril.client.ui.widgets.dialogs;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 
+import com.forerunnergames.peril.client.input.KeyRepeatListener;
 import com.forerunnergames.tools.common.Message;
 
 import javax.annotation.Nullable;
 
-public interface Dialog
+public interface Dialog extends KeyRepeatListener
 {
   Dialog NULL = new NullDialog ();
 

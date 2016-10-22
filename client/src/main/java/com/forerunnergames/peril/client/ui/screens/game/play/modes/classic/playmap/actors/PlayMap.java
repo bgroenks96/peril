@@ -82,6 +82,8 @@ public interface PlayMap
 
   boolean secondaryImageStateOfCountryIs (final CountrySecondaryImageState state, final String countryName);
 
+  boolean isEnabled ();
+
   @Nullable
   CountryPrimaryImageState getPrimaryImageStateOf (final String countryName);
 

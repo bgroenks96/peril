@@ -18,14 +18,14 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
 
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayMapBlockingDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 
-public interface BattleDialog extends Dialog
+public interface BattleDialog extends PlayMapBlockingDialog
 {
   BattleDialog NULL = new NullBattleDialog ();
 

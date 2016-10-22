@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.NonPlayMapBlockingDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
@@ -40,7 +41,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-public class ReinforcementsPopupMenu extends OkCancelDialog
+public final class ReinforcementDialog extends OkCancelDialog implements NonPlayMapBlockingDialog
 {
   private static final boolean DEBUG = false;
   private static final float INITIAL_BUTTON_REPEAT_DELAY_SECONDS = 0.5f;
@@ -64,17 +65,17 @@ public class ReinforcementsPopupMenu extends OkCancelDialog
   private int minReinforcements;
   private PlayerPacket player;
 
-  public ReinforcementsPopupMenu (final ClassicModePlayScreenWidgetFactory widgetFactory,
-                                  final Stage stage,
-                                  final PlayerBox playerBox,
-                                  final CancellableDialogListener listener)
+  public ReinforcementDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
+                              final Stage stage,
+                              final PlayerBox playerBox,
+                              final CancellableDialogListener listener)
 
   {
     // @formatter:off
     super (widgetFactory,
            DialogStyle.builder ()
                    .modal (false)
-                   .windowStyle (StyleSettings.REINFORCEMENTS_POPUP_MENU_WINDOW_STYLE)
+                   .windowStyle (StyleSettings.REINFORCEMENT_DIALOG_WINDOW_STYLE)
                    .buttonTextPaddingVertical (0)
                    .buttonTextPaddingHorizontal (10)
                    .border (10)
@@ -248,6 +249,28 @@ public class ReinforcementsPopupMenu extends OkCancelDialog
     maxButton.setStyle (widgetFactory.createArmyMovementDialogMaxButtonStyle ());
   }
 
+  @Override
+  public void onKeyDownRepeating (final int keyCode)
+  {
+    if (!isShown ()) return;
+
+    switch (keyCode)
+    {
+      case Input.Keys.LEFT:
+      {
+        decrementSlider ();
+
+        break;
+      }
+      case Input.Keys.RIGHT:
+      {
+        incrementSlider ();
+
+        break;
+      }
+    }
+  }
+
   public void set (final int minReinforcements,
                    final int maxReinforcements,
                    final Country country,
@@ -294,27 +317,6 @@ public class ReinforcementsPopupMenu extends OkCancelDialog
     country.setArmies (originalCountryArmyCount);
   }
 
-  public void keyDownRepeating (final int keyCode)
-  {
-    if (!isShown ()) return;
-
-    switch (keyCode)
-    {
-      case Input.Keys.LEFT:
-      {
-        decrementSlider ();
-
-        break;
-      }
-      case Input.Keys.RIGHT:
-      {
-        incrementSlider ();
-
-        break;
-      }
-    }
-  }
-
   public String getCountryName ()
   {
     return country.getName ();
@@ -323,11 +325,6 @@ public class ReinforcementsPopupMenu extends OkCancelDialog
   public int getReinforcements ()
   {
     return getSliderValue ();
-  }
-
-  public int getOriginalCountryArmyCount ()
-  {
-    return originalCountryArmyCount;
   }
 
   private void updateArmies ()

@@ -204,6 +204,12 @@ final class NullPlayMap implements PlayMap
     return false;
   }
 
+  @Override
+  public boolean isEnabled ()
+  {
+    return false;
+  }
+
   @Nullable
   @Override
   public CountryPrimaryImageState getPrimaryImageStateOf (final String countryName)

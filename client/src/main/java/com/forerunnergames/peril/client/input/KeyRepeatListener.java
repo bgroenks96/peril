@@ -16,16 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
+package com.forerunnergames.peril.client.input;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayScreenDialogListener;
-import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
-
-public interface BattleDialogListener extends PlayScreenDialogListener
+public interface KeyRepeatListener
 {
-  void onBattle ();
+  void onKeyUp (final int keyCode);
 
-  void onResultAttackerVictorious (final BattleResultPacket result);
-
-  void onResultAttackerDefeated (final BattleResultPacket result);
+  void onKeyDownRepeating (final int keyCode);
 }

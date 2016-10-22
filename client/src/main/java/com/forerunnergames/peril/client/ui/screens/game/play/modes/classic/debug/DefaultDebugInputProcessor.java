@@ -25,10 +25,13 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
@@ -48,10 +51,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
   private final PlayerBox playerBox;
-  private final OccupationDialog occupationDialog;
-  private final FortificationDialog fortificationDialog;
-  private final BattleDialog attackDialog;
-  private final BattleDialog defendDialog;
+  private final CompositeDialog allDialogs;
   private PlayMap playMap;
 
   public DefaultDebugInputProcessor (final DebugEventGenerator eventGenerator,
@@ -61,10 +61,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
                                      final MessageBox <StatusBoxRow> statusBox,
                                      final MessageBox <ChatBoxRow> chatBox,
                                      final PlayerBox playerBox,
-                                     final OccupationDialog occupationDialog,
-                                     final FortificationDialog fortificationDialog,
-                                     final BattleDialog attackDialog,
-                                     final BattleDialog defendDialog,
+                                     final CompositeDialog allDialogs,
                                      final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (eventGenerator, "eventGenerator");
@@ -74,10 +71,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
     Arguments.checkIsNotNull (playerBox, "playerBox");
-    Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
-    Arguments.checkIsNotNull (fortificationDialog, "fortificationDialog");
-    Arguments.checkIsNotNull (attackDialog, "attackDialog");
-    Arguments.checkIsNotNull (defendDialog, "defendDialog");
+    Arguments.checkIsNotNull (allDialogs, "allDialogs");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.eventGenerator = eventGenerator;
@@ -87,10 +81,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
     this.statusBox = statusBox;
     this.chatBox = chatBox;
     this.playerBox = playerBox;
-    this.occupationDialog = occupationDialog;
-    this.fortificationDialog = fortificationDialog;
-    this.attackDialog = attackDialog;
-    this.defendDialog = defendDialog;
+    this.allDialogs = allDialogs;
   }
 
   @Override
@@ -423,6 +414,8 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
 
+        final OccupationDialog occupationDialog = allDialogs.get (OccupationDialog.class);
+
         occupationDialog.show (minArmies, targetCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
                                targetCountry);
         playMap.disable ();
@@ -455,6 +448,8 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
         final int totalArmies = Randomness.getRandomIntegerFrom (4, 99);
         final int minArmies = Randomness.getRandomIntegerFrom (1, 3);
         final int maxArmies = totalArmies - 1;
+
+        final FortificationDialog fortificationDialog = allDialogs.get (FortificationDialog.class);
 
         fortificationDialog.show (minArmies, targetCountry.getArmies (), maxArmies, totalArmies, sourceCountry,
                                   targetCountry);
@@ -507,6 +502,8 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
                 .asDefenderPendingBattleActorPacket (defendingPlayerName, defendingCountryName,
                                                      defendingCountry.getArmies ());
 
+        final BattleDialog attackDialog = allDialogs.get (AttackDialog.class);
+
         attackDialog.startBattle (attacker, defender, attackingCountry, defendingCountry);
 
         playMap.disable ();
@@ -557,6 +554,8 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
         final PendingBattleActorPacket defender = DebugPackets
                 .asDefenderPendingBattleActorPacket (defendingPlayerName, defendingCountryName,
                                                      defendingCountry.getArmies ());
+
+        final BattleDialog defendDialog = allDialogs.get (DefendDialog.class);
 
         defendDialog.startBattle (attacker, defender, attackingCountry, defendingCountry);
 

@@ -26,11 +26,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.AbstractArmyMovementDialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.KeyListener;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class FortificationDialog extends AbstractArmyMovementDialog
+public final class FortificationDialog extends AbstractArmyMovementDialog implements CancellableDialog
 {
   private static final String TITLE = "POST-COMBAT MANEUVER";
   private static final String CANCEL_BUTTON_TEXT = "CANCEL";

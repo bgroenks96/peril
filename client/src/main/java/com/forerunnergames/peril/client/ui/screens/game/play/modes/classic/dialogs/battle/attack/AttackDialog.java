@@ -27,10 +27,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.KeyListener;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class AttackDialog extends AbstractBattleDialog
+public final class AttackDialog extends AbstractBattleDialog implements CancellableDialog
 {
   private static final String TITLE_TEXT = "ATTACK";
   private static final String RETREAT_BUTTON_TEXT = "RETREAT";

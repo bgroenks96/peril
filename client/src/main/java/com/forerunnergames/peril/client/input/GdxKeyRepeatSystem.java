@@ -41,7 +41,7 @@ public class GdxKeyRepeatSystem
   private static final float DEFAULT_KEY_REPEAT_START_DELAY_SECONDS = millisToSeconds (DEFAULT_KEY_REPEAT_START_DELAY_MILLIS);
   private static final float DEFAULT_KEY_REPEAT_RATE_SECONDS = millisToSeconds (DEFAULT_KEY_REPEAT_RATE_MILLIS);
   private final Input input;
-  private final GdxKeyRepeatListener listener;
+  private final KeyRepeatListener listener;
   private final Timer keyRepeatTimer;
   private final IntMap <Timer.Task> keyRepeatTasks;
   private final IntArray repeatingKeys;
@@ -52,7 +52,7 @@ public class GdxKeyRepeatSystem
   private int currentRepeatingGdxKeyCode;
   private int currentRepeatingKeyIndex;
 
-  public GdxKeyRepeatSystem (final Input input, final GdxKeyRepeatListener listener)
+  public GdxKeyRepeatSystem (final Input input, final KeyRepeatListener listener)
   {
     Arguments.checkIsNotNull (input, "input");
     Arguments.checkIsNotNull (listener, "listener");

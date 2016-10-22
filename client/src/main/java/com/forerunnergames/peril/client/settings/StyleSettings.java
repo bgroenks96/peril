@@ -23,7 +23,8 @@ import com.forerunnergames.tools.common.Classes;
 public final class StyleSettings
 {
   // Defaults
-  public static final String DEFAULT_DIALOG_WINDOW_STYLE = "dialog-modal";
+  public static final String DEFAULT_MODAL_DIALOG_WINDOW_STYLE = "dialog-modal";
+  public static final String DEFAULT_NON_MODAL_DIALOG_WINDOW_STYLE = "dialog-modal";
   public static final String DEFAULT_DIALOG_TEXT_BUTTON_STYLE = "dialog";
   public static final String DEFAULT_DIALOG_MESSAGE_BOX_ROW_LABEL_STYLE = "dialog-message";
   public static final String DEFAULT_MESSAGE_BOX_SCROLLPANE_STYLE = "default";
@@ -91,6 +92,12 @@ public final class StyleSettings
   public static final String CONTROL_ROOM_BOX_MY_SETTINGS_IMAGE_BUTTON_STYLE = "my-settings";
   public static final String CONTROL_ROOM_BOX_SURRENDER_IMAGE_BUTTON_STYLE = "surrender";
 
+  // Player Notification Dialog
+  public static final String PLAYER_NOTIFICATION_DIALOG_WINDOW_STYLE = "player-notification-dialog";
+
+  // Reinforcement Dialog
+  public static final String REINFORCEMENT_DIALOG_WINDOW_STYLE = "reinforcement-dialog";
+
   // Play Screen Army Movement Dialogs (Occupy & Reinforce)
   public static final String ARMY_MOVEMENT_DIALOG_WINDOW_STYLE = "army-movement-dialog";
   public static final String ARMY_MOVEMENT_DIALOG_COUNTRY_NAME_LABEL_STYLE = "army-movement-dialog-country-name";
@@ -116,9 +123,6 @@ public final class StyleSettings
   // Player Color Icons
   public static final String HUMAN_PLAYER_COLOR_ICON_STYLE_PREFIX = "color-icon-human-player-";
   public static final String AI_PLAYER_COLOR_ICON_STYLE_PREFIX = "color-icon-ai-player-";
-
-  // Reinforcements Popup Menu
-  public static final String REINFORCEMENTS_POPUP_MENU_WINDOW_STYLE = "reinforcements-popup-menu";
 
   private StyleSettings ()
   {

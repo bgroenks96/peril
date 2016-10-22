@@ -44,13 +44,16 @@ import java.util.regex.Pattern;
 public final class AssetSettings
 {
   public static final String INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY = "";
+  public static final String RELATIVE_EXTERNAL_ASSETS_PARENT_DIRECTORY = "peril/";
   // External assets directory is relative to:
   // - the home directory of the current user on desktop (Windows / OS X / Linux)
   // - the SD card root on mobile (Android / iOS)
   // and is accessed via Gdx.files.external.
   // It is used for assets that do not ship with the game executable,
   // and must be downloaded separately to this directory.
-  public static final String RELATIVE_EXTERNAL_ASSETS_DIRECTORY = "peril/assets/";
+  //
+  // Prepend: Relative external assets parent directory (compile-time)
+  public static final String RELATIVE_EXTERNAL_ASSETS_DIRECTORY = RELATIVE_EXTERNAL_ASSETS_PARENT_DIRECTORY + "assets/";
   // Prepend: Relative countries directory (compile-time)
   // Append: Country atlases (runtime)
   public static final String RELATIVE_COUNTRY_ATLASES_DIRECTORY = "atlases/";

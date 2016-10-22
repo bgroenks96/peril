@@ -22,7 +22,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -45,14 +44,24 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.contr
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugEventGenerator;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DebugInputProcessor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debug.DefaultDebugInputProcessor;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayerNotificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.CompositePlayScreenDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.DefaultPlayScreenCancellableDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.DefaultPlayScreenDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayScreenCancellableDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayScreenDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.AbstractBattleDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialogListener;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.AttackerBattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.PlayerNotificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.quit.PlayScreenQuitDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.AttackingBattlePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.BattlePhaseHandler;
@@ -62,17 +71,15 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phase
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.GamePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ManualCountryAssignmentPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.OccupationPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementsPopupMenu;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageGenerator;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
@@ -115,9 +122,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCo
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -134,12 +139,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
 {
   private static final Logger log = LoggerFactory.getLogger (ClassicModePlayScreen.class);
   private static final boolean DEBUG = false;
-  private static final String QUIT_DIALOG_TITLE_GAME_NOT_IN_PROGRESS = "Quit?";
-  private static final Message QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS = new DefaultMessage (
-          "Are you sure you want to quit?\nIf you are the host, quitting will shut down the server for everyone.");
-  private static final String QUIT_DIALOG_TITLE_GAME_IN_PROGRESS = "Surrender & Quit?";
-  private static final Message QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS = new DefaultMessage (
-          "Are you sure you want to surrender & quit?\nIf you are the host, quitting will shut down the server for everyone.");
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final DebugEventGenerator debugEventGenerator;
   private final Image playMapTableForegroundImage;
@@ -148,14 +147,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final PlayerBox playerBox;
   private final IntelBox intelBox;
   private final ControlRoomBox controlRoomBox;
-  private final Dialog quitDialog;
   private final Cell <Actor> playMapCell;
   private final AtomicBoolean isGameInProgress = new AtomicBoolean ();
   private final Vector2 tempPosition = new Vector2 ();
-  private final OccupationDialog occupationDialog;
-  private final FortificationDialog fortificationDialog;
-  private final BattleResultDialog attackerBattleResultDialog;
-  private final BattleResultDialog defenderBattleResultDialog;
   private final PlayerNotificationDialog notificationDialog;
   private final GamePhaseHandler reinforcementPhaseHandler;
   private final GamePhaseHandler manualCountryAssignmentPhaseHandler;
@@ -163,13 +157,11 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final GamePhaseHandler fortificationPhaseHandler;
   private final StatusMessageGenerator statusMessageGenerator;
   private final CompositeGamePhaseHandler gamePhaseHandlers = new CompositeGamePhaseHandler ();
-  private final CompositeDialog dialogs = new CompositeDialog ();
-  private final ReinforcementsPopupMenu reinforcementsPopupMenu;
+  private final CompositeDialog allDialogs = new CompositeDialog ();
+  private final CompositePlayScreenDialogListener allDialogListeners = new CompositePlayScreenDialogListener ();
   private PlayMap playMap = PlayMap.NULL;
   private BattlePhaseHandler attackingBattlePhaseHandler = BattlePhaseHandler.NULL;
   private BattlePhaseHandler defendingBattlePhaseHandler = BattlePhaseHandler.NULL;
-  private BattleDialog attackDialog = BattleDialog.NULL;
-  private BattleDialog defendDialog = BattleDialog.NULL;
   private DebugInputProcessor debugInputProcessor = DebugInputProcessor.NULL;
   @Nullable
   private PlayerCardTradeInAvailableEvent tradeInEvent; // TODO Production: Remove.
@@ -186,6 +178,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (screenSize, "screenSize");
+    Arguments.checkIsNotNull (mouseInput, "mouseInput");
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (debugEventGenerator, "debugEventGenerator");
 
@@ -196,8 +189,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
     playerBox = widgetFactory.createPlayerBox ();
-    reinforcementsPopupMenu = widgetFactory.createReinforcementsPopupMenu (getStage (), playerBox,
-                                                                           new ReinforcementsPopupMenuListener ());
 
     intelBox = widgetFactory.createIntelBox (new ChangeListener ()
     {
@@ -262,10 +253,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
       public void changed (final ChangeEvent event, final Actor actor)
       {
         log.debug ("Clicked surrender & quit button");
-
-        quitDialog.setTitle (getQuitDialogTitle ());
-        quitDialog.setMessage (getQuitDialogMessage ());
-        quitDialog.show ();
+        final PlayScreenQuitDialog quitDialog = allDialogs.get (PlayScreenQuitDialog.class);
+        quitDialog.show (isGameInProgress.get ());
       }
     });
 
@@ -288,10 +277,12 @@ public final class ClassicModePlayScreen extends AbstractScreen
     sideBarTable.setDebug (DEBUG, true);
 
     // @formatter:off
+
     final Table topTable = new Table ().top ().left ();
     topTable.add (playMapTableStack).size (PlayMapSettings.ACTUAL_WIDTH + 8, PlayMapSettings.ACTUAL_HEIGHT + 8).spaceRight (6).fill ();
     topTable.add (sideBarTable).spaceLeft (6).size (296, PlayMapSettings.ACTUAL_HEIGHT + 8).fill ();
     topTable.setDebug (DEBUG, true);
+
     // @formatter:on
 
     final Table bottomTable = new Table ().top ().left ();
@@ -309,26 +300,38 @@ public final class ClassicModePlayScreen extends AbstractScreen
     rootStack.add (screenTable);
     addRootActor (rootStack);
 
+    // @formatter:off
+
     statusMessageGenerator = new StatusMessageGenerator (statusBox, widgetFactory);
 
-    attackerBattleResultDialog = widgetFactory
-            .createAttackerBattleResultDialog (getStage (), new AttackerBattleResultDialogListener ());
-    defenderBattleResultDialog = widgetFactory
-            .createDefenderBattleResultDialog (getStage (), new DefenderBattleResultDialogListener ());
-    occupationDialog = widgetFactory.createOccupationDialog (getStage (), new OccupationDialogListener ());
-    fortificationDialog = widgetFactory.createFortificationDialog (getStage (), new FortificationDialogListener ());
-    quitDialog = widgetFactory.createQuitDialog (getQuitDialogMessageText (), getStage (), new QuitDialogListener ());
-    notificationDialog = widgetFactory.createPlayerNotificationDialog (widgetFactory, getStage (),
-                                                                       new PlayerNotificationDialogListener ());
-    dialogs.add (attackerBattleResultDialog, defenderBattleResultDialog, occupationDialog, fortificationDialog,
-                 quitDialog);
+    final BattleDialogListener attackDialogListener = new DefaultAttackDialogListener (allDialogs, playMap, mouseInput);
+    final BattleDialogListener defendDialogListener = new DefaultDefendDialogListener (allDialogs, playMap, mouseInput);
+    final PlayScreenDialogListener attackerBattleResultDialogListener = new AttackerBattleResultDialogListener (allDialogs, playMap, mouseInput);
+    final PlayScreenDialogListener defenderBattleResultDialogListener = new DefenderBattleResultDialogListener (allDialogs, playMap, mouseInput);
+    final PlayScreenDialogListener occupationDialogListener = new OccupationDialogListener (allDialogs, playMap, mouseInput);
+    final PlayScreenCancellableDialogListener fortificationDialogListener = new FortificationDialogListener (allDialogs, playMap, mouseInput);
+    final PlayScreenDialogListener notificationDialogListener = new DefaultPlayScreenDialogListener (allDialogs, mouseInput, playMap);
+    final PlayScreenCancellableDialogListener quitDialogListener = new QuitDialogListener (allDialogs, playMap, mouseInput);
+    allDialogListeners.add (attackDialogListener, defendDialogListener, attackerBattleResultDialogListener, defenderBattleResultDialogListener,
+            occupationDialogListener, fortificationDialogListener, notificationDialogListener, quitDialogListener);
 
-    reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, reinforcementsPopupMenu, eventBus);
+    final Dialog attackerBattleResultDialog = widgetFactory.createAttackerBattleResultDialog (getStage (), attackerBattleResultDialogListener);
+    final Dialog defenderBattleResultDialog = widgetFactory.createDefenderBattleResultDialog (getStage (), defenderBattleResultDialogListener);
+    final OccupationDialog occupationDialog = widgetFactory.createOccupationDialog (getStage (), occupationDialogListener);
+    final FortificationDialog fortificationDialog = widgetFactory.createFortificationDialog (getStage (), fortificationDialogListener);
+    final ReinforcementDialog reinforcementDialog = widgetFactory.createReinforcementDialog (getStage (), playerBox, new ReinforcementDialogListener ());
+    final Dialog quitDialog = widgetFactory.createQuitDialog ("", getStage (), quitDialogListener);
+    notificationDialog = widgetFactory.createPlayerNotificationDialog (widgetFactory, getStage (), notificationDialogListener);
+    allDialogs.add (attackerBattleResultDialog, defenderBattleResultDialog, occupationDialog, fortificationDialog, reinforcementDialog,
+            notificationDialog, quitDialog);
+
+    reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, reinforcementDialog, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
     occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
-    gamePhaseHandlers.add (reinforcementPhaseHandler, manualCountryAssignmentPhaseHandler, occupationPhaseHandler,
-                           fortificationPhaseHandler);
+    gamePhaseHandlers.add (reinforcementPhaseHandler, manualCountryAssignmentPhaseHandler, occupationPhaseHandler, fortificationPhaseHandler);
+
+    // @formatter:on
   }
 
   @Override
@@ -338,8 +341,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     subscribe (statusMessageGenerator);
 
-    playMap.onMouseMoved (getMousePosition ());
-
     playMapTableForegroundImage.setDrawable (widgetFactory.createPlayMapTableForegroundImageDrawable ());
 
     intelBox.refreshAssets ();
@@ -347,8 +348,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     statusBox.refreshAssets ();
     chatBox.refreshAssets ();
     playerBox.refreshAssets ();
-    dialogs.refreshAssets ();
-    reinforcementsPopupMenu.refreshAssets ();
+    allDialogs.refreshAssets ();
 
     controlRoomBox.disableButton (ControlRoomBox.Button.TRADE_IN);
     controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
@@ -377,12 +377,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     attackingBattlePhaseHandler = BattlePhaseHandler.NULL;
     defendingBattlePhaseHandler = BattlePhaseHandler.NULL;
 
-    dialogs.hide (null);
-    dialogs.remove (attackDialog, defendDialog);
-    reinforcementsPopupMenu.hide (null);
-
-    attackDialog = BattleDialog.NULL;
-    defendDialog = BattleDialog.NULL;
+    allDialogs.hide (null);
 
     isGameInProgress.set (false);
     tradeInEvent = null; // TODO Production: Remove.
@@ -391,30 +386,29 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Override
+  public void dispose ()
+  {
+    super.dispose ();
+    allDialogs.dispose ();
+    allDialogListeners.dispose ();
+  }
+
+  @Override
   protected void update (final float delta)
   {
     super.update (delta);
-    dialogs.update (delta);
-    reinforcementsPopupMenu.update (delta);
+    allDialogs.update (delta);
   }
 
   @Override
   protected boolean onEscape ()
   {
-    if (!attackDialog.isShown () && !fortificationDialog.isShown () && !reinforcementsPopupMenu.isShown ())
+    if (allDialogs.noneAreShown () || !allDialogs.onlyAreShownOf (CancellableDialog.class))
     {
       controlRoomBox.pressButton (ControlRoomBox.Button.SURRENDER_AND_QUIT);
     }
 
     return false;
-  }
-
-  @Override
-  protected void onKeyDownRepeating (final int keyCode)
-  {
-    occupationDialog.keyDownRepeating (keyCode);
-    fortificationDialog.keyDownRepeating (keyCode);
-    reinforcementsPopupMenu.keyDownRepeating (keyCode);
   }
 
   @Override
@@ -471,6 +465,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
+    // @formatter:off
+
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
@@ -478,27 +474,28 @@ public final class ClassicModePlayScreen extends AbstractScreen
       {
         final ScreenShaker screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
 
-        attackDialog = widgetFactory.createAttackDialog (getStage (), event.getGameRules (), screenShaker,
-                                                         new DefaultAttackDialogListener ());
+        final AttackDialog attackDialog = widgetFactory.createAttackDialog (getStage (), event.getGameRules (),
+                screenShaker, allDialogListeners.get (DefaultAttackDialogListener.class));
 
-        defendDialog = widgetFactory.createDefendDialog (getStage (), event.getGameRules (), screenShaker,
-                                                         new DefaultDefendDialogListener ());
+        final DefendDialog defendDialog = widgetFactory.createDefendDialog (getStage (), event.getGameRules (),
+                screenShaker, allDialogListeners.get (DefaultDefendDialogListener.class));
 
-        dialogs.add (attackDialog, defendDialog);
+        allDialogs.add (attackDialog, defendDialog);
 
         attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog,
-                attackerBattleResultDialog, getEventBus ());
+                allDialogs.get (AttackerBattleResultDialog.class), getEventBus ());
 
         defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog,
-                defenderBattleResultDialog, getEventBus ());
+                allDialogs.get (DefenderBattleResultDialog.class), getEventBus ());
+
+        // @formatter:on
 
         gamePhaseHandlers.add (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
 
         if (DEBUG)
         {
           debugInputProcessor = new DefaultDebugInputProcessor (debugEventGenerator, widgetFactory, getMouseInput (),
-                  playMap, statusBox, chatBox, playerBox, occupationDialog, fortificationDialog, attackDialog,
-                  defendDialog, getEventBus ());
+                  playMap, statusBox, chatBox, playerBox, allDialogs, getEventBus ());
 
           addInputProcessor (debugInputProcessor);
         }
@@ -1126,25 +1123,12 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private void updatePlayMap (final PlayMap playMap)
   {
     this.playMap = playMap;
-    playMapCell.setActor (this.playMap.asActor ());
+    playMapCell.setActor (playMap.asActor ());
     intelBox.setMapMetadata (playMap.getMapMetadata ());
     gamePhaseHandlers.setPlayMap (playMap);
-    debugInputProcessor.setPlayMap (this.playMap);
-  }
-
-  private String getQuitDialogTitle ()
-  {
-    return isGameInProgress.get () ? QUIT_DIALOG_TITLE_GAME_IN_PROGRESS : QUIT_DIALOG_TITLE_GAME_NOT_IN_PROGRESS;
-  }
-
-  private Message getQuitDialogMessage ()
-  {
-    return isGameInProgress.get () ? QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS : QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS;
-  }
-
-  private String getQuitDialogMessageText ()
-  {
-    return getQuitDialogMessage ().getText ();
+    allDialogListeners.setPlayMap (playMap);
+    debugInputProcessor.setPlayMap (playMap);
+    playMap.onMouseMoved (getMousePosition ());
   }
 
   private void quitGame ()
@@ -1163,6 +1147,11 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
   private final class DefaultAttackDialogListener extends AbstractBattleDialogListener implements AttackDialogListener
   {
+    DefaultAttackDialogListener (final CompositeDialog allDialogs, final PlayMap playMap, final MouseInput mouseInput)
+    {
+      super (allDialogs, playMap, mouseInput);
+    }
+
     @Override
     public void onBattle ()
     {
@@ -1190,24 +1179,15 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
       attackingBattlePhaseHandler.onResultAttackerDefeated (result);
     }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (occupationDialog.isShown () || attackerBattleResultDialog.isShown () || quitDialog.isShown ()) return;
-
-      playMap.enable (getMousePosition ());
-    }
   }
 
   private final class DefaultDefendDialogListener extends AbstractBattleDialogListener implements DefendDialogListener
   {
+    DefaultDefendDialogListener (final CompositeDialog allDialogs, final PlayMap playMap, final MouseInput mouseInput)
+    {
+      super (allDialogs, playMap, mouseInput);
+    }
+
     @Override
     public void onBattle ()
     {
@@ -1229,47 +1209,30 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
       defendingBattlePhaseHandler.onResultAttackerDefeated (result);
     }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (attackerBattleResultDialog.isShown () || quitDialog.isShown ()) return;
-
-      playMap.enable (getMousePosition ());
-    }
   }
 
-  private final class AttackerBattleResultDialogListener extends DialogListenerAdapter
+  private final class AttackerBattleResultDialogListener extends DefaultPlayScreenDialogListener
   {
-    @Override
-    public void onShow ()
+    AttackerBattleResultDialogListener (final CompositeDialog allDialogs,
+                                        final PlayMap playMap,
+                                        final MouseInput mouseInput)
     {
-      if (quitDialog.isShown ())
-      {
-        quitDialog.hide (null);
-        quitDialog.show ((Action) null);
-      }
-
-      playMap.disable ();
+      super (allDialogs, mouseInput, playMap);
     }
 
     @Override
     public void onHide ()
     {
+      final BattleDialog attackDialog = allDialogs.get (AttackDialog.class);
       if (!attackDialog.isBattling ()) attackDialog.hide ();
+      final AttackerBattleResultDialog resultDialog = allDialogs.get (AttackerBattleResultDialog.class);
+      final OccupationDialog occupationDialog = allDialogs.get (OccupationDialog.class);
 
-      if (attackerBattleResultDialog.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS))
+      if (resultDialog.battleOutcomeIs (BattleOutcome.ATTACKER_VICTORIOUS))
       {
         // Update occupation dialog to match preemptive play map changes (defending country ownership change).
-        occupationDialog.updateCountries (playMap.getCountryWithName (attackerBattleResultDialog
-                .getAttackingCountryName ()), playMap.getCountryWithName (attackerBattleResultDialog
-                .getDefendingCountryName ()));
+        occupationDialog.updateCountries (playMap.getCountryWithName (resultDialog.getAttackingCountryName ()),
+                                          playMap.getCountryWithName (resultDialog.getDefendingCountryName ()));
 
         // Show the occupation dialog here (rather than immediately after battle, in response to
         // PlayerOccupyCountryRequestEvent in OccupationPhaseHandler) so that it doesn't appear until the attacker
@@ -1283,55 +1246,51 @@ public final class ClassicModePlayScreen extends AbstractScreen
         occupationDialog.show ();
       }
 
-      if (!occupationDialog.isShown () && !quitDialog.isShown ()) playMap.enable (getMousePosition ());
+      super.onHide ();
     }
   }
 
-  private final class DefenderBattleResultDialogListener extends DialogListenerAdapter
+  private final class DefenderBattleResultDialogListener extends DefaultPlayScreenDialogListener
   {
-    @Override
-    public void onShow ()
+    DefenderBattleResultDialogListener (final CompositeDialog allDialogs,
+                                        final PlayMap playMap,
+                                        final MouseInput mouseInput)
     {
-      if (quitDialog.isShown ())
-      {
-        quitDialog.hide (null);
-        quitDialog.show ((Action) null);
-      }
-
-      playMap.disable ();
+      super (allDialogs, mouseInput, playMap);
     }
 
     @Override
     public void onHide ()
     {
+      final BattleDialog defendDialog = allDialogs.get (DefendDialog.class);
+
       if (!defendDialog.isBattling ()) defendDialog.hide ();
-      if (!quitDialog.isShown ()) playMap.enable (getMousePosition ());
+
+      super.onHide ();
     }
   }
 
-  private final class OccupationDialogListener implements DialogListener
+  private final class OccupationDialogListener extends DefaultPlayScreenDialogListener
   {
+    OccupationDialogListener (final CompositeDialog allDialogs, final PlayMap playMap, final MouseInput mouseInput)
+    {
+      super (allDialogs, mouseInput, playMap);
+    }
+
     @Override
     public void onSubmit ()
     {
       occupationPhaseHandler.execute ();
     }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (!quitDialog.isShown ()) playMap.enable (getMousePosition ());
-    }
   }
 
-  private final class FortificationDialogListener implements CancellableDialogListener
+  private final class FortificationDialogListener extends DefaultPlayScreenCancellableDialogListener
   {
+    FortificationDialogListener (final CompositeDialog allDialogs, final PlayMap playMap, final MouseInput mouseInput)
+    {
+      super (allDialogs, mouseInput, playMap);
+    }
+
     @Override
     public void onCancel ()
     {
@@ -1352,84 +1311,42 @@ public final class ClassicModePlayScreen extends AbstractScreen
         }
       });
     }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (!quitDialog.isShown ()) playMap.enable (getMousePosition ());
-    }
   }
 
-  private final class QuitDialogListener extends CancellableDialogListenerAdapter
+  private final class QuitDialogListener extends DefaultPlayScreenCancellableDialogListener
   {
+    QuitDialogListener (final CompositeDialog allDialogs, final PlayMap playMap, final MouseInput mouseInput)
+    {
+      super (allDialogs, mouseInput, playMap);
+    }
+
+    @Override
+    protected void reshowQuitDialogOnTopIfShown ()
+    {
+      // The quit dialog itself will always be on top when shown, so don't attempt to re-show it on top.
+      // This override prevents infinite callback recursion.
+    }
+
     @Override
     public void onSubmit ()
     {
       quitGame ();
       publishAsync (new QuitGameEvent ());
     }
-
-    @Override
-    public void onCancel ()
-    {
-      if (!attackDialog.isShown () && !defendDialog.isShown () && !occupationDialog.isShown ()
-              && !fortificationDialog.isShown () && !attackerBattleResultDialog.isShown ()
-              && !defenderBattleResultDialog.isShown ())
-      {
-        playMap.enable (getMousePosition ());
-      }
-    }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
   }
 
-  private final class PlayerNotificationDialogListener implements DialogListener
+  private final class ReinforcementDialogListener extends CancellableDialogListenerAdapter
   {
-    @Override
-    public void onSubmit ()
-    {
-    }
-
-    @Override
-    public void onShow ()
-    {
-      playMap.disable ();
-    }
-
-    @Override
-    public void onHide ()
-    {
-      if (!attackDialog.isShown () && !defendDialog.isShown () && !occupationDialog.isShown ()
-              && !fortificationDialog.isShown () && !attackerBattleResultDialog.isShown ()
-              && !defenderBattleResultDialog.isShown () && !quitDialog.isShown ())
-      {
-        playMap.enable (getMousePosition ());
-      }
-    }
-  }
-
-  private final class ReinforcementsPopupMenuListener extends CancellableDialogListenerAdapter
-  {
-    @Override
-    public void onSubmit ()
-    {
-      reinforcementPhaseHandler.execute ();
-    }
-
     @Override
     public void onCancel ()
     {
       reinforcementPhaseHandler.cancel ();
+    }
+
+    @Override
+    public void onSubmit ()
+    {
+      reinforcementPhaseHandler.execute ();
     }
   }
 }

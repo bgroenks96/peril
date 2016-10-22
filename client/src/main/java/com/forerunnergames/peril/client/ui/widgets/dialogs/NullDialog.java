@@ -20,12 +20,13 @@ package com.forerunnergames.peril.client.ui.widgets.dialogs;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 
+import com.forerunnergames.peril.client.input.KeyRepeatListenerAdapter;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Message;
 
 import javax.annotation.Nullable;
 
-public class NullDialog implements Dialog
+public class NullDialog extends KeyRepeatListenerAdapter implements Dialog
 {
   @Override
   public void show ()

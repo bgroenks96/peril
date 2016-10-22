@@ -17,11 +17,11 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result;
 
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayMapBlockingDialog;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 
-public interface BattleResultDialog extends Dialog
+public interface BattleResultDialog extends PlayMapBlockingDialog
 {
   void show (final BattleResultPacket result);
 

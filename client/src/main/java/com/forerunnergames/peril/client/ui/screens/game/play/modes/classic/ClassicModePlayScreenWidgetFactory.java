@@ -40,10 +40,10 @@ import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.ControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.DefaultControlRoomBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayerNotificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.quit.PlayScreenQuitDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.PlayerNotificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialogWidgetFactory;
@@ -55,14 +55,13 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementsPopupMenu;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
-import com.forerunnergames.peril.client.ui.widgets.dialogs.QuitDialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
@@ -82,13 +81,15 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
   }
 
   @Override
-  public Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener)
+  public CancellableDialog createQuitDialog (final String message,
+                                             final Stage stage,
+                                             final CancellableDialogListener listener)
   {
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new QuitDialog (this, message, 587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
+    return new PlayScreenQuitDialog (this, message, 587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
   }
 
   @Override
@@ -241,7 +242,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
                             ImageButton.ImageButtonStyle.class);
   }
 
-  public BattleDialog createAttackDialog (final Stage stage,
+  public AttackDialog createAttackDialog (final Stage stage,
                                           final GameRules rules,
                                           final ScreenShaker screenShaker,
                                           final AttackDialogListener listener)
@@ -255,7 +256,7 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
             rules.getAbsoluteDefenderDieRange ()), stage, screenShaker, listener);
   }
 
-  public BattleDialog createDefendDialog (final Stage stage,
+  public DefendDialog createDefendDialog (final Stage stage,
                                           final GameRules rules,
                                           final ScreenShaker screenShaker,
                                           final DefendDialogListener listener)
@@ -481,14 +482,14 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_SURRENDER_IMAGE_BUTTON_STYLE);
   }
 
-  public ReinforcementsPopupMenu createReinforcementsPopupMenu (final Stage stage,
-                                                                final PlayerBox playerBox,
-                                                                final CancellableDialogListener listener)
+  public ReinforcementDialog createReinforcementDialog (final Stage stage,
+                                                        final PlayerBox playerBox,
+                                                        final CancellableDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (playerBox, "playerBox");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new ReinforcementsPopupMenu (this, stage, playerBox, listener);
+    return new ReinforcementDialog (this, stage, playerBox, listener);
   }
 }

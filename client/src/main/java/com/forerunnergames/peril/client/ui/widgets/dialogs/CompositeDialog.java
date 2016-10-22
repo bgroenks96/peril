@@ -20,31 +20,27 @@ package com.forerunnergames.peril.client.ui.widgets.dialogs;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 
+import com.forerunnergames.peril.client.input.KeyRepeatListenerAdapter;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Message;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.MutableClassToInstanceMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public final class CompositeDialog implements Dialog
+public final class CompositeDialog extends KeyRepeatListenerAdapter implements Dialog
 {
-  private Collection <Dialog> dialogs = new HashSet <> ();
-
-  public CompositeDialog (final Dialog... dialogs)
-  {
-    Arguments.checkIsNotNull (dialogs, "dialogs");
-    Arguments.checkHasNoNullElements (dialogs, "dialogs");
-
-    this.dialogs.addAll (Arrays.asList (dialogs));
-  }
+  private ClassToInstanceMap <Dialog> dialogClassesToDialogs = MutableClassToInstanceMap.create ();
 
   @Override
   public void show ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.show ();
     }
@@ -53,7 +49,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void show (@Nullable final Action action)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.show (action);
     }
@@ -64,7 +60,7 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (message, "message");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.show (message);
     }
@@ -75,7 +71,7 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (message, "message");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.show (message, action);
     }
@@ -84,7 +80,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void hide ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.hide ();
     }
@@ -93,7 +89,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void hide (@Nullable final Action action)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.hide (action);
     }
@@ -104,7 +100,7 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (title, "title");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.setTitle (title);
     }
@@ -115,21 +111,24 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (message, "message");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.setMessage (message);
     }
   }
 
+  /**
+   * @return true if all dialogs are shown, false otherwise. Same as {@link #allAreShown()}.
+   *
+   * @see #allAreShown()
+   * @see #anyIsShown()
+   * @see #noneAreShown()
+   * @see #noneAreShownExcept(Dialog)
+   */
   @Override
   public boolean isShown ()
   {
-    for (final Dialog dialog : dialogs)
-    {
-      if (!dialog.isShown ()) return false;
-    }
-
-    return true;
+    return allAreShown ();
   }
 
   @Override
@@ -137,7 +136,7 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.addListener (listener);
     }
@@ -146,7 +145,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void enableInput ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.enableInput ();
     }
@@ -155,7 +154,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void disableInput ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.disableInput ();
     }
@@ -164,7 +163,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public boolean isInputDisabled ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       if (!dialog.isInputDisabled ()) return false;
     }
@@ -175,7 +174,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void enableSubmission ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.enableSubmission ();
     }
@@ -184,7 +183,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void disableSubmission ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.disableSubmission ();
     }
@@ -193,7 +192,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public boolean isSubmissionDisabled ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       if (!dialog.isSubmissionDisabled ()) return false;
     }
@@ -204,7 +203,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void setSubmissionDisabled (final boolean isDisabled)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.setSubmissionDisabled (isDisabled);
     }
@@ -215,7 +214,7 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (buttonText, "buttonText");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.enableTextButton (buttonText);
     }
@@ -226,7 +225,7 @@ public final class CompositeDialog implements Dialog
   {
     Arguments.checkIsNotNull (buttonText, "buttonText");
 
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.disableTextButton (buttonText);
     }
@@ -235,7 +234,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void setTextButtonDisabled (final String buttonText, final boolean isDisabled)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.setTextButtonDisabled (buttonText, isDisabled);
     }
@@ -244,7 +243,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public boolean isDisabledTextButton (final String buttonText)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       if (!dialog.isDisabledTextButton (buttonText)) return false;
     }
@@ -255,7 +254,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void setPosition (final int upperLeftReferenceScreenSpaceX, final int upperLeftReferenceScreenSpaceY)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.setPosition (upperLeftReferenceScreenSpaceX, upperLeftReferenceScreenSpaceY);
     }
@@ -264,7 +263,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void setSize (final int widthReferenceScreenSpace, final int heightReferenceScreenSpace)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.setSize (widthReferenceScreenSpace, heightReferenceScreenSpace);
     }
@@ -273,7 +272,7 @@ public final class CompositeDialog implements Dialog
   @Override
   public void update (final float delta)
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.update (delta);
     }
@@ -282,19 +281,113 @@ public final class CompositeDialog implements Dialog
   @Override
   public void refreshAssets ()
   {
-    for (final Dialog dialog : dialogs)
+    for (final Dialog dialog : getDialogs ())
     {
       dialog.refreshAssets ();
     }
+  }
+
+  /**
+   * @return true if any {@link Dialog} is shown, false only if all dialogs are not shown.
+   *
+   * @see #allAreShown()
+   * @see #noneAreShown()
+   * @see #noneAreShownExcept(Dialog)
+   * @see #noneAreShownExcept(Class)
+   */
+  public boolean anyIsShown ()
+  {
+    for (final Dialog dialog : getDialogs ())
+    {
+      if (dialog.isShown ()) return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * @return true if all {@link Dialog}'s are shown, false otherwise.
+   *
+   * @see #anyIsShown()
+   * @see #noneAreShown()
+   * @see #noneAreShownExcept(Dialog)
+   * @see #noneAreShownExcept(Class)
+   */
+  public boolean allAreShown ()
+  {
+    for (final Dialog dialog : getDialogs ())
+    {
+      if (!dialog.isShown ()) return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * @return true if all {@link Dialog}'s are not shown, false otherwise.
+   *
+   * @see #noneAreShownExcept(Dialog)
+   * @see #noneAreShownExcept(Class)
+   * @see #allAreShown()
+   * @see #anyIsShown()
+   */
+  public boolean noneAreShown ()
+  {
+    for (final Dialog dialog : getDialogs ())
+    {
+      if (dialog.isShown ()) return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * @return true if all {@link Dialog}'s except the specified dialog are not shown, false otherwise.
+   *
+   * @see #noneAreShownExcept(Class)
+   * @see #noneAreShown()
+   * @see #allAreShown()
+   * @see #anyIsShown()
+   */
+  public boolean noneAreShownExcept (final Dialog exceptDialog)
+  {
+    Arguments.checkIsNotNull (exceptDialog, "exceptDialog");
+
+    for (final Dialog dialog2 : getDialogs ())
+    {
+      if (dialog2.isShown () && !dialog2.equals (exceptDialog)) return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * @return true if all {@link Dialog}'s except the specified dialog are not shown, false otherwise.
+   *
+   * @see #noneAreShownExcept(Dialog)
+   * @see #noneAreShown()
+   * @see #allAreShown()
+   * @see #anyIsShown()
+   */
+  public boolean noneAreShownExcept (final Class <? extends Dialog> exceptDialogClass)
+  {
+    Arguments.checkIsNotNull (exceptDialogClass, "exceptDialogClass");
+
+    for (final Dialog dialog2 : getDialogs ())
+    {
+      if (dialog2.isShown () && !dialog2.getClass ().equals (exceptDialogClass)) return false;
+    }
+
+    return true;
   }
 
   public void add (final Dialog dialog)
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    final Collection <Dialog> dialogsCopy = new HashSet <> (dialogs);
-    dialogsCopy.add (dialog);
-    dialogs = dialogsCopy;
+    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap <> (dialogClassesToDialogs);
+    copy.put (dialog.getClass (), dialog);
+    dialogClassesToDialogs = MutableClassToInstanceMap.create (copy);
   }
 
   public void add (final Dialog... dialogs)
@@ -302,27 +395,74 @@ public final class CompositeDialog implements Dialog
     Arguments.checkIsNotNull (dialogs, "dialogs");
     Arguments.checkHasNoNullElements (dialogs, "dialogs");
 
-    final Collection <Dialog> dialogsCopy = new HashSet <> (this.dialogs);
-    dialogsCopy.addAll (Arrays.asList (dialogs));
-    this.dialogs = dialogsCopy;
+    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap <> (dialogClassesToDialogs);
+
+    for (final Dialog dialog : dialogs)
+    {
+      copy.put (dialog.getClass (), dialog);
+    }
+
+    dialogClassesToDialogs = MutableClassToInstanceMap.create (copy);
   }
 
-  public void remove (final Dialog dialog)
+  @SafeVarargs
+  public final void remove (final Class <? extends Dialog>... dialogClasses)
   {
-    Arguments.checkIsNotNull (dialog, "dialog");
+    Arguments.checkIsNotNull (dialogClasses, "dialogClasses");
+    Arguments.checkHasNoNullElements (dialogClasses, "dialogClasses");
 
-    final Collection <Dialog> dialogsCopy = new HashSet <> (dialogs);
-    dialogsCopy.remove (dialog);
-    dialogs = dialogsCopy;
+    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap <> (dialogClassesToDialogs);
+
+    for (final Class <? extends Dialog> dialogClass : dialogClasses)
+    {
+      copy.remove (dialogClass);
+    }
+
+    dialogClassesToDialogs = MutableClassToInstanceMap.create (copy);
   }
 
-  public void remove (final Dialog... dialogs)
+  public <T extends Dialog> T get (final Class <T> dialogClass)
   {
-    Arguments.checkIsNotNull (dialogs, "dialogs");
-    Arguments.checkHasNoNullElements (dialogs, "dialogs");
+    Arguments.checkIsNotNull (dialogClass, "dialogClass");
 
-    final Collection <Dialog> dialogsCopy = new HashSet <> (this.dialogs);
-    dialogsCopy.removeAll (Arrays.asList (dialogs));
-    this.dialogs = dialogsCopy;
+    final T dialog = dialogClassesToDialogs.getInstance (dialogClass);
+
+    if (dialog == null) Exceptions.throwIllegalArg ("{} not found.", dialogClass);
+
+    return dialog;
+  }
+
+  public void dispose ()
+  {
+    dialogClassesToDialogs.clear ();
+  }
+
+  public boolean noneAreShownOf (final Class <? extends Dialog> dialogType)
+  {
+    Arguments.checkIsNotNull (dialogType, "dialogType");
+
+    for (final Dialog dialog : getDialogs ())
+    {
+      if (dialog.isShown () && dialogType.isAssignableFrom (dialog.getClass ())) return false;
+    }
+
+    return true;
+  }
+
+  public boolean onlyAreShownOf (final Class <? extends Dialog> dialogType)
+  {
+    Arguments.checkIsNotNull (dialogType, "dialogType");
+
+    for (final Dialog dialog : getDialogs ())
+    {
+      if (dialog.isShown () && !dialogType.isAssignableFrom (dialog.getClass ())) return false;
+    }
+
+    return true;
+  }
+
+  private Iterable <Dialog> getDialogs ()
+  {
+    return dialogClassesToDialogs.values ();
   }
 }

@@ -22,8 +22,8 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
-    "dialogDim": { "name": "white", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 } },
-    "reinforcements-popup-menu-background": { "name": "white", "color": { "r": 0, "g": 0, "b": 0, "a": 0.8 } }
+    "dialogDim":                       { "name": "white", "color": { "r": 0, "g": 0, "b": 0, "a": 0.5 } },
+    "reinforcement-dialog-background": { "name": "white", "color": { "r": 0, "g": 0, "b": 0, "a": 0.8 } }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
@@ -137,13 +137,14 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
-    "dialog-modal":              { "titleFont": "pirulen-28",   "background": "dialog-background",                    "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "dialog-non-modal":          { "titleFont": "pirulen-28",   "background": "dialog-background",                    "titleFontColor": "white", "stageBackground": null },
-    "battle-dialog":             { "titleFont": "pirulen-28",   "background": "battle-dialog-background",             "titleFontColor": "white", "stageBackground": null },
-    "army-movement-dialog":      { "titleFont": "pirulen-28",   "background": "army-movement-dialog-background",      "titleFontColor": "white", "stageBackground": null },
-    "trade-in-dialog":           { "titleFont": "pirulen-28",   "background": "trade-in-dialog-background",           "titleFontColor": "white", "stageBackground": null },
-    "my-settings-dialog":        { "titleFont": "pirulen-28",   "background": "my-settings-dialog-background",        "titleFontColor": "white", "stageBackground": null }
-    "reinforcements-popup-menu": { "titleFont": "default-font", "background": "reinforcements-popup-menu-background", "titleFontColor": "white", "stageBackground": null },
+    "dialog-modal":                { "titleFont": "pirulen-28",   "background": "dialog-background",               "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "dialog-non-modal":            { "titleFont": "pirulen-28",   "background": "dialog-background",               "titleFontColor": "white", "stageBackground": null },
+    "battle-dialog":               { "titleFont": "pirulen-28",   "background": "battle-dialog-background",        "titleFontColor": "white", "stageBackground": null },
+    "army-movement-dialog":        { "titleFont": "pirulen-28",   "background": "army-movement-dialog-background", "titleFontColor": "white", "stageBackground": null },
+    "trade-in-dialog":             { "titleFont": "pirulen-28",   "background": "trade-in-dialog-background",      "titleFontColor": "white", "stageBackground": null },
+    "my-settings-dialog":          { "titleFont": "pirulen-28",   "background": "my-settings-dialog-background",   "titleFontColor": "white", "stageBackground": null },
+    "player-notification-dialog":  { "titleFont": "pirulen-28",   "background": "dialog-background",               "titleFontColor": "white", "stageBackground": null },
+    "reinforcement-dialog":        { "titleFont": "default-font", "background": "reinforcement-dialog-background", "titleFontColor": "white", "stageBackground": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {

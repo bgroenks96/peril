@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayScreenDialogListener;
-import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 
-public interface BattleDialogListener extends PlayScreenDialogListener
+/**
+ * Marker for dialogs that block input to the play map.
+ */
+public interface PlayMapBlockingDialog extends Dialog
 {
-  void onBattle ();
-
-  void onResultAttackerVictorious (final BattleResultPacket result);
-
-  void onResultAttackerDefeated (final BattleResultPacket result);
 }

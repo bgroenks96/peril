@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +15,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs;
 
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.DefaultPlayScreenDialogListener;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
-import com.forerunnergames.tools.common.Strings;
 
-public abstract class AbstractBattleDialogListener extends DefaultPlayScreenDialogListener implements
-        BattleDialogListener
+public class DefaultPlayScreenCancellableDialogListener extends DefaultPlayScreenDialogListener implements
+        PlayScreenCancellableDialogListener
 {
-  public AbstractBattleDialogListener (final CompositeDialog allDialogs,
-                                       final PlayMap playMap,
-                                       final MouseInput mouseInput)
+  public DefaultPlayScreenCancellableDialogListener (final CompositeDialog allDialogs,
+                                                     final MouseInput mouseInput,
+                                                     final PlayMap playMap)
   {
     super (allDialogs, mouseInput, playMap);
   }
 
   @Override
-  public final void onSubmit ()
+  public void onCancel ()
   {
-    throw new UnsupportedOperationException (
-            Strings.format ("The behavior of this method is intentionally undefined for {}.",
-                            BattleDialog.class.getSimpleName ()));
   }
 }

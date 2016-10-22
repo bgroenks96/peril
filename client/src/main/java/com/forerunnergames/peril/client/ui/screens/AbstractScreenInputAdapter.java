@@ -20,7 +20,9 @@ package com.forerunnergames.peril.client.ui.screens;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 
-abstract class AbstractScreenInputAdapter extends InputAdapter implements Screen
+import com.forerunnergames.peril.client.input.KeyRepeatListener;
+
+abstract class AbstractScreenInputAdapter extends InputAdapter implements Screen, KeyRepeatListener
 {
   @Override
   public void show ()
@@ -54,6 +56,16 @@ abstract class AbstractScreenInputAdapter extends InputAdapter implements Screen
 
   @Override
   public void dispose ()
+  {
+  }
+
+  @Override
+  public void onKeyUp (final int keyCode)
+  {
+  }
+
+  @Override
+  public void onKeyDownRepeating (final int keyCode)
   {
   }
 }

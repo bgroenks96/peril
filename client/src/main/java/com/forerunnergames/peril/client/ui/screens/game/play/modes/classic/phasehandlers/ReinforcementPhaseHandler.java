@@ -40,28 +40,28 @@ import org.slf4j.LoggerFactory;
 public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 {
   private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandler.class);
-  private final ReinforcementsPopupMenu reinforcementsPopupMenu;
+  private final ReinforcementDialog reinforcementDialog;
   @Nullable
   private PlayerBeginReinforcementEvent serverInformEvent;
 
   public ReinforcementPhaseHandler (final PlayMap playMap,
-                                    final ReinforcementsPopupMenu reinforcementsPopupMenu,
+                                    final ReinforcementDialog reinforcementDialog,
                                     final MBassador <Event> eventBus)
   {
     super (playMap, eventBus);
 
-    Arguments.checkIsNotNull (reinforcementsPopupMenu, "reinforcementsPopupMenu");
+    Arguments.checkIsNotNull (reinforcementDialog, "reinforcementDialog");
 
-    this.reinforcementsPopupMenu = reinforcementsPopupMenu;
+    this.reinforcementDialog = reinforcementDialog;
   }
 
   @Override
   public void execute ()
   {
-    // This method is only called for ReinforcementsPopupMenu submission.
+    // This method is only called for ReinforcementDialog submission.
 
-    final String countryName = reinforcementsPopupMenu.getCountryName ();
-    final int reinforcements = reinforcementsPopupMenu.getReinforcements ();
+    final String countryName = reinforcementDialog.getCountryName ();
+    final int reinforcements = reinforcementDialog.getReinforcements ();
 
     if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
     if (checkCanReinforceCountryWithArmies (countryName, reinforcements).failed ()) return;
@@ -73,9 +73,9 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   @Override
   public void cancel ()
   {
-    // This method is only called for ReinforcementsPopupMenu cancellation.
+    // This method is only called for ReinforcementDialog cancellation.
 
-    reinforcementsPopupMenu.cancel ();
+    reinforcementDialog.cancel ();
   }
 
   @Override
@@ -83,10 +83,10 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (reinforcementsPopupMenu.isShown ())
+    if (reinforcementDialog.isShown ())
     {
-      reinforcementsPopupMenu.hide ();
-      reinforcementsPopupMenu.cancel ();
+      reinforcementDialog.hide ();
+      reinforcementDialog.cancel ();
       return;
     }
 
@@ -107,10 +107,10 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   {
     Arguments.checkIsNotNull (countryName, "countryName");
 
-    if (reinforcementsPopupMenu.isShown ())
+    if (reinforcementDialog.isShown ())
     {
-      reinforcementsPopupMenu.hide ();
-      reinforcementsPopupMenu.cancel ();
+      reinforcementDialog.hide ();
+      reinforcementDialog.cancel ();
     }
 
     if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
@@ -118,7 +118,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     assert serverInformEvent != null;
 
-    reinforcementsPopupMenu.show (serverInformEvent.getMinReinforcementsPlacedPerCountry (),
+    reinforcementDialog.show (serverInformEvent.getMinReinforcementsPlacedPerCountry (),
                                   serverInformEvent.getTotalReinforcements (), getCountryWithName (countryName), x, y,
                                   getSelfPlayer ());
   }
@@ -126,19 +126,19 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   @Override
   void onNonCountryLeftClicked (final float x, final float y)
   {
-    if (!reinforcementsPopupMenu.isShown ()) return;
+    if (!reinforcementDialog.isShown ()) return;
 
-    reinforcementsPopupMenu.hide ();
-    reinforcementsPopupMenu.cancel ();
+    reinforcementDialog.hide ();
+    reinforcementDialog.cancel ();
   }
 
   @Override
   void onNonCountryRightClicked (final float x, final float y)
   {
-    if (!reinforcementsPopupMenu.isShown ()) return;
+    if (!reinforcementDialog.isShown ()) return;
 
-    reinforcementsPopupMenu.hide ();
-    reinforcementsPopupMenu.cancel ();
+    reinforcementDialog.hide ();
+    reinforcementDialog.cancel ();
   }
 
   @Override

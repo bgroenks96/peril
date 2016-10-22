@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +15,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.input;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs;
 
-public interface GdxKeyRepeatListener
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
+
+public interface PlayScreenDialogListener extends DialogListener
 {
-  void onKeyUp (final int keyCode);
-
-  void onKeyDownRepeating (final int keyCode);
+  void setPlayMap (final PlayMap playMap);
 }

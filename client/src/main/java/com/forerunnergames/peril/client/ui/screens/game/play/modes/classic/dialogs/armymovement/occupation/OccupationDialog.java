@@ -24,7 +24,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.Class
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.AbstractArmyMovementDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 
-public class OccupationDialog extends AbstractArmyMovementDialog
+public final class OccupationDialog extends AbstractArmyMovementDialog
 {
   private static final String TITLE = "OCCUPATION";
 

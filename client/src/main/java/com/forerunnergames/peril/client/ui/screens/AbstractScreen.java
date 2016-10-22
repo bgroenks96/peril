@@ -35,8 +35,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import com.forerunnergames.peril.client.input.GdxKeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.GdxKeyRepeatSystem;
+import com.forerunnergames.peril.client.input.KeyRepeatListenerAdapter;
 import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.settings.GraphicsSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
@@ -143,6 +143,13 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
 
   @Override
   @OverridingMethodsMustInvokeSuper
+  public void resume ()
+  {
+    stage.mouseMoved (mouseInput.x (), mouseInput.y ());
+  }
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
   public void hide ()
   {
     eventBus.unsubscribe (this);
@@ -178,11 +185,6 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
    *         to other {@link InputProcessor}'s for additional handling.
    */
   protected abstract boolean onEscape ();
-
-  protected void onKeyDownRepeating (final int keyCode)
-  {
-    // Empty base implementation.
-  }
 
   protected final MBassador <Event> getEventBus ()
   {
@@ -366,7 +368,7 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
     }
   }
 
-  private final class KeyRepeatListener extends GdxKeyRepeatListenerAdapter
+  private final class KeyRepeatListener extends KeyRepeatListenerAdapter
   {
     @Override
     public void onKeyDownRepeating (final int keyCode)

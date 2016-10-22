@@ -370,7 +370,7 @@ public final class DialogStyle
 
   public static final class DialogStyleBuilder
   {
-    private String windowStyleName = StyleSettings.DEFAULT_DIALOG_WINDOW_STYLE;
+    private String windowStyleName = StyleSettings.DEFAULT_MODAL_DIALOG_WINDOW_STYLE;
     private String textButtonStyleName = StyleSettings.DEFAULT_DIALOG_TEXT_BUTTON_STYLE;
     private String messageBoxRowLabelStyleName = StyleSettings.DEFAULT_DIALOG_MESSAGE_BOX_ROW_LABEL_STYLE;
     private int messageBoxRowLabelAlignment = DEFAULT_MESSAGE_BOX_ROW_LABEL_ALIGNMENT;

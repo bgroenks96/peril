@@ -22,7 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 
-public final class QuitDialog extends OkCancelDialog
+public class QuitDialog extends OkCancelDialog
 {
   public QuitDialog (final WidgetFactory widgetFactory,
                      final String message,

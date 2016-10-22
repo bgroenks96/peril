@@ -15,11 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import com.forerunnergames.peril.client.settings.ScreenSettings;
+import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.PlayMapBlockingDialog;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
@@ -30,7 +32,7 @@ import com.forerunnergames.tools.common.Strings;
 
 import javax.annotation.Nullable;
 
-public final class PlayerNotificationDialog extends OkDialog
+public final class PlayerNotificationDialog extends OkDialog implements PlayMapBlockingDialog
 {
   @Nullable
   private PlayerPacket selfPlayer;
@@ -40,6 +42,8 @@ public final class PlayerNotificationDialog extends OkDialog
     // @formatter:off
     super (widgetFactory,
             DialogStyle.builder ()
+                    .modal (false)
+                    .windowStyle (StyleSettings.PLAYER_NOTIFICATION_DIALOG_WINDOW_STYLE)
                     .size (650, 244)
                     .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284)
                     .titleHeight (51)

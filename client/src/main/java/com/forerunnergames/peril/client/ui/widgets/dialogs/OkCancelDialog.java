@@ -27,7 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.tools.common.Arguments;
 
-public class OkCancelDialog extends OkDialog
+public class OkCancelDialog extends OkDialog implements CancellableDialog
 {
   private static final String CANCEL_BUTTON_TEXT = "CANCEL";
   private final CancellableDialogListener listener;

@@ -35,6 +35,8 @@ import com.forerunnergames.tools.common.Randomness;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,7 @@ import javax.annotation.Nullable;
 
 public final class DefaultPlayMap implements PlayMap
 {
+  private Logger log = LoggerFactory.getLogger (DefaultPlayMap.class);
   private final Group group = new Group ();
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
@@ -514,6 +517,12 @@ public final class DefaultPlayMap implements PlayMap
   }
 
   @Override
+  public boolean isEnabled ()
+  {
+    return isEnabled;
+  }
+
+  @Override
   @Nullable
   public CountryPrimaryImageState getPrimaryImageStateOf (final String countryName)
   {
@@ -538,6 +547,10 @@ public final class DefaultPlayMap implements PlayMap
   @Override
   public void disable ()
   {
+    log.trace ("Disabling play map...");
+
+    if (!isEnabled) return;
+
     hoveredTerritoryText.setVisible (false);
 
     if (hoveredCountry != null) hoveredCountry.onHoverEnd ();
@@ -550,12 +563,18 @@ public final class DefaultPlayMap implements PlayMap
     }
 
     isEnabled = false;
+
+    log.trace ("Disabled play map");
   }
 
   @Override
   public void enable (final Vector2 currentMouseLocation)
   {
     Arguments.checkIsNotNull (currentMouseLocation, "currentMouseLocation");
+
+    log.trace ("Enabling play map...");
+
+    if (isEnabled) return;
 
     hoveredTerritoryText.setVisible (true);
 
@@ -567,6 +586,8 @@ public final class DefaultPlayMap implements PlayMap
     isEnabled = true;
 
     onMouseMoved (currentMouseLocation);
+
+    log.trace ("Enabled play map");
   }
 
   @Override
