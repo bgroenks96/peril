@@ -25,6 +25,7 @@ import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.util.concurrent.ExecutorService;
@@ -66,7 +67,7 @@ public final class LocalAssetUpdater implements AssetUpdater
       public void run ()
       {
         final FileHandle destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
-        FileInputStream fileInputStream = null;
+        FileOutputStream fileOutputStream = null;
         FileLock lock = null;
 
         try
@@ -75,8 +76,8 @@ public final class LocalAssetUpdater implements AssetUpdater
 
           log.info ("Attempting to update assets in [{}] from [{}]...", destAssetsDir.file (), sourceAssetsDir);
 
-          fileInputStream = new FileInputStream (destAssetsDir.file ());
-          lock = fileInputStream.getChannel ().lock ();
+          fileOutputStream = new FileOutputStream (destAssetsDir.file ());
+          lock = fileOutputStream.getChannel ().lock ();
 
           if (Thread.currentThread ().isInterrupted ())
           {
@@ -123,9 +124,9 @@ public final class LocalAssetUpdater implements AssetUpdater
             log.error ("Could not release lock on: [{}].", destAssetsDir.file (), e);
           }
 
-          if (fileInputStream != null) try
+          if (fileOutputStream != null) try
           {
-            fileInputStream.close ();
+            fileOutputStream.close ();
           }
           catch (final IOException e)
           {
