@@ -33,12 +33,15 @@ import com.forerunnergames.peril.client.application.ClientApplicationProperties;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.common.Strings;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileLock;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 
@@ -48,9 +51,11 @@ import org.slf4j.LoggerFactory;
 public final class S3AssetUpdater implements AssetUpdater
 {
   private static final Logger log = LoggerFactory.getLogger (S3AssetUpdater.class);
-  private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor ();
+  private final ExecutorService executorService;
   private final String bucketName;
   private final TransferManager transferManager;
+  @Nullable
+  private Future <?> assetUpdatingFuture;
   @Nullable
   private volatile MultipleFileDownload downloadInProgress;
 
@@ -61,6 +66,7 @@ public final class S3AssetUpdater implements AssetUpdater
                                AssetSettings.VALID_S3_BUCKET_PATH_DESCRIPTION);
 
     bucketName = AssetSettings.getS3BucketName (bucketPath);
+    executorService = Executors.newSingleThreadExecutor ();
     final ClientConfiguration clientConfig = new ClientConfiguration ().withMaxErrorRetry (10)
             .withConnectionTimeout (10_000).withSocketTimeout (10_000).withTcpKeepAlive (true);
     final AmazonS3 s3 = new AmazonS3Client (new ProfileCredentialsProvider (), clientConfig);
@@ -73,38 +79,45 @@ public final class S3AssetUpdater implements AssetUpdater
     if (!AssetSettings.UPDATE_ASSETS)
     {
       log.warn ("Assets are not being updated.\nTo change this behavior, change {} in {} from false to true.\n"
-                        + "Make sure to back up any customizations you made to any assets first, as your changes will be overwritten.",
-                ClientApplicationProperties.UPDATE_ASSETS_KEY,
+                        + "Make sure to back up any customizations you made to any assets first, as your changes "
+                        + "will be overwritten.", ClientApplicationProperties.UPDATE_ASSETS_KEY,
                 ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME);
-
       return;
     }
 
-    final FileHandle destAssetsDir;
-
-    try
-    {
-      destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
-
-      log.info ("Attempting to update assets in [{}] from [{}]...", destAssetsDir.file (),
-                AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
-
-      log.info ("Removing old assets...");
-
-      destAssetsDir.deleteDirectory ();
-    }
-    catch (final Exception e)
-    {
-      throw new RuntimeException ("Failed to remove old assets.\n\nNerdy developer details:\n\n", e);
-    }
-
-    EXECUTOR_SERVICE.submit (new Runnable ()
+    assetUpdatingFuture = executorService.submit (new Runnable ()
     {
       @Override
       public void run ()
       {
+        final FileHandle destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
+        FileOutputStream fileOutputStream = null;
+        FileLock lock = null;
+
         try
         {
+          log.info ("Attempting to update assets in [{}] from [{}]...", destAssetsDir.file (),
+                    AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
+
+          fileOutputStream = new FileOutputStream (destAssetsDir.file ());
+          lock = fileOutputStream.getChannel ().lock ();
+
+          if (Thread.currentThread ().isInterrupted ())
+          {
+            log.warn ("Asset updating was cancelled before beginning.");
+            return;
+          }
+
+          log.info ("Removing old assets...");
+
+          destAssetsDir.deleteDirectory ();
+
+          if (Thread.currentThread ().isInterrupted ())
+          {
+            log.warn ("Asset updating was cancelled after removing old assets, but before downloading new assets.");
+            return;
+          }
+
           final File destinationDirectory = destAssetsDir.file ();
 
           log.info ("Downloading new assets to [{}]...", destinationDirectory);
@@ -112,11 +125,39 @@ public final class S3AssetUpdater implements AssetUpdater
           downloadInProgress = transferManager
                   .downloadDirectory (bucketName, AssetSettings.INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY,
                                       destinationDirectory);
+
+          log.info ("Successfully updated assets.");
         }
         catch (final Exception e)
         {
-          throw new RuntimeException (Strings
-                  .format ("Failed to update assets from [{}].\n\nNerdy developer details:\n\n", bucketName), e);
+          throw new RuntimeException ("Failed to update assets from: [" + bucketName + "].\n" + "Make sure that "
+                  + ClientApplicationProperties.UPDATED_ASSETS_LOCATION_KEY + " is properly set in ["
+                  + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "].\n" + "Also, "
+                  + ClientApplicationProperties.UPDATE_ASSETS_KEY
+                  + " must be set to true (in the same file) the first time you run the game.\n"
+                  + "If you already tried all of that, you can set " + ClientApplicationProperties.UPDATE_ASSETS_KEY
+                  + " to false.\nIn that case, you still need to make sure that you have a copy of all assets in "
+                  + destAssetsDir.file () + ".\n\n" + "Nerdy developer details:\n", e);
+        }
+        finally
+        {
+          if (lock != null) try
+          {
+            lock.release ();
+          }
+          catch (final IOException e)
+          {
+            log.error ("Could not release lock on: [{}].", destAssetsDir.file (), e);
+          }
+
+          if (fileOutputStream != null) try
+          {
+            fileOutputStream.close ();
+          }
+          catch (final IOException e)
+          {
+            log.error ("Could not close {} on: [{}].", FileInputStream.class.getSimpleName (), destAssetsDir.file (), e);
+          }
         }
       }
     });
@@ -141,6 +182,8 @@ public final class S3AssetUpdater implements AssetUpdater
   @Override
   public void shutDown ()
   {
+    if (assetUpdatingFuture != null && !assetUpdatingFuture.isDone ()) assetUpdatingFuture.cancel (true);
+
     if (downloadInProgress != null
             && (downloadInProgress.getState () == Transfer.TransferState.InProgress || downloadInProgress.getState () == Transfer.TransferState.Waiting))
     {
@@ -156,5 +199,6 @@ public final class S3AssetUpdater implements AssetUpdater
     }
 
     transferManager.shutdownNow ();
+    executorService.shutdown ();
   }
 }
