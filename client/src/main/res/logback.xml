@@ -19,7 +19,7 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
 
@@ -44,13 +44,17 @@
         <file>${user.home}/peril/crashes/crash-${bySecond}.txt</file>
         <append>false</append> <!-- If crash.txt already exists erase the contents. -->
         <encoder>
-          <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+          <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
         </encoder>
       </appender>
     </sift>
   </appender>
 
   <logger name="com.forerunnergames.peril" level="TRACE">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="com.forerunnergames.peril.common.net.kryonet.KryonetLogger" level="INFO">
     <appender-ref ref="STDOUT"/>
   </logger>
 

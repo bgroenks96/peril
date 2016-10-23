@@ -19,10 +19,13 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
   <logger name="com.forerunnergames.peril.server" level="TRACE" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+  <logger name="com.forerunnergames.peril.common.net.kryonet.KryonetLogger" level="INFO">
     <appender-ref ref="STDOUT"/>
   </logger>
   <root level="TRACE">

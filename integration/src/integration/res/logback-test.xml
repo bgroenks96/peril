@@ -19,55 +19,59 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
   <appender name="LOGFILE_MAIN" class="ch.qos.logback.core.FileAppender">
-    <file>main.log</file>
+    <file>build/logs/main.log</file>
     <append>false</append>
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
   <appender name="LOGFILE_CORE" class="ch.qos.logback.core.FileAppender">
-    <file>core.log</file>
+    <file>build/logs/core.log</file>
     <append>false</append>
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
   <appender name="LOGFILE_SERVER" class="ch.qos.logback.core.FileAppender">
-    <file>server.log</file>
+    <file>build/logs/server.log</file>
     <append>false</append>
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
   <appender name="LOGFILE_INTEGRATION" class="ch.qos.logback.core.FileAppender">
-    <file>integration.log</file>
+    <file>build/logs/integration.log</file>
     <append>false</append>
     <encoder>
-      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %class{0} %-5level: %msg%n%n</pattern>
+      <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
   <logger name="com.forerunnergames.peril" level="DEBUG" additivity="false">
-    <appender-ref ref="STDOUT"/>
+    <!--<appender-ref ref="STDOUT" />-->
+    <appender-ref ref="LOGFILE_MAIN"/>
+  </logger>
+  <logger name="com.forerunnergames.peril.common.net.kryonet.KryonetLogger" level="INFO" additivity="false">
+    <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_MAIN"/>
   </logger>
   <logger name="com.forerunnergames.tools" level="DEBUG" additivity="false">
-    <appender-ref ref="STDOUT"/>
+    <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_MAIN"/>
   </logger>
   <logger name="com.forerunnergames.peril.core" level="TRACE" additivity="false">
-    <appender-ref ref="STDOUT"/>
+    <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_CORE"/>
   </logger>
   <logger name="com.forerunnergames.peril.server" level="TRACE" additivity="false">
-    <appender-ref ref="STDOUT"/>
+    <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_SERVER"/>
   </logger>
   <logger name="com.forerunnergames.peril.integration" level="TRACE" additivity="false">
-    <appender-ref ref="STDOUT"/>
+    <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_INTEGRATION"/>
   </logger>
   <root level="DEBUG">

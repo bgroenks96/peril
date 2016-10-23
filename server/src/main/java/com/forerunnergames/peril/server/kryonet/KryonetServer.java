@@ -23,6 +23,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 
+import com.forerunnergames.peril.common.net.kryonet.KryonetLogging;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
@@ -54,6 +55,7 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
 
     kryo = getKryo ();
 
+    KryonetLogging.initialize ();
     KryonetRegistration.initialize (kryo);
     KryonetRegistration.registerCustomSerializers (kryo);
   }
@@ -96,7 +98,12 @@ public final class KryonetServer extends com.esotericsoftware.kryonet.Server imp
       @Override
       public void received (final Connection connection, final Object object)
       {
-        if (object == null || object instanceof FrameworkMessage) return;
+        if (object instanceof FrameworkMessage) return;
+        if (object == null)
+        {
+          log.warn ("Received null object from client: [{}].", connection.getRemoteAddressTCP ());
+          return;
+        }
 
         networkListener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
       }
