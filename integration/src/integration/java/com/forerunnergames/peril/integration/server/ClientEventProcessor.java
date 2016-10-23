@@ -31,7 +31,7 @@ public final class ClientEventProcessor
 
   public ClientEventProcessor (final Iterable <TestClient> clients)
   {
-    this.orderedClients = TestUtil.sortClientsByPlayerTurnOrder (clients);
+    orderedClients = TestUtil.sortClientsByPlayerTurnOrder (clients);
   }
 
   public synchronized <T extends Event> void registerCallback (final Class <T> type,
@@ -90,7 +90,7 @@ public final class ClientEventProcessor
 
   public ImmutableSortedSet <TestClient> getClientsSortedByTurnOrder ()
   {
-    return this.orderedClients;
+    return orderedClients;
   }
 
   private synchronized void runUntil (final Class <? extends Event> endProcessingEventType)

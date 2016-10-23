@@ -849,7 +849,7 @@ public final class GameModel
 
     final ImmutableSet <MutatorResult <PlayerReinforceCountryDeniedEvent.Reason>> results = resultBuilder.build ();
     final Optional <MutatorResult <PlayerReinforceCountryDeniedEvent.Reason>> firstFailure;
-    firstFailure = MutatorResult.firstFailedFrom (results);
+    firstFailure = Result.firstFailedFrom (results);
 
     if (firstFailure.isPresent ())
     {

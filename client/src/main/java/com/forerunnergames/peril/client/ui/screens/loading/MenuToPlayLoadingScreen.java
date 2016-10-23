@@ -493,6 +493,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       Arguments.checkIsNotNull (gameServerConfiguration, "gameServerConfiguration");
       Arguments.checkIsNotNull (clientConfiguration, "clientConfiguration");
       Arguments.checkIsNotNull (players, "players");
+      Arguments.checkHasNoNullElements (players, "players");
 
       log.trace ("onJoinFinish: {} [{}], {} [{}], Players [{}]", GameServerConfiguration.class.getSimpleName (),
                  gameServerConfiguration, ClientConfiguration.class.getSimpleName (), clientConfiguration, players);

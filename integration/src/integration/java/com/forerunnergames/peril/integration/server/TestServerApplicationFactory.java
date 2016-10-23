@@ -65,7 +65,7 @@ import de.matthiasmann.AsyncExecution;
 
 import net.engio.mbassy.bus.MBassador;
 
-public class ServerFactory
+public class TestServerApplicationFactory
 {
   private static final MapMetadata MAP_METADATA = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME,
           MapType.STOCK, GameMode.CLASSIC);
@@ -156,6 +156,7 @@ public class ServerFactory
 
     final ServerApplication serverApplication = new ServerApplication (stateMachine, eventBus, mainThreadExecutor,
             serverController, multiplayerController);
+
     return new TestServerApplication (serverApplication, serverController, server, multiplayerController);
   }
 }

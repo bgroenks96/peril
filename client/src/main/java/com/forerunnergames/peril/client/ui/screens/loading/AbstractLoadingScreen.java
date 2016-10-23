@@ -118,9 +118,6 @@ public abstract class AbstractLoadingScreen extends AbstractScreen
     foregroundTable.row ();
     foregroundTable.add (loadingStatusTextLabel);
 
-    // TODO Remove if working while commented out.
-    // foregroundTable.row ().padBottom (98); // Splash: 0
-
     // @formatter:on
 
     rootStack.add (foregroundTable);

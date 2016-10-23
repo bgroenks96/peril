@@ -117,7 +117,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public void addRow (final T row)
   {
-    Arguments.checkIsNotNull (row, "message");
+    Arguments.checkIsNotNull (row, "row");
 
     limitOldRows ();
 

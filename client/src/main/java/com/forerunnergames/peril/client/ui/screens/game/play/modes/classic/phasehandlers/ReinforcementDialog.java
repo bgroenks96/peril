@@ -73,16 +73,16 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
   {
     // @formatter:off
     super (widgetFactory,
-           DialogStyle.builder ()
-                   .modal (false)
-                   .windowStyle (StyleSettings.REINFORCEMENT_DIALOG_WINDOW_STYLE)
-                   .buttonTextPaddingVertical (0)
-                   .buttonTextPaddingHorizontal (10)
-                   .border (10)
-                   .messageBox (false)
-                   .debug (DEBUG)
-                   .build (),
-           stage, listener);
+            DialogStyle.builder ()
+                    .modal (false)
+                    .windowStyle (StyleSettings.REINFORCEMENT_DIALOG_WINDOW_STYLE)
+                    .buttonTextPaddingVertical (0)
+                    .buttonTextPaddingHorizontal (10)
+                    .border (10)
+                    .messageBox (false)
+                    .debug (DEBUG)
+                    .build (),
+            stage, listener);
     // @formatter:on
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");

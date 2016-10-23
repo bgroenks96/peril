@@ -98,7 +98,7 @@ public final class ShaderProgramLoader extends
 
     public FragmentShaderParameter (final String fragmentShaderFile)
     {
-      Arguments.checkIsNotNull (fragmentShaderFile, "fragmentShader");
+      Arguments.checkIsNotNull (fragmentShaderFile, "fragmentShaderFile");
       Arguments.checkIsTrue (fragmentShaderFile.endsWith (".frag"), "Fragment shader file must end in \".frag\".");
 
       this.fragmentShaderFile = fragmentShaderFile;

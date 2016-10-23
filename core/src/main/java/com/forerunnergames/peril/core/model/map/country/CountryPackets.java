@@ -40,9 +40,8 @@ final class CountryPackets
   static ImmutableSet <CountryPacket> fromCountries (final Collection <Country> countries)
   {
     Arguments.checkIsNotNull (countries, "countries");
-
-    Arguments.checkIsNotNull (countries, "players");
-    Arguments.checkHasNoNullElements (countries, "players");
+    Arguments.checkIsNotNull (countries, "countries");
+    Arguments.checkHasNoNullElements (countries, "countries");
 
     final Builder <CountryPacket> packetSetBuilder = ImmutableSet.builder ();
     for (final Country country : countries)

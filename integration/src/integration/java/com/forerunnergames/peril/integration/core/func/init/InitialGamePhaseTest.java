@@ -87,7 +87,7 @@ public final class InitialGamePhaseTest
     sessions.clear ();
   }
 
-  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = INITIAL_GAME_PHASE_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testAllClientsJoinServer (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
@@ -97,7 +97,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = INITIAL_GAME_PHASE_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testAllClientsJoinGame (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
@@ -114,7 +114,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = INITIAL_GAME_PHASE_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testDeterminePlayerTurnOrder (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
@@ -132,7 +132,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = INITIAL_GAME_PHASE_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testDistributeInitialArmies (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
@@ -151,7 +151,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testManualCountryAssignmentNoServerResponseToIllegalClientRequest (final String sessionName,
                                                                                  final Logger log)
   {
@@ -179,7 +179,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testManualCountryAssignmentReceivesDeniedEventOnInvalidRequest (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.MANUAL);
@@ -203,7 +203,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = MANUAL_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testManualCountryAssignmentForAllClientsInOrder (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.MANUAL);
@@ -241,7 +241,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = RANDOM_COUNTRY_ASSIGNMENT_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testRandomCountryAssignment (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
@@ -261,7 +261,7 @@ public final class InitialGamePhaseTest
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 
-  @Test (groups = { INITIAL_GAME_PHASE_TEST_GROUP_NAME }, dataProvider = SINGLETON_PROVIDER)
+  @Test (groups = INITIAL_GAME_PHASE_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
   public void testInitialReinforcementPhase (final String sessionName, final Logger log)
   {
     final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);

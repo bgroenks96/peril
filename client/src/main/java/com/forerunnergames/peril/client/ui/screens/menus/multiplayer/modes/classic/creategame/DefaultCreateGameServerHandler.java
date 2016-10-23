@@ -58,7 +58,7 @@ public final class DefaultCreateGameServerHandler implements CreateGameServerHan
   public DefaultCreateGameServerHandler (final JoinGameServerHandler joinGameServerHandler,
                                          final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (joinGameServerHandler, "joinGameHandler");
+    Arguments.checkIsNotNull (joinGameServerHandler, "joinGameServerHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.joinGameServerHandler = joinGameServerHandler;

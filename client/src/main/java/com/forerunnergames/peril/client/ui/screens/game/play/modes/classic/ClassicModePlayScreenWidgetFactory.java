@@ -275,11 +275,25 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new AttackerBattleResultDialog (this, DialogStyle.builder ()
-            .windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false).movable (true)
-            .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51).border (28)
-            .buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21)
-            .textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
+    // @formatter:off
+    return new AttackerBattleResultDialog (this,
+            DialogStyle.builder ()
+                    .windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE)
+                    .modal (false)
+                    .movable (true)
+                    .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284)
+                    .size (650, 244)
+                    .titleHeight (51)
+                    .border (28)
+                    .buttonSpacing (16)
+                    .buttonWidth (90)
+                    .textBoxPaddingHorizontal (2)
+                    .textBoxPaddingBottom (21)
+                    .textPaddingHorizontal (4)
+                    .textPaddingBottom (4)
+                    .build (),
+            stage, listener);
+    // @formatter:on
   }
 
   public BattleResultDialog createDefenderBattleResultDialog (final Stage stage, final DialogListener listener)
@@ -287,11 +301,25 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new DefenderBattleResultDialog (this, DialogStyle.builder ()
-            .windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE).modal (false).movable (true)
-            .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284).size (650, 244).titleHeight (51).border (28)
-            .buttonSpacing (16).buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21)
-            .textPaddingHorizontal (4).textPaddingBottom (4).build (), stage, listener);
+    // @formatter:off
+    return new DefenderBattleResultDialog (this,
+            DialogStyle.builder ()
+                    .windowStyle (StyleSettings.BATTLE_RESULT_DIALOG_WINDOW_STYLE)
+                    .modal (false)
+                    .movable (true)
+                    .position (587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284)
+                    .size (650, 244)
+                    .titleHeight (51)
+                    .border (28)
+                    .buttonSpacing (16)
+                    .buttonWidth (90)
+                    .textBoxPaddingHorizontal (2)
+                    .textBoxPaddingBottom (21)
+                    .textPaddingHorizontal (4)
+                    .textPaddingBottom (4)
+                    .build (),
+            stage, listener);
+    // @formatter:on
   }
 
   public PlayerNotificationDialog createPlayerNotificationDialog (final WidgetFactory widgetFactory,
@@ -303,11 +331,6 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     Arguments.checkIsNotNull (listener, "listener");
 
     return new PlayerNotificationDialog (widgetFactory, stage, listener);
-  }
-
-  public Sound createBattleSingleExplosionSound ()
-  {
-    return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_SINGLE_EXPLOSION_SOUND_ASSET_DESCRIPTOR);
   }
 
   public Label createIntelBoxTitleLabel (final String titleText)

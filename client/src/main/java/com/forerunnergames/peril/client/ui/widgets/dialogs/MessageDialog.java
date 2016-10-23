@@ -25,8 +25,20 @@ public final class MessageDialog extends OkDialog
 {
   public MessageDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener)
   {
-    super (widgetFactory, DialogStyle.builder ().size (650, 388).titleHeight (51).border (28).buttonSpacing (16)
-            .buttonWidth (90).textBoxPaddingHorizontal (2).textBoxPaddingBottom (21).textPaddingHorizontal (4)
-            .textPaddingBottom (4).build (), stage, listener);
+    // @formatter:off
+    super (widgetFactory,
+            DialogStyle.builder ()
+                    .size (650, 388)
+                    .titleHeight (51)
+                    .border (28)
+                    .buttonSpacing (16)
+                    .buttonWidth (90)
+                    .textBoxPaddingHorizontal (2)
+                    .textBoxPaddingBottom (21)
+                    .textPaddingHorizontal (4)
+                    .textPaddingBottom (4)
+                    .build (),
+            stage, listener);
+    // @formatter:on
   }
 }

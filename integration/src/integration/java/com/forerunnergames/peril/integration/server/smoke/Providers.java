@@ -23,9 +23,9 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.integration.NetworkPortPool;
-import com.forerunnergames.peril.integration.server.ServerFactory;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
+import com.forerunnergames.peril.integration.server.TestServerApplicationFactory;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.DefaultInternalAddressResolver;
 import com.forerunnergames.tools.net.InternalAddressResolver;
@@ -56,9 +56,9 @@ public class Providers
   {
     final MBassador <Event> eventBus = EventBusFactory.create ();
     final int port = PORT_POOL.getAvailablePort ();
-    final TestServerApplication server = ServerFactory.createTestServer (eventBus, GameServerType.DEDICATED,
-                                                                         ClassicGameRules.DEFAULT_PLAYER_LIMIT,
-                                                                         FAKE_EXTERNAL_SERVER_ADDRESS, port);
+    final TestServerApplication server = TestServerApplicationFactory
+            .createTestServer (eventBus, GameServerType.DEDICATED, ClassicGameRules.DEFAULT_PLAYER_LIMIT,
+                               FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
     return new Object [] { eventBus, server, client,
                           new DefaultServerConfiguration (INTERNAL_ADDRESS_RESOLVER.resolveIp (), port) };
@@ -68,9 +68,9 @@ public class Providers
   {
     final MBassador <Event> eventBus = EventBusFactory.create ();
     final int port = PORT_POOL.getAvailablePort ();
-    final TestServerApplication server = ServerFactory.createTestServer (eventBus, GameServerType.HOST_AND_PLAY,
-                                                                         ClassicGameRules.DEFAULT_PLAYER_LIMIT,
-                                                                         FAKE_EXTERNAL_SERVER_ADDRESS, port);
+    final TestServerApplication server = TestServerApplicationFactory
+            .createTestServer (eventBus, GameServerType.HOST_AND_PLAY, ClassicGameRules.DEFAULT_PLAYER_LIMIT,
+                               FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
     return new Object [] { eventBus, server, client, new DefaultServerConfiguration ("localhost", port) };
   }

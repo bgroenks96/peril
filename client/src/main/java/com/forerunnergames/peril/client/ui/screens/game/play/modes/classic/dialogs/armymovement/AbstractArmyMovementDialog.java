@@ -101,20 +101,20 @@ public abstract class AbstractArmyMovementDialog extends OkDialog implements Pla
   {
     // @formatter:off
     super (widgetFactory,
-           DialogStyle.builder ()
-                   .windowStyle (StyleSettings.ARMY_MOVEMENT_DIALOG_WINDOW_STYLE)
-                   .modal (false)
-                   .movable (true)
-                   .size (862, 484)
-                   .position (481, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 164)
-                   .title (title)
-                   .titleHeight (58)
-                   .messageBox (false)
-                   .border (28)
-                   .buttonSize (90, 32)
-                   .debug (DEBUG)
-                   .build (),
-           stage, listener);
+            DialogStyle.builder ()
+                    .windowStyle (StyleSettings.ARMY_MOVEMENT_DIALOG_WINDOW_STYLE)
+                    .modal (false)
+                    .movable (true)
+                    .size (862, 484)
+                    .position (481, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 164)
+                    .title (title)
+                    .titleHeight (58)
+                    .messageBox (false)
+                    .border (28)
+                    .buttonSize (90, 32)
+                    .debug (DEBUG)
+                    .build (),
+            stage, listener);
     // @formatter:on
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");

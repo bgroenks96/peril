@@ -30,6 +30,6 @@ public final class PlayerOrderFortifyRequestEvent implements PlayerRequestEvent
   @RequiredForNetworkSerialization
   private PlayerOrderFortifyRequestEvent ()
   {
-    this.deltaArmyCount = 0;
+    deltaArmyCount = 0;
   }
 }

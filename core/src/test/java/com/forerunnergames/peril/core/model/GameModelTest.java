@@ -18,9 +18,6 @@
 
 package com.forerunnergames.peril.core.model;
 
-import static com.forerunnergames.peril.common.net.events.EventFluency.playerNameFrom;
-import static com.forerunnergames.peril.common.net.events.EventFluency.reasonFrom;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -1173,6 +1170,16 @@ public class GameModelTest
       countryNames.add ("TestCountry-" + i);
     }
     return countryNames.build ();
+  }
+
+  private static String playerNameFrom (final PlayerJoinGameDeniedEvent event)
+  {
+    return event.getPlayerName ();
+  }
+
+  private static <T> T reasonFrom (final DeniedEvent <T> event)
+  {
+    return event.getReason ();
   }
 
   private void verifyPlayerCountryAssignmentCompleteEvent ()

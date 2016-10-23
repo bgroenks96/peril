@@ -40,8 +40,8 @@ public abstract class NetworkEventHandler
 
   protected NetworkEventHandler (final Iterable <IPublicationErrorHandler> internalBusErrorHandlers)
   {
-    Arguments.checkIsNotNull (internalBusErrorHandlers, "persistedErrorHandlers");
-    Arguments.checkHasNoNullElements (internalBusErrorHandlers, "persistedErrorHandlers");
+    Arguments.checkIsNotNull (internalBusErrorHandlers, "internalBusErrorHandlers");
+    Arguments.checkHasNoNullElements (internalBusErrorHandlers, "internalBusErrorHandlers");
 
     internalEventBus = EventBusFactory.create (internalBusErrorHandlers);
   }

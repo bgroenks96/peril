@@ -22,8 +22,10 @@ import com.forerunnergames.tools.common.color.RgbaColorComponent;
 
 public interface TerritoryColor <T extends RgbaColorComponent>
 {
+  @Override
   int hashCode ();
 
+  @Override
   boolean equals (final Object obj);
 
   T getComponent ();

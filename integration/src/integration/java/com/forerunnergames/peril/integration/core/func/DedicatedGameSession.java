@@ -29,9 +29,9 @@ import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.TestSessions.TestSession;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
-import com.forerunnergames.peril.integration.server.ServerFactory;
 import com.forerunnergames.peril.integration.server.TestClientPool;
 import com.forerunnergames.peril.integration.server.TestServerApplication;
+import com.forerunnergames.peril.integration.server.TestServerApplicationFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
@@ -147,8 +147,8 @@ public class DedicatedGameSession implements TestSession
     final GameStateMachineConfig config = new GameStateMachineConfig ();
     config.setGameModel (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);
-    serverApplication = ServerFactory.createTestServer (eventBus, GameServerType.DEDICATED, gameRules, stateMachine,
-                                                        serverAddress, serverPort);
+    serverApplication = TestServerApplicationFactory.createTestServer (eventBus, GameServerType.DEDICATED, gameRules,
+                                                                       stateMachine, serverAddress, serverPort);
     log.trace ("Starting server application [{}] on port {}", serverAddress, serverPort);
     serverApplication.start ();
   }

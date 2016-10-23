@@ -109,21 +109,21 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   {
     // @formatter:off
     super (widgetFactory,
-           DialogStyle.builder ()
-                   .windowStyle (StyleSettings.BATTLE_DIALOG_WINDOW_STYLE)
-                   .modal (false)
-                   .movable (true)
-                   .size (990, 432)
-                   .position (405, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 178)
-                   .title (title)
-                   .titleHeight (56)
-                   .messageBox (false)
-                   .border (28)
-                   .buttonSpacing (16)
-                   .buttonTextPaddingHorizontal (6)
-                   .debug (DEBUG)
-                   .build (),
-           stage, listener);
+            DialogStyle.builder ()
+                    .windowStyle (StyleSettings.BATTLE_DIALOG_WINDOW_STYLE)
+                    .modal (false)
+                    .movable (true)
+                    .size (990, 432)
+                    .position (405, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 178)
+                    .title (title)
+                    .titleHeight (56)
+                    .messageBox (false)
+                    .border (28)
+                    .buttonSpacing (16)
+                    .buttonTextPaddingHorizontal (6)
+                    .debug (DEBUG)
+                    .build (),
+            stage, listener);
     // @formatter:on
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
@@ -402,7 +402,8 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   @Override
   public void updateCountries (final Country attackingCountry, final Country defendingCountry)
   {
-    Arguments.checkIsNotNull (attackingCountry, "country");
+    Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
+    Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
 
     setCountries (attackingCountry, defendingCountry);
   }

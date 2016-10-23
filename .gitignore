@@ -17,78 +17,57 @@
 #
 
 ## Java
-
 *.class
 *.war
 *.ear
 hs_err_pid*
 
-# Auto-generated Java
+## Auto-generated Java
 core/src-gen/
 
-## GWT
-war/
-html/war/gwt_bree/
-html/gwt-unitCache/
-.apt_generated/
-html/war/WEB-INF/deploy/
-html/war/WEB-INF/classes/
-.gwt/
-gwt-unitCache/
-www-test/
-.gwt-tmp/
-
-## Android Studio and Intellij and Android in general
-android/libs/armeabi/
-android/libs/armeabi-v7a/
-android/libs/x86/
+## Android, Android Studio
+android/build/
 android/gen/
-.idea/
+android/libs/
+out/
 *.ipr
 *.iws
-*.iml
-out/
 com_crashlytics_export_strings.xml
+local.properties
 project.properties
-android/libs/
+
+## IDEA
+.idea/
 
 ## Eclipse
-.classpath
-.project
-.metadata
 **/bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
 .settings/
-.loadpath
 .externalToolBuilders/
-*.launch
+tmp/
 .checkstyle
-
-## NetBeans
-**/nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-nb-configuration.xml
+.classpath
+.loadpath
+.metadata
+.project
+*.bak
+*.launch
+*~.nib
+*.swp
+*.tmp
 
 ## Gradle
-.gradle
+.gradle/
 build/
 
-## OS Specific
-.DS_Store
+## Linux
 .directory
+
+## OS X
+.DS_Store
 
 ## Clover
 .clover
 test-output/
 
-## Log files
+## Logs
 *.log

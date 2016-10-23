@@ -64,7 +64,8 @@ public final class PlayMapDataLoadersFactory
                                                                                final CountryMapGraphModel countryMapGraphModel)
   {
     Arguments.checkIsNotNull (mapType, "mapType");
-    Arguments.checkIsNotNull (continents, "continennts");
+    Arguments.checkIsNotNull (continents, "continents");
+    Arguments.checkIsNotNull (countryMapGraphModel, "countryMapGraphModel");
 
     return new ContinentMapGraphDataLoader (getStreamParserFactory (mapType), continents, countryMapGraphModel);
   }

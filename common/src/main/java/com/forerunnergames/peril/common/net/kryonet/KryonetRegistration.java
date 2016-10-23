@@ -23,7 +23,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
-import com.forerunnergames.peril.common.net.events.EventFluency;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
@@ -119,7 +118,6 @@ public final class KryonetRegistration
    */
   private static final ImmutableSet <Class <?>> EXCLUDED_CLASSES = ImmutableSet.of (
           GameRulesFactory.class,
-          EventFluency.class,
           LocalGameServerCreator.class,
           PlayMapLoadingException.class);
 

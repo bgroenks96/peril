@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
 
 public final class DefaultPlayMap implements PlayMap
 {
-  private Logger log = LoggerFactory.getLogger (DefaultPlayMap.class);
+  private final Logger log = LoggerFactory.getLogger (DefaultPlayMap.class);
   private final Group group = new Group ();
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
@@ -192,7 +192,7 @@ public final class DefaultPlayMap implements PlayMap
   @Override
   public boolean onLeftButtonUp (final Vector2 coordinate)
   {
-    Arguments.checkIsNotNull (coordinate, "touchUpCoordinate");
+    Arguments.checkIsNotNull (coordinate, "coordinate");
 
     if (!isEnabled) return false;
 

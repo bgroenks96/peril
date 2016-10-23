@@ -32,13 +32,13 @@ final class NullCountryArmyText implements CountryArmyText
   @Override
   public void setCircleTopLeft (final Vector2 topLeft)
   {
-    Arguments.checkIsNotNull (topLeft, "circleTopLeft");
+    Arguments.checkIsNotNull (topLeft, "topLeft");
   }
 
   @Override
   public void setCircleSize (final Vector2 size)
   {
-    Arguments.checkIsNotNull (size, "circleSize");
+    Arguments.checkIsNotNull (size, "size");
     Arguments.checkIsNotNegative (size.x, "circleSize.x");
     Arguments.checkIsNotNegative (size.y, "circleSize.y");
   }

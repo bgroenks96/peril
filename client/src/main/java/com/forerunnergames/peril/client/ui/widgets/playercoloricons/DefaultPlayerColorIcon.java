@@ -72,7 +72,7 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
 
     if (color == PlayerColor.UNKNOWN)
     {
-      log.warn ("Not setting invalid color [{}]", color);
+      log.warn ("Not setting invalid color [{}]", PlayerColor.UNKNOWN);
       return;
     }
 

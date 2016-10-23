@@ -30,7 +30,9 @@ final class ContinentPackets
 {
   static ContinentPacket from (final Continent continent, final ImmutableSet <CountryPacket> countries)
   {
-    Arguments.checkIsNotNull (continent, "country");
+    Arguments.checkIsNotNull (continent, "continent");
+    Arguments.checkIsNotNull (countries, "countries");
+    Arguments.checkHasNoNullElements (countries, "countries");
 
     return new DefaultContinentPacket (continent.getName (), continent.getId ().value (),
             continent.getReinforcementBonus (), countries);
