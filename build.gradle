@@ -32,7 +32,7 @@ buildscript {
     roboVMGradleVersion = json.robovmPluginVersion
     androidToolsVersion = json.androidBuildtoolsVersion
     androidSDKVersion = json.androidSDKVersion
-    androidGradleToolsVersion = json.androidGradleToolVersion
+    androidGradleToolsVersion = "2.2.0"//json.androidGradleToolVersion
     logbackClassicVersion = "1.1.3"
     jcommanderVersion = "1.48"
     fgToolsVersion = "1.0.1-SNAPSHOT"
@@ -60,7 +60,7 @@ plugins {
 }
 
 task wrapper (type: Wrapper) {
-  gradleVersion = "2.13"
+  gradleVersion = "3.1"
 }
 
 // Apply to parent project & all subprojects.
