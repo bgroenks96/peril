@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -32,7 +32,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
   private final int spectatorLimit;
   private final int winPercentage;
   private final InitialCountryAssignment initialCountryAssignment;
-  private final MapMetadata mapMetadata;
+  private final PlayMapMetadata playMapMetadata;
   private final GameRules rules;
 
   public DefaultGameConfiguration (final GameMode gameMode,
@@ -40,7 +40,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
                                    final int spectatorLimit,
                                    final int winPercentage,
                                    final InitialCountryAssignment initialCountryAssignment,
-                                   final MapMetadata mapMetadata,
+                                   final PlayMapMetadata playMapMetadata,
                                    final GameRules rules)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
@@ -48,7 +48,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
     Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
     Arguments.checkIsNotNegative (winPercentage, "winPercentage");
     Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
     Arguments.checkIsNotNull (rules, "rules");
 
     this.gameMode = gameMode;
@@ -56,7 +56,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
     this.spectatorLimit = spectatorLimit;
     this.winPercentage = winPercentage;
     this.initialCountryAssignment = initialCountryAssignment;
-    this.mapMetadata = mapMetadata;
+    this.playMapMetadata = playMapMetadata;
     this.rules = rules;
   }
 
@@ -109,31 +109,31 @@ public final class DefaultGameConfiguration implements GameConfiguration
   }
 
   @Override
-  public String getMapName ()
+  public String getPlayMapName ()
   {
-    return mapMetadata.getName ();
+    return playMapMetadata.getName ();
   }
 
   @Override
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return mapMetadata;
+    return playMapMetadata;
   }
 
   @Override
-  public MapType getMapType ()
+  public PlayMapType getPlayMapType ()
   {
-    return mapMetadata.getType ();
+    return playMapMetadata.getType ();
   }
 
   @Override
   public String toString ()
   {
     return Strings.format ("{}: GameMode: {} | PlayerLimit: {} | SpectatorLimit: {} | WinPercentage: {} | "
-                                   + "InitialCountryAssignment: {} | MapMetadata: {} | " + "GameRules: {}", getClass ()
-                                   .getSimpleName (),
-                           gameMode, playerLimit, spectatorLimit, winPercentage, initialCountryAssignment, mapMetadata,
-                           rules);
+                                   + "InitialCountryAssignment: {} | PlayMapMetadata: {} | " + "GameRules: {}",
+                           getClass ().getSimpleName (),
+                           gameMode, playerLimit, spectatorLimit, winPercentage, initialCountryAssignment,
+                           playMapMetadata, rules);
   }
 
   @RequiredForNetworkSerialization
@@ -144,7 +144,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
     spectatorLimit = 0;
     winPercentage = 0;
     initialCountryAssignment = null;
-    mapMetadata = null;
+    playMapMetadata = null;
     rules = null;
   }
 }

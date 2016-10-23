@@ -297,16 +297,16 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     return createLabelStyle (StyleSettings.MENU_PLAYER_LIMIT_LABEL_STYLE);
   }
 
-  public Label createMapNameLabel (final String text)
+  public Label createPlayMapNameLabel (final String text)
   {
     Arguments.checkIsNotNull (text, "text");
 
-    return createLabel (text, Align.left, createMapNameLabelStyle ());
+    return createLabel (text, Align.left, createPlayMapNameLabelStyle ());
   }
 
-  public Label.LabelStyle createMapNameLabelStyle ()
+  public Label.LabelStyle createPlayMapNameLabelStyle ()
   {
-    return createLabelStyle (StyleSettings.MENU_MAP_NAME_LABEL_STYLE);
+    return createLabelStyle (StyleSettings.MENU_PLAY_MAP_NAME_LABEL_STYLE);
   }
 
   public ImageButton createCustomizePlayersButton (final ClickListener listener)
@@ -321,16 +321,16 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     return createImageButtonStyle (StyleSettings.MENU_CUSTOMIZE_PLAYERS_IMAGE_BUTTON_STYLE);
   }
 
-  public ImageButton createCustomizeMapButton (final ClickListener listener)
+  public ImageButton createCustomizePlayMapButton (final ClickListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createImageButton (createCustomizeMapButtonStyle (), listener);
+    return createImageButton (createCustomizePlayMapButtonStyle (), listener);
   }
 
-  public ImageButton.ImageButtonStyle createCustomizeMapButtonStyle ()
+  public ImageButton.ImageButtonStyle createCustomizePlayMapButtonStyle ()
   {
-    return createImageButtonStyle (StyleSettings.MENU_CUSTOMIZE_MAP_IMAGE_BUTTON_STYLE);
+    return createImageButtonStyle (StyleSettings.MENU_CUSTOMIZE_PLAY_MAP_IMAGE_BUTTON_STYLE);
   }
 
   public SelectBox <Integer> createWinPercentSelectBox ()

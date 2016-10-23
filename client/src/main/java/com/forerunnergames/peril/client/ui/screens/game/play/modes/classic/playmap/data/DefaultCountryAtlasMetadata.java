@@ -21,23 +21,23 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 public final class DefaultCountryAtlasMetadata implements CountryAtlasMetadata
 {
   private final AssetDescriptor <TextureAtlas> assetDescriptor;
-  private final MapMetadata mapMetadata;
+  private final PlayMapMetadata playMapMetadata;
 
   public DefaultCountryAtlasMetadata (final AssetDescriptor <TextureAtlas> assetDescriptor,
-                                      final MapMetadata mapMetadata)
+                                      final PlayMapMetadata playMapMetadata)
   {
     Arguments.checkIsNotNull (assetDescriptor, "assetDescriptor");
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
     this.assetDescriptor = assetDescriptor;
-    this.mapMetadata = mapMetadata;
+    this.playMapMetadata = playMapMetadata;
   }
 
   @Override
@@ -47,16 +47,16 @@ public final class DefaultCountryAtlasMetadata implements CountryAtlasMetadata
   }
 
   @Override
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return mapMetadata;
+    return playMapMetadata;
   }
 
   @Override
   public int hashCode ()
   {
     int result = assetDescriptor.hashCode ();
-    result = 31 * result + mapMetadata.hashCode ();
+    result = 31 * result + playMapMetadata.hashCode ();
     return result;
   }
 
@@ -68,13 +68,13 @@ public final class DefaultCountryAtlasMetadata implements CountryAtlasMetadata
 
     final DefaultCountryAtlasMetadata that = (DefaultCountryAtlasMetadata) obj;
 
-    return assetDescriptor.fileName.equals (that.assetDescriptor.fileName) && mapMetadata.equals (that.mapMetadata);
+    return assetDescriptor.fileName.equals (that.assetDescriptor.fileName) && playMapMetadata.equals (that.playMapMetadata);
   }
 
   @Override
   public String toString ()
   {
     return Strings.format ("{}: {}: {} | {}: {}", getClass ().getSimpleName (), assetDescriptor.getClass ()
-            .getSimpleName (), assetDescriptor, mapMetadata.getClass ().getSimpleName (), mapMetadata);
+            .getSimpleName (), assetDescriptor, playMapMetadata.getClass ().getSimpleName (), playMapMetadata);
   }
 }

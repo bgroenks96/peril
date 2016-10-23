@@ -25,26 +25,26 @@ import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
-import com.forerunnergames.peril.common.map.DefaultMapMetadata;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.MapType;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
-import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.PlayMapModelFactory;
-import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
-import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryFactory;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.DefaultCountryIdResolver;
-import com.forerunnergames.peril.core.model.map.io.PlayMapModelDataFactoryCreator;
+import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModelFactory;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.DefaultCountryIdResolver;
+import com.forerunnergames.peril.core.model.playmap.io.PlayMapModelDataFactoryCreator;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
@@ -67,8 +67,8 @@ import net.engio.mbassy.bus.MBassador;
 
 public class TestServerApplicationFactory
 {
-  private static final MapMetadata MAP_METADATA = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME,
-          MapType.STOCK, GameMode.CLASSIC);
+  private static final PlayMapMetadata PLAY_MAP_METADATA = new DefaultPlayMapMetadata (
+          GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, PlayMapType.STOCK, GameMode.CLASSIC);
   private static final int SPECTATOR_LIMIT = 0;
   private static volatile int testGameServerId = 0;
 
@@ -88,19 +88,19 @@ public class TestServerApplicationFactory
     final GameMode gameMode = GameMode.CLASSIC;
     final int winPercentage = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
     final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
-    final CountryFactory countries = PlayMapModelDataFactoryCreator.create (gameMode).createCountries (MAP_METADATA);
-    final ContinentFactory continents = PlayMapModelDataFactoryCreator.create (gameMode).createContinents (MAP_METADATA, new DefaultCountryIdResolver (countries));
+    final CountryFactory countries = PlayMapModelDataFactoryCreator.create (gameMode).createCountries (PLAY_MAP_METADATA);
+    final ContinentFactory continents = PlayMapModelDataFactoryCreator.create (gameMode).createContinents (PLAY_MAP_METADATA, new DefaultCountryIdResolver (countries));
     final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.getCountryCount (), initialCountryAssignment);
     final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
-    final CountryMapGraphModel countryMapGraphModel = CountryMapGraphModel.disjointCountryGraphFrom (countries);
-    final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModel.disjointContinentGraphFrom (continents, countryMapGraphModel);
+    final CountryGraphModel countryGraphModel = CountryGraphModel.disjointCountryGraphFrom (countries);
+    final ContinentGraphModel continentGraphModel = ContinentGraphModel.disjointContinentGraphFrom (continents, countryGraphModel);
     final GameStateMachineConfig config = new GameStateMachineConfig ();
-    final PlayMapModel playMapModel = playMapModelFactory.create (countryMapGraphModel, continentMapGraphModel);
+    final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
     final BattleModel battleModel = new DefaultBattleModel(playMapModel);
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).eventBus (eventBus).build ();
     config.setGameModel (gameModel);
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
-    return newTestServer (eventBus, type, gameMode, MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
+    return newTestServer (eventBus, type, gameMode, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
     // @formatter:on
   }
 
@@ -118,14 +118,14 @@ public class TestServerApplicationFactory
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    return newTestServer (eventBus, type, GameMode.CLASSIC, MAP_METADATA, gameRules, stateMachine, serverAddress,
+    return newTestServer (eventBus, type, GameMode.CLASSIC, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress,
                           serverPort);
   }
 
   private static TestServerApplication newTestServer (final MBassador <Event> eventBus,
                                                       final GameServerType type,
                                                       final GameMode gameMode,
-                                                      final MapMetadata mapMetadata,
+                                                      final PlayMapMetadata playMapMetadata,
                                                       final GameRules gameRules,
                                                       final StateMachineEventHandler stateMachine,
                                                       final String serverAddress,
@@ -142,7 +142,7 @@ public class TestServerApplicationFactory
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
-            SPECTATOR_LIMIT, gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), mapMetadata,
+            SPECTATOR_LIMIT, gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), playMapMetadata,
             gameRules);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);

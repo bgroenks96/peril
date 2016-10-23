@@ -21,7 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 public interface CountryAtlasMetadata
 {
@@ -36,5 +36,5 @@ public interface CountryAtlasMetadata
 
   AssetDescriptor <TextureAtlas> getAssetDescriptor ();
 
-  MapMetadata getMapMetadata ();
+  PlayMapMetadata getPlayMapMetadata ();
 }

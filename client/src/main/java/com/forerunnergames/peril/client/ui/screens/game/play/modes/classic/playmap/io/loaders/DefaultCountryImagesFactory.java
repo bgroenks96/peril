@@ -28,8 +28,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImages;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
@@ -56,17 +56,17 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   private final Map <String, CountrySecondaryImages> countryNamesToSecondaryImages = new HashMap <> ();
   private final Table <String, CountryPrimaryImageState, CountryPrimaryImage> countryNamesAndPrimaryImageStatesToPrimaryImages = TreeBasedTable.create ();
   private final Table <String, CountrySecondaryImageState, CountrySecondaryImage> countryNamesAndSecondaryImageStatesToSecondaryImages = TreeBasedTable.create ();
-  private MapMetadata loadedMapMetadata = MapMetadata.NULL;
+  private PlayMapMetadata loadedPlayMapMetadata = PlayMapMetadata.NULL;
   // @formatter:on
 
   @Override
-  public void create (final MapMetadata mapMetadata, final ImmutableList <TextureAtlas> countryAtlases)
+  public void create (final PlayMapMetadata playMapMetadata, final ImmutableList <TextureAtlas> countryAtlases)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
     Arguments.checkIsNotNull (countryAtlases, "countryAtlases");
     Arguments.checkHasNoNullElements (countryAtlases, "countryAtlases");
 
-    log.debug ("Creating country images for map [{}]...", mapMetadata);
+    log.debug ("Creating country images for play map [{}]...", playMapMetadata);
 
     destroy ();
 
@@ -76,7 +76,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
     {
       for (final TextureAtlas.AtlasRegion countryAtlasRegion : countryAtlas.getRegions ())
       {
-        final ImmutableList <String> regionNameSegments = createRegionNameSegments (countryAtlasRegion, mapMetadata);
+        final ImmutableList <String> regionNameSegments = createRegionNameSegments (countryAtlasRegion, playMapMetadata);
         final String countryName = createCountryNameFrom (regionNameSegments);
         final SpriteDrawable countryDrawable = new SpriteDrawable (countryAtlas.createSprite (countryAtlasRegion.name));
 
@@ -100,7 +100,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
         }
         else
         {
-          invalidCountryImageState (regionNameSegments, countryAtlasRegion, mapMetadata);
+          invalidCountryImageState (regionNameSegments, countryAtlasRegion, playMapMetadata);
         }
 
         registerCountryAtlasIndex (countryName, atlasIndex);
@@ -134,33 +134,33 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
                                                  .get (countryName)));
     }
 
-    loadedMapMetadata = mapMetadata;
+    loadedPlayMapMetadata = playMapMetadata;
 
-    log.debug ("Finished creating country images for map [{}].", mapMetadata);
+    log.debug ("Finished creating country images for play map [{}].", playMapMetadata);
   }
 
   @Override
-  public ImmutableMap <String, CountryPrimaryImages> getPrimary (final MapMetadata mapMetadata)
+  public ImmutableMap <String, CountryPrimaryImages> getPrimary (final PlayMapMetadata playMapMetadata)
 
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (isLoaded (mapMetadata),
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions.checkIsTrue (isLoaded (playMapMetadata),
                                Strings.format ("{} for {}: [{}] are not loaded.",
                                                CountryPrimaryImages.class.getSimpleName (),
-                                               MapMetadata.class.getSimpleName (), mapMetadata));
+                                               PlayMapMetadata.class.getSimpleName (), playMapMetadata));
 
     return ImmutableMap.copyOf (countryNamesToPrimaryImages);
   }
 
   @Override
-  public ImmutableMap <String, CountrySecondaryImages> getSecondary (final MapMetadata mapMetadata)
+  public ImmutableMap <String, CountrySecondaryImages> getSecondary (final PlayMapMetadata playMapMetadata)
 
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (isLoaded (mapMetadata),
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions.checkIsTrue (isLoaded (playMapMetadata),
                                Strings.format ("{} for {}: [{}] are not loaded.",
                                                CountrySecondaryImages.class.getSimpleName (),
-                                               MapMetadata.class.getSimpleName (), mapMetadata));
+                                               PlayMapMetadata.class.getSimpleName (), playMapMetadata));
 
     return ImmutableMap.copyOf (countryNamesToSecondaryImages);
   }
@@ -173,7 +173,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
     countryNamesToSecondaryImages.clear ();
     countryNamesAndPrimaryImageStatesToPrimaryImages.clear ();
     countryNamesAndSecondaryImageStatesToSecondaryImages.clear ();
-    loadedMapMetadata = MapMetadata.NULL;
+    loadedPlayMapMetadata = PlayMapMetadata.NULL;
   }
 
   private static String createCountryNameFrom (final ImmutableList <String> countryAtlasRegionNameSegments)
@@ -217,12 +217,12 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
   }
 
   private static ImmutableList <String> createRegionNameSegments (final TextureAtlas.AtlasRegion countryAtlasRegion,
-                                                                  final MapMetadata mapMetadata)
+                                                                  final PlayMapMetadata playMapMetadata)
   {
     if (countryAtlasRegion.name == null)
     {
       throw new PlayMapLoadingException (Strings.format ("Empty country atlas region name detected for map [{}].",
-                                                         mapMetadata));
+                                                         playMapMetadata));
     }
 
     final ImmutableList <String> regionNameSegments = ImmutableList.copyOf (countryAtlasRegion.name.split (" - "));
@@ -231,20 +231,20 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
     {
       throw new PlayMapLoadingException (
               Strings.format ("Invalid country atlas region name [{}] detected for map [{}].", countryAtlasRegion,
-                              mapMetadata));
+                              playMapMetadata));
     }
 
     return regionNameSegments;
   }
 
-  private boolean isLoaded (final MapMetadata mapMetadata)
+  private boolean isLoaded (final PlayMapMetadata playMapMetadata)
   {
-    return loadedMapMetadata.equals (mapMetadata);
+    return loadedPlayMapMetadata.equals (playMapMetadata);
   }
 
   private void invalidCountryImageState (final ImmutableList <String> countryAtlasRegionNameSegments,
                                          final TextureAtlas.AtlasRegion countryAtlasRegion,
-                                         final MapMetadata mapMetadata)
+                                         final PlayMapMetadata playMapMetadata)
   {
     final String invalidCountryImageStateAtlasRegionNameSegment = countryAtlasRegionNameSegments
             .get (countryAtlasRegionNameSegments.size () - 1);
@@ -252,7 +252,7 @@ public final class DefaultCountryImagesFactory implements CountryImagesFactory
     throw new PlayMapLoadingException (
             Strings.format ("Invalid country image state [{}] in country texture atlas region [{}] for map [{}].\n"
                                     + "Valid country image states: {}'s [{}], {}'s [{}].",
-                            invalidCountryImageStateAtlasRegionNameSegment, countryAtlasRegion, mapMetadata,
+                            invalidCountryImageStateAtlasRegionNameSegment, countryAtlasRegion, playMapMetadata,
                             CountryPrimaryImageState.class.getSimpleName (),
                             getValidCountryImageStateAtlasRegionNameSegments (CountryPrimaryImageState.class),
                             CountrySecondaryImageState.class.getSimpleName (),

@@ -40,9 +40,9 @@ public final class CommandLineArgs
               validateWith = ServerTitleParameterValidator.class)
   public String gameServerName;
 
-  @Parameter (names = { "--map-name", "-m" }, description = "Map name", validateWith = MapNameParameterValidator.class,
-              required = true)
-  public String mapName;
+  @Parameter (names = { "--map-name", "-m" }, description = "Map name",
+              validateWith = PlayMapNameParameterValidator.class, required = true)
+  public String playMapName;
 
   @Parameter (names = { "--players", "-pl" }, description = "Maximum number of players allowed", required = true)
   public Integer playerLimit;

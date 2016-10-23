@@ -51,26 +51,26 @@ public final class AssetSettings
   // @formatter:off
 
   // Prepend: Nothing (absolute path from external root)
-  // Append: Relative maps directory (compile-time)
+  // Append: Relative play maps directory (compile-time)
   public static final String ABSOLUTE_EXTERNAL_ASSETS_DIRECTORY = System.getProperty ("user.home") + "/peril/assets/";
 
   // Prepend: Absolute external assets directory (compile-time or runtime)
   // Append: Game mode (runtime, external) or relative mode directory (compile-time, internal)
-  public static final String RELATIVE_MAPS_DIRECTORY = "maps/";
+  public static final String RELATIVE_PLAY_MAPS_DIRECTORY = "maps/";
 
   // Prepend: Nothing (absolute path from external root)
   // Append: Game mode (runtime)
-  public static final String ABSOLUTE_EXTERNAL_MAPS_DIRECTORY = ABSOLUTE_EXTERNAL_ASSETS_DIRECTORY + RELATIVE_MAPS_DIRECTORY;
+  public static final String ABSOLUTE_EXTERNAL_PLAY_MAPS_DIRECTORY = ABSOLUTE_EXTERNAL_ASSETS_DIRECTORY + RELATIVE_PLAY_MAPS_DIRECTORY;
 
-  // Prepend: Relative maps directory (compile-time)
+  // Prepend: Relative play maps directory (compile-time)
   // Append: Game mode (runtime)
   public static final String RELATIVE_MODE_DIRECTORY = "mode/";
 
   // Prepend: Nothing (absolute path from internal root)
   // Append: Game mode (runtime)
-  public static final String ABSOLUTE_INTERNAL_MAPS_MODE_DIRECTORY = "/" + RELATIVE_MAPS_DIRECTORY + RELATIVE_MODE_DIRECTORY;
+  public static final String ABSOLUTE_INTERNAL_PLAY_MAPS_MODE_DIRECTORY = "/" + RELATIVE_PLAY_MAPS_DIRECTORY + RELATIVE_MODE_DIRECTORY;
 
-  // Prepend: Map name (runtime)
+  // Prepend: Play map name (runtime)
   // Append: Relative country data directory (compile-time)
   public static final String RELATIVE_COUNTRIES_DIRECTORY = "countries/";
 
@@ -78,7 +78,7 @@ public final class AssetSettings
   // Append: Countries data filename (compile-time)
   public static final String RELATIVE_COUNTRY_DATA_DIRECTORY = "data/";
 
-  // Prepend: Map name (runtime)
+  // Prepend: Play map name (runtime)
   // Append: Relative continent data directory (compile-time)
   public static final String RELATIVE_CONTINENTS_DIRECTORY = "continents/";
 
@@ -86,7 +86,7 @@ public final class AssetSettings
   // Append: Continents data filename (compile-time)
   public static final String RELATIVE_CONTINENT_DATA_DIRECTORY = "data/";
 
-  // Prepend: Map name (runtime)
+  // Prepend: Play map name (runtime)
   // Append: Relative card data directory (compile-time)
   public static final String RELATIVE_CARDS_DIRECTORY = "cards/";
 

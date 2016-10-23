@@ -22,18 +22,18 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImages;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImages;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 public interface CountryImagesFactory
 {
-  void create (final MapMetadata mapMetadata, final ImmutableList <TextureAtlas> countryAtlases);
+  void create (final PlayMapMetadata playMapMetadata, final ImmutableList <TextureAtlas> countryAtlases);
 
-  ImmutableMap <String, CountryPrimaryImages> getPrimary (final MapMetadata mapMetadata);
+  ImmutableMap <String, CountryPrimaryImages> getPrimary (final PlayMapMetadata playMapMetadata);
 
-  ImmutableMap <String, CountrySecondaryImages> getSecondary (final MapMetadata mapMetadata);
+  ImmutableMap <String, CountrySecondaryImages> getSecondary (final PlayMapMetadata playMapMetadata);
 
   void destroy ();
 }

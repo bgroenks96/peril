@@ -24,11 +24,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data.CountryAtlasMetadata;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data.DefaultCountryAtlasMetadata;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsoluteMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.MapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativeMapResourcesPathParser;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapResourcesPathParser;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -47,14 +47,14 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
   private static final Logger log = LoggerFactory.getLogger (DefaultCountryAtlasMetadataLoader.class);
 
   @Override
-  public ImmutableSet <CountryAtlasMetadata> load (final MapMetadata mapMetadata)
+  public ImmutableSet <CountryAtlasMetadata> load (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
     // @formatter:off
-    final MapResourcesPathParser absoluteMapResourcesPathParser = new AbsoluteMapResourcesPathParser (mapMetadata.getMode ());
-    final MapResourcesPathParser relativeMapResourcesPathParser = new RelativeMapResourcesPathParser (mapMetadata.getMode ());
-    final File externalCountryAtlasesDirectory = new File (absoluteMapResourcesPathParser.parseCountryAtlasesPath (mapMetadata));
+    final PlayMapResourcesPathParser absolutePlayMapResourcesPathParser = new AbsolutePlayMapResourcesPathParser (playMapMetadata.getMode ());
+    final PlayMapResourcesPathParser relativePlayMapResourcesPathParser = new RelativePlayMapResourcesPathParser (playMapMetadata.getMode ());
+    final File externalCountryAtlasesDirectory = new File (absolutePlayMapResourcesPathParser.parseCountryAtlasesPath (playMapMetadata));
     final Set <CountryAtlasMetadata> countryAtlasMetadatas = new HashSet <> ();
     // @formatter:on
 
@@ -65,13 +65,14 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
       if (childPathFiles == null)
       {
-        generalCountryAtlasError ("Cannot find any country atlases", externalCountryAtlasesDirectory, mapMetadata,
+        generalCountryAtlasError ("Cannot find any country atlases", externalCountryAtlasesDirectory, playMapMetadata,
                                   expectedAtlasIndex);
       }
 
       Arrays.sort (childPathFiles);
 
-      final String relativeCountryAtlasesPath = relativeMapResourcesPathParser.parseCountryAtlasesPath (mapMetadata);
+      final String relativeCountryAtlasesPath = relativePlayMapResourcesPathParser
+              .parseCountryAtlasesPath (playMapMetadata);
 
       for (final File childPathFile : childPathFiles)
       {
@@ -79,15 +80,15 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
         if (childPathFile.isDirectory ())
         {
-          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is a directory",
-                     childPathFile, mapMetadata);
+          log.trace ("Ignoring potential country atlas file [{}] for play map [{}] because it is a directory",
+                     childPathFile, playMapMetadata);
           continue;
         }
 
         if (childPathFile.isHidden ())
         {
-          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because it is hidden.", childPathFile,
-                     mapMetadata);
+          log.trace ("Ignoring potential country atlas file [{}] for play map [{}] because it is hidden.",
+                     childPathFile, playMapMetadata);
           continue;
         }
 
@@ -99,9 +100,9 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         // so expectedAtlasIndex is still 1.
         if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex))
         {
-          log.trace ("Ignoring potential country atlas file [{}] for map [{}] because although it's a valid country "
+          log.trace ("Ignoring potential country atlas file [{}] for play map [{}] because although it's a valid country "
                              + "atlas *image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
-                     childPathFile, mapMetadata, expectedAtlasIndex);
+                     childPathFile, playMapMetadata, expectedAtlasIndex);
           continue;
         }
 
@@ -111,9 +112,9 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         // but in that corner case it will always return false, so it's not a problem.
         if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex - 1))
         {
-          log.trace ("Ignoring child path file [{}] for map [{}] because although it's a valid country atlas "
+          log.trace ("Ignoring child path file [{}] for play map [{}] because although it's a valid country atlas "
                              + "*image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
-                     childPathFile, mapMetadata, expectedAtlasIndex);
+                     childPathFile, playMapMetadata, expectedAtlasIndex);
           continue;
         }
 
@@ -122,22 +123,22 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         if (!AssetSettings.isAtlasPackFileType (rawCountryAtlasFileName))
         {
           invalidCountryAtlasError ("Found invalid file in country atlas directory", rawCountryAtlasFileName,
-                                    externalCountryAtlasesDirectory, mapMetadata, expectedAtlasIndex);
+                                    externalCountryAtlasesDirectory, playMapMetadata, expectedAtlasIndex);
         }
 
         if (!AssetSettings.isValidCountryAtlasPackFileName (rawCountryAtlasFileName, expectedAtlasIndex))
         {
           invalidCountryAtlasError ("Found invalid country atlas filename", rawCountryAtlasFileName,
-                                    externalCountryAtlasesDirectory, mapMetadata, expectedAtlasIndex);
+                                    externalCountryAtlasesDirectory, playMapMetadata, expectedAtlasIndex);
         }
 
         final CountryAtlasMetadata countryAtlasMetadata = new DefaultCountryAtlasMetadata (new AssetDescriptor <> (
-                relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class), mapMetadata);
+                relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class), playMapMetadata);
 
         if (!countryAtlasMetadatas.add (countryAtlasMetadata))
         {
           invalidCountryAtlasError ("Found duplicate country atlas filename", rawCountryAtlasFileName,
-                                    externalCountryAtlasesDirectory, mapMetadata, expectedAtlasIndex);
+                                    externalCountryAtlasesDirectory, playMapMetadata, expectedAtlasIndex);
         }
 
         log.debug ("Successfully loaded country atlas metadata [{}].", countryAtlasMetadata);
@@ -147,7 +148,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
       if (countryAtlasMetadatas.isEmpty ())
       {
-        generalCountryAtlasError ("Cannot find any country atlases", externalCountryAtlasesDirectory, mapMetadata, 1);
+        generalCountryAtlasError ("Cannot find any country atlases", externalCountryAtlasesDirectory, playMapMetadata,
+                                  1);
       }
 
       return ImmutableSet.copyOf (countryAtlasMetadatas);
@@ -156,8 +158,8 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
     {
       // @formatter:off
       throw new PlayMapLoadingException (Strings.format ("Could not load country atlases for {} map: \'{}\'",
-                                                         mapMetadata.getType ().name ().toLowerCase (),
-                                                         Strings.toProperCase (mapMetadata.getName ())), e);
+                                                         playMapMetadata.getType ().name ().toLowerCase (),
+                                                         Strings.toProperCase (playMapMetadata.getName ())), e);
       // @formatter:on
     }
   }
@@ -165,24 +167,24 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
   private static void invalidCountryAtlasError (final String prependedMessage,
                                                 final String rawCountryAtlasFileName,
                                                 final File externalCountryAtlasesDirectory,
-                                                final MapMetadata mapMetadata,
+                                                final PlayMapMetadata playMapMetadata,
                                                 final int expectedAtlasIndex)
   {
     generalCountryAtlasError (Strings.format ("{}: \'{}\',", prependedMessage, rawCountryAtlasFileName),
-                              externalCountryAtlasesDirectory, mapMetadata, expectedAtlasIndex);
+                              externalCountryAtlasesDirectory, playMapMetadata, expectedAtlasIndex);
   }
 
   private static void generalCountryAtlasError (final String prependedMessage,
                                                 final File externalCountryAtlasesDirectory,
-                                                final MapMetadata mapMetadata,
+                                                final PlayMapMetadata playMapMetadata,
                                                 final int expectedAtlasIndex)
   {
     // @formatter:off
     throw new PlayMapLoadingException (Strings
             .format ("{} for {} map: \'{}\'\n\nIn Location:\n\n{}\n\nExpected country atlas named: \'{}\'\n\n" +
                     "Naming rules for country atlases:\n\n{}",
-                     prependedMessage, mapMetadata.getType ().name ().toLowerCase (),
-                     Strings.toProperCase (mapMetadata.getName ()), externalCountryAtlasesDirectory.getAbsolutePath (),
+                     prependedMessage, playMapMetadata.getType ().name ().toLowerCase (),
+                     Strings.toProperCase (playMapMetadata.getName ()), externalCountryAtlasesDirectory.getAbsolutePath (),
                      AssetSettings.getValidCountryAtlasPackFileName (expectedAtlasIndex),
                      AssetSettings.VALID_COUNTRY_ATLAS_FILENAME_DESCRIPTION));
     // @formatter:on

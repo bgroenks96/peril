@@ -19,18 +19,18 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.CountryNamesDataLoader;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
-import com.forerunnergames.peril.common.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.io.PlayMapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParserException;
 
 public final class DefaultCountryCounter implements CountryCounter
 {
   private final CountryNamesDataLoader loader;
-  private final MapDataPathParser pathParser;
+  private final PlayMapDataPathParser pathParser;
 
-  public DefaultCountryCounter (final CountryNamesDataLoader loader, final MapDataPathParser pathParser)
+  public DefaultCountryCounter (final CountryNamesDataLoader loader, final PlayMapDataPathParser pathParser)
   {
     Arguments.checkIsNotNull (loader, "loader");
     Arguments.checkIsNotNull (pathParser, "pathParser");
@@ -40,15 +40,15 @@ public final class DefaultCountryCounter implements CountryCounter
   }
 
   @Override
-  public int count (final MapMetadata mapMetadata)
+  public int count (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL)) return 0;
+    if (playMapMetadata.equals (PlayMapMetadata.NULL)) return 0;
 
     try
     {
-      return loader.load (pathParser.parseCountriesFileNamePath (mapMetadata)).size ();
+      return loader.load (pathParser.parseCountriesFileNamePath (playMapMetadata)).size ();
     }
     catch (final StreamParserException e)
     {

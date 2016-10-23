@@ -20,7 +20,7 @@ package com.forerunnergames.peril.client.events;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -99,9 +99,9 @@ public final class PlayGameEvent implements LocalEvent
     return getPlayerCount () == 1;
   }
 
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return gameServerConfig.getMapMetadata ();
+    return gameServerConfig.getPlayMapMetadata ();
   }
 
   public PlayMap getPlayMap ()

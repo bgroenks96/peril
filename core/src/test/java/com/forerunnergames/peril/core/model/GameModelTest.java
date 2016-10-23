@@ -88,20 +88,20 @@ import com.forerunnergames.peril.core.model.card.CardModelTest;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
-import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.PlayMapStateBuilder;
-import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
-import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
-import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModelTest;
-import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.CountryFactory;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModelTest;
-import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapStateBuilder;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentGraphModel;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentGraphModelTest;
+import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModelTest;
+import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.graph.DefaultGraphModel;
@@ -146,14 +146,14 @@ public class GameModelTest
   private PlayMapModel playMapModel;
   private CountryOwnerModel countryOwnerModel;
   private CountryArmyModel countryArmyModel;
-  private CountryMapGraphModel countryMapGraphModel;
+  private CountryGraphModel countryGraphModel;
   private BattleModel battleModel;
   private CardModel cardModel;
   private InternalCommunicationHandler mockCommHandler;
   private ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
   private GameRules gameRules;
 
-  public static CountryMapGraphModel createDefaultTestCountryMapGraph (final ImmutableList <String> countryNames)
+  public static CountryGraphModel createDefaultTestCountryGraph (final ImmutableList <String> countryNames)
   {
     final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
     // set every node adjacent to country 0
@@ -169,7 +169,7 @@ public class GameModelTest
     // complete the cycle by setting country 1 adjacent to last country
     countryNameGraphBuilder.setAdjacent (countryNames.get (countryNames.size () - 1), countryNames.get (1));
     final GraphModel <String> countryNameGraph = countryNameGraphBuilder.build ();
-    return CountryMapGraphModelTest.createCountryMapGraphModelFrom (countryNameGraph);
+    return CountryGraphModelTest.createCountryGraphModelFrom (countryNameGraph);
   }
 
   @Before
@@ -317,11 +317,11 @@ public class GameModelTest
       gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
     }
     assertTrue (gameModel.playerCountIs (10));
-    assertTrue (countryMapGraphModel.countryCountIs (10));
+    assertTrue (countryGraphModel.countryCountIs (10));
 
     for (final Id player : playerModel.getPlayerIds ())
     {
-      playerModel.addArmiesToHandOf (player, countryMapGraphModel.getCountryCount () / gameModel.getPlayerCount ());
+      playerModel.addArmiesToHandOf (player, countryGraphModel.getCountryCount () / gameModel.getPlayerCount ());
     }
 
     gameModel.randomlyAssignPlayerCountries ();
@@ -344,7 +344,7 @@ public class GameModelTest
 
     for (final Id player : playerModel.getPlayerIds ())
     {
-      playerModel.addArmiesToHandOf (player, countryMapGraphModel.getCountryCount () / gameModel.getPlayerCount ());
+      playerModel.addArmiesToHandOf (player, countryGraphModel.getCountryCount () / gameModel.getPlayerCount ());
     }
 
     gameModel.randomlyAssignPlayerCountries ();
@@ -411,7 +411,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayerOwner = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayerOwner).commitIfSuccessful ());
     }
@@ -436,7 +436,7 @@ public class GameModelTest
     playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST));
 
     final Id randomCountry = randomCountry ();
-    final String randomCountryName = countryMapGraphModel.nameOf (randomCountry);
+    final String randomCountryName = countryGraphModel.nameOf (randomCountry);
 
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             randomCountryName);
@@ -476,7 +476,7 @@ public class GameModelTest
 
     final Id country = randomCountry ();
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
-            countryMapGraphModel.nameOf (country));
+            countryGraphModel.nameOf (country));
     publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // should be successful for first player
@@ -533,7 +533,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
@@ -557,7 +557,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
@@ -590,7 +590,7 @@ public class GameModelTest
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final PlayMapStateBuilder builder = new PlayMapStateBuilder (playMapModel);
-    builder.forCountries (countryMapGraphModel.getCountryIds ()).setOwner (testPlayer);
+    builder.forCountries (countryGraphModel.getCountryIds ()).setOwner (testPlayer);
     final int reinforcementCount = gameRules.getMinReinforcementsPlacedPerCountry ();
     playerModel.addArmiesToHandOf (testPlayer, reinforcementCount);
 
@@ -600,7 +600,7 @@ public class GameModelTest
     assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPlayer ()
             .is (playerModel.playerPacketWith (testPlayer)));
     assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getReinforceableCountries ()
-            .equals (countryMapGraphModel.getCountryPackets ()));
+            .equals (countryGraphModel.getCountryPackets ()));
   }
 
   @Test
@@ -610,7 +610,7 @@ public class GameModelTest
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
     final PlayMapStateBuilder builder = new PlayMapStateBuilder (playMapModel);
-    builder.forCountries (countryMapGraphModel.getCountryIds ()).setOwner (testPlayer);
+    builder.forCountries (countryGraphModel.getCountryIds ()).setOwner (testPlayer);
 
     assertEquals (0, playerModel.getArmiesInHand (testPlayer));
 
@@ -619,7 +619,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (EndReinforcementPhaseEvent.class));
     assertTrue (eventHandler.lastEventOfType (EndReinforcementPhaseEvent.class).getPlayerOwnedCountries ()
-            .equals (countryMapGraphModel.getCountryPackets ()));
+            .equals (countryGraphModel.getCountryPackets ()));
   }
 
   @Test
@@ -628,7 +628,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
@@ -661,7 +661,7 @@ public class GameModelTest
     for (int i = 0; i < count; i++)
     {
       final String countryName = updatedCountries.next ().getName ();
-      assertEquals (1, countryArmyModel.getArmyCountFor (countryMapGraphModel.countryWith (countryName)));
+      assertEquals (1, countryArmyModel.getArmyCountFor (countryGraphModel.countryWith (countryName)));
     }
   }
 
@@ -671,7 +671,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
@@ -703,7 +703,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 3));
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
 
-    assertEquals (1, countryArmyModel.getArmyCountFor (countryMapGraphModel.countryWith (randomCountry.getName ())));
+    assertEquals (1, countryArmyModel.getArmyCountFor (countryGraphModel.countryWith (randomCountry.getName ())));
   }
 
   public void testVerifyPlayerCountryReinforcementWithOptionalTradeIn ()
@@ -716,7 +716,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer);
     }
@@ -747,7 +747,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 2));
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
 
-    assertEquals (1, countryArmyModel.getArmyCountFor (countryMapGraphModel.countryWith (randomCountry.getName ())));
+    assertEquals (1, countryArmyModel.getArmyCountFor (countryGraphModel.countryWith (randomCountry.getName ())));
   }
 
   @Test
@@ -756,7 +756,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
@@ -800,8 +800,8 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    final Id notOwnedCountry = countryMapGraphModel.getCountryIds ().asList ().get (0);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    final Id notOwnedCountry = countryGraphModel.getCountryIds ().asList ().get (0);
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       if (nextCountry.is (notOwnedCountry)) continue;
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
@@ -809,7 +809,7 @@ public class GameModelTest
 
     gameModel.beginReinforcementPhase ();
 
-    final String notOwnedCountryName = countryMapGraphModel.nameOf (notOwnedCountry);
+    final String notOwnedCountryName = countryGraphModel.nameOf (notOwnedCountry);
     final int armyCount = playerModel.getArmiesInHand (testPlayer);
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
@@ -833,7 +833,7 @@ public class GameModelTest
     addMaxPlayers ();
 
     final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    for (final Id nextCountry : countryMapGraphModel.getCountryIds ())
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
     }
@@ -862,7 +862,7 @@ public class GameModelTest
   @Test
   public void testBeginFortifyPhase ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -904,7 +904,7 @@ public class GameModelTest
   @Test
   public void testBeginFortifyPhaseSkipsPhaseWhenNoValidVectorsExist ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -934,7 +934,7 @@ public class GameModelTest
   @Test
   public void testVerifyValidPlayerFortifyCountryRequest ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -966,7 +966,7 @@ public class GameModelTest
   @Test
   public void testVerifyInvalidPlayerFortifyCountryRequestSourceCountryNotOwned ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -997,7 +997,7 @@ public class GameModelTest
   @Test
   public void testVerifyInvalidPlayerFortifyCountryRequestTargetCountryNotOwned ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -1028,7 +1028,7 @@ public class GameModelTest
   @Test
   public void testVerifyInvalidPlayerFortifyCountryRequestCountriesNotAdjacent ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -1059,7 +1059,7 @@ public class GameModelTest
   @Test
   public void testVerifyInvalidPlayerFortifyCountryRequestTooManyArmies ()
   {
-    initializeGameModelWith (createPlayMapModelWithTestMapGraph (defaultTestCountries));
+    initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
 
     addMaxPlayers ();
 
@@ -1184,12 +1184,12 @@ public class GameModelTest
 
   private void verifyPlayerCountryAssignmentCompleteEvent ()
   {
-    for (final Id country : countryMapGraphModel.getCountryIds ())
+    for (final Id country : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.isCountryOwned (country));
       final PlayerCountryAssignmentCompleteEvent event = eventHandler
               .lastEventOfType (PlayerCountryAssignmentCompleteEvent.class);
-      final CountryPacket countryPacket = countryMapGraphModel.countryPacketWith (country);
+      final CountryPacket countryPacket = countryGraphModel.countryPacketWith (country);
       final Id player = countryOwnerModel.ownerOf (country);
       assertEquals (playerModel.playerPacketWith (player), event.getOwner (countryPacket));
     }
@@ -1250,7 +1250,7 @@ public class GameModelTest
 
   private Id randomCountry ()
   {
-    return Randomness.getRandomElementFrom (countryMapGraphModel.getCountryIds ());
+    return Randomness.getRandomElementFrom (countryGraphModel.getCountryIds ());
   }
 
   private ImmutableList <Id> countryIdsFor (final ImmutableList <String> countryNames,
@@ -1259,7 +1259,7 @@ public class GameModelTest
     final ImmutableList.Builder <Id> countryIds = ImmutableList.builder ();
     for (final int i : indices)
     {
-      countryIds.add (countryMapGraphModel.countryWith (countryNames.get (i)));
+      countryIds.add (countryGraphModel.countryWith (countryNames.get (i)));
     }
     return countryIds.build ();
   }
@@ -1282,10 +1282,10 @@ public class GameModelTest
             .builder ();
     for (final CountryAdjacencyIndices adjInd : adjacencyIndices)
     {
-      final CountryPacket cp0 = countryMapGraphModel.countryPacketWith (countryNameList.get (adjInd.c0));
+      final CountryPacket cp0 = countryGraphModel.countryPacketWith (countryNameList.get (adjInd.c0));
       for (final int adj : adjInd.adj)
       {
-        final CountryPacket cpAdj = countryMapGraphModel.countryPacketWith (countryNameList.get (adj));
+        final CountryPacket cpAdj = countryGraphModel.countryPacketWith (countryNameList.get (adj));
         expectedFortifyVectors.put (cp0, cpAdj);
       }
     }
@@ -1298,7 +1298,7 @@ public class GameModelTest
     playerModel = new DefaultPlayerModel (gameRules);
     cardModel = new DefaultCardModel (gameRules, playerModel, cardDeck);
     battleModel = new DefaultBattleModel (playMapModel);
-    countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    countryGraphModel = playMapModel.getCountryGraphModel ();
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
     countryArmyModel = playMapModel.getCountryArmyModel ();
     this.playMapModel = playMapModel;
@@ -1317,24 +1317,23 @@ public class GameModelTest
     {
       factory.newCountryWith (name);
     }
-    final CountryMapGraphModel countryMapGraphModel = CountryMapGraphModelTest
-            .createDisjointCountryMapGraphModelWith (factory);
+    final CountryGraphModel countryGraphModel = CountryGraphModelTest.createDisjointCountryGraphModelWith (factory);
 
     // create empty continent graph
     final ContinentFactory continentFactory = new ContinentFactory ();
-    final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModelTest
-            .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
-    return new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
+    final ContinentGraphModel continentGraphModel = ContinentGraphModelTest
+            .createContinentGraphModelWith (continentFactory, countryGraphModel);
+    return new DefaultPlayMapModelFactory (gameRules).create (countryGraphModel, continentGraphModel);
   }
 
-  private PlayMapModel createPlayMapModelWithTestMapGraph (final ImmutableList <String> countryNames)
+  private PlayMapModel createPlayMapModelWithTestTerritoryGraphs (final ImmutableList <String> countryNames)
   {
-    final CountryMapGraphModel countryMapGraphModel = createDefaultTestCountryMapGraph (countryNames);
+    final CountryGraphModel countryGraphModel = createDefaultTestCountryGraph (countryNames);
     // create empty continent graph
     final ContinentFactory continentFactory = new ContinentFactory ();
-    final ContinentMapGraphModel continentMapGraphModel = ContinentMapGraphModelTest
-            .createContinentMapGraphModelWith (continentFactory, countryMapGraphModel);
-    playMapModel = new DefaultPlayMapModelFactory (gameRules).create (countryMapGraphModel, continentMapGraphModel);
+    final ContinentGraphModel continentGraphModel = ContinentGraphModelTest
+            .createContinentGraphModelWith (continentFactory, countryGraphModel);
+    playMapModel = new DefaultPlayMapModelFactory (gameRules).create (countryGraphModel, continentGraphModel);
     return playMapModel;
   }
 

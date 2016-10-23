@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.integration.core;
 
 import com.forerunnergames.peril.core.model.GameModel;
-import com.forerunnergames.peril.core.model.map.country.CountryFactory;
+import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;

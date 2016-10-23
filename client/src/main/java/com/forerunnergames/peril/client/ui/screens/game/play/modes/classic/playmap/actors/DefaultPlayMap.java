@@ -28,7 +28,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.PlayMapInputDetection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
 
@@ -56,7 +56,7 @@ public final class DefaultPlayMap implements PlayMap
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
   private final HoveredTerritoryText hoveredTerritoryText;
-  private final MapMetadata mapMetadata;
+  private final PlayMapMetadata playMapMetadata;
   private List <PlayMapInputListener> listeners = new ArrayList <> ();
   @Nullable
   private Country hoveredCountry = null;
@@ -70,19 +70,19 @@ public final class DefaultPlayMap implements PlayMap
                          final PlayMapInputDetection inputDetection,
                          final HoveredTerritoryText hoveredTerritoryText,
                          final Image backgroundImage,
-                         final MapMetadata mapMetadata)
+                         final PlayMapMetadata playMapMetadata)
   {
     Arguments.checkIsNotNull (countryNamesToCountries, "countryNamesToCountries");
     Arguments.checkHasNoNullKeysOrValues (countryNamesToCountries, "countryNamesToCountries");
     Arguments.checkIsNotNull (inputDetection, "inputDetection");
     Arguments.checkIsNotNull (hoveredTerritoryText, "hoveredTerritoryText");
     Arguments.checkIsNotNull (backgroundImage, "backgroundImage");
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
     this.countryNamesToCountries = countryNamesToCountries;
     this.inputDetection = inputDetection;
     this.hoveredTerritoryText = hoveredTerritoryText;
-    this.mapMetadata = mapMetadata;
+    this.playMapMetadata = playMapMetadata;
 
     group.setTransform (false);
 
@@ -591,9 +591,9 @@ public final class DefaultPlayMap implements PlayMap
   }
 
   @Override
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return mapMetadata;
+    return playMapMetadata;
   }
 
   @Override

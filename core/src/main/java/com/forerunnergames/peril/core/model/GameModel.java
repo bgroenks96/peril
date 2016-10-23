@@ -135,20 +135,20 @@ import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
-import com.forerunnergames.peril.core.model.map.DefaultPlayMapModelFactory;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
-import com.forerunnergames.peril.core.model.map.continent.ContinentMapGraphModel;
-import com.forerunnergames.peril.core.model.map.continent.ContinentOwnerModel;
-import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.CountryFactory;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
+import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentGraphModel;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentOwnerModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTimerDuration;
@@ -198,7 +198,7 @@ public final class GameModel
   private final PlayerModel playerModel;
   private final PlayMapModel playMapModel;
   private final CountryOwnerModel countryOwnerModel;
-  private final CountryMapGraphModel countryMapGraphModel;
+  private final CountryGraphModel countryGraphModel;
   private final CountryArmyModel countryArmyModel;
   private final ContinentOwnerModel continentOwnerModel;
   private final CardModel cardModel;
@@ -260,10 +260,10 @@ public final class GameModel
     this.eventBus = eventBus;
 
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
-    countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    countryGraphModel = playMapModel.getCountryGraphModel ();
     countryArmyModel = playMapModel.getCountryArmyModel ();
     continentOwnerModel = playMapModel.getContinentOwnerModel ();
-    // continentMapGraphModel = playMapModel.getContinentMapGraphModel ();
+    // continentGraphModel = playMapModel.getContinentGraphModel ();
 
     eventBus.subscribe (internalCommHandler);
   }
@@ -465,7 +465,7 @@ public final class GameModel
       return;
     }
 
-    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryMapGraphModel.getCountryIds ()));
+    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules.getInitialPlayerCountryDistribution (players
             .size ());
@@ -486,7 +486,7 @@ public final class GameModel
         MutatorResult <?> result = countryOwnerModel.requestToAssignCountryOwner (toAssign, nextPlayerId);
         if (result.failed ())
         {
-          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryMapGraphModel.nameOf (toAssign),
+          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryGraphModel.nameOf (toAssign),
                     nextPlayer, result.getFailureReason ());
           continue;
         }
@@ -496,7 +496,7 @@ public final class GameModel
         result = countryArmyModel.requestToAddArmiesToCountry (toAssign, 1);
         if (result.failed ())
         {
-          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryMapGraphModel.nameOf (toAssign),
+          log.warn ("Failed to assign country [{}] to [{}] | Reason: {}", countryGraphModel.nameOf (toAssign),
                     nextPlayer, result.getFailureReason ());
           continue;
         }
@@ -506,8 +506,8 @@ public final class GameModel
         playerModel.removeArmyFromHandOf (nextPlayerId);
         assignSuccessCount++;
 
-        publish (new DefaultCountryArmiesChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), 1));
-        publish (new DefaultCountryOwnerChangedEvent (countryMapGraphModel.countryPacketWith (toAssign), nextPlayer));
+        publish (new DefaultCountryArmiesChangedEvent (countryGraphModel.countryPacketWith (toAssign), 1));
+        publish (new DefaultCountryOwnerChangedEvent (countryGraphModel.countryPacketWith (toAssign), nextPlayer));
 
         countryItr.remove ();
       }
@@ -628,7 +628,7 @@ public final class GameModel
       return false;
     }
 
-    if (!countryMapGraphModel.existsCountryWith (claimedCountryName))
+    if (!countryGraphModel.existsCountryWith (claimedCountryName))
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
@@ -636,7 +636,7 @@ public final class GameModel
       return false;
     }
 
-    final Id countryId = countryMapGraphModel.idOf (claimedCountryName);
+    final Id countryId = countryGraphModel.idOf (claimedCountryName);
 
     final MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> res1;
     res1 = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
@@ -661,7 +661,7 @@ public final class GameModel
 
     final PlayerPacket updatedPlayer = playerModel.playerPacketWith (currentPlayerId);
     publish (new PlayerClaimCountryResponseSuccessEvent (updatedPlayer,
-            countryMapGraphModel.countryPacketWith (countryId), 1));
+            countryGraphModel.countryPacketWith (countryId), 1));
 
     return true;
   }
@@ -721,14 +721,14 @@ public final class GameModel
     }
 
     final String countryName = event.getCountryName ();
-    if (!countryMapGraphModel.existsCountryWith (countryName))
+    if (!countryGraphModel.existsCountryWith (countryName))
     {
       publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
               PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, event));
       return false;
     }
 
-    final Id countryId = countryMapGraphModel.countryWith (countryName);
+    final Id countryId = countryGraphModel.countryWith (countryName);
     if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
     {
       publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
@@ -748,7 +748,7 @@ public final class GameModel
     result.commitIfSuccessful ();
     playerModel.removeArmiesFromHandOf (playerId, requestedReinforcements);
 
-    final CountryPacket countryPacket = countryMapGraphModel.countryPacketWith (countryId);
+    final CountryPacket countryPacket = countryGraphModel.countryPacketWith (countryId);
     publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), countryPacket, requestedReinforcements));
 
     return true;
@@ -831,13 +831,13 @@ public final class GameModel
       resultBuilder.add (result);
     }
 
-    if (!countryMapGraphModel.existsCountryWith (countryName))
+    if (!countryGraphModel.existsCountryWith (countryName))
     {
       result = MutatorResult.failure (PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST);
       resultBuilder.add (result);
     }
 
-    final Id countryId = countryMapGraphModel.idOf (countryName);
+    final Id countryId = countryGraphModel.idOf (countryName);
     if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
     {
       result = MutatorResult.failure (PlayerReinforceCountryDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY);
@@ -862,7 +862,7 @@ public final class GameModel
     playerModel.removeArmiesFromHandOf (playerId, reinforcementCount);
     MutatorResult.commitAllSuccessful (results.toArray (new MutatorResult <?> [results.size ()]));
 
-    final CountryPacket countryPacket = countryMapGraphModel.countryPacketWith (countryId);
+    final CountryPacket countryPacket = countryGraphModel.countryPacketWith (countryId);
     publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), countryPacket, reinforcementCount));
   }
 
@@ -936,7 +936,7 @@ public final class GameModel
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
     for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (getCurrentPlayerId ()))
     {
-      final Id countryId = countryMapGraphModel.countryWith (country.getName ());
+      final Id countryId = countryGraphModel.countryWith (country.getName ());
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
     }
 
@@ -957,18 +957,18 @@ public final class GameModel
     final PlayerPacket currentPlayerPacket = getCurrentPlayerPacket ();
 
     final String sourceCountryName = event.getSourceCountryName ();
-    final Id sourceCountry = countryMapGraphModel.countryWith (sourceCountryName);
+    final Id sourceCountry = countryGraphModel.countryWith (sourceCountryName);
     final String targetCountryName = event.getTargetCounryName ();
-    final Id targetCountry = countryMapGraphModel.countryWith (targetCountryName);
+    final Id targetCountry = countryGraphModel.countryWith (targetCountryName);
 
-    if (!countryMapGraphModel.existsCountryWith (sourceCountryName))
+    if (!countryGraphModel.existsCountryWith (sourceCountryName))
     {
       publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket,
               PlayerSelectAttackVectorDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
-    if (!countryMapGraphModel.existsCountryWith (targetCountryName))
+    if (!countryGraphModel.existsCountryWith (targetCountryName))
     {
       publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket,
               PlayerSelectAttackVectorDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
@@ -1058,7 +1058,7 @@ public final class GameModel
     checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
 
     final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
-    final CountryPacket attackingCountry = countryMapGraphModel.countryPacketWith (attackVector.getSourceCountry ());
+    final CountryPacket attackingCountry = countryGraphModel.countryPacketWith (attackVector.getSourceCountry ());
 
     // Use the maximum dice since the player did not choose a die count in time.
     final int dieCount = rules.getMaxAttackerDieCount (attackingCountry.getArmyCount ());
@@ -1077,7 +1077,7 @@ public final class GameModel
     checkCacheValues (CacheKey.BATTLE_ATTACK_VECTOR);
 
     final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
-    final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
+    final CountryPacket defendingCountry = countryGraphModel.countryPacketWith (attackVector.getTargetCountry ());
 
     // Use the maximum dice since the player did not choose a die count in time.
     final int dieCount = rules.getMaxDefenderDieCount (defendingCountry.getArmyCount ());
@@ -1103,8 +1103,8 @@ public final class GameModel
     final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
     final PlayerPacket attackingPlayer = playerModel.playerPacketWith (attackVector.getPlayerId ());
     final PlayerPacket defendingPlayer = playerModel.playerPacketWith (countryOwnerModel.ownerOf (attackVector.getTargetCountry ()));
-    final CountryPacket attackingCountry = countryMapGraphModel.countryPacketWith (attackVector.getSourceCountry ());
-    final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
+    final CountryPacket attackingCountry = countryGraphModel.countryPacketWith (attackVector.getSourceCountry ());
+    final CountryPacket defendingCountry = countryGraphModel.countryPacketWith (attackVector.getTargetCountry ());
     // @formatter:on
 
     publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
@@ -1163,7 +1163,7 @@ public final class GameModel
     final AttackVector attackVector = turnDataCache.get (CacheKey.BATTLE_ATTACK_VECTOR, AttackVector.class);
     final Id defendingPlayerId = countryOwnerModel.ownerOf (attackVector.getTargetCountry ());
     final PlayerPacket defendingPlayer = playerModel.playerPacketWith (defendingPlayerId);
-    final CountryPacket defendingCountry = countryMapGraphModel.countryPacketWith (attackVector.getTargetCountry ());
+    final CountryPacket defendingCountry = countryGraphModel.countryPacketWith (attackVector.getTargetCountry ());
 
     if (!defendingPlayer.equals (sender.get ()))
     {
@@ -1210,8 +1210,8 @@ public final class GameModel
     final int newDefenderArmyCount = countryArmyModel.getArmyCountFor (defendingCountryId);
     final int attackerArmyCountDelta = newAttackerArmyCount - initialAttackerArmyCount;
     final int defenderArmyCountDelta = newDefenderArmyCount - initialDefenderAmryCount;
-    final CountryPacket attackerCountry = countryMapGraphModel.countryPacketWith (attackingCountryId);
-    final CountryPacket defenderCountry = countryMapGraphModel.countryPacketWith (defendingCountryId);
+    final CountryPacket attackerCountry = countryGraphModel.countryPacketWith (attackingCountryId);
+    final CountryPacket defenderCountry = countryGraphModel.countryPacketWith (defendingCountryId);
     final Id newOwnerId = countryOwnerModel.ownerOf (attackingCountryId);
     final Id prevOwnerId = countryOwnerModel.ownerOf (defendingCountryId);
     final PlayerPacket prevOwner = playerModel.playerPacketWith (prevOwnerId);
@@ -1236,7 +1236,7 @@ public final class GameModel
     turnDataCache.put (CacheKey.OCCUPY_MIN_ARMY_COUNT, rules.getMinOccupyArmyCount (attackOrder.getDieCount ()));
     turnDataCache.put (CacheKey.OCCUPY_MAX_ARMY_COUNT, rules.getMaxOccupyArmyCount (newAttackerArmyCount));
 
-    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryMapGraphModel,
+    final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryGraphModel,
                                                                 attackerArmyCountDelta, defenderArmyCountDelta);
 
     publish (new PlayerOrderAttackSuccessEvent (resultPacket.getAttackingPlayer (), resultPacket));
@@ -1324,8 +1324,8 @@ public final class GameModel
       return false;
     }
 
-    final Id sourceCountryId = countryMapGraphModel.countryWith (sourceCountry.getName ());
-    final Id targetCountryId = countryMapGraphModel.countryWith (targetCountry.getName ());
+    final Id sourceCountryId = countryGraphModel.countryWith (sourceCountry.getName ());
+    final Id targetCountryId = countryGraphModel.countryWith (targetCountry.getName ());
 
     final MutatorResult <PlayerOccupyCountryResponseDeniedEvent.Reason> res1, res2;
     res1 = countryArmyModel.requestToRemoveArmiesFromCountry (sourceCountryId, deltaArmyCount);
@@ -1344,8 +1344,8 @@ public final class GameModel
 
     final PlayerPacket updatedPlayerPacket = getCurrentPlayerPacket ();
     final PlayerPacket updatedPrevTargetCountryOwner = playerModel.playerPacketWith (prevTargetCountryOwnerId);
-    final CountryPacket updatedSourceCountry = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    final CountryPacket updatedTargetCountry = countryMapGraphModel.countryPacketWith (targetCountryId);
+    final CountryPacket updatedSourceCountry = countryGraphModel.countryPacketWith (sourceCountryId);
+    final CountryPacket updatedTargetCountry = countryGraphModel.countryPacketWith (targetCountryId);
     publish (new DefaultCountryArmiesChangedEvent (updatedSourceCountry, -deltaArmyCount));
     publish (new DefaultCountryArmiesChangedEvent (updatedTargetCountry, deltaArmyCount));
     publish (new PlayerOccupyCountryResponseSuccessEvent (updatedPlayerPacket, updatedPrevTargetCountryOwner,
@@ -1382,12 +1382,12 @@ public final class GameModel
     for (final CountryPacket country : ownedCountries)
     {
       if (!country.hasAtLeastNArmies (rules.getMinArmiesOnSourceCountryForFortify ())) continue;
-      final Id countryId = countryMapGraphModel.countryWith (country.getName ());
-      final ImmutableSet <Id> adjCountries = countryMapGraphModel.getAdjacentNodes (countryId);
+      final Id countryId = countryGraphModel.countryWith (country.getName ());
+      final ImmutableSet <Id> adjCountries = countryGraphModel.getAdjacentNodes (countryId);
       for (final Id adjCountry : adjCountries)
       {
         if (!countryOwnerModel.isCountryOwnedBy (adjCountry, currentPlayerId)) continue;
-        validFortifyVectorBuilder.put (country, countryMapGraphModel.countryPacketWith (adjCountry));
+        validFortifyVectorBuilder.put (country, countryGraphModel.countryPacketWith (adjCountry));
       }
     }
 
@@ -1447,22 +1447,22 @@ public final class GameModel
       return false;
     }
 
-    if (!countryMapGraphModel.existsCountryWith (event.getSourceCountry ()))
+    if (!countryGraphModel.existsCountryWith (event.getSourceCountry ()))
     {
       publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
               PlayerSelectFortifyVectorDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
-    if (!countryMapGraphModel.existsCountryWith (event.getTargetCountry ()))
+    if (!countryGraphModel.existsCountryWith (event.getTargetCountry ()))
     {
       publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
               PlayerSelectFortifyVectorDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
-    final Id sourceCountryId = countryMapGraphModel.countryWith (event.getSourceCountry ());
-    final Id targetCountryId = countryMapGraphModel.countryWith (event.getTargetCountry ());
+    final Id sourceCountryId = countryGraphModel.countryWith (event.getSourceCountry ());
+    final Id targetCountryId = countryGraphModel.countryWith (event.getTargetCountry ());
 
     if (!countryOwnerModel.isCountryOwnedBy (sourceCountryId, currentPlayerId))
     {
@@ -1478,7 +1478,7 @@ public final class GameModel
       return false;
     }
 
-    if (!countryMapGraphModel.areAdjacent (sourceCountryId, targetCountryId))
+    if (!countryGraphModel.areAdjacent (sourceCountryId, targetCountryId))
     {
       publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
               PlayerSelectFortifyVectorDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
@@ -1502,8 +1502,8 @@ public final class GameModel
       return false;
     }
 
-    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountryId);
-    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountryId);
+    final CountryPacket sourceCountryPacket = countryGraphModel.countryPacketWith (sourceCountryId);
+    final CountryPacket targetCountryPacket = countryGraphModel.countryPacketWith (targetCountryId);
     final PlayerPacket playerPacket = getCurrentPlayerPacket ();
     final int minDeltaArmyCount = rules.getMinFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
     final int maxDeltaArmyCount = rules.getMaxFortifyDeltaArmyCount (sourceCountryArmyCount, targetCountryArmyCount);
@@ -1574,8 +1574,8 @@ public final class GameModel
 
     MutatorResult.commitAllSuccessful (res1, res2);
 
-    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountry);
-    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
+    final CountryPacket sourceCountryPacket = countryGraphModel.countryPacketWith (sourceCountry);
+    final CountryPacket targetCountryPacket = countryGraphModel.countryPacketWith (targetCountry);
     publish (new DefaultCountryArmiesChangedEvent (sourceCountryPacket, -deltaArmyCount));
     publish (new DefaultCountryArmiesChangedEvent (targetCountryPacket, deltaArmyCount));
     publish (new PlayerOrderFortifySuccessEvent (currentPlayer, sourceCountryPacket, targetCountryPacket,
@@ -1592,8 +1592,8 @@ public final class GameModel
 
     final Id sourceCountry = turnDataCache.get (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, Id.class);
     final Id targetCountry = turnDataCache.get (CacheKey.FORTIFY_TARGET_COUNTRY_ID, Id.class);
-    final CountryPacket sourceCountryPacket = countryMapGraphModel.countryPacketWith (sourceCountry);
-    final CountryPacket targetCountryPacket = countryMapGraphModel.countryPacketWith (targetCountry);
+    final CountryPacket sourceCountryPacket = countryGraphModel.countryPacketWith (sourceCountry);
+    final CountryPacket targetCountryPacket = countryGraphModel.countryPacketWith (targetCountry);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
     final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
@@ -1701,16 +1701,16 @@ public final class GameModel
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
-    final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    final CountryGraphModel countryGraphModel = playMapModel.getCountryGraphModel ();
     final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
 
     final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapView = ImmutableMap.builder ();
-    for (final Id countryId : countryMapGraphModel)
+    for (final Id countryId : countryGraphModel)
     {
       if (!countryOwnerModel.isCountryOwned (countryId)) continue;
 
       final Id ownerId = countryOwnerModel.ownerOf (countryId);
-      playMapView.put (countryMapGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
+      playMapView.put (countryGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
     }
     return playMapView.build ();
   }
@@ -1768,12 +1768,12 @@ public final class GameModel
 
   private PendingBattleActorPacket asPacket (final PendingBattleActor battleActor)
   {
-    return BattlePackets.from (battleActor, playerModel, countryMapGraphModel);
+    return BattlePackets.from (battleActor, playerModel, countryGraphModel);
   }
 
   private FinalBattleActorPacket asPacket (final FinalBattleActor battleActor)
   {
-    return BattlePackets.from (battleActor, playerModel, countryMapGraphModel);
+    return BattlePackets.from (battleActor, playerModel, countryGraphModel);
   }
 
   private void publish (final Event event)
@@ -1957,9 +1957,8 @@ public final class GameModel
       final CountryFactory defaultCountryFactory = CountryFactory.generateDefaultCountries (gameRules
               .getTotalCountryCount ());
       final ContinentFactory emptyContinentFactory = new ContinentFactory ();
-      final CountryMapGraphModel disjointCountryGraph = CountryMapGraphModel
-              .disjointCountryGraphFrom (defaultCountryFactory);
-      playMapModel = new DefaultPlayMapModelFactory (gameRules).create (disjointCountryGraph, ContinentMapGraphModel
+      final CountryGraphModel disjointCountryGraph = CountryGraphModel.disjointCountryGraphFrom (defaultCountryFactory);
+      playMapModel = new DefaultPlayMapModelFactory (gameRules).create (disjointCountryGraph, ContinentGraphModel
               .disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
       cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());

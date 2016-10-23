@@ -47,12 +47,12 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.CountryColorToNameLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.DefaultPlayMapInputDetectionImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.PlayMapInputDetectionImageLoader;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsoluteMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.MapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
 import com.forerunnergames.peril.common.io.BiMapDataLoader;
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
@@ -72,34 +72,34 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
   }
 
   @Override
-  public void loadAssets (final MapMetadata mapMetadata)
+  public void loadAssets (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    imageLoader.load (mapMetadata);
+    imageLoader.load (playMapMetadata);
   }
 
   @Override
-  public boolean isFinishedLoadingAssets (final MapMetadata mapMetadata)
+  public boolean isFinishedLoadingAssets (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    return imageLoader.isFinishedLoading (mapMetadata);
+    return imageLoader.isFinishedLoading (playMapMetadata);
   }
 
   @Override
-  public PlayMapInputDetection create (final MapMetadata mapMetadata, final Vector2 playMapReferenceSize)
+  public PlayMapInputDetection create (final PlayMapMetadata playMapMetadata, final Vector2 playMapReferenceSize)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
     Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
-    Preconditions.checkIsTrue (isFinishedLoadingAssets (mapMetadata), Strings
-            .format ("Assets must finish loading before creating {} for map [{}].",
-                     PlayMapInputDetection.class.getSimpleName (), mapMetadata));
+    Preconditions.checkIsTrue (isFinishedLoadingAssets (playMapMetadata), Strings
+            .format ("Assets must finish loading before creating {} for play map [{}].",
+                     PlayMapInputDetection.class.getSimpleName (), playMapMetadata));
 
     // @formatter:off
 
     final PlayMapCoordinateToRgbaColorConverter playMapCoordinateToRgbaColorConverter =
-            new DefaultPlayMapCoordinateToRgbaColorConverter (imageLoader.get (mapMetadata));
+            new DefaultPlayMapCoordinateToRgbaColorConverter (imageLoader.get (playMapMetadata));
 
     final PlayMapCoordinateToTerritoryColorConverter <CountryColor> playMapCoordinateToCountryColorConverter =
             new PlayMapCoordinateToCountryColorConverter (playMapCoordinateToRgbaColorConverter);
@@ -115,20 +115,20 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
     final BiMapDataLoader <ContinentColor, String> continentColorToNameLoader =
             new ContinentColorToNameLoader (streamParserFactory);
 
-    final MapResourcesPathParser absoluteMapResourcesPathParser =
-            new AbsoluteMapResourcesPathParser (mapMetadata.getMode ());
+    final PlayMapResourcesPathParser absolutePlayMapResourcesPathParser =
+            new AbsolutePlayMapResourcesPathParser (playMapMetadata.getMode ());
 
     final TerritoryColorToNameConverter <CountryColor> countryColorToNameConverter =
             new CountryColorToNameConverter (
                     countryColorToNameLoader.load (
-                            absoluteMapResourcesPathParser.parseCountryInputDetectionDataFileNamePath (
-                                    mapMetadata)));
+                            absolutePlayMapResourcesPathParser.parseCountryInputDetectionDataFileNamePath (
+                                    playMapMetadata)));
 
     final TerritoryColorToNameConverter <ContinentColor> continentColorToNameConverter =
             new ContinentColorToNameConverter (
                     continentColorToNameLoader.load (
-                            absoluteMapResourcesPathParser.parseContinentInputDetectionDataFileNamePath (
-                                    mapMetadata)));
+                            absolutePlayMapResourcesPathParser.parseContinentInputDetectionDataFileNamePath (
+                                    playMapMetadata)));
 
     final PlayMapCoordinateToTerritoryNameConverter playMapCoordinateToCountryNameConverter =
             new PlayMapCoordinateToCountryNameConverter (
@@ -172,10 +172,10 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
   }
 
   @Override
-  public void destroy (final MapMetadata mapMetadata)
+  public void destroy (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    imageLoader.unload (mapMetadata);
+    imageLoader.unload (playMapMetadata);
   }
 }

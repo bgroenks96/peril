@@ -18,9 +18,9 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 public interface CountryImageDataRepositoryFactory
 {
-  CountryImageDataRepository create (final MapMetadata mapMetadata);
+  CountryImageDataRepository create (final PlayMapMetadata playMapMetadata);
 }

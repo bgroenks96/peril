@@ -10,9 +10,9 @@ import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
-import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
@@ -29,8 +29,8 @@ public final class DefaultIntelBox implements IntelBox
   private final Label playerNameTextLabel;
   private final Label serverNameSettingLabel;
   private final Label serverNameTextLabel;
-  private final Label mapNameSettingLabel;
-  private final Label mapNameTextLabel;
+  private final Label playMapNameSettingLabel;
+  private final Label playMapNameTextLabel;
   private final Label gameRoundSettingLabel;
   private final Label gameRoundTextLabel;
   private final Label gamePhaseSettingLabel;
@@ -72,8 +72,8 @@ public final class DefaultIntelBox implements IntelBox
     playerNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
     serverNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Server: ");
     serverNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
-    mapNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Map: ");
-    mapNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
+    playMapNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Map: ");
+    playMapNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
     gameRoundSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Round: ");
     gameRoundTextLabel = widgetFactory.createIntelBoxSettingTextLabel ("?");
     gamePhaseSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Phase: ");
@@ -120,10 +120,10 @@ public final class DefaultIntelBox implements IntelBox
 
     intelBoxTable.row ().padLeft (16).padRight (16).spaceTop (10).spaceBottom (10).expandY ();
 
-    final Table mapNameTable = new Table ();
-    mapNameTable.add (mapNameSettingLabel).fill ();
-    mapNameTable.add (mapNameTextLabel).expandX ().fill ();
-    intelBoxTable.add (mapNameTable).expandX ().fill ();
+    final Table playMapNameTable = new Table ();
+    playMapNameTable.add (playMapNameSettingLabel).fill ();
+    playMapNameTable.add (playMapNameTextLabel).expandX ().fill ();
+    intelBoxTable.add (playMapNameTable).expandX ().fill ();
 
     intelBoxTable.row ().padLeft (16).padRight (16).spaceTop (10).spaceBottom (10).expandY ();
 
@@ -202,7 +202,7 @@ public final class DefaultIntelBox implements IntelBox
 
     gameServerConfig = config;
 
-    setMapMetadata (config.getMapMetadata ());
+    setPlayMapMetadata (config.getPlayMapMetadata ());
     setServerName (config.getGameServerName ());
     setWinConditions (ownedCountries, config);
   }
@@ -214,11 +214,11 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void setMapMetadata (final MapMetadata mapMetadata)
+  public void setPlayMapMetadata (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    mapNameTextLabel.setText (Strings.toProperCase (mapMetadata.getName ()));
+    playMapNameTextLabel.setText (Strings.toProperCase (playMapMetadata.getName ()));
   }
 
   @Override
@@ -270,7 +270,7 @@ public final class DefaultIntelBox implements IntelBox
   {
     playerNameTextLabel.setText ("?");
     serverNameTextLabel.setText ("?");
-    mapNameTextLabel.setText ("?");
+    playMapNameTextLabel.setText ("?");
     gameRoundTextLabel.setText ("?");
     gamePhaseTextLabel.setText ("?");
     conquerWinPercentTextLabel.setText ("? of ? %");
@@ -301,8 +301,8 @@ public final class DefaultIntelBox implements IntelBox
     playerNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
     serverNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
     serverNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
-    mapNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
-    mapNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
+    playMapNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
+    playMapNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
     gameRoundSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
     gameRoundTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextLabelStyle ());
     gamePhaseSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());

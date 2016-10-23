@@ -21,7 +21,7 @@ package com.forerunnergames.peril.core.model.battle;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.id.Id;

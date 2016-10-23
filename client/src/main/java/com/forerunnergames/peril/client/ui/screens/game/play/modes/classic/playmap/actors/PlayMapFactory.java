@@ -18,17 +18,17 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 public interface PlayMapFactory
 {
-  void loadAssets (final MapMetadata mapMetadata);
+  void loadAssets (final PlayMapMetadata playMapMetadata);
 
-  boolean isFinishedLoadingAssets (final MapMetadata mapMetadata);
+  boolean isFinishedLoadingAssets (final PlayMapMetadata playMapMetadata);
 
-  PlayMap create (final MapMetadata mapMetadata);
+  PlayMap create (final PlayMapMetadata playMapMetadata);
 
-  void destroy (final MapMetadata mapMetadata);
+  void destroy (final PlayMapMetadata playMapMetadata);
 
-  float getAssetLoadingProgressPercent (final MapMetadata mapMetadata);
+  float getAssetLoadingProgressPercent (final PlayMapMetadata playMapMetadata);
 }

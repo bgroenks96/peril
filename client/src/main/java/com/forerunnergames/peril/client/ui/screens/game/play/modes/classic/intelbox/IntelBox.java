@@ -2,9 +2,9 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.inte
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 
 import javax.annotation.Nullable;
@@ -17,7 +17,7 @@ public interface IntelBox
 
   void setClientConfiguration (final ClientConfiguration config);
 
-  void setMapMetadata (final MapMetadata mapMetadata);
+  void setPlayMapMetadata (final PlayMapMetadata playMapMetadata);
 
   void setGamePhaseName (final String phaseName);
 

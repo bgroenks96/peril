@@ -87,7 +87,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBo
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
@@ -1124,7 +1124,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     this.playMap = playMap;
     playMapCell.setActor (playMap.asActor ());
-    intelBox.setMapMetadata (playMap.getMapMetadata ());
+    intelBox.setPlayMapMetadata (playMap.getPlayMapMetadata ());
     gamePhaseHandlers.setPlayMap (playMap);
     allDialogListeners.setPlayMap (playMap);
     debugInputProcessor.setPlayMap (playMap);
@@ -1135,14 +1135,14 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     // playMap must be used here because it will be reset to
     // PlayMap#NULL in #hide during the call to #toScreen.
-    final MapMetadata mapMetadata = playMap.getMapMetadata ();
+    final PlayMapMetadata playMapMetadata = playMap.getPlayMapMetadata ();
 
     toScreen (ScreenId.PLAY_TO_MENU_LOADING);
 
     // The play-to-menu loading screen is now active & can therefore receive events.
 
     publishAsync (new UnloadPlayScreenAssetsRequestEvent (GameMode.CLASSIC));
-    publishAsync (new UnloadPlayMapRequestEvent (mapMetadata));
+    publishAsync (new UnloadPlayMapRequestEvent (playMapMetadata));
   }
 
   private final class DefaultAttackDialogListener extends AbstractBattleDialogListener implements AttackDialogListener

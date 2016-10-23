@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.core.model.card.io;
 
 import com.forerunnergames.peril.common.game.GameMode;
-import com.forerunnergames.peril.core.model.map.io.CoreMapDataPathParser;
+import com.forerunnergames.peril.core.model.playmap.io.CorePlayMapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
@@ -29,7 +29,7 @@ public final class CardModelDataFactoryCreator
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
 
-    return new DefaultCardModelDataFactory (new CoreMapDataPathParser (gameMode));
+    return new DefaultCardModelDataFactory (new CorePlayMapDataPathParser (gameMode));
   }
 
   private CardModelDataFactoryCreator ()

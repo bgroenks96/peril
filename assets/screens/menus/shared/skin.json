@@ -76,7 +76,7 @@
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
     "dialog-modal"         : { "titleFont": "pirulen-28", "background": "dialog-background",             "titleFontColor": "white", "stageBackground": "dialogDim" },
     "players-dialog"       : { "titleFont": "pirulen-28", "background": "players-dialog-background",     "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "map-dialog"           : { "titleFont": "pirulen-28", "background": "map-dialog-background",         "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "play-map-dialog"      : { "titleFont": "pirulen-28", "background": "play-map-dialog-background",    "titleFontColor": "white", "stageBackground": "dialogDim" },
     "my-settings-dialog"   : { "titleFont": "pirulen-28", "background": "my-settings-dialog-background", "titleFontColor": "white", "stageBackground": "dialogDim" }
   },
 

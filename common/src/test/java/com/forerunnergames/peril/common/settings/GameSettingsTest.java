@@ -26,170 +26,170 @@ import org.junit.Test;
 public class GameSettingsTest
 {
   @Test
-  public void testValidMapNamePatternPassesNoSpacesAllLowerCase ()
+  public void testValidPlayMapNamePatternPassesNoSpacesAllLowerCase ()
   {
-    final String testString = "mapname";
+    final String testString = "playmapname";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesNoSpacesAllUpperCase ()
+  public void testValidPlayMapNamePatternPassesNoSpacesAllUpperCase ()
   {
-    final String testString = "MAPNAME";
+    final String testString = "PLAYMAPNAME";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesNoSpacesMixedCase ()
+  public void testValidPlayMapNamePatternPassesNoSpacesMixedCase ()
   {
-    final String testString = "MapName";
+    final String testString = "PlayMapName";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesSpacesMixedCase ()
+  public void testValidPlayMapNamePatternPassesSpacesMixedCase ()
   {
-    final String testString = "A Map name";
+    final String testString = "A Play Map name";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesNumbers ()
+  public void testValidPlayMapNamePatternPassesNumbers ()
   {
-    final String testString = "A m4p n4me";
+    final String testString = "A pl4y m4p n4me";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesNumbersOnly ()
+  public void testValidPlayMapNamePatternPassesNumbersOnly ()
   {
     final String testString = "1234";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesNumbersBeginning ()
+  public void testValidPlayMapNamePatternPassesNumbersBeginning ()
   {
-    final String testString = "1234 Test Map Name";
+    final String testString = "1234 Test Play Map Name";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesNumbersEnd ()
+  public void testValidPlayMapNamePatternPassesNumbersEnd ()
   {
-    final String testString = "Test Map Name 23487";
+    final String testString = "Test Play Map Name 23487";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesMinLengthNumbersOnly ()
+  public void testValidPlayMapNamePatternPassesMinLengthNumbersOnly ()
   {
     final String testString = "12";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesMinLengthLowercaseLettersOnly ()
+  public void testValidPlayMapNamePatternPassesMinLengthLowercaseLettersOnly ()
   {
     final String testString = "ab";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternPassesMinLengthUppercaseLettersOnly ()
+  public void testValidPlayMapNamePatternPassesMinLengthUppercaseLettersOnly ()
   {
     final String testString = "ZQ";
 
-    assertTrue (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertTrue (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsMoreThanOneSpaceBetweenWords ()
+  public void testValidPlayMapNamePatternFailsMoreThanOneSpaceBetweenWords ()
   {
-    final String testString = "A Map  name";
+    final String testString = "A Play Map  name";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsSingleSpaceBeginning ()
+  public void testValidPlayMapNamePatternFailsSingleSpaceBeginning ()
   {
-    final String testString = " A Map name";
+    final String testString = " A Play Map name";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsSingleSpaceEnd ()
+  public void testValidPlayMapNamePatternFailsSingleSpaceEnd ()
   {
-    final String testString = "A Map name ";
+    final String testString = "A Play Map name ";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsMultipleSpacesBeginning ()
+  public void testValidPlayMapNamePatternFailsMultipleSpacesBeginning ()
   {
-    final String testString = "   A Map name";
+    final String testString = "   A Play Map name";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsMultipleSpacesEnd ()
+  public void testValidPlayMapNamePatternFailsMultipleSpacesEnd ()
   {
-    final String testString = "A Map name   ";
+    final String testString = "A Play Map name   ";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsIllegalCharactersMiddle ()
+  public void testValidPlayMapNamePatternFailsIllegalCharactersMiddle ()
   {
-    final String testString = "A Map @#$& name";
+    final String testString = "A Play Map @#$& name";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsIllegalCharacterBeginning ()
+  public void testValidPlayMapNamePatternFailsIllegalCharacterBeginning ()
   {
-    final String testString = "!A Map name";
+    final String testString = "!A Play Map name";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsIllegalCharacterEnd ()
+  public void testValidPlayMapNamePatternFailsIllegalCharacterEnd ()
   {
-    final String testString = "A Map name]";
+    final String testString = "A Play Map name]";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsBeyondMaxLength ()
+  public void testValidPlayMapNamePatternFailsBeyondMaxLength ()
   {
-    final String testString = "A Map name that is way too long to be Valid";
+    final String testString = "A Play Map name that is way too long to be Valid";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 
   @Test
-  public void testValidMapNamePatternFailsLessThanMinLength ()
+  public void testValidPlayMapNamePatternFailsLessThanMinLength ()
   {
     final String testString = "";
 
-    assertFalse (GameSettings.VALID_MAP_NAME_PATTERN.matcher (testString).matches ());
+    assertFalse (GameSettings.VALID_PLAY_MAP_NAME_PATTERN.matcher (testString).matches ());
   }
 }

@@ -32,7 +32,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMapFactory;
 import com.forerunnergames.peril.common.game.GameMode;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
@@ -130,9 +130,9 @@ public final class PlayToMenuLoadingScreen extends AbstractLoadingScreen
       @Override
       public void run ()
       {
-        if (event.isNullMapMetadata ()) return;
+        if (event.isNullPlayMapMetadata ()) return;
 
-        unloadPlayMapAssetsSync (event.getMapMetadata ());
+        unloadPlayMapAssetsSync (event.getPlayMapMetadata ());
         resumeLoadingMenuAssetsStatus ();
       }
     });
@@ -144,10 +144,10 @@ public final class PlayToMenuLoadingScreen extends AbstractLoadingScreen
     unloadAssetsSync (AssetSettings.fromGameMode (mode));
   }
 
-  private void unloadPlayMapAssetsSync (final MapMetadata mapMetadata)
+  private void unloadPlayMapAssetsSync (final PlayMapMetadata playMapMetadata)
   {
-    status ("Unloading map \"{}\"...", Strings.toProperCase (mapMetadata.getName ()));
-    playMapFactory.destroy (mapMetadata);
+    status ("Unloading map \"{}\"...", Strings.toProperCase (playMapMetadata.getName ()));
+    playMapFactory.destroy (playMapMetadata);
   }
 
   private void resumeLoadingMenuAssetsStatus ()

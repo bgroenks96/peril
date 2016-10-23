@@ -27,11 +27,11 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.continent.ContinentOwnerModel;
-import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentOwnerModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
@@ -43,7 +43,7 @@ import com.google.common.collect.Sets;
 public final class DefaultEventFactory implements EventFactory
 {
   private final PlayerModel playerModel;
-  private final CountryMapGraphModel countryMapGraphModel;
+  private final CountryGraphModel countryGraphModel;
   private final CountryOwnerModel countryOwnerModel;
   private final CountryArmyModel countryArmyModel;
   private final ContinentOwnerModel continentOwnerModel;
@@ -64,7 +64,7 @@ public final class DefaultEventFactory implements EventFactory
     this.cardModel = cardModel;
     this.rules = rules;
 
-    countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    countryGraphModel = playMapModel.getCountryGraphModel ();
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
     countryArmyModel = playMapModel.getCountryArmyModel ();
     continentOwnerModel = playMapModel.getContinentOwnerModel ();

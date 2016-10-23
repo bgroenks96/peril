@@ -57,11 +57,11 @@ public final class AssetSettings
   // Prepend: Relative countries directory (compile-time)
   // Append: Country atlases (runtime)
   public static final String RELATIVE_COUNTRY_ATLASES_DIRECTORY = "atlases/";
-  // Map resource files
-  public static final String MAP_BACKGROUND_IMAGE_FILENAME = "background.png";
-  public static final Class <Texture> MAP_BACKGROUND_IMAGE_TYPE = Texture.class;
-  public static final String MAP_INPUT_DETECTION_IMAGE_FILENAME = "inputDetection.png";
-  public static final Class <Pixmap> MAP_INPUT_DETECTION_IMAGE_TYPE = Pixmap.class;
+  // Play map resource files
+  public static final String PLAY_MAP_BACKGROUND_IMAGE_FILENAME = "background.png";
+  public static final Class <Texture> PLAY_MAP_BACKGROUND_IMAGE_TYPE = Texture.class;
+  public static final String PLAY_MAP_INPUT_DETECTION_IMAGE_FILENAME = "inputDetection.png";
+  public static final Class <Pixmap> PLAY_MAP_INPUT_DETECTION_IMAGE_TYPE = Pixmap.class;
   public static final String CONTINENT_INPUT_DETECTION_DATA_FILENAME = "inputDetection.txt";
   public static final String COUNTRY_IMAGE_DATA_FILENAME = "imageData.txt";
   public static final String COUNTRY_INPUT_DETECTION_DATA_FILENAME = "inputDetection.txt";
@@ -150,7 +150,7 @@ public final class AssetSettings
   public static final ImmutableList <AssetDescriptor <?>> PERIL_MODE_PLAY_SCREEN_ASSET_DESCRIPTORS = ImmutableList
           .<AssetDescriptor <?>> of (PERIL_MODE_ATLAS_ASSET_DESCRIPTOR);
   private static final TextureLoader.TextureParameter GENERAL_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
-  public static final TextureLoader.TextureParameter MAP_BACKGROUND_IMAGE_PARAMETER = GENERAL_TEXTURE_PARAMETER;
+  public static final TextureLoader.TextureParameter PLAY_MAP_BACKGROUND_IMAGE_PARAMETER = GENERAL_TEXTURE_PARAMETER;
   private static final TextureLoader.TextureParameter FONT_TEXTURE_PARAMETER = new TextureLoader.TextureParameter ();
   private static final String S3_BUCKET_PATH_PREFIX = "s3://";
   // Amazon S3

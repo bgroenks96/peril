@@ -33,16 +33,16 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.GameModelTest;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.PlayMapStateBuilder;
-import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
-import com.forerunnergames.peril.core.model.map.country.DefaultCountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.DefaultCountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapStateBuilder;
+import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
+import com.forerunnergames.peril.core.model.playmap.country.DefaultCountryArmyModel;
+import com.forerunnergames.peril.core.model.playmap.country.DefaultCountryOwnerModel;
 import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.id.Id;
@@ -58,7 +58,7 @@ public class BattleModelTest
 {
   private static final int TEST_COUNTRY_COUNT = 10;
   private static final ImmutableList <String> countryNames = generateCountryNameList (TEST_COUNTRY_COUNT);
-  private CountryMapGraphModel countryMapGraphModel;
+  private CountryGraphModel countryGraphModel;
   private CountryOwnerModel countryOwnerModel;
   private CountryArmyModel countryArmyModel;
   private BattleModel battleModel;
@@ -68,11 +68,11 @@ public class BattleModelTest
   @Before
   public void prepare ()
   {
-    countryMapGraphModel = GameModelTest.createDefaultTestCountryMapGraph (countryNames);
+    countryGraphModel = GameModelTest.createDefaultTestCountryGraph (countryNames);
     gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (countryMapGraphModel.size ()).build ();
-    countryOwnerModel = new DefaultCountryOwnerModel (countryMapGraphModel, gameRules);
-    countryArmyModel = new DefaultCountryArmyModel (countryMapGraphModel, gameRules);
+            .totalCountryCount (countryGraphModel.size ()).build ();
+    countryOwnerModel = new DefaultCountryOwnerModel (countryGraphModel, gameRules);
+    countryArmyModel = new DefaultCountryArmyModel (countryGraphModel, gameRules);
     playMapModel = mockPlayMapModel ();
     battleModel = new DefaultBattleModel (playMapModel);
   }
@@ -93,7 +93,7 @@ public class BattleModelTest
     final ImmutableSet.Builder <CountryPacket> expected = ImmutableSet.builder ();
     for (int i = 2; i < countries.size (); i++)
     {
-      expected.add (countryMapGraphModel.countryPacketWith (countries.get (i)));
+      expected.add (countryGraphModel.countryPacketWith (countries.get (i)));
     }
 
     final ImmutableSet <CountryPacket> actual = battleModel.getValidAttackTargetsFor (countries.get (0), playMapModel);
@@ -424,7 +424,7 @@ public class BattleModelTest
   private PlayMapModel mockPlayMapModel ()
   {
     final PlayMapModel playMapModelMock = mock (PlayMapModel.class);
-    when (playMapModelMock.getCountryMapGraphModel ()).thenReturn (countryMapGraphModel);
+    when (playMapModelMock.getCountryGraphModel ()).thenReturn (countryGraphModel);
     when (playMapModelMock.getCountryOwnerModel ()).thenReturn (countryOwnerModel);
     when (playMapModelMock.getCountryArmyModel ()).thenReturn (countryArmyModel);
     when (playMapModelMock.getRules ()).thenReturn (gameRules);
@@ -437,7 +437,7 @@ public class BattleModelTest
     final ImmutableList.Builder <Id> builder = ImmutableList.builder ();
     for (final String name : countryNames)
     {
-      builder.add (countryMapGraphModel.countryWith (name));
+      builder.add (countryGraphModel.countryWith (name));
     }
     return builder.build ();
   }

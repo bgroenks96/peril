@@ -42,11 +42,11 @@ import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.class
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.DefaultJoinGameServerHandler;
 import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.JoinGameServerHandler;
 import com.forerunnergames.peril.common.game.GameMode;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.CrashSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -84,7 +84,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private final JoinGameServerHandler joinGameServerHandler;
   private final CreateGameServerHandler createGameServerHandler;
   private final CreateGameServerListener createGameServerListener;
-  private MapMetadata mapMetadata = MapMetadata.NULL;
+  private PlayMapMetadata playMapMetadata = PlayMapMetadata.NULL;
   private boolean createdGameFirst;
   private boolean isLoadingPlayMapAssets;
   @Nullable
@@ -121,7 +121,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   {
     super.hide ();
 
-    mapMetadata = MapMetadata.NULL;
+    playMapMetadata = PlayMapMetadata.NULL;
     gameServerConfiguration = null;
     clientConfiguration = null;
     createdGameFirst = false;
@@ -241,7 +241,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   {
     isLoadingPlayMapAssets = true;
 
-    statusWithProgressPercent ("Loading map \"{}\"...", Strings.toProperCase (mapMetadata.getName ()));
+    statusWithProgressPercent ("Loading map \"{}\"...", Strings.toProperCase (playMapMetadata.getName ()));
 
     loadAssetsAsync (new Runnable ()
     {
@@ -250,7 +250,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       {
         try
         {
-          playMapFactory.loadAssets (mapMetadata);
+          playMapFactory.loadAssets (playMapMetadata);
         }
         catch (final PlayMapLoadingException e)
         {
@@ -266,12 +266,12 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
 
     try
     {
-      return playMapFactory.create (mapMetadata);
+      return playMapFactory.create (playMapMetadata);
     }
     catch (final PlayMapLoadingException e)
     {
       handlePlayMapLoadingException (e);
-      log.warn ("Could not create {}: [{}]. Returning [{}] instead.", PlayMap.class.getSimpleName (), mapMetadata,
+      log.warn ("Could not create {}: [{}]. Returning [{}] instead.", PlayMap.class.getSimpleName (), playMapMetadata,
                 PlayMap.NULL.getClass ().getSimpleName ());
       return PlayMap.NULL;
     }
@@ -279,17 +279,17 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
 
   private boolean isFinishedLoadingPlayMapAssets ()
   {
-    return playMapFactory.isFinishedLoadingAssets (mapMetadata);
+    return playMapFactory.isFinishedLoadingAssets (playMapMetadata);
   }
 
   private void handlePlayMapLoadingException (final PlayMapLoadingException e)
   {
-    assert mapMetadata != null;
+    assert playMapMetadata != null;
 
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources for {} map \'{}\'."
                          + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                  CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                 mapMetadata.getType ().name ().toLowerCase (), Strings.toProperCase (mapMetadata.getName ()),
+                 playMapMetadata.getType ().name ().toLowerCase (), Strings.toProperCase (playMapMetadata.getName ()),
                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
   }
 
@@ -501,7 +501,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfiguration;
       MenuToPlayLoadingScreen.this.clientConfiguration = clientConfiguration;
       MenuToPlayLoadingScreen.this.players.addAll (players);
-      mapMetadata = gameServerConfiguration.getMapMetadata ();
+      playMapMetadata = gameServerConfiguration.getPlayMapMetadata ();
 
       Gdx.app.postRunnable (new Runnable ()
       {
@@ -607,9 +607,9 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     @Override
     public void onResetProgressComplete ()
     {
-      // mapMetadata & gameServerConfiguration must be used / copied here because
+      // playMapMetadata & gameServerConfiguration must be used / copied here because
       // they will be made null in #hide during the call to #toScreen.
-      final UnloadPlayMapRequestEvent unloadPlayMapRequestEvent = new UnloadPlayMapRequestEvent (mapMetadata);
+      final UnloadPlayMapRequestEvent unloadPlayMapRequestEvent = new UnloadPlayMapRequestEvent (playMapMetadata);
       @Nullable
       final GameServerConfiguration gameServerConfiguration = MenuToPlayLoadingScreen.this.gameServerConfiguration;
 

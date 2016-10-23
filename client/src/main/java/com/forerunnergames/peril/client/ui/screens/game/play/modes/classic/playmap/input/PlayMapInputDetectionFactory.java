@@ -20,15 +20,15 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 
 import com.badlogic.gdx.math.Vector2;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 public interface PlayMapInputDetectionFactory
 {
-  void loadAssets (MapMetadata mapMetadata);
+  void loadAssets (PlayMapMetadata playMapMetadata);
 
-  boolean isFinishedLoadingAssets (MapMetadata mapMetadata);
+  boolean isFinishedLoadingAssets (PlayMapMetadata playMapMetadata);
 
-  PlayMapInputDetection create (MapMetadata mapMetadata, final Vector2 playMapReferenceSize);
+  PlayMapInputDetection create (PlayMapMetadata playMapMetadata, final Vector2 playMapReferenceSize);
 
-  void destroy (MapMetadata mapMetadata);
+  void destroy (PlayMapMetadata playMapMetadata);
 }

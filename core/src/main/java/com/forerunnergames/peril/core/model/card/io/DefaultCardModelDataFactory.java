@@ -18,8 +18,8 @@
 
 package com.forerunnergames.peril.core.model.card.io;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.io.MapDataPathParser;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.io.PlayMapDataPathParser;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.tools.common.Arguments;
 
@@ -27,22 +27,22 @@ import com.google.common.collect.ImmutableSet;
 
 public final class DefaultCardModelDataFactory implements CardModelDataFactory
 {
-  private final MapDataPathParser mapDataPathParser;
+  private final PlayMapDataPathParser playMapDataPathParser;
 
-  DefaultCardModelDataFactory (final MapDataPathParser mapDataPathParser)
+  DefaultCardModelDataFactory (final PlayMapDataPathParser playMapDataPathParser)
   {
-    Arguments.checkIsNotNull (mapDataPathParser, "mapDataPathParser");
+    Arguments.checkIsNotNull (playMapDataPathParser, "playMapDataPathParser");
 
-    this.mapDataPathParser = mapDataPathParser;
+    this.playMapDataPathParser = playMapDataPathParser;
   }
 
   @Override
-  public ImmutableSet <Card> createCards (final MapMetadata mapMetadata)
+  public ImmutableSet <Card> createCards (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    final CardModelDataLoader loader = CardModelDataLoaderFactory.create (mapMetadata.getType ());
+    final CardModelDataLoader loader = CardModelDataLoaderFactory.create (playMapMetadata.getType ());
 
-    return ImmutableSet.copyOf (loader.load (mapDataPathParser.parseCardsFileNamePath (mapMetadata)).values ());
+    return ImmutableSet.copyOf (loader.load (playMapDataPathParser.parseCardsFileNamePath (playMapMetadata)).values ());
   }
 }

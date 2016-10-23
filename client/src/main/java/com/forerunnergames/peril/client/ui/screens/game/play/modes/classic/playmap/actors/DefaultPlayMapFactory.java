@@ -44,7 +44,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.common.io.BiMapDataLoader;
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableMap;
@@ -79,49 +79,49 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
   }
 
   @Override
-  public void loadAssets (final MapMetadata mapMetadata)
+  public void loadAssets (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL)) return;
+    if (playMapMetadata.equals (PlayMapMetadata.NULL)) return;
 
-    countryAtlasesLoader.load (mapMetadata);
-    playMapBackgroundImageLoader.load (mapMetadata);
-    playMapInputDetectionFactory.loadAssets (mapMetadata);
+    countryAtlasesLoader.load (playMapMetadata);
+    playMapBackgroundImageLoader.load (playMapMetadata);
+    playMapInputDetectionFactory.loadAssets (playMapMetadata);
   }
 
   @Override
-  public boolean isFinishedLoadingAssets (final MapMetadata mapMetadata)
+  public boolean isFinishedLoadingAssets (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL)) return true;
+    if (playMapMetadata.equals (PlayMapMetadata.NULL)) return true;
 
-    return countryAtlasesLoader.isFinishedLoading (mapMetadata)
-            && playMapBackgroundImageLoader.isFinishedLoading (mapMetadata)
-            && playMapInputDetectionFactory.isFinishedLoadingAssets (mapMetadata);
+    return countryAtlasesLoader.isFinishedLoading (playMapMetadata)
+            && playMapBackgroundImageLoader.isFinishedLoading (playMapMetadata)
+            && playMapInputDetectionFactory.isFinishedLoadingAssets (playMapMetadata);
   }
 
   @Override
-  public PlayMap create (final MapMetadata mapMetadata)
+  public PlayMap create (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL)) return PlayMap.NULL;
+    if (playMapMetadata.equals (PlayMapMetadata.NULL)) return PlayMap.NULL;
 
     // @formatter:off
     final BitmapFont font = new BitmapFont ();
-    final CountryImageDataRepository countryImageDataRepository = countryImageDataRepositoryFactory.create (mapMetadata);
-    final Image backgroundImage = playMapBackgroundImageLoader.get (mapMetadata);
+    final CountryImageDataRepository countryImageDataRepository = countryImageDataRepositoryFactory.create (playMapMetadata);
+    final Image backgroundImage = playMapBackgroundImageLoader.get (playMapMetadata);
     final Vector2 playMapReferenceSize = new Vector2 (backgroundImage.getWidth (), backgroundImage.getHeight ());
-    final PlayMapInputDetection playMapInputDetection = playMapInputDetectionFactory.create (mapMetadata, playMapReferenceSize);
+    final PlayMapInputDetection playMapInputDetection = playMapInputDetectionFactory.create (playMapMetadata, playMapReferenceSize);
     final HoveredTerritoryText hoveredTerritoryText = new HoveredTerritoryText (playMapInputDetection, mouseInput, font);
     final ImmutableMap.Builder <String, Country> countryNamesToActorsBuilder = ImmutableMap.builder ();
-    countryImagesFactory.create (mapMetadata, countryAtlasesLoader.get (mapMetadata));
+    countryImagesFactory.create (playMapMetadata, countryAtlasesLoader.get (playMapMetadata));
     // @formatter:on
 
     final CountryImagesRepository countryImagesRepository = new DefaultCountryImagesRepository (
-            countryImagesFactory.getPrimary (mapMetadata), countryImagesFactory.getSecondary (mapMetadata));
+            countryImagesFactory.getPrimary (playMapMetadata), countryImagesFactory.getSecondary (playMapMetadata));
 
     final CountryFactory countryFactory = new CountryFactory (countryImageDataRepository, countryImagesRepository,
             playMapReferenceSize);
@@ -132,7 +132,7 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
     }
 
     final PlayMap playMap = new DefaultPlayMap (countryNamesToActorsBuilder.build (), playMapInputDetection,
-            hoveredTerritoryText, backgroundImage, mapMetadata);
+            hoveredTerritoryText, backgroundImage, playMapMetadata);
 
     hoveredTerritoryText.setPlayMap (playMap);
 
@@ -140,23 +140,23 @@ public final class DefaultPlayMapFactory implements PlayMapFactory
   }
 
   @Override
-  public void destroy (final MapMetadata mapMetadata)
+  public void destroy (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (mapMetadata.equals (MapMetadata.NULL)) return;
+    if (playMapMetadata.equals (PlayMapMetadata.NULL)) return;
 
-    countryAtlasesLoader.unload (mapMetadata);
-    playMapBackgroundImageLoader.unload (mapMetadata);
-    playMapInputDetectionFactory.destroy (mapMetadata);
+    countryAtlasesLoader.unload (playMapMetadata);
+    playMapBackgroundImageLoader.unload (playMapMetadata);
+    playMapInputDetectionFactory.destroy (playMapMetadata);
     countryImagesFactory.destroy ();
   }
 
   @Override
-  public float getAssetLoadingProgressPercent (final MapMetadata mapMetadata)
+  public float getAssetLoadingProgressPercent (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    return isFinishedLoadingAssets (mapMetadata) ? 1.0f : assetManager.getProgressLoading ();
+    return isFinishedLoadingAssets (playMapMetadata) ? 1.0f : assetManager.getProgressLoading ();
   }
 }

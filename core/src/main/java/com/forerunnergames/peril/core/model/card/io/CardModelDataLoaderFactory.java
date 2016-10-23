@@ -20,8 +20,8 @@ package com.forerunnergames.peril.core.model.card.io;
 
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
-import com.forerunnergames.peril.common.map.MapType;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.core.model.io.InternalStreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
@@ -29,13 +29,13 @@ import com.forerunnergames.tools.common.Strings;
 
 public final class CardModelDataLoaderFactory
 {
-  public static CardModelDataLoader create (final MapType mapType)
+  public static CardModelDataLoader create (final PlayMapType playMapType)
   {
-    Arguments.checkIsNotNull (mapType, "mapType");
+    Arguments.checkIsNotNull (playMapType, "playMapType");
 
     final StreamParserFactory streamParserFactory;
 
-    switch (mapType)
+    switch (playMapType)
     {
       case STOCK:
       {
@@ -51,7 +51,7 @@ public final class CardModelDataLoaderFactory
       {
         throw new PlayMapLoadingException (Strings.format ("Cannot create {} for {}: [{}].",
                                                            CardModelDataLoader.class.getSimpleName (),
-                                                           MapType.class.getSimpleName (), mapType));
+                                                           PlayMapType.class.getSimpleName (), playMapType));
       }
     }
 

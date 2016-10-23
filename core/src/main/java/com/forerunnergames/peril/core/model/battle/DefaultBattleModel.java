@@ -28,10 +28,10 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAtta
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.model.map.PlayMapModel;
-import com.forerunnergames.peril.core.model.map.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
-import com.forerunnergames.peril.core.model.map.country.CountryOwnerModel;
+import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DataResult;
@@ -76,7 +76,7 @@ public final class DefaultBattleModel implements BattleModel
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
 
-    final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    final CountryGraphModel countryGraphModel = playMapModel.getCountryGraphModel ();
     final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
     final CountryArmyModel countryArmyModel = playMapModel.getCountryArmyModel ();
 
@@ -85,11 +85,11 @@ public final class DefaultBattleModel implements BattleModel
     if (armyCount < rules.getMinArmiesOnCountryForAttack ()) return ImmutableSet.of ();
 
     final Id owner = countryOwnerModel.ownerOf (sourceCountry);
-    final ImmutableSet <Id> adjacentCountries = countryMapGraphModel.getAdjacentNodes (sourceCountry);
+    final ImmutableSet <Id> adjacentCountries = countryGraphModel.getAdjacentNodes (sourceCountry);
     final ImmutableSet.Builder <CountryPacket> validAdjacentTargets = ImmutableSet.builder ();
     for (final Id countryId : adjacentCountries)
     {
-      final CountryPacket country = countryMapGraphModel.countryPacketWith (countryId);
+      final CountryPacket country = countryGraphModel.countryPacketWith (countryId);
       if (countryOwnerModel.ownerOf (countryId).isNot (owner)) validAdjacentTargets.add (country);
     }
 
@@ -105,7 +105,7 @@ public final class DefaultBattleModel implements BattleModel
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (targetCountry, "targetCountry");
 
-    final CountryMapGraphModel countryMapGraphModel = playMapModel.getCountryMapGraphModel ();
+    final CountryGraphModel countryGraphModel = playMapModel.getCountryGraphModel ();
     final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
     final CountryArmyModel countryArmyModel = playMapModel.getCountryArmyModel ();
 
@@ -119,7 +119,7 @@ public final class DefaultBattleModel implements BattleModel
       return DataResult.failureNoData (Reason.ALREADY_OWNER_OF_TARGET_COUNTRY);
     }
 
-    if (!countryMapGraphModel.areAdjacent (sourceCountry, targetCountry))
+    if (!countryGraphModel.areAdjacent (sourceCountry, targetCountry))
     {
       return DataResult.failureNoData (Reason.COUNTRIES_NOT_ADJACENT);
     }

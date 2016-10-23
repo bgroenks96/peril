@@ -20,17 +20,17 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 import com.google.common.collect.ImmutableList;
 
 public interface CountryAtlasesLoader
 {
-  void load (final MapMetadata mapMetadata);
+  void load (final PlayMapMetadata playMapMetadata);
 
-  boolean isFinishedLoading (final MapMetadata mapMetadata);
+  boolean isFinishedLoading (final PlayMapMetadata playMapMetadata);
 
-  ImmutableList <TextureAtlas> get (final MapMetadata mapMetadata);
+  ImmutableList <TextureAtlas> get (final PlayMapMetadata playMapMetadata);
 
-  void unload (final MapMetadata mapMetadata);
+  void unload (final PlayMapMetadata playMapMetadata);
 }

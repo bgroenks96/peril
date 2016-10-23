@@ -51,9 +51,9 @@ import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
-import com.forerunnergames.peril.common.map.DefaultMapMetadata;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
@@ -1091,8 +1091,8 @@ public class MultiplayerControllerTest
     private final CoreCommunicator coreCommunicator;
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
-    private final MapMetadata mapMetadata = new DefaultMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_MAP_NAME,
-            MapType.STOCK, gameMode);
+    private final PlayMapMetadata playMapMetadata = new DefaultPlayMapMetadata (GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME,
+            PlayMapType.STOCK, gameMode);
     private InitialCountryAssignment initialCountryAssignment = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
     // game server configuration fields
     private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;
@@ -1187,7 +1187,7 @@ public class MultiplayerControllerTest
                                                            initialCountryAssignment);
 
       final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playerLimit, spectatorLimit,
-              winPercent, initialCountryAssignment, mapMetadata, gameRules);
+              winPercent, initialCountryAssignment, playMapMetadata, gameRules);
 
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 

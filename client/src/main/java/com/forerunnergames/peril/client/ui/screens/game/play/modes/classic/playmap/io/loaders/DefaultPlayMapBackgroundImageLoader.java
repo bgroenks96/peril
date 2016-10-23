@@ -22,10 +22,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.MapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativeMapResourcesPathParser;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapResourcesPathParser;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgroundImageLoader
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultPlayMapBackgroundImageLoader.class);
-  private final Map <MapMetadata, String> loadedImageFileNames = new HashMap <> ();
+  private final Map <PlayMapMetadata, String> loadedImageFileNames = new HashMap <> ();
   private final AssetManager assetManager;
 
   public DefaultPlayMapBackgroundImageLoader (final AssetManager assetManager)
@@ -50,66 +50,68 @@ public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgro
   }
 
   @Override
-  public void load (final MapMetadata mapMetadata)
+  public void load (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (!loadedImageFileNames.containsKey (mapMetadata),
-                               Strings.format ("Background image for map [{}] was already loaded.", mapMetadata));
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions.checkIsTrue (!loadedImageFileNames.containsKey (playMapMetadata), Strings
+            .format ("Background image for play map [{}] was already loaded.", playMapMetadata));
 
-    final MapResourcesPathParser pathParser = new RelativeMapResourcesPathParser (mapMetadata.getMode ());
-    final String imageFileNamePath = pathParser.parseBackgroundImageFileNamePath (mapMetadata);
+    final PlayMapResourcesPathParser pathParser = new RelativePlayMapResourcesPathParser (playMapMetadata.getMode ());
+    final String imageFileNamePath = pathParser.parseBackgroundImageFileNamePath (playMapMetadata);
 
-    assetManager.load (imageFileNamePath, AssetSettings.MAP_BACKGROUND_IMAGE_TYPE,
-                       AssetSettings.MAP_BACKGROUND_IMAGE_PARAMETER);
+    assetManager.load (imageFileNamePath, AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_TYPE,
+                       AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_PARAMETER);
 
-    loadedImageFileNames.put (mapMetadata, imageFileNamePath);
+    loadedImageFileNames.put (playMapMetadata, imageFileNamePath);
   }
 
   @Override
-  public boolean isFinishedLoading (final MapMetadata mapMetadata)
+  public boolean isFinishedLoading (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (loadedImageFileNames.containsKey (mapMetadata),
-                               Strings.format ("Background image for map [{}] was never loaded.", mapMetadata));
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions
+            .checkIsTrue (loadedImageFileNames.containsKey (playMapMetadata),
+                          Strings.format ("Background image for play map [{}] was never loaded.", playMapMetadata));
 
-    return assetManager.isLoaded (loadedImageFileNames.get (mapMetadata));
+    return assetManager.isLoaded (loadedImageFileNames.get (playMapMetadata));
   }
 
   @Override
-  public Image get (final MapMetadata mapMetadata)
+  public Image get (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (loadedImageFileNames.containsKey (mapMetadata),
-                               Strings.format ("Background image for map [{}] was never loaded.", mapMetadata));
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions
+            .checkIsTrue (loadedImageFileNames.containsKey (playMapMetadata),
+                          Strings.format ("Background image for play map [{}] was never loaded.", playMapMetadata));
 
-    final String imageFileNamePath = loadedImageFileNames.get (mapMetadata);
+    final String imageFileNamePath = loadedImageFileNames.get (playMapMetadata);
 
-    if (!assetManager.isLoaded (imageFileNamePath, AssetSettings.MAP_BACKGROUND_IMAGE_TYPE))
+    if (!assetManager.isLoaded (imageFileNamePath, AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_TYPE))
     {
       throw new PlayMapLoadingException (Strings.format ("Background image [{}] for map [{}] is not loaded.",
-                                                         imageFileNamePath, mapMetadata));
+                                                         imageFileNamePath, playMapMetadata));
     }
 
-    return new Image (assetManager.get (imageFileNamePath, AssetSettings.MAP_BACKGROUND_IMAGE_TYPE));
+    return new Image (assetManager.get (imageFileNamePath, AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_TYPE));
   }
 
   @Override
-  public void unload (final MapMetadata mapMetadata)
+  public void unload (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (!loadedImageFileNames.containsKey (mapMetadata))
+    if (!loadedImageFileNames.containsKey (playMapMetadata))
     {
-      log.warn ("Cannot unload background image for map [{}] because it is not loaded.", mapMetadata);
+      log.warn ("Cannot unload background image for play map [{}] because it is not loaded.", playMapMetadata);
       return;
     }
 
-    final String imageFileName = loadedImageFileNames.remove (mapMetadata);
+    final String imageFileName = loadedImageFileNames.remove (playMapMetadata);
 
     if (!assetManager.isLoaded (imageFileName))
     {
-      log.warn ("Cannot unload background image [{}] for map [{}] because it is not loaded.", imageFileName,
-                mapMetadata);
+      log.warn ("Cannot unload background image [{}] for play map [{}] because it is not loaded.", imageFileName,
+                playMapMetadata);
       return;
     }
 

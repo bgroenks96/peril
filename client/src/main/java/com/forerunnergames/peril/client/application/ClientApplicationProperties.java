@@ -91,7 +91,7 @@ public final class ClientApplicationProperties
   public static final String SERVER_ADDRESS_KEY = "server-address";
   public static final String CLASSIC_MODE_PLAYER_LIMIT_KEY = "players-classic-mode";
   public static final String SPECTATOR_LIMIT_KEY = "spectators";
-  public static final String CLASSIC_MODE_MAP_NAME_KEY = "map-name-classic-mode";
+  public static final String CLASSIC_MODE_PLAY_MAP_NAME_KEY = "map-name-classic-mode";
   public static final String CLASSIC_MODE_WIN_PERCENT_KEY = "win-percent-classic-mode";
   public static final String CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY = "initial-country-assignment-classic-mode";
   public static final String AUTO_JOIN_MULTIPLAYER_GAME_KEY = "auto-join-multiplayer-game";
@@ -156,9 +156,9 @@ public final class ClientApplicationProperties
           + SPECTATOR_LIMIT_KEY
           + ": Number of spectators allowed in your server in any game mode, any whole number, "
           + GameSettings.MIN_SPECTATORS + " to " + GameSettings.MAX_SPECTATORS + "\n\n "
-          + CLASSIC_MODE_MAP_NAME_KEY
+          + CLASSIC_MODE_PLAY_MAP_NAME_KEY
           + ": Name of the map for your classic game mode server. "
-          + GameSettings.VALID_MAP_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
+          + GameSettings.VALID_PLAY_MAP_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + CLASSIC_MODE_WIN_PERCENT_KEY
           + ": % of the map that must be conquered to win the game in your classic game mode server, any whole "
           + "number, must be a multiple of 5, " + "5 (?) to " + ClassicGameRules.MAX_WIN_PERCENTAGE + ", the real "
@@ -390,7 +390,7 @@ public final class ClientApplicationProperties
     properties.setProperty (SERVER_ADDRESS_KEY, InputSettings.INITIAL_SERVER_ADDRESS);
     properties.setProperty (CLASSIC_MODE_PLAYER_LIMIT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT));
     properties.setProperty (SPECTATOR_LIMIT_KEY, String.valueOf (InputSettings.INITIAL_SPECTATOR_LIMIT));
-    properties.setProperty (CLASSIC_MODE_MAP_NAME_KEY, Strings.toProperCase (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME)));
+    properties.setProperty (CLASSIC_MODE_PLAY_MAP_NAME_KEY, Strings.toProperCase (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME)));
     properties.setProperty (CLASSIC_MODE_WIN_PERCENT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT));
     properties.setProperty (CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT));
     properties.setProperty (AUTO_JOIN_MULTIPLAYER_GAME_KEY, String.valueOf (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME));
@@ -443,7 +443,7 @@ public final class ClientApplicationProperties
     InputSettings.INITIAL_SERVER_ADDRESS = parseServerAddress (SERVER_ADDRESS_KEY, properties);
     InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_PLAYER_LIMIT_KEY, ClassicGameRules.MIN_PLAYER_LIMIT, ClassicGameRules.MAX_PLAYER_LIMIT, properties);
     InputSettings.INITIAL_SPECTATOR_LIMIT = parseInteger (SPECTATOR_LIMIT_KEY, GameSettings.MIN_SPECTATORS, GameSettings.MAX_SPECTATORS, properties);
-    InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME = parseClassicModeMapName (CLASSIC_MODE_MAP_NAME_KEY, properties);
+    InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME = parseClassicModePlayMapName (CLASSIC_MODE_PLAY_MAP_NAME_KEY, properties);
     InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT = parseInteger (CLASSIC_MODE_WIN_PERCENT_KEY, 5, ClassicGameRules.MAX_WIN_PERCENTAGE, 5, properties);
     InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT = parseEnum (CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY, InitialCountryAssignment.class, properties);
     InputSettings.AUTO_JOIN_MULTIPLAYER_GAME = parseBoolean (AUTO_JOIN_MULTIPLAYER_GAME_KEY, properties);
@@ -604,16 +604,16 @@ public final class ClientApplicationProperties
     return serverAddress;
   }
 
-  private static String parseClassicModeMapName (final String classicModeMapNameKey, final Properties properties)
+  private static String parseClassicModePlayMapName (final String classicModePlayMapNameKey, final Properties properties)
   {
-    final String mapName = properties.getProperty (classicModeMapNameKey);
+    final String playMapName = properties.getProperty (classicModePlayMapNameKey);
 
-    if (!GameSettings.isValidMapName (mapName))
+    if (!GameSettings.isValidPlayMapName (playMapName))
     {
-      throw new RuntimeException (getParseErrorMessageFor (classicModeMapNameKey, mapName));
+      throw new RuntimeException (getParseErrorMessageFor (classicModePlayMapNameKey, playMapName));
     }
 
-    return Strings.toProperCase (mapName);
+    return Strings.toProperCase (playMapName);
   }
 
   private ClientApplicationProperties ()

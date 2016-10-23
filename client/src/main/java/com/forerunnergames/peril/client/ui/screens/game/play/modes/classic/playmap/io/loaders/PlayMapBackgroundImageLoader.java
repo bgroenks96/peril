@@ -20,15 +20,15 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 public interface PlayMapBackgroundImageLoader
 {
-  void load (final MapMetadata mapMetadata);
+  void load (final PlayMapMetadata playMapMetadata);
 
-  boolean isFinishedLoading (final MapMetadata mapMetadata);
+  boolean isFinishedLoading (final PlayMapMetadata playMapMetadata);
 
-  Image get (final MapMetadata mapMetadata);
+  Image get (final PlayMapMetadata playMapMetadata);
 
-  void unload (final MapMetadata mapMetadata);
+  void unload (final PlayMapMetadata playMapMetadata);
 }

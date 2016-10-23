@@ -50,9 +50,9 @@ public final class StyleSettings
   public static final String MENU_SERVER_NAME_TEXTFIELD_STYLE = DEFAULT_TEXTFIELD_STYLE;
   public static final String MENU_CLAN_NAME_CHECK_BOX_STYLE = DEFAULT_CHECK_BOX_STYLE;
   public static final String MENU_PLAYER_LIMIT_LABEL_STYLE = "option-box";
-  public static final String MENU_MAP_NAME_LABEL_STYLE = "option-box";
+  public static final String MENU_PLAY_MAP_NAME_LABEL_STYLE = "option-box";
   public static final String MENU_CUSTOMIZE_PLAYERS_IMAGE_BUTTON_STYLE = "options";
-  public static final String MENU_CUSTOMIZE_MAP_IMAGE_BUTTON_STYLE = "options";
+  public static final String MENU_CUSTOMIZE_PLAY_MAP_IMAGE_BUTTON_STYLE = "options";
   public static final String MENU_WIN_PERCENT_SELECT_BOX_STYLE = DEFAULT_SELECT_BOX_STYLE;
   public static final String MENU_INITIAL_COUNTRY_ASSIGNMENT_SELECT_BOX_STYLE = DEFAULT_SELECT_BOX_STYLE;
   public static final String MENU_SPECTATOR_LIMIT_SELECT_BOX_STYLE = DEFAULT_SELECT_BOX_STYLE;

@@ -19,11 +19,11 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data.CountryAtlasMetadata;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 import com.google.common.collect.ImmutableSet;
 
 public interface CountryAtlasMetadataLoader
 {
-  ImmutableSet <CountryAtlasMetadata> load (final MapMetadata mapMetadata);
+  ImmutableSet <CountryAtlasMetadata> load (final PlayMapMetadata playMapMetadata);
 }

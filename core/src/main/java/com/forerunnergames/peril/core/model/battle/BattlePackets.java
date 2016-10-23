@@ -26,8 +26,8 @@ import com.forerunnergames.peril.common.net.packets.defaults.DefaultFinalBattleA
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.model.map.country.CountryMapGraphModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
+import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
@@ -36,44 +36,44 @@ public final class BattlePackets
 {
   public static PendingBattleActorPacket from (final PendingBattleActor actor,
                                                final PlayerModel playerModel,
-                                               final CountryMapGraphModel mapGraphModel)
+                                               final CountryGraphModel graphModel)
   {
     Arguments.checkIsNotNull (actor, "actor");
     Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (mapGraphModel, "mapGraphModel");
+    Arguments.checkIsNotNull (graphModel, "graphModel");
 
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
-    final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
+    final CountryPacket country = graphModel.countryPacketWith (actor.getCountryId ());
 
     return new DefaultPendingBattleActorPacket (player, country, actor.getDieRange ());
   }
 
   public static FinalBattleActorPacket from (final FinalBattleActor actor,
                                              final PlayerModel playerModel,
-                                             final CountryMapGraphModel mapGraphModel)
+                                             final CountryGraphModel graphModel)
   {
     Arguments.checkIsNotNull (actor, "actor");
     Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (mapGraphModel, "mapGraphModel");
+    Arguments.checkIsNotNull (graphModel, "graphModel");
 
     final PlayerPacket player = playerModel.playerPacketWith (actor.getPlayerId ());
-    final CountryPacket country = mapGraphModel.countryPacketWith (actor.getCountryId ());
+    final CountryPacket country = graphModel.countryPacketWith (actor.getCountryId ());
 
     return new DefaultFinalBattleActorPacket (player, country, actor.getDieRange (), actor.getDieCount ());
   }
 
   public static BattleResultPacket from (final BattleResult result,
                                          final PlayerModel playerModel,
-                                         final CountryMapGraphModel mapGraphModel,
+                                         final CountryGraphModel countryGraphModel,
                                          @AllowNegative final int attackingCountryArmyDelta,
                                          @AllowNegative final int defendingCountryArmyDelta)
   {
     Arguments.checkIsNotNull (result, "result");
     Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (mapGraphModel, "mapGraphModel");
+    Arguments.checkIsNotNull (countryGraphModel, "countryGraphModel");
 
-    final FinalBattleActorPacket attacker = from (result.getAttacker (), playerModel, mapGraphModel);
-    final FinalBattleActorPacket defender = from (result.getDefender (), playerModel, mapGraphModel);
+    final FinalBattleActorPacket attacker = from (result.getAttacker (), playerModel, countryGraphModel);
+    final FinalBattleActorPacket defender = from (result.getDefender (), playerModel, countryGraphModel);
 
     return new DefaultBattleResultPacket (result.getOutcome (), attacker, defender,
             playerModel.playerPacketWith (result.getDefendingCountryOwner ()), result.getAttackerRolls (),

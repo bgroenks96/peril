@@ -38,9 +38,9 @@ public final class GameSettings
   public static final String CLAN_TAG_END_SYMBOL = "]";
   public static final String PLAYER_NAME_CLAN_TAG_SEPARATOR_SYMBOL = " ";
   public static final Pattern COMMAND_PREFIX_PATTERN = Pattern.compile ("^[\\\\/]");
-  public static final String DEFAULT_CLASSIC_MODE_MAP_NAME = "classic";
-  public static final int MIN_MAP_NAME_LENGTH = 2;
-  public static final int MAX_MAP_NAME_LENGTH = 30;
+  public static final String DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME = "classic";
+  public static final int MIN_PLAY_MAP_NAME_LENGTH = 2;
+  public static final int MAX_PLAY_MAP_NAME_LENGTH = 30;
   public static final DieFaceValue DEFAULT_DIE_FACE_VALUE = DieFaceValue.SIX;
   public static final float BATTLE_INTERACTION_TIME_SECONDS = 1.5f;
   public static final float BATTLE_RESULT_VIEWING_TIME_SECONDS = 1.0f;
@@ -65,8 +65,8 @@ public final class GameSettings
   public static final Pattern VALID_CLAN_TAG_PATTERN = Pattern.compile (Pattern.quote (CLAN_TAG_START_SYMBOL) +
           VALID_CLAN_NAME_PATTERN.pattern () + Pattern.quote (CLAN_TAG_END_SYMBOL));
 
-  public static final Pattern VALID_MAP_NAME_PATTERN = Pattern.compile ("^(?=.{" + MIN_MAP_NAME_LENGTH + ","
-          + MAX_MAP_NAME_LENGTH + "}$)(?!.* {2,})[a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z0-9]$");
+  public static final Pattern VALID_PLAY_MAP_NAME_PATTERN = Pattern.compile ("^(?=.{" + MIN_PLAY_MAP_NAME_LENGTH + ","
+          + MAX_PLAY_MAP_NAME_LENGTH + "}$)(?!.* {2,})[a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z0-9]$");
 
   public static final String VALID_PLAYER_NAME_DESCRIPTION =
             "1) " + MIN_PLAYER_NAME_LENGTH + " to " + MAX_PLAYER_NAME_LENGTH + " alphanumeric characters are allowed.\n"
@@ -82,8 +82,8 @@ public final class GameSettings
           + "4) No other type of whitespace.\n"
           + "5) No special characters.\n";
 
-  public static final String VALID_MAP_NAME_DESCRIPTION =
-            "1) " + MIN_MAP_NAME_LENGTH + " to " + MAX_MAP_NAME_LENGTH + " alphanumeric characters are allowed.\n"
+  public static final String VALID_PLAY_MAP_NAME_DESCRIPTION =
+            "1) " + MIN_PLAY_MAP_NAME_LENGTH + " to " + MAX_PLAY_MAP_NAME_LENGTH + " alphanumeric characters are allowed.\n"
           + "2) Any combination of uppercase or lowercase is allowed.\n"
           + "3) Single spaces are allowed, but cannot begin or end with a space.\n"
           + "4) No consecutive spaces.\n"
@@ -162,11 +162,11 @@ public final class GameSettings
     return getClanTag (clanName) + PLAYER_NAME_CLAN_TAG_SEPARATOR_SYMBOL + playerName;
   }
 
-  public static boolean isValidMapName (final String mapName)
+  public static boolean isValidPlayMapName (final String playMapName)
   {
-    Arguments.checkIsNotNull (mapName, "mapName");
+    Arguments.checkIsNotNull (playMapName, "playMapName");
 
-    return VALID_MAP_NAME_PATTERN.matcher (mapName).matches ();
+    return VALID_PLAY_MAP_NAME_PATTERN.matcher (playMapName).matches ();
   }
 
   private static void invalidPlayerName (final String playerName)

@@ -17,35 +17,35 @@
 
 package com.forerunnergames.peril.client.events;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 public final class UnloadPlayMapRequestEvent implements LocalEvent
 {
-  private final MapMetadata mapMetadata;
+  private final PlayMapMetadata playMapMetadata;
 
-  public UnloadPlayMapRequestEvent (final MapMetadata mapMetadata)
+  public UnloadPlayMapRequestEvent (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    this.mapMetadata = mapMetadata;
+    this.playMapMetadata = playMapMetadata;
   }
 
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return mapMetadata;
+    return playMapMetadata;
   }
 
-  public boolean isNullMapMetadata ()
+  public boolean isNullPlayMapMetadata ()
   {
-    return mapMetadata.equals (MapMetadata.NULL);
+    return playMapMetadata.equals (PlayMapMetadata.NULL);
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: MapMetadata: {}", getClass ().getSimpleName (), mapMetadata);
+    return Strings.format ("{}: PlayMapMetadata: {}", getClass ().getSimpleName (), playMapMetadata);
   }
 }

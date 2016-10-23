@@ -25,7 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableSet;
@@ -240,9 +240,9 @@ final class NullPlayMap implements PlayMap
   }
 
   @Override
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return MapMetadata.NULL;
+    return PlayMapMetadata.NULL;
   }
 
   @Override

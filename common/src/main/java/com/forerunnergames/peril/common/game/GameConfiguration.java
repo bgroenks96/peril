@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 
 public interface GameConfiguration
 {
@@ -40,9 +40,9 @@ public interface GameConfiguration
 
   InitialCountryAssignment getInitialCountryAssignment ();
 
-  String getMapName ();
+  String getPlayMapName ();
 
-  MapMetadata getMapMetadata ();
+  PlayMapMetadata getPlayMapMetadata ();
 
-  MapType getMapType ();
+  PlayMapType getPlayMapType ();
 }

@@ -18,10 +18,10 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsoluteMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.MapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
 import com.forerunnergames.peril.common.io.BiMapDataLoader;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 
 public final class DefaultCountryImageDataRepositoryFactory implements CountryImageDataRepositoryFactory
@@ -36,13 +36,14 @@ public final class DefaultCountryImageDataRepositoryFactory implements CountryIm
   }
 
   @Override
-  public CountryImageDataRepository create (final MapMetadata mapMetadata)
+  public CountryImageDataRepository create (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    final MapResourcesPathParser mapResourcesPathParser = new AbsoluteMapResourcesPathParser (mapMetadata.getMode ());
+    final PlayMapResourcesPathParser playMapResourcesPathParser = new AbsolutePlayMapResourcesPathParser (
+            playMapMetadata.getMode ());
 
-    return new DefaultCountryImageDataRepository (countryImageDataLoader.load (mapResourcesPathParser
-            .parseCountryImageDataFileNamePath (mapMetadata)));
+    return new DefaultCountryImageDataRepository (countryImageDataLoader.load (playMapResourcesPathParser
+            .parseCountryImageDataFileNamePath (playMapMetadata)));
   }
 }

@@ -22,8 +22,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data.CountryAtlasMetadata;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
@@ -39,7 +39,7 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
 {
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (DefaultCountryAtlasesLoader.class);
-  private final Multimap <MapMetadata, CountryAtlasMetadata> mapMetadataToCountryAtlasesMetadata = HashMultimap.create ();
+  private final Multimap <PlayMapMetadata, CountryAtlasMetadata> playMapMetadataToCountryAtlasesMetadata = HashMultimap.create ();
   private final CountryAtlasMetadataLoader countryAtlasMetadataLoader = new DefaultCountryAtlasMetadataLoader ();
   private final AssetManager assetManager;
   // @formatter:on
@@ -52,27 +52,29 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
   }
 
   @Override
-  public void load (final MapMetadata mapMetadata)
+  public void load (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (!mapMetadataToCountryAtlasesMetadata.containsKey (mapMetadata),
-                               Strings.format ("Country atlases were already loaded for map [{}].", mapMetadata));
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions.checkIsTrue (!playMapMetadataToCountryAtlasesMetadata.containsKey (playMapMetadata), Strings
+            .format ("Country atlases were already loaded for play map [{}].", playMapMetadata));
 
-    for (final CountryAtlasMetadata countryAtlasMetadata : countryAtlasMetadataLoader.load (mapMetadata))
+    for (final CountryAtlasMetadata countryAtlasMetadata : countryAtlasMetadataLoader.load (playMapMetadata))
     {
       assetManager.load (countryAtlasMetadata.getAssetDescriptor ());
-      mapMetadataToCountryAtlasesMetadata.put (mapMetadata, countryAtlasMetadata);
+      playMapMetadataToCountryAtlasesMetadata.put (playMapMetadata, countryAtlasMetadata);
     }
   }
 
   @Override
-  public boolean isFinishedLoading (final MapMetadata mapMetadata)
+  public boolean isFinishedLoading (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (mapMetadataToCountryAtlasesMetadata.containsKey (mapMetadata),
-                               Strings.format ("Country atlases were never loaded for map [{}].", mapMetadata));
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions
+            .checkIsTrue (playMapMetadataToCountryAtlasesMetadata.containsKey (playMapMetadata),
+                          Strings.format ("Country atlases were never loaded for play map [{}].", playMapMetadata));
 
-    for (final CountryAtlasMetadata countryAtlasMetadata : mapMetadataToCountryAtlasesMetadata.get (mapMetadata))
+    for (final CountryAtlasMetadata countryAtlasMetadata : playMapMetadataToCountryAtlasesMetadata
+            .get (playMapMetadata))
     {
       if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ())) return false;
     }
@@ -81,20 +83,22 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
   }
 
   @Override
-  public ImmutableList <TextureAtlas> get (final MapMetadata mapMetadata)
+  public ImmutableList <TextureAtlas> get (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
-    Preconditions.checkIsTrue (mapMetadataToCountryAtlasesMetadata.containsKey (mapMetadata),
-                               Strings.format ("Country atlases were never loaded for map [{}].", mapMetadata));
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Preconditions
+            .checkIsTrue (playMapMetadataToCountryAtlasesMetadata.containsKey (playMapMetadata),
+                          Strings.format ("Country atlases were never loaded for play map [{}].", playMapMetadata));
 
     final ImmutableList.Builder <TextureAtlas> countryAtlasesBuilder = ImmutableList.builder ();
 
-    for (final CountryAtlasMetadata countryAtlasMetadata : mapMetadataToCountryAtlasesMetadata.get (mapMetadata))
+    for (final CountryAtlasMetadata countryAtlasMetadata : playMapMetadataToCountryAtlasesMetadata
+            .get (playMapMetadata))
     {
       if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ()))
       {
         throw new PlayMapLoadingException (Strings.format ("Country atlas [{}] for map [{}] is not loaded.",
-                                                           countryAtlasMetadata, mapMetadata));
+                                                           countryAtlasMetadata, playMapMetadata));
       }
 
       countryAtlasesBuilder.add (assetManager.get (countryAtlasMetadata.getAssetDescriptor ()));
@@ -104,28 +108,29 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
   }
 
   @Override
-  public void unload (final MapMetadata mapMetadata)
+  public void unload (final PlayMapMetadata playMapMetadata)
   {
-    Arguments.checkIsNotNull (mapMetadata, "mapMetadata");
+    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    if (!mapMetadataToCountryAtlasesMetadata.containsKey (mapMetadata))
+    if (!playMapMetadataToCountryAtlasesMetadata.containsKey (playMapMetadata))
     {
-      log.warn ("Cannot unload country atlases for map [{}] because it is not loaded.", mapMetadata);
+      log.warn ("Cannot unload country atlases for play map [{}] because it is not loaded.", playMapMetadata);
       return;
     }
 
-    for (final CountryAtlasMetadata countryAtlasMetadata : mapMetadataToCountryAtlasesMetadata.get (mapMetadata))
+    for (final CountryAtlasMetadata countryAtlasMetadata : playMapMetadataToCountryAtlasesMetadata
+            .get (playMapMetadata))
     {
       if (!assetManager.isLoaded (countryAtlasMetadata.getAssetDescriptor ()))
       {
-        log.warn ("Cannot unload country atlas [{}] for map [{}] because it is not loaded.", countryAtlasMetadata,
-                  mapMetadata);
+        log.warn ("Cannot unload country atlas [{}] for play map [{}] because it is not loaded.", countryAtlasMetadata,
+                  playMapMetadata);
         continue;
       }
 
       assetManager.unload (countryAtlasMetadata.getAssetDescriptor ());
     }
 
-    mapMetadataToCountryAtlasesMetadata.removeAll (mapMetadata);
+    playMapMetadataToCountryAtlasesMetadata.removeAll (playMapMetadata);
   }
 }

@@ -22,11 +22,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.common.io.DataLoader;
-import com.forerunnergames.peril.core.model.map.continent.ContinentDataMatcher;
-import com.forerunnergames.peril.core.model.map.continent.ContinentFactory;
-import com.forerunnergames.peril.core.model.map.continent.ContinentDataMatcher.ContinentData;
-import com.forerunnergames.peril.core.model.map.io.ContinentModelDataLoader;
-import com.forerunnergames.peril.core.model.map.io.CountryIdResolver;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentDataMatcher;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentFactory;
+import com.forerunnergames.peril.core.model.playmap.continent.ContinentDataMatcher.ContinentData;
+import com.forerunnergames.peril.core.model.playmap.io.ContinentModelDataLoader;
+import com.forerunnergames.peril.core.model.playmap.io.CountryIdResolver;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
 import com.google.common.collect.ImmutableSet;

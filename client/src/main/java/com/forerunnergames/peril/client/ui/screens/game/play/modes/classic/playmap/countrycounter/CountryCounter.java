@@ -18,9 +18,9 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter;
 
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 public interface CountryCounter
 {
-  int count (final MapMetadata mapMetadata);
+  int count (final PlayMapMetadata playMapMetadata);
 }

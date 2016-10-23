@@ -71,7 +71,7 @@ public final class LocalGameServerCreator implements GameServerCreator
                       "--spectators", String.valueOf (config.getSpectatorLimit ()),
                       "--win-percent", String.valueOf (config.getWinPercentage ()),
                       "--assignment", config.getInitialCountryAssignment ().name(),
-                      "--map-name", config.getMapName ())
+                      "--map-name", config.getPlayMapName ())
                       .redirectErrorStream (true)
                       .start ();
       // @formatter:on

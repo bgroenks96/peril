@@ -22,8 +22,8 @@ import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.MapType;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
@@ -101,21 +101,21 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
-  public String getMapName ()
+  public String getPlayMapName ()
   {
-    return gameConfig.getMapName ();
+    return gameConfig.getPlayMapName ();
   }
 
   @Override
-  public MapMetadata getMapMetadata ()
+  public PlayMapMetadata getPlayMapMetadata ()
   {
-    return gameConfig.getMapMetadata ();
+    return gameConfig.getPlayMapMetadata ();
   }
 
   @Override
-  public MapType getMapType ()
+  public PlayMapType getPlayMapType ()
   {
-    return gameConfig.getMapType ();
+    return gameConfig.getPlayMapType ();
   }
 
   @Override

@@ -19,9 +19,9 @@
 package com.forerunnergames.peril.core.model.io;
 
 import com.forerunnergames.peril.common.io.DataLoader;
-import com.forerunnergames.peril.core.model.map.country.CountryFactory;
-import com.forerunnergames.peril.core.model.map.country.CountryNameMatcher;
-import com.forerunnergames.peril.core.model.map.io.CountryModelDataLoader;
+import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
+import com.forerunnergames.peril.core.model.playmap.country.CountryNameMatcher;
+import com.forerunnergames.peril.core.model.playmap.io.CountryModelDataLoader;
 
 import com.google.common.collect.ImmutableSet;
 

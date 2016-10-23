@@ -43,7 +43,7 @@ import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter.CountryCounter;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.ClientMapMetadataLoaderFactory;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.ClientPlayMapMetadataLoaderFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
@@ -54,10 +54,10 @@ import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
-import com.forerunnergames.peril.common.map.MapMetadata;
-import com.forerunnergames.peril.common.map.MapType;
-import com.forerunnergames.peril.common.map.PlayMapLoadingException;
-import com.forerunnergames.peril.common.map.io.MapMetadataLoader;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
+import com.forerunnergames.peril.common.playmap.io.PlayMapMetadataLoader;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -89,11 +89,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private static final String SERVER_NAME_SETTING_LABEL_TEXT = "Title";
   private static final String PLAYERS_SETTING_LABEL_TEXT = "Players";
   private static final String SPECTATORS_SETTING_SETTING_LABEL_TEXT = "Spectators";
-  private static final String MAP_SETTING_LABEL_TEXT = "Map";
+  private static final String PLAY_MAP_SETTING_LABEL_TEXT = "Map";
   private static final String WIN_PERCENT_SETTING_LABEL_TEXT = "Win Percent";
   private static final String INITIAL_COUNTRY_ASSIGNMENT_SETTING_LABEL_TEXT = "Initial Countries";
-  private static final MapMetadataLoader MAPS_LOADER = new ClientMapMetadataLoaderFactory (GameMode.CLASSIC)
-          .create (MapType.STOCK, MapType.CUSTOM);
+  private static final PlayMapMetadataLoader PLAY_MAPS_LOADER = new ClientPlayMapMetadataLoaderFactory (
+          GameMode.CLASSIC).create (PlayMapType.STOCK, PlayMapType.CUSTOM);
   private static final int WIN_PERCENT_INCREMENT = 5;
   private final MenuScreenWidgetFactory widgetFactory;
   private final Dialog errorDialog;
@@ -105,9 +105,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final SelectBox <String> initialCountryAssignmentSelectBox;
   private final SelectBox <Integer> spectatorLimitSelectBox;
   private final Label playerLimitLabel;
-  private final Label mapNameLabel;
+  private final Label playMapNameLabel;
   private final ImageButton customizePlayersButton;
-  private final ImageButton customizeMapButton;
+  private final ImageButton customizePlayMapButton;
   private final CountryCounter countryCounter;
   private final Label playerSettingsSectionTitleLabel;
   private final Label playerNameSettingLabel;
@@ -116,15 +116,15 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label serverNameSettingLabel;
   private final Label playerLimitSettingLabel;
   private final Label spectatorLimitSettingLabel;
-  private final Label mapSettingLabel;
+  private final Label playMapSettingLabel;
   private final Label winPercentSettingLabel;
   private final Label initialCountryAssignmentSettingLabel;
   private final Button forwardButton;
-  private Set <MapMetadata> maps;
+  private Set <PlayMapMetadata> playMaps;
   private int totalCountryCount;
   @Nullable
-  private Iterator <MapMetadata> mapIterator = null;
-  private MapMetadata currentMap = MapMetadata.NULL;
+  private Iterator <PlayMapMetadata> playMapIterator = null;
+  private PlayMapMetadata currentPlayMap = PlayMapMetadata.NULL;
   private boolean isFirstTimeOnScreen = true;
 
   public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
@@ -168,10 +168,10 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     // @formatter:off
     playerLimitLabel = widgetFactory.createPlayerLimitLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT));
-    maps = loadMaps ();
-    currentMap = findMapOrFirstMap (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME);
-    mapNameLabel = widgetFactory.createMapNameLabel (asMapNameLabelText (currentMap));
-    totalCountryCount = calculateCurrentMapTotalCountryCount ();
+    playMaps = loadPlayMaps ();
+    currentPlayMap = findPlayMapOrFirstPlayMap (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME);
+    playMapNameLabel = widgetFactory.createPlayMapNameLabel (asPlayMapNameLabelText (currentPlayMap));
+    totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
     // @formatter:on
 
     customizePlayersButton = widgetFactory.createCustomizePlayersButton (new ClickListener (Input.Buttons.LEFT)
@@ -194,16 +194,16 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       }
     });
 
-    customizeMapButton = widgetFactory.createCustomizeMapButton (new ClickListener (Input.Buttons.LEFT)
+    customizePlayMapButton = widgetFactory.createCustomizePlayMapButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // TODO Show Map Dialog.
+        // TODO Show Play Map Dialog.
 
-        currentMap = nextMap ();
-        mapNameLabel.setText (asMapNameLabelText (currentMap));
-        totalCountryCount = calculateCurrentMapTotalCountryCount ();
+        currentPlayMap = nextPlayMap ();
+        playMapNameLabel.setText (asPlayMapNameLabelText (currentPlayMap));
+        totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
         updateWinPercentSelectBoxItems ();
       }
     });
@@ -243,7 +243,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     serverNameSettingLabel = widgetFactory.createMenuSettingLabel (SERVER_NAME_SETTING_LABEL_TEXT);
     playerLimitSettingLabel = widgetFactory.createMenuSettingLabel (PLAYERS_SETTING_LABEL_TEXT);
     spectatorLimitSettingLabel = widgetFactory.createMenuSettingLabel (SPECTATORS_SETTING_SETTING_LABEL_TEXT);
-    mapSettingLabel = widgetFactory.createMenuSettingLabel (MAP_SETTING_LABEL_TEXT);
+    playMapSettingLabel = widgetFactory.createMenuSettingLabel (PLAY_MAP_SETTING_LABEL_TEXT);
     winPercentSettingLabel = widgetFactory.createMenuSettingLabel (WIN_PERCENT_SETTING_LABEL_TEXT);
     initialCountryAssignmentSettingLabel = widgetFactory.createMenuSettingLabel (INITIAL_COUNTRY_ASSIGNMENT_SETTING_LABEL_TEXT);
     // @formatter:on
@@ -288,11 +288,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     gameSettingsTable.row ();
 
-    final Table mapTable = new Table ();
-    mapTable.add (mapSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    mapTable.add (mapNameLabel).size (238, 28).fill ().left ().spaceLeft (10).spaceRight (4);
-    mapTable.add (customizeMapButton).size (28, 28).fill ().left ().spaceLeft (4);
-    gameSettingsTable.add (mapTable).left ();
+    final Table playMapTable = new Table ();
+    playMapTable.add (playMapSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    playMapTable.add (playMapNameLabel).size (238, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    playMapTable.add (customizePlayMapButton).size (28, 28).fill ().left ().spaceLeft (4);
+    gameSettingsTable.add (playMapTable).left ();
 
     gameSettingsTable.row ();
 
@@ -350,7 +350,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        if (currentMap.equals (MapMetadata.NULL))
+        if (currentPlayMap.equals (PlayMapMetadata.NULL))
         {
           errorDialog.setMessage (new DefaultMessage ("Please select a valid map before continuing."));
           errorDialog.show ();
@@ -389,7 +389,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, playerLimit, winPercent,
                                                              totalCountryCount, initialCountryAssignment);
         final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit,
-                spectatorLimit, winPercent, initialCountryAssignment, currentMap, gameRules);
+                spectatorLimit, winPercent, initialCountryAssignment, currentPlayMap, gameRules);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))
@@ -417,11 +417,11 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     expandMenuBar ();
 
-    mapIterator = null;
-    maps = loadMaps ();
-    currentMap = findMapOrFirstMap (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME);
-    mapNameLabel.setText (asMapNameLabelText (currentMap));
-    totalCountryCount = calculateCurrentMapTotalCountryCount ();
+    playMapIterator = null;
+    playMaps = loadPlayMaps ();
+    currentPlayMap = findPlayMapOrFirstPlayMap (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME);
+    playMapNameLabel.setText (asPlayMapNameLabelText (currentPlayMap));
+    totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
     updateWinPercentSelectBoxItems ();
 
     // @formatter:off
@@ -442,9 +442,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     initialCountryAssignmentSelectBox.getScrollPane ().setStyle (initialCountryAssignmentSelectBoxStyle.scrollStyle);
     initialCountryAssignmentSelectBox.getList ().setStyle (initialCountryAssignmentSelectBoxStyle.listStyle);
     playerLimitLabel.setStyle (widgetFactory.createPlayerLimitLabelStyle ());
-    mapNameLabel.setStyle (widgetFactory.createMapNameLabelStyle ());
+    playMapNameLabel.setStyle (widgetFactory.createPlayMapNameLabelStyle ());
     customizePlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
-    customizeMapButton.setStyle (widgetFactory.createCustomizeMapButtonStyle ());
+    customizePlayMapButton.setStyle (widgetFactory.createCustomizePlayMapButtonStyle ());
     playerSettingsSectionTitleLabel.setStyle (widgetFactory.createPlayerSettingsSectionTitleLabelStyle ());
     playerNameSettingLabel.setStyle (widgetFactory.createPlayerNameSettingLabelStyle ());
     clanTagSettingLabel.setStyle (widgetFactory.createClanTagSettingLabelStyle ());
@@ -452,7 +452,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     serverNameSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     playerLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     spectatorLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
-    mapSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    playMapSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     winPercentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     initialCountryAssignmentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     // @formatter:on
@@ -489,16 +489,16 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     return true;
   }
 
-  private static String asMapNameLabelText (final MapMetadata map)
+  private static String asPlayMapNameLabelText (final PlayMapMetadata playMap)
   {
-    return Strings.toProperCase (map.getName ());
+    return Strings.toProperCase (playMap.getName ());
   }
 
-  private ImmutableSet <MapMetadata> loadMaps ()
+  private ImmutableSet <PlayMapMetadata> loadPlayMaps ()
   {
     try
     {
-      return MAPS_LOADER.load ();
+      return PLAY_MAPS_LOADER.load ();
     }
     catch (final PlayMapLoadingException e)
     {
@@ -511,22 +511,23 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       errorDialog.setMessage (new DefaultMessage (errorMessage));
       errorDialog.show ();
 
-      return ImmutableSet.of (MapMetadata.NULL);
+      return ImmutableSet.of (PlayMapMetadata.NULL);
     }
   }
 
-  private int calculateCurrentMapTotalCountryCount ()
+  private int calculateCurrentPlayMapTotalCountryCount ()
   {
     try
     {
-      return countryCounter.count (currentMap);
+      return countryCounter.count (currentPlayMap);
     }
     catch (final PlayMapLoadingException e)
     {
       final String errorMessage = Strings
-              .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}", currentMap
-                      .getType ().name ().toLowerCase (), Strings.toProperCase (currentMap.getName ()), Throwables
-                      .getRootCause (e).getMessage (), Strings.toString (e));
+              .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
+                       currentPlayMap.getType ().name ().toLowerCase (),
+                       Strings.toProperCase (currentPlayMap.getName ()), Throwables.getRootCause (e).getMessage (),
+                       Strings.toString (e));
 
       log.error (errorMessage);
 
@@ -539,7 +540,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
   private void updateWinPercentSelectBoxItems ()
   {
-    if (currentMap.equals (MapMetadata.NULL))
+    if (currentPlayMap.equals (PlayMapMetadata.NULL))
     {
       winPercentSelectBox.setItems (ClassicGameRules.MAX_WIN_PERCENTAGE);
       return;
@@ -572,51 +573,50 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     if (winPercentSelectBox.getItems ().contains (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, true)) return;
 
-    errorDialog
-            .setMessage (new DefaultMessage (
-                    Strings.format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\nPlease check your settings file.",
-                                    InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, playerLimitLabel.getText ()
-                                            .toString (), currentMap.getType ().name ().toLowerCase (), Strings
-                                            .toProperCase (currentMap.getName ()))));
+    errorDialog.setMessage (new DefaultMessage (Strings
+            .format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\n"
+                             + "Please check your settings file.", InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT,
+                     playerLimitLabel.getText ().toString (), currentPlayMap.getType ().name ().toLowerCase (),
+                     Strings.toProperCase (currentPlayMap.getName ()))));
 
     errorDialog.show ();
   }
 
-  private MapMetadata nextMap ()
+  private PlayMapMetadata nextPlayMap ()
   {
-    if (mapIterator == null || !mapIterator.hasNext ()) mapIterator = maps.iterator ();
+    if (playMapIterator == null || !playMapIterator.hasNext ()) playMapIterator = playMaps.iterator ();
 
-    if (!mapIterator.hasNext ())
+    if (!playMapIterator.hasNext ())
     {
       errorDialog.setMessage (new DefaultMessage (Strings.format ("No maps could be found.")));
       errorDialog.show ();
-      return MapMetadata.NULL;
+      return PlayMapMetadata.NULL;
     }
 
-    return mapIterator.next ();
+    return playMapIterator.next ();
   }
 
-  private MapMetadata findMapOrFirstMap (final String mapName)
+  private PlayMapMetadata findPlayMapOrFirstPlayMap (final String playMapName)
   {
-    final MapMetadata firstMap = nextMap ();
-    MapMetadata map = firstMap;
+    final PlayMapMetadata firstPlayMap = nextPlayMap ();
+    PlayMapMetadata playMap = firstPlayMap;
 
-    while (!map.getName ().equalsIgnoreCase (InputSettings.INITIAL_CLASSIC_MODE_MAP_NAME))
+    while (!playMap.getName ().equalsIgnoreCase (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME))
     {
-      map = nextMap ();
+      playMap = nextPlayMap ();
 
-      if (map.equals (firstMap))
+      if (playMap.equals (firstPlayMap))
       {
         errorDialog.setMessage (new DefaultMessage (Strings
-                .format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", mapName)));
+                .format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", playMapName)));
         errorDialog.show ();
 
-        mapIterator = null;
+        playMapIterator = null;
 
-        return nextMap ();
+        return nextPlayMap ();
       }
     }
 
-    return map;
+    return playMap;
   }
 }

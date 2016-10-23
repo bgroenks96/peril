@@ -3,7 +3,7 @@ size: 2048, 2048
 format: RGBA8888
 filter: MipMapLinearLinear,Linear
 repeat: none
-map-dialog-background
+play-map-dialog-background
   rotate: false
   xy: 0, 1399
   size: 1516, 638

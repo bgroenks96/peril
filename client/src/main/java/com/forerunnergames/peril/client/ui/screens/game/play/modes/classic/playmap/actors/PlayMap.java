@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.input.listeners.PlayMapInputListener;
-import com.forerunnergames.peril.common.map.MapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -94,7 +94,7 @@ public interface PlayMap
 
   void enable (final Vector2 currentMouseLocation);
 
-  MapMetadata getMapMetadata ();
+  PlayMapMetadata getPlayMapMetadata ();
 
   Actor asActor ();
 }
