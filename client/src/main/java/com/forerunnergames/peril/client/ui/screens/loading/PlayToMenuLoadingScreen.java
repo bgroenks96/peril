@@ -35,7 +35,6 @@ import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Strings;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -146,7 +145,7 @@ public final class PlayToMenuLoadingScreen extends AbstractLoadingScreen
 
   private void unloadPlayMapAssetsSync (final PlayMapMetadata playMapMetadata)
   {
-    status ("Unloading map \"{}\"...", Strings.toProperCase (playMapMetadata.getName ()));
+    status ("Unloading map \"{}\"...", playMapMetadata.getName ());
     playMapFactory.destroy (playMapMetadata);
   }
 

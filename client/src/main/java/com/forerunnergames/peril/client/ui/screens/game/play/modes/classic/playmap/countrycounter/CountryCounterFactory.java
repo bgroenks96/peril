@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.CountryNamesDataLoader;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
@@ -32,7 +32,7 @@ public final class CountryCounterFactory
     Arguments.checkIsNotNull (gameMode, "gameMode");
 
     return new DefaultCountryCounter (new CountryNamesDataLoader (new ExternalStreamParserFactory ()),
-            new AbsolutePlayMapResourcesPathParser (gameMode));
+            new AbsolutePlayMapGraphicsPathParser (gameMode));
   }
 
   private CountryCounterFactory ()

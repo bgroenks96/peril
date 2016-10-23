@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.playmap.io.CompositePlayMapMetadataLoader;
@@ -38,7 +38,7 @@ public final class ClientPlayMapMetadataLoaderFactory implements PlayMapMetadata
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
 
-    playMapDataPathParser = new AbsolutePlayMapResourcesPathParser (gameMode);
+    playMapDataPathParser = new AbsolutePlayMapGraphicsPathParser (gameMode);
   }
 
   @Override

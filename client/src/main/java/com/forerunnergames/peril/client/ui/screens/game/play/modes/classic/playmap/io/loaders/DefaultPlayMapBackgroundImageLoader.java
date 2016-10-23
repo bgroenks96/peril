@@ -22,8 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapGraphicsPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
@@ -56,7 +56,7 @@ public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgro
     Preconditions.checkIsTrue (!loadedImageFileNames.containsKey (playMapMetadata), Strings
             .format ("Background image for play map [{}] was already loaded.", playMapMetadata));
 
-    final PlayMapResourcesPathParser pathParser = new RelativePlayMapResourcesPathParser (playMapMetadata.getMode ());
+    final PlayMapGraphicsPathParser pathParser = new RelativePlayMapGraphicsPathParser (playMapMetadata.getMode ());
     final String imageFileNamePath = pathParser.parseBackgroundImageFileNamePath (playMapMetadata);
 
     assetManager.load (imageFileNamePath, AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_TYPE,

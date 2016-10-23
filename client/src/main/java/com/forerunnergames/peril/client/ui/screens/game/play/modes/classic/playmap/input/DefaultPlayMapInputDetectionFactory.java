@@ -47,8 +47,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.CountryColorToNameLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.DefaultPlayMapInputDetectionImageLoader;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.PlayMapInputDetectionImageLoader;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapGraphicsPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.io.BiMapDataLoader;
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
@@ -115,19 +115,19 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
     final BiMapDataLoader <ContinentColor, String> continentColorToNameLoader =
             new ContinentColorToNameLoader (streamParserFactory);
 
-    final PlayMapResourcesPathParser absolutePlayMapResourcesPathParser =
-            new AbsolutePlayMapResourcesPathParser (playMapMetadata.getMode ());
+    final PlayMapGraphicsPathParser absolutePlayMapGraphicsPathParser =
+            new AbsolutePlayMapGraphicsPathParser (playMapMetadata.getMode ());
 
     final TerritoryColorToNameConverter <CountryColor> countryColorToNameConverter =
             new CountryColorToNameConverter (
                     countryColorToNameLoader.load (
-                            absolutePlayMapResourcesPathParser.parseCountryInputDetectionDataFileNamePath (
+                            absolutePlayMapGraphicsPathParser.parseCountryInputDetectionDataFileNamePath (
                                     playMapMetadata)));
 
     final TerritoryColorToNameConverter <ContinentColor> continentColorToNameConverter =
             new ContinentColorToNameConverter (
                     continentColorToNameLoader.load (
-                            absolutePlayMapResourcesPathParser.parseContinentInputDetectionDataFileNamePath (
+                            absolutePlayMapGraphicsPathParser.parseContinentInputDetectionDataFileNamePath (
                                     playMapMetadata)));
 
     final PlayMapCoordinateToTerritoryNameConverter playMapCoordinateToCountryNameConverter =

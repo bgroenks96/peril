@@ -241,7 +241,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   {
     isLoadingPlayMapAssets = true;
 
-    statusWithProgressPercent ("Loading map \"{}\"...", Strings.toProperCase (playMapMetadata.getName ()));
+    statusWithProgressPercent ("Loading map \"{}\"...", playMapMetadata.getName ());
 
     loadAssetsAsync (new Runnable ()
     {
@@ -289,8 +289,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources for {} map \'{}\'."
                          + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
                  CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                 playMapMetadata.getType ().name ().toLowerCase (), Strings.toProperCase (playMapMetadata.getName ()),
-                 Throwables.getRootCause (e).getMessage (), Strings.toString (e));
+                 playMapMetadata.getType ().name ().toLowerCase (), playMapMetadata.getName (), Throwables
+                         .getRootCause (e).getMessage (), Strings.toString (e));
   }
 
   private final class DefaultCreateGameServerListener implements CreateGameServerListener

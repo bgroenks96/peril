@@ -22,8 +22,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapGraphicsPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
@@ -56,7 +56,7 @@ public final class DefaultPlayMapInputDetectionImageLoader implements PlayMapInp
     Preconditions.checkIsTrue (!loadedImageFileNames.containsKey (playMapMetadata), Strings
             .format ("Input detection image for play map [{}] was already loaded.", playMapMetadata));
 
-    final PlayMapResourcesPathParser pathParser = new RelativePlayMapResourcesPathParser (playMapMetadata.getMode ());
+    final PlayMapGraphicsPathParser pathParser = new RelativePlayMapGraphicsPathParser (playMapMetadata.getMode ());
     final String imageFileNamePath = pathParser.parseInputDetectionImageFileNamePath (playMapMetadata);
 
     assetManager.load (imageFileNamePath, AssetSettings.PLAY_MAP_INPUT_DETECTION_IMAGE_TYPE);

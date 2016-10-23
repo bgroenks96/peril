@@ -22,7 +22,6 @@ import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.playmap.io.AbstractPlayMapDataPathParser;
-import com.forerunnergames.peril.common.settings.AssetSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -34,48 +33,48 @@ public final class CorePlayMapDataPathParser extends AbstractPlayMapDataPathPars
   }
 
   @Override
-  protected String parsePlayMapsModePath (final PlayMapType playMapType, final GameMode gameMode)
+  protected String parsePlayMapDirName (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapType, "playMapType");
-    Arguments.checkIsNotNull (gameMode, "gameMode");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    switch (playMapType)
+    switch (metadata.getType ())
     {
       case CUSTOM:
       {
-        return AssetSettings.ABSOLUTE_EXTERNAL_PLAY_MAPS_DIRECTORY + gameMode.name ().toLowerCase () + " mode/";
+        return parseExternalPlayMapDirName (metadata);
       }
       case STOCK:
       {
-        return AssetSettings.ABSOLUTE_INTERNAL_PLAY_MAPS_MODE_DIRECTORY + gameMode.name ().toLowerCase () + "/";
+        return parseInternalPlayMapDirName (metadata);
       }
       default:
       {
         throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           playMapType));
+                metadata.getType ()));
       }
     }
   }
 
   @Override
-  protected String parsePlayMapNameAsPath (final PlayMapMetadata playMapMetadata)
+  protected String parsePlayMapsModePath (final PlayMapType type, final GameMode mode)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (type, "type");
+    Arguments.checkIsNotNull (mode, "mode");
 
-    switch (playMapMetadata.getType ())
+    switch (type)
     {
       case CUSTOM:
       {
-        return playMapMetadata.getName ().toLowerCase () + "/";
+        return parseAbsoluteExternalPlayMapsModePath (mode);
       }
       case STOCK:
       {
-        return playMapMetadata.getName ().replace (" ", "_").toLowerCase () + "/";
+        return parseAbsoluteInternalPlayMapsModePath (mode);
       }
       default:
       {
         throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           playMapMetadata.getType ()));
+                                                           type));
       }
     }
   }

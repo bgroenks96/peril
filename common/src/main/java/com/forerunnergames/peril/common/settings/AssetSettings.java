@@ -18,6 +18,11 @@
 
 package com.forerunnergames.peril.common.settings;
 
+import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.playmap.PlayMapDirectoryType;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
 /*
@@ -55,14 +60,16 @@ public final class AssetSettings
   public static final String ABSOLUTE_EXTERNAL_ASSETS_DIRECTORY = System.getProperty ("user.home") + "/peril/assets/";
 
   // Prepend: Absolute external assets directory (compile-time or runtime)
-  // Append: Game mode (runtime, external) or relative mode directory (compile-time, internal)
+  // Append: Game mode (runtime, external) OR
+  // Append: Relative mode directory (compile-time, internal)
   public static final String RELATIVE_PLAY_MAPS_DIRECTORY = "maps/";
 
   // Prepend: Nothing (absolute path from external root)
   // Append: Game mode (runtime)
   public static final String ABSOLUTE_EXTERNAL_PLAY_MAPS_DIRECTORY = ABSOLUTE_EXTERNAL_ASSETS_DIRECTORY + RELATIVE_PLAY_MAPS_DIRECTORY;
 
-  // Prepend: Relative play maps directory (compile-time)
+  // Prepend: Game mode (runtime, external) OR
+  // Prepend: Relative play maps directory (compile-time, internal)
   // Append: Game mode (runtime)
   public static final String RELATIVE_MODE_DIRECTORY = "mode/";
 
@@ -115,6 +122,55 @@ public final class AssetSettings
   public static final String CARD_DATA_FILENAME = "cards.txt";
 
   // @formatter:on
+
+  public static String asExternalPathSegment (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    return mode.name ().toLowerCase ().replace ("_", " ") + " " + RELATIVE_MODE_DIRECTORY;
+  }
+
+  public static String asInternalPathSegment (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    return mode.name ().toLowerCase () + "/";
+  }
+
+  public static String asPathSegment (final PlayMapType type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    return type.name ().toLowerCase () + "/";
+  }
+
+  public static String asExternalPlayMapDirName (final PlayMapMetadata metadata)
+  {
+    Arguments.checkIsNotNull (metadata, "metadata");
+
+    if (metadata.isDirType (PlayMapDirectoryType.EXTERNAL)) return metadata.getDirName ();
+
+    return internalToExternalDirName (metadata.getDirName ());
+  }
+
+  public static String asInternalPlayMapDirName (final PlayMapMetadata metadata)
+  {
+    Arguments.checkIsNotNull (metadata, "metadata");
+
+    if (metadata.isDirType (PlayMapDirectoryType.INTERNAL)) return metadata.getDirName ();
+
+    return externalToInternalDirName (metadata.getDirName ());
+  }
+
+  private static String externalToInternalDirName (final String dirName)
+  {
+    return dirName.replace (" ", "_");
+  }
+
+  private static String internalToExternalDirName (final String dirName)
+  {
+    return dirName.replace ("_", " ");
+  }
 
   private AssetSettings ()
   {

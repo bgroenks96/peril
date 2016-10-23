@@ -75,7 +75,6 @@ import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
-import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
@@ -1092,7 +1091,8 @@ public class MultiplayerControllerTest
     // game configuration fields
     private final GameMode gameMode = GameMode.CLASSIC;
     private final PlayMapMetadata playMapMetadata = new DefaultPlayMapMetadata (
-            GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, PlayMapType.STOCK, gameMode);
+            GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_TYPE, gameMode,
+            GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_TYPE);
     private InitialCountryAssignment initialCountryAssignment = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
     // game server configuration fields
     private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;

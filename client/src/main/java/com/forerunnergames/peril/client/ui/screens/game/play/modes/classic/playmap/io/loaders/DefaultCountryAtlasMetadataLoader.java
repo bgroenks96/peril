@@ -24,9 +24,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data.CountryAtlasMetadata;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data.DefaultCountryAtlasMetadata;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapGraphicsPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapGraphicsPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.RelativePlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
@@ -52,9 +52,9 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
     // @formatter:off
-    final PlayMapResourcesPathParser absolutePlayMapResourcesPathParser = new AbsolutePlayMapResourcesPathParser (playMapMetadata.getMode ());
-    final PlayMapResourcesPathParser relativePlayMapResourcesPathParser = new RelativePlayMapResourcesPathParser (playMapMetadata.getMode ());
-    final File externalCountryAtlasesDirectory = new File (absolutePlayMapResourcesPathParser.parseCountryAtlasesPath (playMapMetadata));
+    final PlayMapGraphicsPathParser absolutePlayMapGraphicsPathParser = new AbsolutePlayMapGraphicsPathParser (playMapMetadata.getMode ());
+    final PlayMapGraphicsPathParser relativePlayMapGraphicsPathParser = new RelativePlayMapGraphicsPathParser (playMapMetadata.getMode ());
+    final File externalCountryAtlasesDirectory = new File (absolutePlayMapGraphicsPathParser.parseCountryAtlasesPath (playMapMetadata));
     final Set <CountryAtlasMetadata> countryAtlasMetadatas = new HashSet <> ();
     // @formatter:on
 
@@ -71,7 +71,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
 
       Arrays.sort (childPathFiles);
 
-      final String relativeCountryAtlasesPath = relativePlayMapResourcesPathParser
+      final String relativeCountryAtlasesPath = relativePlayMapGraphicsPathParser
               .parseCountryAtlasesPath (playMapMetadata);
 
       for (final File childPathFile : childPathFiles)
@@ -159,7 +159,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
       // @formatter:off
       throw new PlayMapLoadingException (Strings.format ("Could not load country atlases for {} map: \'{}\'",
                                                          playMapMetadata.getType ().name ().toLowerCase (),
-                                                         Strings.toProperCase (playMapMetadata.getName ())), e);
+                                                         playMapMetadata.getName ()), e);
       // @formatter:on
     }
   }
@@ -184,7 +184,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
             .format ("{} for {} map: \'{}\'\n\nIn Location:\n\n{}\n\nExpected country atlas named: \'{}\'\n\n" +
                     "Naming rules for country atlases:\n\n{}",
                      prependedMessage, playMapMetadata.getType ().name ().toLowerCase (),
-                     Strings.toProperCase (playMapMetadata.getName ()), externalCountryAtlasesDirectory.getAbsolutePath (),
+                     playMapMetadata.getName (), externalCountryAtlasesDirectory.getAbsolutePath (),
                      AssetSettings.getValidCountryAtlasPackFileName (expectedAtlasIndex),
                      AssetSettings.VALID_COUNTRY_ATLAS_FILENAME_DESCRIPTION));
     // @formatter:on

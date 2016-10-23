@@ -18,8 +18,8 @@
 
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.data;
 
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapResourcesPathParser;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapResourcesPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.AbsolutePlayMapGraphicsPathParser;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.pathparsers.PlayMapGraphicsPathParser;
 import com.forerunnergames.peril.common.io.BiMapDataLoader;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
@@ -40,10 +40,10 @@ public final class DefaultCountryImageDataRepositoryFactory implements CountryIm
   {
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    final PlayMapResourcesPathParser playMapResourcesPathParser = new AbsolutePlayMapResourcesPathParser (
+    final PlayMapGraphicsPathParser playMapGraphicsPathParser = new AbsolutePlayMapGraphicsPathParser (
             playMapMetadata.getMode ());
 
-    return new DefaultCountryImageDataRepository (countryImageDataLoader.load (playMapResourcesPathParser
+    return new DefaultCountryImageDataRepository (countryImageDataLoader.load (playMapGraphicsPathParser
             .parseCountryImageDataFileNamePath (playMapMetadata)));
   }
 }

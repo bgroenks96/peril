@@ -31,7 +31,6 @@ import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
-import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
@@ -68,7 +67,9 @@ import net.engio.mbassy.bus.MBassador;
 public class TestServerApplicationFactory
 {
   private static final PlayMapMetadata PLAY_MAP_METADATA = new DefaultPlayMapMetadata (
-          GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, PlayMapType.STOCK, GameMode.CLASSIC);
+          GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_TYPE,
+          GameMode.CLASSIC, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_NAME,
+          GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_TYPE);
   private static final int SPECTATOR_LIMIT = 0;
   private static volatile int testGameServerId = 0;
 

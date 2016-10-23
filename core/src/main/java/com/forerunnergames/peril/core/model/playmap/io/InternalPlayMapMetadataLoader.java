@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.core.model.playmap.io;
 
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapDirectoryType;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
@@ -74,11 +75,11 @@ public final class InternalPlayMapMetadataLoader implements PlayMapMetadataLoade
       return ImmutableSet.of ();
     }
 
-    final Set <PlayMapMetadata> playMapMetadatas = new HashSet <> ();
+    final Set <PlayMapMetadata> metadatas = new HashSet <> ();
 
     for (final String rawPlayMapDirectoryName : rawPlayMapDirectoryNames)
     {
-      final String finalPlayMapName = rawPlayMapDirectoryName.replaceAll ("_", " ");
+      final String finalPlayMapName = Strings.toProperCase (rawPlayMapDirectoryName.replaceAll ("_", " "));
 
       if (!GameSettings.isValidPlayMapName (finalPlayMapName))
       {
@@ -86,17 +87,17 @@ public final class InternalPlayMapMetadataLoader implements PlayMapMetadataLoade
       }
 
       final PlayMapMetadata playMapMetadata = new DefaultPlayMapMetadata (finalPlayMapName, PlayMapType.STOCK,
-              playMapDataPathParser.getGameMode ());
+              playMapDataPathParser.getGameMode (), rawPlayMapDirectoryName, PlayMapDirectoryType.INTERNAL);
 
-      if (!playMapMetadatas.add (playMapMetadata))
+      if (!metadatas.add (playMapMetadata))
       {
         playMapNameError ("Duplicate", finalPlayMapName, internalPlayMapsDirectory);
       }
     }
 
-    if (playMapMetadatas.isEmpty ()) log.warn ("Could not find any play maps in [{}].", internalPlayMapsDirectory);
+    if (metadatas.isEmpty ()) log.warn ("Could not find any play maps in [{}].", internalPlayMapsDirectory);
 
-    return ImmutableSet.copyOf (playMapMetadatas);
+    return ImmutableSet.copyOf (metadatas);
   }
 
   private void playMapNameError (final String prependedMessage,

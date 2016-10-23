@@ -218,7 +218,7 @@ public final class DefaultIntelBox implements IntelBox
   {
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    playMapNameTextLabel.setText (Strings.toProperCase (playMapMetadata.getName ()));
+    playMapNameTextLabel.setText (playMapMetadata.getName ());
   }
 
   @Override

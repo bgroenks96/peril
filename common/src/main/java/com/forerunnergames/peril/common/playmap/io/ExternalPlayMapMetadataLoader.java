@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.common.playmap.io;
 
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
+import com.forerunnergames.peril.common.playmap.PlayMapDirectoryType;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
@@ -52,7 +53,6 @@ public final class ExternalPlayMapMetadataLoader implements PlayMapMetadataLoade
   @Override
   public ImmutableSet <PlayMapMetadata> load ()
   {
-    final Set <PlayMapMetadata> playMapMetadatas = new HashSet <> ();
     final File externalPlayMapsDirectory = new File (playMapDataPathParser.parsePlayMapTypePath (playMapType));
     final File[] childPathFiles = externalPlayMapsDirectory.listFiles ();
 
@@ -62,12 +62,14 @@ public final class ExternalPlayMapMetadataLoader implements PlayMapMetadataLoade
       return ImmutableSet.of ();
     }
 
+    final Set <PlayMapMetadata> metadatas = new HashSet <> ();
+
     for (final File childPathFile : childPathFiles)
     {
       if (!childPathFile.isDirectory ()) continue;
 
       final String rawPlayMapDirectoryName = childPathFile.getName ();
-      final String finalPlayMapName = rawPlayMapDirectoryName.replaceAll ("_", " ");
+      final String finalPlayMapName = Strings.toProperCase (rawPlayMapDirectoryName.replaceAll ("_", " "));
 
       if (!GameSettings.isValidPlayMapName (finalPlayMapName))
       {
@@ -75,17 +77,17 @@ public final class ExternalPlayMapMetadataLoader implements PlayMapMetadataLoade
       }
 
       final PlayMapMetadata playMapMetaData = new DefaultPlayMapMetadata (finalPlayMapName, playMapType,
-              playMapDataPathParser.getGameMode ());
+              playMapDataPathParser.getGameMode (), rawPlayMapDirectoryName, PlayMapDirectoryType.EXTERNAL);
 
-      if (!playMapMetadatas.add (playMapMetaData))
+      if (!metadatas.add (playMapMetaData))
       {
         playMapNameError ("Duplicate", finalPlayMapName, externalPlayMapsDirectory);
       }
     }
 
-    if (playMapMetadatas.isEmpty ()) log.warn ("Could not find any play maps in [{}].", externalPlayMapsDirectory);
+    if (metadatas.isEmpty ()) log.warn ("Could not find any play maps in [{}].", externalPlayMapsDirectory);
 
-    return ImmutableSet.copyOf (playMapMetadatas);
+    return ImmutableSet.copyOf (metadatas);
   }
 
   private void playMapNameError (final String prependedMessage,

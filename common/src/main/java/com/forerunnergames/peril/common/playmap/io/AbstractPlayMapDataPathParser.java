@@ -36,101 +36,101 @@ public abstract class AbstractPlayMapDataPathParser implements PlayMapDataPathPa
   }
 
   @Override
-  public String parseCardsFileNamePath (final PlayMapMetadata playMapMetadata)
+  public String parseCardsFileNamePath (final PlayMapMetadata metadata)
   {
-    return parseCardDataPath (playMapMetadata) + AssetSettings.CARD_DATA_FILENAME;
+    return parseCardDataPath (metadata) + AssetSettings.CARD_DATA_FILENAME;
   }
 
   @Override
-  public final String parseCountriesFileNamePath (final PlayMapMetadata playMapMetadata)
+  public final String parseCountriesFileNamePath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parseCountryDataPath (playMapMetadata) + AssetSettings.COUNTRY_DATA_FILENAME;
+    return parseCountryDataPath (metadata) + AssetSettings.COUNTRY_DATA_FILENAME;
   }
 
   @Override
-  public final String parseCountryGraphFileNamePath (final PlayMapMetadata playMapMetadata)
+  public final String parseCountryGraphFileNamePath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parseCountryDataPath (playMapMetadata) + AssetSettings.COUNTRY_GRAPH_FILENAME;
+    return parseCountryDataPath (metadata) + AssetSettings.COUNTRY_GRAPH_FILENAME;
   }
 
   @Override
-  public final String parseContinentGraphFileNamePath (final PlayMapMetadata playMapMetadata)
+  public final String parseContinentGraphFileNamePath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parseContinentDataPath (playMapMetadata) + AssetSettings.CONTINENT_GRAPH_FILENAME;
+    return parseContinentDataPath (metadata) + AssetSettings.CONTINENT_GRAPH_FILENAME;
   }
 
   @Override
-  public final String parseContinentsFileNamePath (final PlayMapMetadata playMapMetadata)
+  public final String parseContinentsFileNamePath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parseContinentDataPath (playMapMetadata) + AssetSettings.CONTINENT_DATA_FILENAME;
+    return parseContinentDataPath (metadata) + AssetSettings.CONTINENT_DATA_FILENAME;
   }
 
   @Override
-  public final String parseCountryDataPath (final PlayMapMetadata playMapMetadata)
+  public final String parseCountryDataPath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parseCountriesPath (playMapMetadata) + AssetSettings.RELATIVE_COUNTRY_DATA_DIRECTORY;
+    return parseCountriesPath (metadata) + AssetSettings.RELATIVE_COUNTRY_DATA_DIRECTORY;
   }
 
   @Override
-  public final String parseContinentDataPath (final PlayMapMetadata playMapMetadata)
+  public final String parseContinentDataPath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parseContinentsPath (playMapMetadata) + AssetSettings.RELATIVE_CONTINENT_DATA_DIRECTORY;
+    return parseContinentsPath (metadata) + AssetSettings.RELATIVE_CONTINENT_DATA_DIRECTORY;
   }
 
   @Override
-  public String parseCardDataPath (final PlayMapMetadata playMapMetadata)
+  public String parseCardDataPath (final PlayMapMetadata metadata)
   {
-    return parseCardsPath (playMapMetadata) + AssetSettings.RELATIVE_CARD_DATA_DIRECTORY;
+    return parseCardsPath (metadata) + AssetSettings.RELATIVE_CARD_DATA_DIRECTORY;
   }
 
   @Override
-  public final String parsePlayMapNamePath (final PlayMapMetadata playMapMetadata)
+  public final String parsePlayMapPath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parsePlayMapTypePath (playMapMetadata.getType ()) + parsePlayMapNameAsPath (playMapMetadata);
+    return parsePlayMapTypePath (metadata.getType ()) + parsePlayMapDirName (metadata) + "/";
   }
 
   @Override
-  public final String parseCountriesPath (final PlayMapMetadata playMapMetadata)
+  public final String parseCountriesPath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parsePlayMapNamePath (playMapMetadata) + AssetSettings.RELATIVE_COUNTRIES_DIRECTORY;
+    return parsePlayMapPath (metadata) + AssetSettings.RELATIVE_COUNTRIES_DIRECTORY;
   }
 
   @Override
-  public final String parseContinentsPath (final PlayMapMetadata playMapMetadata)
+  public final String parseContinentsPath (final PlayMapMetadata metadata)
   {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
+    Arguments.checkIsNotNull (metadata, "metadata");
 
-    return parsePlayMapNamePath (playMapMetadata) + AssetSettings.RELATIVE_CONTINENTS_DIRECTORY;
+    return parsePlayMapPath (metadata) + AssetSettings.RELATIVE_CONTINENTS_DIRECTORY;
   }
 
   @Override
-  public String parseCardsPath (final PlayMapMetadata playMapMetadata)
+  public String parseCardsPath (final PlayMapMetadata metadata)
   {
-    return parsePlayMapNamePath (playMapMetadata) + AssetSettings.RELATIVE_CARDS_DIRECTORY;
+    return parsePlayMapPath (metadata) + AssetSettings.RELATIVE_CARDS_DIRECTORY;
   }
 
   @Override
-  public final String parsePlayMapTypePath (final PlayMapType playMapType)
+  public final String parsePlayMapTypePath (final PlayMapType type)
   {
-    Arguments.checkIsNotNull (playMapType, "playMapType");
+    Arguments.checkIsNotNull (type, "type");
 
-    return parsePlayMapsModePath (playMapType, gameMode) + parsePlayMapTypeAsPath (playMapType);
+    return parsePlayMapsModePath (type, gameMode) + AssetSettings.asPathSegment (type);
   }
 
   @Override
@@ -139,13 +139,43 @@ public abstract class AbstractPlayMapDataPathParser implements PlayMapDataPathPa
     return gameMode;
   }
 
-  protected abstract String parsePlayMapsModePath (final PlayMapType playMapType, final GameMode gameMode);
+  protected abstract String parsePlayMapDirName (final PlayMapMetadata metadata);
 
-  protected abstract String parsePlayMapNameAsPath (final PlayMapMetadata playMapMetadata);
+  protected abstract String parsePlayMapsModePath (final PlayMapType type, final GameMode mode);
 
-  private String parsePlayMapTypeAsPath (final PlayMapType playMapType)
+  protected final String parseExternalPlayMapDirName (final PlayMapMetadata metadata)
   {
-    return playMapType.name ().toLowerCase () + "/";
+    Arguments.checkIsNotNull (metadata, "metadata");
+
+    return AssetSettings.asExternalPlayMapDirName (metadata);
+  }
+
+  protected final String parseInternalPlayMapDirName (final PlayMapMetadata metadata)
+  {
+    Arguments.checkIsNotNull (metadata, "metadata");
+
+    return AssetSettings.asInternalPlayMapDirName (metadata);
+  }
+
+  protected final String parseAbsoluteExternalPlayMapsModePath (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    return AssetSettings.ABSOLUTE_EXTERNAL_PLAY_MAPS_DIRECTORY + AssetSettings.asExternalPathSegment (mode);
+  }
+
+  protected final String parseAbsoluteInternalPlayMapsModePath (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    return AssetSettings.ABSOLUTE_INTERNAL_PLAY_MAPS_MODE_DIRECTORY + AssetSettings.asInternalPathSegment (mode);
+  }
+
+  protected final String parseRelativeExternalPlayMapsModePath (final GameMode mode)
+  {
+    Arguments.checkIsNotNull (mode, "mode");
+
+    return AssetSettings.RELATIVE_PLAY_MAPS_DIRECTORY + AssetSettings.asExternalPathSegment (mode);
   }
 
   @Override

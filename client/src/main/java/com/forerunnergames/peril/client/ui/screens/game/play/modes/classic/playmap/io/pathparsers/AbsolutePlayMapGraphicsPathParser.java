@@ -20,49 +20,39 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
-import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
-import com.forerunnergames.peril.common.settings.AssetSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 /**
- * Use to resolve play map resource paths ONLY for resources that WILL be loaded with an
+ * Resolves play map graphics paths ONLY for graphics resources that WILL NOT be loaded with an
  * {@link com.badlogic.gdx.assets.AssetManager}
  */
-public final class RelativePlayMapResourcesPathParser extends AbstractPlayMapResourcesPathParser
+public final class AbsolutePlayMapGraphicsPathParser extends AbstractPlayMapGraphicsPathParser
 {
-  public RelativePlayMapResourcesPathParser (final GameMode gameMode)
+  public AbsolutePlayMapGraphicsPathParser (final GameMode gameMode)
   {
     super (gameMode);
   }
 
   @Override
-  protected String parsePlayMapsModePath (final PlayMapType playMapType, final GameMode gameMode)
+  protected String parsePlayMapsModePath (final PlayMapType type, final GameMode mode)
   {
-    Arguments.checkIsNotNull (playMapType, "playMapType");
-    Arguments.checkIsNotNull (gameMode, "gameMode");
+    Arguments.checkIsNotNull (type, "type");
+    Arguments.checkIsNotNull (mode, "mode");
 
-    switch (playMapType)
+    switch (type)
     {
       case STOCK:
       case CUSTOM:
       {
-        return AssetSettings.RELATIVE_PLAY_MAPS_DIRECTORY + gameMode.name ().toLowerCase () + " mode/";
+        return parseAbsoluteExternalPlayMapsModePath (mode);
       }
       default:
       {
         throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           playMapType));
+                                                           type));
       }
     }
-  }
-
-  @Override
-  protected String parsePlayMapNameAsPath (final PlayMapMetadata playMapMetadata)
-  {
-    Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
-
-    return playMapMetadata.getName ().toLowerCase () + "/";
   }
 }

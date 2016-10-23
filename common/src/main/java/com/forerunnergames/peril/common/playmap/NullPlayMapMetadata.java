@@ -18,18 +18,35 @@
 package com.forerunnergames.peril.common.playmap;
 
 import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 final class NullPlayMapMetadata implements PlayMapMetadata
 {
   private static final String NAME = "";
+  private static final String DIR_NAME = "";
   private static final PlayMapType TYPE = PlayMapType.STOCK;
   private static final GameMode MODE = GameMode.CLASSIC;
+  private static final PlayMapDirectoryType DIR_TYPE = PlayMapDirectoryType.INTERNAL;
 
   @Override
   public String getName ()
   {
     return NAME;
+  }
+
+  @Override
+  public String getDirName ()
+  {
+    return DIR_NAME;
+  }
+
+  @Override
+  public boolean isDirType (final PlayMapDirectoryType dirType)
+  {
+    Arguments.checkIsNotNull (dirType, "dirType");
+
+    return DIR_TYPE == dirType;
   }
 
   @Override
@@ -59,15 +76,15 @@ final class NullPlayMapMetadata implements PlayMapMetadata
     if (this == obj) return true;
     if (obj == null || getClass () != obj.getClass ()) return false;
 
-    final PlayMapMetadata playMapMetadata = (PlayMapMetadata) obj;
+    final PlayMapMetadata metadata = (PlayMapMetadata) obj;
 
-    return NAME.equals (playMapMetadata.getName ()) && TYPE == playMapMetadata.getType ()
-            && MODE == playMapMetadata.getMode ();
+    return NAME.equals (metadata.getName ()) && TYPE == metadata.getType () && MODE == metadata.getMode ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Type: {} | Mode: {}", getClass ().getSimpleName (), NAME, TYPE, MODE);
+    return Strings.format ("{}: Name: {} | Type: {} | Mode: {} | DirName: {} | DirType: {}", getClass ()
+            .getSimpleName (), NAME, TYPE, MODE, DIR_NAME, DIR_TYPE);
   }
 }

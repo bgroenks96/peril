@@ -23,31 +23,31 @@ import com.forerunnergames.peril.common.playmap.PlayMapType;
 
 public interface PlayMapDataPathParser
 {
-  String parseCardsFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseCardsFileNamePath (final PlayMapMetadata metadata);
 
-  String parseCountriesFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseCountriesFileNamePath (final PlayMapMetadata metadata);
 
-  String parseCountryGraphFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseCountryGraphFileNamePath (final PlayMapMetadata metadata);
 
-  String parseContinentGraphFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseContinentGraphFileNamePath (final PlayMapMetadata metadata);
 
-  String parseContinentsFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseContinentsFileNamePath (final PlayMapMetadata metadata);
 
-  String parseCountryDataPath (final PlayMapMetadata playMapMetadata);
+  String parseCountryDataPath (final PlayMapMetadata metadata);
 
-  String parseContinentDataPath (final PlayMapMetadata playMapMetadata);
+  String parseContinentDataPath (final PlayMapMetadata metadata);
 
-  String parseCardDataPath (final PlayMapMetadata playMapMetadata);
+  String parseCardDataPath (final PlayMapMetadata metadata);
 
-  String parsePlayMapNamePath (final PlayMapMetadata playMapMetadata);
+  String parsePlayMapPath (final PlayMapMetadata metadata);
 
-  String parseCountriesPath (final PlayMapMetadata playMapMetadata);
+  String parseCountriesPath (final PlayMapMetadata metadata);
 
-  String parseContinentsPath (final PlayMapMetadata playMapMetadata);
+  String parseContinentsPath (final PlayMapMetadata metadata);
 
-  String parseCardsPath (final PlayMapMetadata playMapMetadata);
+  String parseCardsPath (final PlayMapMetadata metadata);
 
-  String parsePlayMapTypePath (final PlayMapType playMapType);
+  String parsePlayMapTypePath (final PlayMapType type);
 
   GameMode getGameMode ();
 }

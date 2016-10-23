@@ -170,7 +170,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     playerLimitLabel = widgetFactory.createPlayerLimitLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT));
     playMaps = loadPlayMaps ();
     currentPlayMap = findPlayMapOrFirstPlayMap (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME);
-    playMapNameLabel = widgetFactory.createPlayMapNameLabel (asPlayMapNameLabelText (currentPlayMap));
+    playMapNameLabel = widgetFactory.createPlayMapNameLabel (currentPlayMap.getName ());
     totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
     // @formatter:on
 
@@ -202,7 +202,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         // TODO Show Play Map Dialog.
 
         currentPlayMap = nextPlayMap ();
-        playMapNameLabel.setText (asPlayMapNameLabelText (currentPlayMap));
+        playMapNameLabel.setText (currentPlayMap.getName ());
         totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
         updateWinPercentSelectBoxItems ();
       }
@@ -420,7 +420,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     playMapIterator = null;
     playMaps = loadPlayMaps ();
     currentPlayMap = findPlayMapOrFirstPlayMap (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME);
-    playMapNameLabel.setText (asPlayMapNameLabelText (currentPlayMap));
+    playMapNameLabel.setText (currentPlayMap.getName ());
     totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
     updateWinPercentSelectBoxItems ();
 
@@ -489,11 +489,6 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     return true;
   }
 
-  private static String asPlayMapNameLabelText (final PlayMapMetadata playMap)
-  {
-    return Strings.toProperCase (playMap.getName ());
-  }
-
   private ImmutableSet <PlayMapMetadata> loadPlayMaps ()
   {
     try
@@ -525,9 +520,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     {
       final String errorMessage = Strings
               .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
-                       currentPlayMap.getType ().name ().toLowerCase (),
-                       Strings.toProperCase (currentPlayMap.getName ()), Throwables.getRootCause (e).getMessage (),
-                       Strings.toString (e));
+                       currentPlayMap.getType ().name ().toLowerCase (), currentPlayMap.getName (), Throwables
+                               .getRootCause (e).getMessage (), Strings.toString (e));
 
       log.error (errorMessage);
 
@@ -577,7 +571,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
             .format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\n"
                              + "Please check your settings file.", InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT,
                      playerLimitLabel.getText ().toString (), currentPlayMap.getType ().name ().toLowerCase (),
-                     Strings.toProperCase (currentPlayMap.getName ()))));
+                     currentPlayMap.getName ())));
 
     errorDialog.show ();
   }

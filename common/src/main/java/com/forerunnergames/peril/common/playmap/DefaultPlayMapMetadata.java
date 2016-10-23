@@ -24,39 +24,63 @@ import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class DefaultPlayMapMetadata implements PlayMapMetadata
+public final class DefaultPlayMapMetadata implements PlayMapMetadata
 {
   private final String name;
   private final PlayMapType type;
   private final GameMode mode;
+  private final String dirName;
+  private final PlayMapDirectoryType dirType;
 
-  public DefaultPlayMapMetadata (final String name, final PlayMapType type, final GameMode mode)
+  public DefaultPlayMapMetadata (final String name,
+                                 final PlayMapType type,
+                                 final GameMode mode,
+                                 final String dirName,
+                                 final PlayMapDirectoryType dirType)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (type, "type");
     Arguments.checkIsNotNull (mode, "mode");
+    Arguments.checkIsNotNull (dirName, "dirName");
+    Arguments.checkIsNotNull (dirType, "dirType");
     Preconditions.checkIsTrue (GameSettings.isValidPlayMapName (name),
                                Strings.format ("Invalid play map name [{}].", name));
 
     this.name = name;
     this.type = type;
     this.mode = mode;
+    this.dirName = dirName;
+    this.dirType = dirType;
   }
 
   @Override
-  public final String getName ()
+  public String getName ()
   {
     return name;
   }
 
   @Override
-  public final PlayMapType getType ()
+  public String getDirName ()
+  {
+    return dirName;
+  }
+
+  @Override
+  public boolean isDirType (final PlayMapDirectoryType dirType)
+  {
+    Arguments.checkIsNotNull (dirType, "dirType");
+
+    return this.dirType == dirType;
+  }
+
+  @Override
+  public PlayMapType getType ()
   {
     return type;
   }
 
   @Override
-  public final GameMode getMode ()
+  public GameMode getMode ()
   {
     return mode;
   }
@@ -76,16 +100,16 @@ public class DefaultPlayMapMetadata implements PlayMapMetadata
     if (this == obj) return true;
     if (obj == null || getClass () != obj.getClass ()) return false;
 
-    final PlayMapMetadata playMapMetadata = (PlayMapMetadata) obj;
+    final PlayMapMetadata metadata = (PlayMapMetadata) obj;
 
-    return name.equals (playMapMetadata.getName ()) && type == playMapMetadata.getType ()
-            && mode == playMapMetadata.getMode ();
+    return name.equals (metadata.getName ()) && type == metadata.getType () && mode == metadata.getMode ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Type: {} | Mode: {}", getClass ().getSimpleName (), name, type, mode);
+    return Strings.format ("{}: Name: {} | Type: {} | Mode: {} | DirName: {} | DirType: {}", getClass ()
+            .getSimpleName (), name, type, mode, dirName, dirType);
   }
 
   @RequiredForNetworkSerialization
@@ -94,5 +118,7 @@ public class DefaultPlayMapMetadata implements PlayMapMetadata
     name = null;
     type = null;
     mode = null;
+    dirName = null;
+    dirType = null;
   }
 }

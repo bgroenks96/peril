@@ -19,6 +19,8 @@
 package com.forerunnergames.peril.common.settings;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
+import com.forerunnergames.peril.common.playmap.PlayMapDirectoryType;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Strings;
@@ -38,7 +40,10 @@ public final class GameSettings
   public static final String CLAN_TAG_END_SYMBOL = "]";
   public static final String PLAYER_NAME_CLAN_TAG_SEPARATOR_SYMBOL = " ";
   public static final Pattern COMMAND_PREFIX_PATTERN = Pattern.compile ("^[\\\\/]");
-  public static final String DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME = "classic";
+  public static final String DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME = "Classic";
+  public static final String DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_NAME = "classic";
+  public static final PlayMapDirectoryType DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_TYPE = PlayMapDirectoryType.INTERNAL;
+  public static final PlayMapType DEFAULT_CLASSIC_MODE_PLAY_MAP_TYPE = PlayMapType.STOCK;
   public static final int MIN_PLAY_MAP_NAME_LENGTH = 2;
   public static final int MAX_PLAY_MAP_NAME_LENGTH = 30;
   public static final DieFaceValue DEFAULT_DIE_FACE_VALUE = DieFaceValue.SIX;

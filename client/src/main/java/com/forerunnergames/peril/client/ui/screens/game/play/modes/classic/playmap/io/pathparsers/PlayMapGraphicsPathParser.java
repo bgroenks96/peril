@@ -21,17 +21,17 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.io.PlayMapDataPathParser;
 
-public interface PlayMapResourcesPathParser extends PlayMapDataPathParser
+public interface PlayMapGraphicsPathParser extends PlayMapDataPathParser
 {
-  String parseCountryAtlasesPath (final PlayMapMetadata playMapMetadata);
+  String parseCountryAtlasesPath (final PlayMapMetadata metadata);
 
-  String parseCountryImageDataFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseCountryImageDataFileNamePath (final PlayMapMetadata metadata);
 
-  String parseCountryInputDetectionDataFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseCountryInputDetectionDataFileNamePath (final PlayMapMetadata metadata);
 
-  String parseContinentInputDetectionDataFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseContinentInputDetectionDataFileNamePath (final PlayMapMetadata metadata);
 
-  String parseInputDetectionImageFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseInputDetectionImageFileNamePath (final PlayMapMetadata metadata);
 
-  String parseBackgroundImageFileNamePath (final PlayMapMetadata playMapMetadata);
+  String parseBackgroundImageFileNamePath (final PlayMapMetadata metadata);
 }
