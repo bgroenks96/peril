@@ -15,6 +15,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+machine:
+  java:
+    version: openjdk8
+
 dependencies:
   override:
     - export TERM="dumb"
