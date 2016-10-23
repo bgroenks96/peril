@@ -87,7 +87,6 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBo
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
@@ -121,6 +120,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;

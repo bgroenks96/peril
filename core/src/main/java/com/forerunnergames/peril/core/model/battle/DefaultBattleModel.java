@@ -28,11 +28,11 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAtta
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DataResult;
 import com.forerunnergames.tools.common.Exceptions;

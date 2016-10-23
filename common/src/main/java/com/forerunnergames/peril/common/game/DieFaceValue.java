@@ -43,16 +43,6 @@ public enum DieFaceValue implements IterableEnum <DieFaceValue>
 
   private final int value;
 
-  public static int count ()
-  {
-    return values ().length;
-  }
-
-  public static DieFaceValue valueOf (final int value)
-  {
-    return IterableEnumHelper.getNthValue (value, values ());
-  }
-
   @Override
   public boolean hasNext ()
   {
@@ -111,6 +101,16 @@ public enum DieFaceValue implements IterableEnum <DieFaceValue>
   public String toMixedOrdinalPosition ()
   {
     return IterableEnumHelper.toMixedOrdinalPosition (this);
+  }
+
+  public static int count ()
+  {
+    return values ().length;
+  }
+
+  public static DieFaceValue valueOf (final int value)
+  {
+    return IterableEnumHelper.getNthValue (value, values ());
   }
 
   public int value ()

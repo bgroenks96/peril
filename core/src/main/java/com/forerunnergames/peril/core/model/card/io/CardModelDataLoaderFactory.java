@@ -20,8 +20,8 @@ package com.forerunnergames.peril.core.model.card.io;
 
 import com.forerunnergames.peril.common.io.ExternalStreamParserFactory;
 import com.forerunnergames.peril.common.io.StreamParserFactory;
-import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.peril.core.model.io.InternalStreamParserFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;

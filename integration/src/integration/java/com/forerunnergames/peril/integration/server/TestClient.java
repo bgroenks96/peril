@@ -71,6 +71,29 @@ public class TestClient extends AbstractClientController
     callbacks = Multimaps.synchronizedListMultimap (ArrayListMultimap.<Class <?>, ClientEventCallback <?>> create ());
   }
 
+  @Override
+  protected void onConnectionTo (final Remote server)
+  {
+    Arguments.checkIsNotNull (server, "server");
+  }
+
+  @Override
+  protected void onDisconnectionFrom (final Remote server)
+  {
+    Arguments.checkIsNotNull (server, "server");
+  }
+
+  @Override
+  protected void onCommunication (final Object object, final Remote server)
+  {
+    Arguments.checkIsNotNull (object, "object");
+    Arguments.checkIsNotNull (server, "server");
+
+    final Event event = (Event) object;
+    log.trace ("[{}] Event received: [{}]", this, event);
+    inboundEventQueue.add (event);
+  }
+
   public Result <String> connect (final String addr, final int tcpPort)
   {
     Arguments.checkIsNotNull (addr, "addr");
@@ -277,35 +300,6 @@ public class TestClient extends AbstractClientController
     }
   }
 
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}-{}", getClass ().getSimpleName (), clientId);
-  }
-
-  @Override
-  protected void onConnectionTo (final Remote server)
-  {
-    Arguments.checkIsNotNull (server, "server");
-  }
-
-  @Override
-  protected void onDisconnectionFrom (final Remote server)
-  {
-    Arguments.checkIsNotNull (server, "server");
-  }
-
-  @Override
-  protected void onCommunication (final Object object, final Remote server)
-  {
-    Arguments.checkIsNotNull (object, "object");
-    Arguments.checkIsNotNull (server, "server");
-
-    final Event event = (Event) object;
-    log.trace ("[{}] Event received: [{}]", this, event);
-    inboundEventQueue.add (event);
-  }
-
   @SuppressWarnings ({ "unchecked", "rawtypes" })
   protected <T extends Event> void invokeCallbacks (final T event)
   {
@@ -327,5 +321,11 @@ public class TestClient extends AbstractClientController
     final PlayerEvent playerEvent = (PlayerEvent) event;
     if (!playerEvent.getPlayer ().is (player)) return;
     player = playerEvent.getPlayer ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}-{}", getClass ().getSimpleName (), clientId);
   }
 }

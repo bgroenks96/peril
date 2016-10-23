@@ -32,11 +32,6 @@ public enum CountrySecondaryImageState implements CountryImageState <CountrySeco
     return name ();
   }
 
-  public static int count ()
-  {
-    return IterableEnumHelper.count (values ());
-  }
-
   @Override
   public boolean hasNext ()
   {
@@ -95,5 +90,10 @@ public enum CountrySecondaryImageState implements CountryImageState <CountrySeco
   public String toMixedOrdinalPosition ()
   {
     return IterableEnumHelper.toMixedOrdinalPosition (this);
+  }
+
+  public static int count ()
+  {
+    return IterableEnumHelper.count (values ());
   }
 }

@@ -119,8 +119,8 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     assert serverInformEvent != null;
 
     reinforcementDialog.show (serverInformEvent.getMinReinforcementsPlacedPerCountry (),
-                                  serverInformEvent.getTotalReinforcements (), getCountryWithName (countryName), x, y,
-                                  getSelfPlayer ());
+                              serverInformEvent.getTotalReinforcements (), getCountryWithName (countryName), x, y,
+                              getSelfPlayer ());
   }
 
   @Override

@@ -42,8 +42,7 @@ public class DefaultPlayMapModelFactory implements PlayMapModelFactory
   }
 
   @Override
-  public PlayMapModel create (final CountryGraphModel countryGraphModel,
-                              final ContinentGraphModel continentGraphModel)
+  public PlayMapModel create (final CountryGraphModel countryGraphModel, final ContinentGraphModel continentGraphModel)
   {
     final CountryOwnerModel countryOwnerModel = new DefaultCountryOwnerModel (countryGraphModel, rules);
     final ContinentOwnerModel continentOwnerModel = new DefaultContinentOwnerModel (continentGraphModel,

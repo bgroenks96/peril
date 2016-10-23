@@ -53,29 +53,6 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
             }
           }));
 
-  public static int count ()
-  {
-    return IterableEnumHelper.count (values ());
-  }
-
-  public static int validCount ()
-  {
-    return validSortedValues.size ();
-  }
-
-  public static ImmutableSortedSet <PlayerTurnOrder> validSortedValues ()
-  {
-    return validSortedValues;
-  }
-
-  public static PlayerTurnOrder getNthValidTurnOrder (final int nthPlayerTurnOrder)
-  {
-    Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
-    Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");
-
-    return PlayerTurnOrder.values () [nthPlayerTurnOrder];
-  }
-
   @Override
   public boolean hasNext ()
   {
@@ -139,6 +116,29 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
     // UNKNOWN is position 0, FIRST is position 1, etc., so we can't use
     // IterableEnumHelper#toMixedOrdinalPosition(Enum) or we would be off by 1.
     return Strings.toMixedOrdinal (getPosition ());
+  }
+
+  public static int count ()
+  {
+    return IterableEnumHelper.count (values ());
+  }
+
+  public static int validCount ()
+  {
+    return validSortedValues.size ();
+  }
+
+  public static ImmutableSortedSet <PlayerTurnOrder> validSortedValues ()
+  {
+    return validSortedValues;
+  }
+
+  public static PlayerTurnOrder getNthValidTurnOrder (final int nthPlayerTurnOrder)
+  {
+    Arguments.checkLowerExclusiveBound (nthPlayerTurnOrder, 0, "nthPlayerTurnOrder");
+    Arguments.checkUpperInclusiveBound (nthPlayerTurnOrder, count () - 1, "nthPlayerTurnOrder");
+
+    return PlayerTurnOrder.values () [nthPlayerTurnOrder];
   }
 
   public boolean hasNextValid ()

@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -40,8 +39,6 @@ import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.ControlRoomBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.controlroombox.DefaultControlRoomBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.quit.PlayScreenQuitDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.PlayerNotificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
@@ -53,6 +50,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.AttackerBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.PlayerNotificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.quit.PlayScreenQuitDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementDialog;

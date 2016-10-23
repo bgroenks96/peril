@@ -68,7 +68,8 @@ public final class DefaultCountryAtlasMetadata implements CountryAtlasMetadata
 
     final DefaultCountryAtlasMetadata that = (DefaultCountryAtlasMetadata) obj;
 
-    return assetDescriptor.fileName.equals (that.assetDescriptor.fileName) && playMapMetadata.equals (that.playMapMetadata);
+    return assetDescriptor.fileName.equals (that.assetDescriptor.fileName)
+            && playMapMetadata.equals (that.playMapMetadata);
   }
 
   @Override

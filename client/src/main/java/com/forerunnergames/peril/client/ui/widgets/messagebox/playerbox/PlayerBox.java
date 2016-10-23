@@ -24,7 +24,6 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;

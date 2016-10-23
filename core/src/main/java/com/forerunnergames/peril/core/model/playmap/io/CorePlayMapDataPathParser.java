@@ -18,9 +18,9 @@
 package com.forerunnergames.peril.core.model.playmap.io;
 
 import com.forerunnergames.peril.common.game.GameMode;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
-import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.io.AbstractPlayMapDataPathParser;
 import com.forerunnergames.peril.common.settings.AssetSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -52,7 +52,7 @@ public final class CorePlayMapDataPathParser extends AbstractPlayMapDataPathPars
       default:
       {
         throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                playMapType));
+                                                           playMapType));
       }
     }
   }

@@ -19,8 +19,8 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.countrycounter;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.io.loaders.CountryNamesDataLoader;
-import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
+import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.io.PlayMapDataPathParser;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.io.StreamParserException;

@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.common.playmap.io;
 
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
+
 import com.google.common.collect.ImmutableSet;
 
 public interface PlayMapMetadataLoader

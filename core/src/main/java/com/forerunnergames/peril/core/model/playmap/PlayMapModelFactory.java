@@ -22,7 +22,6 @@ import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
 
 public interface PlayMapModelFactory
 {
-  PlayMapModel create (final CountryGraphModel countryGraphModel,
-                       final ContinentGraphModel continentGraphModel);
+  PlayMapModel create (final CountryGraphModel countryGraphModel, final ContinentGraphModel continentGraphModel);
 
 }

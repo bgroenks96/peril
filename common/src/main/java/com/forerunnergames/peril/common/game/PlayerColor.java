@@ -63,25 +63,6 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
             }
           }).toSet ();
 
-  public static int count ()
-  {
-    return IterableEnumHelper.count (values ());
-  }
-
-  public static boolean isValidValue (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    return VALID_VALUES.contains (color);
-  }
-
-  public static boolean isValidValue (final String color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    return VALID_VALUE_NAMES.contains (color.toUpperCase ());
-  }
-
   @Override
   public boolean hasNext ()
   {
@@ -140,6 +121,25 @@ public enum PlayerColor implements IterableEnum <PlayerColor>
   public String toMixedOrdinalPosition ()
   {
     return IterableEnumHelper.toMixedOrdinalPosition (this);
+  }
+
+  public static int count ()
+  {
+    return IterableEnumHelper.count (values ());
+  }
+
+  public static boolean isValidValue (final PlayerColor color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+
+    return VALID_VALUES.contains (color);
+  }
+
+  public static boolean isValidValue (final String color)
+  {
+    Arguments.checkIsNotNull (color, "color");
+
+    return VALID_VALUE_NAMES.contains (color.toUpperCase ());
   }
 
   public boolean hasNextValid ()

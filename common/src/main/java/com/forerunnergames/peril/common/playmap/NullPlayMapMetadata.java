@@ -61,7 +61,8 @@ final class NullPlayMapMetadata implements PlayMapMetadata
 
     final PlayMapMetadata playMapMetadata = (PlayMapMetadata) obj;
 
-    return NAME.equals (playMapMetadata.getName ()) && TYPE == playMapMetadata.getType () && MODE == playMapMetadata.getMode ();
+    return NAME.equals (playMapMetadata.getName ()) && TYPE == playMapMetadata.getType ()
+            && MODE == playMapMetadata.getMode ();
   }
 
   @Override

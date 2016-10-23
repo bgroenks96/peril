@@ -27,12 +27,12 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
 import com.forerunnergames.peril.core.model.playmap.continent.ContinentOwnerModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 

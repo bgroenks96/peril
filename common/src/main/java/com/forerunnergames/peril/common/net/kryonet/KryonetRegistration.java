@@ -21,8 +21,8 @@ package com.forerunnergames.peril.common.net.kryonet;
 import com.esotericsoftware.kryo.Kryo;
 
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
-import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
+import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
