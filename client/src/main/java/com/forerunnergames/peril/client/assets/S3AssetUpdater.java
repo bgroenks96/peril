@@ -35,10 +35,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileLock;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -91,16 +88,11 @@ public final class S3AssetUpdater implements AssetUpdater
       public void run ()
       {
         final FileHandle destAssetsDir = Gdx.files.external (AssetSettings.RELATIVE_EXTERNAL_ASSETS_DIRECTORY);
-        FileOutputStream fileOutputStream = null;
-        FileLock lock = null;
 
         try
         {
           log.info ("Attempting to update assets in [{}] from [{}]...", destAssetsDir.file (),
                     AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
-
-          fileOutputStream = new FileOutputStream (destAssetsDir.file ());
-          lock = fileOutputStream.getChannel ().lock ();
 
           if (Thread.currentThread ().isInterrupted ())
           {
@@ -130,34 +122,18 @@ public final class S3AssetUpdater implements AssetUpdater
         }
         catch (final Exception e)
         {
-          throw new RuntimeException ("Failed to update assets from: [" + bucketName + "].\n" + "Make sure that "
+          final String errorMessage = "Failed to update assets from: [" + bucketName + "].\n" + "Make sure that "
                   + ClientApplicationProperties.UPDATED_ASSETS_LOCATION_KEY + " is properly set in ["
                   + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "].\n" + "Also, "
                   + ClientApplicationProperties.UPDATE_ASSETS_KEY
                   + " must be set to true (in the same file) the first time you run the game.\n"
                   + "If you already tried all of that, you can set " + ClientApplicationProperties.UPDATE_ASSETS_KEY
                   + " to false.\nIn that case, you still need to make sure that you have a copy of all assets in "
-                  + destAssetsDir.file () + ".\n\n" + "Nerdy developer details:\n", e);
-        }
-        finally
-        {
-          if (lock != null) try
-          {
-            lock.release ();
-          }
-          catch (final IOException e)
-          {
-            log.error ("Could not release lock on: [{}].", destAssetsDir.file (), e);
-          }
+                  + destAssetsDir.file () + ".\n\n" + "Nerdy developer details:\n";
 
-          if (fileOutputStream != null) try
-          {
-            fileOutputStream.close ();
-          }
-          catch (final IOException e)
-          {
-            log.error ("Could not close {} on: [{}].", FileInputStream.class.getSimpleName (), destAssetsDir.file (), e);
-          }
+          log.error (errorMessage, e);
+
+          throw new RuntimeException (errorMessage, e);
         }
       }
     });
