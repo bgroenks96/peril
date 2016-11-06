@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.badlogic.gdx.Gdx;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
@@ -134,13 +135,17 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
 
   private void preemptivelyUpdatePlayMap (final String countryName)
   {
+    // PlayerClaimCountryRequestEvent field will be reset to null before the Runnable executes,
+    // so make a defensive copy of the required event data.
+    assert request != null;
+    final PlayerColor playerColor = request.getPlayerColor ();
+
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        assert request != null;
-        setCountryOwner (request.getPlayerColor (), countryName);
+        setCountryOwner (playerColor, countryName);
         changeCountryArmiesBy (1, countryName);
       }
     });
