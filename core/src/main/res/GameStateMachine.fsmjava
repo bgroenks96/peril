@@ -288,7 +288,7 @@
                   <onExit action="gameModel.endReinforcementPhase()"/>
                   <state name="WaitForPlayerToReinforceOrTradeIn">
                     <transition event="onPlayerReinforceCountryRequestEvent"
-                                action="gameModel.handlePlayerReinforceCountry(event)"
+                                condition="gameModel.verifyPlayerReinforceCountry(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
                     <transition event="onPlayerTradeInCardsRequestEvent"
                                 condition="gameModel.verifyPlayerCardTradeIn(event)"
@@ -297,7 +297,7 @@
                   <state name="WaitForPlayerToPlaceReinforcements">
                     <onEntry action="gameModel.waitForPlayerToPlaceReinforcements()"/>
                     <transition event="onPlayerReinforceCountryRequestEvent"
-                                action="gameModel.handlePlayerReinforceCountry(event)"
+                                condition="gameModel.verifyPlayerReinforceCountry(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
                     <transition event="onEndReinforcementPhaseEvent"
                                 action="gameModel.endReinforcementPhase()"

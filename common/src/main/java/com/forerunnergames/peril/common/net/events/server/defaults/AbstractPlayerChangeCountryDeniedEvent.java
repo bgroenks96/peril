@@ -37,6 +37,7 @@ public abstract class AbstractPlayerChangeCountryDeniedEvent extends AbstractPla
     INSUFFICIENT_REINFORCEMENTS_PLACED,
     REINFORCEMENT_NOT_ALLOWED,
     COUNTRY_ALREADY_OWNED,
+    TRADE_IN_REQUIRED,
     COUNTRY_DISABLED
   }
 

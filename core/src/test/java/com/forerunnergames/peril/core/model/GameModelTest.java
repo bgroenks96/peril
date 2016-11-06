@@ -580,7 +580,8 @@ public class GameModelTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCardTradeInAvailableEvent.class));
-    assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPlayer ().is (testPlayerPacket));
+    assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPlayer ()
+            .is (testPlayerPacket));
   }
 
   @Test
@@ -639,16 +640,16 @@ public class GameModelTest
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
     final int armiesInHand = testPlayerPacket.getArmiesInHand ();
 
-    final PlayerTradeInCardsRequestEvent tradeInRequest = new PlayerTradeInCardsRequestEvent (new DefaultCardSetPacket (
-            ImmutableSet.<CardPacket> of ()));
+    final PlayerTradeInCardsRequestEvent tradeInRequest = new PlayerTradeInCardsRequestEvent (
+            new DefaultCardSetPacket (ImmutableSet. <CardPacket> of ()));
     gameModel.verifyPlayerCardTradeIn (tradeInRequest);
 
     final int count = armiesInHand;
     for (int i = 0; i < count; i++)
     {
-      final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (countries
-              .next ().getName (), 1);
-      gameModel.handlePlayerReinforceCountry (reinforceResponse);
+      final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
+              countries.next ().getName (), 1);
+      gameModel.verifyPlayerReinforceCountry (reinforceResponse);
       assertTrue (eventHandler.lastEventWasType (PlayerReinforceCountrySuccessEvent.class));
     }
 
@@ -685,8 +686,8 @@ public class GameModelTest
 
     gameModel.beginReinforcementPhase ();
 
-    final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+    final CountryPacket randomCountry = Randomness
+            .getRandomElementFrom (countryOwnerModel.getCountriesOwnedBy (testPlayer));
 
     final CardSetPacket match = eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getMatches ()
             .asList ().get (0);
@@ -695,7 +696,7 @@ public class GameModelTest
 
     final PlayerReinforceCountryRequestEvent reinforceResponse;
     reinforceResponse = new PlayerReinforceCountryRequestEvent (randomCountry.getName (), 1);
-    gameModel.handlePlayerReinforceCountry (reinforceResponse);
+    gameModel.verifyPlayerReinforceCountry (reinforceResponse);
 
     log.debug ("{}", eventHandler.lastEvent ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountrySuccessEvent.class));
@@ -704,6 +705,42 @@ public class GameModelTest
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
 
     assertEquals (1, countryArmyModel.getArmyCountFor (countryGraphModel.countryWith (randomCountry.getName ())));
+  }
+
+  @Test
+  public void testVerifyPlayerCountryReinforcementFailsWhenRequiredTradeInNotReceived ()
+  {
+    addMaxPlayers ();
+
+    final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    for (final Id nextCountry : countryGraphModel.getCountryIds ())
+    {
+      assertTrue (countryOwnerModel.requestToAssignCountryOwner (nextCountry, testPlayer).commitIfSuccessful ());
+    }
+
+    final int numCardsInHand = gameRules.getMinCardsInHandToRequireTradeIn (TurnPhase.REINFORCE);
+
+    for (int i = 0; i < numCardsInHand; i++)
+    {
+      cardModel.giveCard (testPlayer, TurnPhase.REINFORCE);
+    }
+
+    gameModel.beginReinforcementPhase ();
+
+    final CountryPacket randomCountry = Randomness
+            .getRandomElementFrom (countryOwnerModel.getCountriesOwnedBy (testPlayer));
+
+    final PlayerReinforceCountryRequestEvent reinforceResponse;
+    reinforceResponse = new PlayerReinforceCountryRequestEvent (randomCountry.getName (), 1);
+    final boolean check = gameModel.verifyPlayerReinforceCountry (reinforceResponse);
+
+    log.debug ("{}", eventHandler.lastEvent ());
+    assertFalse (check);
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryDeniedEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountrySuccessEvent.class));
+    assertEquals (PlayerReinforceCountryDeniedEvent.Reason.TRADE_IN_REQUIRED,
+                  eventHandler.lastEventOfType (PlayerReinforceCountryDeniedEvent.class).getReason ());
+    assertEquals (numCardsInHand, cardModel.countCardsInHand (testPlayer));
   }
 
   public void testVerifyPlayerCountryReinforcementWithOptionalTradeIn ()
@@ -728,8 +765,8 @@ public class GameModelTest
 
     gameModel.beginReinforcementPhase ();
 
-    final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+    final CountryPacket randomCountry = Randomness
+            .getRandomElementFrom (countryOwnerModel.getCountriesOwnedBy (testPlayer));
 
     final CardSetPacket match = eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getMatches ()
             .asList ().get (0);
@@ -739,7 +776,7 @@ public class GameModelTest
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
             randomCountry.getName (), 1);
-    gameModel.handlePlayerReinforceCountry (reinforceResponse);
+    gameModel.verifyPlayerReinforceCountry (reinforceResponse);
 
     log.debug ("{}", eventHandler.lastEvent ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountrySuccessEvent.class));
@@ -776,16 +813,16 @@ public class GameModelTest
 
     gameModel.beginReinforcementPhase ();
 
-    final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+    final CountryPacket randomCountry = Randomness
+            .getRandomElementFrom (countryOwnerModel.getCountriesOwnedBy (testPlayer));
 
-    final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (CardPackets
-            .fromCardMatchSet (ImmutableSet.of (testTradeIn)).asList ().get (0));
+    final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
+            CardPackets.fromCardMatchSet (ImmutableSet.of (testTradeIn)).asList ().get (0));
     gameModel.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
             randomCountry.getName (), 1);
-    gameModel.handlePlayerReinforceCountry (reinforceResponse);
+    gameModel.verifyPlayerReinforceCountry (reinforceResponse);
 
     assertTrue (eventHandler.wasNeverFired (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountrySuccessEvent.class));
@@ -813,12 +850,12 @@ public class GameModelTest
     final int armyCount = playerModel.getArmiesInHand (testPlayer);
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet. <CardPacket> of ()));
     gameModel.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
             notOwnedCountryName, armyCount);
-    gameModel.handlePlayerReinforceCountry (reinforceResponse);
+    gameModel.verifyPlayerReinforceCountry (reinforceResponse);
 
     assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountrySuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryDeniedEvent.class));
@@ -840,17 +877,17 @@ public class GameModelTest
 
     gameModel.beginReinforcementPhase ();
 
-    final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+    final CountryPacket randomCountry = Randomness
+            .getRandomElementFrom (countryOwnerModel.getCountriesOwnedBy (testPlayer));
     final int reinforcementCount = playerModel.getArmiesInHand (testPlayer) + 1;
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet. <CardPacket> of ()));
     gameModel.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
             randomCountry.getName (), reinforcementCount);
-    gameModel.handlePlayerReinforceCountry (reinforceResponse);
+    gameModel.verifyPlayerReinforceCountry (reinforceResponse);
 
     assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountrySuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryDeniedEvent.class));
@@ -885,8 +922,8 @@ public class GameModelTest
     gameModel.beginFortifyPhase ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginFortifyPhaseEvent.class));
-    assertEquals (playerModel.playerPacketWith (player1), eventHandler.lastEventOfType (BeginFortifyPhaseEvent.class)
-            .getPlayer ());
+    assertEquals (playerModel.playerPacketWith (player1),
+                  eventHandler.lastEventOfType (BeginFortifyPhaseEvent.class).getPlayer ());
 
     // begin fortification phase (part II)
     gameModel.waitForPlayerToSelectFortifyVector ();
@@ -897,8 +934,8 @@ public class GameModelTest
     final ImmutableMultimap <CountryPacket, CountryPacket> expectedFortifyVectors;
     expectedFortifyVectors = buildCountryMultimapFromIndices (defaultTestCountries, adj (0, 1, 3), adj (1, 0),
                                                               adj (3, 0));
-    assertEquals (expectedFortifyVectors, eventHandler.lastEventOfType (PlayerBeginFortificationEvent.class)
-            .getValidVectors ());
+    assertEquals (expectedFortifyVectors,
+                  eventHandler.lastEventOfType (PlayerBeginFortificationEvent.class).getValidVectors ());
   }
 
   @Test
@@ -989,8 +1026,8 @@ public class GameModelTest
             defaultTestCountries.get (2), defaultTestCountries.get (0))));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorDeniedEvent.class));
-    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY, eventHandler
-            .lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
+    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY,
+                  eventHandler.lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
     assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorSuccessEvent.class));
   }
 
@@ -1020,8 +1057,8 @@ public class GameModelTest
             defaultTestCountries.get (0), defaultTestCountries.get (2))));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerSelectFortifyVectorDeniedEvent.class));
-    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY, eventHandler
-            .lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
+    assertEquals (PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY,
+                  eventHandler.lastEventOfType (PlayerSelectFortifyVectorDeniedEvent.class).getReason ());
     assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorSuccessEvent.class));
   }
 
