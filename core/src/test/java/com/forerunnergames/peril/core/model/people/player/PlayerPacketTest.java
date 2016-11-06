@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
 import com.google.common.collect.ImmutableMap;
@@ -40,7 +41,7 @@ public class PlayerPacketTest
   @Test
   public void testTwoCommonPlayerPacketsAreEqual ()
   {
-    final Player player = PlayerFactory.create ("TestPlayer-1");
+    final Player player = PlayerFactory.createHuman ("TestPlayer-1");
 
     final PlayerPacket packet0 = PlayerPackets.from (player);
     final PlayerPacket packet1 = PlayerPackets.from (player);
@@ -51,7 +52,7 @@ public class PlayerPacketTest
   @Test
   public void testTwoCommonPlayerPacketsInHashSet ()
   {
-    final Player player = PlayerFactory.create ("TestPlayer-1");
+    final Player player = PlayerFactory.createHuman ("TestPlayer-1");
 
     final PlayerPacket packet0 = PlayerPackets.from (player);
     final PlayerPacket packet1 = PlayerPackets.from (player);
@@ -65,7 +66,7 @@ public class PlayerPacketTest
   @Test
   public void testTwoCommonPlayerPacketsDifferentAttribsAreEqual ()
   {
-    final Player player = PlayerFactory.create ("TestPlayer-1");
+    final Player player = PlayerFactory.createHuman ("TestPlayer-1");
 
     final PlayerPacket packet0 = PlayerPackets.from (player);
     player.setTurnOrder (PlayerTurnOrder.TENTH);
@@ -77,7 +78,7 @@ public class PlayerPacketTest
   @Test
   public void testTwoCommonPlayerPacketsDifferentAttribsInHashSet ()
   {
-    final Player player = PlayerFactory.create ("TestPlayer-1");
+    final Player player = PlayerFactory.createHuman ("TestPlayer-1");
 
     final PlayerPacket packet0 = PlayerPackets.from (player);
     player.setTurnOrder (PlayerTurnOrder.TENTH);
@@ -92,8 +93,8 @@ public class PlayerPacketTest
   @Test
   public void testTwoDifferentPlayerPacketsAreNotEqual ()
   {
-    final Player player0 = PlayerFactory.builder ("TestPlayer-0").build ();
-    final Player player1 = PlayerFactory.builder ("TestPlayer-1").build ();
+    final Player player0 = PlayerFactory.builder ("TestPlayer-0", PersonSentience.HUMAN).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer-1", PersonSentience.HUMAN).build ();
 
     final PlayerPacket packet0 = PlayerPackets.from (player0);
     final PlayerPacket packet1 = PlayerPackets.from (player1);
@@ -109,7 +110,7 @@ public class PlayerPacketTest
 
     for (int i = 0; i < n; ++i)
     {
-      final Player player = PlayerFactory.builder ("Player" + i).build ();
+      final Player player = PlayerFactory.builder ("Player" + i, PersonSentience.HUMAN).build ();
       final PlayerPacket packet = PlayerPackets.from (player);
 
       mapBuilder.put (packet, player);
@@ -128,7 +129,8 @@ public class PlayerPacketTest
     for (int i = 0; i < n; ++i)
     {
       final int strLen = 3 + i % 20;
-      final Player player = PlayerFactory.builder (generateRandomLetterString (strLen) + i).build ();
+      final Player player = PlayerFactory.builder (generateRandomLetterString (strLen) + i, PersonSentience.HUMAN)
+              .build ();
       final PlayerPacket packet = PlayerPackets.from (player);
 
       mapBuilder.put (packet, player);

@@ -51,6 +51,7 @@ import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
@@ -68,12 +69,11 @@ import com.forerunnergames.tools.common.Maths;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -87,7 +87,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private static final String SUBTITLE_TEXT = "CLASSIC MODE";
   private static final String FORWARD_BUTTON_TEXT = "CREATE GAME";
   private static final String SERVER_NAME_SETTING_LABEL_TEXT = "Title";
-  private static final String PLAYERS_SETTING_LABEL_TEXT = "Players";
+  private static final String HUMAN_PLAYERS_SETTING_LABEL_TEXT = "Human Players";
+  private static final String AI_PLAYERS_SETTING_LABEL_TEXT = "AI Players";
   private static final String SPECTATORS_SETTING_SETTING_LABEL_TEXT = "Spectators";
   private static final String PLAY_MAP_SETTING_LABEL_TEXT = "Map";
   private static final String WIN_PERCENT_SETTING_LABEL_TEXT = "Win Percent";
@@ -98,15 +99,14 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final MenuScreenWidgetFactory widgetFactory;
   private final Dialog errorDialog;
   private final TextField playerNameTextField;
-  private final TextField clanNameTextField;
+  private final TextField clanAcronymTextField;
   private final TextField serverNameTextField;
-  private final CheckBox clanNameCheckBox;
+  private final CheckBox clanAcronymCheckBox;
   private final SelectBox <Integer> winPercentSelectBox;
   private final SelectBox <String> initialCountryAssignmentSelectBox;
   private final SelectBox <Integer> spectatorLimitSelectBox;
-  private final Label playerLimitLabel;
-  private final Label playMapNameLabel;
-  private final ImageButton customizePlayersButton;
+  private final ImageButton customizeHumanPlayersButton;
+  private final ImageButton customizeAiPlayersButton;
   private final ImageButton customizePlayMapButton;
   private final CountryCounter countryCounter;
   private final Label playerSettingsSectionTitleLabel;
@@ -114,16 +114,19 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private final Label clanTagSettingLabel;
   private final Label gameSettingsSectionTitleLabel;
   private final Label serverNameSettingLabel;
-  private final Label playerLimitSettingLabel;
+  private final Label humanPlayerLimitSettingLabel;
+  private final Label humanPlayerLimitLabel;
+  private final Label aiPlayerLimitSettingLabel;
+  private final Label aiPlayerLimitLabel;
+  private final Label playMapNameLabel;
   private final Label spectatorLimitSettingLabel;
   private final Label playMapSettingLabel;
   private final Label winPercentSettingLabel;
   private final Label initialCountryAssignmentSettingLabel;
   private final Button forwardButton;
-  private Set <PlayMapMetadata> playMaps;
   private int totalCountryCount;
-  @Nullable
-  private Iterator <PlayMapMetadata> playMapIterator = null;
+  private ImmutableCollection <PlayMapMetadata> playMaps = ImmutableSet.of ();
+  private Iterator <PlayMapMetadata> playMapIterator = Collections.emptyIterator ();
   private PlayMapMetadata currentPlayMap = PlayMapMetadata.NULL;
   private boolean isFirstTimeOnScreen = true;
 
@@ -150,46 +153,49 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     addSubTitle (SUBTITLE_TEXT);
 
     playerNameTextField = widgetFactory.createPlayerNameTextField ();
-    clanNameTextField = widgetFactory.createClanNameTextField ();
+    clanAcronymTextField = widgetFactory.createClanAcronymTextField ();
     serverNameTextField = widgetFactory.createServerNameTextField ();
 
-    clanNameCheckBox = widgetFactory.createClanNameCheckBox (new ChangeListener ()
+    clanAcronymCheckBox = widgetFactory.createClanAcronymCheckBox (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        clanNameTextField.setText (clanNameCheckBox.isChecked () ? clanNameTextField.getText () : "");
-        clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
+        clanAcronymTextField.setText (clanAcronymCheckBox.isChecked () ? clanAcronymTextField.getText () : "");
+        clanAcronymTextField.setDisabled (!clanAcronymCheckBox.isChecked ());
       }
     });
 
-    clanNameCheckBox.setChecked (!clanNameTextField.getText ().isEmpty ());
-    clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
+    clanAcronymCheckBox.setChecked (!clanAcronymTextField.getText ().isEmpty ());
+    clanAcronymTextField.setDisabled (!clanAcronymCheckBox.isChecked ());
 
     // @formatter:off
-    playerLimitLabel = widgetFactory.createPlayerLimitLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT));
-    playMaps = loadPlayMaps ();
-    currentPlayMap = findPlayMapOrFirstPlayMap (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME);
-    playMapNameLabel = widgetFactory.createPlayMapNameLabel (currentPlayMap.getName ());
+    humanPlayerLimitLabel = widgetFactory.createPlayerLimitLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT));
+    aiPlayerLimitLabel = widgetFactory.createPlayerLimitLabel (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT));
+    playMapNameLabel = widgetFactory.createPlayMapNameLabel ();
     totalCountryCount = calculateCurrentPlayMapTotalCountryCount ();
     // @formatter:on
 
-    customizePlayersButton = widgetFactory.createCustomizePlayersButton (new ClickListener (Input.Buttons.LEFT)
+    customizeHumanPlayersButton = widgetFactory.createCustomizePlayersButton (new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
         // TODO Show Players Dialog.
 
-        if (Integer.valueOf (playerLimitLabel.getText ().toString ()) < ClassicGameRules.MAX_PLAYERS)
-        {
-          playerLimitLabel.setText (String.valueOf (Integer.valueOf (playerLimitLabel.getText ().toString ()) + 1));
-        }
-        else
-        {
-          playerLimitLabel.setText (String.valueOf (ClassicGameRules.MIN_PLAYER_LIMIT));
-        }
+        updateHumanPlayerLimit ();
+        updateWinPercentSelectBoxItems ();
+      }
+    });
 
+    customizeAiPlayersButton = widgetFactory.createCustomizePlayersButton (new ClickListener (Input.Buttons.LEFT)
+    {
+      @Override
+      public void clicked (final InputEvent event, final float x, final float y)
+      {
+        // TODO Show Players Dialog.
+
+        updateAiPlayerLimit ();
         updateWinPercentSelectBoxItems ();
       }
     });
@@ -200,6 +206,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
       public void clicked (final InputEvent event, final float x, final float y)
       {
         // TODO Show Play Map Dialog.
+
+        // TODO Add refresh button to Play Map Dialog to re-load play maps.
+        playMaps = loadPlayMaps ();
 
         currentPlayMap = nextPlayMap ();
         playMapNameLabel.setText (currentPlayMap.getName ());
@@ -241,7 +250,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     clanTagSettingLabel = widgetFactory.createClanTagSettingLabel ();
     gameSettingsSectionTitleLabel = widgetFactory.createGameSettingsSectionTitleLabel ();
     serverNameSettingLabel = widgetFactory.createMenuSettingLabel (SERVER_NAME_SETTING_LABEL_TEXT);
-    playerLimitSettingLabel = widgetFactory.createMenuSettingLabel (PLAYERS_SETTING_LABEL_TEXT);
+    humanPlayerLimitSettingLabel = widgetFactory.createMenuSettingLabel (HUMAN_PLAYERS_SETTING_LABEL_TEXT);
+    aiPlayerLimitSettingLabel = widgetFactory.createMenuSettingLabel (AI_PLAYERS_SETTING_LABEL_TEXT);
     spectatorLimitSettingLabel = widgetFactory.createMenuSettingLabel (SPECTATORS_SETTING_SETTING_LABEL_TEXT);
     playMapSettingLabel = widgetFactory.createMenuSettingLabel (PLAY_MAP_SETTING_LABEL_TEXT);
     winPercentSettingLabel = widgetFactory.createMenuSettingLabel (WIN_PERCENT_SETTING_LABEL_TEXT);
@@ -267,8 +277,8 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     final Table clanTable = new Table ();
     clanTable.add (clanTagSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    clanTable.add (clanNameCheckBox).size (20, 20).fill ().left ().spaceLeft (10).spaceRight (8);
-    clanTable.add (clanNameTextField).size (80, 28).fill ().left ().spaceLeft (8);
+    clanTable.add (clanAcronymCheckBox).size (20, 20).fill ().left ().spaceLeft (10).spaceRight (8);
+    clanTable.add (clanAcronymTextField).size (80, 28).fill ().left ().spaceLeft (8);
     playerSettingsTable.add (clanTable).left ();
 
     verticalGroup.addActor (playerSettingsTable);
@@ -296,11 +306,19 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     gameSettingsTable.row ();
 
-    final Table playersTable = new Table ();
-    playersTable.add (playerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playersTable.add (playerLimitLabel).size (76, 28).fill ().left ().spaceLeft (10).spaceRight (4);
-    playersTable.add (customizePlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
-    gameSettingsTable.add (playersTable).left ();
+    final Table humanPlayersTable = new Table ();
+    humanPlayersTable.add (humanPlayerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    humanPlayersTable.add (humanPlayerLimitLabel).size (76, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    humanPlayersTable.add (customizeHumanPlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
+    gameSettingsTable.add (humanPlayersTable).left ();
+
+    gameSettingsTable.row ();
+
+    final Table aiPlayersTable = new Table ();
+    aiPlayersTable.add (aiPlayerLimitSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
+    aiPlayersTable.add (aiPlayerLimitLabel).size (76, 28).fill ().left ().spaceLeft (10).spaceRight (4);
+    aiPlayersTable.add (customizeAiPlayersButton).size (28, 28).fill ().left ().spaceLeft (4);
+    gameSettingsTable.add (aiPlayersTable).left ();
 
     gameSettingsTable.row ();
 
@@ -368,28 +386,32 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
           return;
         }
 
-        final String clanName = clanNameTextField.getText ();
+        final String clanAcronym = clanAcronymTextField.getText ();
 
-        if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
+        if (!clanAcronymTextField.isDisabled () && !GameSettings.isValidHumanClanAcronym (clanAcronym))
         {
           errorDialog.setMessage (new DefaultMessage (Strings
-                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
-                           GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
+                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanAcronym,
+                           GameSettings.VALID_CLAN_ACRONYM_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
 
-        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName,
-                                                                                                    clanName);
-        final int playerLimit = Integer.valueOf (playerLimitLabel.getText ().toString ());
+        final String playerNameWithOptionalClanTag = GameSettings.getHumanPlayerNameWithOptionalClanTag (playerName,
+                                                                                                         clanAcronym);
+        final int humanPlayerLimit = getHumanPlayerLimit ();
+        final int aiPlayerLimit = getAiPlayerLimit ();
+        final int totalPlayerLimit = getValidTotalPlayerLimit (humanPlayerLimit, aiPlayerLimit);
         final int spectatorLimit = spectatorLimitSelectBox.getSelected ();
         final int winPercent = winPercentSelectBox.getSelected ();
         final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.valueOf (Strings
                 .toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
-        final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, playerLimit, winPercent,
+        final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, totalPlayerLimit, winPercent,
                                                              totalCountryCount, initialCountryAssignment);
-        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, playerLimit,
-                spectatorLimit, winPercent, initialCountryAssignment, currentPlayMap, gameRules);
+        final PersonLimits limits = PersonLimits.builder ().humanPlayers (humanPlayerLimit).aiPlayers (aiPlayerLimit)
+                .spectators (spectatorLimit).build ();
+        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, limits, winPercent,
+                initialCountryAssignment, currentPlayMap, gameRules);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))
@@ -417,7 +439,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     expandMenuBar ();
 
-    playMapIterator = null;
+    playMapIterator = Collections.emptyIterator ();
     playMaps = loadPlayMaps ();
     currentPlayMap = findPlayMapOrFirstPlayMap (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME);
     playMapNameLabel.setText (currentPlayMap.getName ());
@@ -426,9 +448,9 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
     // @formatter:off
     playerNameTextField.setStyle (widgetFactory.createPlayerNameTextFieldStyle ());
-    clanNameTextField.setStyle (widgetFactory.createClanNameTextFieldStyle ());
+    clanAcronymTextField.setStyle (widgetFactory.createClanAcronymTextFieldStyle ());
     serverNameTextField.setStyle (widgetFactory.createServerNameTextFieldStyle ());
-    clanNameCheckBox.setStyle (widgetFactory.createClanNameCheckBoxStyle ());
+    clanAcronymCheckBox.setStyle (widgetFactory.createClanAcronymCheckBoxStyle ());
     final SelectBox.SelectBoxStyle winPercentSelectBoxStyle = widgetFactory.createWinPercentSelectBoxStyle ();
     winPercentSelectBox.setStyle (winPercentSelectBoxStyle);
     winPercentSelectBox.getScrollPane ().setStyle (winPercentSelectBoxStyle.scrollStyle);
@@ -441,16 +463,19 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     initialCountryAssignmentSelectBox.setStyle (initialCountryAssignmentSelectBoxStyle);
     initialCountryAssignmentSelectBox.getScrollPane ().setStyle (initialCountryAssignmentSelectBoxStyle.scrollStyle);
     initialCountryAssignmentSelectBox.getList ().setStyle (initialCountryAssignmentSelectBoxStyle.listStyle);
-    playerLimitLabel.setStyle (widgetFactory.createPlayerLimitLabelStyle ());
     playMapNameLabel.setStyle (widgetFactory.createPlayMapNameLabelStyle ());
-    customizePlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
+    customizeHumanPlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
+    customizeAiPlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
     customizePlayMapButton.setStyle (widgetFactory.createCustomizePlayMapButtonStyle ());
     playerSettingsSectionTitleLabel.setStyle (widgetFactory.createPlayerSettingsSectionTitleLabelStyle ());
     playerNameSettingLabel.setStyle (widgetFactory.createPlayerNameSettingLabelStyle ());
     clanTagSettingLabel.setStyle (widgetFactory.createClanTagSettingLabelStyle ());
     gameSettingsSectionTitleLabel.setStyle (widgetFactory.createGameSettingsSectionTitleLabelStyle ());
     serverNameSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
-    playerLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    humanPlayerLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    humanPlayerLimitLabel.setStyle (widgetFactory.createPlayerLimitLabelStyle ());
+    aiPlayerLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
+    aiPlayerLimitLabel.setStyle (widgetFactory.createPlayerLimitLabelStyle ());
     spectatorLimitSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     playMapSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     winPercentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
@@ -543,7 +568,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     // @formatter:off
     final GameRules gameRules = new ClassicGameRules.Builder ()
             .totalCountryCount (totalCountryCount)
-            .playerLimit (Integer.valueOf (playerLimitLabel.getText ().toString ()))
+            .playerLimit (getValidTotalPlayerLimit ())
             .winPercentage (ClassicGameRules.MAX_WIN_PERCENTAGE)
             .initialCountryAssignment (InitialCountryAssignment.valueOf (initialCountryAssignmentSelectBox.getSelected ().toUpperCase ()))
             .build ();
@@ -570,7 +595,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     errorDialog.setMessage (new DefaultMessage (Strings
             .format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\n"
                              + "Please check your settings file.", InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT,
-                     playerLimitLabel.getText ().toString (), currentPlayMap.getType ().name ().toLowerCase (),
+                     getValidTotalPlayerLimit (), currentPlayMap.getType ().name ().toLowerCase (),
                      currentPlayMap.getName ())));
 
     errorDialog.show ();
@@ -578,7 +603,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
 
   private PlayMapMetadata nextPlayMap ()
   {
-    if (playMapIterator == null || !playMapIterator.hasNext ()) playMapIterator = playMaps.iterator ();
+    if (!playMapIterator.hasNext ()) playMapIterator = playMaps.iterator ();
 
     if (!playMapIterator.hasNext ())
     {
@@ -604,13 +629,73 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         errorDialog.setMessage (new DefaultMessage (Strings
                 .format ("Could not find any map named \'{}\'.\n\nPlease check your settings file. ", playMapName)));
         errorDialog.show ();
-
-        playMapIterator = null;
-
+        playMapIterator = Collections.emptyIterator ();
         return nextPlayMap ();
       }
     }
 
     return playMap;
+  }
+
+  private void updateHumanPlayerLimit ()
+  {
+    setHumanPlayerLimit (canIncreaseHumanPlayerLimit () ? getHumanPlayerLimit () + 1 : 0);
+  }
+
+  private void updateAiPlayerLimit ()
+  {
+    setAiPlayerLimit (canIncreaseAiPlayerLimit () ? getAiPlayerLimit () + 1 : 0);
+  }
+
+  private boolean canIncreaseHumanPlayerLimit ()
+  {
+    return getHumanPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT
+            && getValidTotalPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT;
+  }
+
+  private boolean canIncreaseAiPlayerLimit ()
+  {
+    return getAiPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT
+            && getValidTotalPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT;
+  }
+
+  private int getHumanPlayerLimit ()
+  {
+    return Integer.valueOf (humanPlayerLimitLabel.getText ().toString ());
+  }
+
+  private void setHumanPlayerLimit (final int limit)
+  {
+    assert limit >= 0;
+    humanPlayerLimitLabel.setText (String.valueOf (limit));
+  }
+
+  private int getAiPlayerLimit ()
+  {
+    return Integer.valueOf (aiPlayerLimitLabel.getText ().toString ());
+  }
+
+  private void setAiPlayerLimit (final int limit)
+  {
+    assert limit >= 0;
+    aiPlayerLimitLabel.setText (String.valueOf (limit));
+  }
+
+  private int getValidTotalPlayerLimit ()
+  {
+    return getValidTotalPlayerLimit (getHumanPlayerLimit (), getAiPlayerLimit ());
+  }
+
+  private int getValidTotalPlayerLimit (final int humanPlayerLimit, final int aiPlayerLimit)
+  {
+    assert humanPlayerLimit >= 0;
+    assert aiPlayerLimit >= 0;
+
+    final int limit = humanPlayerLimit + aiPlayerLimit;
+
+    if (limit < ClassicGameRules.MIN_PLAYER_LIMIT) return ClassicGameRules.MIN_PLAYER_LIMIT;
+    if (limit > ClassicGameRules.MAX_PLAYER_LIMIT) return ClassicGameRules.MAX_PLAYER_LIMIT;
+
+    return limit;
   }
 }

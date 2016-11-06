@@ -22,8 +22,11 @@ import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.controllers.CompositeController;
 import com.forerunnergames.tools.common.controllers.Controller;
+import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
-public class DefaultApplication implements Application
+import com.google.common.collect.ImmutableCollection;
+
+public class DefaultApplication extends ControllerAdapter implements Application
 {
   private final CompositeController compositeController;
 
@@ -42,6 +45,24 @@ public class DefaultApplication implements Application
   }
 
   @Override
+  public void update ()
+  {
+    compositeController.update ();
+  }
+
+  @Override
+  public boolean shouldShutDown ()
+  {
+    return compositeController.shouldShutDown ();
+  }
+
+  @Override
+  public void shutDown ()
+  {
+    compositeController.shutDown ();
+  }
+
+  @Override
   public void add (final Controller controller)
   {
     Arguments.checkIsNotNull (controller, "controller");
@@ -57,21 +78,22 @@ public class DefaultApplication implements Application
     compositeController.remove (controller);
   }
 
-  @Override
-  public void update ()
+  public void removeController (final String name)
   {
-    compositeController.update ();
+    Arguments.checkIsNotNull (name, "name");
+
+    compositeController.remove (name);
   }
 
-  @Override
-  public void shutDown ()
+  public Controller getController (final String name)
   {
-    compositeController.shutDown ();
+    Arguments.checkIsNotNull (name, "name");
+
+    return compositeController.get (name);
   }
 
-  @Override
-  public boolean shouldShutDown ()
+  public ImmutableCollection <Controller> getAllControllers ()
   {
-    return compositeController.shouldShutDown ();
+    return compositeController.getAll ();
   }
 }

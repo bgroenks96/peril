@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.common.net.kryonet;
 
 import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -126,12 +125,5 @@ public final class KryonetRemote implements Remote
   public int getPort ()
   {
     return address != null ? address.getPort () : -1;
-  }
-
-  @RequiredForNetworkSerialization
-  private KryonetRemote ()
-  {
-    connectionId = -1;
-    address = null;
   }
 }

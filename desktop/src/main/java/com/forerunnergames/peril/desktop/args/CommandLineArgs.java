@@ -22,14 +22,14 @@ import com.beust.jcommander.Parameter;
 
 public final class CommandLineArgs
 {
-  @Parameter (names = { "--player-name", "-p", }, description = "Player Name", required = false,
+  @Parameter (names = { "--player-name", "-p", }, description = "Player Name",
               validateWith = PlayerNameParameterValidator.class)
   public String playerName = "";
 
-  @Parameter (names = { "--clan-tag", "-c", }, description = "Clan Tag", required = false,
-              validateWith = ClanTagParameterValidator.class)
-  public String clanName = "";
+  @Parameter (names = { "--clan", "-c", }, description = "Clan Acronym",
+              validateWith = ClanAcronymParameterValidator.class)
+  public String clanAcronym = "";
 
-  @Parameter (names = "--help", help = true, description = "Show usage", required = false)
+  @Parameter (names = "--help", help = true, description = "Show usage")
   public boolean help = false;
 }

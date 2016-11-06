@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.tools.common.Arguments;
@@ -28,32 +29,28 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class DefaultGameConfiguration implements GameConfiguration
 {
   private final GameMode gameMode;
-  private final int playerLimit;
-  private final int spectatorLimit;
+  private final PersonLimits personLimits;
   private final int winPercentage;
   private final InitialCountryAssignment initialCountryAssignment;
   private final PlayMapMetadata playMapMetadata;
   private final GameRules rules;
 
   public DefaultGameConfiguration (final GameMode gameMode,
-                                   final int playerLimit,
-                                   final int spectatorLimit,
+                                   final PersonLimits personLimits,
                                    final int winPercentage,
                                    final InitialCountryAssignment initialCountryAssignment,
                                    final PlayMapMetadata playMapMetadata,
                                    final GameRules rules)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
-    Arguments.checkIsNotNegative (playerLimit, "playerLimit");
-    Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
+    Arguments.checkIsNotNull (personLimits, "personLimits");
     Arguments.checkIsNotNegative (winPercentage, "winPercentage");
     Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
     Arguments.checkIsNotNull (rules, "rules");
 
     this.gameMode = gameMode;
-    this.playerLimit = playerLimit;
-    this.spectatorLimit = spectatorLimit;
+    this.personLimits = personLimits;
     this.winPercentage = winPercentage;
     this.initialCountryAssignment = initialCountryAssignment;
     this.playMapMetadata = playMapMetadata;
@@ -69,13 +66,21 @@ public final class DefaultGameConfiguration implements GameConfiguration
   @Override
   public int getPlayerLimit ()
   {
-    return playerLimit;
+    return personLimits.getPlayerLimit ();
+  }
+
+  @Override
+  public int getPlayerLimitFor (final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    return personLimits.getPlayerLimitFor (sentience);
   }
 
   @Override
   public int getSpectatorLimit ()
   {
-    return spectatorLimit;
+    return personLimits.getSpectatorLimit ();
   }
 
   @Override
@@ -129,19 +134,17 @@ public final class DefaultGameConfiguration implements GameConfiguration
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: GameMode: {} | PlayerLimit: {} | SpectatorLimit: {} | WinPercentage: {} | "
-                                   + "InitialCountryAssignment: {} | PlayMapMetadata: {} | " + "GameRules: {}",
-                           getClass ().getSimpleName (),
-                           gameMode, playerLimit, spectatorLimit, winPercentage, initialCountryAssignment,
-                           playMapMetadata, rules);
+    return Strings.format ("{}: GameMode: {} | PersonLimits: {} | WinPercentage: {} | InitialCountryAssignment: {} "
+                                   + "| PlayMapMetadata: {} | " + "GameRules: {}", getClass ().getSimpleName (),
+                           gameMode, personLimits,
+                           winPercentage, initialCountryAssignment, playMapMetadata, rules);
   }
 
   @RequiredForNetworkSerialization
   private DefaultGameConfiguration ()
   {
     gameMode = null;
-    playerLimit = 0;
-    spectatorLimit = 0;
+    personLimits = null;
     winPercentage = 0;
     initialCountryAssignment = null;
     playMapMetadata = null;

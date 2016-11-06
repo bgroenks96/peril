@@ -21,8 +21,8 @@ package com.forerunnergames.peril.integration.core.func.init;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
@@ -85,7 +85,7 @@ public final class InitialGamePhaseController implements TestPhaseController
     final TestClientPool clientPool = session.getTestClientPool ();
     log.trace ("Waiting for clients to connect...");
     clientPool.waitForAllClients ();
-    session.getTestClientPool ().sendAll (new JoinGameServerRequestEvent ());
+    session.getTestClientPool ().sendAll (new HumanJoinGameServerRequestEvent ());
     log.trace ("Waiting for clients to be accepted into game server...");
     return clientPool.waitForAllClientsToReceive (JoinGameServerSuccessEvent.class).isEmpty ();
   }
@@ -239,7 +239,7 @@ public final class InitialGamePhaseController implements TestPhaseController
     {
       final TestClient client = clientPool.get (i);
       final String playerName = Strings.format ("{}{}", PLAYER_NAME_BASE, client.getClientId ());
-      clientPool.send (i, new PlayerJoinGameRequestEvent (playerName));
+      clientPool.send (i, new HumanPlayerJoinGameRequestEvent (playerName));
     }
   }
 }

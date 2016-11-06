@@ -18,19 +18,49 @@
 
 package com.forerunnergames.peril.core.model.people.person;
 
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.assets.AbstractAsset;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public abstract class AbstractPerson extends AbstractAsset implements Person
 {
-  protected AbstractPerson (final String name, final Id id)
+  private final PersonSentience sentience;
+
+  protected AbstractPerson (final String name, final Id id, final PersonSentience sentience)
   {
     super (name, id);
+
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    this.sentience = sentience;
   }
 
   @RequiredForNetworkSerialization
   protected AbstractPerson ()
   {
+    sentience = null;
+  }
+
+  @Override
+  public final PersonSentience getSentience ()
+  {
+    return sentience;
+  }
+
+  @Override
+  public final boolean has (final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    return this.sentience == sentience;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: PersonSentience: [{}]", super.toString ());
   }
 }

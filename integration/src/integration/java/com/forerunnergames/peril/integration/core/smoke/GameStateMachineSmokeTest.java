@@ -21,7 +21,7 @@ package com.forerunnergames.peril.integration.core.smoke;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
@@ -93,7 +93,7 @@ public class GameStateMachineSmokeTest
           for (int i = 0; i < 50; ++i)
           {
             log.trace ("Adding player {}", i);
-            eventBus.publish (new PlayerJoinGameRequestEvent (getRandomPlayerName ()));
+            eventBus.publish (new HumanPlayerJoinGameRequestEvent (getRandomPlayerName ()));
           }
         }
       }, initialDelaySeconds, TimeUnit.SECONDS);

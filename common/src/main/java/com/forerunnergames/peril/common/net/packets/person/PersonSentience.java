@@ -21,5 +21,5 @@ package com.forerunnergames.peril.common.net.packets.person;
 public enum PersonSentience
 {
   HUMAN,
-  AI
+  AI;
 }

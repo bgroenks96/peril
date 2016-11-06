@@ -27,7 +27,7 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
@@ -79,6 +79,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
@@ -280,6 +281,14 @@ public final class GameModel
     Arguments.checkIsNotNull (rules, "rules");
 
     return builder (rules).build ();
+  }
+
+  @StateEntryAction
+  public void waitForGameToBegin ()
+  {
+    log.info ("Waiting for game to begin...");
+
+    publish (new WaitingForPlayersToJoinGameEvent ());
   }
 
   @StateEntryAction
@@ -533,7 +542,7 @@ public final class GameModel
     log.trace ("Event received [{}]", event);
 
     final PlayerFactory playerFactory = new PlayerFactory ();
-    playerFactory.newPlayerWith (event.getPlayerName ());
+    playerFactory.newPlayerWith (event.getPlayerName (), event.getPlayerSentience ());
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (playerFactory);
 
     // for loop is a formality; there should only ever be one result for this case.

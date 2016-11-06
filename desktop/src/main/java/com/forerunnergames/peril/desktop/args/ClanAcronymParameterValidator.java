@@ -16,21 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request;
+package com.forerunnergames.peril.desktop.args;
 
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
+import com.beust.jcommander.IParameterValidator;
+import com.beust.jcommander.ParameterException;
 
-public final class JoinGameServerRequestEvent implements ClientRequestEvent
+import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.tools.common.Strings;
+
+public final class ClanAcronymParameterValidator implements IParameterValidator
 {
-  @RequiredForNetworkSerialization
-  public JoinGameServerRequestEvent ()
-  {
-  }
-
   @Override
-  public String toString ()
+  public void validate (final String name, final String value) throws ParameterException
   {
-    return getClass ().getSimpleName ();
+    if (!GameSettings.isValidHumanClanAcronym (value))
+    {
+      throw new ParameterException (
+              Strings.format ("Invalid value \"{}\" for parameter \"{}\".\n\nValid clan acronym rules:\n\n{}", value,
+                              name, GameSettings.VALID_CLAN_ACRONYM_DESCRIPTION));
+    }
   }
 }

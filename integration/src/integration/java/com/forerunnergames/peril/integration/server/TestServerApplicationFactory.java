@@ -18,10 +18,14 @@
 
 package com.forerunnergames.peril.integration.server;
 
+import com.forerunnergames.peril.ai.application.AiApplication;
+import com.forerunnergames.peril.ai.net.AiClientCommunicator;
+import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
@@ -48,9 +52,10 @@ import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.server.application.ServerApplication;
+import com.forerunnergames.peril.server.communicators.AiPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
-import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
+import com.forerunnergames.peril.server.communicators.HumanPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
@@ -142,21 +147,26 @@ public class TestServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, gameServerPort,
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
-    final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, gameRules.getPlayerLimit (),
-            SPECTATOR_LIMIT, gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), playMapMetadata,
-            gameRules);
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, PersonLimits.builder ()
+            .humanPlayers (gameRules.getPlayerLimit ()).spectators (SPECTATOR_LIMIT).build (),
+            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), playMapMetadata, gameRules);
 
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
 
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName, type,
             gameConfig, serverConfig);
 
+    final MBassador <Event> aiEventBus = EventBusFactory.create ();
+
     final MultiplayerController multiplayerController = new MultiplayerController (gameServerConfig, serverController,
-            new DefaultPlayerCommunicator (serverController), new DefaultSpectatorCommunicator (serverController),
-            new DefaultCoreCommunicator (eventBus), eventBus);
+            new HumanPlayerCommunicator (serverController), new AiPlayerCommunicator (new AiClientCommunicator (
+                    aiEventBus)), new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (
+                    eventBus), eventBus);
+
+    final AiApplication aiApplication = new AiApplication (gameServerConfig, eventBus, aiEventBus);
 
     final ServerApplication serverApplication = new ServerApplication (stateMachine, eventBus, mainThreadExecutor,
-            serverController, multiplayerController);
+            serverController, aiApplication, multiplayerController);
 
     return new TestServerApplication (serverApplication, serverController, server, multiplayerController);
   }

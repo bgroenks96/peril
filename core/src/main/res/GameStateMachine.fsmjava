@@ -165,7 +165,7 @@
     </eventSource>
     <eventSource name="Players">
       <event id="onPlayerJoinGameRequestEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent"
                    name="event"/>
       </event>
       <event id="onPlayerJoinGameSuccessEvent">
@@ -221,6 +221,7 @@
         <!-- Second parallel section -->
         <state name="GameHandler">
           <state name="WaitForGameToBegin">
+            <onEntry action="gameModel.waitForGameToBegin()"/>
             <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()" nextState="PlayingGame"/>
           </state>
           <state name="PlayingGame">

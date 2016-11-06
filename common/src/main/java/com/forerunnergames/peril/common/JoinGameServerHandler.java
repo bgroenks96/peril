@@ -16,25 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.desktop.args;
+package com.forerunnergames.peril.common;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.ParameterException;
-
-import com.forerunnergames.peril.common.settings.GameSettings;
-import com.forerunnergames.tools.common.Strings;
-
-public final class ClanTagParameterValidator implements IParameterValidator
+public interface JoinGameServerHandler
 {
-  @Override
-  public void validate (final String name, final String value) throws ParameterException
-  {
-    if (!GameSettings.isValidClanName (value))
-    {
-      throw new ParameterException (
-              Strings.format ("Invalid value \"{}\" for parameter \"{}\".\n\nValid clan tag rules:\n\n{}", value, name,
-                              GameSettings.VALID_CLAN_NAME_DESCRIPTION));
-
-    }
-  }
+  void join (final String playerName, final String serverAddress, final JoinGameServerListener listener);
 }

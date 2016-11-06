@@ -21,6 +21,7 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
 
@@ -29,12 +30,12 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DefaultPlayerCommunicator implements PlayerCommunicator
+public final class HumanPlayerCommunicator implements PlayerCommunicator
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultPlayerCommunicator.class);
+  private static final Logger log = LoggerFactory.getLogger (HumanPlayerCommunicator.class);
   private final ClientCommunicator clientCommunicator;
 
-  public DefaultPlayerCommunicator (final ClientCommunicator clientCommunicator)
+  public HumanPlayerCommunicator (final ClientCommunicator clientCommunicator)
   {
     Arguments.checkIsNotNull (clientCommunicator, "clientCommunicator");
 
@@ -42,49 +43,51 @@ public final class DefaultPlayerCommunicator implements PlayerCommunicator
   }
 
   @Override
-  public void sendToPlayer (final PlayerPacket player,
-                            final Object object,
-                            final ClientPlayerMapping clientPlayerMapping)
+  public void sendToPlayer (final PlayerPacket player, final Event message, final ClientPlayerMapping mapping)
   {
-    Arguments.checkIsNotNull (clientPlayerMapping, "clientPlayerMapping");
+    Arguments.checkIsNotNull (mapping, "mapping");
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (object, "object");
+    Arguments.checkIsNotNull (message, "message");
 
-    final Optional <Remote> clientQuery = clientPlayerMapping.clientFor (player);
+    final Optional <Remote> clientQuery = mapping.clientFor (player);
 
     if (!clientQuery.isPresent ())
     {
-      log.warn ("Ignoring attempt to send object [{}] to disconnected player [{}]", object, player);
+      log.warn ("Ignoring attempt to send message: [{}] to disconnected player: [{}]", message, player);
       return;
     }
 
-    sendTo (clientQuery.get (), object);
+    log.debug ("Sending message: [{}] to human player: [{}]", message, player);
+
+    sendTo (clientQuery.get (), message);
   }
 
   @Override
-  public void sendToAllPlayers (final Object object, final ClientPlayerMapping clientPlayerMapping)
+  public void sendToAllPlayers (final Event message, final ClientPlayerMapping mapping)
   {
-    Arguments.checkIsNotNull (clientPlayerMapping, "clientPlayerMapping");
-    Arguments.checkIsNotNull (object, "object");
+    Arguments.checkIsNotNull (mapping, "mapping");
+    Arguments.checkIsNotNull (message, "message");
 
-    for (final PlayerPacket player : clientPlayerMapping.players ())
+    log.debug ("Sending message: [{}] to all human players.", message);
+
+    for (final PlayerPacket player : mapping.humanPlayers ())
     {
-      sendToPlayer (player, object, clientPlayerMapping);
+      sendToPlayer (player, message, mapping);
     }
   }
 
   @Override
-  public void sendToAllPlayersExcept (final PlayerPacket player,
-                                      final Object object,
-                                      final ClientPlayerMapping clientPlayerMapping)
+  public void sendToAllPlayersExcept (final PlayerPacket player, final Event message, final ClientPlayerMapping mapping)
   {
-    Arguments.checkIsNotNull (clientPlayerMapping, "clientPlayerMapping");
+    Arguments.checkIsNotNull (mapping, "mapping");
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (object, "object");
+    Arguments.checkIsNotNull (message, "message");
 
-    for (final PlayerPacket targetPlayer : clientPlayerMapping.playersExcept (player))
+    log.debug ("Sending message: [{}] to all human players except: [{}].", message, player);
+
+    for (final PlayerPacket targetPlayer : mapping.humanPlayersExcept (player))
     {
-      sendToPlayer (targetPlayer, object, clientPlayerMapping);
+      sendToPlayer (targetPlayer, message, mapping);
     }
   }
 
@@ -94,6 +97,8 @@ public final class DefaultPlayerCommunicator implements PlayerCommunicator
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
 
+    log.trace ("Sending object: [{}] to human client: [{}].", object, client);
+
     clientCommunicator.sendTo (client, object);
   }
 
@@ -101,6 +106,8 @@ public final class DefaultPlayerCommunicator implements PlayerCommunicator
   public void sendToAll (final Object object)
   {
     Arguments.checkIsNotNull (object, "object");
+
+    log.trace ("Sending object: [{}] to all human clients.", object);
 
     clientCommunicator.sendToAll (object);
   }
@@ -110,6 +117,8 @@ public final class DefaultPlayerCommunicator implements PlayerCommunicator
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
+
+    log.trace ("Sending object: [{}] to all human clients except: [{}].", object, client);
 
     clientCommunicator.sendToAllExcept (client, object);
   }

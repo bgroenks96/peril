@@ -24,6 +24,7 @@ import static com.google.common.base.Predicates.not;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -547,12 +548,23 @@ public final class DefaultPlayerModel implements PlayerModel
     {
       Result <PlayerJoinGameDeniedEvent.Reason> result = Result.success ();
       // @formatter:off
+      if (isFull ()) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL);
       if (existsPlayerWith (player.getName ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
       if (existsPlayerWith (player.getColor ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_COLOR);
       if (existsPlayerWith (player.getTurnOrder ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.DUPLICATE_TURN_ORDER);
-      if (!GameSettings.isValidPlayerNameWithOptionalClanTag (player.getName ())) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME);
-      if (isFull ()) result = Result.failure (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL);
       // @formatter:on
+
+      if (player.has (PersonSentience.HUMAN)
+              && !GameSettings.isValidHumanPlayerNameWithOptionalClanTag (player.getName ()))
+      {
+        result = Result.failure (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME);
+      }
+
+      if (player.has (PersonSentience.AI) && !GameSettings.isValidAiPlayerNameWithMandatoryClanTag (player.getName ()))
+      {
+        result = Result.failure (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME);
+      }
+
       if (result.succeeded ()) add (player);
       joinGameResults.add (new PlayerJoinGameStatus (PlayerPackets.from (player), result));
     }

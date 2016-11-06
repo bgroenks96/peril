@@ -251,15 +251,16 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     return createTextFieldStyle (StyleSettings.MENU_PLAYER_NAME_TEXTFIELD_STYLE);
   }
 
-  public TextField createClanNameTextField ()
+  public TextField createClanAcronymTextField ()
   {
-    return createTextField (InputSettings.INITIAL_CLAN_NAME, GameSettings.MAX_CLAN_NAME_LENGTH,
-                            InputSettings.VALID_CLAN_NAME_TEXTFIELD_INPUT_PATTERN, createClanNameTextFieldStyle ());
+    return createTextField (InputSettings.INITIAL_CLAN_ACRONYM, GameSettings.MAX_CLAN_ACRONYM_LENGTH,
+                            InputSettings.VALID_CLAN_ACRONYM_TEXTFIELD_INPUT_PATTERN,
+                            createClanAcronymTextFieldStyle ());
   }
 
-  public TextField.TextFieldStyle createClanNameTextFieldStyle ()
+  public TextField.TextFieldStyle createClanAcronymTextFieldStyle ()
   {
-    return createTextFieldStyle (StyleSettings.MENU_CLAN_NAME_TEXTFIELD_STYLE);
+    return createTextFieldStyle (StyleSettings.MENU_CLAN_ACRONYM_TEXTFIELD_STYLE);
   }
 
   public TextField createServerNameTextField ()
@@ -273,16 +274,16 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     return createTextFieldStyle (StyleSettings.MENU_SERVER_NAME_TEXTFIELD_STYLE);
   }
 
-  public CheckBox createClanNameCheckBox (final ChangeListener listener)
+  public CheckBox createClanAcronymCheckBox (final ChangeListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createCheckBox (createClanNameCheckBoxStyle (), listener);
+    return createCheckBox (createClanAcronymCheckBoxStyle (), listener);
   }
 
-  public CheckBox.CheckBoxStyle createClanNameCheckBoxStyle ()
+  public CheckBox.CheckBoxStyle createClanAcronymCheckBoxStyle ()
   {
-    return getSkinResource (StyleSettings.MENU_CLAN_NAME_CHECK_BOX_STYLE, CheckBox.CheckBoxStyle.class);
+    return getSkinResource (StyleSettings.MENU_CLAN_ACRONYM_CHECK_BOX_STYLE, CheckBox.CheckBoxStyle.class);
   }
 
   public Label createPlayerLimitLabel (final String text)
@@ -297,11 +298,9 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     return createLabelStyle (StyleSettings.MENU_PLAYER_LIMIT_LABEL_STYLE);
   }
 
-  public Label createPlayMapNameLabel (final String text)
+  public Label createPlayMapNameLabel ()
   {
-    Arguments.checkIsNotNull (text, "text");
-
-    return createLabel (text, Align.left, createPlayMapNameLabelStyle ());
+    return createLabel ("", Align.left, createPlayMapNameLabelStyle ());
   }
 
   public Label.LabelStyle createPlayMapNameLabelStyle ()

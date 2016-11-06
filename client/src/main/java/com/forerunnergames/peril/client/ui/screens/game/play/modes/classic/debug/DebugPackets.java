@@ -23,6 +23,7 @@ import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPac
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultCountryPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPendingBattleActorPacket;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -82,9 +83,9 @@ public final class DebugPackets
   {
     Arguments.checkIsNotNull (playerName, "playerName");
 
-    return new DefaultPlayerPacket (idFor (playerName), playerName, DebugEventGenerator.getRandomPlayerColor (),
-            DebugEventGenerator.getRandomPlayerTurnOrder (), DebugEventGenerator.getRandomArmiesInHand (),
-            DebugEventGenerator.getRandomCardsInHand ());
+    return new DefaultPlayerPacket (idFor (playerName), playerName, PersonSentience.HUMAN,
+            DebugEventGenerator.getRandomPlayerColor (), DebugEventGenerator.getRandomPlayerTurnOrder (),
+            DebugEventGenerator.getRandomArmiesInHand (), DebugEventGenerator.getRandomCardsInHand ());
   }
 
   private static UUID idFor (final String str)

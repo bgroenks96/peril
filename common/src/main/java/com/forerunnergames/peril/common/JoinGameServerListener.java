@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
+package com.forerunnergames.peril.common;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
@@ -28,22 +28,23 @@ import com.google.common.collect.ImmutableSet;
 
 public interface JoinGameServerListener
 {
-  void onJoinStart (final String playerName, final ServerConfiguration configuration);
+  void onJoinStart (final String playerName, final ServerConfiguration config);
 
-  void onConnectToServerSuccess (final ServerConfiguration configuration);
+  void onConnectToServerSuccess (final ServerConfiguration config);
 
-  void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfiguration,
-                                final ClientConfiguration clientConfiguration);
+  void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfig,
+                                final ClientConfiguration clientConfig,
+                                final String playerName);
 
   void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame);
 
-  void onConnectToServerFailure (final ServerConfiguration configuration, final String reason);
+  void onConnectToServerFailure (final ServerConfiguration config, final String reason);
 
-  void onJoinGameServerFailure (final ClientConfiguration configuration, final String reason);
+  void onJoinGameServerFailure (final ClientConfiguration config, final String reason);
 
   void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason);
 
-  void onJoinFinish (final GameServerConfiguration gameServerConfiguration,
-                     final ClientConfiguration clientConfiguration,
+  void onJoinFinish (final GameServerConfiguration gameServerConfig,
+                     final ClientConfiguration clientConfig,
                      final ImmutableSet <PlayerPacket> players);
 }

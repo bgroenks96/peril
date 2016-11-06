@@ -45,7 +45,7 @@ public abstract class PlayerCardHandlerTest
   public void beforeTest ()
   {
     final PlayerFactory factory = new PlayerFactory ();
-    factory.newPlayerWith (TEST_PLAYER_NAME);
+    factory.newHumanPlayerWith (TEST_PLAYER_NAME);
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
   }
 

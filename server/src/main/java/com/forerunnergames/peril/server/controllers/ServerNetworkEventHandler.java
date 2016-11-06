@@ -19,11 +19,12 @@
 package com.forerunnergames.peril.server.controllers;
 
 import com.forerunnergames.peril.common.net.NetworkEventHandler;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
@@ -63,7 +64,15 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   }
 
   @Handler
-  public void onEvent (final JoinGameServerRequestEvent event)
+  public void onEvent (final HumanJoinGameServerRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    controller.handleEvent (event, clientFor (event));
+  }
+
+  @Handler
+  public void onEvent (final AiJoinGameServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -79,7 +88,7 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
   }
 
   @Handler
-  public void onEvent (final SepctatorJoinGameRequestEvent event)
+  public void onEvent (final SpectatorJoinGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

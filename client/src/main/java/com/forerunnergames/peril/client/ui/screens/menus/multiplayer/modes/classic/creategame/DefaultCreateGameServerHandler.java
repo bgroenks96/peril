@@ -21,7 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.clas
 import com.forerunnergames.peril.client.events.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.JoinGameServerHandler;
+import com.forerunnergames.peril.common.JoinGameServerHandler;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;

@@ -245,6 +245,7 @@ project (":client") {
 project (":server") {
   dependencies {
     compile project (":core")
+    compile project (":ai")
     compile "com.beust:jcommander:$jcommanderVersion"
     testCompile project (":common").sourceSets.test.output
     testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
@@ -267,6 +268,14 @@ project (":integration") {
 
   test {
     useTestNG ()
+  }
+}
+
+project (":ai") {
+  dependencies {
+    compile project (":common")
+    testCompile project (":common").sourceSets.test.output
+    testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
 }
 

@@ -44,24 +44,30 @@ public final class CommandLineArgs
               validateWith = PlayMapNameParameterValidator.class, required = true)
   public String playMapName;
 
-  @Parameter (names = { "--players", "-pl" }, description = "Maximum number of players allowed", required = true)
-  public Integer playerLimit;
+  @Parameter (names = { "--human-players", "-h" }, description = "Maximum number of human players allowed",
+              validateWith = HumanPlayersParameterValidator.class, required = true)
+  public Integer humanPlayerLimit;
 
-  @Parameter (names = { "--spectators", "-sp" }, description = "Maximum number of spectators allowed", required = false)
-  public Integer spectatorLimit = GameSettings.DEFAULT_SPECTATOR_LIMIT;
+  @Parameter (names = { "--ai-players", "-ai" }, description = "Maximum number of AI players allowed",
+              validateWith = AiPlayersParameterValidator.class)
+  public Integer aiPlayerLimit = GameSettings.MIN_AI_PLAYERS;
 
-  @Parameter (names = { "--port", "-p", }, description = "TCP port number", required = false)
+  @Parameter (names = { "--spectators", "-sp" }, description = "Maximum number of spectators allowed",
+              validateWith = SpectatorsParameterValidator.class)
+  public Integer spectatorLimit = GameSettings.MIN_SPECTATORS;
+
+  @Parameter (names = { "--port", "-p", }, description = "TCP port number")
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;
 
   @Parameter (names = { "--win-percent", "-w" },
-              description = "Minimum percentage of countries one must conquer to win the game", required = false)
+              description = "Minimum percentage of countries one must conquer to win the game")
   public Integer winPercentage = 100;
 
   @Parameter (names = { "--assignment", "-a" }, description = "Initial country assignment",
               converter = InitialCountryAssignmentParameterConverter.class,
-              validateWith = InitialCountryAssignmentParameterValidator.class, required = false)
+              validateWith = InitialCountryAssignmentParameterValidator.class)
   public InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
 
-  @Parameter (names = "--help", help = true, description = "Show usage", required = false)
+  @Parameter (names = "--help", help = true, description = "Show usage")
   public boolean help = false;
 }

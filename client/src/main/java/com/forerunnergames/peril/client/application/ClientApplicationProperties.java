@@ -58,10 +58,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Reads & writes user configurable settings to & from an external properties file.
+ *
+ * IMPORTANT: Always increment CURRENT_VERSION when making any changes here! It will cause the changes to propagate to
+ * any existing properties files out in the wild.
  */
 public final class ClientApplicationProperties
 {
-  public static final int CURRENT_VERSION = 4;
+  public static final int CURRENT_VERSION = 6;
   public static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   public static final String PROPERTIES_FILE_NAME = "settings.txt";
   public static final String VERSION_FILE_NAME = ".version";
@@ -86,10 +89,11 @@ public final class ClientApplicationProperties
   public static final String UPDATE_ASSETS_KEY = "update-assets";
   public static final String UPDATED_ASSETS_LOCATION_KEY = "updated-assets-location";
   public static final String PLAYER_NAME_KEY = "player-name";
-  public static final String CLAN_NAME_KEY = "clan-tag";
+  public static final String CLAN_ACRONYM_KEY = "clan-tag";
   public static final String SERVER_NAME_KEY = "server-title";
   public static final String SERVER_ADDRESS_KEY = "server-address";
-  public static final String CLASSIC_MODE_PLAYER_LIMIT_KEY = "players-classic-mode";
+  public static final String CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY = "human-players-classic-mode";
+  public static final String CLASSIC_MODE_AI_PLAYER_LIMIT_KEY = "ai-players-classic-mode";
   public static final String SPECTATOR_LIMIT_KEY = "spectators";
   public static final String CLASSIC_MODE_PLAY_MAP_NAME_KEY = "map-name-classic-mode";
   public static final String CLASSIC_MODE_WIN_PERCENT_KEY = "win-percent-classic-mode";
@@ -141,18 +145,25 @@ public final class ClientApplicationProperties
           + PLAYER_NAME_KEY
           + ": The name of your player, optional, can be left blank. "
           + GameSettings.VALID_PLAYER_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
-          + CLAN_NAME_KEY
-          + ": Your clan tag, optional, can be left blank. "
-          + GameSettings.VALID_CLAN_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
+          + CLAN_ACRONYM_KEY
+          + ": Your clan's acronym, optional, can be left blank. "
+          + GameSettings.VALID_CLAN_ACRONYM_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + SERVER_NAME_KEY
           + ": Your server title, optional, can be left blank. "
           + NetworkSettings.VALID_SERVER_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + SERVER_ADDRESS_KEY
           + ": Your server address, optional, can be left blank. "
           + NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION.replace ("\n", " ") + "\n\n "
-          + CLASSIC_MODE_PLAYER_LIMIT_KEY
-          + ": Number of players allowed in your classic game mode server, any whole number, "
-          + ClassicGameRules.MIN_PLAYER_LIMIT + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n\n "
+          + CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY
+          + ": Number of human players allowed in your classic game mode server, "
+          + "any whole number, " + GameSettings.MIN_HUMAN_PLAYERS + " to " + ClassicGameRules.MAX_PLAYER_LIMIT
+          + ", total players (human + AI) must be in the range " + ClassicGameRules.MIN_PLAYER_LIMIT
+          + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n\n "
+          + CLASSIC_MODE_AI_PLAYER_LIMIT_KEY
+          + ": Number of AI players allowed in your classic game mode server, "
+          + "any whole number, " + GameSettings.MIN_AI_PLAYERS + " to " + ClassicGameRules.MAX_PLAYER_LIMIT
+          + ", total players (human + AI) must be in the range " + ClassicGameRules.MIN_PLAYER_LIMIT
+          + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n\n "
           + SPECTATOR_LIMIT_KEY
           + ": Number of spectators allowed in your server in any game mode, any whole number, "
           + GameSettings.MIN_SPECTATORS + " to " + GameSettings.MAX_SPECTATORS + "\n\n "
@@ -385,10 +396,11 @@ public final class ClientApplicationProperties
     properties.setProperty (UPDATE_ASSETS_KEY, String.valueOf (AssetSettings.UPDATE_ASSETS));
     properties.setProperty (UPDATED_ASSETS_LOCATION_KEY, AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION);
     properties.setProperty (PLAYER_NAME_KEY, InputSettings.INITIAL_PLAYER_NAME);
-    properties.setProperty (CLAN_NAME_KEY, InputSettings.INITIAL_CLAN_NAME);
+    properties.setProperty (CLAN_ACRONYM_KEY, InputSettings.INITIAL_CLAN_ACRONYM);
     properties.setProperty (SERVER_NAME_KEY, InputSettings.INITIAL_SERVER_NAME);
     properties.setProperty (SERVER_ADDRESS_KEY, InputSettings.INITIAL_SERVER_ADDRESS);
-    properties.setProperty (CLASSIC_MODE_PLAYER_LIMIT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT));
+    properties.setProperty (CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT));
+    properties.setProperty (CLASSIC_MODE_AI_PLAYER_LIMIT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT));
     properties.setProperty (SPECTATOR_LIMIT_KEY, String.valueOf (InputSettings.INITIAL_SPECTATOR_LIMIT));
     properties.setProperty (CLASSIC_MODE_PLAY_MAP_NAME_KEY, Strings.toProperCase (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME)));
     properties.setProperty (CLASSIC_MODE_WIN_PERCENT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT));
@@ -438,10 +450,11 @@ public final class ClientApplicationProperties
     AssetSettings.UPDATE_ASSETS = parseBoolean (UPDATE_ASSETS_KEY, properties);
     AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION = properties.getProperty (UPDATED_ASSETS_LOCATION_KEY);
     InputSettings.INITIAL_PLAYER_NAME = parsePlayerName (PLAYER_NAME_KEY, properties);
-    InputSettings.INITIAL_CLAN_NAME = parseClanName (CLAN_NAME_KEY, properties);
+    InputSettings.INITIAL_CLAN_ACRONYM = parseClanAcronym (CLAN_ACRONYM_KEY, properties);
     InputSettings.INITIAL_SERVER_NAME = parseServerName (SERVER_NAME_KEY, properties);
     InputSettings.INITIAL_SERVER_ADDRESS = parseServerAddress (SERVER_ADDRESS_KEY, properties);
-    InputSettings.INITIAL_CLASSIC_MODE_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_PLAYER_LIMIT_KEY, ClassicGameRules.MIN_PLAYER_LIMIT, ClassicGameRules.MAX_PLAYER_LIMIT, properties);
+    InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY, GameSettings.MIN_HUMAN_PLAYERS, ClassicGameRules.MAX_PLAYER_LIMIT, properties);
+    InputSettings.INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_AI_PLAYER_LIMIT_KEY, GameSettings.getAiPlayersLowerBoundClassicMode (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT), GameSettings.getAiPlayersUpperBoundClassicMode (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT), properties);
     InputSettings.INITIAL_SPECTATOR_LIMIT = parseInteger (SPECTATOR_LIMIT_KEY, GameSettings.MIN_SPECTATORS, GameSettings.MAX_SPECTATORS, properties);
     InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME = parseClassicModePlayMapName (CLASSIC_MODE_PLAY_MAP_NAME_KEY, properties);
     InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT = parseInteger (CLASSIC_MODE_WIN_PERCENT_KEY, 5, ClassicGameRules.MAX_WIN_PERCENTAGE, 5, properties);
@@ -568,16 +581,16 @@ public final class ClientApplicationProperties
     return playerName;
   }
 
-  private static String parseClanName (final String clanNameKey, final Properties properties)
+  private static String parseClanAcronym (final String clanAcronymKey, final Properties properties)
   {
-    final String clanName = properties.getProperty (clanNameKey);
+    final String clanAcronym = properties.getProperty (clanAcronymKey);
 
-    if (!clanName.isEmpty () && !GameSettings.isValidClanName (clanName))
+    if (!clanAcronym.isEmpty () && !GameSettings.isValidHumanClanAcronym (clanAcronym))
     {
-      throw new RuntimeException (getParseErrorMessageFor (clanNameKey, clanName));
+      throw new RuntimeException (getParseErrorMessageFor (clanAcronymKey, clanAcronym));
     }
 
-    return clanName;
+    return clanAcronym;
   }
 
   private static String parseServerName (final String serverNameKey, final Properties properties)

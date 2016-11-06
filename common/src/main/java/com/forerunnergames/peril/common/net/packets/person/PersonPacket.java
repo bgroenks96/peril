@@ -25,7 +25,5 @@ public interface PersonPacket extends AssetPacket, Author
 {
   PersonSentience getSentience ();
 
-  void setSentience (final PersonSentience sentience);
-
   boolean has (final PersonSentience sentience);
 }

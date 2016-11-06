@@ -21,6 +21,7 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
 
@@ -42,47 +43,47 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   }
 
   @Override
-  public void sendToSpectator (final SpectatorPacket spectator, final Object msg, final ClientSpectatorMapping mapping)
+  public void sendToSpectator (final SpectatorPacket spectator, final Event message, final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (spectator, "spectator");
-    Arguments.checkIsNotNull (msg, "msg");
+    Arguments.checkIsNotNull (message, "msg");
     Arguments.checkIsNotNull (mapping, "mapping");
 
     final Optional <Remote> clientQuery = mapping.clientFor (spectator);
 
     if (!clientQuery.isPresent ())
     {
-      log.warn ("Ignoring attempt to send [{}] to disconnected spectator [{}].", msg, spectator);
+      log.warn ("Ignoring attempt to send [{}] to disconnected spectator [{}].", message, spectator);
       return;
     }
 
-    sendTo (clientQuery.get (), msg);
+    sendTo (clientQuery.get (), message);
   }
 
   @Override
-  public void sendToAllSpectators (final Object msg, final ClientSpectatorMapping mapping)
+  public void sendToAllSpectators (final Event message, final ClientSpectatorMapping mapping)
   {
-    Arguments.checkIsNotNull (msg, "msg");
+    Arguments.checkIsNotNull (message, "msg");
     Arguments.checkIsNotNull (mapping, "mapping");
 
     for (final SpectatorPacket next : mapping.spectators ())
     {
-      sendToSpectator (next, msg, mapping);
+      sendToSpectator (next, message, mapping);
     }
   }
 
   @Override
   public void sendToAllSpectatorsExcept (final SpectatorPacket spectator,
-                                         final Object msg,
+                                         final Event message,
                                          final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (spectator, "spectator");
-    Arguments.checkIsNotNull (msg, "msg");
+    Arguments.checkIsNotNull (message, "msg");
     Arguments.checkIsNotNull (mapping, "mapping");
 
     for (final SpectatorPacket next : mapping.spectatorsExcept (spectator))
     {
-      sendToSpectator (next, msg, mapping);
+      sendToSpectator (next, message, mapping);
     }
   }
 

@@ -20,6 +20,13 @@ package com.forerunnergames.peril.common.net.events.server.interfaces;
 
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
+/**
+ * Represents request events sent by the server to a client that has previously successfully joined the game as a
+ * player. Should be answered by a
+ * {@link com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent}, which the server should
+ * answer with a {@link com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent} or
+ * {@link com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent}.
+ */
 public interface PlayerInputRequestEvent extends DirectPlayerEvent, ServerRequestEvent
 {
 }

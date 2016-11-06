@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.packets.defaults;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.AbstractPersonPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -36,12 +37,13 @@ public final class DefaultPlayerPacket extends AbstractPersonPacket implements P
 
   public DefaultPlayerPacket (final UUID playerId,
                               final String name,
+                              final PersonSentience sentience,
                               final PlayerColor color,
                               final int turnOrder,
                               final int armiesInHand,
                               final int cardsInHand)
   {
-    super (name, playerId);
+    super (name, playerId, sentience);
 
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNegative (turnOrder, "turnOrder");

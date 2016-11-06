@@ -131,7 +131,7 @@ public final class DesktopLauncher
     }
 
     if (!jArgs.playerName.isEmpty ()) InputSettings.INITIAL_PLAYER_NAME = jArgs.playerName;
-    if (!jArgs.clanName.isEmpty ()) InputSettings.INITIAL_CLAN_NAME = jArgs.clanName;
+    if (!jArgs.clanAcronym.isEmpty ()) InputSettings.INITIAL_CLAN_ACRONYM = jArgs.clanAcronym;
 
     new LwjglApplication (LibGdxGameFactory.create (), config);
   }

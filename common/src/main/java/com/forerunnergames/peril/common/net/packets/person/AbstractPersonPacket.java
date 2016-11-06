@@ -27,11 +27,15 @@ import java.util.UUID;
 
 public abstract class AbstractPersonPacket extends AbstractAssetPacket implements PersonPacket
 {
-  private PersonSentience sentience = PersonSentience.HUMAN;
+  private PersonSentience sentience;
 
-  protected AbstractPersonPacket (final String name, final UUID id)
+  protected AbstractPersonPacket (final String name, final UUID id, final PersonSentience sentience)
   {
     super (name, id);
+
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    this.sentience = sentience;
   }
 
   @RequiredForNetworkSerialization
@@ -44,14 +48,6 @@ public abstract class AbstractPersonPacket extends AbstractAssetPacket implement
   public PersonSentience getSentience ()
   {
     return sentience;
-  }
-
-  @Override
-  public void setSentience (final PersonSentience sentience)
-  {
-    Arguments.checkIsNotNull (sentience, "sentience");
-
-    this.sentience = sentience;
   }
 
   @Override

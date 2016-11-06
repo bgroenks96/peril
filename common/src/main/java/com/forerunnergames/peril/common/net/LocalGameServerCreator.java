@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net;
 
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
@@ -67,7 +68,8 @@ public final class LocalGameServerCreator implements GameServerCreator
                       "--server-type", config.getGameServerType ().name (),
                       "--title", config.getGameServerName (),
                       "--port", String.valueOf (config.getServerTcpPort ()),
-                      "--players", String.valueOf (config.getPlayerLimit ()),
+                      "--human-players", String.valueOf (config.getPlayerLimitFor (PersonSentience.HUMAN)),
+                      "--ai-players", String.valueOf (config.getPlayerLimitFor (PersonSentience.AI)),
                       "--spectators", String.valueOf (config.getSpectatorLimit ()),
                       "--win-percent", String.valueOf (config.getWinPercentage ()),
                       "--assignment", config.getInitialCountryAssignment ().name(),

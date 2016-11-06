@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,35 +17,19 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.peril.common.net.events.defaults.AbstractPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class PlayerJoinGameRequestEvent implements ClientRequestEvent
+public final class HumanPlayerJoinGameRequestEvent extends AbstractPlayerJoinGameRequestEvent
 {
-  private final String playerName;
-
-  public PlayerJoinGameRequestEvent (final String playerName)
+  public HumanPlayerJoinGameRequestEvent (final String playerName)
   {
-    Arguments.checkIsNotNull (playerName, "playerName");
-
-    this.playerName = playerName;
-  }
-
-  public String getPlayerName ()
-  {
-    return playerName;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return String.format ("%1$s: Player name: %2$s", getClass ().getSimpleName (), playerName);
+    super (playerName, PersonSentience.HUMAN);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerJoinGameRequestEvent ()
+  private HumanPlayerJoinGameRequestEvent ()
   {
-    playerName = null;
   }
 }

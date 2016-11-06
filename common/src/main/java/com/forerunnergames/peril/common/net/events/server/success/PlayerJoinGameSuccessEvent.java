@@ -110,6 +110,13 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implem
     }));
   }
 
+  public boolean hasIdentity (final PersonIdentity identity)
+  {
+    Arguments.checkIsNotNull (identity, "identity");
+
+    return this.identity == identity;
+  }
+
   @Override
   public String toString ()
   {

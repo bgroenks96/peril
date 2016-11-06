@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,38 +15,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request;
+package com.forerunnergames.peril.ai.events;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
+import com.forerunnergames.tools.net.events.local.LocalEvent;
 
-public final class SepctatorJoinGameRequestEvent implements ClientRequestEvent
+public final class AiConnectionEvent implements LocalEvent
 {
-  private final String name;
+  private final String playerName;
 
-  public SepctatorJoinGameRequestEvent (final String name)
+  public AiConnectionEvent (final String playerName)
   {
-    Arguments.checkIsNotNull (name, "name");
+    Arguments.checkIsNotNull (playerName, "playerName");
 
-    this.name = name;
+    this.playerName = playerName;
   }
 
-  public String getSpectatorName ()
+  public String getPlayerName ()
   {
-    return name;
+    return playerName;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {}", getClass ().getSimpleName (), name);
-  }
-
-  @RequiredForNetworkSerialization
-  private SepctatorJoinGameRequestEvent ()
-  {
-    name = null;
+    return Strings.format ("{}: PlayerName: [{}]", getClass ().getSimpleName (), playerName);
   }
 }

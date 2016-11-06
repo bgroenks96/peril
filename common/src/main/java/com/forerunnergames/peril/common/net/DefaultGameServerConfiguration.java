@@ -22,6 +22,7 @@ import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.tools.common.Arguments;
@@ -62,6 +63,14 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   public int getPlayerLimit ()
   {
     return gameConfig.getPlayerLimit ();
+  }
+
+  @Override
+  public int getPlayerLimitFor (final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    return gameConfig.getPlayerLimitFor (sentience);
   }
 
   @Override

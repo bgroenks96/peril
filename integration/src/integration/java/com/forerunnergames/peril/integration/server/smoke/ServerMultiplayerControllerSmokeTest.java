@@ -22,8 +22,8 @@ import static org.testng.Assert.assertTrue;
 
 import com.esotericsoftware.kryo.Kryo;
 
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
@@ -88,14 +88,14 @@ public class ServerMultiplayerControllerSmokeTest
   @Test (dependsOnMethods = "testConnectToServer")
   public void testJoinServer ()
   {
-    client.sendEvent (new JoinGameServerRequestEvent ());
+    client.sendEvent (new HumanJoinGameServerRequestEvent ());
     client.waitForEventCommunication (JoinGameServerSuccessEvent.class, true);
   }
 
   @Test (dependsOnMethods = "testJoinServer")
   public void testJoinGame ()
   {
-    client.sendEvent (new PlayerJoinGameRequestEvent ("TestPlayer1"));
+    client.sendEvent (new HumanPlayerJoinGameRequestEvent ("TestPlayer1"));
     client.waitForEventCommunication (PlayerJoinGameSuccessEvent.class, true);
   }
 

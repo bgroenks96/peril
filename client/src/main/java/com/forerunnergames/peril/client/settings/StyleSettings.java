@@ -46,9 +46,9 @@ public final class StyleSettings
   public static final String MENU_SETTING_SECTION_TITLE_LABEL_STYLE = "menu-settings-section-title";
   public static final String MENU_SETTING_LABEL_STYLE = "menu-settings";
   public static final String MENU_PLAYER_NAME_TEXTFIELD_STYLE = DEFAULT_TEXTFIELD_STYLE;
-  public static final String MENU_CLAN_NAME_TEXTFIELD_STYLE = DEFAULT_TEXTFIELD_STYLE;
+  public static final String MENU_CLAN_ACRONYM_TEXTFIELD_STYLE = DEFAULT_TEXTFIELD_STYLE;
   public static final String MENU_SERVER_NAME_TEXTFIELD_STYLE = DEFAULT_TEXTFIELD_STYLE;
-  public static final String MENU_CLAN_NAME_CHECK_BOX_STYLE = DEFAULT_CHECK_BOX_STYLE;
+  public static final String MENU_CLAN_ACRONYM_CHECK_BOX_STYLE = DEFAULT_CHECK_BOX_STYLE;
   public static final String MENU_PLAYER_LIMIT_LABEL_STYLE = "option-box";
   public static final String MENU_PLAY_MAP_NAME_LABEL_STYLE = "option-box";
   public static final String MENU_CUSTOMIZE_PLAYERS_IMAGE_BUTTON_STYLE = "options";

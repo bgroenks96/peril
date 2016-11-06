@@ -20,15 +20,20 @@ package com.forerunnergames.peril.server.controllers;
 
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
+import com.forerunnergames.peril.ai.events.AiDisconnectionEvent;
+import com.forerunnergames.peril.ai.net.AiClient;
+import com.forerunnergames.peril.ai.net.AiClientConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.NetworkEventHandler;
+import com.forerunnergames.peril.common.net.events.client.interfaces.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.SepctatorJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
@@ -43,6 +48,7 @@ import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinG
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultSpectatorPacket;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
@@ -52,11 +58,11 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
-import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping.RegisteredClientSpectatorNotFoundException;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
@@ -103,7 +109,8 @@ public final class MultiplayerController extends ControllerAdapter
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final GameServerConfiguration gameServerConfig;
   private final ClientConnector clientConnector;
-  private final PlayerCommunicator playerCommunicator;
+  private final PlayerCommunicator humanPlayerCommunicator;
+  private final PlayerCommunicator aiPlayerCommunicator;
   private final SpectatorCommunicator spectatorCommunicator;
   private final CoreCommunicator coreCommunicator;
   private final MBassador <Event> eventBus;
@@ -116,21 +123,24 @@ public final class MultiplayerController extends ControllerAdapter
 
   public MultiplayerController (final GameServerConfiguration gameServerConfig,
                                 final ClientConnector clientConnector,
-                                final PlayerCommunicator playerCommunicator,
+                                final PlayerCommunicator humanPlayerCommunicator,
+                                final PlayerCommunicator aiPlayerCommunicator,
                                 final SpectatorCommunicator spectatorCommunicator,
                                 final CoreCommunicator coreCommunicator,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConnector, "clientConnector");
-    Arguments.checkIsNotNull (playerCommunicator, "playerCommunicator");
+    Arguments.checkIsNotNull (humanPlayerCommunicator, "humanPlayerCommunicator");
+    Arguments.checkIsNotNull (aiPlayerCommunicator, "aiPlayerCommunicator");
     Arguments.checkIsNotNull (spectatorCommunicator, "spectatorCommunicator");
     Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.gameServerConfig = gameServerConfig;
     this.clientConnector = clientConnector;
-    this.playerCommunicator = playerCommunicator;
+    this.humanPlayerCommunicator = humanPlayerCommunicator;
+    this.aiPlayerCommunicator = aiPlayerCommunicator;
     this.spectatorCommunicator = spectatorCommunicator;
     this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
@@ -184,6 +194,18 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerConfig.getPlayerLimit ();
   }
 
+  public int getPlayerLimitFor (final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    return gameServerConfig.getPlayerLimitFor (sentience);
+  }
+
+  public int getSpectatorLimit ()
+  {
+    return gameServerConfig.getSpectatorLimit ();
+  }
+
   public boolean isPlayerInGame (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
@@ -204,6 +226,9 @@ public final class MultiplayerController extends ControllerAdapter
   public void onEvent (final BroadcastEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    // PlayerJoinGameSuccessEvent requires special processing.
+    if (event instanceof PlayerJoinGameSuccessEvent) return;
 
     log.trace ("Event received [{}]", event);
 
@@ -264,7 +289,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    // let handler for broadcast events handle forwarding the event
+    sendPlayerJoinGameSuccessEvent (event);
   }
 
   @Handler
@@ -282,8 +307,17 @@ public final class MultiplayerController extends ControllerAdapter
 
     final Remote client = playerJoinGameRequestCache.get (playerName);
 
-    playerCommunicator.sendTo (client, event);
-    clientConnector.disconnect (client);
+    if (client instanceof AiClient)
+    {
+      sendToAiClient (client, event);
+      disconnectAi ((AiClient) client);
+    }
+    else
+    {
+      sendToHumanClient (client, event);
+      disconnectHuman (client);
+    }
+
     playerJoinGameRequestCache.remove (playerName);
   }
 
@@ -315,8 +349,8 @@ public final class MultiplayerController extends ControllerAdapter
     }
     // remove client/player mapping; keep client in server
     clientsToPlayers.remove (client.get ());
-    // add client as an spectator
-    clientsToSpectators.put (client.get (), createNewSpectatorFromValidName (event.getPlayer ().getName ()));
+    // add client as a spectator
+    clientsToSpectators.put (client.get (), createNewSpectatorFromValidName (event.getPlayerName ()));
 
     // let handler for broadcast events handle forwarding the event
   }
@@ -363,7 +397,8 @@ public final class MultiplayerController extends ControllerAdapter
       playerQuery = clientsToPlayers.playerFor (client);
       spectatorQuery = clientsToSpectators.spectatorFor (client);
     }
-    catch (final RegisteredClientPlayerNotFoundException | RegisteredClientSpectatorNotFoundException e)
+    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException
+            | RegisteredClientSpectatorNotFoundException e)
     {
       log.error ("Error resolving client.", e);
     }
@@ -377,7 +412,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    // if client is neither a player nor an spectator, log a warning
+    // if client is neither a player nor a spectator, log a warning
     if (!playerQuery.isPresent () && !spectatorQuery.isPresent ())
     {
       log.warn ("Client [{}] disconnected but did not exist as a player or spectator.", client);
@@ -396,7 +431,9 @@ public final class MultiplayerController extends ControllerAdapter
     networkEventHandler.handle (event.getMessage (), event.getClient ());
   }
 
-  void handleEvent (final JoinGameServerRequestEvent event, final Remote client)
+  // ---------- inbound client event callbacks from NetworkEventHandler ---------- //
+
+  void handleEvent (final HumanJoinGameServerRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -408,7 +445,7 @@ public final class MultiplayerController extends ControllerAdapter
     // This reeks of hacking...
     if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
     {
-      sendJoinGameServerDenied (client, "Your IP address [" + client.getAddress () + "] is invalid.");
+      sendJoinGameServerDeniedToHumanClient (client, "Your IP address [" + client.getAddress () + "] is invalid.");
       return;
     }
 
@@ -419,45 +456,73 @@ public final class MultiplayerController extends ControllerAdapter
     // is required for LAN clients to join using the server's internal network address, which circumvents this problem.
     if (serverHasAddress () && client.getAddress ().equals (getServerAddress ()))
     {
-      sendJoinGameServerDenied (client,
-                                "You cannot join this game having the same IP address ["
-                                        + client.getAddress ()
-                                        + "] as the game server.\nIf you are on the same network as the server, you can join using the game server's internal IP address to play a LAN game.");
+      sendJoinGameServerDeniedToHumanClient (client,
+                                             "You cannot join this game having the same IP address ["
+                                                     + client.getAddress ()
+                                                     + "] as the game server.\nIf you are on the same network as the server, "
+                                                     + "you can join using the game server's internal IP address to play a LAN game.");
       return;
     }
 
     // check if client is already in server
     if (clientsInServer.contains (client))
     {
-      sendJoinGameServerDenied (client, "You have already joined this game server.");
+      sendJoinGameServerDeniedToHumanClient (client, "You have already joined this game server.");
       return;
     }
 
     // local host cannot join a dedicated server
     if (!isHostAndPlay () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, "You cannot join a dedicated game server as localhost.");
+      sendJoinGameServerDeniedToHumanClient (client, "You cannot join a dedicated game server as localhost.");
       return;
     }
 
     // local host must join first in a host-and-play server
     if (isHostAndPlay () && !isHostConnected () && !isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, "Waiting for the host to connect...");
+      sendJoinGameServerDeniedToHumanClient (client, "Waiting for the host to connect...");
       return;
     }
 
     // only one local host can join a host-and-play server
     if (isHostAndPlay () && isHostConnected () && isLocalHost (client))
     {
-      sendJoinGameServerDenied (client, "The host has already joined this game server.");
+      sendJoinGameServerDeniedToHumanClient (client, "The host has already joined this game server.");
       return;
     }
 
     // local host has joined the host-and-play server
     if (isHostAndPlay () && !isHostConnected () && isLocalHost (client)) host = client;
 
-    sendJoinGameServerSuccess (client);
+    sendJoinGameServerSuccessToHumanClient (client);
+  }
+
+  void handleEvent (final AiJoinGameServerRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    // Check to make sure that this event is not coming from a real human client.
+    // AI clients never have a valid address, while human clients must.
+    if (NetworkConstants.isValidIpAddress (client.getAddress ()))
+    {
+      // It's a human client. Send the denial to the human client.
+      sendJoinGameServerDeniedToHumanClient (client, Strings.format ("Invalid AI client: [{}]", client));
+      return;
+    }
+
+    log.trace ("Event received [{}]", event);
+    log.info ("Received join game server request from {}", client);
+
+    // check if client is already in server
+    if (clientsInServer.contains (client))
+    {
+      sendJoinGameServerDeniedToAiClient (client, "You have already joined this game server.");
+      return;
+    }
+
+    sendJoinGameServerSuccessToAiClient (client);
   }
 
   void handleEvent (final PlayerJoinGameRequestEvent event, final Remote client)
@@ -472,14 +537,14 @@ public final class MultiplayerController extends ControllerAdapter
     {
       log.warn ("Ignoring join game request from player [{}] | REASON: unrecognized client [{}].",
                 event.getPlayerName (), client);
-      clientConnector.disconnect (client);
+      disconnect (client);
       return;
     }
 
     if (clientsToSpectators.existsSpectatorWith (event.getPlayerName ()))
     {
       final SpectatorPacket nameConflictSpectator = clientsToSpectators.spectatorWith (event.getPlayerName ()).get ();
-      log.warn ("Rejecting {} from [{}] because an spectator client [{}] => [{}] already exists with that name.", event
+      log.warn ("Rejecting {} from [{}] because a spectator client [{}] => [{}] already exists with that name.", event
                         .getClass ().getSimpleName (), client, clientsToSpectators.clientFor (nameConflictSpectator)
                         .get (),
                 nameConflictSpectator);
@@ -499,7 +564,7 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (event);
   }
 
-  void handleEvent (final SepctatorJoinGameRequestEvent event, final Remote client)
+  void handleEvent (final SpectatorJoinGameRequestEvent event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -508,7 +573,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       log.warn ("Ignoring join game request from spectator [{}] | REASON: unrecognized client [{}].",
                 event.getSpectatorName (), client);
-      clientConnector.disconnect (client);
+      disconnectHuman (client);
       return;
     }
 
@@ -550,7 +615,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       playerQuery = clientsToPlayers.playerFor (client);
     }
-    catch (final RegisteredClientPlayerNotFoundException e)
+    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
       return;
@@ -578,7 +643,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       playerQuery = clientsToPlayers.playerFor (client);
     }
-    catch (final RegisteredClientPlayerNotFoundException e)
+    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
       return;
@@ -607,7 +672,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       playerQuery = clientsToPlayers.playerFor (client);
     }
-    catch (final RegisteredClientPlayerNotFoundException e)
+    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
       return;
@@ -631,16 +696,99 @@ public final class MultiplayerController extends ControllerAdapter
     handlePlayerResponseTo (event.getRequestType (), event, player);
   }
 
-  // ---------- internal event utility methods and types ---------- //
+  // ---------- outbound server responses requiring special processing ---------- //
 
   private static boolean isLocalHost (final Remote client)
   {
     return client.getAddress ().equals (NetworkConstants.LOCALHOST_ADDRESS);
   }
 
-  private static ClientConfiguration createClientConfig (final String clientAddress, final int clientPort)
+  private static ClientConfiguration createHumanClientConfig (final Remote client)
   {
-    return new DefaultClientConfiguration (clientAddress, clientPort);
+    return new DefaultClientConfiguration (client.getAddress (), client.getPort ());
+  }
+
+  private static ClientConfiguration createAiClientConfig (final Remote client)
+  {
+    return new AiClientConfiguration (client.getAddress (), client.getPort ());
+  }
+
+  private void sendPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
+  {
+    final PlayerJoinGameSuccessEvent nonSelfEvent = new PlayerJoinGameSuccessEvent (event.getPlayer (),
+            PersonIdentity.NON_SELF, event.getPlayersInGame (), gameServerConfig.getPlayerLimit ());
+    final PlayerJoinGameSuccessEvent selfEvent = new PlayerJoinGameSuccessEvent (event.getPlayer (),
+            PersonIdentity.SELF, event.getPlayersInGame (), gameServerConfig.getPlayerLimit ());
+
+    sendToAllPlayersExcept (event.getPlayer (), nonSelfEvent);
+    sendToPlayer (event.getPlayer (), selfEvent);
+    sendToAllSpectators (nonSelfEvent);
+  }
+
+  private void sendJoinGameServerSuccessToHumanClient (final Remote client)
+  {
+    final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig, createHumanClientConfig (client));
+
+    sendToHumanClient (client, successEvent);
+    clientsInServer.add (client);
+
+    log.info ("Client [{}] successfully joined game server.", client);
+  }
+
+  private void sendJoinGameServerSuccessToAiClient (final Remote client)
+  {
+    final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig, createAiClientConfig (client));
+
+    sendToAiClient (client, successEvent);
+    clientsInServer.add (client);
+
+    log.info ("Client [{}] successfully joined game server.", client);
+  }
+
+  // ---------- internal event utility methods and types ---------- //
+
+  private void sendJoinGameServerDeniedToHumanClient (final Remote client, final String reason)
+  {
+    sendToHumanClient (client, new JoinGameServerDeniedEvent (createHumanClientConfig (client), reason));
+    disconnectHuman (client);
+
+    log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
+  }
+
+  private void sendJoinGameServerDeniedToAiClient (final Remote client, final String reason)
+  {
+    sendToAiClient (client, new JoinGameServerDeniedEvent (createAiClientConfig (client), reason));
+
+    log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
+  }
+
+  private void sendSpectatorJoinGameDenied (final Remote client,
+                                            final String name,
+                                            final SpectatorJoinGameDeniedEvent.Reason reason)
+  {
+    sendToSpectator (client, new SpectatorJoinGameDeniedEvent (name, reason));
+    disconnectHuman (client);
+  }
+
+  private void disconnect (final Remote client)
+  {
+    if (client instanceof AiClient)
+    {
+      disconnectAi ((AiClient) client);
+      return;
+    }
+
+    disconnectHuman (client);
+  }
+
+  private void disconnectHuman (final Remote client)
+  {
+    clientConnector.disconnect (client);
+  }
+
+  private void disconnectAi (final AiClient client)
+  {
+    eventBus.publish (new AiDisconnectionEvent (client.getPlayerName ()));
   }
 
   private boolean serverHasAddress ()
@@ -653,75 +801,66 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerConfig.getServerAddress ();
   }
 
-  private void sendTo (final Remote client, final Object object)
+  private void sendToHumanClient (final Remote client, final Event message)
   {
-    playerCommunicator.sendTo (client, object);
+    humanPlayerCommunicator.sendTo (client, message);
   }
 
-  private void sendToPlayer (final PlayerPacket player, final Object object)
+  private void sendToAiClient (final Remote client, final Event message)
   {
-    playerCommunicator.sendToPlayer (player, object, clientsToPlayers);
+    aiPlayerCommunicator.sendTo (client, message);
   }
 
-  private void sendToAllPlayersAndSpectators (final Object object)
+  private void sendToSpectator (final Remote client, final Event message)
   {
-    // PlayerJoinGameSuccessEvent requires special processing for person-identity
-    if (object instanceof PlayerJoinGameSuccessEvent)
+    spectatorCommunicator.sendTo (client, message);
+  }
+
+  private void sendToPlayer (final PlayerPacket player, final Event message)
+  {
+    switch (player.getSentience ())
     {
-      sendPlayerJoinGameSuccessEvent ((PlayerJoinGameSuccessEvent) object);
-      return;
+      case HUMAN:
+      {
+        humanPlayerCommunicator.sendToPlayer (player, message, clientsToPlayers);
+        break;
+      }
+      case AI:
+      {
+        aiPlayerCommunicator.sendToPlayer (player, message, clientsToPlayers);
+        break;
+      }
     }
-
-    playerCommunicator.sendToAllPlayers (object, clientsToPlayers);
-    spectatorCommunicator.sendToAllSpectators (object, clientsToSpectators);
   }
 
-  private void sendPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event)
+  private void sendToAllPlayersExcept (final PlayerPacket player, final Event message)
   {
-    final PlayerJoinGameSuccessEvent nonSelfEvent = new PlayerJoinGameSuccessEvent (event.getPlayer (),
-            PersonIdentity.NON_SELF, event.getPlayersInGame (), gameServerConfig.getPlayerLimit ());
-    final PlayerJoinGameSuccessEvent selfEvent = new PlayerJoinGameSuccessEvent (event.getPlayer (),
-            PersonIdentity.SELF, event.getPlayersInGame (), gameServerConfig.getPlayerLimit ());
+    humanPlayerCommunicator.sendToAllPlayersExcept (player, message, clientsToPlayers);
+    aiPlayerCommunicator.sendToAllPlayersExcept (player, message, clientsToPlayers);
+  }
 
-    playerCommunicator.sendToAllPlayersExcept (event.getPlayer (), nonSelfEvent, clientsToPlayers);
-    playerCommunicator.sendToPlayer (event.getPlayer (), selfEvent, clientsToPlayers);
-    spectatorCommunicator.sendToAllSpectators (nonSelfEvent, clientsToSpectators);
+  private void sendToAllPlayers (final Event message)
+  {
+    humanPlayerCommunicator.sendToAllPlayers (message, clientsToPlayers);
+    aiPlayerCommunicator.sendToAllPlayers (message, clientsToPlayers);
+  }
+
+  private void sendToAllSpectators (final Event message)
+  {
+    spectatorCommunicator.sendToAllSpectators (message, clientsToSpectators);
+  }
+
+  private void sendToAllPlayersAndSpectators (final Event message)
+  {
+    sendToAllPlayers (message);
+    sendToAllSpectators (message);
   }
 
   private void remove (final Remote client)
   {
     clientsInServer.remove (client);
     clientsToPlayers.remove (client); // remove from players, if client is a player
-    clientsToSpectators.remove (client); // remove from spectators, if client is an spectator
-  }
-
-  private void sendJoinGameServerSuccess (final Remote client)
-  {
-    final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig,
-            createClientConfig (client.getAddress (), client.getPort ()));
-
-    playerCommunicator.sendTo (client, successEvent);
-    clientsInServer.add (client);
-
-    log.info ("Client [{}] successfully joined game server.", client);
-  }
-
-  private void sendJoinGameServerDenied (final Remote client, final String reason)
-  {
-    playerCommunicator.sendTo (client,
-                               new JoinGameServerDeniedEvent (new DefaultClientConfiguration (client.getAddress (),
-                                       client.getPort ()), reason));
-
-    clientConnector.disconnect (client);
-
-    log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
-  }
-
-  private void sendSpectatorJoinGameDenied (final Remote client,
-                                            final String name,
-                                            final SpectatorJoinGameDeniedEvent.Reason reason)
-  {
-    sendTo (client, new SpectatorJoinGameDeniedEvent (name, reason));
+    clientsToSpectators.remove (client); // remove from spectators, if client is a spectator
   }
 
   private boolean isHostConnected ()
@@ -752,7 +891,7 @@ public final class MultiplayerController extends ControllerAdapter
       return Result.failure (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
     }
 
-    if (!GameSettings.isValidPlayerNameWithOptionalClanTag (name))
+    if (!GameSettings.isValidHumanPlayerNameWithOptionalClanTag (name))
     {
       return Result.failure (SpectatorJoinGameDeniedEvent.Reason.INVALID_NAME);
     }
@@ -820,7 +959,7 @@ public final class MultiplayerController extends ControllerAdapter
 
         if (clientsInServer.contains (client)) return;
 
-        clientConnector.disconnect (client);
+        disconnect (client);
 
         log.info ("Client connection timed out [{}].", client.getAddress ());
       }

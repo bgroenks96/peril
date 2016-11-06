@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +15,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
+package com.forerunnergames.peril.common;
 
-import com.forerunnergames.peril.client.events.ConnectToServerDeniedEvent;
-import com.forerunnergames.peril.client.events.ConnectToServerRequestEvent;
-import com.forerunnergames.peril.client.events.ConnectToServerSuccessEvent;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.events.client.request.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -45,6 +39,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -55,9 +50,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Listener (references = References.Strong)
-public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
+public abstract class AbstractJoinGameServerHandler implements JoinGameServerHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultJoinGameServerHandler.class);
+  protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final MBassador <Event> eventBus;
   private final Set <PlayerPacket> players = new HashSet <> ();
   @Nullable
@@ -67,9 +62,9 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   @Nullable
   private GameServerConfiguration gameServerConfig = null;
   private ClientConfiguration clientConfig = new UnknownClientConfiguration ();
-  private boolean joinGameIsInProgress = false;
+  private boolean isJoinGameIsInProgress = false;
 
-  public DefaultJoinGameServerHandler (final MBassador <Event> eventBus)
+  public AbstractJoinGameServerHandler (final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
@@ -77,7 +72,8 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   }
 
   @Override
-  public void join (final String playerName, final String serverAddress, final JoinGameServerListener listener)
+  @OverridingMethodsMustInvokeSuper
+  public final void join (final String playerName, final String serverAddress, final JoinGameServerListener listener)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
@@ -87,70 +83,72 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
     this.listener = listener;
 
     players.clear ();
-
     eventBus.subscribe (this);
+    isJoinGameIsInProgress = true;
 
-    final ConnectToServerRequestEvent event = new ConnectToServerRequestEvent (new DefaultServerConfiguration (
-            serverAddress, NetworkSettings.DEFAULT_TCP_PORT));
+    listener.onJoinStart (playerName, new DefaultServerConfiguration (serverAddress, NetworkSettings.DEFAULT_TCP_PORT));
+  }
 
-    log.info ("Attempting to connect to server... [{}]", event);
-
-    assert listener != null;
-    listener.onJoinStart (playerName, event.getServerConfiguration ());
+  protected final void publishAsync (final Event event)
+  {
+    Arguments.checkIsNotNull (event, "event");
 
     eventBus.publishAsync (event);
-
-    joinGameIsInProgress = true;
   }
 
-  @Handler
-  void onEvent (final ConnectToServerSuccessEvent event)
+  protected final void publishSync (final Event event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
 
-    log.trace ("Event received [{}]", event);
-    log.info ("Successfully connected to server [{}]", event);
-    log.info ("Attempting to join game server... [{}]", event);
+    eventBus.publish (event);
+  }
 
+  protected final boolean isJoinGameIsInProgress ()
+  {
+    return isJoinGameIsInProgress;
+  }
+
+  protected final JoinGameServerListener getListener ()
+  {
     assert listener != null;
-    listener.onConnectToServerSuccess (event.getServerConfiguration ());
-
-    eventBus.publishAsync (new JoinGameServerRequestEvent ());
+    return listener;
   }
 
+  protected final void shutDown ()
+  {
+    eventBus.unsubscribe (this);
+    isJoinGameIsInProgress = false;
+  }
+
+  protected abstract boolean isSelf (final JoinGameServerSuccessEvent event, final String playerName);
+
   @Handler
-  void onEvent (final JoinGameServerSuccessEvent event)
+  final void onEvent (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
+
+    assert playerName != null;
+    if (!isSelf (event, playerName)) return;
+
+    Preconditions.checkIsTrue (isJoinGameIsInProgress,
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.info ("Successfully joined game server [{}]", event);
 
-    assert listener != null;
-    listener.onJoinGameServerSuccess (event.getGameServerConfiguration (), event.getClientConfiguration ());
-
     gameServerConfig = event.getGameServerConfiguration ();
     clientConfig = event.getClientConfiguration ();
 
-    assert playerName != null;
-    final PlayerJoinGameRequestEvent playerJoinGameRequestEvent = new PlayerJoinGameRequestEvent (playerName);
-
-    log.info ("Attempting to join game as a player... [{}]", playerJoinGameRequestEvent);
-
-    eventBus.publishAsync (playerJoinGameRequestEvent);
+    assert listener != null;
+    listener.onJoinGameServerSuccess (event.getGameServerConfiguration (), event.getClientConfiguration (), playerName);
   }
 
   @Handler
-  void onEvent (final PlayerJoinGameSuccessEvent event)
+  final void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
+    Preconditions.checkIsTrue (isJoinGameIsInProgress,
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
@@ -168,7 +166,7 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     eventBus.unsubscribe (this);
 
-    joinGameIsInProgress = false;
+    isJoinGameIsInProgress = false;
 
     assert listener != null;
     players.addAll (event.getPlayersInGame ());
@@ -177,29 +175,10 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
   }
 
   @Handler
-  void onEvent (final ConnectToServerDeniedEvent event)
+  final void onEvent (final JoinGameServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
-
-    log.trace ("Event received [{}]", event);
-    log.error ("Could not connect to server: [{}]", event);
-
-    eventBus.unsubscribe (this);
-
-    joinGameIsInProgress = false;
-
-    assert listener != null;
-    listener.onConnectToServerFailure (event.getServerConfiguration (), event.getReason ());
-  }
-
-  @Handler
-  void onEvent (final JoinGameServerDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
+    Preconditions.checkIsTrue (isJoinGameIsInProgress,
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
@@ -208,17 +187,17 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     eventBus.unsubscribe (this);
 
-    joinGameIsInProgress = false;
+    isJoinGameIsInProgress = false;
 
     assert listener != null;
     listener.onJoinGameServerFailure (event.getClientConfiguration (), event.getReason ());
   }
 
   @Handler
-  void onEvent (final PlayerJoinGameDeniedEvent event)
+  final void onEvent (final PlayerJoinGameDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (joinGameIsInProgress,
+    Preconditions.checkIsTrue (isJoinGameIsInProgress,
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
@@ -236,7 +215,7 @@ public final class DefaultJoinGameServerHandler implements JoinGameServerHandler
 
     eventBus.unsubscribe (this);
 
-    joinGameIsInProgress = false;
+    isJoinGameIsInProgress = false;
 
     assert listener != null;
     listener.onPlayerJoinGameFailure (event.getPlayerName (), event.getReason ());

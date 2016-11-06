@@ -30,6 +30,7 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -198,7 +199,8 @@ public final class DebugEventGenerator
     if (shouldResetPlayers ()) return Optional.absent ();
 
     return Optional.of (new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), nextAvailablePlayerName (),
-            nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0, getRandomCardsInHand ()));
+            PersonSentience.HUMAN, nextAvailablePlayerColor (), nextAvailablePlayerTurnOrder (), 0,
+            getRandomCardsInHand ()));
   }
 
   void generateChatMessageSuccessEvent ()
@@ -256,7 +258,7 @@ public final class DebugEventGenerator
   private static PlayerPacket createRandomPlayer ()
   {
     return new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (), getRandomPlayerName (),
-            getRandomPlayerColor (), getRandomPlayerTurnOrder (), 0, 0);
+            PersonSentience.HUMAN, getRandomPlayerColor (), getRandomPlayerTurnOrder (), 0, 0);
   }
 
   private void resetPlayersKeepUnavailable ()
@@ -296,7 +298,7 @@ public final class DebugEventGenerator
   private ChatMessage createRandomChatMessage ()
   {
     final Author author = new DefaultPlayerPacket (IdGenerator.generateUniqueId ().value (),
-            Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES),
+            Randomness.getRandomElementFrom (RANDOM_PLAYER_NAMES), PersonSentience.HUMAN,
             Randomness.getRandomElementFrom (PlayerColor.VALID_VALUES), 0, 0, 0);
 
     return new DefaultChatMessage (author, createRandomMessageText ());

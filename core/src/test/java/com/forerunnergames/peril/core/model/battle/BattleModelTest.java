@@ -239,8 +239,8 @@ public class BattleModelTest
     final PlayMapModel playMapModel = mockPlayMapModel ();
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
     final PlayerFactory factory = new PlayerFactory ();
-    factory.newPlayerWith ("TestPlayer0");
-    factory.newPlayerWith ("TestPlayer1");
+    factory.newHumanPlayerWith ("TestPlayer0");
+    factory.newHumanPlayerWith ("TestPlayer1");
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
     final Id player0 = playerModel.playerWith ("TestPlayer0");
     final Id player1 = playerModel.playerWith ("TestPlayer1");
@@ -298,8 +298,8 @@ public class BattleModelTest
     final PlayMapModel playMapModel = mockPlayMapModel ();
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
     final PlayerFactory factory = new PlayerFactory ();
-    factory.newPlayerWith ("TestPlayer0");
-    factory.newPlayerWith ("TestPlayer1");
+    factory.newHumanPlayerWith ("TestPlayer0");
+    factory.newHumanPlayerWith ("TestPlayer1");
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
     final Id player0 = playerModel.playerWith ("TestPlayer0");
     final Id player1 = playerModel.playerWith ("TestPlayer1");
@@ -358,8 +358,8 @@ public class BattleModelTest
     final PlayMapModel playMapModel = mockPlayMapModel ();
     final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
     final PlayerFactory factory = new PlayerFactory ();
-    factory.newPlayerWith ("TestPlayer0");
-    factory.newPlayerWith ("TestPlayer1");
+    factory.newHumanPlayerWith ("TestPlayer0");
+    factory.newHumanPlayerWith ("TestPlayer1");
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factory)));
     final Id player0 = playerModel.playerWith ("TestPlayer0");
     final Id player1 = playerModel.playerWith ("TestPlayer1");

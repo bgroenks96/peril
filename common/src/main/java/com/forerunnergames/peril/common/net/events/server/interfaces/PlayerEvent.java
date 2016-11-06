@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
@@ -27,6 +28,8 @@ public interface PlayerEvent extends ServerEvent
   PlayerPacket getPlayer ();
 
   String getPlayerName ();
+
+  PersonSentience getPlayerSentience ();
 
   PlayerColor getPlayerColor ();
 

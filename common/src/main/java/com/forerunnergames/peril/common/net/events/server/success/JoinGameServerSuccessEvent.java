@@ -23,9 +23,9 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.DirectSuccessEvent;
 
-public final class JoinGameServerSuccessEvent implements BroadcastSuccessEvent
+public final class JoinGameServerSuccessEvent implements DirectSuccessEvent
 {
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;
@@ -49,6 +49,11 @@ public final class JoinGameServerSuccessEvent implements BroadcastSuccessEvent
   public ClientConfiguration getClientConfiguration ()
   {
     return clientConfig;
+  }
+
+  public String getClientAddress ()
+  {
+    return clientConfig.getClientAddress ();
   }
 
   @Override

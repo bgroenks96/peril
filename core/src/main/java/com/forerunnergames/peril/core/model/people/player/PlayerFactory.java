@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.core.model.people.player;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
@@ -31,20 +32,28 @@ public final class PlayerFactory
   private final ImmutableSet.Builder <Player> playerSetBuilder = ImmutableSet.builder ();
   private int playerCount = 0;
 
-  static Player create (final String name)
+  static Player createHuman (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
-    return builder (name).build ();
+    return create (name, PersonSentience.HUMAN);
   }
 
-  static Player create (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
+  static Player create (final String name, final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (name, "name");
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    return new PlayerBuilder (name, sentience).build ();
+  }
+
+  static Player createHuman (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
-    return builder (name).color (color).turnOrder (turnOrder).build ();
+    return builder (name, PersonSentience.HUMAN).color (color).turnOrder (turnOrder).build ();
   }
 
   static PlayerFactory from (final ImmutableCollection <Player> players)
@@ -61,28 +70,37 @@ public final class PlayerFactory
     return factory;
   }
 
-  public static PlayerBuilder builder (final String playerName)
+  public static PlayerBuilder builder (final String playerName, final PersonSentience playerSentience)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
 
-    return new PlayerBuilder (playerName);
+    return new PlayerBuilder (playerName, playerSentience);
   }
 
-  public void newPlayerWith (final String name)
+  public void newHumanPlayerWith (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
-    playerSetBuilder.add (create (name));
+    playerSetBuilder.add (createHuman (name));
     playerCount++;
   }
 
-  public void newPlayerWith (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
+  public void newPlayerWith (final String name, final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (name, "name");
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    playerSetBuilder.add (create (name, sentience));
+    playerCount++;
+  }
+
+  public void newHumanPlayerWith (final String name, final PlayerColor color, final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (name, "name");
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
 
-    playerSetBuilder.add (create (name, color, turnOrder));
+    playerSetBuilder.add (createHuman (name, color, turnOrder));
     playerCount++;
   }
 
@@ -112,14 +130,17 @@ public final class PlayerFactory
   {
     private final String name;
     private final Id id;
+    private final PersonSentience sentience;
     private PlayerColor color = PlayerColor.UNKNOWN;
     private PlayerTurnOrder turnOrder = PlayerTurnOrder.UNKNOWN;
 
-    public PlayerBuilder (final String name)
+    public PlayerBuilder (final String name, final PersonSentience sentience)
     {
       Arguments.checkIsNotNull (name, "name");
+      Arguments.checkIsNotNull (sentience, "sentience");
 
       this.name = name;
+      this.sentience = sentience;
       id = IdGenerator.generateUniqueId ();
     }
 
@@ -150,7 +171,7 @@ public final class PlayerFactory
 
     Player build ()
     {
-      return new DefaultPlayer (name, id, color, turnOrder);
+      return new DefaultPlayer (name, id, sentience, color, turnOrder);
     }
   }
 }

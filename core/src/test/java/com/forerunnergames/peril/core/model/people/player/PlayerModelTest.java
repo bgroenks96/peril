@@ -31,9 +31,11 @@ import static org.mockito.Mockito.when;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.Result.ReturnStatus;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
@@ -138,7 +140,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerColor color = PlayerColor.TEAL;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").color (color).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer", PersonSentience.HUMAN).color (color).toFactory ());
 
     assertTrue (playerModel.existsPlayerWith (color));
   }
@@ -147,7 +149,7 @@ public class PlayerModelTest
   public void testExistsPlayerWithId ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final Player player = PlayerFactory.create ("TestPlayer");
+    final Player player = PlayerFactory.createHuman ("TestPlayer");
 
     playerModel.requestToAdd (factoryFrom (player));
 
@@ -160,7 +162,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String name = "TestPlayer";
 
-    playerModel.requestToAdd (PlayerFactory.builder (name).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder (name, PersonSentience.HUMAN).toFactory ());
 
     assertTrue (playerModel.existsPlayerWith (name));
   }
@@ -171,7 +173,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String name = "TestPlayer";
 
-    playerModel.requestToAdd (PlayerFactory.builder (name).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder (name, PersonSentience.HUMAN).toFactory ());
 
     assertTrue (playerModel.existsPlayerWithName (name));
   }
@@ -182,7 +184,8 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.THIRD;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").turnOrder (turnOrder).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer", PersonSentience.HUMAN).turnOrder (turnOrder)
+            .toFactory ());
 
     assertTrue (playerModel.existsPlayerWith (turnOrder));
   }
@@ -193,7 +196,7 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerColor color = PlayerColor.UNKNOWN;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").color (color).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer", PersonSentience.HUMAN).color (color).toFactory ());
 
     assertFalse (playerModel.existsPlayerWith (color));
   }
@@ -204,7 +207,8 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.UNKNOWN;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").turnOrder (turnOrder).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer", PersonSentience.HUMAN).turnOrder (turnOrder)
+            .toFactory ());
 
     assertFalse (playerModel.existsPlayerWith (turnOrder));
   }
@@ -246,9 +250,9 @@ public class PlayerModelTest
   @Test
   public void testGetPlayers ()
   {
-    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("TestPlayer1"),
-                                                                   PlayerFactory.create ("TestPlayer2"),
-                                                                   PlayerFactory.create ("TestPlayer3"));
+    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.createHuman ("TestPlayer1"),
+                                                                   PlayerFactory.createHuman ("TestPlayer2"),
+                                                                   PlayerFactory.createHuman ("TestPlayer3"));
 
     final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size ());
 
@@ -264,15 +268,15 @@ public class PlayerModelTest
   @Test
   public void testGetAllPlayersExcept ()
   {
-    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.create ("TestPlayer1"),
-                                                                   PlayerFactory.create ("TestPlayer2"),
-                                                                   PlayerFactory.create ("TestPlayer3"));
+    final ImmutableSet <Player> expectedPlayers = ImmutableSet.of (PlayerFactory.createHuman ("TestPlayer1"),
+                                                                   PlayerFactory.createHuman ("TestPlayer2"),
+                                                                   PlayerFactory.createHuman ("TestPlayer3"));
 
     final PlayerModel playerModel = createPlayerModelWithLimitOf (expectedPlayers.size () + 1);
 
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (PlayerFactory.from (expectedPlayers))));
 
-    final Player unwantedPlayer = PlayerFactory.create ("TestPlayer4");
+    final Player unwantedPlayer = PlayerFactory.createHuman ("TestPlayer4");
 
     assertFalse (Result
             .anyStatusFailed (playerModel.requestToAdd (PlayerFactory.from (ImmutableSet.of (unwantedPlayer)))));
@@ -452,8 +456,9 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final PlayerColor player1Color = PlayerColor.CYAN;
-    final Player player1 = PlayerFactory.builder ("TestPlayer1").color (player1Color).build ();
-    final Player player2 = PlayerFactory.builder ("TestPlayer2").color (PlayerColor.GOLD).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1", PersonSentience.HUMAN).color (player1Color).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2", PersonSentience.HUMAN).color (PlayerColor.GOLD)
+            .build ();
 
     playerModel.requestToAdd (factoryFrom (player1));
     playerModel.requestToAdd (factoryFrom (player2));
@@ -466,9 +471,10 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final Id player1Id = IdGenerator.generateUniqueId ();
-    final Player player1 = new DefaultPlayer ("TestPlayer1", player1Id, PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
-    final Player player2 = new DefaultPlayer ("TestPlayer2", IdGenerator.generateUniqueId (), PlayerColor.UNKNOWN,
+    final Player player1 = new DefaultPlayer ("TestPlayer1", player1Id, PersonSentience.HUMAN, PlayerColor.UNKNOWN,
             PlayerTurnOrder.UNKNOWN);
+    final Player player2 = new DefaultPlayer ("TestPlayer2", IdGenerator.generateUniqueId (), PersonSentience.HUMAN,
+            PlayerColor.UNKNOWN, PlayerTurnOrder.UNKNOWN);
 
     playerModel.requestToAdd (factoryFrom (player1));
     playerModel.requestToAdd (factoryFrom (player2));
@@ -481,8 +487,10 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final PlayerTurnOrder player1TurnOrder = PlayerTurnOrder.NINTH;
-    final Player player1 = PlayerFactory.builder ("TestPlayer1").turnOrder (player1TurnOrder).build ();
-    final Player player2 = PlayerFactory.builder ("TestPlayer2").turnOrder (PlayerTurnOrder.SEVENTH).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1", PersonSentience.HUMAN).turnOrder (player1TurnOrder)
+            .build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2", PersonSentience.HUMAN)
+            .turnOrder (PlayerTurnOrder.SEVENTH).build ();
 
     playerModel.requestToAdd (factoryFrom (player1));
     playerModel.requestToAdd (factoryFrom (player2));
@@ -539,8 +547,10 @@ public class PlayerModelTest
   public void testRequestAddPlayerFailedWithDuplicateColor ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Player player1 = PlayerFactory.builder ("TestPlayer1").color (PlayerColor.BLUE).build ();
-    final Player player2 = PlayerFactory.builder ("TestPlayer2").color (PlayerColor.BLUE).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1", PersonSentience.HUMAN).color (PlayerColor.BLUE)
+            .build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2", PersonSentience.HUMAN).color (PlayerColor.BLUE)
+            .build ();
 
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factoryFrom (player1))));
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player2));
@@ -552,8 +562,10 @@ public class PlayerModelTest
   public void testRequestAddPlayerFailedWithDuplicateTurnOrder ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
-    final Player player1 = PlayerFactory.builder ("TestPlayer1").turnOrder (PlayerTurnOrder.THIRD).build ();
-    final Player player2 = PlayerFactory.builder ("TestPlayer2").turnOrder (PlayerTurnOrder.THIRD).build ();
+    final Player player1 = PlayerFactory.builder ("TestPlayer1", PersonSentience.HUMAN)
+            .turnOrder (PlayerTurnOrder.THIRD).build ();
+    final Player player2 = PlayerFactory.builder ("TestPlayer2", PersonSentience.HUMAN)
+            .turnOrder (PlayerTurnOrder.THIRD).build ();
 
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factoryFrom (player1))));
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player2));
@@ -568,8 +580,8 @@ public class PlayerModelTest
 
     addNPlayersTo (playerModel, MAX_PLAYERS);
 
-    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (PlayerFactory.builder ("TestPlayerX")
-            .toFactory ());
+    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (PlayerFactory
+            .builder ("TestPlayerX", PersonSentience.HUMAN).toFactory ());
     assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL));
   }
 
@@ -578,8 +590,8 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     final String duplicateName = "TestPlayer";
-    final Player player1 = PlayerFactory.create (duplicateName, PlayerColor.PINK, PlayerTurnOrder.EIGHTH);
-    final Player player2 = PlayerFactory.create (duplicateName, PlayerColor.BLUE, PlayerTurnOrder.THIRD);
+    final Player player1 = PlayerFactory.createHuman (duplicateName, PlayerColor.PINK, PlayerTurnOrder.EIGHTH);
+    final Player player2 = PlayerFactory.createHuman (duplicateName, PlayerColor.BLUE, PlayerTurnOrder.THIRD);
 
     assertFalse (Result.anyStatusFailed (playerModel.requestToAdd (factoryFrom (player1))));
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player2));
@@ -592,10 +604,11 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = "";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player));
-    assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (Strings.format ("{}", singleResultFrom (results).getFailureReason ()), singleResultFrom (results)
+            .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
     assertTrue (playerModel.isEmpty ());
   }
 
@@ -604,7 +617,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = "!";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player));
     assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -616,7 +629,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = "   \r\r\t\t\n\n     \b\b";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player)))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -628,7 +641,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = "              ";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player)))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -640,7 +653,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = "Test  Player";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player)))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -652,7 +665,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = " TestPlayer";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player)))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -664,7 +677,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final String invalidName = "TestPlayer ";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player)))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -679,7 +692,7 @@ public class PlayerModelTest
             + "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer"
             + "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer"
             + "TestPlayerTestPlayerTestPlayerTestPlayerTestPlayerTestPlayer";
-    final Player player = PlayerFactory.create (invalidName);
+    final Player player = PlayerFactory.createHuman (invalidName);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player)))
             .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
@@ -693,7 +706,7 @@ public class PlayerModelTest
     final String name = "TestPlayer";
     final PlayerColor color = PlayerColor.TEAL;
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIFTH;
-    final Player player = PlayerFactory.create (name, color, turnOrder);
+    final Player player = PlayerFactory.createHuman (name, color, turnOrder);
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player))).succeeded ());
     assertTrue (playerModel.playerCountIs (1));
@@ -727,7 +740,7 @@ public class PlayerModelTest
 
     final PlayerColor color = PlayerColor.PINK;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").color (color).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer", PersonSentience.HUMAN).color (color).toFactory ());
     playerModel.removeByColor (color);
 
     assertFalse (playerModel.existsPlayerWith (color));
@@ -745,7 +758,7 @@ public class PlayerModelTest
   public void testRemovePlayerByIdSuccessful ()
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
-    final Player player = PlayerFactory.create ("TestPlayer");
+    final Player player = PlayerFactory.createHuman ("TestPlayer");
     final Id id = player.getId ();
 
     playerModel.requestToAdd (factoryFrom (player));
@@ -796,7 +809,8 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (1);
     final PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
 
-    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer").turnOrder (turnOrder).toFactory ());
+    playerModel.requestToAdd (PlayerFactory.builder ("TestPlayer", PersonSentience.HUMAN).turnOrder (turnOrder)
+            .toFactory ());
     playerModel.removeByTurnOrder (turnOrder);
 
     assertFalse (playerModel.existsPlayerWith (turnOrder));
@@ -898,7 +912,7 @@ public class PlayerModelTest
 
     for (int i = 1; i <= playerCount; ++i)
     {
-      final Player player = PlayerFactory.create ("TestPlayer" + i);
+      final Player player = PlayerFactory.createHuman ("TestPlayer" + i);
 
       playerBuilder.add (player);
 
@@ -915,7 +929,7 @@ public class PlayerModelTest
     assertTrue (playerModel.isEmpty ());
     assertTrue (playerModel.getPlayerLimit () >= 1);
 
-    final Player player = PlayerFactory.create ("TestPlayer");
+    final Player player = PlayerFactory.createHuman ("TestPlayer");
 
     assertTrue (singleResultFrom (playerModel.requestToAdd (factoryFrom (player))).succeeded ());
     assertTrue (playerModel.getPlayerCount () == 1);

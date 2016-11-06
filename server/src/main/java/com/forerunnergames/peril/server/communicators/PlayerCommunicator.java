@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +19,14 @@ package com.forerunnergames.peril.server.communicators;
 
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping;
+import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.client.ClientCommunicator;
 
 public interface PlayerCommunicator extends ClientCommunicator
 {
-  void sendToPlayer (final PlayerPacket player, final Object msg, final ClientPlayerMapping mapping);
+  void sendToPlayer (final PlayerPacket player, final Event message, final ClientPlayerMapping mapping);
 
-  void sendToAllPlayers (final Object msg, final ClientPlayerMapping mapping);
+  void sendToAllPlayers (final Event message, final ClientPlayerMapping mapping);
 
-  void sendToAllPlayersExcept (final PlayerPacket player, final Object msg, final ClientPlayerMapping mapping);
+  void sendToAllPlayersExcept (final PlayerPacket player, final Event message, final ClientPlayerMapping mapping);
 }

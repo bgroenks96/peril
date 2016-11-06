@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.server.controllers;
 
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
@@ -25,7 +26,9 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.Remote;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -86,6 +89,7 @@ public final class ClientPlayerMapping
   {
     Arguments.checkIsNotNull (player, "player");
 
+    syncPlayerData ();
     return Optional.fromNullable (clientsToPlayers.inverse ().get (player));
   }
 
@@ -96,6 +100,7 @@ public final class ClientPlayerMapping
 
   public Optional <PlayerPacket> playerWith (final String name)
   {
+    syncPlayerData ();
     for (final PlayerPacket player : clientsToPlayers.values ())
     {
       if (player.hasName (name)) return Optional.of (player);
@@ -103,19 +108,37 @@ public final class ClientPlayerMapping
     return Optional.absent ();
   }
 
-  public ImmutableSet <PlayerPacket> players ()
+  public ImmutableSet <PlayerPacket> humanPlayers ()
   {
     syncPlayerData ();
-    return ImmutableSet.copyOf (clientsToPlayers.values ());
+    return ImmutableSet.copyOf (Collections2.filter (clientsToPlayers.values (), new PlayersBySentiencePredicate (
+            PersonSentience.HUMAN)));
   }
 
-  public ImmutableSet <PlayerPacket> playersExcept (final PlayerPacket player)
+  public ImmutableSet <PlayerPacket> aiPlayers ()
   {
-    return ImmutableSet.copyOf (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)));
+    syncPlayerData ();
+    return ImmutableSet.copyOf (Collections2.filter (clientsToPlayers.values (), new PlayersBySentiencePredicate (
+            PersonSentience.AI)));
+  }
+
+  public ImmutableSet <PlayerPacket> humanPlayersExcept (final PlayerPacket player)
+  {
+    syncPlayerData ();
+    return ImmutableSet.copyOf (Sets.filter (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)),
+                                             new PlayersBySentiencePredicate (PersonSentience.HUMAN)));
+  }
+
+  public ImmutableSet <PlayerPacket> aiPlayersExcept (final PlayerPacket player)
+  {
+    syncPlayerData ();
+    return ImmutableSet.copyOf (Sets.filter (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)),
+                                             new PlayersBySentiencePredicate (PersonSentience.AI)));
   }
 
   public ImmutableSet <Remote> clients ()
   {
+    syncPlayerData ();
     return ImmutableSet.copyOf (clientsToPlayers.keySet ());
   }
 
@@ -147,6 +170,24 @@ public final class ClientPlayerMapping
   public String toString ()
   {
     return clientsToPlayers.toString ();
+  }
+
+  private static class PlayersBySentiencePredicate implements Predicate <PlayerPacket>
+  {
+    private final PersonSentience sentience;
+
+    public PlayersBySentiencePredicate (final PersonSentience sentience)
+    {
+      Arguments.checkIsNotNull (sentience, "sentience");
+
+      this.sentience = sentience;
+    }
+
+    @Override
+    public boolean apply (final PlayerPacket input)
+    {
+      return input.has (sentience);
+    }
   }
 
   /**

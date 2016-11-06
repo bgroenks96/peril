@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.net.events.server.defaults;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -52,6 +53,12 @@ public abstract class AbstractPlayerEvent implements PlayerEvent
   public final String getPlayerName ()
   {
     return player.getName ();
+  }
+
+  @Override
+  public final PersonSentience getPlayerSentience ()
+  {
+    return player.getSentience ();
   }
 
   @Override

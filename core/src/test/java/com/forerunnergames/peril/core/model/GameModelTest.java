@@ -37,7 +37,7 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
@@ -314,7 +314,7 @@ public class GameModelTest
     initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (10)));
     for (int i = 0; i < 10; ++i)
     {
-      gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
+      gameModel.handlePlayerJoinGameRequest (new HumanPlayerJoinGameRequestEvent ("TestPlayer" + i));
     }
     assertTrue (gameModel.playerCountIs (10));
     assertTrue (countryGraphModel.countryCountIs (10));
@@ -1160,7 +1160,7 @@ public class GameModelTest
 
     final String name = "TestPlayerX";
 
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
+    gameModel.handlePlayerJoinGameRequest (new HumanPlayerJoinGameRequestEvent (name));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameDeniedEvent.class));
     assertThat (playerNameFrom (eventHandler.lastEventOfType (PlayerJoinGameDeniedEvent.class)), is (name));
@@ -1173,7 +1173,7 @@ public class GameModelTest
   {
     final String name = "TestPlayer";
 
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent (name));
+    gameModel.handlePlayerJoinGameRequest (new HumanPlayerJoinGameRequestEvent (name));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameSuccessEvent.class));
     assertEquals (eventHandler.lastEventOfType (PlayerJoinGameSuccessEvent.class).getPlayerName (), name);
@@ -1238,7 +1238,7 @@ public class GameModelTest
 
     for (int i = 1; i <= playerLimit; i++)
     {
-      gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer" + i));
+      gameModel.handlePlayerJoinGameRequest (new HumanPlayerJoinGameRequestEvent ("TestPlayer" + i));
     }
 
     assertTrue (gameModel.isFull ());
@@ -1249,7 +1249,7 @@ public class GameModelTest
     assertTrue (gameModel.isEmpty ());
     assertTrue (gameModel.isNotFull ());
 
-    gameModel.handlePlayerJoinGameRequest (new PlayerJoinGameRequestEvent ("TestPlayer"));
+    gameModel.handlePlayerJoinGameRequest (new HumanPlayerJoinGameRequestEvent ("TestPlayer"));
 
     assertTrue (gameModel.playerCountIs (1));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameSuccessEvent.class));

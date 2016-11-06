@@ -18,9 +18,13 @@
 
 package com.forerunnergames.peril.core.model.people.person;
 
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.common.Author;
 import com.forerunnergames.tools.common.assets.Asset;
 
 public interface Person extends Asset, Author
 {
+  PersonSentience getSentience ();
+
+  boolean has (final PersonSentience sentience);
 }

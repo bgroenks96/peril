@@ -56,9 +56,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
   private final MenuScreenWidgetFactory widgetFactory;
   private final Dialog errorDialog;
   private final TextField playerNameTextField;
-  private final TextField clanNameTextField;
+  private final TextField clanAcronymTextField;
   private final TextField serverAddressTextField;
-  private final CheckBox clanNameCheckBox;
+  private final CheckBox clanAcronymCheckBox;
   private final Label playerSettingsSectionTitleLabel;
   private final Label playerNameSettingLabel;
   private final Label clanTagSettingLabel;
@@ -86,21 +86,21 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     addSubTitle ("CLASSIC MODE");
 
     playerNameTextField = widgetFactory.createPlayerNameTextField ();
-    clanNameTextField = widgetFactory.createClanNameTextField ();
+    clanAcronymTextField = widgetFactory.createClanAcronymTextField ();
     serverAddressTextField = widgetFactory.createServerAddressTextField ();
 
-    clanNameCheckBox = widgetFactory.createClanNameCheckBox (new ChangeListener ()
+    clanAcronymCheckBox = widgetFactory.createClanAcronymCheckBox (new ChangeListener ()
     {
       @Override
       public void changed (final ChangeEvent event, final Actor actor)
       {
-        clanNameTextField.setText (clanNameCheckBox.isChecked () ? clanNameTextField.getText () : "");
-        clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
+        clanAcronymTextField.setText (clanAcronymCheckBox.isChecked () ? clanAcronymTextField.getText () : "");
+        clanAcronymTextField.setDisabled (!clanAcronymCheckBox.isChecked ());
       }
     });
 
-    clanNameCheckBox.setChecked (!clanNameTextField.getText ().isEmpty ());
-    clanNameTextField.setDisabled (!clanNameCheckBox.isChecked ());
+    clanAcronymCheckBox.setChecked (!clanAcronymTextField.getText ().isEmpty ());
+    clanAcronymTextField.setDisabled (!clanAcronymCheckBox.isChecked ());
 
     playerSettingsSectionTitleLabel = widgetFactory.createPlayerSettingsSectionTitleLabel ();
     playerNameSettingLabel = widgetFactory.createPlayerNameSettingLabel ();
@@ -122,8 +122,8 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     playerSettingsTable.add ().expandX ().fill ();
     playerSettingsTable.row ();
     playerSettingsTable.add (clanTagSettingLabel).size (150, 40).fill ().padLeft (90).left ().spaceRight (10);
-    playerSettingsTable.add (clanNameCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
-    playerSettingsTable.add (clanNameTextField).size (74, 28).fill ().left ().spaceLeft (10);
+    playerSettingsTable.add (clanAcronymCheckBox).size (18, 18).fill ().left ().spaceLeft (10).spaceRight (10);
+    playerSettingsTable.add (clanAcronymTextField).size (74, 28).fill ().left ().spaceLeft (10);
     playerSettingsTable.add ().width (102).fill ();
     playerSettingsTable.add ().expandX ().fill ();
     verticalGroup.addActor (playerSettingsTable);
@@ -176,19 +176,19 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
           return;
         }
 
-        final String clanName = clanNameTextField.getText ();
+        final String clanAcronym = clanAcronymTextField.getText ();
 
-        if (!clanNameTextField.isDisabled () && !GameSettings.isValidClanName (clanName))
+        if (!clanAcronymTextField.isDisabled () && !GameSettings.isValidHumanClanAcronym (clanAcronym))
         {
           errorDialog.setMessage (new DefaultMessage (Strings
-                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanName,
-                           GameSettings.VALID_CLAN_NAME_DESCRIPTION)));
+                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanAcronym,
+                           GameSettings.VALID_CLAN_ACRONYM_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
 
-        final String playerNameWithOptionalClanTag = GameSettings.getPlayerNameWithOptionalClanTag (playerName,
-                                                                                                    clanName);
+        final String playerNameWithOptionalClanTag = GameSettings.getHumanPlayerNameWithOptionalClanTag (playerName,
+                                                                                                    clanAcronym);
         final String serverAddress = serverAddressTextField.getText ();
 
         if (!NetworkSettings.isValidServerAddress (serverAddress))
@@ -217,9 +217,9 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     expandMenuBar ();
 
     playerNameTextField.setStyle (widgetFactory.createPlayerNameTextFieldStyle ());
-    clanNameTextField.setStyle (widgetFactory.createClanNameTextFieldStyle ());
+    clanAcronymTextField.setStyle (widgetFactory.createClanAcronymTextFieldStyle ());
     serverAddressTextField.setStyle (widgetFactory.createServerAddressTextFieldStyle ());
-    clanNameCheckBox.setStyle (widgetFactory.createClanNameCheckBoxStyle ());
+    clanAcronymCheckBox.setStyle (widgetFactory.createClanAcronymCheckBoxStyle ());
     playerSettingsSectionTitleLabel.setStyle (widgetFactory.createMenuSettingSectionTitleLabelStyle ());
     playerNameSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     clanTagSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());

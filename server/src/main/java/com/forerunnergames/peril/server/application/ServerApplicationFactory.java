@@ -18,9 +18,12 @@
 
 package com.forerunnergames.peril.server.application;
 
+import com.forerunnergames.peril.ai.application.AiApplication;
+import com.forerunnergames.peril.ai.net.AiClientCommunicator;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
@@ -52,9 +55,10 @@ import com.forerunnergames.peril.core.model.playmap.io.PlayMapModelDataFactoryCr
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
+import com.forerunnergames.peril.server.communicators.AiPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultCoreCommunicator;
-import com.forerunnergames.peril.server.communicators.DefaultPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
+import com.forerunnergames.peril.server.communicators.HumanPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
 import com.forerunnergames.peril.server.kryonet.KryonetServer;
@@ -83,14 +87,14 @@ public final class ServerApplicationFactory
   {
     Arguments.checkIsNotNull (args, "args");
 
-    final MBassador <Event> eventBus = EventBusFactory.create ();
+    final MBassador <Event> serverEventBus = EventBusFactory.create ();
 
     final Server server = new KryonetServer ();
 
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
 
     final ServerController serverController = new EventBasedServerController (server, args.serverTcpPort,
-            KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
+            KryonetRegistration.CLASSES, serverEventBus, mainThreadExecutor);
 
     final PlayMapMetadataFinder playMapMetadataFinder = CorePlayMapMetadataFinderFactory.create (args.gameMode);
     final PlayMapMetadata playMapMetadata = playMapMetadataFinder.find (args.playMapName);
@@ -111,8 +115,11 @@ public final class ServerApplicationFactory
 
     final ImmutableSet <Card> cards = CardModelDataFactoryCreator.create (args.gameMode).createCards (playMapMetadata);
 
-    final GameRules gameRules = GameRulesFactory.create (args.gameMode, args.playerLimit, args.winPercentage,
-                                                         countryFactory.getCountryCount (),
+    final PersonLimits personLimits = PersonLimits.builder ().humanPlayers (args.humanPlayerLimit)
+            .aiPlayers (args.aiPlayerLimit).spectators (args.spectatorLimit).build ();
+
+    final GameRules gameRules = GameRulesFactory.create (args.gameMode, personLimits.getPlayerLimit (),
+                                                         args.winPercentage, countryFactory.getCountryCount (),
                                                          args.initialCountryAssignment);
 
     final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
@@ -123,12 +130,12 @@ public final class ServerApplicationFactory
     final BattleModel battleModel = new DefaultBattleModel (playMapModel);
     final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (gameRules);
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
-            .cardModel (cardModel).battleModel (battleModel).playerTurnModel (playerTurnModel).eventBus (eventBus)
-            .build ();
+            .cardModel (cardModel).battleModel (battleModel).playerTurnModel (playerTurnModel)
+            .eventBus (serverEventBus).build ();
     final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
-    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, args.playerLimit,
-            args.spectatorLimit, args.winPercentage, args.initialCountryAssignment, playMapMetadata, gameRules);
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, personLimits, args.winPercentage,
+            args.initialCountryAssignment, playMapMetadata, gameRules);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
@@ -139,12 +146,17 @@ public final class ServerApplicationFactory
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (args.gameServerName,
             args.gameServerType, gameConfig, serverConfig);
 
-    final Controller multiplayerController = new MultiplayerController (gameServerConfig, serverController,
-            new DefaultPlayerCommunicator (serverController), new DefaultSpectatorCommunicator (serverController),
-            new DefaultCoreCommunicator (eventBus), eventBus);
+    final MBassador <Event> aiEventBus = EventBusFactory.create ();
 
-    return new ServerApplication (gameStateMachine, eventBus, mainThreadExecutor, serverController,
-            multiplayerController);
+    final Controller multiplayerController = new MultiplayerController (gameServerConfig, serverController,
+            new HumanPlayerCommunicator (serverController), new AiPlayerCommunicator (new AiClientCommunicator (
+                    aiEventBus)), new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (
+                    serverEventBus), serverEventBus);
+
+    final AiApplication aiApplication = new AiApplication (gameServerConfig, serverEventBus, aiEventBus);
+
+    return new ServerApplication (gameStateMachine, serverEventBus, mainThreadExecutor, serverController,
+            aiApplication, multiplayerController);
   }
 
   private ServerApplicationFactory ()

@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame;
 
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.JoinGameServerListener;
+import com.forerunnergames.peril.common.JoinGameServerListener;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 
 public interface CreateGameServerListener extends JoinGameServerListener

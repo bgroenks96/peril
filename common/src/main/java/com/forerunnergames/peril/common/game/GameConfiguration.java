@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
 
@@ -27,6 +28,8 @@ public interface GameConfiguration
   GameMode getGameMode ();
 
   int getPlayerLimit ();
+
+  int getPlayerLimitFor (final PersonSentience sentience);
 
   int getSpectatorLimit ();
 
