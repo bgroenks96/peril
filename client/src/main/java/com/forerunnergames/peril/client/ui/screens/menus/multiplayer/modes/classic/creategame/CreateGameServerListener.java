@@ -23,9 +23,9 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 
 public interface CreateGameServerListener extends JoinGameServerListener
 {
-  void onCreateStart (final GameServerConfiguration configuration, final String playerName);
+  void onCreateStart (final String playerName, final GameServerConfiguration config);
 
-  void onCreateFinish (final GameServerConfiguration configuration);
+  void onCreateFinish (final GameServerConfiguration config);
 
-  void onCreateFailure (final GameServerConfiguration configuration, final String reason);
+  void onCreateFailure (final GameServerConfiguration config, final String reason);
 }

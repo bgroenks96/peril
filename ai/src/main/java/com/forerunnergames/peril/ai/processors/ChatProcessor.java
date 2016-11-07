@@ -81,6 +81,8 @@ import net.engio.mbassy.listener.Handler;
 
 public final class ChatProcessor extends AbstractAiProcessor
 {
+  private static final double CHAT_PROBABILITY = 0.25; // How frequently do you want me to talk?
+
   public ChatProcessor (final String playerName,
                         final GameServerConfiguration gameServerConfig,
                         final MBassador <Event> eventBus)
@@ -93,7 +95,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
 
     say ("Good luck, and may the best bot win.");
   }
@@ -103,10 +105,21 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
 
-    sayIfNotSelf (event, "Hello {}.", event.getPlayerName ());
-    sayIfNotSelf (event, "Ready to lose?");
+    final String playerName = event.getPlayerName ();
+
+    sayOneOfWhenOther (event,
+                       Strings.format ("Hi {}.", deTag (playerName)),
+                       Strings.format ("Hello {}. Ready to lose?", deTag (playerName),
+                                       Strings.format ("Ready to lose, {}?")));
+
+    if (hasClan (playerName))
+    {
+      sayEitherOrWhenOther (event, Strings.format ("Members of {} are welcome here.", clanFrom (playerName)),
+                            Strings.format ("{}... hmmmm... I don't like the {} clan.", clanFrom (playerName)));
+
+    }
   }
 
   @Handler
@@ -114,7 +127,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -122,7 +135,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -130,9 +143,9 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
 
-    sayIfSelf (event, "Uh oh. My programmer didn't teach me how to claim countries yet.");
+    alwaysSayWhenSelf (event, "Uh oh. My programmer didn't teach me how to claim countries yet.");
   }
 
   @Handler
@@ -140,7 +153,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -148,7 +161,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -156,7 +169,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -164,7 +177,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -172,9 +185,9 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
 
-    sayIfSelf (event, "Uh oh. My programmer didn't teach me how to reinforce countries yet.");
+    alwaysSayWhenSelf (event, "Uh oh. My programmer didn't teach me how to reinforce countries yet.");
   }
 
   @Handler
@@ -182,7 +195,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -190,7 +203,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -198,7 +211,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -206,7 +219,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -214,7 +227,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -222,7 +235,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -230,7 +243,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -238,7 +251,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -246,7 +259,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -254,7 +267,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -262,7 +275,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -270,7 +283,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -278,7 +291,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -286,7 +299,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -294,7 +307,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -302,7 +315,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -310,7 +323,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -318,7 +331,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -326,7 +339,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -334,7 +347,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -342,7 +355,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -350,7 +363,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -358,7 +371,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -366,7 +379,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -374,7 +387,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -382,7 +395,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -390,7 +403,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -398,7 +411,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -406,7 +419,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -414,7 +427,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -422,7 +435,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -430,7 +443,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -438,7 +451,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -446,7 +459,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -454,7 +467,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -462,7 +475,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -470,7 +483,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -478,7 +491,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_LAST)
@@ -486,7 +499,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.trace ("{}] received event [{}].", getPlayerName (), event);
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_LAST)
@@ -494,32 +507,60 @@ public final class ChatProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.trace ("{}] received event [{}].", getPlayerName (), event);
   }
 
-  private void say (final String message, final Object... messageArgs)
+  // Guaranteed to say the message when the specified event is referring to self.
+  private void alwaysSayWhenSelf (final PlayerEvent event, final String message, final Object... messageArgs)
   {
-    send (createChatRequest (message, messageArgs), getPlayerName ());
+    if (isSelf (event)) alwaysSay (message, messageArgs);
   }
 
-  private void sayIfSelf (final PlayerEvent event, final String message, final Object... messageArgs)
+  // Has a chance of saying the message with a probability of CHAT_PROBABILITY, but only when the specified event is
+  // referring to self.
+  private void sayWhenSelf (final PlayerEvent event, final String message, final Object... messageArgs)
   {
     if (isSelf (event)) say (message, messageArgs);
   }
 
-  private void sayIfNotSelf (final PlayerEvent event, final String message, final Object... messageArgs)
+  // Has a chance of saying the message with a probability of CHAT_PROBABILITY, but only when the specified event is NOT
+  // referring to self.
+  private void sayWhenOther (final PlayerEvent event, final String message, final Object... messageArgs)
   {
     if (!isSelf (event)) say (message, messageArgs);
   }
 
-  private void sayEitherOrIfSelf (final PlayerEvent event, final String message1, final String message2)
+  // Has a (CHAT_PROBABILITY / 2.0) chance of saying one of the two specified messages, but only when the specified
+  // event is referring to self.
+  private void sayEitherOrWhenSelf (final PlayerEvent event, final String message1, final String message2)
   {
-    sayIfSelf (event, Randomness.getRandomElementFrom (message1, message2));
+    sayWhenSelf (event, Randomness.getRandomElementFrom (message1, message2));
   }
 
-  private void sayEitherOrIfNotSelf (final PlayerEvent event, final String message1, final String message2)
+  // Has a (CHAT_PROBABILITY / 2.0) chance of saying one of the two specified messages, but only when the specified
+  // event is NOT referring to self.
+  private void sayEitherOrWhenOther (final PlayerEvent event, final String message1, final String message2)
   {
-    sayIfNotSelf (event, Randomness.getRandomElementFrom (message1, message2));
+    sayWhenOther (event, Randomness.getRandomElementFrom (message1, message2));
+  }
+
+  // Has a (CHAT_PROBABILITY / messages.length) chance of saying one of the specified messages, but only when the
+  // specified event is NOT referring to self.
+  private void sayOneOfWhenOther (final PlayerEvent event, final String... messages)
+  {
+    sayWhenOther (event, Randomness.getRandomElementFrom (messages));
+  }
+
+  // Has a chance of saying the message with a probability of CHAT_PROBABILITY, regardless of self-identity.
+  private void say (final String message, final Object... messageArgs)
+  {
+    if (shouldAct (CHAT_PROBABILITY)) send (createChatRequest (message, messageArgs), getPlayerName ());
+  }
+
+  // Guaranteed to always say the message (probability = 1.0), regardless of self-identity.
+  private void alwaysSay (final String message, final Object... messageArgs)
+  {
+    send (createChatRequest (message, messageArgs), getPlayerName ());
   }
 
   private ChatMessageRequestEvent createChatRequest (final String message, final Object... messageArgs)

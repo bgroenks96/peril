@@ -18,7 +18,11 @@
 package com.forerunnergames.peril.ai.net;
 
 import com.forerunnergames.peril.common.AbstractJoinGameServerHandler;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -32,11 +36,38 @@ public final class AiJoinGameServerHandler extends AbstractJoinGameServerHandler
   }
 
   @Override
-  protected boolean isSelf (final JoinGameServerSuccessEvent event, final String playerName)
+  protected boolean isSelf (final JoinGameServerSuccessEvent event, final String selfPlayerName)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (selfPlayerName, "playerName");
 
-    return event.getClientAddress ().equals (playerName);
+    return event.getClientAddress ().equals (selfPlayerName);
+  }
+
+  @Override
+  protected boolean isSelf (final JoinGameServerDeniedEvent event, final String selfPlayerName)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
+
+    return event.getClientAddress ().equals (selfPlayerName);
+  }
+
+  @Override
+  protected boolean isSelf (final PlayerJoinGameSuccessEvent event, final String selfPlayerName)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
+
+    return event.hasIdentity (PersonIdentity.SELF) && selfPlayerName.equals (event.getPlayerName ());
+  }
+
+  @Override
+  protected boolean isSelf (final PlayerJoinGameDeniedEvent event, final String selfPlayerName)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
+
+    return event.getPlayerName ().equals (selfPlayerName);
   }
 }

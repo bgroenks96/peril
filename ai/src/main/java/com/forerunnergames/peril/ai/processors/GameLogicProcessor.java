@@ -88,7 +88,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -96,7 +96,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -104,7 +104,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -112,7 +112,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -120,7 +120,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -128,7 +128,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -136,7 +136,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -144,7 +144,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -152,7 +152,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -160,7 +160,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -168,7 +168,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -176,7 +176,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -184,7 +184,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -192,7 +192,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -200,7 +200,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -208,7 +208,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -216,7 +216,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -224,7 +224,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -232,7 +232,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -240,7 +240,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -248,7 +248,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -256,7 +256,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -264,7 +264,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -272,7 +272,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -280,7 +280,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -288,7 +288,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -296,7 +296,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -304,7 +304,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -312,7 +312,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -320,7 +320,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -328,7 +328,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -336,7 +336,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -344,7 +344,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -352,7 +352,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -360,7 +360,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -368,7 +368,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -376,7 +376,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -384,7 +384,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -392,7 +392,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -400,7 +400,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -408,7 +408,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -416,7 +416,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -424,7 +424,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -432,7 +432,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -440,7 +440,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -448,7 +448,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -456,7 +456,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -464,7 +464,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_LAST)
@@ -472,7 +472,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.trace ("{}] received event [{}].", getPlayerName (), event);
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_LAST)
@@ -480,6 +480,6 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.trace ("{}] received event [{}].", getPlayerName (), event);
   }
 }

@@ -45,7 +45,11 @@ import com.forerunnergames.peril.common.JoinGameServerHandler;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.playmap.PlayMapLoadingException;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
@@ -298,13 +302,13 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private final class DefaultCreateGameServerListener implements CreateGameServerListener
   {
     @Override
-    public void onCreateStart (final GameServerConfiguration configuration, final String playerName)
+    public void onCreateStart (final String playerName, final GameServerConfiguration config)
     {
-      Arguments.checkIsNotNull (configuration, "configuration");
       Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (config, "config");
 
-      log.trace ("onCreateStart: {} [{}], Player Name [{}]", GameServerConfiguration.class.getSimpleName (),
-                 configuration, playerName);
+      log.trace ("onCreateStart: {} [{}], Player Name [{}]", GameServerConfiguration.class.getSimpleName (), config,
+                 playerName);
 
       Gdx.app.postRunnable (new Runnable ()
       {
@@ -318,11 +322,11 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onCreateFinish (final GameServerConfiguration configuration)
+    public void onCreateFinish (final GameServerConfiguration config)
     {
-      Arguments.checkIsNotNull (configuration, "configuration");
+      Arguments.checkIsNotNull (config, "config");
 
-      log.trace ("onCreateFinish: {} [{}]", GameServerConfiguration.class.getSimpleName (), configuration);
+      log.trace ("onCreateFinish: {} [{}]", GameServerConfiguration.class.getSimpleName (), config);
 
       Gdx.app.postRunnable (new Runnable ()
       {
@@ -335,13 +339,13 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onCreateFailure (final GameServerConfiguration configuration, final String reason)
+    public void onCreateFailure (final GameServerConfiguration config, final String reason)
     {
-      Arguments.checkIsNotNull (configuration, "configuration");
+      Arguments.checkIsNotNull (config, "config");
       Arguments.checkIsNotNull (reason, "reason");
 
-      log.trace ("onCreateFailure: {} [{}], Reason [{}]", GameServerConfiguration.class.getSimpleName (),
-                 configuration, reason);
+      log.trace ("onCreateFailure: {} [{}], Reason [{}]", GameServerConfiguration.class.getSimpleName (), config,
+                 reason);
 
       Gdx.app.postRunnable (new Runnable ()
       {
@@ -356,7 +360,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     @Override
     public void onJoinStart (final String playerName, final ServerConfiguration config)
     {
-      Arguments.checkIsNotNull (config, "configuration");
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (config, "config");
 
       log.trace ("onJoinStart: Player Name [{}], {} [{}] ", playerName, ServerConfiguration.class.getSimpleName (),
                  config);
@@ -375,9 +380,10 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onConnectToServerSuccess (final ServerConfiguration config)
+    public void onConnectToServerSuccess (final String playerName, final ServerConfiguration config)
     {
-      Arguments.checkIsNotNull (config, "configuration");
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (config, "config");
 
       log.trace ("onConnectToServerSuccess: {} [{}]", ServerConfiguration.class.getSimpleName (), config);
 
@@ -393,16 +399,12 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfig,
-                                         final ClientConfiguration clientConfig,
-                                         final String playerName)
+    public void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event)
     {
-      Arguments.checkIsNotNull (gameServerConfig, "gameServerConfiguration");
-      Arguments.checkIsNotNull (clientConfig, "clientConfiguration");
       Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (event, "event");
 
-      log.trace ("onJoinGameServerSuccess: {} [{}], {} [{}]", GameServerConfiguration.class.getSimpleName (),
-                 gameServerConfig, ClientConfiguration.class.getSimpleName (), clientConfig);
+      log.trace ("onJoinGameServerSuccess: PlayerName: [{}], Event: [{}]", playerName, event);
 
       publishAsync (new HumanPlayerJoinGameRequestEvent (playerName));
 
@@ -417,30 +419,10 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
+    public void onConnectToServerFailure (final String playerName, final ServerConfiguration config, final String reason)
     {
-      Arguments.checkIsNotNull (player, "player");
-      Arguments.checkIsNotNull (playersInGame, "playersInGame");
-      Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
-
-      log.trace ("onPlayerJoinGameSuccess: Player [{}]", player);
-
-      selfPlayer = player;
-
-      Gdx.app.postRunnable (new Runnable ()
-      {
-        @Override
-        public void run ()
-        {
-          increaseProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
-        }
-      });
-    }
-
-    @Override
-    public void onConnectToServerFailure (final ServerConfiguration config, final String reason)
-    {
-      Arguments.checkIsNotNull (config, "configuration");
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (config, "config");
       Arguments.checkIsNotNull (reason, "reason");
 
       log.trace ("onConnectToServerFailure: {} [{}], Reason [{}]", ServerConfiguration.class.getSimpleName (), config,
@@ -457,38 +439,36 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onJoinGameServerFailure (final ClientConfiguration config, final String reason)
+    public void onJoinGameServerFailure (final String playerName, final JoinGameServerDeniedEvent event)
     {
-      Arguments.checkIsNotNull (config, "configuration");
-      Arguments.checkIsNotNull (reason, "reason");
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (event, "event");
 
-      log.trace ("onJoinGameServerFailure: {} [{}], Reason [{}]", ClientConfiguration.class.getSimpleName (), config,
-                 reason);
+      log.trace ("onJoinGameServerFailure: Event: [{}].", event);
 
       Gdx.app.postRunnable (new Runnable ()
       {
         @Override
         public void run ()
         {
-          handleError ("{}", reason);
+          handleError ("{}", event.getReason ());
         }
       });
     }
 
     @Override
-    public void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason)
+    public void onPlayerJoinGameFailure (final PlayerJoinGameDeniedEvent event)
     {
-      Arguments.checkIsNotNull (playerName, "playerName");
-      Arguments.checkIsNotNull (reason, "reason");
+      Arguments.checkIsNotNull (event, "event");
 
-      log.trace ("onPlayerJoinGameFailure: Player Name [{}], Reason [{}]", playerName, reason);
+      log.trace ("onPlayerJoinGameFailure: Event: [{}]", event);
 
       Gdx.app.postRunnable (new Runnable ()
       {
         @Override
         public void run ()
         {
-          handleError ("{}", asText (reason, playerName));
+          handleError ("{}", asText (event.getReason (), event.getPlayerName ()));
         }
       });
     }
@@ -496,26 +476,33 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     @Override
     public void onJoinFinish (final GameServerConfiguration gameServerConfig,
                               final ClientConfiguration clientConfig,
-                              final ImmutableSet <PlayerPacket> players)
+                              final ImmutableSet <PlayerPacket> players,
+                              final PlayerJoinGameSuccessEvent event)
     {
       Arguments.checkIsNotNull (gameServerConfig, "gameServerConfiguration");
       Arguments.checkIsNotNull (clientConfig, "clientConfiguration");
       Arguments.checkIsNotNull (players, "players");
       Arguments.checkHasNoNullElements (players, "players");
+      Arguments.checkIsNotNull (event, "event");
 
       log.trace ("onJoinFinish: {} [{}], {} [{}], Players [{}]", GameServerConfiguration.class.getSimpleName (),
                  gameServerConfig, ClientConfiguration.class.getSimpleName (), clientConfig, players);
 
-      MenuToPlayLoadingScreen.this.gameServerConfiguration = gameServerConfig;
-      MenuToPlayLoadingScreen.this.clientConfiguration = clientConfig;
-      MenuToPlayLoadingScreen.this.players.addAll (players);
+      assert event.hasIdentity (PersonIdentity.SELF);
+
+      selfPlayer = event.getPlayer ();
+
+      gameServerConfiguration = gameServerConfig;
       playMapMetadata = gameServerConfig.getPlayMapMetadata ();
+      clientConfiguration = clientConfig;
+      MenuToPlayLoadingScreen.this.players.addAll (players);
 
       Gdx.app.postRunnable (new Runnable ()
       {
         @Override
         public void run ()
         {
+          increaseProgressBy (createdGameFirst ? ONE_NINTH : ONE_SIXTH);
           loadPlayScreenAssetsAsync (gameServerConfig.getGameMode ());
         }
       });

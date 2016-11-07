@@ -66,6 +66,10 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
+  <logger name="com.forerunnergames.peril.server.communicators" level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
   <logger name="com.forerunnergames.peril.server.kryonet" level="WARN">
     <appender-ref ref="STDOUT"/>
   </logger>

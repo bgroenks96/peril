@@ -333,6 +333,25 @@ public final class GameSettings
     return aiPlayers;
   }
 
+  public static String getPlayerNameWithoutClanTag (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    if (!hasClanTag (playerName)) return playerName;
+
+    final int separatorSymbolIndex = playerName.indexOf (PLAYER_NAME_CLAN_TAG_SEPARATOR_SYMBOL);
+
+    // Ensure separator symbol was found in player name.
+    // If it doesn't exist, the player name with clan tag is invalid.
+    assert separatorSymbolIndex >= 0;
+
+    // Ensure separator symbol is not the last character in player name.
+    // If it is, the player name without the clan tag is invalid (empty).
+    assert separatorSymbolIndex < playerName.length () - 1;
+
+    return playerName.substring (playerName.indexOf (PLAYER_NAME_CLAN_TAG_SEPARATOR_SYMBOL) + 1);
+  }
+
   private static void invalidPlayerName (final String playerName)
   {
     throw new IllegalStateException (Strings.format ("Invalid player name [{}]. Valid player name rules:\n\n{}",

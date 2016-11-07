@@ -23,8 +23,11 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
 import javax.annotation.Nullable;
@@ -95,9 +98,48 @@ abstract class AbstractAiProcessor implements AiProcessor
   }
 
   @Override
+  public String getPlayerNameDeTagged ()
+  {
+    return deTag (playerName);
+  }
+
+  @Override
+  public String deTag (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return GameSettings.getPlayerNameWithoutClanTag (playerName);
+  }
+
+  @Override
+  public boolean hasClan (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return GameSettings.hasClanTag (playerName);
+  }
+
+  @Override
+  public String clanFrom (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return GameSettings.getClanAcronymFromPlayerName (playerName);
+  }
+
+  @Override
   public final GameServerConfiguration getConfig ()
   {
     return gameServerConfig;
+  }
+
+  @Override
+  public final boolean shouldAct (final double probability)
+  {
+    Arguments.checkLowerInclusiveBound (probability, 0.0f, "probability");
+    Arguments.checkUpperInclusiveBound (probability, 1.0f, "probability");
+
+    return Randomness.getRandomDouble () <= probability;
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_FIRST)
@@ -105,8 +147,35 @@ abstract class AbstractAiProcessor implements AiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}].", event);
+    log.debug ("[{}] received event: [{}].", playerName, event);
 
-    if (event.hasIdentity (PersonIdentity.SELF)) selfPlayer = event.getPlayer ();
+    setSelfPlayer (event);
+  }
+
+  private void setSelfPlayer (final PlayerJoinGameSuccessEvent event)
+  {
+    // Only set once.
+    if (selfPlayer != null) return;
+
+    // Checking #hasIdentity isn't enough because all events are sent to all AI players.
+    // We must also check that the player name matches to avoid false positives.
+    //
+    // Checking only the player name causes self-identity to be updated too many times, as #NON_SELF events with
+    // matching player name will also be received, that are intended for other players.
+    //
+    // The only other solution would be to use a separate event bus per AI player to filter messages, so the original
+    // recipient(s) intent is honored.
+    if (!event.hasIdentity (PersonIdentity.SELF) || !event.getPlayerName ().equals (playerName)) return;
+
+    selfPlayer = event.getPlayer ();
+
+    log.trace ("Set self-identity of AI player [{}] to: [{}]", playerName, selfPlayer);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: PlayerName: [{]] | SelfPlayer: [{}] | GameServerConfig: [{}]", getClass ()
+            .getSimpleName (), playerName, selfPlayer, gameServerConfig);
   }
 }

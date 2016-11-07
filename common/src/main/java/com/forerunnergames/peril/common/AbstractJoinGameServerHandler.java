@@ -22,7 +22,6 @@ import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -56,7 +55,7 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
   private final MBassador <Event> eventBus;
   private final Set <PlayerPacket> players = new HashSet <> ();
   @Nullable
-  private String playerName = null;
+  private String selfPlayerName = null;
   @Nullable
   private JoinGameServerListener listener = null;
   @Nullable
@@ -79,7 +78,7 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNull (listener, "listener");
 
-    this.playerName = playerName;
+    selfPlayerName = playerName;
     this.listener = listener;
 
     players.clear ();
@@ -114,34 +113,45 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
     return listener;
   }
 
+  protected final String getSelfPlayerName ()
+  {
+    assert selfPlayerName != null;
+    return selfPlayerName;
+  }
+
   protected final void shutDown ()
   {
     eventBus.unsubscribe (this);
     isJoinGameIsInProgress = false;
   }
 
-  protected abstract boolean isSelf (final JoinGameServerSuccessEvent event, final String playerName);
+  protected abstract boolean isSelf (final JoinGameServerSuccessEvent event, final String selfPlayerName);
+
+  protected abstract boolean isSelf (final JoinGameServerDeniedEvent event, final String selfPlayerName);
+
+  protected abstract boolean isSelf (final PlayerJoinGameSuccessEvent event, final String selfPlayerName);
+
+  protected abstract boolean isSelf (final PlayerJoinGameDeniedEvent event, final String selfPlayerName);
 
   @Handler
   final void onEvent (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-
-    assert playerName != null;
-    if (!isSelf (event, playerName)) return;
-
     Preconditions.checkIsTrue (isJoinGameIsInProgress,
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
+    assert selfPlayerName != null;
+    if (!isSelf (event, selfPlayerName)) return;
+
     log.trace ("Event received [{}]", event);
-    log.info ("Successfully joined game server [{}]", event);
+    log.info ("Client: [{}] successfully joined game server: [{}]", event.getClientConfiguration (), event);
 
     gameServerConfig = event.getGameServerConfiguration ();
     clientConfig = event.getClientConfiguration ();
 
     assert listener != null;
-    listener.onJoinGameServerSuccess (event.getGameServerConfiguration (), event.getClientConfiguration (), playerName);
+    listener.onJoinGameServerSuccess (selfPlayerName, event);
   }
 
   @Handler
@@ -156,9 +166,11 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
 
     players.add (event.getPlayer ());
 
-    if (event.getIdentity () == PersonIdentity.NON_SELF)
+    assert selfPlayerName != null;
+
+    if (!isSelf (event, selfPlayerName))
     {
-      log.debug ("Collecting [{}] for non-self player.", event);
+      log.debug ("Collected non-self player [{}].", event.getPlayer ());
       return;
     }
 
@@ -170,8 +182,7 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
 
     assert listener != null;
     players.addAll (event.getPlayersInGame ());
-    listener.onPlayerJoinGameSuccess (event.getPlayer (), event.getPlayersInGame ());
-    listener.onJoinFinish (gameServerConfig, clientConfig, ImmutableSet.copyOf (players));
+    listener.onJoinFinish (gameServerConfig, clientConfig, ImmutableSet.copyOf (players), event);
   }
 
   @Handler
@@ -182,6 +193,9 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
+    assert selfPlayerName != null;
+    if (!isSelf (event, selfPlayerName)) return;
+
     log.trace ("Event received [{}]", event);
     log.error ("Could not join game server: [{}]", event);
 
@@ -190,7 +204,7 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
     isJoinGameIsInProgress = false;
 
     assert listener != null;
-    listener.onJoinGameServerFailure (event.getClientConfiguration (), event.getReason ());
+    listener.onJoinGameServerFailure (selfPlayerName, event);
   }
 
   @Handler
@@ -201,16 +215,10 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
                                Strings.format ("{}#join has not been called first.",
                                                JoinGameServerHandler.class.getSimpleName ()));
 
+    assert selfPlayerName != null;
+    if (!isSelf (event, selfPlayerName)) return;
+
     log.trace ("Event received [{}]", event);
-
-    assert playerName != null;
-    if (!event.getPlayerName ().equals (playerName))
-    {
-      log.warn ("Received [{}] with player name [{}] while expecting player name [{}]", event, event.getPlayerName (),
-                playerName);
-      return;
-    }
-
     log.error ("Could not join game as a player: [{}]", event);
 
     eventBus.unsubscribe (this);
@@ -218,6 +226,7 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
     isJoinGameIsInProgress = false;
 
     assert listener != null;
-    listener.onPlayerJoinGameFailure (event.getPlayerName (), event.getReason ());
+    assert event.getPlayerName ().equals (selfPlayerName);
+    listener.onPlayerJoinGameFailure (event);
   }
 }

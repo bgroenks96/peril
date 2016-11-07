@@ -19,7 +19,10 @@
 package com.forerunnergames.peril.common;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
@@ -30,21 +33,18 @@ public interface JoinGameServerListener
 {
   void onJoinStart (final String playerName, final ServerConfiguration config);
 
-  void onConnectToServerSuccess (final ServerConfiguration config);
+  void onConnectToServerSuccess (final String playerName, final ServerConfiguration config);
 
-  void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfig,
-                                final ClientConfiguration clientConfig,
-                                final String playerName);
+  void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event);
 
-  void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame);
+  void onConnectToServerFailure (final String playerName, final ServerConfiguration config, final String reason);
 
-  void onConnectToServerFailure (final ServerConfiguration config, final String reason);
+  void onJoinGameServerFailure (final String playerName, final JoinGameServerDeniedEvent event);
 
-  void onJoinGameServerFailure (final ClientConfiguration config, final String reason);
-
-  void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason);
+  void onPlayerJoinGameFailure (final PlayerJoinGameDeniedEvent event);
 
   void onJoinFinish (final GameServerConfiguration gameServerConfig,
                      final ClientConfiguration clientConfig,
-                     final ImmutableSet <PlayerPacket> players);
+                     final ImmutableSet <PlayerPacket> players,
+                     final PlayerJoinGameSuccessEvent event);
 }

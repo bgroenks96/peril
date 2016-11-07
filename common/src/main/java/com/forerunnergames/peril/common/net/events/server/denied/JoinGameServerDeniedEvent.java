@@ -50,6 +50,11 @@ public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
     return clientConfig;
   }
 
+  public String getClientAddress ()
+  {
+    return clientConfig.getClientAddress ();
+  }
+
   @Override
   public String toString ()
   {

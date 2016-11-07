@@ -27,11 +27,47 @@ public interface AiProcessor
 
   void deactivate ();
 
-  void send (ClientRequestEvent event, String playerName);
+  void send (final ClientRequestEvent event, final String playerName);
 
-  boolean isSelf (PlayerEvent event);
+  boolean isSelf (final PlayerEvent event);
 
+  /**
+   * Get this AI's player name.
+   */
   String getPlayerName ();
 
+  /**
+   * Get this AI's player name without any clan tag.
+   */
+  String getPlayerNameDeTagged ();
+
+  /**
+   * Get the specified player name without any clan tag.
+   */
+  String deTag (final String playerName);
+
+  /**
+   * Gets whether the specified player name contains a clan tag.
+   */
+  boolean hasClan (final String playerName);
+
+  /**
+   * Get the clan acronym from the specified player name, or empty string if there is no clan tag.
+   */
+  String clanFrom (final String playerName);
+
   GameServerConfiguration getConfig ();
+
+  /**
+   * Check whether an action should be performed by an AI actor, based on the specified probability.
+   *
+   * @param probability
+   *          The specified probability, in the range [0.0, 1.0] of how often this method should return true, where 0.0
+   *          will always return false, 1.0 will always return true, and 0.5, for example, will (on average) return true
+   *          50% of the time and false 50% of the time.
+   *
+   * @return Whether the action should be carried out based on performing a random true/false choice, taking into
+   *         account the specified probability for a 'true' choice.
+   */
+  boolean shouldAct (final double probability);
 }

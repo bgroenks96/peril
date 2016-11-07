@@ -23,7 +23,11 @@ import com.forerunnergames.peril.client.events.ConnectToServerSuccessEvent;
 import com.forerunnergames.peril.common.AbstractJoinGameServerHandler;
 import com.forerunnergames.peril.common.JoinGameServerHandler;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
@@ -43,12 +47,43 @@ public final class HumanJoinGameServerHandler extends AbstractJoinGameServerHand
   }
 
   @Override
-  protected boolean isSelf (final JoinGameServerSuccessEvent event, final String playerName)
+  protected boolean isSelf (final JoinGameServerSuccessEvent event, final String selfPlayerName)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
 
     return true; // Human players only ever receive their own JoinGameServerSuccessEvent.
+  }
+
+  @Override
+  protected boolean isSelf (final JoinGameServerDeniedEvent event, final String selfPlayerName)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
+
+    return true; // Human players only ever receive their own JoinGameServerDeniedEvent.
+  }
+
+  @Override
+  protected boolean isSelf (final PlayerJoinGameSuccessEvent event, final String selfPlayerName)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
+
+    assert selfPlayerName.equals (event.getPlayerName ());
+
+    return event.hasIdentity (PersonIdentity.SELF);
+  }
+
+  @Override
+  protected boolean isSelf (final PlayerJoinGameDeniedEvent event, final String selfPlayerName)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
+
+    assert selfPlayerName.equals (event.getPlayerName ());
+
+    return true; // Human players only ever receive their own PlayerJoinGameDeniedEvent.
   }
 
   @Handler
@@ -63,7 +98,7 @@ public final class HumanJoinGameServerHandler extends AbstractJoinGameServerHand
     log.info ("Successfully connected to server [{}]", event);
     log.info ("Attempting to join game server... [{}]", event);
 
-    getListener ().onConnectToServerSuccess (event.getServerConfiguration ());
+    getListener ().onConnectToServerSuccess (getSelfPlayerName (), event.getServerConfiguration ());
     publishAsync (new HumanJoinGameServerRequestEvent ());
   }
 
@@ -79,6 +114,6 @@ public final class HumanJoinGameServerHandler extends AbstractJoinGameServerHand
     log.error ("Could not connect to server: [{}]", event);
 
     shutDown ();
-    getListener ().onConnectToServerFailure (event.getServerConfiguration (), event.getReason ());
+    getListener ().onConnectToServerFailure (getSelfPlayerName (), event.getServerConfiguration (), event.getReason ());
   }
 }

@@ -18,7 +18,10 @@
 package com.forerunnergames.peril.common;
 
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
@@ -36,58 +39,50 @@ public class JoinGameServerListenerAdapter implements JoinGameServerListener
   }
 
   @Override
-  public void onConnectToServerSuccess (final ServerConfiguration config)
-  {
-    Arguments.checkIsNotNull (config, "config");
-  }
-
-  @Override
-  public void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfig,
-                                       final ClientConfiguration clientConfig,
-                                       final String playerName)
-  {
-    Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
-    Arguments.checkIsNotNull (clientConfig, "clientConfig");
-    Arguments.checkIsNotNull (playerName, "playerName");
-  }
-
-  @Override
-  public void onPlayerJoinGameSuccess (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
-  {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (playersInGame, "playersInGame");
-    Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
-  }
-
-  @Override
-  public void onConnectToServerFailure (final ServerConfiguration config, final String reason)
-  {
-    Arguments.checkIsNotNull (config, "config");
-    Arguments.checkIsNotNull (reason, "reason");
-  }
-
-  @Override
-  public void onJoinGameServerFailure (final ClientConfiguration config, final String reason)
-  {
-    Arguments.checkIsNotNull (config, "config");
-    Arguments.checkIsNotNull (reason, "reason");
-  }
-
-  @Override
-  public void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason)
+  public void onConnectToServerSuccess (final String playerName, final ServerConfiguration config)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (config, "config");
+  }
+
+  @Override
+  public void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (event, "event");
+  }
+
+  @Override
+  public void onConnectToServerFailure (final String playerName, final ServerConfiguration config, final String reason)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (config, "config");
     Arguments.checkIsNotNull (reason, "reason");
+  }
+
+  @Override
+  public void onJoinGameServerFailure (final String playerName, final JoinGameServerDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (event, "event");
+  }
+
+  @Override
+  public void onPlayerJoinGameFailure (final PlayerJoinGameDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
   }
 
   @Override
   public void onJoinFinish (final GameServerConfiguration gameServerConfig,
                             final ClientConfiguration clientConfig,
-                            final ImmutableSet <PlayerPacket> players)
+                            final ImmutableSet <PlayerPacket> players,
+                            final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConfig, "clientConfig");
     Arguments.checkIsNotNull (players, "players");
     Arguments.checkHasNoNullElements (players, "players");
+    Arguments.checkIsNotNull (event, "event");
   }
 }

@@ -88,7 +88,7 @@ public final class DefaultCreateGameServerHandler implements CreateGameServerHan
     log.info ("Attempting to create game server... [{}]", event);
 
     assert listener != null;
-    listener.onCreateStart (event.getGameServerConfiguration (), playerName);
+    listener.onCreateStart (playerName, event.getGameServerConfiguration ());
 
     eventBus.publishAsync (event);
 

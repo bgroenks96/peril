@@ -28,8 +28,12 @@ import com.forerunnergames.peril.common.JoinGameServerHandler;
 import com.forerunnergames.peril.common.JoinGameServerListenerAdapter;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.AiPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -89,7 +93,7 @@ public final class AiController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.debug ("[{}] received event: [{}].", playerName, event);
 
     joinGameServerHandler.join (playerName, gameServerConfig.getServerAddress (), new JoinGameServerListenerAdapter ()
     {
@@ -99,46 +103,62 @@ public final class AiController extends ControllerAdapter
         Arguments.checkIsNotNull (playerName, "playerName");
         Arguments.checkIsNotNull (config, "config");
 
+        assert playerName.equals (AiController.this.playerName);
+
         internalEventBus.publish (new AiConnectionEvent (playerName));
       }
 
       @Override
-      public void onJoinGameServerSuccess (final GameServerConfiguration gameServerConfig,
-                                           final ClientConfiguration clientConfig,
-                                           final String playerName)
+      public void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event)
       {
-        Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
-        Arguments.checkIsNotNull (clientConfig, "clientConfig");
         Arguments.checkIsNotNull (playerName, "playerName");
+        Arguments.checkIsNotNull (event, "event");
+
+        assert playerName.equals (AiController.this.playerName);
 
         internalEventBus.publish (new AiCommunicationEvent (new AiPlayerJoinGameRequestEvent (playerName), playerName));
       }
 
       @Override
-      public void onConnectToServerFailure (final ServerConfiguration config, final String reason)
+      public void onJoinGameServerFailure (final String playerName, final JoinGameServerDeniedEvent event)
       {
+        Arguments.checkIsNotNull (playerName, "playerName");
+        Arguments.checkIsNotNull (event, "event");
+
+        assert playerName.equals (AiController.this.playerName);
+
         internalEventBus.publish (new AiDisconnectionEvent (playerName));
       }
 
       @Override
-      public void onJoinGameServerFailure (final ClientConfiguration config, final String reason)
+      public void onPlayerJoinGameFailure (final PlayerJoinGameDeniedEvent event)
       {
-        internalEventBus.publish (new AiDisconnectionEvent (playerName));
-      }
+        Arguments.checkIsNotNull (event, "event");
 
-      @Override
-      public void onPlayerJoinGameFailure (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason)
-      {
-        internalEventBus.publish (new AiDisconnectionEvent (playerName));
+        assert event.getPlayerName ().equals (playerName);
+
+        internalEventBus.publish (new AiDisconnectionEvent (event.getPlayerName ()));
       }
 
       @Override
       public void onJoinFinish (final GameServerConfiguration gameServerConfig,
                                 final ClientConfiguration clientConfig,
-                                final ImmutableSet <PlayerPacket> players)
+                                final ImmutableSet <PlayerPacket> players,
+                                final PlayerJoinGameSuccessEvent event)
       {
+        Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
+        Arguments.checkIsNotNull (clientConfig, "clientConfig");
+        Arguments.checkIsNotNull (players, "players");
+        Arguments.checkHasNoNullElements (players, "players");
+        Arguments.checkIsNotNull (event, "event");
+
+        assert event.getPlayerName ().equals (playerName);
+        assert event.hasIdentity (PersonIdentity.SELF);
+
         gameLogicProcessor.activate ();
         chatProcessor.activate ();
+
+        internalEventBus.publish (event);
       }
     });
   }
