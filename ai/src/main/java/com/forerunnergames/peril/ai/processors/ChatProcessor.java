@@ -28,6 +28,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
@@ -48,20 +49,30 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
@@ -73,7 +84,6 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInC
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 
 import net.engio.mbassy.bus.MBassador;
@@ -88,6 +98,14 @@ public final class ChatProcessor extends AbstractAiProcessor
                         final MBassador <Event> eventBus)
   {
     super (playerName, gameServerConfig, eventBus);
+  }
+
+  @Handler
+  void onEvent (final ChatMessageSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
   }
 
   @Handler
@@ -114,12 +132,19 @@ public final class ChatProcessor extends AbstractAiProcessor
                        Strings.format ("Hello {}. Ready to lose?", deTag (playerName),
                                        Strings.format ("Ready to lose, {}?")));
 
-    if (hasClan (playerName))
-    {
-      sayEitherOrWhenOther (event, Strings.format ("Members of {} are welcome here.", clanFrom (playerName)),
-                            Strings.format ("{}... hmmmm... I don't like the {} clan.", clanFrom (playerName)));
+    if (!hasClan (playerName)) return;
 
+    final String clan = clanFrom (playerName);
+    final boolean isSameClan = clan.equalsIgnoreCase (getPlayerClan ());
+    final String message = Strings.format ("Members of {} are welcome here.", clan);
+
+    if (isSameClan)
+    {
+      sayWhenOther (event, message);
+      return;
     }
+
+    sayEitherOrWhenOther (event, message, Strings.format ("{}... hmmmm... I don't like the {} clan.", clan, clan));
   }
 
   @Handler
@@ -144,8 +169,6 @@ public final class ChatProcessor extends AbstractAiProcessor
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("[{}] received event: [{}].", getPlayerName (), event);
-
-    alwaysSayWhenSelf (event, "Uh oh. My programmer didn't teach me how to claim countries yet.");
   }
 
   @Handler
@@ -186,8 +209,6 @@ public final class ChatProcessor extends AbstractAiProcessor
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("[{}] received event: [{}].", getPlayerName (), event);
-
-    alwaysSayWhenSelf (event, "Uh oh. My programmer didn't teach me how to reinforce countries yet.");
   }
 
   @Handler
@@ -279,6 +300,14 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
+  void onEvent (final PlayerBeginAttackEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
   void onEvent (final PlayerBeginAttackWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -295,7 +324,23 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
+  void onEvent (final PlayerIssueAttackOrderEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
   void onEvent (final PlayerIssueAttackOrderWaitEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
+  void onEvent (final PlayerDefendCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -327,7 +372,23 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
+  void onEvent (final PlayerDefendCountryResponseSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
   void onEvent (final PlayerDefendCountryResponseDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
+  void onEvent (final PlayerEndAttackPhaseSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -344,6 +405,14 @@ public final class ChatProcessor extends AbstractAiProcessor
 
   @Handler
   void onEvent (final PlayerWinGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
+  void onEvent (final PlayerOccupyCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -399,6 +468,14 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
+  void onEvent (final PlayerBeginFortificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
   void onEvent (final PlayerBeginFortificationWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -407,7 +484,15 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerFortifyCountryWaitEvent event)
+  void onEvent (final PlayerIssueFortifyOrderEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
+  void onEvent (final PlayerIssueFortifyOrderWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -471,6 +556,14 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
+  void onEvent (final SkipPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
   void onEvent (final EndRoundEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -488,6 +581,14 @@ public final class ChatProcessor extends AbstractAiProcessor
 
   @Handler
   void onEvent (final EndGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+  }
+
+  @Handler
+  void onEvent (final ActivePlayerChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -534,33 +635,33 @@ public final class ChatProcessor extends AbstractAiProcessor
   // event is referring to self.
   private void sayEitherOrWhenSelf (final PlayerEvent event, final String message1, final String message2)
   {
-    sayWhenSelf (event, Randomness.getRandomElementFrom (message1, message2));
+    sayWhenSelf (event, chooseRandomly (message1, message2));
   }
 
   // Has a (CHAT_PROBABILITY / 2.0) chance of saying one of the two specified messages, but only when the specified
   // event is NOT referring to self.
   private void sayEitherOrWhenOther (final PlayerEvent event, final String message1, final String message2)
   {
-    sayWhenOther (event, Randomness.getRandomElementFrom (message1, message2));
+    sayWhenOther (event, chooseRandomly (message1, message2));
   }
 
   // Has a (CHAT_PROBABILITY / messages.length) chance of saying one of the specified messages, but only when the
   // specified event is NOT referring to self.
   private void sayOneOfWhenOther (final PlayerEvent event, final String... messages)
   {
-    sayWhenOther (event, Randomness.getRandomElementFrom (messages));
+    sayWhenOther (event, chooseRandomly (messages));
   }
 
   // Has a chance of saying the message with a probability of CHAT_PROBABILITY, regardless of self-identity.
   private void say (final String message, final Object... messageArgs)
   {
-    if (shouldAct (CHAT_PROBABILITY)) send (createChatRequest (message, messageArgs), getPlayerName ());
+    if (shouldAct (CHAT_PROBABILITY)) send (createChatRequest (message, messageArgs));
   }
 
   // Guaranteed to always say the message (probability = 1.0), regardless of self-identity.
   private void alwaysSay (final String message, final Object... messageArgs)
   {
-    send (createChatRequest (message, messageArgs), getPlayerName ());
+    send (createChatRequest (message, messageArgs));
   }
 
   private ChatMessageRequestEvent createChatRequest (final String message, final Object... messageArgs)

@@ -19,7 +19,20 @@
 package com.forerunnergames.peril.common.net.packets.territory;
 
 import com.forerunnergames.peril.common.net.packets.AssetPacket;
+import com.forerunnergames.tools.common.Arguments;
+
+import com.google.common.base.Function;
 
 public interface TerritoryPacket extends AssetPacket
 {
+  Function <TerritoryPacket, String> GET_BY_NAME_FUNCTION = new Function <TerritoryPacket, String> ()
+  {
+    @Override
+    public String apply (final TerritoryPacket input)
+    {
+      Arguments.checkIsNotNull (input, "input");
+
+      return input.getName ();
+    }
+  };
 }

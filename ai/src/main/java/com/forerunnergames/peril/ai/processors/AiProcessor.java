@@ -21,18 +21,42 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
+import java.util.Collection;
+
+/**
+ * API for various event-based AI behavior processing.
+ */
 public interface AiProcessor
 {
+  /**
+   * Causes this processor to start receiving server events.
+   */
   void activate ();
 
+  /**
+   * Causes this processor to stop receiving server events, but doesn't shut down, only pauses. May call
+   * {@link #activate()} again after.
+   */
   void deactivate ();
 
-  void send (final ClientRequestEvent event, final String playerName);
+  /**
+   * Sends the specified request to the server. It could be a request initiated solely by the AI client before joining
+   * as a player (ClientRequestEvent), or after joining as a player (PlayerRequestEvent), or a response to a request
+   * initiated by the server (ResponseRequestEvent}.
+   *
+   * @see ClientRequestEvent
+   * @see com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent
+   * @see com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent
+   */
+  void send (final ClientRequestEvent event);
 
+  /**
+   * Gets whether the player in the specified {@link PlayerEvent} is this AI player.
+   */
   boolean isSelf (final PlayerEvent event);
 
   /**
-   * Get this AI's player name.
+   * Get this AI player's name.
    */
   String getPlayerName ();
 
@@ -40,6 +64,24 @@ public interface AiProcessor
    * Get this AI's player name without any clan tag.
    */
   String getPlayerNameDeTagged ();
+
+  /**
+   * Get the clan acronym from this AI player's name.
+   * <br/>
+   * Note that AI players always have an [AI] clan tag, with AI clan acronym.
+   *
+   * @return AI
+   */
+  String getPlayerClan ();
+
+  /**
+   * Gets whether this AI player's name contains a clan tag.
+   * <br/>
+   * Note that AI players always have an [AI] clan tag.
+   *
+   * @return true
+   */
+  boolean hasClan ();
 
   /**
    * Get the specified player name without any clan tag.
@@ -56,6 +98,9 @@ public interface AiProcessor
    */
   String clanFrom (final String playerName);
 
+  /**
+   * Gets the game & server configuration for the game server this AI has joined as a player.
+   */
   GameServerConfiguration getConfig ();
 
   /**
@@ -70,4 +115,30 @@ public interface AiProcessor
    *         account the specified probability for a 'true' choice.
    */
   boolean shouldAct (final double probability);
+
+  /**
+   * Choose one of the specified choices at random, with equal probability.
+   * 
+   * @param choices
+   *          Must not be null, must not contain any null elements.
+   */
+  <T> T chooseRandomly (final T... choices);
+
+  /**
+   * Choose one of the specified choices at random, with equal probability.
+   *
+   * @param choices
+   *          Must not be null, must not contain any null elements.
+   */
+  <T> T chooseRandomly (final Collection <T> choices);
+
+  /**
+   * Choose a random integer in the range [lowerInclusiveBound, upperInclusiveBound], with equal probability.
+   *
+   * @param inclusiveLowerBound
+   *          The inclusive lower bound, must be >= 0 and <= inclusiveUpperBound and < Integer.MAX_VALUE.
+   * @param inclusiveUpperBound
+   *          The inclusive upper bound, must be >= 0 and >= inclusiveLowerBound and < Integer.MAX_VALUE.
+   */
+  int chooseRandomly (final int inclusiveLowerBound, final int inclusiveUpperBound);
 }

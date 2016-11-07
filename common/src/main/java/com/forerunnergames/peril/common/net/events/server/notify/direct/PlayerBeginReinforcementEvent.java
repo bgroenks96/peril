@@ -21,14 +21,16 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlaye
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.common.net.packets.territory.TerritoryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
-public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
+public final class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
   private final ImmutableMap <String, Integer> reinforceableCountryNamesToCountryArmyCounts;
   private final ImmutableSet <CountryPacket> reinforceableCountries;
@@ -80,6 +82,17 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
     return reinforceableCountries;
   }
 
+  public int getReinforceableCountryCount ()
+  {
+    return reinforceableCountries.size ();
+  }
+
+  public ImmutableSet <String> getReinforceableCountryNames ()
+  {
+    return ImmutableSet
+            .copyOf (Lists.transform (reinforceableCountries.asList (), TerritoryPacket.GET_BY_NAME_FUNCTION));
+  }
+
   public boolean isReinforceableCountry (final String countryName)
   {
     Arguments.checkIsNotNull (countryName, "countryName");
@@ -100,6 +113,22 @@ public class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implement
     final Integer armyCount = reinforceableCountryNamesToCountryArmyCounts.get (countryName);
 
     return armyCount != null && armyCount + armies <= maxArmiesPerCountry && armies <= getPlayerArmiesInHand ();
+  }
+
+  public int getMaxReinforcementsToPlaceOn (final String reinforceableCountryName)
+  {
+    Arguments.checkIsNotNull (reinforceableCountryName, "reinforceableCountryName");
+
+    final Integer countryArmyCount = reinforceableCountryNamesToCountryArmyCounts.get (reinforceableCountryName);
+
+    if (countryArmyCount == null)
+    {
+      throw new IllegalStateException (
+              Strings.format ("Cannot get armies on {} (not a reinforceable country.) Reinforceable countries: [{}]",
+                              reinforceableCountryName, reinforceableCountries));
+    }
+
+    return Math.min (getTotalReinforcements (), maxArmiesPerCountry - countryArmyCount);
   }
 
   @Override

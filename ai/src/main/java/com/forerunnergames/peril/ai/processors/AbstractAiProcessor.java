@@ -30,6 +30,8 @@ import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
+import java.util.Collection;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
@@ -75,10 +77,9 @@ abstract class AbstractAiProcessor implements AiProcessor
   }
 
   @Override
-  public final void send (final ClientRequestEvent event, final String playerName)
+  public final void send (final ClientRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsNotNull (playerName, "playerName");
 
     eventBus.publish (new AiCommunicationEvent (event, playerName));
   }
@@ -101,6 +102,18 @@ abstract class AbstractAiProcessor implements AiProcessor
   public String getPlayerNameDeTagged ()
   {
     return deTag (playerName);
+  }
+
+  @Override
+  public String getPlayerClan ()
+  {
+    return clanFrom (playerName);
+  }
+
+  @Override
+  public boolean hasClan ()
+  {
+    return hasClan (playerName);
   }
 
   @Override
@@ -140,6 +153,24 @@ abstract class AbstractAiProcessor implements AiProcessor
     Arguments.checkUpperInclusiveBound (probability, 1.0f, "probability");
 
     return Randomness.getRandomDouble () <= probability;
+  }
+
+  @Override
+  public <T> T chooseRandomly (final T... choices)
+  {
+    return Randomness.getRandomElementFrom (choices);
+  }
+
+  @Override
+  public <T> T chooseRandomly (final Collection <T> choices)
+  {
+    return Randomness.getRandomElementFrom (choices);
+  }
+
+  @Override
+  public int chooseRandomly (final int inclusiveLowerBound, final int inclusiveUpperBound)
+  {
+    return Randomness.getRandomIntegerFrom (inclusiveLowerBound, inclusiveUpperBound);
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_FIRST)

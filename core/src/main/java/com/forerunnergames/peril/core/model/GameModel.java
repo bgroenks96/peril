@@ -85,7 +85,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
@@ -1531,7 +1531,7 @@ public final class GameModel
     publish (new PlayerSelectFortifyVectorSuccessEvent (playerPacket, sourceCountryPacket, targetCountryPacket));
     publish (new PlayerIssueFortifyOrderEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
             minDeltaArmyCount, maxDeltaArmyCount));
-    publish (new PlayerFortifyCountryWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
+    publish (new PlayerIssueFortifyOrderWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
             minDeltaArmyCount, maxDeltaArmyCount));
 
     turnDataCache.put (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, sourceCountryId);

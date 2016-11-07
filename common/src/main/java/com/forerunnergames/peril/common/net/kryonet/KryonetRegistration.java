@@ -88,6 +88,8 @@ public final class KryonetRegistration
   private static final ImmutableSet <Class <?>> INCLUDED_CLASSES = ImmutableSet.<Class <?>> of (
           // TODO Still can't get this one via reflection?! :'(
           com.forerunnergames.peril.common.net.packets.person.PlayerPacket.TURN_ORDER_COMPARATOR.getClass (),
+          // TODO Still can't get this one via reflection?! :'(
+          com.forerunnergames.peril.common.net.packets.territory.TerritoryPacket.GET_BY_NAME_FUNCTION.getClass (),
           com.forerunnergames.tools.common.Classes.class,
           com.forerunnergames.tools.common.DefaultMessage.class,
           com.forerunnergames.tools.common.id.Id.class,

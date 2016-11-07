@@ -62,6 +62,14 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
+  <logger name="com.forerunnergames.peril.ai.net.AiClientCommunicator" level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="com.forerunnergames.peril.ai.processors" level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
   <logger name="com.forerunnergames.peril.server.controllers" level="WARN">
     <appender-ref ref="STDOUT"/>
   </logger>

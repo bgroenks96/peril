@@ -22,11 +22,13 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlaye
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.common.net.packets.territory.TerritoryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 public final class PlayerClaimCountryRequestEvent extends AbstractPlayerEvent implements PlayerInputRequestEvent
 {
@@ -45,6 +47,11 @@ public final class PlayerClaimCountryRequestEvent extends AbstractPlayerEvent im
   public ImmutableSet <CountryPacket> getUnclaimedCountries ()
   {
     return unclaimedCountries;
+  }
+
+  public ImmutableSet <String> getUnclaimedCountryNames ()
+  {
+    return ImmutableSet.copyOf (Lists.transform (unclaimedCountries.asList (), TerritoryPacket.GET_BY_NAME_FUNCTION));
   }
 
   public boolean isUnclaimedCountry (final String countryName)

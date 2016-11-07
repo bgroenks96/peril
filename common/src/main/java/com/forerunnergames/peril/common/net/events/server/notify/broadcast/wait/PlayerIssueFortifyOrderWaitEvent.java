@@ -23,19 +23,19 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerFortifyCountryWaitEvent extends AbstractPlayerFortifyCountryEvent implements PlayerWaitEvent
+public final class PlayerIssueFortifyOrderWaitEvent extends AbstractPlayerFortifyCountryEvent implements PlayerWaitEvent
 {
-  public PlayerFortifyCountryWaitEvent (final PlayerPacket player,
-                                        final CountryPacket sourceCountry,
-                                        final CountryPacket targetCountry,
-                                        final int minDeltaArmyCount,
-                                        final int maxDeltaArmyCount)
+  public PlayerIssueFortifyOrderWaitEvent (final PlayerPacket player,
+                                           final CountryPacket sourceCountry,
+                                           final CountryPacket targetCountry,
+                                           final int minDeltaArmyCount,
+                                           final int maxDeltaArmyCount)
   {
     super (player, sourceCountry, targetCountry, minDeltaArmyCount, maxDeltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerFortifyCountryWaitEvent ()
+  private PlayerIssueFortifyOrderWaitEvent ()
   {
   }
 }
