@@ -24,10 +24,10 @@ import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
@@ -85,8 +85,8 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
@@ -139,8 +139,8 @@ import com.forerunnergames.peril.core.model.card.DefaultCardModel;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
 import com.forerunnergames.peril.core.model.playmap.continent.ContinentFactory;
@@ -1440,12 +1440,16 @@ public final class GameModel
   @SuppressWarnings ("unchecked")
   public void waitForPlayerToSelectFortifyVector ()
   {
+    // Fixes PERIL-842 ("SkipFortifyPhaseEvent Crashes Server")
+    // We're in the middle of skipping fortification phase, so do nothing.
+    if (turnDataCache.isNotSet (CacheKey.FORTIFY_VALID_VECTORS)) return;
+
     final PlayerPacket player = getCurrentPlayerPacket ();
 
     log.info ("Waiting for player [{}] to select a fortification vector...", player);
 
-    final ImmutableMultimap <CountryPacket, CountryPacket> validFortifyVectors;
-    validFortifyVectors = turnDataCache.get (CacheKey.FORTIFY_VALID_VECTORS, ImmutableMultimap.class);
+    final ImmutableMultimap <CountryPacket, CountryPacket> validFortifyVectors = turnDataCache
+            .get (CacheKey.FORTIFY_VALID_VECTORS, ImmutableMultimap.class);
 
     publish (new PlayerBeginFortificationEvent (player, validFortifyVectors));
   }
