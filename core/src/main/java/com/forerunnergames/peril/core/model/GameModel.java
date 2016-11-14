@@ -357,17 +357,19 @@ public final class GameModel
       // TODO: Attack phase trade-ins; for the prior statement to be true, attack-phase trade-ins must be implemented
       final TurnPhase turnPhase = TurnPhase.FORTIFY;
       // TODO: Could do request/result/reason-for-denial here instead.
-      if (!cardModel.canGiveCard (getCurrentPlayerId (), turnPhase))
+      if (cardModel.canGiveCard (getCurrentPlayerId (), turnPhase))
+      {
+        final Card card = cardModel.giveCard (getCurrentPlayerId (), TurnPhase.FORTIFY);
+        log.debug ("Distributing card [{}] to player [{}]...", card, getCurrentPlayerPacket ());
+        newPlayerCard = CardPackets.from (card);
+      }
+      else
       {
         log.warn ("Can't give card to player: [{}] for {}: [{}]. Cards in deck: [{}]. Cards in discard pile: [{}]. "
                 + "Max cards allowed in hand for {}: [{}]: [{}]", getCurrentPlayerPacket (), turnPhase.getClass ()
                 .getSimpleName (), turnPhase, cardModel.getDeckCount (), cardModel.getDiscardCount (), turnPhase
                 .getClass ().getSimpleName (), turnPhase, rules.getMaxCardsInHand (turnPhase));
-        return;
       }
-      final Card card = cardModel.giveCard (getCurrentPlayerId (), TurnPhase.FORTIFY);
-      log.debug ("Distributing card [{}] to player [{}]...", card, getCurrentPlayerPacket ());
-      newPlayerCard = CardPackets.from (card);
     }
 
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket (), newPlayerCard));
@@ -835,7 +837,7 @@ public final class GameModel
 
     final Id playerId = getCurrentPlayerId ();
 
-    if (cardModel.countCardsInHand (playerId) >= rules.getMinCardsInHandForTradeInReinforcePhase ())
+    if (cardModel.countCardsInHand (playerId) >= rules.getMinCardsInHandToRequireTradeIn (TurnPhase.REINFORCE))
     {
       publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
               PlayerReinforceCountryDeniedEvent.Reason.TRADE_IN_REQUIRED, event));
