@@ -56,9 +56,15 @@ final class DefaultCardDealer implements CardDealer
   }
 
   @Override
+  public boolean canTake ()
+  {
+    return !liveDeck.isEmpty () || !discardPile.isEmpty ();
+  }
+
+  @Override
   public Card take ()
   {
-    Preconditions.checkIsTrue (!liveDeck.isEmpty () || !discardPile.isEmpty (), "No cards available!");
+    Preconditions.checkIsTrue (canTake (), "No cards available!");
 
     if (needsReshuffle ())
     {
@@ -125,6 +131,18 @@ final class DefaultCardDealer implements CardDealer
     Arguments.checkIsNotNull (card, "card");
 
     return discardPile.contains (card);
+  }
+
+  @Override
+  public int getDeckCount ()
+  {
+    return liveDeck.size ();
+  }
+
+  @Override
+  public int getDiscardCount ()
+  {
+    return discardPile.size ();
   }
 
   private Optional <Card> findCardByName (final String name, final Iterable <Card> cards)

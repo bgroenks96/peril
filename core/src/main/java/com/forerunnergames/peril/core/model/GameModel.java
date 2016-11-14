@@ -355,6 +355,16 @@ public final class GameModel
     {
       // use fortify phase for rule check since card count should never exceed 6 at the end of a turn
       // TODO: Attack phase trade-ins; for the prior statement to be true, attack-phase trade-ins must be implemented
+      final TurnPhase turnPhase = TurnPhase.FORTIFY;
+      // TODO: Could do request/result/reason-for-denial here instead.
+      if (!cardModel.canGiveCard (getCurrentPlayerId (), turnPhase))
+      {
+        log.warn ("Can't give card to player: [{}] for {}: [{}]. Cards in deck: [{}]. Cards in discard pile: [{}]. "
+                + "Max cards allowed in hand for {}: [{}]: [{}]", getCurrentPlayerPacket (), turnPhase.getClass ()
+                .getSimpleName (), turnPhase, cardModel.getDeckCount (), cardModel.getDiscardCount (), turnPhase
+                .getClass ().getSimpleName (), turnPhase, rules.getMaxCardsInHand (turnPhase));
+        return;
+      }
       final Card card = cardModel.giveCard (getCurrentPlayerId (), TurnPhase.FORTIFY);
       log.debug ("Distributing card [{}] to player [{}]...", card, getCurrentPlayerPacket ());
       newPlayerCard = CardPackets.from (card);
@@ -900,7 +910,7 @@ public final class GameModel
 
   /**
    * @return true if trade-ins are complete and state machine should advance to normal reinforcement state, false if
-   *         additional trade-ins are available
+   * additional trade-ins are available
    */
   @StateTransitionCondition
   public boolean verifyPlayerCardTradeIn (final PlayerTradeInCardsRequestEvent event)

@@ -56,14 +56,24 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
+  public boolean canGiveCard (final Id playerId, final TurnPhase turnPhase)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+    Arguments.checkIsNotNull (turnPhase, "turnPhase");
+
+    return canAddCardToHand (playerId, turnPhase) && cardDealer.canTake ();
+  }
+
+  @Override
   public Card giveCard (final Id playerId, final TurnPhase turnPhase)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (turnPhase, "turnPhase");
-    final int maxCardsInHand = rules.getMaxCardsInHand (turnPhase);
-    Preconditions.checkIsTrue (playerCardHandler.countCardsInHand (playerId) < maxCardsInHand,
-                               Strings.format ("Player [{}] has reached maximum cards in hand [{}] for [{}]", playerId,
-                                               maxCardsInHand, turnPhase));
+    Preconditions.checkIsTrue (canAddCardToHand (playerId, turnPhase), Strings
+            .format ("Player [{}] has reached maximum cards in hand [{}] for [{}]", playerId,
+                     rules.getMaxCardsInHand (turnPhase), turnPhase));
+    Preconditions.checkIsTrue (cardDealer.canTake (), Strings
+            .format ("Out of cards to give! PlayerId: [{}] | TurnPhase: [{}]", playerId, turnPhase));
 
     final Card card = cardDealer.take ();
     playerCardHandler.addCardToHand (playerId, card);
@@ -85,8 +95,6 @@ public final class DefaultCardModel implements CardModel
 
     return playerCardHandler.countCardsInHand (playerId);
   }
-
-  // --- delegation methods --- //
 
   @Override
   public boolean isCardInHand (final Id playerId, final Card card)
@@ -174,5 +182,22 @@ public final class DefaultCardModel implements CardModel
     Arguments.checkIsNotNull (cards, "cards");
 
     return playerCardHandler.areCardsInHand (playerId, cards);
+  }
+
+  @Override
+  public int getDeckCount ()
+  {
+    return cardDealer.getDeckCount ();
+  }
+
+  @Override
+  public int getDiscardCount ()
+  {
+    return cardDealer.getDiscardCount ();
+  }
+
+  private boolean canAddCardToHand (final Id playerId, final TurnPhase turnPhase)
+  {
+    return playerCardHandler.countCardsInHand (playerId) < rules.getMaxCardsInHand (turnPhase);
   }
 }

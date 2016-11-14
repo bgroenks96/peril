@@ -27,6 +27,8 @@ import com.google.common.collect.ImmutableSet;
 
 public interface CardModel
 {
+  boolean canGiveCard (final Id playerId, final TurnPhase turnPhase);
+
   Card giveCard (final Id playerId, final TurnPhase turnPhase);
 
   CardSet getCardsInHand (final Id playerId);
@@ -48,4 +50,8 @@ public interface CardModel
   int getNextTradeInBonus ();
 
   boolean areCardsInHand (final Id playerId, final CardSet cards);
+
+  int getDeckCount ();
+
+  int getDiscardCount ();
 }

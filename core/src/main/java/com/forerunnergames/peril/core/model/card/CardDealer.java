@@ -20,6 +20,8 @@ package com.forerunnergames.peril.core.model.card;
 
 interface CardDealer
 {
+  boolean canTake ();
+
   Card take ();
 
   void discard (final Card card);
@@ -33,4 +35,8 @@ interface CardDealer
   boolean isInDeck (final Card card);
 
   boolean isInDiscardPile (final Card card);
+
+  int getDeckCount ();
+
+  int getDiscardCount ();
 }
