@@ -92,6 +92,7 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInC
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
@@ -635,6 +636,24 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
+  void onEvent (final PlayerTurnOrderChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playerBox.updatePlayerWithNewTurnOrder (event.getPlayer (), event.getOldTurnOrder ());
+        gamePhaseHandlers.updatePlayerForSelf (event.getPlayer ());
+      }
+    });
+  }
+
+  @Handler
   void onEvent (final DeterminePlayerTurnOrderCompleteEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -913,9 +932,17 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    notificationDialog.setTitle ("Ahem, General");
-    notificationDialog.showForSelf (event.getPlayer (), "We have been annihilated.", event.getPlayerName ());
-    notificationDialog.showForEveryoneElse (event.getPlayer (), "{} has been annihilated.", event.getPlayerName ());
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playerBox.removePlayer (event.getPlayer ());
+        notificationDialog.setTitle ("Ahem, General");
+        notificationDialog.showForSelf (event.getPlayer (), "We have been annihilated.", event.getPlayerName ());
+        notificationDialog.showForEveryoneElse (event.getPlayer (), "{} has been annihilated.", event.getPlayerName ());
+      }
+    });
   }
 
   @Handler

@@ -171,6 +171,25 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     return this.player.is (player);
   }
 
+  public boolean playerTurnOrderIs (final int turnOrder)
+  {
+    Arguments.checkIsNotNegative (turnOrder, "turnOrder");
+
+    return player.has (turnOrder);
+  }
+
+  public PlayerPacket getPlayer ()
+  {
+    return player;
+  }
+
+  public boolean playerHasName (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return player.hasName (playerName);
+  }
+
   private static String createMessageTextLeft (final int playerTurnOrder)
   {
     return Strings.toMixedOrdinal (playerTurnOrder);

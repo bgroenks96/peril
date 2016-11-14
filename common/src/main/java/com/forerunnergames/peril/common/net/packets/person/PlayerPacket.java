@@ -29,18 +29,7 @@ public interface PlayerPacket extends PersonPacket
     @Override
     public int compare (final PlayerPacket o1, final PlayerPacket o2)
     {
-      if (o1.getTurnOrder () < o2.getTurnOrder ())
-      {
-        return -1;
-      }
-      else if (o1.getTurnOrder () > o2.getTurnOrder ())
-      {
-        return 1;
-      }
-      else
-      {
-        return 0;
-      }
+      return Integer.compare (o1.getTurnOrder (), o2.getTurnOrder ());
     }
   };
 

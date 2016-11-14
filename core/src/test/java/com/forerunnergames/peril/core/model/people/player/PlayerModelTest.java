@@ -44,6 +44,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Test;
@@ -125,13 +126,28 @@ public class PlayerModelTest
     final PlayerModel playerModel = createPlayerModelWithLimitOf (2);
     addNPlayersTo (playerModel, 2);
 
-    final Id player1 = playerModel.playerWith (PlayerTurnOrder.FIRST);
-    final Id player2 = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final Id player1Id = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final Id player2Id = playerModel.playerWith (PlayerTurnOrder.SECOND);
 
-    playerModel.changeTurnOrderOfPlayer (player1, PlayerTurnOrder.SECOND);
+    final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> mutations = playerModel
+            .changeTurnOrderOfPlayer (player1Id, PlayerTurnOrder.SECOND);
 
-    assertTrue (playerModel.turnOrderOf (player2).is (PlayerTurnOrder.FIRST)
-            && playerModel.turnOrderOf (player1).is (PlayerTurnOrder.SECOND));
+    assertTrue (playerModel.turnOrderOf (player2Id).is (PlayerTurnOrder.FIRST)
+            && playerModel.turnOrderOf (player1Id).is (PlayerTurnOrder.SECOND));
+
+    assertTrue (mutations.size () == 2);
+
+    final Iterator <PlayerModel.PlayerTurnOrderMutation> iterator = mutations.iterator ();
+
+    final PlayerModel.PlayerTurnOrderMutation player1Mutation = iterator.next ();
+    assertTrue (player1Mutation.getPlayer ().is (playerModel.playerPacketWith (player1Id)));
+    assertEquals (player1Mutation.getOldTurnOrder (), PlayerTurnOrder.FIRST.getPosition ());
+    assertEquals (player1Mutation.getNewTurnOrder (), PlayerTurnOrder.SECOND.getPosition ());
+
+    final PlayerModel.PlayerTurnOrderMutation player2Mutation = iterator.next ();
+    assertTrue (player2Mutation.getPlayer ().is (playerModel.playerPacketWith (player2Id)));
+    assertEquals (player2Mutation.getOldTurnOrder (), PlayerTurnOrder.SECOND.getPosition ());
+    assertEquals (player2Mutation.getNewTurnOrder (), PlayerTurnOrder.FIRST.getPosition ());
   }
 
   @Test
@@ -762,9 +778,42 @@ public class PlayerModelTest
     final Id id = player.getId ();
 
     playerModel.requestToAdd (factoryFrom (player));
-    playerModel.removeById (id);
+    final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> mutations = playerModel.removeById (id);
 
     assertFalse (playerModel.existsPlayerWith (id));
+    assertTrue (mutations.isEmpty ());
+  }
+
+  @Test
+  public void testRemovePlayerByIdSuccessfulMultiplePlayers ()
+  {
+    final PlayerModel playerModel = createPlayerModelWithLimitOf (5);
+    addNPlayersTo (playerModel, 5);
+    final Id player2Id = playerModel.playerWith (PlayerTurnOrder.SECOND);
+    final Id player3Id = playerModel.playerWith (PlayerTurnOrder.THIRD);
+    final Id player4Id = playerModel.playerWith (PlayerTurnOrder.FOURTH);
+    final Id player5Id = playerModel.playerWith (PlayerTurnOrder.FIFTH);
+    final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> mutations = playerModel.removeById (player2Id);
+
+    assertFalse (playerModel.existsPlayerWith (player2Id));
+    assertTrue (mutations.size () == 3);
+
+    final Iterator <PlayerModel.PlayerTurnOrderMutation> iterator = mutations.iterator ();
+
+    final PlayerModel.PlayerTurnOrderMutation player3Mutation = iterator.next ();
+    assertTrue (player3Mutation.getPlayer ().is (playerModel.playerPacketWith (player3Id)));
+    assertEquals (player3Mutation.getOldTurnOrder (), PlayerTurnOrder.THIRD.getPosition ());
+    assertEquals (player3Mutation.getNewTurnOrder (), PlayerTurnOrder.SECOND.getPosition ());
+
+    final PlayerModel.PlayerTurnOrderMutation player4Mutation = iterator.next ();
+    assertTrue (player4Mutation.getPlayer ().is (playerModel.playerPacketWith (player4Id)));
+    assertEquals (player4Mutation.getOldTurnOrder (), PlayerTurnOrder.FOURTH.getPosition ());
+    assertEquals (player4Mutation.getNewTurnOrder (), PlayerTurnOrder.THIRD.getPosition ());
+
+    final PlayerModel.PlayerTurnOrderMutation player5Mutation = iterator.next ();
+    assertTrue (player5Mutation.getPlayer ().is (playerModel.playerPacketWith (player5Id)));
+    assertEquals (player5Mutation.getOldTurnOrder (), PlayerTurnOrder.FIFTH.getPosition ());
+    assertEquals (player5Mutation.getNewTurnOrder (), PlayerTurnOrder.FOURTH.getPosition ());
   }
 
   @Test

@@ -52,6 +52,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFor
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
@@ -195,6 +196,7 @@ public class GameModelTest
     gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DeterminePlayerTurnOrderCompleteEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerTurnOrderChangedEvent.class));
   }
 
   @Test
@@ -205,6 +207,7 @@ public class GameModelTest
     gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DeterminePlayerTurnOrderCompleteEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerTurnOrderChangedEvent.class));
   }
 
   @Test
@@ -215,6 +218,7 @@ public class GameModelTest
     gameModel.determinePlayerTurnOrder ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DeterminePlayerTurnOrderCompleteEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerTurnOrderChangedEvent.class));
   }
 
   @Test

@@ -42,6 +42,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlaye
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
@@ -408,6 +409,10 @@ public final class GameModel
 
       final PlayerPacket player = randomPlayerItr.next ();
       final Id playerId = playerModel.idOf (player.getName ());
+
+      // Don't publish DefaultPlayerTurnOrderChangedEvent's for turn order mutation results because
+      // the changes are temporary placeholders, and the final changes are published together in
+      // DeterminePlayerTurnOrderCompleteEvent.
       playerModel.changeTurnOrderOfPlayer (playerId, turnOrder);
 
       log.info ("Set turn order of player [{}] to [{}].", player.getName (), turnOrder);
@@ -1839,8 +1844,12 @@ public final class GameModel
     if (playerCountryCount < rules.getMinPlayerCountryCount ())
     {
       publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
-      playerModel.remove (playerId);
+      final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> turnOrderMutations = playerModel.remove (playerId);
       playerTurnModel.decrementTurnCount ();
+      for (final PlayerModel.PlayerTurnOrderMutation mutation : turnOrderMutations)
+      {
+        publish (new DefaultPlayerTurnOrderChangedEvent (mutation.getPlayer (), mutation.getOldTurnOrder ()));
+      }
       return;
     }
 

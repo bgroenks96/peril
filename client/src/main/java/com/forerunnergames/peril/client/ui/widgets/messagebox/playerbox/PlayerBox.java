@@ -21,15 +21,16 @@ package com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
-import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -40,7 +41,8 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerBox.class);
   private final WidgetFactory widgetFactory;
-  private final Collection <PlayerPacket> turnOrderedPlayers = new TreeSet <> (PlayerPacket.TURN_ORDER_COMPARATOR);
+  private final Collection <PlayerPacket> players = new HashSet <> ();
+  private final Map <String, Integer> playerNamesToRowIndices = new HashMap <> ();
   @Nullable
   private PlayerPacket highlightedPlayer;
 
@@ -58,7 +60,8 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   {
     super.clear ();
 
-    turnOrderedPlayers.clear ();
+    players.clear ();
+    playerNamesToRowIndices.clear ();
   }
 
   public void setPlayers (final ImmutableSet <PlayerPacket> players)
@@ -66,14 +69,11 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     Arguments.checkIsNotNull (players, "players");
     Arguments.checkHasNoNullElements (players, "players");
 
-    turnOrderedPlayers.clear ();
+    this.players.clear ();
+    playerNamesToRowIndices.clear ();
 
-    if (!turnOrderedPlayers.addAll (players))
-    {
-      log.warn ("Not adding any players [{}] to {}. (Players already added, or duplicate turn order conflict.)",
-                players, PlayerBox.class.getSimpleName ());
-      return;
-    }
+    final boolean anyWereAdded = this.players.addAll (players);
+    assert anyWereAdded;
 
     updateMessageBox ();
   }
@@ -82,13 +82,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (!turnOrderedPlayers.add (player))
-    {
-      log.warn ("Not adding player [{}] to {}. (Player already added, or duplicate turn order conflict.)", player,
-                PlayerBox.class.getSimpleName ());
-      return;
-    }
-
+    internalAdd (player);
     updateMessageBox ();
   }
 
@@ -96,16 +90,23 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (!turnOrderedPlayers.remove (player))
-    {
-      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player,
-                PlayerBox.class.getSimpleName (), PlayerBox.class.getSimpleName ());
-      return;
-    }
-
+    internalRemove (player);
     updateMessageBox ();
-
     if (isHighlighted (player)) clearHighlighting ();
+  }
+
+  public void updatePlayerWithNewTurnOrder (final PlayerPacket player, final int oldTurnOrder)
+  {
+    assert existsRowWith (player);
+    assert getRowWith (player).playerTurnOrderIs (oldTurnOrder);
+
+    // Cannot use #updateExisting(PlayerPacket) because because it won't update the set of turn-ordered players.
+    // Player must be removed and re-added.
+    // Avoids unnecessarily updating the message box twice and superfluously de-highlighting/re-highlighting player by
+    // not using the public API for add / remove.
+    internalRemove (player);
+    internalAdd (player);
+    updateMessageBox ();
   }
 
   public void highlightPlayer (final PlayerPacket player)
@@ -152,18 +153,6 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     row.setPlayer (player);
   }
 
-  public Optional <String> getNameOfPlayerWithColor (final PlayerColor color)
-  {
-    Arguments.checkIsNotNull (color, "color");
-
-    for (final PlayerPacket player : turnOrderedPlayers)
-    {
-      if (player.has (color)) return Optional.of (player.getName ());
-    }
-
-    return Optional.absent ();
-  }
-
   public void setArmiesInHand (final int armies, final PlayerPacket player)
   {
     Arguments.checkIsNotNegative (armies, "armies");
@@ -172,18 +161,45 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     getRowWith (player).setPlayerArmiesInHand (armies);
   }
 
+  private void internalRemove (final PlayerPacket player)
+  {
+    if (!players.remove (player))
+    {
+      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player,
+                PlayerBox.class.getSimpleName (), PlayerBox.class.getSimpleName ());
+    }
+  }
+
+  private void internalAdd (final PlayerPacket player)
+  {
+    if (!players.add (player))
+    {
+      log.warn ("Not adding player [{}] to {}. (Player already added, or duplicate turn order conflict.)", player,
+                PlayerBox.class.getSimpleName ());
+    }
+  }
+
   private boolean existsRowWith (final PlayerPacket player)
   {
-    return hasRowWithIndex (player.getTurnOrder () - 1);
+    return hasRowWithIndex (playerNamesToRowIndices.get (player.getName ()));
   }
 
   private PlayerBoxRow getRowWith (final PlayerPacket player)
   {
-    final int index = player.getTurnOrder () - 1;
+    final PlayerBoxRow row = getRowWith (player.getName ());
+    assert row.playerIs (player);
+
+    return row;
+  }
+
+  private PlayerBoxRow getRowWith (final String playerName)
+  {
+    final Integer index = playerNamesToRowIndices.get (playerName);
+    assert index != null;
     assert hasRowWithIndex (index);
 
     final PlayerBoxRow row = getRowByIndex (index);
-    assert row.playerIs (player);
+    assert row.playerHasName (playerName);
 
     return row;
   }
@@ -201,15 +217,20 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     }
   }
 
+  // Generally only needs to be called after adding or removing players.
   private void updateMessageBox ()
   {
     super.clear ();
 
-    for (final PlayerPacket player : turnOrderedPlayers)
+    int rowIndex = 0;
+    playerNamesToRowIndices.clear ();
+
+    for (final PlayerPacket player : ImmutableSortedSet.copyOf (PlayerPacket.TURN_ORDER_COMPARATOR, players))
     {
       addRow (widgetFactory.createPlayerBoxRow (player));
-
+      playerNamesToRowIndices.put (player.getName (), rowIndex);
       if (isHighlighted (player)) highlightPlayer (player);
+      rowIndex++;
     }
   }
 }

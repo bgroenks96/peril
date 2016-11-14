@@ -158,7 +158,8 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
-  public void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder)
+  public ImmutableSet <PlayerTurnOrderMutation> changeTurnOrderOfPlayer (final Id playerId,
+                                                                         final PlayerTurnOrder toTurnOrder)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (toTurnOrder, "toTurnOrder");
@@ -166,7 +167,13 @@ public final class DefaultPlayerModel implements PlayerModel
 
     final Player player = modelPlayerWith (playerId);
 
-    if (player.has (toTurnOrder)) return;
+    if (player.has (toTurnOrder)) return ImmutableSet.of ();
+
+    final int oldTurnOrderPosition = player.getTurnOrderPosition ();
+
+    // Sort mutations by old turn order.
+    final ImmutableSortedSet.Builder <PlayerTurnOrderMutation> turnOrderMutationBuilder = ImmutableSortedSet
+            .orderedBy (PlayerTurnOrderMutation.ORDER_BY_OLD_TURN_ORDER);
 
     if (existsPlayerWith (toTurnOrder))
     {
@@ -174,11 +181,16 @@ public final class DefaultPlayerModel implements PlayerModel
       old.setTurnOrder (PlayerTurnOrder.UNKNOWN);
       player.setTurnOrder (toTurnOrder);
       old.setTurnOrder (nextAvailableTurnOrder ());
+      turnOrderMutationBuilder.add (new PlayerTurnOrderMutation (PlayerPackets.from (old), toTurnOrder.getPosition ()));
     }
     else
     {
       player.setTurnOrder (toTurnOrder);
     }
+
+    turnOrderMutationBuilder.add (new PlayerTurnOrderMutation (PlayerPackets.from (player), oldTurnOrderPosition));
+
+    return turnOrderMutationBuilder.build ();
   }
 
   @Override
@@ -573,57 +585,57 @@ public final class DefaultPlayerModel implements PlayerModel
   }
 
   @Override
-  public void remove (final Id playerId)
+  public ImmutableSet <PlayerTurnOrderMutation> remove (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
 
-    if (!existsPlayerWith (playerId)) return;
+    if (!existsPlayerWith (playerId)) return ImmutableSet.of ();
 
     final Player player = modelPlayerWith (playerId);
     deregister (player);
-    fixTurnOrdersAfterRemovalOfPlayer (player);
+    return fixTurnOrdersAfterRemovalOfPlayer (player);
   }
 
   @Override
-  public void removeByColor (final PlayerColor color)
+  public ImmutableSet <PlayerTurnOrderMutation> removeByColor (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
     Arguments.checkIsTrue (color.isNot (PlayerColor.UNKNOWN), "Invalid color [" + color + "].");
 
-    if (!existsPlayerWith (color)) return;
+    if (!existsPlayerWith (color)) return ImmutableSet.of ();
 
-    remove (modelPlayerWith (color).getId ());
+    return remove (modelPlayerWith (color).getId ());
   }
 
   @Override
-  public void removeById (final Id id)
+  public ImmutableSet <PlayerTurnOrderMutation> removeById (final Id id)
   {
     Arguments.checkIsNotNull (id, "id");
 
-    if (!existsPlayerWith (id)) return;
+    if (!existsPlayerWith (id)) return ImmutableSet.of ();
 
-    remove (modelPlayerWith (id).getId ());
+    return remove (modelPlayerWith (id).getId ());
   }
 
   @Override
-  public void removeByName (final String name)
+  public ImmutableSet <PlayerTurnOrderMutation> removeByName (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
 
-    if (!existsPlayerWith (name)) return;
+    if (!existsPlayerWith (name)) return ImmutableSet.of ();
 
-    remove (modelPlayerWith (name).getId ());
+    return remove (modelPlayerWith (name).getId ());
   }
 
   @Override
-  public void removeByTurnOrder (final PlayerTurnOrder turnOrder)
+  public ImmutableSet <PlayerTurnOrderMutation> removeByTurnOrder (final PlayerTurnOrder turnOrder)
   {
     Arguments.checkIsNotNull (turnOrder, "turnOrder");
     Arguments.checkIsTrue (turnOrder.isNot (PlayerTurnOrder.UNKNOWN), "Invalid turn order [" + turnOrder + "].");
 
-    if (!existsPlayerWith (turnOrder)) return;
+    if (!existsPlayerWith (turnOrder)) return ImmutableSet.of ();
 
-    remove (modelPlayerWith (turnOrder).getId ());
+    return remove (modelPlayerWith (turnOrder).getId ());
   }
 
   Player modelPlayerWith (final Id id)
@@ -696,10 +708,15 @@ public final class DefaultPlayerModel implements PlayerModel
     players.remove (player.getId ());
   }
 
-  private void fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
+  private ImmutableSet <PlayerTurnOrderMutation> fixTurnOrdersAfterRemovalOfPlayer (final Player removedPlayer)
   {
     // Ensure the removed player is really removed, or this will not work.
     assert !players.containsValue (removedPlayer);
+
+    // Sort mutations by old turn order; sorting by old or new turn order yields the same ordering since the mutations
+    // are always decrements.
+    final ImmutableSortedSet.Builder <PlayerTurnOrderMutation> turnOrderMutationBuilder = ImmutableSortedSet
+            .orderedBy (PlayerTurnOrderMutation.ORDER_BY_OLD_TURN_ORDER);
 
     final int danglingTurnOrderPosition = removedPlayer.getTurnOrderPosition ();
 
@@ -714,8 +731,13 @@ public final class DefaultPlayerModel implements PlayerModel
       if (!existsPlayerWith (turnOrder)) continue;
       if (turnOrder.getPosition () <= danglingTurnOrderPosition) continue;
 
-      modelPlayerWith (turnOrder).setTurnOrderByPosition (turnOrder.getPosition () - 1);
+      final Player player = modelPlayerWith (turnOrder);
+      player.setTurnOrderByPosition (turnOrder.getPosition () - 1);
+      turnOrderMutationBuilder
+              .add (new PlayerTurnOrderMutation (PlayerPackets.from (player), turnOrder.getPosition ()));
     }
+
+    return turnOrderMutationBuilder.build ();
   }
 
   private PlayerColor nextAvailableColor ()

@@ -22,11 +22,15 @@ import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Result;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
+
+import java.util.Comparator;
 
 public interface PlayerModel
 {
@@ -54,7 +58,13 @@ public interface PlayerModel
 
   boolean canRemoveCardFromHandOf (final Id playerId);
 
-  void changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder);
+  /**
+   * @return Ordered data about any players who had their turn order changed as a result of changing the turn order of
+   *         the specified player, ordered by old turn order, will be empty if the specified player's turn order wasn't
+   *         changed for any reason, otherwise always includes the specified player, and optionally another player who
+   *         previously possessed the specified turn order. Never contains any duplicate players (by {@link Id}).
+   */
+  ImmutableSet <PlayerTurnOrderMutation> changeTurnOrderOfPlayer (final Id playerId, final PlayerTurnOrder toTurnOrder);
 
   boolean existsPlayerWith (final Id id);
 
@@ -140,18 +150,45 @@ public interface PlayerModel
 
   ImmutableSet <PlayerJoinGameStatus> requestToAdd (final PlayerFactory players);
 
-  void remove (final Id playerId);
+  /**
+   * @return Ordered data about any players who had their turn order changed as a result of removing the specified
+   *         player, ordered by old turn order, will be empty if no players were affected, or if the specified player
+   *         wasn't removed for any reason. Never includes the removed player. Never contains any duplicate players (by
+   *         {@link Id}).
+   */
+  ImmutableSet <PlayerTurnOrderMutation> remove (final Id playerId);
 
-  void removeByColor (final PlayerColor color);
+  /**
+   * @return Ordered data about any players who had their turn order changed as a result of removing the specified
+   *         player, ordered by old turn order, will be empty if no players were affected, or if the specified player
+   *         wasn't removed for any reason. Never includes the removed player. Never contains any duplicate players (by
+   *         {@link Id}).
+   */
+  ImmutableSet <PlayerTurnOrderMutation> removeByColor (final PlayerColor color);
 
-  void removeById (final Id id);
+  /**
+   * @return Ordered data about any players who had their turn order changed as a result of removing the specified
+   *         player, ordered by old turn order, will be empty if no players were affected, or if the specified player
+   *         wasn't removed for any reason. Never includes the removed player. Never contains any duplicate players (by
+   *         {@link Id}).
+   */
+  ImmutableSet <PlayerTurnOrderMutation> removeById (final Id id);
 
-  void removeByName (final String name);
+  /**
+   * @return Ordered data about any players who had their turn order changed as a result of removing the specified
+   *         player, ordered by old turn order, will be empty if no players were affected, or if the specified player
+   *         wasn't removed for any reason. Never includes the removed player. Never contains any duplicate players (by
+   *         {@link Id}).
+   */
+  ImmutableSet <PlayerTurnOrderMutation> removeByName (final String name);
 
-  void removeByTurnOrder (final PlayerTurnOrder turnOrder);
-
-  @Override
-  String toString ();
+  /**
+   * @return Ordered data about any players who had their turn order changed as a result of removing the specified
+   *         player, ordered by old turn order, will be empty if no players were affected, or if the specified player
+   *         wasn't removed for any reason. Never includes the removed player. Never contains any duplicate players (by
+   *         {@link Id}).
+   */
+  ImmutableSet <PlayerTurnOrderMutation> removeByTurnOrder (final PlayerTurnOrder turnOrder);
 
   class PlayerJoinGameStatus implements Result.ReturnStatus <PlayerJoinGameDeniedEvent.Reason>
   {
@@ -193,4 +230,77 @@ public interface PlayerModel
       return result.succeeded ();
     }
   }
+
+  final class PlayerTurnOrderMutation
+  {
+    public static final Comparator <PlayerTurnOrderMutation> ORDER_BY_OLD_TURN_ORDER = new Comparator <PlayerTurnOrderMutation> ()
+    {
+      @Override
+      public int compare (final PlayerTurnOrderMutation o1, final PlayerTurnOrderMutation o2)
+      {
+        Arguments.checkIsNotNull (o1, "o1");
+        Arguments.checkIsNotNull (o2, "o2");
+
+        return Integer.compare (o1.getOldTurnOrder (), o2.getOldTurnOrder ());
+      }
+    };
+
+    private final PlayerPacket player;
+    private final int oldTurnOrder;
+
+    PlayerTurnOrderMutation (final PlayerPacket player, final int oldTurnOrder)
+    {
+      Arguments.checkIsNotNull (player, "player");
+      Arguments.checkIsNotNull (oldTurnOrder, "oldTurnOrder");
+      Preconditions.checkIsTrue (player.doesNotHave (oldTurnOrder), "Player: [{}] must not have old turn order: [{}].",
+                                 player, oldTurnOrder);
+
+      this.player = player;
+      this.oldTurnOrder = oldTurnOrder;
+    }
+
+    @Override
+    public int hashCode ()
+    {
+      return player.hashCode ();
+    }
+
+    @Override
+    public boolean equals (final Object o)
+    {
+      if (this == o) return true;
+      if (o == null || getClass () != o.getClass ()) return false;
+
+      final PlayerTurnOrderMutation mutation = (PlayerTurnOrderMutation) o;
+
+      return player.equals (mutation.player);
+    }
+
+    @Override
+    public String toString ()
+    {
+      return Strings.format ("{}: Player: [{}] | OldTurnOrder: [{}]", getClass ().getSimpleName (), player,
+                             oldTurnOrder);
+    }
+
+    public int getNewTurnOrder ()
+    {
+      return player.getTurnOrder ();
+    }
+
+    public int getOldTurnOrder ()
+    {
+      return oldTurnOrder;
+    }
+
+    public PlayerPacket getPlayer ()
+    {
+      return player;
+    }
+
+  }
+
+  @Override
+  String toString ();
+
 }

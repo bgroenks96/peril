@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model;
 
+import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -194,8 +195,12 @@ class InternalCommunicationHandler
     final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
 
     countryOwnerModel.unassignAllCountriesOwnedBy (player);
-    playerModel.remove (player);
+    final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> turnOrderMutations = playerModel.remove (player);
     playerTurnModel.decrementTurnCount ();
+    for (final PlayerModel.PlayerTurnOrderMutation mutation : turnOrderMutations)
+    {
+      eventBus.publish (new DefaultPlayerTurnOrderChangedEvent (mutation.getPlayer (), mutation.getOldTurnOrder ()));
+    }
 
     eventBus.publish (new PlayerLeaveGameEvent (event.getPlayer (), playerModel.getPlayerPackets ()));
   }
