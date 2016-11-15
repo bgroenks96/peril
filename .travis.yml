@@ -73,5 +73,21 @@ notifications:
     secure: k6hcEkhZ3euedmvo7SvRT26BIe6gHOSvO8q0w4H25ADr+0zOEK4GBjCn82TAW/H5w6ttrPKzf2FkDSAOhOQE2iyQu3HlJdsVkd2+N6Gh8mdhJRAgLpxj+fw3tEwQ9D/vi6Jxku/mqYW1Q7eoIP+11Ndb54C/E8FWQUPIBx3+bW5GDTgUFgn7WULmx2ttmy9F251QoAzHyvspehAGzsMZimrLfRqf3gfMByDVCSOzcljZhYnAy2R7I/jsJ64KkJPEODCGy4KbvGPnvhjDm7+DIThQhVBKVhYmLt6y8feCDGbl7ipbNpE3B7J3p8QDTjs3c48zVPudUHtYqlmrxbfoUHy7lUnVm6mp5ZNqKd9Y4ZhRZ1UAO8GzUVzGKnCtm3Itwjwfu8PDcqFuFkbwKierBFehBOupxEMoMSHYJ1tPOATLkvDPLG+kvaj8pKpiScxHp0+7dcAn99eI4CZucBtCBIHGa/L+FACqV45Szbkrc/K1s89nbkj+3vH+4Cw4V1RK0/WVbf/ad4OOlF+Q1NifB0TlLGGuHZe3Gmw1aITC3TC9/QD1FSfLzmbE085UfKZ4s+Bd4/5Sor3swn1CSWbzHJHWJiHThlibTRN57whli6H5r8py0aHKJc5jcagGa7QBd7ClqoNBSccPPdN1UuaDzgMyHbU5am2CdiFNSHo6VqM=
 env:
   global:
+    #
+    # Fix for Travis CI builds crashing due to running too low on memory and SIGKILL-ing processes.
+    #
+    # Relevant error messages:
+    #
+    # - Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed).
+    # - Process 'Gradle Test Executor 4' finished with non-zero exit value 137
+    #
+    # For more information, see:
+    #
+    # - build.gradle (for the other part of this fix)
+    # - https://discuss.gradle.org/t/travis-ci-org-gradle-launcher-daemon-client-daemondisappearedexception-gradle-build-daemon-disappeared-unexpectedly-it-may-have-been-killed-or-may-have-crashed/13106
+    # - https://discuss.gradle.org/t/gradle-check-fails-but-tests-finish-with-success/10214
+    # - https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
+    #
+    - GRADLE_OPTS="-Xms128m" # Limit initial heap size of Gradle daemon. Travis default is 1GB.
     - secure: hJGlGp4bz8nq6DEr5Qa6rTM7yNt8HuawMdwarX132iNetpuPohKEMnIj9WSqkcH0rLyosj6AQVAJqTXEJ5WcRKyfSYnp8EVAHr2RsVak+qSCvZAhJeMq+do41CI29LBxb40ygW4rB7McDkLmlN+WlFK5DCD1TPyvexg0OUoegq3sAKSO2MmXaydbCDutrt5tkx67YEt1viwfd+iheINZX1ZxalrqCtKeun0+yVwRrdL/jjf/HjexWwtigDq3WKOzerj1UuGuey6XWNMikBmbDIxMDjg8HY3xOfkTiaJ9Q1ou+EVk+a2f/bc+32dMaxeuGnEXh5R7M6wHTuUh1I6vur3ceqRbvw6DoVAJLTjkT7c4NS0C+DZ2qAUk9YEoSKv4vTioSPISii5sVfs8XDT8S1SSmY3tqRx9pg9gou6lWMJOjymz6OoiWgw2T30OvkOJ5Goc4pI28LzqZRykYdR8AOGQul+av0+GyHBijBXgPBComWoDaM9iSqQWcbmrJD4kECoOD1kE/J68RHCEXUYvRINlkFpefhcTg7ce0j1x5udyrCIZuhFXKLMj7M8hYFl4aitU25FqQFUin9+el00w0AUdZp3ZAQjF7fUJd3JareFJaE15Sx+pfNR4xPIxKS0i37YjFp4XYZbQgu0lTtpNgri3uGNct2bXfTtTyedRr7g=
     - secure: 1Pm5SbrQrzLZuSv0CoU0wdI0Gnyt3GDbTHzie087Be/dtOBPmNDTHx1xEtCFziWWiS+8YvASSuJ1ZhLRWvqxtC0S2lQ9ENyDeUULX9RYoAqHnArpYR5QAWHHM3xEiIjG7fKQTknpvI+RbXW122JKxWgsmsR3argWXvgJvsgfyavwq245RB3lG0AXLqOGk+VL5w4IaBE8E1B2iU9wRe0gA4pNbWaF61uiSFo/J8/lt89STA9WDeCdEQ3swdsd2L7/FPpujb5tpmjCpZS69xF/jGkUG5YiEZ9jx5a6kDcJ/SLt4BBDgd9aBxVBigW16PW/yZd+VU6T7PnHBnosgmzFJkauMp2OyW9DDzezveXs/xbEkSXJ2hgueKHULX7DvM/TIXPZio1X9/29pJ3LbMUjWnLXuFVf8Xfi3NEmc+TyJECWJqokaPIcP0WobLgtpqkGcbcMRBnxPNh/H0R+zssAj1ZlewOiGwZN/rCpncXfn4vtwessdNRV6MEaq/0/QRJfMlMPimZw5EFzozMhM76TlU+ycAmWpDx94Z2djz1kk4JQiKXIfFc5g6VmMCn43aE8QxlgfGgHNTsGY1fFT2aADJDSOC4y1/G8oAeicdyuDMV8M2wMVUopqumFRYli02BI2zMZVX+41eD9kPEzBWadFiaOUdQapjROk6SCzWkv2JU=
