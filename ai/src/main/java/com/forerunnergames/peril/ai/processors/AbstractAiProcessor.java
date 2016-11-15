@@ -22,6 +22,7 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
@@ -31,6 +32,9 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
 import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -44,10 +48,13 @@ abstract class AbstractAiProcessor implements AiProcessor
 {
   protected static final int EVENT_HANDLER_PRIORITY_CALL_FIRST = Integer.MAX_VALUE;
   protected static final int EVENT_HANDLER_PRIORITY_CALL_LAST = Integer.MIN_VALUE;
+  private static final long OUTGOING_COMMUNICATION_DELAY_SECONDS = 2;
   protected final Logger log = LoggerFactory.getLogger (getClass ());
+  private final ScheduledExecutorService executor = Executors.newScheduledThreadPool (10);
   private final String playerName;
   private final GameServerConfiguration gameServerConfig;
   private final MBassador <Event> eventBus;
+  private final boolean shouldDelayOutoingCommunication;
   @Nullable
   private PlayerPacket selfPlayer;
 
@@ -62,6 +69,8 @@ abstract class AbstractAiProcessor implements AiProcessor
     this.playerName = playerName;
     this.gameServerConfig = gameServerConfig;
     this.eventBus = eventBus;
+    shouldDelayOutoingCommunication = gameServerConfig.getPlayerLimitFor (PersonSentience.HUMAN) > 0
+            || gameServerConfig.getSpectatorLimit () > 0;
   }
 
   @Override
@@ -81,7 +90,14 @@ abstract class AbstractAiProcessor implements AiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    eventBus.publish (new AiCommunicationEvent (event, playerName));
+    executor.schedule (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        eventBus.publish (new AiCommunicationEvent (event, playerName));
+      }
+    }, shouldDelayOutoingCommunication ? OUTGOING_COMMUNICATION_DELAY_SECONDS : 0, TimeUnit.SECONDS);
   }
 
   @Override
@@ -206,7 +222,11 @@ abstract class AbstractAiProcessor implements AiProcessor
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: PlayerName: [{]] | SelfPlayer: [{}] | GameServerConfig: [{}]", getClass ()
-            .getSimpleName (), playerName, selfPlayer, gameServerConfig);
+    return Strings
+            .format ("{}: PlayerName: [{]] | SelfPlayer: [{}] | GameServerConfig: [{}] | "
+                             + "ShouldDelayOutgoingCommunication: [{}] | OutgoingCommunicationDelaySeconds: [{}]",
+                     getClass ().getSimpleName (), playerName, selfPlayer, gameServerConfig,
+                     shouldDelayOutoingCommunication,
+                     OUTGOING_COMMUNICATION_DELAY_SECONDS);
   }
 }
