@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.peril;
+package com.forerunnergames.peril.client.ui.screens.menus.modes.classic;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -34,28 +33,27 @@ import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class MultiplayerPerilGameModeMenuScreen extends AbstractMenuScreen
+public final class ClassicGameModeMenuScreen extends AbstractMenuScreen
 {
-  public MultiplayerPerilGameModeMenuScreen (final MenuScreenWidgetFactory widgetFactory,
-                                             final ScreenChanger screenChanger,
-                                             final ScreenSize screenSize,
-                                             final MouseInput mouseInput,
-                                             final Batch batch,
-                                             final MBassador <Event> eventBus)
+  public ClassicGameModeMenuScreen (final MenuScreenWidgetFactory widgetFactory,
+                                    final ScreenChanger screenChanger,
+                                    final ScreenSize screenSize,
+                                    final MouseInput mouseInput,
+                                    final Batch batch,
+                                    final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
-    addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
-    addSubTitle ("PERIL MODE");
+    addTitle ("CLASSIC MODE", Align.left, 60);
 
-    addMenuChoiceSpacer (22);
+    addMenuChoiceSpacer (42);
 
     addMenuChoice ("CREATE GAME", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        toScreen (ScreenId.PLAY_PERIL);
+        toScreen (ScreenId.CLASSIC_GAME_MODE_CREATE_GAME_MENU);
       }
     });
 
@@ -66,7 +64,7 @@ public final class MultiplayerPerilGameModeMenuScreen extends AbstractMenuScreen
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        toScreen (ScreenId.PLAY_PERIL);
+        toScreen (ScreenId.CLASSIC_GAME_MODE_JOIN_GAME_MENU);
       }
     });
 
@@ -75,7 +73,7 @@ public final class MultiplayerPerilGameModeMenuScreen extends AbstractMenuScreen
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
+        toScreen (ScreenId.GAME_MODES_MENU);
       }
     });
   }
@@ -83,7 +81,7 @@ public final class MultiplayerPerilGameModeMenuScreen extends AbstractMenuScreen
   @Override
   protected boolean onEscape ()
   {
-    if (!super.onEscape ()) toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
+    if (!super.onEscape ()) toScreen (ScreenId.GAME_MODES_MENU);
     return true;
   }
 }

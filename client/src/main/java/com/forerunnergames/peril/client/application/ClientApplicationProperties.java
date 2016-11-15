@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ClientApplicationProperties
 {
-  public static final int CURRENT_VERSION = 7;
+  public static final int CURRENT_VERSION = 8;
   public static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   public static final String PROPERTIES_FILE_NAME = "settings.txt";
   public static final String VERSION_FILE_NAME = ".version";
@@ -98,8 +98,8 @@ public final class ClientApplicationProperties
   public static final String CLASSIC_MODE_PLAY_MAP_NAME_KEY = "map-name-classic-mode";
   public static final String CLASSIC_MODE_WIN_PERCENT_KEY = "win-percent-classic-mode";
   public static final String CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY = "initial-country-assignment-classic-mode";
-  public static final String AUTO_JOIN_MULTIPLAYER_GAME_KEY = "auto-join-multiplayer-game";
-  public static final String AUTO_CREATE_MULTIPLAYER_GAME_KEY = "auto-create-multiplayer-game";
+  public static final String AUTO_JOIN_GAME_KEY = "auto-join-game";
+  public static final String AUTO_CREATE_GAME_KEY = "auto-create-game";
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (ClientApplicationProperties.class);
   private static final String PROPERTIES_FILE_COMMENTS = " Player-Configurable Peril Settings\n\n"
@@ -177,12 +177,12 @@ public final class ClientApplicationProperties
           + CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY
           + ": Method of assigning initial countries to players in your classic game mode server: "
           + Strings.toStringList (", ", LetterCase.NONE, false, InitialCountryAssignment.values ()) + "\n\n "
-          + AUTO_JOIN_MULTIPLAYER_GAME_KEY
-          + ": true, false ('true' will automatically join a multiplayer game using the settings in this file, "
-          + "ignoring the " + START_SCREEN_PROPERTY_KEY + " setting. 'false' will disable auto-joining.)\n\n "
-          + AUTO_CREATE_MULTIPLAYER_GAME_KEY
-          + ": true, false ('true' will automatically create a multiplayer game using the settings in this file, "
-          + "ignoring the " + START_SCREEN_PROPERTY_KEY + " setting. 'false' will disable auto-creation.)\n\n "
+          + AUTO_JOIN_GAME_KEY
+          + ": true, false ('true' will automatically join a game using the settings in this file, ignoring the "
+          + START_SCREEN_PROPERTY_KEY + " setting. 'false' will disable auto-joining.)\n\n "
+          + AUTO_CREATE_GAME_KEY
+          + ": true, false ('true' will automatically create a game using the settings in this file, ignoring the "
+          + START_SCREEN_PROPERTY_KEY + " setting. 'false' will disable auto-creation.)\n\n "
           + "\n"
           + " If you've done your best to read & follow these instructions, and you're still having problems:\n\n"
           + " 1) Ask for help on our forums at https://forerunner.games/forums\n"
@@ -405,8 +405,8 @@ public final class ClientApplicationProperties
     properties.setProperty (CLASSIC_MODE_PLAY_MAP_NAME_KEY, Strings.toProperCase (String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME)));
     properties.setProperty (CLASSIC_MODE_WIN_PERCENT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT));
     properties.setProperty (CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY, String.valueOf (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT));
-    properties.setProperty (AUTO_JOIN_MULTIPLAYER_GAME_KEY, String.valueOf (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME));
-    properties.setProperty (AUTO_CREATE_MULTIPLAYER_GAME_KEY, String.valueOf (InputSettings.AUTO_CREATE_MULTIPLAYER_GAME));
+    properties.setProperty (AUTO_JOIN_GAME_KEY, String.valueOf (InputSettings.AUTO_JOIN_GAME));
+    properties.setProperty (AUTO_CREATE_GAME_KEY, String.valueOf (InputSettings.AUTO_CREATE_GAME));
     // @formatter:on
   }
 
@@ -459,8 +459,8 @@ public final class ClientApplicationProperties
     InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME = parseClassicModePlayMapName (CLASSIC_MODE_PLAY_MAP_NAME_KEY, properties);
     InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT = parseInteger (CLASSIC_MODE_WIN_PERCENT_KEY, 5, ClassicGameRules.MAX_WIN_PERCENTAGE, 5, properties);
     InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT = parseEnum (CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY, InitialCountryAssignment.class, properties);
-    InputSettings.AUTO_JOIN_MULTIPLAYER_GAME = parseBoolean (AUTO_JOIN_MULTIPLAYER_GAME_KEY, properties);
-    InputSettings.AUTO_CREATE_MULTIPLAYER_GAME = parseBoolean (AUTO_CREATE_MULTIPLAYER_GAME_KEY, properties);
+    InputSettings.AUTO_JOIN_GAME = parseBoolean (AUTO_JOIN_GAME_KEY, properties);
+    InputSettings.AUTO_CREATE_GAME = parseBoolean (AUTO_CREATE_GAME_KEY, properties);
     // @formatter:on
   }
 

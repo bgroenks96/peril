@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame;
+package com.forerunnergames.peril.client.ui.screens.menus.modes.classic.creategame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -80,10 +79,10 @@ import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MultiplayerClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
+public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScreen
 {
-  private static final Logger log = LoggerFactory.getLogger (MultiplayerClassicGameModeCreateGameMenuScreen.class);
-  private static final String TITLE_TEXT = "CREATE MULTIPLAYER GAME";
+  private static final Logger log = LoggerFactory.getLogger (ClassicGameModeCreateGameMenuScreen.class);
+  private static final String TITLE_TEXT = "CREATE GAME";
   private static final String SUBTITLE_TEXT = "CLASSIC MODE";
   private static final String FORWARD_BUTTON_TEXT = "CREATE GAME";
   private static final String SERVER_NAME_SETTING_LABEL_TEXT = "Title";
@@ -130,13 +129,13 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
   private PlayMapMetadata currentPlayMap = PlayMapMetadata.NULL;
   private boolean isFirstTimeOnScreen = true;
 
-  public MultiplayerClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
-                                                         final ScreenChanger screenChanger,
-                                                         final ScreenSize screenSize,
-                                                         final MouseInput mouseInput,
-                                                         final Batch batch,
-                                                         final CountryCounter countryCounter,
-                                                         final MBassador <Event> eventBus)
+  public ClassicGameModeCreateGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
+                                              final ScreenChanger screenChanger,
+                                              final ScreenSize screenSize,
+                                              final MouseInput mouseInput,
+                                              final Batch batch,
+                                              final CountryCounter countryCounter,
+                                              final MBassador <Event> eventBus)
 
   {
     super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
@@ -357,7 +356,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
           @Override
           public void run ()
           {
-            toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+            toScreen (ScreenId.CLASSIC_GAME_MODE_MENU);
           }
         });
       }
@@ -482,7 +481,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
     initialCountryAssignmentSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
     // @formatter:on
 
-    if (isFirstTimeOnScreen && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
+    if (isFirstTimeOnScreen && InputSettings.AUTO_CREATE_GAME)
     {
       // Execute next frame because a screen transition is still in progress.
       Gdx.app.postRunnable (new Runnable ()
@@ -507,7 +506,7 @@ public final class MultiplayerClassicGameModeCreateGameMenuScreen extends Abstra
         @Override
         public void run ()
         {
-          toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+          toScreen (ScreenId.CLASSIC_GAME_MODE_MENU);
         }
       });
     }

@@ -209,26 +209,26 @@ public final class SplashScreen extends AbstractLoadingScreen
   {
     try
     {
-      if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME && InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
+      if (InputSettings.AUTO_JOIN_GAME && InputSettings.AUTO_CREATE_GAME)
       {
         throw new IllegalStateException (
-                Strings.format ("Cannot auto-join & auto-create a multiplayer game simultaneously.\n\n"
+                Strings.format ("Cannot auto-join & auto-create a game simultaneously.\n\n"
                                         + "Please disable either '{}', '{}', or both in:\n\n{}.",
-                                ClientApplicationProperties.AUTO_JOIN_MULTIPLAYER_GAME_KEY,
-                                ClientApplicationProperties.AUTO_CREATE_MULTIPLAYER_GAME_KEY,
+                                ClientApplicationProperties.AUTO_JOIN_GAME_KEY,
+                                ClientApplicationProperties.AUTO_CREATE_GAME_KEY,
                                 ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
       }
-      else if (InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
+      else if (InputSettings.AUTO_JOIN_GAME)
       {
-        log.info ("Auto-joining multiplayer game, skipping start screen.");
+        log.info ("Auto-joining game, skipping start screen.");
 
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU);
+        toScreen (ScreenId.CLASSIC_GAME_MODE_JOIN_GAME_MENU);
       }
-      else if (InputSettings.AUTO_CREATE_MULTIPLAYER_GAME)
+      else if (InputSettings.AUTO_CREATE_GAME)
       {
-        log.info ("Auto-creating multiplayer game, skipping start screen.");
+        log.info ("Auto-creating game, skipping start screen.");
 
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU);
+        toScreen (ScreenId.CLASSIC_GAME_MODE_CREATE_GAME_MENU);
       }
       else
       {

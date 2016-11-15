@@ -45,8 +45,8 @@ public final class InputSettings
   public static String INITIAL_CLASSIC_MODE_PLAY_MAP_NAME = GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME;
   public static int INITIAL_CLASSIC_MODE_WIN_PERCENT = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
   public static InitialCountryAssignment INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
-  public static boolean AUTO_JOIN_MULTIPLAYER_GAME = false;
-  public static boolean AUTO_CREATE_MULTIPLAYER_GAME = false;
+  public static boolean AUTO_JOIN_GAME = false;
+  public static boolean AUTO_CREATE_GAME = false;
 
   private InputSettings ()
   {

@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame;
+package com.forerunnergames.peril.client.ui.screens.menus.modes.classic.joingame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -51,7 +50,7 @@ import com.forerunnergames.tools.common.Strings;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class MultiplayerClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
+public final class ClassicGameModeJoinGameMenuScreen extends AbstractMenuScreen
 {
   private final MenuScreenWidgetFactory widgetFactory;
   private final Dialog errorDialog;
@@ -67,12 +66,12 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
   private final Button forwardButton;
   private boolean isFirstTimeOnScreen = true;
 
-  public MultiplayerClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
-                                                       final ScreenChanger screenChanger,
-                                                       final ScreenSize screenSize,
-                                                       final MouseInput mouseInput,
-                                                       final Batch batch,
-                                                       final MBassador <Event> eventBus)
+  public ClassicGameModeJoinGameMenuScreen (final MenuScreenWidgetFactory widgetFactory,
+                                            final ScreenChanger screenChanger,
+                                            final ScreenSize screenSize,
+                                            final MouseInput mouseInput,
+                                            final Batch batch,
+                                            final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
@@ -82,7 +81,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
 
     errorDialog = createErrorDialog ();
 
-    addTitle ("JOIN MULTIPLAYER GAME", Align.bottomLeft, 40);
+    addTitle ("JOIN GAME", Align.bottomLeft, 40);
     addSubTitle ("CLASSIC MODE");
 
     playerNameTextField = widgetFactory.createPlayerNameTextField ();
@@ -154,7 +153,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
           @Override
           public void run ()
           {
-            toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+            toScreen (ScreenId.CLASSIC_GAME_MODE_MENU);
           }
         });
       }
@@ -226,7 +225,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
     gameSettingsSectionTitleLabel.setStyle (widgetFactory.createGameSettingsSectionTitleLabelStyle ());
     serverAddressSettingLabel.setStyle (widgetFactory.createMenuSettingLabelStyle ());
 
-    if (isFirstTimeOnScreen && InputSettings.AUTO_JOIN_MULTIPLAYER_GAME)
+    if (isFirstTimeOnScreen && InputSettings.AUTO_JOIN_GAME)
     {
       // Execute next frame because a screen transition is still in progress.
       Gdx.app.postRunnable (new Runnable ()
@@ -252,7 +251,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
         @Override
         public void run ()
         {
-          toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+          toScreen (ScreenId.CLASSIC_GAME_MODE_MENU);
         }
       });
     }

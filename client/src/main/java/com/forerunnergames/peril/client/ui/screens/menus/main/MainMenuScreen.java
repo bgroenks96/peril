@@ -63,23 +63,12 @@ public final class MainMenuScreen extends AbstractMenuScreen
 
     addMenuChoiceSpacer (42);
 
-    addMenuChoice ("SINGLE PLAYER", new ClickListener (Input.Buttons.LEFT)
+    addMenuChoice ("PLAY", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // TODO Implement
-      }
-    });
-
-    addMenuChoiceSpacer (10);
-
-    addMenuChoice ("MULTIPLAYER", new ClickListener (Input.Buttons.LEFT)
-    {
-      @Override
-      public void clicked (final InputEvent event, final float x, final float y)
-      {
-        toScreen (ScreenId.MULTIPLAYER_GAME_MODES_MENU);
+        toScreen (ScreenId.GAME_MODES_MENU);
       }
     });
 

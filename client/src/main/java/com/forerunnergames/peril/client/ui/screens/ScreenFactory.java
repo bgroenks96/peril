@@ -40,11 +40,11 @@ import com.forerunnergames.peril.client.ui.screens.loading.MenuToPlayLoadingScre
 import com.forerunnergames.peril.client.ui.screens.loading.PlayToMenuLoadingScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.menus.main.MainMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.MultiplayerGameModesMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.MultiplayerClassicGameModeMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.creategame.MultiplayerClassicGameModeCreateGameMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.classic.joingame.MultiplayerClassicGameModeJoinGameMenuScreen;
-import com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes.peril.MultiplayerPerilGameModeMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.GameModesMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.classic.ClassicGameModeMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.classic.creategame.ClassicGameModeCreateGameMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.classic.joingame.ClassicGameModeJoinGameMenuScreen;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.peril.PerilGameModeMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.splash.SplashScreen;
 import com.forerunnergames.peril.client.ui.screens.splash.SplashScreenWidgetFactory;
 import com.forerunnergames.peril.common.game.GameMode;
@@ -116,30 +116,29 @@ public final class ScreenFactory
       {
         return new MainMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
       }
-      case MULTIPLAYER_GAME_MODES_MENU:
+      case GAME_MODES_MENU:
       {
-        return new MultiplayerGameModesMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
+        return new GameModesMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
+      }
+      case CLASSIC_GAME_MODE_MENU:
+      {
+        return new ClassicGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput, batch,
+                eventBus);
+      }
+      case PLAYER_PERIL_GAME_MODE_MENU:
+      {
+        return new PerilGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput, batch,
+                eventBus);
+      }
+      case CLASSIC_GAME_MODE_CREATE_GAME_MENU:
+      {
+        return new ClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
+                batch, CountryCounterFactory.create (GameMode.CLASSIC), eventBus);
+      }
+      case CLASSIC_GAME_MODE_JOIN_GAME_MENU:
+      {
+        return new ClassicGameModeJoinGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
                 batch, eventBus);
-      }
-      case MULTIPLAYER_CLASSIC_GAME_MODE_MENU:
-      {
-        return new MultiplayerClassicGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                mouseInput, batch, eventBus);
-      }
-      case MULTIPLAYER_PERIL_GAME_MODE_MENU:
-      {
-        return new MultiplayerPerilGameModeMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize, mouseInput,
-                batch, eventBus);
-      }
-      case MULTIPLAYER_CLASSIC_GAME_MODE_CREATE_GAME_MENU:
-      {
-        return new MultiplayerClassicGameModeCreateGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                mouseInput, batch, CountryCounterFactory.create (GameMode.CLASSIC), eventBus);
-      }
-      case MULTIPLAYER_CLASSIC_GAME_MODE_JOIN_GAME_MENU:
-      {
-        return new MultiplayerClassicGameModeJoinGameMenuScreen (menuScreenWidgetFactory, screenChanger, screenSize,
-                mouseInput, batch, eventBus);
       }
       case MENU_TO_PLAY_LOADING:
       {

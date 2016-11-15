@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.menus.multiplayer.modes;
+package com.forerunnergames.peril.client.ui.screens.menus.modes;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -34,28 +33,27 @@ import com.forerunnergames.tools.common.Event;
 
 import net.engio.mbassy.bus.MBassador;
 
-public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
+public final class GameModesMenuScreen extends AbstractMenuScreen
 {
-  public MultiplayerGameModesMenuScreen (final MenuScreenWidgetFactory widgetFactory,
-                                         final ScreenChanger screenChanger,
-                                         final ScreenSize screenSize,
-                                         final MouseInput mouseInput,
-                                         final Batch batch,
-                                         final MBassador <Event> eventBus)
+  public GameModesMenuScreen (final MenuScreenWidgetFactory widgetFactory,
+                              final ScreenChanger screenChanger,
+                              final ScreenSize screenSize,
+                              final MouseInput mouseInput,
+                              final Batch batch,
+                              final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
 
-    addTitle ("MULTIPLAYER", Align.bottomLeft, 40);
-    addSubTitle ("GAME MODES");
+    addTitle ("GAME MODES", Align.left, 60);
 
-    addMenuChoiceSpacer (22);
+    addMenuChoiceSpacer (42);
 
     addMenuChoice ("CLASSIC", new ClickListener (Input.Buttons.LEFT)
     {
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        toScreen (ScreenId.MULTIPLAYER_CLASSIC_GAME_MODE_MENU);
+        toScreen (ScreenId.CLASSIC_GAME_MODE_MENU);
       }
     });
 
@@ -66,8 +64,8 @@ public final class MultiplayerGameModesMenuScreen extends AbstractMenuScreen
       @Override
       public void clicked (final InputEvent event, final float x, final float y)
       {
-        // TODO Production: Go to MultiplayerPerilGameModeMenuScreen.
-        // toScreen (ScreenId.MULTIPLAYER_PERIL_GAME_MODE_MENU);
+        // TODO Production: Go to PerilGameModeMenuScreen.
+        // toScreen (ScreenId.PERIL_GAME_MODE_MENU);
       }
     });
 
