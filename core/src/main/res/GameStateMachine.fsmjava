@@ -19,8 +19,8 @@
 
 <sm:StateMachine xmlns:sm="http://www.stateforge.com/StateMachineJava-v1"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.stateforge.com/StateMachineJava-v1 http://www.stateforge.com/xsd/StateMachineJava-v1.xsd
-  http://www.stateforge.com/StateMachineJava-v1">
+                 xsi:schemaLocation="http://www.stateforge.com/StateMachineJava-v1
+                                     http://www.stateforge.com/xsd/StateMachineJava-v1.xsd">
   <!-- General settings -->
   <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
     <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model"/>
