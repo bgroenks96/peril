@@ -120,27 +120,6 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     return this.player.doesNotHave (player.getTurnOrder ());
   }
 
-  public void setPlayer (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-
-    log.trace ("Setting player: Old player: [{}] | New player: [{}]", this.player, player);
-
-    this.player = player;
-
-    messageRowLeft = createMessageRow (createMessageTextLeft (player.getTurnOrder ()));
-    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), player.getArmiesInHand ()));
-    message = createMessage ();
-
-    messageRowLeftCell.setActor (messageRowLeft.asActor ());
-    messageRowRightCell.setActor (messageRowRight.asActor ());
-
-    playerColorIcon = widgetFactory.createPlayerColorIcon (player);
-    playerColorIconCell.setActor (playerColorIcon.asActor ());
-
-    table.invalidateHierarchy ();
-  }
-
   public void setPlayerArmiesInHand (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
@@ -181,6 +160,27 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   public PlayerPacket getPlayer ()
   {
     return player;
+  }
+
+  public void setPlayer (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    log.trace ("Setting player: Old player: [{}] | New player: [{}]", this.player, player);
+
+    this.player = player;
+
+    messageRowLeft = createMessageRow (createMessageTextLeft (player.getTurnOrder ()));
+    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), player.getArmiesInHand ()));
+    message = createMessage ();
+
+    messageRowLeftCell.setActor (messageRowLeft.asActor ());
+    messageRowRightCell.setActor (messageRowRight.asActor ());
+
+    playerColorIcon = widgetFactory.createPlayerColorIcon (player);
+    playerColorIconCell.setActor (playerColorIcon.asActor ());
+
+    table.invalidateHierarchy ();
   }
 
   public boolean playerHasName (final String playerName)

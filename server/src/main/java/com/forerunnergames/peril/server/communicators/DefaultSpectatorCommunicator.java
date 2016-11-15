@@ -43,7 +43,9 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   }
 
   @Override
-  public void sendToSpectator (final SpectatorPacket spectator, final Event message, final ClientSpectatorMapping mapping)
+  public void sendToSpectator (final SpectatorPacket spectator,
+                               final Event message,
+                               final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (spectator, "spectator");
     Arguments.checkIsNotNull (message, "message");

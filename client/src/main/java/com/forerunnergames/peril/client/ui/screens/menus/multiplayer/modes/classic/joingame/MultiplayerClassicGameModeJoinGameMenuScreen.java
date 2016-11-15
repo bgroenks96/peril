@@ -188,7 +188,7 @@ public final class MultiplayerClassicGameModeJoinGameMenuScreen extends Abstract
         }
 
         final String playerNameWithOptionalClanTag = GameSettings.getHumanPlayerNameWithOptionalClanTag (playerName,
-                                                                                                    clanAcronym);
+                                                                                                         clanAcronym);
         final String serverAddress = serverAddressTextField.getText ();
 
         if (!NetworkSettings.isValidServerAddress (serverAddress))

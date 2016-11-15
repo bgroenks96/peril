@@ -18,10 +18,10 @@
 
 package com.forerunnergames.peril.core.model.state;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;

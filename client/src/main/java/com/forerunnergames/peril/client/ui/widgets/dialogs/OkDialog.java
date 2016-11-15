@@ -308,22 +308,26 @@ public class OkDialog implements Dialog
     delegate.refreshAssets ();
   }
 
-  protected void addButtons ()
+  @Override
+  public void onKeyDownRepeating (final int keyCode)
   {
-    delegate.addButtons ();
-  }  @Override
+    // Empty base implementation
+  }
+
+  @Override
   public void onKeyUp (final int keyCode)
   {
     // Empty base implementation
   }
 
+  protected void addButtons ()
+  {
+    delegate.addButtons ();
+  }
+
   protected final void addTextButton (final String buttonText, final DialogAction dialogAction)
   {
     delegate.addTextButton (buttonText, dialogAction);
-  }  @Override
-  public void onKeyDownRepeating (final int keyCode)
-  {
-    // Empty base implementation
   }
 
   protected final TextButton addTextButton (final String buttonText,
@@ -933,8 +937,4 @@ public class OkDialog implements Dialog
       getCell (getButtonTable ()).right ();
     }
   }
-
-
-
-
 }

@@ -50,7 +50,7 @@ public final class CorePlayMapDataPathParser extends AbstractPlayMapDataPathPars
       default:
       {
         throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                metadata.getType ()));
+                                                           metadata.getType ()));
       }
     }
   }

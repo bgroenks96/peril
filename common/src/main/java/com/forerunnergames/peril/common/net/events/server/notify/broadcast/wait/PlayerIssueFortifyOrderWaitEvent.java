@@ -23,7 +23,8 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerIssueFortifyOrderWaitEvent extends AbstractPlayerFortifyCountryEvent implements PlayerWaitEvent
+public final class PlayerIssueFortifyOrderWaitEvent extends AbstractPlayerFortifyCountryEvent implements
+        PlayerWaitEvent
 {
   public PlayerIssueFortifyOrderWaitEvent (final PlayerPacket player,
                                            final CountryPacket sourceCountry,

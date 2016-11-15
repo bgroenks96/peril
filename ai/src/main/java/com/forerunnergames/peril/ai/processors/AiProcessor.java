@@ -66,8 +66,7 @@ public interface AiProcessor
   String getPlayerNameDeTagged ();
 
   /**
-   * Get the clan acronym from this AI player's name.
-   * <br/>
+   * Get the clan acronym from this AI player's name. <br/>
    * Note that AI players always have an [AI] clan tag, with AI clan acronym.
    *
    * @return AI
@@ -75,8 +74,7 @@ public interface AiProcessor
   String getPlayerClan ();
 
   /**
-   * Gets whether this AI player's name contains a clan tag.
-   * <br/>
+   * Gets whether this AI player's name contains a clan tag. <br/>
    * Note that AI players always have an [AI] clan tag.
    *
    * @return true
