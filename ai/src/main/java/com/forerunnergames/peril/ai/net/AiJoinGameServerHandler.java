@@ -39,7 +39,7 @@ public final class AiJoinGameServerHandler extends AbstractJoinGameServerHandler
   protected boolean isSelf (final JoinGameServerSuccessEvent event, final String selfPlayerName)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsNotNull (selfPlayerName, "playerName");
+    Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
 
     return event.getClientAddress ().equals (selfPlayerName);
   }

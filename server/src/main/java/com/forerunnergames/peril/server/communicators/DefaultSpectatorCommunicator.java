@@ -46,7 +46,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   public void sendToSpectator (final SpectatorPacket spectator, final Event message, final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (spectator, "spectator");
-    Arguments.checkIsNotNull (message, "msg");
+    Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (mapping, "mapping");
 
     final Optional <Remote> clientQuery = mapping.clientFor (spectator);
@@ -63,7 +63,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   @Override
   public void sendToAllSpectators (final Event message, final ClientSpectatorMapping mapping)
   {
-    Arguments.checkIsNotNull (message, "msg");
+    Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (mapping, "mapping");
 
     for (final SpectatorPacket next : mapping.spectators ())
@@ -78,7 +78,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
                                          final ClientSpectatorMapping mapping)
   {
     Arguments.checkIsNotNull (spectator, "spectator");
-    Arguments.checkIsNotNull (message, "msg");
+    Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (mapping, "mapping");
 
     for (final SpectatorPacket next : mapping.spectatorsExcept (spectator))
