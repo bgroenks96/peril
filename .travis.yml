@@ -58,13 +58,6 @@ notifications:
       - developers@forerunnergames.com
     on_success: change
     on_failure: always
-  hipchat:
-    rooms:
-      secure: dywelOlZoAuVoFEY3ZwRLgetKP+BWxAz1cX9kWUF14oUeETSoK+lAshCK1JhGBNKpJUjiFnhd4IiRtnYfN8jdTCOojgHU63Iff6yMyibUTLX/joOR583N/DOpn5SpE74qfsNWKv6FxjeodmL8rfPInj7SDI7mHULYN1EHmfDM1BShaOdfDOI4jdnTKXeDsNJt3FPUEURUVo5qAmJpHgVxFBym5GLDVaH4SOA21PZnhPRcNzXx0KowM2+x+4LqfMzno+MZkMla1f5F3+MLlLG7np78rGJ8laWKcUzZDiiWuSrsAtg1jnPfq2KCv1Ajnn34+43rEQXcp7Ss7oTMHK6tDEZhHHPSjjq4HVvHKNqN6YRcf4T1EozbtuThOiwbUv5UhQLwPRQf+OJMvCsVvhsyB8Yg/gttpu2zTbOLnWG79JkVIob2HTm+dxBACWugsk4ScmhRd7niQvb8ESIQzWUB8Q4dOYprU9hT7xBTVJ1Aj+4qFz2ZE2+tbj8EnMMN4hnjKgfQGcLFUkuok3H6s87dTdn9h6oB4YfYUH8WSjN9AVzMq5tMn3IzyRraARh+WVP3V67n9bXmph5tgJpcBIPs1v1bY8gOlIFFhajh4W7PuJ7+Npw5bHC3nMkoFh0MWIBJdchIv4UGA57PhejzrR0YBmdQk+KoqJiep/luI9HlDM=
-    template:
-      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
-    format: html
-    notify: true
   slack:
     on_start: always
     on_success: always
