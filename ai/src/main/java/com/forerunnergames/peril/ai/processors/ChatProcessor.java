@@ -28,6 +28,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
@@ -605,6 +606,14 @@ public final class ChatProcessor extends AbstractAiProcessor
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_LAST)
   void onEvent (final PlayerArmiesChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("{}] received event [{}].", getPlayerName (), event);
+  }
+
+  @Handler (priority = EVENT_HANDLER_PRIORITY_CALL_LAST)
+  void onEvent (final PlayerTurnOrderChangedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
