@@ -311,7 +311,7 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
     show ();
   }
 
-  public void cancel ()
+  public void rollbackAnyPreemptiveUpdates ()
   {
     playerBox.setArmiesInHand (player.getArmiesInHand (), player);
     country.setArmies (originalCountryArmyCount);
@@ -322,9 +322,19 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
     return country.getName ();
   }
 
+  public int getCountryArmyCount ()
+  {
+    return country.getArmies ();
+  }
+
   public int getReinforcements ()
   {
     return getSliderValue ();
+  }
+
+  public int getPlayerArmiesInHand ()
+  {
+    return playerBox.getArmiesInHand (player);
   }
 
   private void updateArmies ()

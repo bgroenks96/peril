@@ -191,6 +191,11 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     return player.hasName (playerName);
   }
 
+  public int getPlayerArmiesInHand ()
+  {
+    return player.getArmiesInHand ();
+  }
+
   private static String createMessageTextLeft (final int playerTurnOrder)
   {
     return Strings.toMixedOrdinal (playerTurnOrder);

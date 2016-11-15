@@ -43,6 +43,14 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   private final ReinforcementDialog reinforcementDialog;
   @Nullable
   private PlayerBeginReinforcementEvent serverInformEvent;
+  @Nullable
+  private ReinforceTrigger trigger;
+
+  enum ReinforceTrigger
+  {
+    REINFORCEMENTS_DIALOG_SUBMITTED,
+    COUNTRY_LEFT_CLICKED
+  }
 
   public ReinforcementPhaseHandler (final PlayMap playMap,
                                     final ReinforcementDialog reinforcementDialog,
@@ -63,11 +71,21 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     final String countryName = reinforcementDialog.getCountryName ();
     final int reinforcements = reinforcementDialog.getReinforcements ();
 
-    if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
-    if (checkCanReinforceCountryWithArmies (countryName, reinforcements).failed ()) return;
+    if (checkServerInformEventExistsForCountry (countryName).failed ())
+    {
+      reinforcementDialog.rollbackAnyPreemptiveUpdates ();
+      return;
+    }
+
+    if (checkCanReinforceCountryWithArmies (countryName, reinforcements).failed ())
+    {
+      reinforcementDialog.rollbackAnyPreemptiveUpdates ();
+      return;
+    }
+
+    trigger = ReinforceTrigger.REINFORCEMENTS_DIALOG_SUBMITTED;
 
     publish (new PlayerReinforceCountryRequestEvent (countryName, reinforcements));
-    reset ();
   }
 
   @Override
@@ -75,7 +93,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   {
     // This method is only called for ReinforcementDialog cancellation.
 
-    reinforcementDialog.cancel ();
+    reinforcementDialog.rollbackAnyPreemptiveUpdates ();
   }
 
   @Override
@@ -86,7 +104,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     if (reinforcementDialog.isShown ())
     {
       reinforcementDialog.hide ();
-      reinforcementDialog.cancel ();
+      reinforcementDialog.rollbackAnyPreemptiveUpdates ();
       return;
     }
 
@@ -96,10 +114,11 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     assert serverInformEvent != null;
 
+    trigger = ReinforceTrigger.COUNTRY_LEFT_CLICKED;
+
     preemptivelyUpdatePlayMap (countryName, serverInformEvent.getMinReinforcementsPlacedPerCountry ());
     publish (new PlayerReinforceCountryRequestEvent (countryName,
             serverInformEvent.getMinReinforcementsPlacedPerCountry ()));
-    reset ();
   }
 
   @Override
@@ -110,7 +129,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     if (reinforcementDialog.isShown ())
     {
       reinforcementDialog.hide ();
-      reinforcementDialog.cancel ();
+      reinforcementDialog.rollbackAnyPreemptiveUpdates ();
     }
 
     if (checkServerInformEventExistsForCountry (countryName).failed ()) return;
@@ -129,7 +148,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     if (!reinforcementDialog.isShown ()) return;
 
     reinforcementDialog.hide ();
-    reinforcementDialog.cancel ();
+    reinforcementDialog.rollbackAnyPreemptiveUpdates ();
   }
 
   @Override
@@ -138,7 +157,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     if (!reinforcementDialog.isShown ()) return;
 
     reinforcementDialog.hide ();
-    reinforcementDialog.cancel ();
+    reinforcementDialog.rollbackAnyPreemptiveUpdates ();
   }
 
   @Override
@@ -146,6 +165,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   {
     super.reset ();
     serverInformEvent = null;
+    trigger = null;
   }
 
   @Handler
@@ -167,7 +187,10 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getPlayer ())) verifyPreemptivePlayMapUpdates (event);
+    if (!isSelf (event.getPlayer ())) return;
+
+    verifyPreemptivePlayMapUpdates (event);
+    reset ();
   }
 
   @Handler
@@ -181,7 +204,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
                event.getReason ());
 
     final PlayerReinforceCountryRequestEvent originalRequest = event.getOriginalRequest ();
-    rollBackPreemptivePlayMapUpdates (originalRequest.getCountryName (), originalRequest.getReinforcementCount ());
+    rollBackPreemptiveUpdates (originalRequest.getCountryName (), originalRequest.getReinforcementCount ());
     reset ();
   }
 
@@ -263,24 +286,57 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
   private void verifyPreemptivePlayMapUpdates (final PlayerReinforceCountrySuccessEvent event)
   {
+    assert trigger != null;
+
+    // Make a defensive copy because it will be reset to null before the Runnable is executed.
+    final ReinforceTrigger trigger = this.trigger;
+
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
+        switch (trigger)
+        {
+          case REINFORCEMENTS_DIALOG_SUBMITTED:
+          {
+            assert reinforcementDialog.getPlayerArmiesInHand () == event.getPlayerArmiesInHand ();
+            assert reinforcementDialog.getCountryArmyCount () == event.getCountryArmyCount ();
+            break;
+          }
+          case COUNTRY_LEFT_CLICKED:
+          {
+            assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
+          }
+        }
       }
     });
   }
 
-  private void rollBackPreemptivePlayMapUpdates (final String countryName, final int reinforcements)
+  private void rollBackPreemptiveUpdates (final String countryName, final int reinforcements)
   {
+    assert trigger != null;
+
+    // Make a defensive copy because it will be reset to null before the Runnable is executed.
+    final ReinforceTrigger trigger = this.trigger;
+
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        changeCountryArmiesBy (reinforcements, countryName);
+        switch (trigger)
+        {
+          case REINFORCEMENTS_DIALOG_SUBMITTED:
+          {
+            reinforcementDialog.rollbackAnyPreemptiveUpdates ();
+            break;
+          }
+          case COUNTRY_LEFT_CLICKED:
+          {
+            changeCountryArmiesBy (-reinforcements, countryName);
+          }
+        }
       }
     });
   }

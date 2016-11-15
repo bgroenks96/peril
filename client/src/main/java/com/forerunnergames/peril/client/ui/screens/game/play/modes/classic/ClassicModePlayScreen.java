@@ -823,6 +823,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
         }
         else if (event.isTradeInRequired ())
         {
+          // TODO Show trade-in dialog first, which will (desirably) block play map even after notification dialog...
+          // TODO ...is closed to prevent premature reinforcing.
           notificationDialog.setTitleForSelf (event.getPlayer (), "Ahem, General");
           notificationDialog.showForSelf (event.getPlayer (),
                                           "You now have so many matching cards that you must now use some of them to "

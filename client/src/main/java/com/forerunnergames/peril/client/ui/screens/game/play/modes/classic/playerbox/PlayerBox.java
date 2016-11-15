@@ -160,6 +160,13 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     getRowWith (player).setPlayerArmiesInHand (armies);
   }
 
+  public int getArmiesInHand (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    return getRowWith (player).getPlayerArmiesInHand ();
+  }
+
   private void internalRemove (final PlayerPacket player)
   {
     if (!players.remove (player))
