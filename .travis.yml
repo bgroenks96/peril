@@ -55,7 +55,7 @@ cache:
 notifications:
   email:
     recipients:
-      - developers@forerunnergames.com
+      - developers@forerunner.games
     on_success: change
     on_failure: always
   slack:

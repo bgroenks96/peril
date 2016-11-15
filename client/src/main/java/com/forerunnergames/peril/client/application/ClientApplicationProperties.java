@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ClientApplicationProperties
 {
-  public static final int CURRENT_VERSION = 6;
+  public static final int CURRENT_VERSION = 7;
   public static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   public static final String PROPERTIES_FILE_NAME = "settings.txt";
   public static final String VERSION_FILE_NAME = ".version";
@@ -185,8 +185,8 @@ public final class ClientApplicationProperties
           + "ignoring the " + START_SCREEN_PROPERTY_KEY + " setting. 'false' will disable auto-creation.)\n\n "
           + "\n"
           + " If you've done your best to read & follow these instructions, and you're still having problems:\n\n"
-          + " 1) Ask for help on our forums at http://forerunnergames.com/forums\n"
-          + " 2) Email us at support@forerunnergames.com. Please attach this file in the email, as well as any crash files.\n";
+          + " 1) Ask for help on our forums at https://forerunner.games/forums\n"
+          + " 2) Email us at support@forerunner.games. Please attach this file in the email, as well as any crash files.\n";
   // @formatter:on
 
   public static void set ()

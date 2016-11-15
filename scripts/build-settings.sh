@@ -19,7 +19,7 @@
 
 BUILD_ARTIFACTS=("build/libs" "build/reports" "build/outputs" "build/logs" "build/*.log" "*.log")
 BUILD_ARTIFACTS_COLLECTION_DIR="tmp/uploads/artifacts"
-BUILD_ARTIFACTS_S3_BUCKET_NAME="ci.forerunnergames.com"
+BUILD_ARTIFACTS_S3_BUCKET_NAME="ci.forerunner.games"
 ASSETS=("assets/*" "android/assets/*")
 ASSETS_COLLECTION_DIR="tmp/uploads/assets"
 PRODUCTION_ASSETS_S3_BUCKET_NAME="assets.peril.forerunner.games"
