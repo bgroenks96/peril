@@ -42,6 +42,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlaye
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerCardsChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
@@ -373,6 +374,7 @@ public final class GameModel
     }
 
     publish (new EndPlayerTurnEvent (getCurrentPlayerPacket (), newPlayerCard));
+    if (newPlayerCard != null) publish (new DefaultPlayerCardsChangedEvent (getCurrentPlayerPacket (), 1));
     if (isLastTurn ()) publish (new EndRoundEvent (currentRound.get ()));
 
     if (turnDataCache.isSet (CacheKey.PLAYER_OCCUPIED_COUNTRY)) clearCacheValues (CacheKey.PLAYER_OCCUPIED_COUNTRY);
@@ -952,6 +954,7 @@ public final class GameModel
 
     publish (new PlayerTradeInCardsResponseSuccessEvent (getCurrentPlayerPacket (), event.getTradeIn (),
             cardTradeInBonus, cardModel.getNextTradeInBonus ()));
+    publish (new DefaultPlayerCardsChangedEvent (getCurrentPlayerPacket (), -event.getTradeInCardCount ()));
 
     final boolean shouldWaitForNextTradeIn = publishTradeInEventIfNecessary ();
     return !shouldWaitForNextTradeIn;

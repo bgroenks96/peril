@@ -40,6 +40,11 @@ public final class PlayerTradeInCardsRequestEvent implements PlayerRequestEvent
     return tradeIn;
   }
 
+  public int getTradeInCardCount ()
+  {
+    return tradeIn.getCardCount ();
+  }
+
   @Override
   public String toString ()
   {

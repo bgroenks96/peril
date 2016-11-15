@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -126,7 +126,7 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
 
     assert player != null;
 
-    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), armies));
+    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), armies, player.getCardsInHand ()));
     messageRowRightCell.setActor (messageRowRight.asActor ());
     message = createMessage ();
 
@@ -171,7 +171,8 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     this.player = player;
 
     messageRowLeft = createMessageRow (createMessageTextLeft (player.getTurnOrder ()));
-    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), player.getArmiesInHand ()));
+    messageRowRight = createMessageRow (createMessageTextRight (player.getName (), player.getArmiesInHand (),
+                                                                player.getCardsInHand ()));
     message = createMessage ();
 
     messageRowLeftCell.setActor (messageRowLeft.asActor ());
@@ -195,9 +196,12 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     return Strings.toMixedOrdinal (playerTurnOrder);
   }
 
-  private static String createMessageTextRight (final String playerName, final int playerArmiesInHand)
+  private static String createMessageTextRight (final String playerName,
+                                                final int playerArmiesInHand,
+                                                final int playerCardsInHand)
   {
-    return playerName + " " + Strings.pluralize (playerArmiesInHand, "army", "armies");
+    return playerName + ", " + Strings.pluralize (playerArmiesInHand, "army", "armies") + ", "
+            + Strings.pluralizeS (playerCardsInHand, "card");
   }
 
   private MessageBoxRow <Message> createMessageRow (final String messageText)

@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.packets.card;
+package com.forerunnergames.peril.common.net.events.server.interfaces;
 
-import com.google.common.collect.ImmutableSet;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public interface CardSetPacket
+/**
+ * All implementations of PlayerCardsChangedEvent should be constructed with an updated PlayerPacket (accessible via
+ * {@link #getPlayer()} that contains the number of cards in the player's hand <b>after</b> the delta is applied.
+ */
+public interface PlayerCardsChangedEvent extends PlayerEvent, BroadcastNotificationEvent
 {
-  ImmutableSet <CardPacket> getCards ();
-
-  int getCardCount ();
-
-  boolean matches (final CardSetPacket cardSet);
+  int getPlayerDeltaCardCount ();
 }

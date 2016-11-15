@@ -44,6 +44,12 @@ public class DefaultCardSetPacket implements CardSetPacket
   }
 
   @Override
+  public int getCardCount ()
+  {
+    return cards.size ();
+  }
+
+  @Override
   public boolean matches (final CardSetPacket cardSet)
   {
     return cards.equals (cardSet.getCards ());

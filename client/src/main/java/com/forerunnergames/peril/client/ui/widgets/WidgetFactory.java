@@ -50,8 +50,8 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighl
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.widgets.messagebox.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
