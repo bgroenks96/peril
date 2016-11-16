@@ -85,6 +85,7 @@ if (System.env.TRAVIS == "true") {
     tasks.withType (Test) {
       maxParallelForks = 2 // One fork per core for tests. Container-based builds (sudo: false) have 2 cores.
       minHeapSize = "128m" // Limit initial heap size of Gradle daemon. Travis default is 1GB.
+      maxHeapSize = "512m" // // Limit max heap size of Gradle daemon.
 
       // Make debugging from Travis logs easier.
       testLogging {
