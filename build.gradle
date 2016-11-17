@@ -63,40 +63,6 @@ task wrapper (type: Wrapper) {
   gradleVersion = "3.1"
 }
 
-// Fix for Travis CI builds crashing due to running too low on memory and SIGKILL-ing processes.
-//
-// Relevant error messages:
-//
-// - Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed).
-// - Process 'Gradle Test Executor 4' finished with non-zero exit value 137
-//
-// For more information, see:
-//
-// - .travis.yml (for the other part of this fix)
-// - https://discuss.gradle.org/t/travis-ci-org-gradle-launcher-daemon-client-daemondisappearedexception-gradle-build-daemon-disappeared-unexpectedly-it-may-have-been-killed-or-may-have-crashed/13106
-// - https://discuss.gradle.org/t/gradle-check-fails-but-tests-finish-with-success/10214
-// - https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
-//
-if (System.env.TRAVIS == "true") {
-  allprojects {
-    tasks.withType (JavaCompile) {
-      options.fork = false // Don't use separate Gradle daemons during compilation of Java sources.
-    }
-    tasks.withType (Test) {
-      maxParallelForks = 2 // One fork per core for tests. Container-based builds (sudo: false) have 2 cores.
-      minHeapSize = "128m" // Limit initial heap size of Gradle daemon. Travis default is 1GB.
-      maxHeapSize = "512m" // // Limit max heap size of Gradle daemon.
-
-      // Make debugging from Travis logs easier.
-      testLogging {
-        events "passed", "skipped", "failed"
-        showStackTraces true
-        exceptionFormat "full"
-      }
-    }
-  }
-}
-
 // Apply to parent project & all subprojects.
 allprojects {
   apply plugin: "eclipse"
