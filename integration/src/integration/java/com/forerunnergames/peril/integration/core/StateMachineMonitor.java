@@ -105,7 +105,7 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
     stateMachine.addStateMachineListener (barrier);
     try
     {
-      log.debug ("Waiting {} seconds for state change to {}.", newStateName, timeoutMs / 1000.0f);
+      log.debug ("Waiting {} seconds for state change to {}.", timeoutMs / 1000.0f, newStateName);
       barrier.waitForNewStateEntry (timeoutMs);
       return true;
     }
