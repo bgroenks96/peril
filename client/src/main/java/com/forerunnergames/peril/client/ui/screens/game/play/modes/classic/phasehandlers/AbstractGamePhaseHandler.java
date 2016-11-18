@@ -290,4 +290,9 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
       }
     });
   }
+
+  final String getSelfPlayerName ()
+  {
+    return selfPlayer != null ? selfPlayer.getName () : "";
+  }
 }

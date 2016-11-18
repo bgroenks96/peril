@@ -32,6 +32,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,7 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   private MessageBoxRow <Message> messageRowRight;
   private Message message;
   private PlayerPacket player;
+  private int displayedArmiesInHand;
 
   public PlayerBoxRow (final PlayerPacket player, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
   {
@@ -120,17 +122,26 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     return this.player.doesNotHave (player.getTurnOrder ());
   }
 
-  public void setPlayerArmiesInHand (final int armies)
+  public void setDisplayedArmiesInHandToDeltaFromActual (@AllowNegative final int deltaArmies)
+  {
+    setDisplayedPlayerArmiesInHand (player.getArmiesInHand () + deltaArmies);
+  }
+
+  public void setDisplayedPlayerArmiesInHand (final int armies)
   {
     Arguments.checkIsNotNegative (armies, "armies");
 
-    assert player != null;
-
+    displayedArmiesInHand = armies;
     messageRowRight = createMessageRow (createMessageTextRight (player.getName (), armies, player.getCardsInHand ()));
     messageRowRightCell.setActor (messageRowRight.asActor ());
     message = createMessage ();
 
     table.invalidateHierarchy ();
+  }
+
+  public void resetDisplayedArmiesInHand ()
+  {
+    setDisplayedPlayerArmiesInHand (player.getArmiesInHand ());
   }
 
   public void highlight ()
@@ -170,6 +181,7 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
 
     this.player = player;
 
+    displayedArmiesInHand = player.getArmiesInHand ();
     messageRowLeft = createMessageRow (createMessageTextLeft (player.getTurnOrder ()));
     messageRowRight = createMessageRow (createMessageTextRight (player.getName (), player.getArmiesInHand (),
                                                                 player.getCardsInHand ()));
@@ -191,9 +203,14 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
     return player.hasName (playerName);
   }
 
-  public int getPlayerArmiesInHand ()
+  public int getActualPlayerArmiesInHand ()
   {
     return player.getArmiesInHand ();
+  }
+
+  public int getDisplayedArmiesInHand ()
+  {
+    return displayedArmiesInHand;
   }
 
   private static String createMessageTextLeft (final int playerTurnOrder)
@@ -222,10 +239,10 @@ public final class PlayerBoxRow implements MessageBoxRow <Message>
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Player: {} | Highlighting: {} | Player Color Icon: {} | Message: {} | "
-                                   + " Message Row Left: {} | Message Row Right: {} | Row Style: {} | Table: {} | "
-                                   + "Stack: {}",
-                           super.toString (), player, highlighting, playerColorIcon, message, messageRowLeft,
-                           messageRowRight, rowStyle, table, stack);
+    return Strings
+            .format ("{} | Player: {} | Displayed Armies In Hand: {} | Highlighting: {} | Player Color Icon: {} | "
+                             + "Message: {} |  Message Row Left: {} | Message Row Right: {} | Row Style: {} | "
+                             + "Table: {} | Stack: {}", super.toString (), player, displayedArmiesInHand, highlighting,
+                     playerColorIcon, message, messageRowLeft, messageRowRight, rowStyle, table, stack);
   }
 }

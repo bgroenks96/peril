@@ -32,12 +32,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.NonPlayMapBlockingDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.OkCancelDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -63,7 +62,7 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
   private Country country = Country.NULL;
   private int originalCountryArmyCount;
   private int minReinforcements;
-  private PlayerPacket player;
+  private String playerName = "";
 
   public ReinforcementDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
                               final Stage stage,
@@ -276,18 +275,18 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
                    final Country country,
                    final float screenX,
                    final float screenY,
-                   final PlayerPacket player)
+                   final String playerName)
   {
     // @formatter:off
     Arguments.checkIsNotNegative (minReinforcements, "minReinforcements");
     Arguments.checkIsNotNegative (maxReinforcements, "maxReinforcements");
     Arguments.checkIsNotNull (country, "country");
     Arguments.checkUpperInclusiveBound (minReinforcements, maxReinforcements, "minReinforcements", "maxReinforcements");
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playerName, "playerName");
     // @formatter:on
 
     this.country = country;
-    this.player = player;
+    this.playerName = playerName;
     originalCountryArmyCount = country.getArmies ();
     this.minReinforcements = minReinforcements;
 
@@ -305,15 +304,15 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
                     final Country country,
                     final float screenX,
                     final float screenY,
-                    final PlayerPacket player)
+                    final String playerName)
   {
-    set (minReinforcements, maxReinforcements, country, screenX, screenY, player);
+    set (minReinforcements, maxReinforcements, country, screenX, screenY, playerName);
     show ();
   }
 
   public void rollbackAnyPreemptiveUpdates ()
   {
-    playerBox.setArmiesInHand (player.getArmiesInHand (), player);
+    playerBox.resetDisplayedArmiesInHand (playerName);
     country.setArmies (originalCountryArmyCount);
   }
 
@@ -332,20 +331,25 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
     return getSliderValue ();
   }
 
-  public int getPlayerArmiesInHand ()
+  public int getActualPlayerArmiesInHand ()
   {
-    return playerBox.getArmiesInHand (player);
+    return playerBox.getActualArmiesInHand (playerName);
+  }
+
+  public int getDisplayedArmiesInHand ()
+  {
+    return playerBox.getDisplayedArmiesInHand (playerName);
   }
 
   private void updateArmies ()
   {
-    updateArmiesInHand ();
+    updateDisplayedArmiesInHand ();
     updateCountryArmies ();
   }
 
-  private void updateArmiesInHand ()
+  private void updateDisplayedArmiesInHand ()
   {
-    playerBox.setArmiesInHand (player.getArmiesInHand () - getReinforcements (), player);
+    playerBox.setDisplayedArmiesInHandToDeltaFromActual (-getReinforcements (), playerName);
   }
 
   private void updateCountryArmies ()

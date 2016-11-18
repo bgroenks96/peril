@@ -22,6 +22,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.annotations.AllowNegative;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
@@ -30,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -96,12 +98,14 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 
   public void updatePlayerWithNewTurnOrder (final PlayerPacket player, final int oldTurnOrder)
   {
+    Arguments.checkIsNotNull (player, "player");
+
     assert existsRowWith (player);
     assert getRowWith (player).playerTurnOrderIs (oldTurnOrder);
 
     // Cannot use #updateExisting (PlayerPacket) because because it won't update the set of turn-ordered players.
     // Player must be removed and re-added.
-    // Avoids unnecessarily updating the message box twice and superfluously de-highlighting/re-highlighting player by
+    // Avoids unnecessarily updating the message box twice (and superfluously de-highlighting/re-highlighting player) by
     // not using the public API for add / remove.
     internalRemove (player);
     internalAdd (player);
@@ -119,7 +123,6 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     }
 
     clearHighlighting ();
-
     getRowWith (player).highlight ();
 
     highlightedPlayer = player;
@@ -152,19 +155,32 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     row.setPlayer (player);
   }
 
-  public void setArmiesInHand (final int armies, final PlayerPacket player)
+  public void setDisplayedArmiesInHandToDeltaFromActual (@AllowNegative final int deltaArmies, final String playerName)
   {
-    Arguments.checkIsNotNegative (armies, "armies");
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playerName, "playerName");
 
-    getRowWith (player).setPlayerArmiesInHand (armies);
+    getRowWith (playerName).setDisplayedArmiesInHandToDeltaFromActual (deltaArmies);
   }
 
-  public int getArmiesInHand (final PlayerPacket player)
+  public void resetDisplayedArmiesInHand (final String playerName)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (playerName, "playerName");
 
-    return getRowWith (player).getPlayerArmiesInHand ();
+    getRowWith (playerName).resetDisplayedArmiesInHand ();
+  }
+
+  public int getDisplayedArmiesInHand (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return getRowWith (playerName).getDisplayedArmiesInHand ();
+  }
+
+  public int getActualArmiesInHand (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    return getRowWith (playerName).getActualPlayerArmiesInHand ();
   }
 
   private void internalRemove (final PlayerPacket player)
@@ -212,7 +228,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 
   private boolean isHighlighted (final PlayerPacket player)
   {
-    return highlightedPlayer != null && player.is (highlightedPlayer);
+    return Objects.equals (highlightedPlayer, player);
   }
 
   private void clearHighlighting ()
@@ -228,8 +244,9 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   {
     super.clear ();
 
-    int rowIndex = 0;
     playerNamesToRowIndices.clear ();
+
+    int rowIndex = 0;
 
     for (final PlayerPacket player : ImmutableSortedSet.copyOf (PlayerPacket.TURN_ORDER_COMPARATOR, players))
     {

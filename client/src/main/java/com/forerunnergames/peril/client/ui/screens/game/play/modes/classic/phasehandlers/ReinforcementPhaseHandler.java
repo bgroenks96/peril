@@ -139,7 +139,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     reinforcementDialog.show (serverInformEvent.getMinReinforcementsPlacedPerCountry (),
                               serverInformEvent.getTotalReinforcements (), getCountryWithName (countryName), x, y,
-                              getSelfPlayer ());
+                              getSelfPlayerName ());
   }
 
   @Override
@@ -189,7 +189,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     if (!isSelf (event.getPlayer ())) return;
 
-    verifyPreemptivePlayMapUpdates (event);
+    verifyPreemptiveUpdates (event);
     reset ();
   }
 
@@ -284,7 +284,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     });
   }
 
-  private void verifyPreemptivePlayMapUpdates (final PlayerReinforceCountrySuccessEvent event)
+  private void verifyPreemptiveUpdates (final PlayerReinforceCountrySuccessEvent event)
   {
     assert trigger != null;
 
@@ -300,7 +300,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
         {
           case REINFORCEMENTS_DIALOG_SUBMITTED:
           {
-            assert reinforcementDialog.getPlayerArmiesInHand () == event.getPlayerArmiesInHand ();
+            assert reinforcementDialog.getDisplayedArmiesInHand () == event.getPlayerArmiesInHand ();
             assert reinforcementDialog.getCountryArmyCount () == event.getCountryArmyCount ();
             break;
           }
