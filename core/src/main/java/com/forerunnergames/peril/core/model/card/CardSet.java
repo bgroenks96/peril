@@ -190,8 +190,8 @@ public final class CardSet implements Collection <Card>
   public CardSet merge (final CardSet cardSet)
   {
     Arguments.checkIsNotNull (cardSet, "cardSet");
-    Arguments.checkIsTrue (rules.getClass ().equals (cardSet.rules.getClass ()),
-                           String.format ("%s rules must match.", getClass ().getSimpleName ()));
+    Arguments.checkIsTrue (rules.getClass ().equals (cardSet.rules.getClass ()), "{} rules must match.", getClass ()
+            .getSimpleName ());
 
     return new CardSet (rules, Sets.union (cardSet.cards, cards).immutableCopy ());
   }

@@ -21,6 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 import com.badlogic.gdx.math.Vector2;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 
 public final class CountryImageData
 {
@@ -73,9 +74,9 @@ public final class CountryImageData
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Country Name: %2$s | Reference Destination: %3$s"
-                                  + " | Reference Text Upper Left: %4$s | Reference Size: %5$s", getClass ()
-                                  .getSimpleName (), countryName,
-                          referenceDestination, referenceTextUpperLeft, referenceSize);
+    return Strings.format ("{}: Country Name: {} | Reference Destination: {} | Reference Text Upper Left: {} | "
+                                   + "Reference Size: {}", getClass ().getSimpleName (), countryName,
+                           referenceDestination,
+                           referenceTextUpperLeft, referenceSize);
   }
 }

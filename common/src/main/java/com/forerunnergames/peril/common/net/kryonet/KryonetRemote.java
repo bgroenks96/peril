@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.kryonet;
 
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.Remote;
 
 import java.net.InetSocketAddress;
@@ -57,8 +58,7 @@ public final class KryonetRemote implements Remote
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Connection Id: %2$s | Address: %3$s", getClass ().getSimpleName (), connectionId,
-                          address);
+    return Strings.format ("{}: Connection Id: {} | Address: {}", getClass ().getSimpleName (), connectionId, address);
   }
 
   @Override

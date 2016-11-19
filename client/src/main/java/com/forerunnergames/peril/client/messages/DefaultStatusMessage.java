@@ -21,6 +21,7 @@ package com.forerunnergames.peril.client.messages;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.Strings;
 
 public final class DefaultStatusMessage implements StatusMessage
 {
@@ -42,6 +43,6 @@ public final class DefaultStatusMessage implements StatusMessage
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Message: %2$s", getClass ().getSimpleName (), message);
+    return Strings.format ("{}: Message: {}", getClass ().getSimpleName (), message);
   }
 }

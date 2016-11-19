@@ -20,6 +20,7 @@ package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.assets.AbstractAsset;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -53,6 +54,6 @@ public final class DefaultCard extends AbstractAsset implements Card
   @Override
   public String toString ()
   {
-    return String.format ("%s | Type: %s", super.toString (), type.toString ());
+    return Strings.format ("{} | Type: {}", super.toString (), type.toString ());
   }
 }

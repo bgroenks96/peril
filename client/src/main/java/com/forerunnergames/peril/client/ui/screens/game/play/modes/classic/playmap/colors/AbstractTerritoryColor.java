@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.colors;
 
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.color.RgbaColorComponent;
 
 public abstract class AbstractTerritoryColor <T extends RgbaColorComponent> implements TerritoryColor <T>
@@ -58,6 +59,6 @@ public abstract class AbstractTerritoryColor <T extends RgbaColorComponent> impl
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Color Component: %2$s", getClass ().getSimpleName (), colorComponent);
+    return Strings.format ("{}: Color Component: {}", getClass ().getSimpleName (), colorComponent);
   }
 }

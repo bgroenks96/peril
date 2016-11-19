@@ -64,7 +64,7 @@ public abstract class NetworkEventHandler
 
   protected final Remote clientFor (final Event event)
   {
-    Preconditions.checkIsTrue (eventClientCache.containsKey (event), String.format ("%s not registered.", event));
+    Preconditions.checkIsTrue (eventClientCache.containsKey (event), "{} not registered.", event);
 
     return eventClientCache.get (event);
   }

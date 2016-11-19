@@ -21,6 +21,7 @@ package com.forerunnergames.peril.core.model.card;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -79,9 +80,9 @@ final class DefaultCardDealer implements CardDealer
   public void discard (final Card card)
   {
     Arguments.checkIsNotNull (card, "card");
-    Arguments.checkIsTrue (baseDeck.contains (card), String.format ("%s does not exist.", card));
-    Arguments.checkIsTrue (!liveDeck.contains (card), String.format ("%s is currently in the deck.", card));
-    Arguments.checkIsTrue (!discardPile.contains (card), String.format ("%s has already been discarded.", card));
+    Arguments.checkIsTrue (baseDeck.contains (card), "{} does not exist.", card);
+    Arguments.checkIsTrue (!liveDeck.contains (card), "{} is currently in the deck.", card);
+    Arguments.checkIsTrue (!discardPile.contains (card), "{} has already been discarded.", card);
 
     discardPile.add (card);
   }
@@ -90,11 +91,9 @@ final class DefaultCardDealer implements CardDealer
   public void discard (final CardSet cards)
   {
     Arguments.checkIsNotNull (cards, "cards");
-    Arguments.checkIsTrue (baseDeck.containsAll (cards), String.format ("Unrecognized cards in [%s]", cards));
-    Arguments.checkIsTrue (!liveDeck.containsAll (cards),
-                           String.format ("Found one or more cards already in deck [%s]", cards));
-    Arguments.checkIsTrue (!discardPile.containsAll (cards),
-                           String.format ("Found one or more cards already discarded [%s]", cards));
+    Arguments.checkIsTrue (baseDeck.containsAll (cards), "Unrecognized cards in [{}]", cards);
+    Arguments.checkIsTrue (!liveDeck.containsAll (cards), "Found one or more cards already in deck [{}]", cards);
+    Arguments.checkIsTrue (!discardPile.containsAll (cards), "Found one or more cards already discarded [{}]", cards);
 
     discardPile.addAll (cards);
   }
@@ -105,7 +104,7 @@ final class DefaultCardDealer implements CardDealer
     Arguments.checkIsNotNull (name, "name");
 
     final Optional <Card> card = findCardByName (name, baseDeck);
-    if (!card.isPresent ()) throw new IllegalStateException (String.format ("Could not find card with name: %s", name));
+    if (!card.isPresent ()) throw new IllegalStateException (Strings.format ("Could not find card with name: {}", name));
     return card.get ();
   }
 

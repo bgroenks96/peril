@@ -33,6 +33,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountrySecondaryImageState;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Randomness;
+import com.forerunnergames.tools.common.Strings;
 
 import javax.annotation.Nullable;
 
@@ -361,11 +362,11 @@ public final class DefaultCountry implements Country
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Name: %2$s | Primary Image State: %3$s | Secondary Image State: %4$s"
-                                  + " | Primary Image: %5$s  | Secondary Image: %6$s | Enabled: %7$s | "
-                                  + "Image Data: %8$s | Army Text: %9$s | Primary Images: %10$s "
-                                  + "| Secondary Images: %11$s", getClass ().getSimpleName (), group.getName (),
-                          primaryImageState, secondaryImageState, primaryImage, secondaryImage,
-                          isEnabled, imageData, armyText, primaryImages, secondaryImages);
+    return Strings.format ("{} | Name: {} | Primary Image State: {} | Secondary Image State: {}"
+                                   + " | Primary Image: {}  | Secondary Image: {} | Enabled: {} | "
+                                   + "Image Data: {} | Army Text: {} | Primary Images: {} " + "| Secondary Images: {}",
+                           getClass ().getSimpleName (), group.getName (), primaryImageState, secondaryImageState,
+                           primaryImage, secondaryImage,
+                           isEnabled, imageData, armyText, primaryImages, secondaryImages);
   }
 }

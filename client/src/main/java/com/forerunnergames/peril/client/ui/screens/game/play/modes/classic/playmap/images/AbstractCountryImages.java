@@ -104,7 +104,7 @@ public abstract class AbstractCountryImages <E extends Enum <E> & CountryImageSt
   @Override
   public String toString ()
   {
-    return String.format ("%1$s | Country Image States => Country Images: %2$s | Atlas Index: %3$s", getClass ()
+    return Strings.format ("{} | Country Image States => Country Images: {} | Atlas Index: {}", getClass ()
             .getSimpleName (), Strings.toString (imageStatesToImages), atlasIndex);
   }
 }

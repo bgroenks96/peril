@@ -21,6 +21,7 @@ package com.forerunnergames.peril.common.net.messages;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Message;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class DefaultCommandMessage implements CommandMessage
@@ -43,7 +44,7 @@ public final class DefaultCommandMessage implements CommandMessage
   @Override
   public String toString ()
   {
-    return String.format ("%1$s: Message: %2$s", getClass ().getSimpleName (), message);
+    return Strings.format ("{}: Message: {}", getClass ().getSimpleName (), message);
   }
 
   @RequiredForNetworkSerialization
