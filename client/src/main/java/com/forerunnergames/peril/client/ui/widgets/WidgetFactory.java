@@ -41,6 +41,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 import com.forerunnergames.peril.client.messages.StatusMessage;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
@@ -50,8 +52,6 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowHighl
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
