@@ -51,7 +51,7 @@ public class TestSessions
   public static synchronized TestSession get (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
-    Preconditions.checkIsTrue (existsSessionWith (name), Strings.format ("No session with name [{}] exists.", name));
+    Preconditions.checkIsTrue (existsSessionWith (name), "No session with name [{}] exists.", name);
 
     return sessionMap.get (name);
   }
@@ -73,7 +73,7 @@ public class TestSessions
   public static synchronized void end (final String name)
   {
     Arguments.checkIsNotNull (name, "name");
-    Preconditions.checkIsTrue (existsSessionWith (name), Strings.format ("No session with name [{}] exists.", name));
+    Preconditions.checkIsTrue (existsSessionWith (name), "No session with name [{}] exists.", name);
 
     final TestSession session = sessionMap.get (name);
     if (!session.isShutDown ()) session.shutDown ();
@@ -83,7 +83,7 @@ public class TestSessions
   public static synchronized void end (final TestSession session)
   {
     Arguments.checkIsNotNull (session, "session");
-    Preconditions.checkIsTrue (exists (session), Strings.format ("Session [{}] is not registered.", session));
+    Preconditions.checkIsTrue (exists (session), "Session [{}] is not registered.", session);
 
     if (!session.isShutDown ()) session.shutDown ();
     sessionMap.inverse ().remove (session);

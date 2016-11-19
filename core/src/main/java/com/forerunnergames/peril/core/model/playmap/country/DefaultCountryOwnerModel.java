@@ -94,7 +94,7 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
     Arguments.checkIsNotNull (countryName, "countryName");
 
     final Optional <Country> country = getCountryByName (countryName);
-    Preconditions.checkIsTrue (country.isPresent (), Strings.format ("No country with name [{}] exists.", countryName));
+    Preconditions.checkIsTrue (country.isPresent (), "No country with name [{}] exists.", countryName);
 
     return countryGraphModel.existsCountryWith (countryName) && isCountryOwned (country.get ().getId ());
   }

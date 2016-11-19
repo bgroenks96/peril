@@ -186,7 +186,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public T getRowByIndex (final int index)
   {
-    Arguments.checkIsTrue (hasRowWithIndex (index), Strings.format ("Row does not exist with index [{}].", index));
+    Arguments.checkIsTrue (hasRowWithIndex (index), "Row does not exist with index [{}].", index);
 
     final Cell <?> cell = table.getCells ().get (index);
     final Actor actor = cell.getActor ();
