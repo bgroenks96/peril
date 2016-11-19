@@ -24,7 +24,7 @@ import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
-import com.forerunnergames.tools.net.events.remote.QuestionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
 import com.forerunnergames.tools.net.server.AbstractServerController;
 import com.forerunnergames.tools.net.server.Server;
 
@@ -104,14 +104,14 @@ public final class EventBasedServerController extends AbstractServerController
       {
         log.debug ("Received object [{}] from client [{}].", object, client);
 
-        if (!(object instanceof QuestionEvent))
+        if (!(object instanceof ClientEvent))
         {
           log.debug ("Ignoring unrecognized object [{}] from client [{}].", object, client);
 
           return;
         }
 
-        eventBus.publish (new ClientCommunicationEvent ((QuestionEvent) object, client));
+        eventBus.publish (new ClientCommunicationEvent ((ClientEvent) object, client));
       }
     });
   }

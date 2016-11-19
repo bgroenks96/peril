@@ -110,7 +110,7 @@ public final class EventBasedClientController extends AbstractClientController
           return;
         }
 
-        eventBus.publish (new ServerCommunicationEvent ((Event) object, server));
+        eventBus.publish (new ServerCommunicationEvent ((ServerEvent) object, server));
       }
     });
   }

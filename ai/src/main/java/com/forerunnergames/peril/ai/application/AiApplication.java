@@ -35,6 +35,7 @@ import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -104,9 +105,7 @@ public final class AiApplication extends DefaultApplication
 
     log.debug ("Event received [{}]", event);
 
-    final String playerName = event.getPlayerName ();
-    final Remote fakeClient = new AiClient (playerName);
-    final Event joinGameServerRequest = new AiJoinGameServerRequestEvent ();
+    final Remote fakeClient = new AiClient (event.getPlayerName ());
 
     log.info ("Creating fake server connection...");
 
@@ -114,7 +113,7 @@ public final class AiApplication extends DefaultApplication
 
     log.info ("Attempting to join game server...");
 
-    sendToServer (joinGameServerRequest, fakeClient);
+    sendToServer (new AiJoinGameServerRequestEvent (), fakeClient);
   }
 
   @Handler
@@ -154,7 +153,7 @@ public final class AiApplication extends DefaultApplication
     sendToServer (event.getMessage (), new AiClient (event.getPlayerName ()));
   }
 
-  private void sendToServer (final Event message, final Remote fakeClient)
+  private void sendToServer (final ClientEvent message, final Remote fakeClient)
   {
     externalEventBus.publishAsync (new ClientCommunicationEvent (message, fakeClient));
   }

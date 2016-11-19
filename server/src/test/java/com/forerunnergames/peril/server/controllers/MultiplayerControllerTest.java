@@ -101,6 +101,7 @@ import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
@@ -627,7 +628,7 @@ public class MultiplayerControllerTest
     verify (mockHumanClientCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     final String playerName = "TestPlayer1";
-    final Event event = new HumanPlayerJoinGameRequestEvent (playerName);
+    final ClientEvent event = new HumanPlayerJoinGameRequestEvent (playerName);
     communicateEventFromClient (event, client);
     assertLastEventWas (event);
   }
@@ -641,7 +642,7 @@ public class MultiplayerControllerTest
     final Remote client = addAiClient (playerName);
     verify (mockAiClientCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
-    final Event event = new AiPlayerJoinGameRequestEvent (playerName);
+    final ClientEvent event = new AiPlayerJoinGameRequestEvent (playerName);
     communicateEventFromClient (event, client);
     assertLastEventWas (event);
   }
@@ -958,7 +959,7 @@ public class MultiplayerControllerTest
                                                  isA (PlayerClaimCountryRequestEvent.class));
 
     // Simulate player/client claiming a country.
-    final Event event = new PlayerClaimCountryResponseRequestEvent ("Test Country 1");
+    final ClientEvent event = new PlayerClaimCountryResponseRequestEvent ("Test Country 1");
     communicateEventFromClient (event, clientPlayer.client ());
 
     // Verify that player/client's country claim was published.
@@ -1027,7 +1028,7 @@ public class MultiplayerControllerTest
     verify (mockHumanClientCommunicator, never ()).sendTo (second.client (), claimCountryRequestEvent1);
 
     // Simulate & verify first player/client claiming a country.
-    final Event claimCountryResponseRequestEvent1 = new PlayerClaimCountryResponseRequestEvent ("Test Country 1");
+    final ClientEvent claimCountryResponseRequestEvent1 = new PlayerClaimCountryResponseRequestEvent ("Test Country 1");
     communicateEventFromClient (claimCountryResponseRequestEvent1, first.client ());
     assertLastEventWas (claimCountryResponseRequestEvent1);
 
@@ -1040,7 +1041,7 @@ public class MultiplayerControllerTest
     verify (mockHumanClientCommunicator, never ()).sendTo (first.client (), claimCountryRequestEvent2);
 
     // Simulate & verify second player/client claiming a country.
-    final Event claimCountryResponseRequestEvent2 = new PlayerClaimCountryResponseRequestEvent ("Test Country 2");
+    final ClientEvent claimCountryResponseRequestEvent2 = new PlayerClaimCountryResponseRequestEvent ("Test Country 2");
     communicateEventFromClient (claimCountryResponseRequestEvent2, second.client ());
     assertLastEventWas (claimCountryResponseRequestEvent2);
 
@@ -1053,7 +1054,7 @@ public class MultiplayerControllerTest
     verify (mockHumanClientCommunicator, never ()).sendTo (second.client (), claimCountryRequestEvent3);
 
     // Simulate & verify first player/client claiming a country.
-    final Event claimCountryResponseRequestEvent3 = new PlayerClaimCountryResponseRequestEvent ("Test Country 3");
+    final ClientEvent claimCountryResponseRequestEvent3 = new PlayerClaimCountryResponseRequestEvent ("Test Country 3");
     communicateEventFromClient (claimCountryResponseRequestEvent3, first.client ());
     assertLastEventWas (claimCountryResponseRequestEvent3);
 
@@ -1066,7 +1067,7 @@ public class MultiplayerControllerTest
     verify (mockHumanClientCommunicator, never ()).sendTo (first.client (), claimCountryRequestEvent4);
 
     // Simulate & verify second player/client claiming a country.
-    final Event claimCountryResponseRequestEvent4 = new PlayerClaimCountryResponseRequestEvent ("Test Country 4");
+    final ClientEvent claimCountryResponseRequestEvent4 = new PlayerClaimCountryResponseRequestEvent ("Test Country 4");
     communicateEventFromClient (claimCountryResponseRequestEvent4, second.client ());
     assertLastEventWas (claimCountryResponseRequestEvent4);
 
@@ -1340,7 +1341,7 @@ public class MultiplayerControllerTest
                 eventHandler.wasFiredExactlyOnce (event));
   }
 
-  private ClientCommunicationEvent communicateEventFromClient (final Event event, final Remote client)
+  private ClientCommunicationEvent communicateEventFromClient (final ClientEvent event, final Remote client)
   {
     final ClientCommunicationEvent clientCommunicationEvent = new ClientCommunicationEvent (event, client);
     eventBus.publish (clientCommunicationEvent);

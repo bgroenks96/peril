@@ -18,16 +18,16 @@
 package com.forerunnergames.peril.ai.events;
 
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.events.local.LocalEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
 
 public final class AiCommunicationEvent implements LocalEvent
 {
-  private final Event message;
+  private final ClientEvent message;
   private final String playerName;
 
-  public AiCommunicationEvent (final Event message, final String playerName)
+  public AiCommunicationEvent (final ClientEvent message, final String playerName)
   {
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (playerName, "playerName");
@@ -36,7 +36,7 @@ public final class AiCommunicationEvent implements LocalEvent
     this.playerName = playerName;
   }
 
-  public Event getMessage ()
+  public ClientEvent getMessage ()
   {
     return message;
   }
