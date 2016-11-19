@@ -103,8 +103,7 @@ public abstract class AbstractAssetPacket implements AssetPacket
   @Override
   public boolean equals (final Object obj)
   {
-    if (this == obj) return true;
-    return obj instanceof AbstractAssetPacket && ((AbstractAssetPacket) obj).id.equals (id);
+    return this == obj || obj instanceof AbstractAssetPacket && ((AbstractAssetPacket) obj).id.equals (id);
   }
 
   @Override
