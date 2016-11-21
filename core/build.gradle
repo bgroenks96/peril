@@ -29,12 +29,14 @@ dependencies {
   stateBuilderAntTask "com.stateforge.statebuilder:statebuilder-java:3.6"
 }
 
-task generateJava << {
-  new File ("${projectDir}/src-gen").deleteDir ();
-  ant.taskdef (name: "stateBuilder",
-          classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",
-          classpath: configurations.stateBuilderAntTask.asPath)
-  ant.stateBuilder (input: "${projectDir}/src/main/res", output: "${projectDir}/src-gen/main/java") {}
+task generateJava {
+  doLast {
+    new File ("${projectDir}/src-gen").deleteDir ();
+    ant.taskdef (name: "stateBuilder",
+            classname: "com.stateforge.statebuilder.ant.StateBuilderAntTask",
+            classpath: configurations.stateBuilderAntTask.asPath)
+    ant.stateBuilder (input: "${projectDir}/src/main/res", output: "${projectDir}/src-gen/main/java") {}
+  }
 }
 
 compileJava.dependsOn (generateJava)
