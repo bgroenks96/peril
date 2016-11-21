@@ -48,6 +48,7 @@ buildscript {
   dependencies {
     classpath "com.android.tools.build:gradle:$androidGradleToolsVersion"
     classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradleVersion"
+    classpath "io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE"
   }
 
   configurations.all {
@@ -148,6 +149,24 @@ configure (subprojects - project (":android") - project (":integration")) {
   sourceSets.test.resources.srcDirs = ["src/test/res/"]
 }
 
+// Apply to the following subprojects: client, desktop, ios, integration
+// Unfortunately, dependency resolution using the dependency management mechanism is not transitive,
+// so it must be applied not only to "client", but to all subprojects that depend on "client".
+// It is worth it, however, in order to achieve aws-java-sdk modularization.
+configure ([project (":client"), project (":desktop"), project (":ios"), project (":integration")]) {
+  apply plugin: "io.spring.dependency-management"
+
+  dependencyManagement {
+    imports {
+      mavenBom "com.amazonaws:aws-java-sdk-bom:1.11.58"
+    }
+  }
+
+  dependencies {
+    compile "com.amazonaws:aws-java-sdk-s3"
+  }
+}
+
 project (":desktop") {
   dependencies {
     compile project (":client")
@@ -167,7 +186,7 @@ project (":android") {
 
   dependencies {
     compile (project (":client")) {
-      exclude module: "aws-java-sdk"
+      exclude module: "aws-java-sdk-s3"
     }
     compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
@@ -236,7 +255,6 @@ project (":client") {
     compile project (":common")
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-    compile "com.amazonaws:aws-java-sdk:1.11.58"
     testCompile project (":common").sourceSets.test.output
     testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
