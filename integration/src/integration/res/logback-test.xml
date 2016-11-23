@@ -50,7 +50,7 @@
       <pattern>%d{MMM-dd-yyyy HH:mm:ss.SSS} [%thread] %logger{0} %level: %msg%n%n</pattern>
     </encoder>
   </appender>
-  <logger name="com.forerunnergames.peril" level="DEBUG" additivity="false">
+  <logger name="com.forerunnergames.peril" level="TRACE" additivity="false">
     <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_MAIN"/>
   </logger>
@@ -58,7 +58,7 @@
     <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_MAIN"/>
   </logger>
-  <logger name="com.forerunnergames.tools" level="DEBUG" additivity="false">
+  <logger name="com.forerunnergames.tools" level="TRACE" additivity="false">
     <!--<appender-ref ref="STDOUT" />-->
     <appender-ref ref="LOGFILE_MAIN"/>
   </logger>
