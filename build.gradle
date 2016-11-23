@@ -137,7 +137,7 @@ configure (subprojects - project (":android")) {
       }
     }
 
-    testLogging.showStandardStreams = true;
+    testLogging.showStandardStreams = true
   }
 }
 
@@ -323,8 +323,8 @@ idea {
   }
 
   module {
-    downloadJavadoc = true
     downloadSources = true
+    downloadJavadoc = true
   }
 }
 
