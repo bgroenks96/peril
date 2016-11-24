@@ -26,18 +26,18 @@ import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.OkDialog;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 import javax.annotation.Nullable;
 
-public final class PlayerNotificationDialog extends OkDialog implements PlayMapBlockingDialog
+public final class NotificationDialog extends OkDialog implements PlayMapBlockingDialog
 {
   @Nullable
-  private PlayerPacket selfPlayer;
+  private PersonPacket self;
 
-  public PlayerNotificationDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener)
+  public NotificationDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener)
   {
     // @formatter:off
     super (widgetFactory,
@@ -60,90 +60,90 @@ public final class PlayerNotificationDialog extends OkDialog implements PlayMapB
     // @formatter:on
   }
 
-  public void clearTitleForSelf (final PlayerPacket player)
+  public void clearTitleForSelf (final PersonPacket person)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
 
-    setTitleForSelf (player, "");
+    setTitleForSelf (person, "");
   }
 
-  public void setTitleForSelf (final PlayerPacket player, final String title)
+  public void setTitleForSelf (final PersonPacket person, final String title)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
     Arguments.checkIsNotNull (title, "title");
 
-    if (isSelf (player)) setTitle (title);
+    if (isSelf (person)) setTitle (title);
   }
 
-  public void setTitleForSelf (final PlayerPacket player, final String title, final Object... titleArgs)
+  public void setTitleForSelf (final PersonPacket person, final String title, final Object... titleArgs)
   {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (title, "title");
-    Arguments.checkIsNotNull (titleArgs, "titleArgs");
-
-    setTitleForSelf (player, Strings.format (title, titleArgs));
-  }
-
-  public void setTitleForEveryoneElse (final PlayerPacket player, final String title)
-  {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (title, "title");
-
-    if (!isSelf (player)) setTitle (title);
-  }
-
-  public void setTitleForEveryoneElse (final PlayerPacket player, final String title, final Object... titleArgs)
-  {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
     Arguments.checkIsNotNull (title, "title");
     Arguments.checkIsNotNull (titleArgs, "titleArgs");
 
-    setTitleForEveryoneElse (player, Strings.format (title, titleArgs));
+    setTitleForSelf (person, Strings.format (title, titleArgs));
   }
 
-  public void showForSelf (final PlayerPacket player, final String message)
+  public void setTitleForEveryoneElse (final PersonPacket person, final String title)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
+    Arguments.checkIsNotNull (title, "title");
+
+    if (!isSelf (person)) setTitle (title);
+  }
+
+  public void setTitleForEveryoneElse (final PersonPacket person, final String title, final Object... titleArgs)
+  {
+    Arguments.checkIsNotNull (person, "person");
+    Arguments.checkIsNotNull (title, "title");
+    Arguments.checkIsNotNull (titleArgs, "titleArgs");
+
+    setTitleForEveryoneElse (person, Strings.format (title, titleArgs));
+  }
+
+  public void showForSelf (final PersonPacket person, final String message)
+  {
+    Arguments.checkIsNotNull (person, "person");
     Arguments.checkIsNotNull (message, "message");
 
-    if (isSelf (player)) show (message);
+    if (isSelf (person)) show (message);
   }
 
-  public void showForSelf (final PlayerPacket player, final String message, final Object... messageArgs)
+  public void showForSelf (final PersonPacket person, final String message, final Object... messageArgs)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
     Arguments.checkIsNotNull (messageArgs, "messageArgs");
 
-    showForSelf (player, Strings.format (message, messageArgs));
+    showForSelf (person, Strings.format (message, messageArgs));
   }
 
-  public void showForEveryoneElse (final PlayerPacket player, final String message)
+  public void showForEveryoneElse (final PersonPacket person, final String message)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
     Arguments.checkIsNotNull (message, "message");
 
-    if (!isSelf (player)) show (message);
+    if (!isSelf (person)) show (message);
   }
 
-  public void showForEveryoneElse (final PlayerPacket player, final String message, final Object... messageArgs)
+  public void showForEveryoneElse (final PersonPacket person, final String message, final Object... messageArgs)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
     Arguments.checkIsNotNull (messageArgs, "messageArgs");
 
-    showForEveryoneElse (player, Strings.format (message, messageArgs));
+    showForEveryoneElse (person, Strings.format (message, messageArgs));
   }
 
-  public void setSelfPlayer (final PlayerPacket player)
+  public void setSelf (final PersonPacket person)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
 
-    selfPlayer = player;
+    self = person;
   }
 
-  private boolean isSelf (final PlayerPacket player)
+  private boolean isSelf (final PersonPacket person)
   {
-    assert player != null;
+    assert person != null;
 
-    return selfPlayer != null && player.is (selfPlayer);
+    return self != null && person.is (self);
   }
 }

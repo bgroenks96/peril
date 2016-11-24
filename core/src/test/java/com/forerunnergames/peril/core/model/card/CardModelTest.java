@@ -48,7 +48,7 @@ public abstract class CardModelTest
   static final int DEFAULT_CARD_COUNT = 45;
   static final int DEFAULT_WILDCARD_COUNT = 2;
   private static final String TEST_PLAYER_NAME = "TestPlayer0";
-  private final GameRules rules = new ClassicGameRules.Builder ().build ();
+  private final GameRules rules = ClassicGameRules.defaults ();
   private final ImmutableSet <Card> testDeck = generateTestCards ();
   private final PlayerModel playerModel = new DefaultPlayerModel (rules);
 
@@ -247,7 +247,7 @@ public abstract class CardModelTest
 
   private CardSet createCardSetFrom (final ImmutableSet <Card> cards)
   {
-    final GameRules defaultRules = new ClassicGameRules.Builder ().build ();
-    return new CardSet (defaultRules, cards);
+    final GameRules rules = ClassicGameRules.defaults ();
+    return new CardSet (rules, cards);
   }
 }

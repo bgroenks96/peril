@@ -15,27 +15,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
+package com.forerunnergames.peril.client.ui.widgets.personicons.players;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.client.assets.AssetManager;
-import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.tools.common.Arguments;
 
-abstract class HumanPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory
+final class NullPlayerIcon implements PlayerIcon
 {
-  HumanPlayerColorIconWidgetFactory (final AssetManager assetManager)
+  private final Actor actor = new Actor ();
+
+  @Override
+  public void setColor (final PlayerColor color)
   {
-    super (assetManager);
+    Arguments.checkIsNotNull (color, "color");
   }
 
   @Override
-  public Button.ButtonStyle createPlayerColorIconStyle (final PlayerColor color)
+  public void refreshAssets ()
   {
-    Arguments.checkIsNotNull (color, "color");
+  }
 
-    return createButtonStyle (StyleSettings.HUMAN_PLAYER_COLOR_ICON_STYLE_PREFIX + color.toLowerCase ());
+  @Override
+  public Actor asActor ()
+  {
+    return actor;
   }
 }

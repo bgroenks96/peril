@@ -15,34 +15,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
-
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+package com.forerunnergames.peril.client.ui.widgets.personicons.spectators;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
-import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-public abstract class AbstractPlayerColorIconWidgetFactory extends AbstractWidgetFactory implements
-        PlayerColorIconWidgetFactory
+abstract class AbstractSpectatorIconWidgetFactory extends AbstractWidgetFactory implements SpectatorIconWidgetFactory
 {
-  public AbstractPlayerColorIconWidgetFactory (final AssetManager assetManager)
+  AbstractSpectatorIconWidgetFactory (final AssetManager assetManager)
   {
     super (assetManager);
   }
 
   @Override
-  public PlayerColorIcon createPlayerColorIcon (final PlayerColor activeColor)
+  public SpectatorIcon createPersonIcon (final SpectatorPacket person)
   {
-    Arguments.checkIsNotNull (activeColor, "activeColor");
+    Arguments.checkIsNotNull (person, "person");
 
-    return new DefaultPlayerColorIcon (activeColor, this);
-  }
-
-  @Override
-  public Button createPlayerColorIconButton (final PlayerColor color)
-  {
-    return createButton (createPlayerColorIconStyle (color));
+    return new DefaultSpectatorIcon (this);
   }
 }

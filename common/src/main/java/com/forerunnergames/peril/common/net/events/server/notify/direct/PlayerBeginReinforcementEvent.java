@@ -18,7 +18,7 @@
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.net.packets.territory.TerritoryPacket;
@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-public final class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
+public final class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements PlayerInformEvent
 {
   private final ImmutableMap <String, Integer> reinforceableCountryNamesToCountryArmyCounts;
   private final ImmutableSet <CountryPacket> reinforceableCountries;

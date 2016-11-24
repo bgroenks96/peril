@@ -126,7 +126,7 @@ public final class ChatProcessor extends AbstractAiProcessor
 
     log.debug ("[{}] received event: [{}].", getPlayerName (), event);
 
-    final String playerName = event.getPlayerName ();
+    final String playerName = event.getPersonName ();
 
     sayOneOfWhenOther (event,
                        Strings.format ("Hi {}.", deTag (playerName)),

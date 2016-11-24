@@ -69,8 +69,7 @@ public class BattleModelTest
   public void prepare ()
   {
     countryGraphModel = GameModelTest.createDefaultTestCountryGraph (countryNames);
-    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (countryGraphModel.size ()).build ();
+    gameRules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (countryGraphModel.size ()).build ();
     countryOwnerModel = new DefaultCountryOwnerModel (countryGraphModel, gameRules);
     countryArmyModel = new DefaultCountryArmyModel (countryGraphModel, gameRules);
     playMapModel = mockPlayMapModel ();

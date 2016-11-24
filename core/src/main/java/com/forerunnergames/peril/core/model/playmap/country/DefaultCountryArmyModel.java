@@ -19,6 +19,7 @@ package com.forerunnergames.peril.core.model.playmap.country;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
 import com.forerunnergames.tools.common.Preconditions;
@@ -26,6 +27,7 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.math.IntMath;
 
 public final class DefaultCountryArmyModel implements CountryArmyModel
@@ -122,5 +124,26 @@ public final class DefaultCountryArmyModel implements CountryArmyModel
       final Country country = countryGraphModel.modelCountryWith (countryId);
       country.removeArmies (country.getArmyCount ());
     }
+  }
+
+  @Override
+  public ImmutableSet <CountryArmiesMutation> resetCountries (final ImmutableSet <Id> countryIds)
+  {
+    Arguments.checkIsNotNull (countryIds, "countryIds");
+    Arguments.checkHasNoNullElements (countryIds, "countryIds");
+
+    final ImmutableSet.Builder <CountryArmiesMutation> mutationsBuilder = ImmutableSet.builder ();
+
+    for (final Id countryId : countryIds)
+    {
+      if (!countryGraphModel.existsCountryWith (countryId)) continue;
+      final Country country = countryGraphModel.modelCountryWith (countryId);
+      final int armies = country.getArmyCount ();
+      country.removeArmies (armies);
+      final CountryPacket countryPacket = countryGraphModel.countryPacketWith (countryId);
+      mutationsBuilder.add (new CountryArmiesMutation (countryPacket, -armies));
+    }
+
+    return mutationsBuilder.build ();
   }
 }

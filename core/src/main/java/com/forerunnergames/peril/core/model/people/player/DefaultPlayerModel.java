@@ -269,7 +269,7 @@ public final class DefaultPlayerModel implements PlayerModel
   @Override
   public int getPlayerLimit ()
   {
-    return rules.getPlayerLimit ();
+    return rules.getTotalPlayerLimit ();
   }
 
   @Override
@@ -329,7 +329,7 @@ public final class DefaultPlayerModel implements PlayerModel
   @Override
   public boolean isFull ()
   {
-    return !players.isEmpty () && players.size () >= rules.getPlayerLimit ();
+    return !players.isEmpty () && players.size () >= rules.getTotalPlayerLimit ();
   }
 
   @Override
@@ -359,13 +359,13 @@ public final class DefaultPlayerModel implements PlayerModel
   @Override
   public boolean playerLimitIs (final int limit)
   {
-    return rules.getPlayerLimit () == limit;
+    return rules.getTotalPlayerLimit () == limit;
   }
 
   @Override
   public boolean playerLimitIsAtLeast (final int limit)
   {
-    return rules.getPlayerLimit () >= limit;
+    return rules.getTotalPlayerLimit () >= limit;
   }
 
   @Override

@@ -34,6 +34,9 @@ import java.util.Comparator;
 
 public interface PlayerModel
 {
+  @Override
+  String toString ();
+
   void addArmiesToHandOf (final Id playerId, final int armies);
 
   void addArmyToHandOf (final Id playerId);
@@ -297,10 +300,5 @@ public interface PlayerModel
     {
       return player;
     }
-
   }
-
-  @Override
-  String toString ();
-
 }

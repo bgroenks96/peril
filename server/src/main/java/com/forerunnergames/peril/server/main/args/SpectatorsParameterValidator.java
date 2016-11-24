@@ -20,7 +20,7 @@ package com.forerunnergames.peril.server.main.args;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 
-import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.tools.common.Strings;
 
 public final class SpectatorsParameterValidator implements IParameterValidator
@@ -32,7 +32,7 @@ public final class SpectatorsParameterValidator implements IParameterValidator
     {
       final int spectators = Integer.valueOf (value);
 
-      if (spectators < GameSettings.MIN_SPECTATORS || spectators > GameSettings.MAX_SPECTATORS)
+      if (spectators < ClassicGameRules.MIN_SPECTATORS || spectators > ClassicGameRules.MAX_SPECTATORS)
       {
         throw new ParameterException (createErrorMessage (name, value));
       }
@@ -46,6 +46,6 @@ public final class SpectatorsParameterValidator implements IParameterValidator
   private String createErrorMessage (final String name, final String value)
   {
     return Strings.format ("Invalid value \"{}\" for parameter \"{}\".\n\nValid values: {} - {}", value, name,
-                           GameSettings.MIN_SPECTATORS, GameSettings.MAX_SPECTATORS);
+                           ClassicGameRules.MIN_SPECTATORS, ClassicGameRules.MAX_SPECTATORS);
   }
 }

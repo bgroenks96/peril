@@ -319,8 +319,8 @@ public class TestClient extends AbstractClientController
     if (!(event instanceof PlayerEvent) || player == null) return;
 
     final PlayerEvent playerEvent = (PlayerEvent) event;
-    if (!playerEvent.getPlayer ().is (player)) return;
-    player = playerEvent.getPlayer ();
+    if (!playerEvent.getPerson ().is (player)) return;
+    player = playerEvent.getPerson ();
   }
 
   @Override

@@ -311,7 +311,7 @@ public class MultiplayerControllerTest
         assertTrue (eventHandler.wasFiredExactlyOnce (requestEvent));
         players.add (player);
         final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
-                ImmutableSet.copyOf (players), mpc.getPlayerLimit ());
+                ImmutableSet.copyOf (players), mpc.getPersonLimits ());
         final BaseMatcher <PlayerJoinGameSuccessEvent> successEventMatcher = new BaseMatcher <PlayerJoinGameSuccessEvent> ()
         {
           @Override
@@ -319,7 +319,7 @@ public class MultiplayerControllerTest
           {
             if (!(arg0 instanceof PlayerJoinGameSuccessEvent)) return false;
             final PlayerJoinGameSuccessEvent event = (PlayerJoinGameSuccessEvent) arg0;
-            return event.getPlayer ().equals (player) && event.getPlayersInGame ().equals (players);
+            return event.getPerson ().equals (player) && event.getPlayersInGame ().equals (players);
           }
 
           @Override
@@ -341,7 +341,7 @@ public class MultiplayerControllerTest
     final PlayerJoinGameSuccessEvent clientResult2 = clientJoinAsPlayer.apply (client2);
     assertNotNull (clientResult2);
     assertTrue (clientResult1.getOtherPlayersInGame ().isEmpty ());
-    assertEquals (ImmutableSet.of (clientResult1.getPlayer ()), clientResult2.getOtherPlayersInGame ());
+    assertEquals (ImmutableSet.of (clientResult1.getPerson ()), clientResult2.getOtherPlayersInGame ());
   }
 
   @Test
@@ -365,7 +365,7 @@ public class MultiplayerControllerTest
         assertTrue (eventHandler.wasFiredExactlyOnce (requestEvent));
         players.add (player);
         final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
-                ImmutableSet.copyOf (players), mpc.getPlayerLimit ());
+                ImmutableSet.copyOf (players), mpc.getPersonLimits ());
         final BaseMatcher <PlayerJoinGameSuccessEvent> successEventMatcher = new BaseMatcher <PlayerJoinGameSuccessEvent> ()
         {
           @Override
@@ -373,7 +373,7 @@ public class MultiplayerControllerTest
           {
             if (!(arg0 instanceof PlayerJoinGameSuccessEvent)) return false;
             final PlayerJoinGameSuccessEvent event = (PlayerJoinGameSuccessEvent) arg0;
-            return event.getPlayer ().equals (player) && event.getPlayersInGame ().equals (players);
+            return event.getPerson ().equals (player) && event.getPlayersInGame ().equals (players);
           }
 
           @Override
@@ -394,7 +394,7 @@ public class MultiplayerControllerTest
     final PlayerJoinGameSuccessEvent clientResult2 = clientJoinAsPlayer.apply (client2);
     assertNotNull (clientResult2);
     assertTrue (clientResult1.getOtherPlayersInGame ().isEmpty ());
-    assertEquals (ImmutableSet.of (clientResult1.getPlayer ()), clientResult2.getOtherPlayersInGame ());
+    assertEquals (ImmutableSet.of (clientResult1.getPerson ()), clientResult2.getOtherPlayersInGame ());
   }
 
   @Test
@@ -817,7 +817,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameSuccess ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (GameSettings.MAX_SPECTATORS).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient, mpc);
@@ -830,7 +830,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedDuplicatesPlayerName ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (GameSettings.MAX_SPECTATORS).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestPlayer"), spectatorClient);
@@ -842,14 +842,14 @@ public class MultiplayerControllerTest
       {
         if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
         return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
-                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_PLAYER_NAME);
       }
 
       @Override
       public void describeTo (final Description arg0)
       {
         arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_PLAYER_NAME);
       }
     };
     verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient), argThat (matcher));
@@ -859,7 +859,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedDuplicatesSpectatorName ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (GameSettings.MAX_SPECTATORS).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient1 = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient1, mpc);
@@ -872,14 +872,14 @@ public class MultiplayerControllerTest
       {
         if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
         return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
-                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_SPECTATOR_NAME);
       }
 
       @Override
       public void describeTo (final Description arg0)
       {
         arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_NAME);
+                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_SPECTATOR_NAME);
       }
     };
     verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient2), argThat (matcher));
@@ -1138,7 +1138,7 @@ public class MultiplayerControllerTest
     // disconnect client
     disconnect (client);
     assertFalse (mpc.isClientInServer (client));
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPlayerLimit ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (player));
   }
 
@@ -1154,7 +1154,7 @@ public class MultiplayerControllerTest
     // disconnect client
     disconnect (client);
     assertFalse (mpc.isClientInServer (client));
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPlayerLimit ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (player));
   }
 
@@ -1245,7 +1245,7 @@ public class MultiplayerControllerTest
     assert mpc.getPlayerLimitFor (PersonSentience.HUMAN) > 0;
     final PlayerPacket player = createMockHumanPlayer (playerName);
     communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName), client);
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPlayerLimit ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
     verify (mockHumanClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (player));
 
@@ -1260,7 +1260,7 @@ public class MultiplayerControllerTest
     assert mpc.getPlayerLimitFor (PersonSentience.AI) > 0;
     final PlayerPacket player = createMockAiPlayer (playerName);
     communicateEventFromClient (new AiPlayerJoinGameRequestEvent (playerName), client);
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPlayerLimit ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
     verify (mockAiClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (player));
 
@@ -1449,6 +1449,7 @@ public class MultiplayerControllerTest
     private final PlayMapMetadata playMapMetadata = new DefaultPlayMapMetadata (
             GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_TYPE, gameMode,
             GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_TYPE);
+    private final PersonLimits.Builder personLimitsBuilder = PersonLimits.builder ().classicModeDefaults ();
     private InitialCountryAssignment initialCountryAssignment = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
     // game server configuration fields
     private String gameServerName = DEFAULT_TEST_GAME_SERVER_NAME;
@@ -1456,9 +1457,6 @@ public class MultiplayerControllerTest
     // server configuration fields
     private String serverAddress = DEFAULT_TEST_SERVER_ADDRESS;
     private int serverPort = DEFAULT_TEST_SERVER_PORT;
-    private int humanPlayerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
-    private int aiPlayerLimit = GameSettings.MIN_AI_PLAYERS;
-    private int spectatorLimit = GameSettings.DEFAULT_SPECTATOR_LIMIT;
     private int winPercent = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
     private int totalCountryCount = ClassicGameRules.DEFAULT_TOTAL_COUNTRY_COUNT;
 
@@ -1499,7 +1497,8 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNegative (humanPlayerLimit, "humanPlayerLimit");
 
-      this.humanPlayerLimit = humanPlayerLimit;
+      personLimitsBuilder.humanPlayers (humanPlayerLimit);
+
       return this;
     }
 
@@ -1507,7 +1506,8 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNegative (aiPlayerLimit, "aiPlayerLimit");
 
-      this.aiPlayerLimit = aiPlayerLimit;
+      personLimitsBuilder.aiPlayers (aiPlayerLimit);
+
       return this;
     }
 
@@ -1515,7 +1515,8 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
 
-      this.spectatorLimit = spectatorLimit;
+      personLimitsBuilder.spectators (spectatorLimit);
+
       return this;
     }
 
@@ -1548,17 +1549,11 @@ public class MultiplayerControllerTest
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
 
-      final PersonLimits personLimits = PersonLimits.builder ().humanPlayers (humanPlayerLimit)
-              .aiPlayers (aiPlayerLimit).spectators (spectatorLimit).build ();
-
-      final GameRules gameRules = GameRulesFactory.create (gameMode, personLimits.getPlayerLimit (), winPercent,
+      final GameRules gameRules = GameRulesFactory.create (gameMode, personLimitsBuilder.build (), winPercent,
                                                            totalCountryCount, initialCountryAssignment);
 
-      final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, personLimits, winPercent,
-              initialCountryAssignment, playMapMetadata, gameRules);
-
+      final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playMapMetadata, gameRules);
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
-
       final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName,
               gameServerType, gameConfig, serverConfig);
 

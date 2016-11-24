@@ -21,7 +21,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotifi
 
 /**
  * All implementations of PlayerTurnOrderChangedEvent should be constructed with an updated PlayerPacket (accessible via
- * {@link #getPlayer()} that contains the turn order position of the player <b>after</b> the change.
+ * {@link #getPerson()} that contains the turn order position of the player <b>after</b> the change.
  */
 public interface PlayerTurnOrderChangedEvent extends PlayerEvent, BroadcastNotificationEvent
 {

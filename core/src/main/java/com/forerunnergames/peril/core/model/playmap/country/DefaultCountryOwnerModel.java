@@ -21,6 +21,7 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
@@ -203,24 +204,40 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   }
 
   @Override
-  public ImmutableSet <CountryPacket> getCountriesOwnedBy (final Id ownerId)
+  public ImmutableSet <CountryPacket> getCountryPacketsOwnedBy (final Id ownerId)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
 
     if (!countryIdsToOwnerIds.containsValue (ownerId)) return ImmutableSet.of ();
 
-    final ImmutableSet.Builder <CountryPacket> countryBuilder = ImmutableSet.builder ();
+    final ImmutableSet.Builder <CountryPacket> countryPacketBuilder = ImmutableSet.builder ();
 
     for (final Map.Entry <Id, Id> countryIdToOwnerIdEntry : countryIdsToOwnerIds.entrySet ())
     {
       if (!countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
-
       final Country country = countryGraphModel.modelCountryWith (countryIdToOwnerIdEntry.getKey ());
-
-      if (country != null) countryBuilder.add (CountryPackets.from (country));
+      if (country != null) countryPacketBuilder.add (CountryPackets.from (country));
     }
 
-    return countryBuilder.build ();
+    return countryPacketBuilder.build ();
+  }
+
+  @Override
+  public ImmutableSet <Id> getCountriesOwnedBy (final Id ownerId)
+  {
+    Arguments.checkIsNotNull (ownerId, "ownerId");
+
+    if (!countryIdsToOwnerIds.containsValue (ownerId)) return ImmutableSet.of ();
+
+    final ImmutableSet.Builder <Id> countryIdBuilder = ImmutableSet.builder ();
+
+    for (final Map.Entry <Id, Id> countryIdToOwnerIdEntry : countryIdsToOwnerIds.entrySet ())
+    {
+      if (!countryIdToOwnerIdEntry.getValue ().equals (ownerId)) continue;
+      countryIdBuilder.add (countryIdToOwnerIdEntry.getKey ());
+    }
+
+    return countryIdBuilder.build ();
   }
 
   @Override
@@ -262,17 +279,38 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
   }
 
   @Override
-  public void unassignAllCountriesOwnedBy (final Id ownerId)
+  public ImmutableSet <CountryOwnerMutation> unassignAllCountriesOwnedBy (final Id ownerId,
+                                                                          final PlayerPacket ownerPacket)
   {
     Arguments.checkIsNotNull (ownerId, "ownerId");
+    Arguments.checkIsNotNull (ownerPacket, "ownerPacket");
+    Arguments.checkIsTrue (ownerPacket.hasId (ownerId.value ()),
+                           "ownerPacket [{}] Id value must match that of ownerId [{]]");
 
-    for (final Country country : countryGraphModel.getCountries ())
+    final ImmutableSet.Builder <CountryOwnerMutation> mutationsBuilder = ImmutableSet.builder ();
+
+    for (final Id countryId : getCountriesOwnedBy (ownerId))
     {
-      if (countryIdsToOwnerIds.containsKey (country.getId ()) && countryIdsToOwnerIds.containsValue (ownerId))
+      final MutatorResult <AbstractPlayerChangeCountryDeniedEvent.Reason> result = requestToUnassignCountry (countryId);
+
+      // This would indicate a serious bug.
+      if (result.failed ())
       {
-        requestToUnassignCountry (country.getId ());
+        throw new IllegalStateException (Strings.format ("Could not unassign countryId [{}] from owner [{}]",
+                                                         countryId, ownerId));
       }
+
+      // Sanity check.
+      assert result.isSuccessful ();
+
+      // Will always commit because we already ruled out failure.
+      result.commitIfSuccessful ();
+
+      final CountryPacket countryPacket = countryGraphModel.countryPacketWith (countryId);
+      mutationsBuilder.add (new CountryOwnerMutation (countryPacket, ownerPacket, null));
     }
+
+    return mutationsBuilder.build ();
   }
 
   @Override

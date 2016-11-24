@@ -21,7 +21,6 @@ import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
-import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Strings;
 
 public final class HumanPlayersParameterValidator implements IParameterValidator
@@ -33,7 +32,7 @@ public final class HumanPlayersParameterValidator implements IParameterValidator
     {
       final int humanPlayers = Integer.valueOf (value);
 
-      if (humanPlayers < GameSettings.MIN_HUMAN_PLAYERS || humanPlayers > ClassicGameRules.MAX_PLAYERS)
+      if (humanPlayers < ClassicGameRules.MIN_HUMAN_PLAYERS || humanPlayers > ClassicGameRules.MAX_HUMAN_PLAYERS)
       {
         throw new ParameterException (createErrorMessage (name, value));
       }
@@ -54,9 +53,9 @@ public final class HumanPlayersParameterValidator implements IParameterValidator
                            "  AI:     {} - {}\n" +
                            "  Total:  {} - {}",
             value, name,
-            GameSettings.MIN_HUMAN_PLAYERS, ClassicGameRules.MAX_PLAYERS,
-            GameSettings.MIN_AI_PLAYERS, ClassicGameRules.MAX_PLAYERS,
-            ClassicGameRules.MIN_PLAYERS, ClassicGameRules.MAX_PLAYERS);
+            ClassicGameRules.MIN_HUMAN_PLAYERS, ClassicGameRules.MAX_HUMAN_PLAYERS,
+            ClassicGameRules.MIN_AI_PLAYERS, ClassicGameRules.MAX_AI_PLAYERS,
+            ClassicGameRules.MIN_TOTAL_PLAYERS, ClassicGameRules.MAX_TOTAL_PLAYERS);
     // @formatter:on
   }
 }

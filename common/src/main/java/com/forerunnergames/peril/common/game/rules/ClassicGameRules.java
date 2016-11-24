@@ -24,7 +24,9 @@ import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.TurnPhase;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableList;
@@ -34,12 +36,28 @@ import javax.annotation.Nullable;
 public final class ClassicGameRules implements GameRules
 {
   // @formatter:off
-  public static final int MIN_PLAYERS = 2;
-  public static final int MAX_PLAYERS = 10;
-  public static final int MIN_PLAYER_LIMIT = MIN_PLAYERS;
-  public static final int MAX_PLAYER_LIMIT = MAX_PLAYERS;
+  public static final int MIN_TOTAL_PLAYERS = 2;
+  public static final int MAX_TOTAL_PLAYERS = 10;
+  public static final int MIN_HUMAN_PLAYERS = 0;
+  public static final int MAX_HUMAN_PLAYERS = 10;
+  public static final int MIN_AI_PLAYERS = 0;
+  public static final int MAX_AI_PLAYERS = 10;
+  public static final int MIN_SPECTATORS = 0;
+  public static final int MAX_SPECTATORS = 6;
+  public static final int MIN_TOTAL_PLAYER_LIMIT = MIN_TOTAL_PLAYERS;
+  public static final int MAX_TOTAL_PLAYER_LIMIT = MAX_TOTAL_PLAYERS;
+  public static final int MIN_HUMAN_PLAYER_LIMIT = MIN_HUMAN_PLAYERS;
+  public static final int MAX_HUMAN_PLAYER_LIMIT = MAX_HUMAN_PLAYERS;
+  public static final int MIN_AI_PLAYER_LIMIT = MIN_AI_PLAYERS;
+  public static final int MAX_AI_PLAYER_LIMIT = MAX_AI_PLAYERS;
+  public static final int MIN_SPECTATOR_LIMIT = MIN_SPECTATORS;
+  public static final int MAX_SPECTATOR_LIMIT = MAX_SPECTATORS;
+  public static final int DEFAULT_TOTAL_PLAYER_LIMIT = MIN_TOTAL_PLAYER_LIMIT;
+  public static final int DEFAULT_AI_PLAYER_LIMIT = MIN_AI_PLAYER_LIMIT;
+  public static final int DEFAULT_HUMAN_PLAYER_LIMIT = MIN_TOTAL_PLAYER_LIMIT;
+  public static final int DEFAULT_SPECTATOR_LIMIT = MIN_SPECTATOR_LIMIT;
   public static final int MAX_WIN_PERCENTAGE = 100;
-  public static final int MIN_TOTAL_COUNTRY_COUNT = MAX_PLAYERS;
+  public static final int MIN_TOTAL_COUNTRY_COUNT = MAX_TOTAL_PLAYERS;
   public static final int MAX_TOTAL_COUNTRY_COUNT = 1000;
   public static final int MIN_PLAYER_COUNTRY_COUNT = 1;
   public static final int MIN_ARMIES_IN_HAND = 0;
@@ -52,7 +70,6 @@ public final class ClassicGameRules implements GameRules
   public static final int ABSOLUTE_MAX_CARDS_IN_HAND = 9;
   public static final int MIN_ARMIES_ON_SOURCE_COUNTRY_FOR_FORTIFY = 2;
   public static final int MAX_ARMIES_ON_TARGET_COUNTRY_FOR_FORTIFY = MAX_ARMIES_ON_COUNTRY - 1;
-  public static final int DEFAULT_PLAYER_LIMIT = MIN_PLAYER_LIMIT;
   public static final int DEFAULT_WIN_PERCENTAGE = MAX_WIN_PERCENTAGE;
   public static final int DEFAULT_TOTAL_COUNTRY_COUNT = MIN_TOTAL_COUNTRY_COUNT;
   public static final InitialCountryAssignment DEFAULT_INITIAL_COUNTRY_ASSIGNMENT = InitialCountryAssignment.RANDOM;
@@ -72,7 +89,7 @@ public final class ClassicGameRules implements GameRules
   private static final int MIN_CARDS_IN_HAND_FOR_TRADE_IN_ATTACK_PHASE = 6;
   private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_REINFORCE_PHASE = 5;
   private static final int MIN_CARDS_IN_HAND_TO_REQUIRE_TRADE_IN_ATTACK_PHASE = MIN_CARDS_IN_HAND_FOR_TRADE_IN_ATTACK_PHASE;
-  private final int playerLimit;
+  private final PersonLimits personLimits;
   private final int winPercentage;
   private final int minWinPercentage;
   private final int totalCountryCount;
@@ -154,27 +171,15 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getMinPlayerLimit ()
+  public int getMinTotalPlayers ()
   {
-    return MIN_PLAYER_LIMIT;
+    return MIN_TOTAL_PLAYERS;
   }
 
   @Override
-  public int getMaxPlayerLimit ()
+  public int getMaxTotalPlayers ()
   {
-    return MAX_PLAYER_LIMIT;
-  }
-
-  @Override
-  public int getMinPlayers ()
-  {
-    return MIN_PLAYERS;
-  }
-
-  @Override
-  public int getMaxPlayers ()
-  {
-    return MAX_PLAYERS;
+    return MAX_TOTAL_PLAYERS;
   }
 
   @Override
@@ -202,9 +207,41 @@ public final class ClassicGameRules implements GameRules
   }
 
   @Override
-  public int getPlayerLimit ()
+  public int getMinTotalPlayerLimit ()
   {
-    return playerLimit;
+    return MIN_TOTAL_PLAYER_LIMIT;
+  }
+
+  @Override
+  public int getMaxTotalPlayerLimit ()
+  {
+    return MAX_TOTAL_PLAYER_LIMIT;
+  }
+
+  @Override
+  public int getTotalPlayerLimit ()
+  {
+    return personLimits.getTotalPlayerLimit ();
+  }
+
+  @Override
+  public int getPlayerLimitFor (final PersonSentience sentience)
+  {
+    Arguments.checkIsNotNull (sentience, "sentience");
+
+    return personLimits.getPlayerLimitFor (sentience);
+  }
+
+  @Override
+  public int getSpectatorLimit ()
+  {
+    return personLimits.getSpectatorLimit ();
+  }
+
+  @Override
+  public PersonLimits getPersonLimits ()
+  {
+    return personLimits;
   }
 
   @Override
@@ -460,17 +497,19 @@ public final class ClassicGameRules implements GameRules
   }
 
   /**
-   * @return an ImmutableList of length 'playerCount' containing ordered country-per-player distribution values.
+   * @return an ImmutableList of length 'playerCount' containing ordered countries-per-player distribution values.
    */
   @Override
   public ImmutableList <Integer> getInitialPlayerCountryDistribution (final int playerCount)
   {
     Arguments.checkIsNotNegative (playerCount, "playerCount");
-    Arguments.checkLowerInclusiveBound (playerCount, MIN_PLAYERS, "playerCount");
-    Arguments.checkUpperInclusiveBound (playerCount, playerLimit, "playerCount");
+    Arguments.checkLowerInclusiveBound (playerCount, MIN_TOTAL_PLAYERS, "playerCount",
+                                        "ClassicGameRules.MIN_TOTAL_PLAYERS");
+    Arguments.checkUpperInclusiveBound (playerCount, getTotalPlayerLimit (), "playerCount",
+                                        "ClassicGameRules.getTotalPlayerLimit()");
 
     // return immediately for zero players to avoid a zero divisor error
-    // this is only included in case for any reason MIN_PLAYERS becomes 0
+    // this is only included in case for any reason MIN_TOTAL_PLAYERS becomes 0
     if (playerCount == 0) return ImmutableList.of ();
 
     final ImmutableList.Builder <Integer> listBuilder = ImmutableList.builder ();
@@ -594,6 +633,134 @@ public final class ClassicGameRules implements GameRules
     return BattleOutcome.ATTACKER_DEFEATED;
   }
 
+  public static int getMinHumanPlayerLimit (final int aiPlayerLimit)
+  {
+    Arguments.checkLowerInclusiveBound (aiPlayerLimit, MIN_AI_PLAYER_LIMIT, "aiPlayerLimit",
+                                        "GameSettings.MIN_AI_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (aiPlayerLimit, MAX_TOTAL_PLAYER_LIMIT, "aiPlayerLimit",
+                                        "GameSettings.MAX_AI_PLAYER_LIMIT");
+
+    // @formatter:off
+    //
+    // Guarantees there will be at least enough total players (AI + human) to meet MIN_TOTAL_PLAYER_LIMIT requirement.
+    //
+    // if aiPlayerLimit >= MIN_TOTAL_PLAYER_LIMIT (2), then minHumanPlayerLimit = MIN_HUMAN_PLAYER_LIMIT (0)
+    // if aiPlayerLimit < MIN_TOTAL_PLAYER_LIMIT (2), then minHumanPlayerLimit = MIN_TOTAL_PLAYER_LIMIT (2) - aiPlayerLimit (0 or 1)
+    //
+    // More specifically:
+    //
+    // aiPlayerLimit  = 0, minHumanPlayerLimit = 2 (total min players:    2)
+    // aiPlayerLimit  = 1, minHumanPlayerLimit = 1 (total min players:    2)
+    // aiPlayerLimit >= 2, minHumanPlayerLimit = 0 (total min players: >= 2)
+    //
+    // @formatter:on
+    final int minHumanPlayerLimit = Math.max (MIN_TOTAL_PLAYER_LIMIT - aiPlayerLimit, MIN_HUMAN_PLAYER_LIMIT);
+
+    // Sanity checks.
+    assert aiPlayerLimit + minHumanPlayerLimit >= MIN_TOTAL_PLAYER_LIMIT;
+    assert aiPlayerLimit + minHumanPlayerLimit <= MAX_TOTAL_PLAYER_LIMIT;
+
+    return minHumanPlayerLimit;
+  }
+
+  public static int getMaxHumanPlayerLimit (final int aiPlayerLimit)
+  {
+    Arguments.checkLowerInclusiveBound (aiPlayerLimit, MIN_AI_PLAYER_LIMIT, "aiPlayerLimit",
+                                        "GameSettings.MIN_AI_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (aiPlayerLimit, MAX_TOTAL_PLAYER_LIMIT, "aiPlayerLimit",
+                                        "GameSettings.MAX_AI_PLAYER_LIMIT");
+
+    // @formatter:off
+    //
+    // Guarantees there will be at most total players (human + AI) to meet MAX_TOTAL_PLAYER_LIMIT requirement.
+    //
+    // More specifically:
+    //
+    // aiPlayerLimit = 10, maxHumanPlayerLimit =  0 (total max players: 10)
+    // aiPlayerLimit =  9, maxHumanPlayerLimit =  1 (total max players: 10)
+    // aiPlayerLimit =  8, maxHumanPlayerLimit =  2 (total max players: 10)
+    // ...
+    // aiPlayerLimit =  0, maxHumanPlayerLimit = 10 (total max players: 10)
+    //
+    // @formatter:on
+    final int maxHumanPlayerLimit = MAX_TOTAL_PLAYER_LIMIT - aiPlayerLimit;
+
+    // Sanity checks.
+    assert aiPlayerLimit + maxHumanPlayerLimit >= MIN_TOTAL_PLAYER_LIMIT;
+    assert aiPlayerLimit + maxHumanPlayerLimit <= MAX_TOTAL_PLAYER_LIMIT;
+
+    return maxHumanPlayerLimit;
+  }
+
+  public static int getMinAiPlayerLimit (final int humanPlayerLimit)
+  {
+    Arguments.checkLowerInclusiveBound (humanPlayerLimit, MIN_HUMAN_PLAYER_LIMIT, "humanPlayerLimit",
+                                        "GameSettings.MIN_HUMAN_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (humanPlayerLimit, MAX_TOTAL_PLAYER_LIMIT, "humanPlayerLimit",
+                                        "GameSettings.MAX_HUMAN_PLAYER_LIMIT");
+
+    // @formatter:off
+    //
+    // Guarantees there will be at least enough total players (human + AI) to meet MIN_TOTAL_PLAYER_LIMIT requirement.
+    //
+    // if humanPlayerLimit >= MIN_TOTAL_PLAYER_LIMIT (2), then minAiPlayerLimit = MIN_AI_PLAYER_LIMIT (0)
+    // if humanPlayerLimit < MIN_TOTAL_PLAYER_LIMIT (2), then minAiPlayerLimit = MIN_TOTAL_PLAYER_LIMIT (2) - humanPlayerLimit (0 or 1)
+    //
+    // More specifically:
+    //
+    // humanPlayerLimit  = 0, minAiPlayerLimit = 2 (total min players:    2)
+    // humanPlayerLimit  = 1, minAiPlayerLimit = 1 (total min players:    2)
+    // humanPlayerLimit >= 2, minAiPlayerLimit = 0 (total min players: >= 2)
+    //
+    // @formatter:on
+    final int minAiPlayerLimit = Math.max (MIN_TOTAL_PLAYER_LIMIT - humanPlayerLimit, MIN_AI_PLAYER_LIMIT);
+
+    // Sanity checks.
+    assert humanPlayerLimit + minAiPlayerLimit >= MIN_TOTAL_PLAYER_LIMIT;
+    assert humanPlayerLimit + minAiPlayerLimit <= MAX_TOTAL_PLAYER_LIMIT;
+
+    return minAiPlayerLimit;
+  }
+
+  public static int getMaxAiPlayerLimit (final int humanPlayerLimit)
+  {
+    Arguments.checkLowerInclusiveBound (humanPlayerLimit, MIN_HUMAN_PLAYER_LIMIT, "humanPlayerLimit",
+                                        "GameSettings.MIN_HUMAN_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (humanPlayerLimit, MAX_TOTAL_PLAYER_LIMIT, "humanPlayerLimit",
+                                        "GameSettings.MAX_HUMAN_PLAYER_LIMIT");
+
+    // @formatter:off
+    //
+    // Guarantees there will be at most total players (human + AI) to meet MAX_TOTAL_PLAYER_LIMIT requirement.
+    //
+    // More specifically:
+    //
+    // humanPlayerLimit = 10, maxAiPlayerLimit =  0 (total max players: 10)
+    // humanPlayerLimit =  9, maxAiPlayerLimit =  1 (total max players: 10)
+    // humanPlayerLimit =  8, maxAiPlayerLimit =  2 (total max players: 10)
+    // ...
+    // humanPlayerLimit =  0, maxAiPlayerLimit = 10 (total max players: 10)
+    //
+    // @formatter:on
+    final int maxAiPlayerLimit = MAX_TOTAL_PLAYER_LIMIT - humanPlayerLimit;
+
+    // Sanity checks.
+    assert humanPlayerLimit + maxAiPlayerLimit >= MIN_TOTAL_PLAYER_LIMIT;
+    assert humanPlayerLimit + maxAiPlayerLimit <= MAX_TOTAL_PLAYER_LIMIT;
+
+    return maxAiPlayerLimit;
+  }
+
+  public static Builder builder ()
+  {
+    return new Builder ();
+  }
+
+  public static ClassicGameRules defaults ()
+  {
+    return builder ().build ();
+  }
+
   // @formatter:off
   /**
    * Defined in ClassicGameRules by the following piecewise function:
@@ -604,17 +771,17 @@ public final class ClassicGameRules implements GameRules
    * where 'F' is the number of armies returned in the set and 'n' is the number of players in the given PlayerModel.
    */
   // @formatter:on
-  private static int calculateInitialArmies (final int playerLimit)
+  private static int calculateInitialArmies (final int totalPlayerLimit)
   {
-    return playerLimit < 10 ? 40 - 5 * (playerLimit - 2) : 5;
+    return totalPlayerLimit < 10 ? 40 - 5 * (totalPlayerLimit - 2) : 5;
   }
 
-  private static int calculateMinWinPercentage (final int playerLimit, final int totalCountryCount)
+  private static int calculateMinWinPercentage (final int totalPlayerLimit, final int totalCountryCount)
   {
     // @formatter:off
     // If country distribution does not divide evenly, some players will receive at most one extra country.
     // This will correctly calculate the maximum number of countries any player will be initially distributed, even in the case of uneven distribution.
-    final int maxCountriesAnyPlayerWillBeDistributed = (int) Math.ceil (totalCountryCount / (double) playerLimit);
+    final int maxCountriesAnyPlayerWillBeDistributed = (int) Math.ceil (totalCountryCount / (double) totalPlayerLimit);
     final int maxOwnershipPercentageAnyPlayerWillBeDistributed = (int) Math.ceil (maxCountriesAnyPlayerWillBeDistributed / (double) totalCountryCount * 100.0);
     // @formatter:on
 
@@ -632,42 +799,55 @@ public final class ClassicGameRules implements GameRules
     return (int) Math.ceil (winPercentage / 100.0 * totalCountryCount);
   }
 
-  private ClassicGameRules (final int playerLimit,
+  private ClassicGameRules (final PersonLimits personLimits,
                             final int winPercentage,
                             final int totalCountryCount,
                             final InitialCountryAssignment initialCountryAssignment)
   {
+    Arguments.checkIsNotNull (personLimits, "personLimits");
+
+    final int humanPlayerLimit = personLimits.getPlayerLimitFor (PersonSentience.HUMAN);
+    final int aiPlayerLimit = personLimits.getPlayerLimitFor (PersonSentience.AI);
+    final int spectatorLimit = personLimits.getSpectatorLimit ();
+
     // @formatter:off
-    Arguments.checkLowerInclusiveBound (playerLimit, MIN_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MIN_PLAYER_LIMIT");
-    Arguments.checkUpperInclusiveBound (playerLimit, MAX_PLAYER_LIMIT, "playerLimit", "ClassicGameRules.MAX_PLAYER_LIMIT");
+    Arguments.checkLowerInclusiveBound (humanPlayerLimit, MIN_HUMAN_PLAYER_LIMIT, "humanPlayerLimit", "ClassicGameRules.MIN_HUMAN_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (humanPlayerLimit, MAX_HUMAN_PLAYER_LIMIT, "humanPlayerLimit", "ClassicGameRules.MAX_HUMAN_PLAYER_LIMIT");
+    Arguments.checkLowerInclusiveBound (aiPlayerLimit, MIN_AI_PLAYER_LIMIT, "aiPlayerLimit", "ClassicGameRules.MIN_AI_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (aiPlayerLimit, MAX_AI_PLAYER_LIMIT, "aiPlayerLimit", "ClassicGameRules.MAX_AI_PLAYER_LIMIT");
+    Arguments.checkLowerInclusiveBound (humanPlayerLimit + aiPlayerLimit, MIN_TOTAL_PLAYER_LIMIT, "humanPlayerLimit + aiPlayerLimit", "ClassicGameRules.MIN_TOTAL_PLAYER_LIMIT");
+    Arguments.checkUpperInclusiveBound (humanPlayerLimit + aiPlayerLimit, MAX_TOTAL_PLAYER_LIMIT, "humanPlayerLimit + aiPlayerLimit", "ClassicGameRules.MAX_TOTAL_PLAYER_LIMIT");
+    Arguments.checkLowerInclusiveBound (spectatorLimit, MIN_SPECTATOR_LIMIT, "spectatorLimit", "ClassicGameRules.MIN_SPECTATOR_LIMIT");
+    Arguments.checkUpperInclusiveBound (spectatorLimit, MAX_SPECTATOR_LIMIT, "spectatorLimit", "ClassicGameRules.MAX_SPECTATOR_LIMIT");
     Arguments.checkUpperInclusiveBound (winPercentage, MAX_WIN_PERCENTAGE, "winPercentage", "ClassicGameRules.MAX_WIN_PERCENTAGE");
     Arguments.checkLowerInclusiveBound (totalCountryCount, MIN_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT");
     Arguments.checkUpperInclusiveBound (totalCountryCount, MAX_TOTAL_COUNTRY_COUNT, "totalCountryCount", "ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT");
     Arguments.checkIsNotNull (initialCountryAssignment, "initialCountryAssignment");
     // @formatter:on
 
-    minWinPercentage = calculateMinWinPercentage (playerLimit, totalCountryCount);
+    minWinPercentage = calculateMinWinPercentage (personLimits.getTotalPlayerLimit (), totalCountryCount);
 
     Arguments.checkLowerInclusiveBound (winPercentage, minWinPercentage, "winPercentage");
 
-    this.playerLimit = playerLimit;
+    this.personLimits = personLimits;
     this.winPercentage = winPercentage;
     this.totalCountryCount = totalCountryCount;
     this.initialCountryAssignment = initialCountryAssignment;
-    initialArmies = calculateInitialArmies (playerLimit);
+    initialArmies = calculateInitialArmies (personLimits.getTotalPlayerLimit ());
     winningCountryCount = calculateWinningCountryCount (winPercentage, totalCountryCount);
   }
 
   public static final class Builder
   {
-    private int playerLimit = DEFAULT_PLAYER_LIMIT;
     private int winPercentage = DEFAULT_WIN_PERCENTAGE;
     private int totalCountryCount = DEFAULT_TOTAL_COUNTRY_COUNT;
     private InitialCountryAssignment initialCountryAssignment = DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
+    private PersonLimits.Builder personLimitsBuilder = PersonLimits.builder ().classicModeDefaults ();
 
     public ClassicGameRules build ()
     {
-      return new ClassicGameRules (playerLimit, winPercentage, totalCountryCount, initialCountryAssignment);
+      return new ClassicGameRules (personLimitsBuilder.build (), winPercentage, totalCountryCount,
+              initialCountryAssignment);
     }
 
     public Builder initialCountryAssignment (@Nullable final InitialCountryAssignment initialCountryAssignment)
@@ -679,13 +859,85 @@ public final class ClassicGameRules implements GameRules
       return this;
     }
 
-    public Builder playerLimit (@Nullable final Integer playerLimit)
+    public Builder personLimits (final PersonLimits personLimits)
     {
-      if (playerLimit == null) return this;
+      Arguments.checkIsNotNull (personLimits, "personLimits");
 
-      this.playerLimit = playerLimit;
+      personLimitsBuilder.personLimits (personLimits);
 
       return this;
+    }
+
+    public Builder humanPlayerLimit (@Nullable final Integer humanPlayerLimit)
+    {
+      if (humanPlayerLimit == null) return this;
+
+      personLimitsBuilder.humanPlayers (humanPlayerLimit);
+
+      return this;
+    }
+
+    public Builder maxHumanPlayers ()
+    {
+      return humanPlayerLimit (MAX_HUMAN_PLAYER_LIMIT);
+    }
+
+    public Builder defaultHumanPlayers ()
+    {
+      return humanPlayerLimit (DEFAULT_HUMAN_PLAYER_LIMIT);
+    }
+
+    public Builder minHumanPlayers ()
+    {
+      return humanPlayerLimit (MIN_HUMAN_PLAYER_LIMIT);
+    }
+
+    public Builder aiPlayerLimit (@Nullable final Integer aiPlayerLimit)
+    {
+      if (aiPlayerLimit == null) return this;
+
+      personLimitsBuilder.aiPlayers (aiPlayerLimit);
+
+      return this;
+    }
+
+    public Builder maxAiPlayers ()
+    {
+      return aiPlayerLimit (MAX_AI_PLAYER_LIMIT);
+    }
+
+    public Builder defaultAiPlayers ()
+    {
+      return aiPlayerLimit (DEFAULT_AI_PLAYER_LIMIT);
+    }
+
+    public Builder minAiPlayers ()
+    {
+      return aiPlayerLimit (MIN_AI_PLAYER_LIMIT);
+    }
+
+    public Builder spectatorLimit (@Nullable final Integer spectatorLimit)
+    {
+      if (spectatorLimit == null) return this;
+
+      personLimitsBuilder.spectators (spectatorLimit);
+
+      return this;
+    }
+
+    public Builder maxSpectators ()
+    {
+      return spectatorLimit (MAX_SPECTATOR_LIMIT);
+    }
+
+    public Builder defaultSpectators ()
+    {
+      return spectatorLimit (DEFAULT_SPECTATOR_LIMIT);
+    }
+
+    public Builder minSpectators ()
+    {
+      return spectatorLimit (MIN_SPECTATOR_LIMIT);
     }
 
     public Builder totalCountryCount (@Nullable final Integer totalCountryCount)
@@ -704,6 +956,13 @@ public final class ClassicGameRules implements GameRules
       this.winPercentage = winPercentage;
 
       return this;
+    }
+
+    /**
+     * Use static {@link #builder()} convenience method.
+     */
+    private Builder ()
+    {
     }
   }
 }

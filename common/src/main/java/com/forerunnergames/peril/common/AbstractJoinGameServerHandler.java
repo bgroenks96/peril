@@ -164,13 +164,13 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
 
     log.trace ("Event received [{}]", event);
 
-    players.add (event.getPlayer ());
+    players.add (event.getPerson ());
 
     assert selfPlayerName != null;
 
     if (!isSelf (event, selfPlayerName))
     {
-      log.debug ("Collected non-self player [{}].", event.getPlayer ());
+      log.debug ("Collected non-self player [{}].", event.getPerson ());
       return;
     }
 

@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
@@ -51,15 +52,39 @@ public final class PlayerClaimCountryResponseSuccessEvent extends AbstractPlayer
   }
 
   @Override
+  public String getPreviousOwnerName ()
+  {
+    return "";
+  }
+
+  @Override
+  public PlayerColor getPreviousOwnerColor ()
+  {
+    return PlayerColor.UNKNOWN;
+  }
+
+  @Override
+  public boolean hasNewOwner ()
+  {
+    return true;
+  }
+
+  @Override
   public PlayerPacket getNewOwner ()
   {
-    return getPlayer ();
+    return getPerson ();
+  }
+
+  @Override
+  public PlayerColor getNewOwnerColor ()
+  {
+    return getPlayerColor ();
   }
 
   @Override
   public String getNewOwnerName ()
   {
-    return getPlayerName ();
+    return getPersonName ();
   }
 
   @RequiredForNetworkSerialization

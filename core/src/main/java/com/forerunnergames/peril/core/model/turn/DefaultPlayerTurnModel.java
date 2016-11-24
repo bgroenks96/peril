@@ -75,7 +75,10 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   {
     lastTurn = lastTurn.hasPreviousValid () ? lastTurn.previousValid () : PlayerTurnOrder.FIRST;
 
-    if (isCurrentTurnInvalid ()) resetCurrentTurn ();
+    // currentTurn can at most ever become 1 position beyond lastTurn due to decrement-only.
+    // When this occurs, it means the currentTurn was the old lastTurn, so we want to update
+    // currentTurn to the new lastTurn.
+    if (isCurrentTurnInvalid ()) fixCurrentTurn ();
   }
 
   @Override
@@ -87,12 +90,22 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   @Override
   public void resetTurnCount ()
   {
-    lastTurn = PlayerTurnOrder.getNthValidTurnOrder (rules.getPlayerLimit ());
+    lastTurn = PlayerTurnOrder.getNthValidTurnOrder (rules.getTotalPlayerLimit ());
+
+    // currentTurn can never be invalidated here because lastTurn can only ever be decremented from this max value,
+    // implying by logical deduction that this method can only ever increase lastTurn's position, or at worst leave it
+    // unchanged, therefore currentTurn's position could never become greater than lastTurn's position.
+    assert !isCurrentTurnInvalid ();
   }
 
   private boolean isCurrentTurnInvalid ()
   {
     return currentTurn.getPosition () > lastTurn.getPosition ();
+  }
+
+  private void fixCurrentTurn ()
+  {
+    currentTurn = lastTurn;
   }
 
   @Override

@@ -39,9 +39,9 @@ public final class InputSettings
   public static String INITIAL_CLAN_ACRONYM = "";
   public static String INITIAL_SERVER_NAME = "";
   public static String INITIAL_SERVER_ADDRESS = "";
-  public static int INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
-  public static int INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT = GameSettings.DEFAULT_AI_PLAYER_LIMIT;
-  public static int INITIAL_SPECTATOR_LIMIT = GameSettings.DEFAULT_SPECTATOR_LIMIT;
+  public static int INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT = ClassicGameRules.DEFAULT_HUMAN_PLAYER_LIMIT;
+  public static int INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT = ClassicGameRules.DEFAULT_AI_PLAYER_LIMIT;
+  public static int INITIAL_SPECTATOR_LIMIT = ClassicGameRules.DEFAULT_SPECTATOR_LIMIT;
   public static String INITIAL_CLASSIC_MODE_PLAY_MAP_NAME = GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME;
   public static int INITIAL_CLASSIC_MODE_WIN_PERCENT = ClassicGameRules.DEFAULT_WIN_PERCENTAGE;
   public static InitialCountryAssignment INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT = ClassicGameRules.DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;

@@ -1,11 +1,13 @@
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOrderFortifyRequestEvent implements PlayerRequestEvent
+public final class PlayerOrderFortifyRequestEvent implements InformRequestEvent
 {
   private final int deltaArmyCount;
 
@@ -14,6 +16,12 @@ public final class PlayerOrderFortifyRequestEvent implements PlayerRequestEvent
     Arguments.checkIsNotNegative (deltaArmyCount, "deltaArmyCount");
 
     this.deltaArmyCount = deltaArmyCount;
+  }
+
+  @Override
+  public Class <? extends PlayerInformEvent> getInformType ()
+  {
+    return PlayerIssueFortifyOrderEvent.class;
   }
 
   public int getDeltaArmyCount ()

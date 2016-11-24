@@ -82,7 +82,7 @@ public final class TurnPhaseTest
 
   private DedicatedGameSession createNewTestSession (final String sessionName)
   {
-    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT).build ();
+    final GameRules rules = ClassicGameRules.builder ().maxHumanPlayers ().build ();
 
     final DedicatedGameSession testSession = new DedicatedGameSession (sessionName,
             DedicatedGameSession.FAKE_EXTERNAL_SERVER_ADDRESS, rules);

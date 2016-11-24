@@ -20,74 +20,42 @@ package com.forerunnergames.peril.common.net.events.server.defaults;
 
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
-import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractPlayerEvent implements PlayerEvent
+public abstract class AbstractPlayerEvent extends AbstractPersonEvent <PlayerPacket> implements PlayerEvent
 {
-  private final PlayerPacket player;
-
-  public AbstractPlayerEvent (final PlayerPacket player)
+  protected AbstractPlayerEvent (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (player, "player");
-
-    this.player = player;
+    super (player);
   }
 
   @RequiredForNetworkSerialization
   protected AbstractPlayerEvent ()
   {
-    player = null;
-  }
-
-  @Override
-  public final PlayerPacket getPlayer ()
-  {
-    return player;
-  }
-
-  @Override
-  public final String getPlayerName ()
-  {
-    return player.getName ();
-  }
-
-  @Override
-  public final PersonSentience getPlayerSentience ()
-  {
-    return player.getSentience ();
   }
 
   @Override
   public final PlayerColor getPlayerColor ()
   {
-    return player.getColor ();
+    return getPerson ().getColor ();
   }
 
   @Override
   public final int getPlayerTurnOrder ()
   {
-    return player.getTurnOrder ();
+    return getPerson ().getTurnOrder ();
   }
 
   @Override
   public final int getPlayerArmiesInHand ()
   {
-    return player.getArmiesInHand ();
+    return getPerson ().getArmiesInHand ();
   }
 
   @Override
   public final int getPlayerCardsInHand ()
   {
-    return player.getCardsInHand ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: Player: [{}]", getClass ().getSimpleName (), player);
+    return getPerson ().getCardsInHand ();
   }
 }

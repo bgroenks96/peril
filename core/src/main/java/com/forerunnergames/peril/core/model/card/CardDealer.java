@@ -28,6 +28,12 @@ interface CardDealer
 
   void discard (final CardSet cards);
 
+  /**
+   * Returns the specified cards to the live deck, afterward reshuffling the live deck only. The discard pile remains
+   * unaffected. The cards must not already be in the live deck nor in the discard pile.
+   */
+  void returnToDeck (final CardSet cards);
+
   Card cardWith (final String name);
 
   boolean existsCardWith (final String name);

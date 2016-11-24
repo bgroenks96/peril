@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ClientApplicationProperties
 {
-  public static final int CURRENT_VERSION = 8;
+  public static final int CURRENT_VERSION = 9;
   public static final String PROPERTIES_FILE_SUBDIR = "peril" + File.separator + "settings";
   public static final String PROPERTIES_FILE_NAME = "settings.txt";
   public static final String VERSION_FILE_NAME = ".version";
@@ -156,17 +156,17 @@ public final class ClientApplicationProperties
           + NetworkSettings.VALID_SERVER_ADDRESS_DESCRIPTION.replace ("\n", " ") + "\n\n "
           + CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY
           + ": Number of human players allowed in your classic game mode server, "
-          + "any whole number, " + GameSettings.MIN_HUMAN_PLAYERS + " to " + ClassicGameRules.MAX_PLAYER_LIMIT
-          + ", total players (human + AI) must be in the range " + ClassicGameRules.MIN_PLAYER_LIMIT
-          + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n\n "
+          + "any whole number, " + ClassicGameRules.MIN_HUMAN_PLAYERS + " to " + ClassicGameRules.MAX_HUMAN_PLAYERS
+          + ", total players (human + AI) must be in the range " + ClassicGameRules.MIN_TOTAL_PLAYERS
+          + " to " + ClassicGameRules.MAX_TOTAL_PLAYERS + "\n\n "
           + CLASSIC_MODE_AI_PLAYER_LIMIT_KEY
           + ": Number of AI players allowed in your classic game mode server, "
-          + "any whole number, " + GameSettings.MIN_AI_PLAYERS + " to " + ClassicGameRules.MAX_PLAYER_LIMIT
-          + ", total players (human + AI) must be in the range " + ClassicGameRules.MIN_PLAYER_LIMIT
-          + " to " + ClassicGameRules.MAX_PLAYER_LIMIT + "\n\n "
+          + "any whole number, " + ClassicGameRules.MIN_AI_PLAYERS + " to " + ClassicGameRules.MAX_AI_PLAYERS
+          + ", total players (human + AI) must be in the range " + ClassicGameRules.MIN_TOTAL_PLAYERS
+          + " to " + ClassicGameRules.MAX_TOTAL_PLAYERS + "\n\n "
           + SPECTATOR_LIMIT_KEY
           + ": Number of spectators allowed in your server in any game mode, any whole number, "
-          + GameSettings.MIN_SPECTATORS + " to " + GameSettings.MAX_SPECTATORS + "\n\n "
+          + ClassicGameRules.MIN_SPECTATORS + " to " + ClassicGameRules.MAX_SPECTATORS + "\n\n "
           + CLASSIC_MODE_PLAY_MAP_NAME_KEY
           + ": Name of the map for your classic game mode server. "
           + GameSettings.VALID_PLAY_MAP_NAME_DESCRIPTION.replace ("\n", " ") + "\n\n "
@@ -453,9 +453,9 @@ public final class ClientApplicationProperties
     InputSettings.INITIAL_CLAN_ACRONYM = parseClanAcronym (CLAN_ACRONYM_KEY, properties);
     InputSettings.INITIAL_SERVER_NAME = parseServerName (SERVER_NAME_KEY, properties);
     InputSettings.INITIAL_SERVER_ADDRESS = parseServerAddress (SERVER_ADDRESS_KEY, properties);
-    InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY, GameSettings.MIN_HUMAN_PLAYERS, ClassicGameRules.MAX_PLAYER_LIMIT, properties);
-    InputSettings.INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_AI_PLAYER_LIMIT_KEY, GameSettings.getAiPlayersLowerBoundClassicMode (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT), GameSettings.getAiPlayersUpperBoundClassicMode (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT), properties);
-    InputSettings.INITIAL_SPECTATOR_LIMIT = parseInteger (SPECTATOR_LIMIT_KEY, GameSettings.MIN_SPECTATORS, GameSettings.MAX_SPECTATORS, properties);
+    InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_HUMAN_PLAYER_LIMIT_KEY, ClassicGameRules.MIN_HUMAN_PLAYER_LIMIT, ClassicGameRules.MAX_HUMAN_PLAYER_LIMIT, properties);
+    InputSettings.INITIAL_CLASSIC_MODE_AI_PLAYER_LIMIT = parseInteger (CLASSIC_MODE_AI_PLAYER_LIMIT_KEY, ClassicGameRules.getMinAiPlayerLimit (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT), ClassicGameRules.getMaxAiPlayerLimit (InputSettings.INITIAL_CLASSIC_MODE_HUMAN_PLAYER_LIMIT), properties);
+    InputSettings.INITIAL_SPECTATOR_LIMIT = parseInteger (SPECTATOR_LIMIT_KEY, ClassicGameRules.MIN_SPECTATOR_LIMIT, ClassicGameRules.MAX_SPECTATOR_LIMIT, properties);
     InputSettings.INITIAL_CLASSIC_MODE_PLAY_MAP_NAME = parseClassicModePlayMapName (CLASSIC_MODE_PLAY_MAP_NAME_KEY, properties);
     InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT = parseInteger (CLASSIC_MODE_WIN_PERCENT_KEY, 5, ClassicGameRules.MAX_WIN_PERCENTAGE, 5, properties);
     InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT = parseEnum (CLASSIC_MODE_INITIAL_COUNTRY_ASSIGNMENT_KEY, InitialCountryAssignment.class, properties);

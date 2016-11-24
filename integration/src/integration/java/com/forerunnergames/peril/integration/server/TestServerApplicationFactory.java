@@ -75,18 +75,17 @@ public class TestServerApplicationFactory
           GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_TYPE,
           GameMode.CLASSIC, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_NAME,
           GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_TYPE);
-  private static final int SPECTATOR_LIMIT = 0;
   private static volatile int testGameServerId = 0;
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
                                                         final GameServerType type,
-                                                        final int playerLimit,
+                                                        final PersonLimits personLimits,
                                                         final String serverAddress,
                                                         final int serverPort)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (type, "type");
-    Arguments.checkIsNotNegative (playerLimit, "playerLimit");
+    Arguments.checkIsNotNull (personLimits, "personLimits");
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
@@ -96,7 +95,7 @@ public class TestServerApplicationFactory
     final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
     final CountryFactory countries = PlayMapModelDataFactoryCreator.create (gameMode).createCountries (PLAY_MAP_METADATA);
     final ContinentFactory continents = PlayMapModelDataFactoryCreator.create (gameMode).createContinents (PLAY_MAP_METADATA, new DefaultCountryIdResolver (countries));
-    final GameRules gameRules = GameRulesFactory.create (gameMode, playerLimit, winPercentage, countries.getCountryCount (), initialCountryAssignment);
+    final GameRules gameRules = GameRulesFactory.create (gameMode, personLimits, winPercentage, countries.getCountryCount (), initialCountryAssignment);
     final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
     final CountryGraphModel countryGraphModel = CountryGraphModel.disjointCountryGraphFrom (countries);
     final ContinentGraphModel continentGraphModel = ContinentGraphModel.disjointContinentGraphFrom (continents, countryGraphModel);
@@ -147,12 +146,8 @@ public class TestServerApplicationFactory
     final ServerController serverController = new EventBasedServerController (server, gameServerPort,
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);
 
-    final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, PersonLimits.builder ()
-            .humanPlayers (gameRules.getPlayerLimit ()).spectators (SPECTATOR_LIMIT).build (),
-            gameRules.getWinPercentage (), gameRules.getInitialCountryAssignment (), playMapMetadata, gameRules);
-
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playMapMetadata, gameRules);
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
-
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName, type,
             gameConfig, serverConfig);
 
@@ -163,7 +158,7 @@ public class TestServerApplicationFactory
                     aiEventBus)), new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (
                     eventBus), eventBus);
 
-    final AiApplication aiApplication = new AiApplication (gameServerConfig, eventBus, aiEventBus);
+    final AiApplication aiApplication = new AiApplication (gameServerConfig, eventBus, aiEventBus, mainThreadExecutor);
 
     final ServerApplication serverApplication = new ServerApplication (stateMachine, eventBus, mainThreadExecutor,
             serverController, aiApplication, multiplayerController);

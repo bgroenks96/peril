@@ -18,117 +18,91 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.game.PersonLimits;
+import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class PlayerJoinGameSuccessEvent extends AbstractPlayerEvent implements BroadcastSuccessEvent
+public final class PlayerJoinGameSuccessEvent extends AbstractJoinGameSuccessEvent <PlayerPacket> implements
+        PlayerEvent
 {
-  private final int playerLimit;
-  private final PersonIdentity identity;
-  private final ImmutableSet <PlayerPacket> playersInGame;
+  /**
+   * Convenience constructor for when person identity is unknown or not cared about, and there are no spectators in game
+   * or spectators in game are unknown or not cared about.
+   */
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player,
+                                     final ImmutableSet <PlayerPacket> playersInGame,
+                                     final PersonLimits personLimits)
+  {
+    super (player, playersInGame, personLimits);
+  }
+
+  /**
+   * Convenience constructor for when person identity is unknown or not cared about.
+   */
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player,
+                                     final ImmutableSet <PlayerPacket> playersInGame,
+                                     final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                     final PersonLimits personLimits)
+  {
+    super (player, playersInGame, spectatorsInGame, personLimits);
+  }
 
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
                                      final PersonIdentity identity,
                                      final ImmutableSet <PlayerPacket> playersInGame,
-                                     final int playerLimit)
+                                     final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                     final PersonLimits personLimits)
   {
-    super (player);
-
-    Arguments.checkIsNotNull (identity, "identity");
-    Arguments.checkIsNotNull (playersInGame, "playersInGame");
-    Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
-    Arguments.checkIsNotNegative (playerLimit, "playerLimit");
-
-    this.identity = identity;
-    this.playersInGame = playersInGame;
-    this.playerLimit = playerLimit;
+    super (player, identity, playersInGame, spectatorsInGame, personLimits);
   }
 
-  public PlayerJoinGameSuccessEvent (final PlayerPacket player,
-                                     final ImmutableSet <PlayerPacket> playersInGame,
-                                     final int playerLimit)
+  @Override
+  public PlayerColor getPlayerColor ()
   {
-    super (player);
-
-    Arguments.checkIsNotNull (playersInGame, "playersInGame");
-    Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
-    Arguments.checkIsNotNegative (playerLimit, "playerLimit");
-
-    identity = PersonIdentity.UNKNOWN;
-    this.playersInGame = playersInGame;
-    this.playerLimit = playerLimit;
+    return getPerson ().getColor ();
   }
 
-  public PersonIdentity getIdentity ()
+  @Override
+  public int getPlayerTurnOrder ()
   {
-    return identity;
+    return getPerson ().getTurnOrder ();
   }
 
-  public ImmutableSet <PlayerPacket> getPlayersInGame ()
+  @Override
+  public int getPlayerArmiesInHand ()
   {
-    return playersInGame;
+    return getPerson ().getArmiesInHand ();
   }
 
-  public boolean gameIsFull ()
+  @Override
+  public int getPlayerCardsInHand ()
   {
-    return playersInGame.size () == playerLimit;
-  }
-
-  public int getPlayersNeededToMakeGameFull ()
-  {
-    return playerLimit - playersInGame.size ();
-  }
-
-  public int getPlayerCount ()
-  {
-    return playersInGame.size ();
-  }
-
-  public int getPlayerLimit ()
-  {
-    return playerLimit;
+    return getPerson ().getCardsInHand ();
   }
 
   public ImmutableSet <PlayerPacket> getOtherPlayersInGame ()
   {
-    return ImmutableSet.copyOf (Sets.filter (playersInGame, new Predicate <PlayerPacket> ()
+    return ImmutableSet.copyOf (Sets.filter (getPlayersInGame (), new Predicate <PlayerPacket> ()
     {
       @Override
       public boolean apply (final PlayerPacket input)
       {
-        return input.isNot (getPlayer ());
+        return input.isNot (getPerson ());
       }
     }));
-  }
-
-  public boolean hasIdentity (final PersonIdentity identity)
-  {
-    Arguments.checkIsNotNull (identity, "identity");
-
-    return this.identity == identity;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | PersonIdentity: {} | PlayersInGame: {} | PlayerLimit: {}", super.toString (),
-                           identity, playersInGame, playerLimit);
   }
 
   @RequiredForNetworkSerialization
   private PlayerJoinGameSuccessEvent ()
   {
-    identity = null;
-    playersInGame = null;
-    playerLimit = 0;
   }
 }

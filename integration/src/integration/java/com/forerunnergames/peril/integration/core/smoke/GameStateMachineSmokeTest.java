@@ -56,8 +56,8 @@ public class GameStateMachineSmokeTest
   public void setUp ()
   {
     final GameStateMachineConfig config = new GameStateMachineConfig ();
-    final GameRules rules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (TEST_COUNTRY_COUNT).build ();
+    final GameRules rules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (TEST_COUNTRY_COUNT)
+            .build ();
     final GameModel.Builder builder = GameModel.builder (rules);
     builder.eventBus (eventBus);
     gameModel = builder.build ();

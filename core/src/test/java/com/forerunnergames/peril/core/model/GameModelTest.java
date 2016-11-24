@@ -180,8 +180,7 @@ public class GameModelTest
     eventHandler = new EventBusHandler ();
     eventHandler.subscribe (eventBus);
     // crate default play map + game model
-    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (defaultTestCountryCount).build ();
+    gameRules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (defaultTestCountryCount).build ();
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
     mockCommHandler = mock (InternalCommunicationHandler.class);
     initializeGameModelWith (playMapModel);
@@ -258,9 +257,8 @@ public class GameModelTest
   @Test
   public void testWaitForCountryAssignmentToBeginRandom ()
   {
-    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (defaultTestCountryCount).initialCountryAssignment (InitialCountryAssignment.RANDOM)
-            .build ();
+    gameRules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (defaultTestCountryCount)
+            .initialCountryAssignment (InitialCountryAssignment.RANDOM).build ();
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
     initializeGameModelWith (playMapModel);
 
@@ -276,9 +274,8 @@ public class GameModelTest
   @Test
   public void testWaitForCountryAssignmentToBeginManual ()
   {
-    gameRules = new ClassicGameRules.Builder ().playerLimit (ClassicGameRules.MAX_PLAYERS)
-            .totalCountryCount (defaultTestCountryCount).initialCountryAssignment (InitialCountryAssignment.MANUAL)
-            .build ();
+    gameRules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (defaultTestCountryCount)
+            .initialCountryAssignment (InitialCountryAssignment.MANUAL).build ();
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
     initializeGameModelWith (playMapModel);
 
@@ -314,7 +311,7 @@ public class GameModelTest
     // test case in honor of Aaron on PR 27 ;)
     // can't use 5, though, because 5 < ClassicGameRules.MIN_TOTAL_COUNTRY_COUNT
 
-    gameRules = new ClassicGameRules.Builder ().totalCountryCount (10).playerLimit (10).build ();
+    gameRules = ClassicGameRules.builder ().totalCountryCount (10).humanPlayerLimit (10).build ();
     initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (10)));
     for (int i = 0; i < 10; ++i)
     {
@@ -340,8 +337,7 @@ public class GameModelTest
   public void testRandomlyAssignPlayerCountriesMaxPlayersMaxCountries ()
   {
     final int countryCount = ClassicGameRules.MAX_TOTAL_COUNTRY_COUNT;
-    gameRules = new ClassicGameRules.Builder ().totalCountryCount (countryCount)
-            .playerLimit (ClassicGameRules.MAX_PLAYER_LIMIT).build ();
+    gameRules = ClassicGameRules.builder ().totalCountryCount (countryCount).maxHumanPlayers ().build ();
     initializeGameModelWith (createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (countryCount)));
 
     addMaxPlayers ();
@@ -387,8 +383,8 @@ public class GameModelTest
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
 
     final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
-    assertTrue (eventHandler.lastEventOfType (PlayerClaimCountryRequestEvent.class).getPlayer ().is (expectedPlayer));
-    assertTrue (eventHandler.lastEventOfType (ActivePlayerChangedEvent.class).getPlayer ().is (expectedPlayer));
+    assertTrue (eventHandler.lastEventOfType (PlayerClaimCountryRequestEvent.class).getPerson ().is (expectedPlayer));
+    assertTrue (eventHandler.lastEventOfType (ActivePlayerChangedEvent.class).getPerson ().is (expectedPlayer));
   }
 
   @Test
@@ -406,7 +402,7 @@ public class GameModelTest
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
 
     final PlayerPacket expectedPlayer = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
-    assertTrue (eventHandler.lastEvent (SkipPlayerTurnEvent.class).getPlayer ().is (expectedPlayer));
+    assertTrue (eventHandler.lastEvent (SkipPlayerTurnEvent.class).getPerson ().is (expectedPlayer));
   }
 
   @Test
@@ -458,7 +454,8 @@ public class GameModelTest
 
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             "Transylvania");
-    when (mockCommHandler.requestFor (responseRequest)).thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
+    when (mockCommHandler.inputRequestFor (responseRequest))
+            .thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
     publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
 
@@ -489,7 +486,8 @@ public class GameModelTest
 
     gameModel.advancePlayerTurn (); // state machine does this as state exit action
 
-    when (mockCommHandler.requestFor (responseRequest)).thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
+    when (mockCommHandler.inputRequestFor (responseRequest))
+            .thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
     publishInternalResponseRequestEvent (responseRequest);
     gameModel.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // unsuccessful for second player
@@ -546,7 +544,7 @@ public class GameModelTest
 
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginReinforcementPhaseEvent.class));
-    assertTrue (eventHandler.lastEventOfType (BeginReinforcementPhaseEvent.class).getPlayer ().is (testPlayerPacket));
+    assertTrue (eventHandler.lastEventOfType (BeginReinforcementPhaseEvent.class).getPerson ().is (testPlayerPacket));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
@@ -577,14 +575,14 @@ public class GameModelTest
 
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginReinforcementPhaseEvent.class));
-    assertTrue (eventHandler.lastEventOfType (BeginReinforcementPhaseEvent.class).getPlayer ().is (testPlayerPacket));
+    assertTrue (eventHandler.lastEventOfType (BeginReinforcementPhaseEvent.class).getPerson ().is (testPlayerPacket));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCardTradeInAvailableEvent.class));
-    assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPlayer ().is (testPlayerPacket));
+    assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPerson ().is (testPlayerPacket));
   }
 
   @Test
@@ -601,7 +599,7 @@ public class GameModelTest
     gameModel.waitForPlayerToPlaceReinforcements ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
-    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPlayer ()
+    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPerson ()
             .is (playerModel.playerPacketWith (testPlayer)));
     assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getReinforceableCountries ()
             .equals (countryGraphModel.getCountryPackets ()));
@@ -639,7 +637,7 @@ public class GameModelTest
 
     gameModel.beginReinforcementPhase ();
 
-    final Iterator <CountryPacket> countries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
+    final Iterator <CountryPacket> countries = countryOwnerModel.getCountryPacketsOwnedBy (testPlayer).iterator ();
     final PlayerPacket testPlayerPacket = playerModel.playerPacketWith (testPlayer);
     final int armiesInHand = testPlayerPacket.getArmiesInHand ();
 
@@ -661,7 +659,8 @@ public class GameModelTest
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerReinforceCountrySuccessEvent.class, count));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, count + 2));
 
-    final Iterator <CountryPacket> updatedCountries = countryOwnerModel.getCountriesOwnedBy (testPlayer).iterator ();
+    final Iterator <CountryPacket> updatedCountries = countryOwnerModel.getCountryPacketsOwnedBy (testPlayer)
+            .iterator ();
     for (int i = 0; i < count; i++)
     {
       final String countryName = updatedCountries.next ().getName ();
@@ -690,7 +689,7 @@ public class GameModelTest
     gameModel.beginReinforcementPhase ();
 
     final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+            .getCountryPacketsOwnedBy (testPlayer));
 
     final CardSetPacket match = eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getMatches ()
             .asList ().get (0);
@@ -731,7 +730,7 @@ public class GameModelTest
     gameModel.beginReinforcementPhase ();
 
     final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+            .getCountryPacketsOwnedBy (testPlayer));
 
     final PlayerReinforceCountryRequestEvent reinforceResponse;
     reinforceResponse = new PlayerReinforceCountryRequestEvent (randomCountry.getName (), 1);
@@ -769,7 +768,7 @@ public class GameModelTest
     gameModel.beginReinforcementPhase ();
 
     final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+            .getCountryPacketsOwnedBy (testPlayer));
 
     final CardSetPacket match = eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getMatches ()
             .asList ().get (0);
@@ -817,7 +816,7 @@ public class GameModelTest
     gameModel.beginReinforcementPhase ();
 
     final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+            .getCountryPacketsOwnedBy (testPlayer));
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (CardPackets
             .fromCardMatchSet (ImmutableSet.of (testTradeIn)).asList ().get (0));
@@ -881,7 +880,7 @@ public class GameModelTest
     gameModel.beginReinforcementPhase ();
 
     final CountryPacket randomCountry = Randomness.getRandomElementFrom (countryOwnerModel
-            .getCountriesOwnedBy (testPlayer));
+            .getCountryPacketsOwnedBy (testPlayer));
     final int reinforcementCount = playerModel.getArmiesInHand (testPlayer) + 1;
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
@@ -926,14 +925,14 @@ public class GameModelTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginFortifyPhaseEvent.class));
     assertEquals (playerModel.playerPacketWith (player1), eventHandler.lastEventOfType (BeginFortifyPhaseEvent.class)
-            .getPlayer ());
+            .getPerson ());
 
     // begin fortification phase (part II)
     gameModel.waitForPlayerToSelectFortifyVector ();
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginFortificationEvent.class));
     assertEquals (playerModel.playerPacketWith (player1),
-                  eventHandler.lastEventOfType (PlayerBeginFortificationEvent.class).getPlayer ());
+                  eventHandler.lastEventOfType (PlayerBeginFortificationEvent.class).getPerson ());
     final ImmutableMultimap <CountryPacket, CountryPacket> expectedFortifyVectors;
     expectedFortifyVectors = buildCountryMultimapFromIndices (defaultTestCountries, adj (0, 1, 3), adj (1, 0),
                                                               adj (3, 0));
@@ -1179,7 +1178,7 @@ public class GameModelTest
     gameModel.handlePlayerJoinGameRequest (new HumanPlayerJoinGameRequestEvent (name));
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameSuccessEvent.class));
-    assertEquals (eventHandler.lastEventOfType (PlayerJoinGameSuccessEvent.class).getPlayerName (), name);
+    assertEquals (eventHandler.lastEventOfType (PlayerJoinGameSuccessEvent.class).getPersonName (), name);
   }
 
   @Test
@@ -1345,7 +1344,7 @@ public class GameModelTest
 
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
-    maxPlayers = gameRules.getMaxPlayers ();
+    maxPlayers = gameRules.getMaxTotalPlayers ();
     gameModel = GameModel.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel).battleModel (battleModel)
             .playerModel (playerModel).cardModel (cardModel).internalComms (mockCommHandler).build ();
   }

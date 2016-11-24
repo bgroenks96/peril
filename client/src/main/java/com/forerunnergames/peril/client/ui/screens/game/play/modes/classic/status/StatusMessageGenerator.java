@@ -80,8 +80,12 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRet
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
@@ -102,7 +106,7 @@ public final class StatusMessageGenerator
   private final MessageBox <StatusBoxRow> statusBox;
   private final WidgetFactory widgetFactory;
   @Nullable
-  private PlayerPacket selfPlayer;
+  private PersonPacket self;
 
   public StatusMessageGenerator (final MessageBox <StatusBoxRow> statusBox, final WidgetFactory widgetFactory)
   {
@@ -120,10 +124,10 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    selfPlayer = event.getSelfPlayer ();
+    self = event.getSelfPlayer ();
 
     final GameServerConfiguration config = event.getGameServerConfiguration ();
-    final int nMorePlayers = config.getPlayerLimit () - event.getPlayerCount ();
+    final int nMorePlayers = config.getTotalPlayerLimit () - event.getPlayerCount ();
 
     you (event.getSelfPlayer (), "Welcome, {}.", event.getSelfPlayerName ());
 
@@ -131,7 +135,7 @@ public final class StatusMessageGenerator
 
     youIf (nMorePlayers > 0, event.getSelfPlayer (),
            "This is a {} player {} Mode game. You must conquer {}% of the map (at least {}) to achieve victory.",
-           config.getPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
+           config.getTotalPlayerLimit (), Strings.toProperCase (config.getGameMode ().toString ()),
            config.getWinPercentage (), Strings.pluralize (event.getWinningCountryCount (), "country", "countries"));
 
     youIf (nMorePlayers > 0, event.getSelfPlayer (), "The game will begin when {}.",
@@ -155,10 +159,23 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} joined the game.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} joined the game.", event.getPersonName ());
 
-    everyoneElseIf (!event.gameIsFull (), event.getPlayer (), "The game will begin when {}.", Strings.pluralize (event
-            .getPlayersNeededToMakeGameFull (), "more player joins", "more players join"));
+    everyoneElseIf (!event.gameIsFullPlayers (), event.getPerson (), "The game will begin when {}.",
+                    Strings.pluralize (event.getPlayersNeededToMakeGameFull (), "more player joins",
+                                       "more players join"));
+  }
+
+  @Handler
+  void onEvent (final SpectatorJoinGameSuccessEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    if (event.hasIdentity (PersonIdentity.SELF)) self = event.getPerson ();
+
+    everyoneElse (event.getPerson (), "{} joined the game as a spectator.", event.getPersonName ());
   }
 
   @Handler
@@ -194,7 +211,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, claim any unowned country.", event.getPlayerName ());
+    you (event.getPerson (), "General, claim any unowned country.", event.getPersonName ());
   }
 
   @Handler
@@ -204,7 +221,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is claiming a country...", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} is claiming a country...", event.getPersonName ());
   }
 
   @Handler
@@ -214,7 +231,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} claimed {}.", nameify (event.getPlayer (), LetterCase.PROPER), event.getCountryName ());
+    everyone ("{} claimed {}.", nameify (event.getPerson (), LetterCase.PROPER), event.getCountryName ());
   }
 
   @Handler
@@ -224,7 +241,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, something went wrong! We were unable to claim {}.", event.getCountryName ());
+    you (event.getPerson (), "General, something went wrong! We were unable to claim {}.", event.getCountryName ());
   }
 
   @Handler
@@ -244,7 +261,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, choose a country to reinforce.", event.getPlayerName ());
+    you (event.getPerson (), "General, choose a country to reinforce.", event.getPersonName ());
   }
 
   @Handler
@@ -254,7 +271,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is reinforcing...", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} is reinforcing...", event.getPersonName ());
   }
 
   @Handler
@@ -264,7 +281,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} reinforced {} with {}.", nameify (event.getPlayer (), LetterCase.PROPER), event.getCountryName (),
+    everyone ("{} reinforced {} with {}.", nameify (event.getPerson (), LetterCase.PROPER), event.getCountryName (),
               Strings.pluralize (Math.abs (event.getPlayerDeltaArmyCount ()), "army", "armies"));
   }
 
@@ -275,10 +292,10 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, something went wrong! We were unable to reinforce {}.", event
+    you (event.getPerson (), "General, something went wrong! We were unable to reinforce {}.", event
             .getOriginalRequest ().getCountryName ());
 
-    you (event.getPlayer (), "General, choose a country to reinforce.", event.getPlayerName ());
+    you (event.getPerson (), "General, choose a country to reinforce.", event.getPersonName ());
   }
 
   @Handler
@@ -308,7 +325,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("It is {} turn.", nameifyPossessiveYour (event.getPlayer (), LetterCase.LOWER));
+    everyone ("It is {} turn.", nameifyPossessiveYour (event.getPerson (), LetterCase.LOWER));
   }
 
   @Handler
@@ -318,8 +335,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "Reinforcement phase.");
-    everyone ("{} {}.", nameifyVerbHave (event.getPlayer (), LetterCase.PROPER),
+    you (event.getPerson (), "Reinforcement phase.");
+    everyone ("{} {}.", nameifyVerbHave (event.getPerson (), LetterCase.PROPER),
               Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
   }
 
@@ -332,15 +349,15 @@ public final class StatusMessageGenerator
 
     final String reinforcementsPhrase = Strings.pluralizeS (event.getNextTradeInBonus (), "additional reinforcement");
 
-    youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () == 3, event.getPlayer (),
+    youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () == 3, event.getPerson (),
            "Congratulations, General, you have just enough matching cards to purchase {}! If you so desire, that is, "
                    + "sir. Good things come to those who wait, General.", reinforcementsPhrase);
 
-    youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3, event.getPlayer (),
+    youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3, event.getPerson (),
            "General, you may now use 3 of your {} matching cards to purchase {}! If you so desire, that is, sir. "
                    + "Fortune rewards the patient, General.", event.getPlayerCardsInHand (), reinforcementsPhrase);
 
-    youIf (event.isTradeInRequired (), event.getPlayer (),
+    youIf (event.isTradeInRequired (), event.getPerson (),
            "General, you now have so many matching cards that you must now use some of them to purchase {}!",
            reinforcementsPhrase);
   }
@@ -352,12 +369,12 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} used 3 cards ({}) to purchase {}!", nameify (event.getPlayer (), LetterCase.PROPER),
+    everyone ("{} used 3 cards ({}) to purchase {}!", nameify (event.getPerson (), LetterCase.PROPER),
               toString (event.getTradeInCards ()),
               Strings.pluralizeS (event.getTradeInBonus (), "additional reinforcement"));
 
-    everyone ("{} now {} {} remaining.", nameify (event.getPlayer (), LetterCase.PROPER),
-              verbifyHave (event.getPlayer ()), Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
+    everyone ("{} now {} {} remaining.", nameify (event.getPerson (), LetterCase.PROPER),
+              verbifyHave (event.getPerson ()), Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
 
     everyone ("The next purchase will yield {}.", Strings.pluralizeS (event.getNextTradeInBonus (), "reinforcement"));
   }
@@ -369,7 +386,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} has finished reinforcing.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} has finished reinforcing.", event.getPersonName ());
   }
 
   @Handler
@@ -379,7 +396,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "Attack phase.");
+    you (event.getPerson (), "Attack phase.");
   }
 
   @Handler
@@ -389,7 +406,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is deciding where to attack...", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} is deciding where to attack...", event.getPersonName ());
   }
 
   @Handler
@@ -431,7 +448,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("Waiting for {} to roll attacker dice...", nameify (event.getPlayer (), LetterCase.LOWER));
+    everyone ("Waiting for {} to roll attacker dice...", nameify (event.getPerson (), LetterCase.LOWER));
   }
 
   @Handler
@@ -441,7 +458,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("Waiting for {} to roll defender dice...", nameify (event.getPlayer (), LetterCase.LOWER));
+    everyone ("Waiting for {} to roll defender dice...", nameify (event.getPerson (), LetterCase.LOWER));
   }
 
   @Handler
@@ -503,7 +520,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    youIf (event.getReason () != PlayerDefendCountryResponseDeniedEvent.Reason.ATTACKER_RETREATED, event.getPlayer (),
+    youIf (event.getReason () != PlayerDefendCountryResponseDeniedEvent.Reason.ATTACKER_RETREATED, event.getPerson (),
            "General, something went wrong! You cannot defend at this time.");
   }
 
@@ -514,8 +531,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, we have lost the war.");
-    everyoneElse (event.getPlayer (), "{} was annihilated.", event.getPlayerName ());
+    you (event.getPerson (), "General, we have lost the war.");
+    everyoneElse (event.getPerson (), "{} was annihilated.", event.getPersonName ());
   }
 
   @Handler
@@ -525,8 +542,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, you have won the war!");
-    everyoneElse (event.getPlayer (), "{} won the war.", event.getPlayerName ());
+    you (event.getPerson (), "General, you have won the war!");
+    everyoneElse (event.getPerson (), "{} won the war.", event.getPersonName ());
   }
 
   @Handler
@@ -536,7 +553,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is occupying {} with troops from {}...", event.getPlayerName (),
+    everyoneElse (event.getPerson (), "{} is occupying {} with troops from {}...", event.getPersonName (),
                   event.getTargetCountryName (), event.getSourceCountryName ());
   }
 
@@ -550,7 +567,7 @@ public final class StatusMessageGenerator
     final String country = event.getTargetCountryName ();
     final int armies = Math.abs (event.getDeltaArmyCount ());
 
-    everyone ("{} occupied {} with {}.", nameify (event.getPlayer (), LetterCase.PROPER), country,
+    everyone ("{} occupied {} with {}.", nameify (event.getPerson (), LetterCase.PROPER), country,
               Strings.pluralize (armies, "army", "armies"));
 
     everyoneIf (armies == 1, "Looks like an easy target...");
@@ -563,11 +580,11 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    youIf (event.hasOriginalRequest (), event.getPlayer (),
+    youIf (event.hasOriginalRequest (), event.getPerson (),
            "General, something went wrong! We were unable to occupy {} from {}.", event.getTargetCountryName (),
            event.getSourceCountryName ());
 
-    youIf (!event.hasOriginalRequest (), event.getPlayer (), "General, something went wrong! We were unable to occupy.");
+    youIf (!event.hasOriginalRequest (), event.getPerson (), "General, something went wrong! We were unable to occupy.");
   }
 
   @Handler
@@ -577,7 +594,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is finished attacking.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} is finished attacking.", event.getPersonName ());
   }
 
   @Handler
@@ -587,7 +604,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} not have any valid post-combat maneuvers.", nameifyVerbDo (event.getPlayer (), LetterCase.LOWER));
+    everyone ("{} not have any valid post-combat maneuvers.", nameifyVerbDo (event.getPerson (), LetterCase.LOWER));
   }
 
   @Handler
@@ -597,7 +614,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "Post-Combat Maneuver phase.");
+    you (event.getPerson (), "Post-Combat Maneuver phase.");
   }
 
   @Handler
@@ -607,7 +624,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is considering a post-combat maneuver...", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} is considering a post-combat maneuver...", event.getPersonName ());
   }
 
   @Handler
@@ -637,7 +654,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is maneuvering armies into {} from {}...", event.getPlayerName (),
+    everyoneElse (event.getPerson (), "{} is maneuvering armies into {} from {}...", event.getPersonName (),
                   event.getTargetCountryName (), event.getSourceCountryName ());
   }
 
@@ -648,7 +665,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPlayer (), LetterCase.PROPER),
+    everyone ("{} maneuvered {} into {} from {}.", nameify (event.getPerson (), LetterCase.PROPER),
               Strings.pluralize (event.getDeltaArmyCount (), "army", "armies"), event.getTargetCountryName (),
               event.getSourceCountryName ());
   }
@@ -660,7 +677,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} cancelled the maneuver.", nameify (event.getPlayer (), LetterCase.PROPER));
+    everyone ("{} cancelled the maneuver.", nameify (event.getPerson (), LetterCase.PROPER));
   }
 
   @Handler
@@ -670,7 +687,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (),
+    you (event.getPerson (),
          "General, something went wrong! You cannot cancel your post-combat maneuver from {} to {} at this time.",
          event.getSourceCountryName (), event.getTargetCountryName ());
   }
@@ -682,7 +699,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} is finished maneuvering.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} is finished maneuvering.", event.getPersonName ());
   }
 
   @Handler
@@ -692,7 +709,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "You ended you turn.");
+    you (event.getPerson (), "You ended you turn.");
   }
 
   @Handler
@@ -702,7 +719,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPlayer (), "General, something went wrong! You cannot end your turn at this time.");
+    you (event.getPerson (), "General, something went wrong! You cannot end your turn at this time.");
   }
 
   @Handler
@@ -712,17 +729,17 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    youIf (event.wasCardReceived (), event.getPlayer (),
+    youIf (event.wasCardReceived (), event.getPerson (),
            "General, you earned a card ({}) as a reward for your military genius!", toString (event.getCard ()));
 
-    youIf (!event.wasCardReceived (), event.getPlayer (),
+    youIf (!event.wasCardReceived (), event.getPerson (),
            "General, we failed to earn you a card, sir. We will try harder next time, sir...");
 
-    everyone ("{} turn is over.", nameifyPossessiveYour (event.getPlayer (), LetterCase.PROPER));
-    everyoneElseIf (event.wasCardReceived (), event.getPlayer (), "{} earned a card.", event.getPlayerName ());
-    everyoneElseIf (!event.wasCardReceived (), event.getPlayer (), "{} did not earn a card.", event.getPlayerName ());
-    everyoneIf (event.wasCardReceived (), "{} now {} {}.", nameify (event.getPlayer (), LetterCase.PROPER),
-                verbifyHave (event.getPlayer ()), Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
+    everyone ("{} turn is over.", nameifyPossessiveYour (event.getPerson (), LetterCase.PROPER));
+    everyoneElseIf (event.wasCardReceived (), event.getPerson (), "{} earned a card.", event.getPersonName ());
+    everyoneElseIf (!event.wasCardReceived (), event.getPerson (), "{} did not earn a card.", event.getPersonName ());
+    everyoneIf (event.wasCardReceived (), "{} now {} {}.", nameify (event.getPerson (), LetterCase.PROPER),
+                verbifyHave (event.getPerson ()), Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"));
   }
 
   @Handler
@@ -742,7 +759,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} left the game.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} left the game.", event.getPersonName ());
   }
 
   @Handler
@@ -762,8 +779,10 @@ public final class StatusMessageGenerator
 
     log.trace ("Event received [{}].", event);
 
-    everyone ("{} now {} {}.", nameify (event.getNewOwner (), LetterCase.PROPER),
-              verbifyS (event.getNewOwner (), "own"), event.getCountryName ());
+    everyoneIf (event.hasNewOwner (), "{} now {} {}.", nameify (event.getNewOwner (), LetterCase.PROPER),
+                verbifyS (event.getNewOwner (), "own"), event.getCountryName ());
+
+    everyoneIf (!event.hasNewOwner (), "{} now lays unclaimed...", event.getCountryName ());
   }
 
   @Handler (priority = EVENT_HANDLER_PRIORITY_LAST)
@@ -775,7 +794,7 @@ public final class StatusMessageGenerator
 
     if (event.getPlayerDeltaArmyCount () <= 0) return;
 
-    everyone ("{} received {}.", nameify (event.getPlayer (), LetterCase.PROPER),
+    everyone ("{} received {}.", nameify (event.getPerson (), LetterCase.PROPER),
               Strings.pluralize (event.getPlayerDeltaArmyCount (), "army", "armies"));
   }
 
@@ -829,101 +848,130 @@ public final class StatusMessageGenerator
     statusIf (condition, statusMessage, args);
   }
 
-  private void everyoneElse (final PlayerPacket player, final String statusMessage, final Object... args)
+  private void everyoneElse (@Nullable final PersonPacket person, final String statusMessage, final Object... args)
   {
-    statusIf (!isSelf (player), statusMessage, args);
+    statusIf (!isSelf (person), statusMessage, args);
+  }
+
+  private void everyoneElse (@Nullable final SpectatorPacket spectator,
+                             final String statusMessage,
+                             final Object... args)
+  {
+    statusIf (!isSelf (spectator), statusMessage, args);
   }
 
   private void everyoneElseIf (final boolean condition,
-                               final PlayerPacket player,
+                               @Nullable final PersonPacket person,
                                final String statusMessage,
                                final Object... args)
   {
-    statusIf (condition && !isSelf (player), statusMessage, args);
+    statusIf (condition && !isSelf (person), statusMessage, args);
   }
 
-  private void you (final PlayerPacket player, final String statusMessage, final Object... args)
+  private void you (@Nullable final PersonPacket person, final String statusMessage, final Object... args)
   {
-    statusIf (isSelf (player), statusMessage, args);
+    statusIf (isSelf (person), statusMessage, args);
   }
 
   private void youIf (final boolean condition,
-                      final PlayerPacket player,
+                      @Nullable final PersonPacket person,
                       final String statusMessage,
                       final Object... args)
   {
-    statusIf (condition && isSelf (player), statusMessage, args);
+    statusIf (condition && isSelf (person), statusMessage, args);
   }
 
-  private boolean isSelf (final PlayerPacket player)
+  private boolean isSelf (@Nullable final PersonPacket person)
   {
-    return selfPlayer != null && player.is (selfPlayer);
+    return self != null && person != null && person.is (self);
   }
 
-  private String nameify (final PlayerPacket player, final LetterCase letterCase)
+  private String nameify (@Nullable final PersonPacket person, final LetterCase letterCase)
   {
+    if (person == null) return "";
+
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("you", letterCase) : player.getName ();
+    return isSelf (person) ? Strings.toCase ("you", letterCase) : person.getName ();
   }
 
-  private String nameifyVerbBe (final PlayerPacket player, final LetterCase letterCase)
+  private String nameifyVerbBe (@Nullable final PersonPacket person, final LetterCase letterCase)
   {
+    if (person == null) return "";
+
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("you", letterCase) + " are" : player.getName () + " is";
+    return isSelf (person) ? Strings.toCase ("you", letterCase) + " are" : person.getName () + " is";
   }
 
-  private String nameifyVerbHave (final PlayerPacket player, final LetterCase letterCase)
+  private String nameifyVerbHave (@Nullable final PersonPacket person, final LetterCase letterCase)
   {
+    if (person == null) return "";
+
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("you", letterCase) + " have" : player.getName () + " has";
+    return isSelf (person) ? Strings.toCase ("you", letterCase) + " have" : person.getName () + " has";
   }
 
-  private String nameifyVerbDo (final PlayerPacket player, final LetterCase letterCase)
+  private String nameifyVerbDo (@Nullable final PersonPacket person, final LetterCase letterCase)
   {
+    if (person == null) return "";
+
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("you", letterCase) + " do" : player.getName () + " does";
+    return isSelf (person) ? Strings.toCase ("you", letterCase) + " do" : person.getName () + " does";
   }
 
-  private String nameifyVerb (final PlayerPacket player,
+  private String nameifyVerb (@Nullable final PersonPacket person,
                               final String secondPersonVerb,
                               final String thirdPersonVerb,
                               final LetterCase letterCase)
   {
+    if (person == null) return "";
+
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb : player.getName () + " "
+    return isSelf (person) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb : person.getName () + " "
             + thirdPersonVerb;
   }
 
-  private String nameifyPossessiveYour (final PlayerPacket player, final LetterCase letterCase)
+  private String nameifyPossessiveYour (@Nullable final PersonPacket person, final LetterCase letterCase)
   {
+    if (person == null) return "";
+
     checkLetterCase (letterCase);
 
-    return isSelf (player) ? Strings.toCase ("your", letterCase) : player.getName () + "'s";
+    return isSelf (person) ? Strings.toCase ("your", letterCase) : person.getName () + "'s";
   }
 
-  private String verbify (final PlayerPacket player, final String secondPersonVerb, final String thirdPersonVerb)
+  private String verbify (@Nullable final PersonPacket person,
+                          final String secondPersonVerb,
+                          final String thirdPersonVerb)
   {
-    return isSelf (player) ? secondPersonVerb : thirdPersonVerb;
+    if (person == null) return "";
+
+    return isSelf (person) ? secondPersonVerb : thirdPersonVerb;
   }
 
-  private String verbifyHave (final PlayerPacket player)
+  private String verbifyHave (@Nullable final PersonPacket person)
   {
-    return isSelf (player) ? "have" : "has";
+    if (person == null) return "";
+
+    return isSelf (person) ? "have" : "has";
   }
 
-  private String verbifyS (final PlayerPacket player, final String baseVerb)
+  private String verbifyS (@Nullable final PersonPacket person, final String baseVerb)
   {
-    return isSelf (player) ? baseVerb : baseVerb + "s";
+    if (person == null) return "";
+
+    return isSelf (person) ? baseVerb : baseVerb + "s";
   }
 
-  private String possessify (final PlayerPacket player, final LetterCase letterCase)
+  private String possessify (@Nullable final PersonPacket person, final LetterCase letterCase)
   {
-    return Strings.toCase (isSelf (player) ? "your" : "their", letterCase);
+    if (person == null) return "";
+
+    return Strings.toCase (isSelf (person) ? "your" : "their", letterCase);
   }
 
   private String toString (@Nullable final CardPacket card)

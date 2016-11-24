@@ -24,7 +24,9 @@ import com.forerunnergames.peril.common.game.DieFaceValue;
 import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.TurnPhase;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 
 import com.google.common.collect.ImmutableList;
 
@@ -54,13 +56,9 @@ public interface GameRules
 
   int getMaxArmiesOnTargetCountryForFortify ();
 
-  int getMinPlayerLimit ();
+  int getMinTotalPlayers ();
 
-  int getMaxPlayerLimit ();
-
-  int getMinPlayers ();
-
-  int getMaxPlayers ();
+  int getMaxTotalPlayers ();
 
   int getMinTotalCountryCount ();
 
@@ -70,7 +68,17 @@ public interface GameRules
 
   int getMaxWinPercentage ();
 
-  int getPlayerLimit ();
+  int getMinTotalPlayerLimit ();
+
+  int getMaxTotalPlayerLimit ();
+
+  int getTotalPlayerLimit ();
+
+  int getPlayerLimitFor (final PersonSentience sentience);
+
+  int getSpectatorLimit ();
+
+  PersonLimits getPersonLimits ();
 
   int getTotalCountryCount ();
 

@@ -22,8 +22,8 @@ import com.beust.jcommander.Parameter;
 
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.GameServerType;
-import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 
 public final class CommandLineArgs
@@ -46,15 +46,15 @@ public final class CommandLineArgs
 
   @Parameter (names = { "--human-players", "-h" }, description = "Maximum number of human players allowed",
               validateWith = HumanPlayersParameterValidator.class, required = true)
-  public Integer humanPlayerLimit;
+  public Integer humanPlayers;
 
   @Parameter (names = { "--ai-players", "-ai" }, description = "Maximum number of AI players allowed",
               validateWith = AiPlayersParameterValidator.class)
-  public Integer aiPlayerLimit = GameSettings.MIN_AI_PLAYERS;
+  public Integer aiPlayers = ClassicGameRules.MIN_AI_PLAYERS;
 
   @Parameter (names = { "--spectators", "-sp" }, description = "Maximum number of spectators allowed",
               validateWith = SpectatorsParameterValidator.class)
-  public Integer spectatorLimit = GameSettings.MIN_SPECTATORS;
+  public Integer spectators = ClassicGameRules.MIN_SPECTATORS;
 
   @Parameter (names = { "--port", "-p", }, description = "TCP port number")
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;

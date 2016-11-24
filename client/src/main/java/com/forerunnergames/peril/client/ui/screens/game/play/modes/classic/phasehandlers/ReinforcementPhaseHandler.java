@@ -187,7 +187,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     log.debug ("Event received [{}].", event);
 
-    if (!isSelf (event.getPlayer ())) return;
+    if (!isSelf (event.getPerson ())) return;
 
     verifyPreemptiveUpdates (event);
     reset ();

@@ -155,8 +155,8 @@ public class DedicatedGameSession implements TestSession
 
   private void initializeClients ()
   {
-    log.trace ("Connecting {} clients to server [{}]", gameRules.getPlayerLimit (), serverPort);
-    clientPool.connectNew (internalServerAddress, serverPort, gameRules.getPlayerLimit ());
+    log.trace ("Connecting {} clients to server [{}]", gameRules.getTotalPlayerLimit (), serverPort);
+    clientPool.connectNew (internalServerAddress, serverPort, gameRules.getTotalPlayerLimit ());
   }
 
   @Override

@@ -55,8 +55,9 @@ import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.InputSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PersonBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PlayerPersonBoxRow;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.SpectatorPersonBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
@@ -78,11 +79,15 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.TextFieldS
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.padding.HorizontalPadding;
 import com.forerunnergames.peril.client.ui.widgets.padding.VerticalPadding;
-import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
-import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIconWidgetFactoryCreator;
+import com.forerunnergames.peril.client.ui.widgets.personicons.players.PlayerIcon;
+import com.forerunnergames.peril.client.ui.widgets.personicons.players.PlayerIconWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.personicons.players.PlayerIconWidgetFactoryCreator;
+import com.forerunnergames.peril.client.ui.widgets.personicons.spectators.SpectatorIcon;
+import com.forerunnergames.peril.client.ui.widgets.personicons.spectators.SpectatorIconWidgetFactory;
+import com.forerunnergames.peril.client.ui.widgets.personicons.spectators.SpectatorIconWidgetFactoryCreator;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
@@ -101,9 +106,9 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   private static final int CHAT_BOX_SCROLL_PADDING_BOTTOM = 3;
   private static final int CHAT_BOX_SCROLLPANE_HEIGHT = 222;
   private static final int CHAT_BOX_SCROLLPANE_TEXTFIELD_SPACING = 2;
-  private static final int PLAYER_BOX_ROW_PADDING_LEFT = 0;
-  private static final int PLAYER_BOX_ABSOLUTE_PADDING_TOP = 3;
-  private static final int PLAYER_BOX_ABSOLUTE_PADDING_BOTTOM = 3;
+  private static final int PERSON_BOX_ROW_PADDING_LEFT = 0;
+  private static final int PERSON_BOX_ABSOLUTE_PADDING_TOP = 3;
+  private static final int PERSON_BOX_ABSOLUTE_PADDING_BOTTOM = 3;
   private static final int DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT = Align.left;
   private static final int DEFAULT_MESSAGE_BOX_ROW_HEIGHT = 24;
   private static final int DEFAULT_MESSAGE_BOX_ROW_PADDING_LEFT = 14;
@@ -137,9 +142,9 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   private static final MessageBoxRowStyle CHATBOX_ROW_STYLE = new MessageBoxRowStyle (
           StyleSettings.CHAT_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
           DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING);
-  private static final MessageBoxRowStyle PLAYER_BOX_ROW_STYLE = new MessageBoxRowStyle (
-          StyleSettings.PLAYER_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
-          new HorizontalPadding (PLAYER_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT));
+  private static final MessageBoxRowStyle PERSON_BOX_ROW_STYLE = new MessageBoxRowStyle (
+          StyleSettings.PERSON_BOX_ROW_LABEL_STYLE, DEFAULT_MESSAGE_BOX_ROW_ALIGNMENT, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
+          new HorizontalPadding (PERSON_BOX_ROW_PADDING_LEFT, DEFAULT_MESSAGE_BOX_ROW_PADDING_RIGHT));
   private static final ScrollbarStyle DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.REQUIRED, DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT,
           DEFAULT_MESSAGE_BOX_VERTICAL_SCROLLBAR_WIDTH);
@@ -152,11 +157,11 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
           CHAT_BOX_SCROLLPANE_TEXTFIELD_SPACING, new TextFieldStyle (StyleSettings.CHAT_BOX_TEXTFIELD_STYLE,
                   DEFAULT_TEXTFIELD_HEIGHT, DEFAULT_TEXTFIELD_H_PADDING, DEFAULT_TEXTFIELD_MAX_CHARS,
                   DEFAULT_TEXTFIELD_FILTER_ALLOW_EVERYTHING));
-  private static final VerticalPadding PLAYER_BOX_ABSOLUTE_V_PADDING = new VerticalPadding (
-          PLAYER_BOX_ABSOLUTE_PADDING_TOP, PLAYER_BOX_ABSOLUTE_PADDING_BOTTOM);
-  private static final MessageBoxStyle PLAYER_BOX_STYLE = new MessageBoxStyle (
-          StyleSettings.PLAYER_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, PLAYER_BOX_ROW_STYLE,
-          DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, PLAYER_BOX_ABSOLUTE_V_PADDING);
+  private static final VerticalPadding PERSON_BOX_ABSOLUTE_V_PADDING = new VerticalPadding (
+          PERSON_BOX_ABSOLUTE_PADDING_TOP, PERSON_BOX_ABSOLUTE_PADDING_BOTTOM);
+  private static final MessageBoxStyle PERSON_BOX_STYLE = new MessageBoxStyle (
+          StyleSettings.PERSON_BOX_SCROLLPANE_STYLE, DEFAULT_MESSAGE_BOX_SCROLLBAR_STYLE, PERSON_BOX_ROW_STYLE,
+          DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, PERSON_BOX_ABSOLUTE_V_PADDING);
   private static final ScrollbarStyle DEFAULT_SELECT_BOX_SCROLLBAR_STYLE = new ScrollbarStyle (
           ScrollbarStyle.Scrollbars.OPTIONAL, DEFAULT_SELECT_BOX_HORIZONTAL_SCROLLBAR_HEIGHT,
           DEFAULT_SELECT_BOX_VERTICAL_SCROLLBAR_WIDTH);
@@ -535,9 +540,9 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public PlayerBox createPlayerBox ()
+  public PersonBox createPersonBox ()
   {
-    return new PlayerBox (PLAYER_BOX_STYLE, this);
+    return new PersonBox (PERSON_BOX_STYLE, this);
   }
 
   @Override
@@ -681,17 +686,35 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public PlayerBoxRow createPlayerBoxRow (final PlayerPacket player)
+  public PlayerPersonBoxRow createPlayerPersonBoxRow (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return new PlayerBoxRow (player, PLAYER_BOX_ROW_STYLE, createPlayerColorIconWidgetFactory (player));
+    return new PlayerPersonBoxRow (player, PERSON_BOX_ROW_STYLE, createPlayerIconWidgetFactory (player));
   }
 
   @Override
-  public PlayerColorIcon createPlayerColorIcon (final PlayerPacket player)
+  public SpectatorPersonBoxRow createSpectatorPersonBoxRow (final SpectatorPacket spectator)
   {
-    return createPlayerColorIconWidgetFactory (player).createPlayerColorIcon (player.getColor ());
+    Arguments.checkIsNotNull (spectator, "spectator");
+
+    return new SpectatorPersonBoxRow (spectator, PERSON_BOX_ROW_STYLE, createSpectatorIconWidgetFactory ());
+  }
+
+  @Override
+  public PlayerIcon createPlayerIcon (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    return createPlayerIconWidgetFactory (player).createPersonIcon (player);
+  }
+
+  @Override
+  public SpectatorIcon createSpectatorIcon (final SpectatorPacket spectator)
+  {
+    Arguments.checkIsNotNull (spectator, "spectator");
+
+    return createSpectatorIconWidgetFactory ().createPersonIcon (spectator);
   }
 
   @Override
@@ -755,10 +778,15 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     return assetManager;
   }
 
-  private PlayerColorIconWidgetFactory createPlayerColorIconWidgetFactory (final PlayerPacket player)
+  private PlayerIconWidgetFactory createPlayerIconWidgetFactory (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return PlayerColorIconWidgetFactoryCreator.create (player, getSkinAssetDescriptor (), assetManager);
+    return PlayerIconWidgetFactoryCreator.create (player, assetManager, getSkinAssetDescriptor ());
+  }
+
+  private SpectatorIconWidgetFactory createSpectatorIconWidgetFactory ()
+  {
+    return SpectatorIconWidgetFactoryCreator.create (assetManager, getSkinAssetDescriptor ());
   }
 }

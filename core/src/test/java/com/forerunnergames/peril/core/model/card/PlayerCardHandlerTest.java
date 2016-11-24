@@ -38,7 +38,7 @@ import org.junit.Test;
 public abstract class PlayerCardHandlerTest
 {
   private static final String TEST_PLAYER_NAME = "TestPlayer0";
-  private final GameRules defaultRules = new ClassicGameRules.Builder ().build ();
+  private final GameRules defaultRules = ClassicGameRules.defaults ();
   private final PlayerModel playerModel = new DefaultPlayerModel (defaultRules);
 
   @Before
@@ -154,7 +154,7 @@ public abstract class PlayerCardHandlerTest
 
   private CardSet createCardSetFrom (final ImmutableSet <Card> cards)
   {
-    final GameRules defaultRules = new ClassicGameRules.Builder ().build ();
-    return new CardSet (defaultRules, cards);
+    final GameRules rules = ClassicGameRules.defaults ();
+    return new CardSet (rules, cards);
   }
 }

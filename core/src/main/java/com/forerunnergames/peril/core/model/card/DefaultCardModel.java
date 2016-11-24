@@ -89,6 +89,17 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
+  public CardSet removePlayer (final Id playerId)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+
+    final CardSet cards = playerCardHandler.removePlayer (playerId);
+    cardDealer.returnToDeck (cards);
+
+    return cards;
+  }
+
+  @Override
   public int countCardsInHand (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");

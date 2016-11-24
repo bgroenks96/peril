@@ -59,7 +59,7 @@ public final class AiJoinGameServerHandler extends AbstractJoinGameServerHandler
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
 
-    return event.hasIdentity (PersonIdentity.SELF) && selfPlayerName.equals (event.getPlayerName ());
+    return event.hasIdentity (PersonIdentity.SELF) && selfPlayerName.equals (event.getPersonName ());
   }
 
   @Override

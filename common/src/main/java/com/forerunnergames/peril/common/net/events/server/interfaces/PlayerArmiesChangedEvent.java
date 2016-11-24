@@ -22,7 +22,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotifi
 
 /**
  * All implementations of PlayerArmiesChangedEvent should be constructed with an updated PlayerPacket (accessible via
- * {@link #getPlayer()} that contains the number of armies in the player's hand <b>after</b> the delta is applied.
+ * {@link #getPerson()} that contains the number of armies in the player's hand <b>after</b> the delta is applied.
  */
 public interface PlayerArmiesChangedEvent extends PlayerEvent, BroadcastNotificationEvent
 {

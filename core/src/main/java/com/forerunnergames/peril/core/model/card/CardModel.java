@@ -33,6 +33,18 @@ public interface CardModel
 
   CardSet getCardsInHand (final Id playerId);
 
+  /**
+   * Removes the player completely (from the perspective of {@link CardModel} only) and returns any cards from the
+   * player's hand to the live deck, reshuffling the live deck only. The discard pile remains unaffected.
+   *
+   * Note: {@link com.forerunnergames.peril.core.model.people.player.PlayerModel} will only remove the number of cards
+   * from the player's hand, if the player still exists. It is not the responsibility of {@link CardModel} to completely
+   * remove a player from the game.
+   *
+   * @return Any cards in the player's hand, {@link CardSet} will be empty if there were no cards.
+   */
+  CardSet removePlayer (final Id playerId);
+
   int countCardsInHand (final Id playerId);
 
   boolean isCardInHand (final Id playerId, final Card card);

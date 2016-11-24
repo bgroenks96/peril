@@ -18,11 +18,14 @@
 
 package com.forerunnergames.peril.server.communicators;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.interfaces.InternalRequestEvent;
 import com.forerunnergames.peril.core.events.internal.interfaces.InternalResponseEvent;
+import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
@@ -89,6 +92,14 @@ public class DefaultCoreCommunicator implements CoreCommunicator
                                                                                                                      final R inputRequestEvent)
   {
     eventBus.publish (new DefaultInboundPlayerResponseRequestEvent <> (player, responseRequestEvent, inputRequestEvent));
+  }
+
+  @Override
+  public <T extends InformRequestEvent, R extends PlayerInformEvent> void publishPlayerInformRequestEvent (final PlayerPacket player,
+                                                                                                           final T informRequestEvent,
+                                                                                                           final R informEvent)
+  {
+    eventBus.publish (new DefaultInboundPlayerInformRequestEvent <> (player, informRequestEvent, informEvent));
   }
 
   // --- response handlers --- //

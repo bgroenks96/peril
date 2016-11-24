@@ -115,27 +115,25 @@ public final class ServerApplicationFactory
 
     final ImmutableSet <Card> cards = CardModelDataFactoryCreator.create (args.gameMode).createCards (playMapMetadata);
 
-    final PersonLimits personLimits = PersonLimits.builder ().humanPlayers (args.humanPlayerLimit)
-            .aiPlayers (args.aiPlayerLimit).spectators (args.spectatorLimit).build ();
+    final PersonLimits personLimits = PersonLimits.builder ().humanPlayers (args.humanPlayers)
+            .aiPlayers (args.aiPlayers).spectators (args.spectators).build ();
 
-    final GameRules gameRules = GameRulesFactory.create (args.gameMode, personLimits.getPlayerLimit (),
-                                                         args.winPercentage, countryFactory.getCountryCount (),
+    final GameRules gameRules = GameRulesFactory.create (args.gameMode, personLimits, args.winPercentage,
+                                                         countryFactory.getCountryCount (),
                                                          args.initialCountryAssignment);
 
-    final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
-
-    final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
-    final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
-    final CardModel cardModel = new DefaultCardModel (gameRules, playerModel, cards);
-    final BattleModel battleModel = new DefaultBattleModel (playMapModel);
     final PlayerTurnModel playerTurnModel = new DefaultPlayerTurnModel (gameRules);
+    final PlayerModel playerModel = new DefaultPlayerModel (gameRules);
+    final CardModel cardModel = new DefaultCardModel (gameRules, playerModel, cards);
+    final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
+    final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
+    final BattleModel battleModel = new DefaultBattleModel (playMapModel);
+
     final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
             .cardModel (cardModel).battleModel (battleModel).playerTurnModel (playerTurnModel)
             .eventBus (serverEventBus).build ();
-    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
-    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, personLimits, args.winPercentage,
-            args.initialCountryAssignment, playMapMetadata, gameRules);
+    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
@@ -143,6 +141,7 @@ public final class ServerApplicationFactory
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (externalAddressResolver.resolveIp (),
             args.serverTcpPort);
 
+    final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, playMapMetadata, gameRules);
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (args.gameServerName,
             args.gameServerType, gameConfig, serverConfig);
 
@@ -153,7 +152,8 @@ public final class ServerApplicationFactory
                     aiEventBus)), new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (
                     serverEventBus), serverEventBus);
 
-    final AiApplication aiApplication = new AiApplication (gameServerConfig, serverEventBus, aiEventBus);
+    final AiApplication aiApplication = new AiApplication (gameServerConfig, serverEventBus, aiEventBus,
+            mainThreadExecutor);
 
     return new ServerApplication (gameStateMachine, serverEventBus, mainThreadExecutor, serverController,
             aiApplication, multiplayerController);

@@ -15,12 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox;
+package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.DefaultMessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxStyle;
+import com.forerunnergames.peril.client.ui.widgets.personicons.PersonIcon;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 
@@ -30,6 +33,7 @@ import com.google.common.collect.ImmutableSortedSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,16 +42,17 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
+public final class PersonBox extends DefaultMessageBox <PersonBoxRow <? extends PersonIcon, ? extends PersonPacket>>
 {
-  private static final Logger log = LoggerFactory.getLogger (PlayerBox.class);
+  private static final Logger log = LoggerFactory.getLogger (PersonBox.class);
   private final WidgetFactory widgetFactory;
   private final Collection <PlayerPacket> players = new HashSet <> ();
+  private final Collection <SpectatorPacket> spectators = new LinkedHashSet <> ();
   private final Map <String, Integer> playerNamesToRowIndices = new HashMap <> ();
   @Nullable
   private PlayerPacket highlightedPlayer;
 
-  public PlayerBox (final MessageBoxStyle style, final WidgetFactory widgetFactory)
+  public PersonBox (final MessageBoxStyle style, final WidgetFactory widgetFactory)
   {
     super (style, widgetFactory);
 
@@ -62,6 +67,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     super.clear ();
 
     players.clear ();
+    spectators.clear ();
     playerNamesToRowIndices.clear ();
   }
 
@@ -79,11 +85,32 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     updateMessageBox ();
   }
 
+  public void setSpectators (final ImmutableSet <SpectatorPacket> spectators)
+  {
+    Arguments.checkIsNotNull (spectators, "spectators");
+    Arguments.checkHasNoNullElements (spectators, "spectators");
+
+    this.spectators.clear ();
+
+    final boolean anyWereAdded = this.spectators.addAll (spectators);
+    assert anyWereAdded;
+
+    updateMessageBox ();
+  }
+
   public void addPlayer (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    internalAdd (player);
+    internalAddPlayer (player);
+    updateMessageBox ();
+  }
+
+  public void addSpectator (final SpectatorPacket spectator)
+  {
+    Arguments.checkIsNotNull (spectator, "spectator");
+
+    internalAddSpectator (spectator);
     updateMessageBox ();
   }
 
@@ -91,9 +118,17 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
   {
     Arguments.checkIsNotNull (player, "player");
 
-    internalRemove (player);
+    internalRemovePlayer (player);
     updateMessageBox ();
     if (isHighlighted (player)) clearHighlighting ();
+  }
+
+  public void removeSpectator (final SpectatorPacket spectator)
+  {
+    Arguments.checkIsNotNull (spectator, "spectator");
+
+    internalRemoveSpectator (spectator);
+    updateMessageBox ();
   }
 
   public void updatePlayerWithNewTurnOrder (final PlayerPacket player, final int oldTurnOrder)
@@ -101,14 +136,14 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     Arguments.checkIsNotNull (player, "player");
 
     assert existsRowWith (player);
-    assert getRowWith (player).playerTurnOrderIs (oldTurnOrder);
+    assert getRowWithPlayer (player).playerTurnOrderIs (oldTurnOrder);
 
     // Cannot use #updateExisting (PlayerPacket) because because it won't update the set of turn-ordered players.
     // Player must be removed and re-added.
     // Avoids unnecessarily updating the message box twice (and superfluously de-highlighting/re-highlighting player) by
     // not using the public API for add / remove.
-    internalRemove (player);
-    internalAdd (player);
+    internalRemovePlayer (player);
+    internalAddPlayer (player);
     updateMessageBox ();
   }
 
@@ -123,7 +158,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     }
 
     clearHighlighting ();
-    getRowWith (player).highlight ();
+    getRowWithPlayer (player).highlight ();
 
     highlightedPlayer = player;
   }
@@ -138,9 +173,9 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
       return;
     }
 
-    final PlayerBoxRow row = getRowWith (player);
+    final PlayerPersonBoxRow row = getRowWithPlayer (player);
 
-    if (row.playerIsNot (player))
+    if (row.personIsNot (player))
     {
       log.warn ("Cannot update player [{}] (player id has changed).", player);
       return;
@@ -152,52 +187,69 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
       return;
     }
 
-    row.setPlayer (player);
+    row.setPerson (player);
   }
 
   public void setDisplayedArmiesInHandToDeltaFromActual (@AllowNegative final int deltaArmies, final String playerName)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
 
-    getRowWith (playerName).setDisplayedArmiesInHandToDeltaFromActual (deltaArmies);
+    getRowWithPlayer (playerName).setDisplayedArmiesInHandToDeltaFromActual (deltaArmies);
   }
 
   public void resetDisplayedArmiesInHand (final String playerName)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
 
-    getRowWith (playerName).resetDisplayedArmiesInHand ();
+    getRowWithPlayer (playerName).resetDisplayedArmiesInHand ();
   }
 
   public int getDisplayedArmiesInHand (final String playerName)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
 
-    return getRowWith (playerName).getDisplayedArmiesInHand ();
+    return getRowWithPlayer (playerName).getDisplayedArmiesInHand ();
   }
 
   public int getActualArmiesInHand (final String playerName)
   {
     Arguments.checkIsNotNull (playerName, "playerName");
 
-    return getRowWith (playerName).getActualPlayerArmiesInHand ();
+    return getRowWithPlayer (playerName).getActualPlayerArmiesInHand ();
   }
 
-  private void internalRemove (final PlayerPacket player)
+  private void internalAddPlayer (final PlayerPacket player)
+  {
+    if (!players.add (player))
+    {
+      log.warn ("Not adding player [{}] to {}. (Player already added.)", player, PersonBox.class.getSimpleName ());
+    }
+  }
+
+  private void internalAddSpectator (final SpectatorPacket spectator)
+  {
+    if (!spectators.add (spectator))
+    {
+      log.warn ("Not adding spectator [{}] to {}. (Spectator already added.)", spectator,
+                PersonBox.class.getSimpleName ());
+    }
+  }
+
+  private void internalRemovePlayer (final PlayerPacket player)
   {
     if (!players.remove (player))
     {
       log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player,
-                PlayerBox.class.getSimpleName (), PlayerBox.class.getSimpleName ());
+                PersonBox.class.getSimpleName (), PersonBox.class.getSimpleName ());
     }
   }
 
-  private void internalAdd (final PlayerPacket player)
+  private void internalRemoveSpectator (final SpectatorPacket spectator)
   {
-    if (!players.add (player))
+    if (!spectators.remove (spectator))
     {
-      log.warn ("Not adding player [{}] to {}. (Player already added, or duplicate turn order conflict.)", player,
-                PlayerBox.class.getSimpleName ());
+      log.warn ("Not removing spectator [{}] from {}. (Spectator not found in {}.)", spectator,
+                PersonBox.class.getSimpleName (), PersonBox.class.getSimpleName ());
     }
   }
 
@@ -206,24 +258,24 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
     return hasRowWithIndex (playerNamesToRowIndices.get (player.getName ()));
   }
 
-  private PlayerBoxRow getRowWith (final PlayerPacket player)
+  private PlayerPersonBoxRow getRowWithPlayer (final PlayerPacket player)
   {
-    final PlayerBoxRow row = getRowWith (player.getName ());
-    assert row.playerIs (player);
+    final PlayerPersonBoxRow row = getRowWithPlayer (player.getName ());
+    assert row.personIs (player);
 
     return row;
   }
 
-  private PlayerBoxRow getRowWith (final String playerName)
+  private PlayerPersonBoxRow getRowWithPlayer (final String playerName)
   {
     final Integer index = playerNamesToRowIndices.get (playerName);
     assert index != null;
     assert hasRowWithIndex (index);
 
-    final PlayerBoxRow row = getRowByIndex (index);
-    assert row.playerHasName (playerName);
+    final PersonBoxRow <? extends PersonIcon, ? extends PersonPacket> row = getRowByIndex (index);
+    assert row.personHasName (playerName);
 
-    return row;
+    return (PlayerPersonBoxRow) row;
   }
 
   private boolean isHighlighted (final PlayerPacket player)
@@ -233,7 +285,7 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 
   private void clearHighlighting ()
   {
-    for (final PlayerBoxRow row : getRows ())
+    for (final PersonBoxRow <? extends PersonIcon, ? extends PersonPacket> row : getRows ())
     {
       row.unhighlight ();
     }
@@ -250,10 +302,15 @@ public final class PlayerBox extends DefaultMessageBox <PlayerBoxRow>
 
     for (final PlayerPacket player : ImmutableSortedSet.copyOf (PlayerPacket.TURN_ORDER_COMPARATOR, players))
     {
-      addRow (widgetFactory.createPlayerBoxRow (player));
+      addRow (widgetFactory.createPlayerPersonBoxRow (player));
       playerNamesToRowIndices.put (player.getName (), rowIndex);
       if (isHighlighted (player)) highlightPlayer (player);
       rowIndex++;
+    }
+
+    for (final SpectatorPacket spectator : spectators)
+    {
+      addRow (widgetFactory.createSpectatorPersonBoxRow (spectator));
     }
   }
 }

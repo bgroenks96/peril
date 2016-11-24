@@ -136,6 +136,12 @@ public final class ClientPlayerMapping
                                              new PlayersBySentiencePredicate (PersonSentience.AI)));
   }
 
+  public ImmutableSet <PlayerPacket> players ()
+  {
+    syncPlayerData ();
+    return ImmutableSet.copyOf (clientsToPlayers.values ());
+  }
+
   public ImmutableSet <Remote> clients ()
   {
     syncPlayerData ();

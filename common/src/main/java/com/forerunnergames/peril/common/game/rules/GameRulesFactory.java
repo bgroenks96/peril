@@ -20,6 +20,7 @@ package com.forerunnergames.peril.common.game.rules;
 
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 
@@ -28,18 +29,19 @@ import javax.annotation.Nullable;
 public final class GameRulesFactory
 {
   public static GameRules create (final GameMode gameMode,
-                                  @Nullable final Integer playerLimit,
+                                  final PersonLimits personLimits,
                                   @Nullable final Integer winPercentage,
                                   @Nullable final Integer totalCountryCount,
                                   @Nullable final InitialCountryAssignment initialCountryAssignment)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
+    Arguments.checkIsNotNull (personLimits, "personLimits");
 
     switch (gameMode)
     {
       case CLASSIC:
       {
-        return new ClassicGameRules.Builder ().playerLimit (playerLimit).winPercentage (winPercentage)
+        return ClassicGameRules.builder ().personLimits (personLimits).winPercentage (winPercentage)
                 .totalCountryCount (totalCountryCount).initialCountryAssignment (initialCountryAssignment).build ();
       }
       case CUSTOM:

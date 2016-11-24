@@ -104,10 +104,10 @@ public final class InitialGamePhaseController implements TestPhaseController
         Arguments.checkIsNotNull (client, "client");
 
         if (!event.isPresent ()) return;
-        final PlayerPacket player = event.get ().getPlayer ();
+        final PlayerPacket player = event.get ().getPerson ();
         final String expectedName = Strings.format ("{}{}", PLAYER_NAME_BASE, client.getClientId ());
         if (player.getName ().equals (expectedName)) verifyCount.getAndIncrement ();
-        client.setPlayer (event.get ().getPlayer ());
+        client.setPlayer (event.get ().getPerson ());
       }
     };
     final ImmutableSet <TestClient> failed = clientPool.waitForAllClientsToReceive (PlayerJoinGameSuccessEvent.class,

@@ -2,7 +2,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.cont
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 
 public interface ControlRoomBox
 {
@@ -12,24 +12,28 @@ public interface ControlRoomBox
     FORTIFY,
     END_TURN,
     MY_SETTINGS,
-    SURRENDER_AND_QUIT
+    QUIT
   }
 
-  void pressButton (final Button surrenderAndQuit);
+  void pressButton (final Button button);
 
   void disableButton (final Button button);
 
-  void disableButtonForSelf (final Button button, final PlayerPacket player);
+  void disableButtonForSelf (final Button button, final PersonPacket person);
 
-  void disableButtonForEveryoneElse (final Button button, final PlayerPacket player);
+  void disableButtonForEveryoneElse (final Button button, final PersonPacket person);
 
   void enableButton (final Button button);
 
-  void enableButtonForSelf (final Button button, final PlayerPacket player);
+  void enableButtonForSelf (final Button button, final PersonPacket person);
 
-  void enableButtonForEveryoneElse (final Button button, final PlayerPacket player);
+  void enableButtonForEveryoneElse (final Button button, final PersonPacket person);
 
-  void setSelfPlayer (final PlayerPacket player);
+  void setButtonText (final Button button, final String text);
+
+  void setButtonTextForSelf (final Button button, final PersonPacket person, final String text);
+
+  void setSelf (final PersonPacket person);
 
   Actor asActor ();
 

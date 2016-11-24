@@ -75,7 +75,7 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
 
     log.debug ("Event received [{}].", event);
 
-    if (isSelf (event.getPlayer ())) verifyPreemptivePlayMapUpdates (event);
+    if (isSelf (event.getPerson ())) verifyPreemptivePlayMapUpdates (event);
   }
 
   @Handler

@@ -32,7 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.NonPlayMapBlockingDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PersonBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
@@ -48,7 +48,7 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
   private static final Vector2 MENU_POSITION_OFFSET = new Vector2 (24, -24);
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final Stage stage;
-  private final PlayerBox playerBox;
+  private final PersonBox personBox;
   private final ImageButton minusButton;
   private final ImageButton plusButton;
   private final ImageButton minButton;
@@ -66,7 +66,7 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
 
   public ReinforcementDialog (final ClassicModePlayScreenWidgetFactory widgetFactory,
                               final Stage stage,
-                              final PlayerBox playerBox,
+                              final PersonBox personBox,
                               final CancellableDialogListener listener)
 
   {
@@ -86,11 +86,11 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (playerBox, "playerBox");
+    Arguments.checkIsNotNull (personBox, "personBox");
 
     this.widgetFactory = widgetFactory;
     this.stage = stage;
-    this.playerBox = playerBox;
+    this.personBox = personBox;
 
     slider = widgetFactory.createArmyMovementDialogSlider (new ChangeListener ()
     {
@@ -312,7 +312,7 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
 
   public void rollbackAnyPreemptiveUpdates ()
   {
-    playerBox.resetDisplayedArmiesInHand (playerName);
+    personBox.resetDisplayedArmiesInHand (playerName);
     country.setArmies (originalCountryArmyCount);
   }
 
@@ -333,12 +333,12 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
 
   public int getActualPlayerArmiesInHand ()
   {
-    return playerBox.getActualArmiesInHand (playerName);
+    return personBox.getActualArmiesInHand (playerName);
   }
 
   public int getDisplayedArmiesInHand ()
   {
-    return playerBox.getDisplayedArmiesInHand (playerName);
+    return personBox.getDisplayedArmiesInHand (playerName);
   }
 
   private void updateArmies ()
@@ -349,7 +349,7 @@ public final class ReinforcementDialog extends OkCancelDialog implements NonPlay
 
   private void updateDisplayedArmiesInHand ()
   {
-    playerBox.setDisplayedArmiesInHandToDeltaFromActual (-getReinforcements (), playerName);
+    personBox.setDisplayedArmiesInHandToDeltaFromActual (-getReinforcements (), playerName);
   }
 
   private void updateCountryArmies ()

@@ -27,7 +27,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.attack.AttackDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.defend.DefendDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PersonBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.Country;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
@@ -50,7 +50,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
   private final MouseInput mouseInput;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
-  private final PlayerBox playerBox;
+  private final PersonBox personBox;
   private final CompositeDialog allDialogs;
   private PlayMap playMap;
 
@@ -60,7 +60,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
                                      final PlayMap playMap,
                                      final MessageBox <StatusBoxRow> statusBox,
                                      final MessageBox <ChatBoxRow> chatBox,
-                                     final PlayerBox playerBox,
+                                     final PersonBox personBox,
                                      final CompositeDialog allDialogs,
                                      final MBassador <Event> eventBus)
   {
@@ -70,7 +70,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
     Arguments.checkIsNotNull (playMap, "playMap");
     Arguments.checkIsNotNull (statusBox, "statusBox");
     Arguments.checkIsNotNull (chatBox, "chatBox");
-    Arguments.checkIsNotNull (playerBox, "playerBox");
+    Arguments.checkIsNotNull (personBox, "personBox");
     Arguments.checkIsNotNull (allDialogs, "allDialogs");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
@@ -80,7 +80,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
     this.playMap = playMap;
     this.statusBox = statusBox;
     this.chatBox = chatBox;
-    this.playerBox = playerBox;
+    this.personBox = personBox;
     this.allDialogs = allDialogs;
   }
 
@@ -100,7 +100,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
     playMap.reset ();
     statusBox.clear ();
     chatBox.clear ();
-    playerBox.clear ();
+    personBox.clear ();
     eventGenerator.resetPlayers ();
   }
 
@@ -364,7 +364,7 @@ public final class DefaultDebugInputProcessor extends InputAdapter implements De
       }
       case 'P':
       {
-        playerBox.clear ();
+        personBox.clear ();
         eventGenerator.resetPlayers ();
 
         return true;

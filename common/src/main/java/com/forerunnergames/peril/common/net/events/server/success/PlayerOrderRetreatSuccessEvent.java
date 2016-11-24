@@ -49,12 +49,12 @@ public final class PlayerOrderRetreatSuccessEvent extends AbstractPlayerEvent im
 
   public PlayerPacket getAttackingPlayer ()
   {
-    return getPlayer ();
+    return getPerson ();
   }
 
   public String getAttackingPlayerName ()
   {
-    return getPlayerName ();
+    return getPersonName ();
   }
 
   public PlayerPacket getDefendingPlayer ()

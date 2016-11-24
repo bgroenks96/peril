@@ -81,8 +81,8 @@ final class DefaultCardDealer implements CardDealer
   {
     Arguments.checkIsNotNull (card, "card");
     Arguments.checkIsTrue (baseDeck.contains (card), "{} does not exist.", card);
-    Arguments.checkIsTrue (!liveDeck.contains (card), "{} is currently in the deck.", card);
-    Arguments.checkIsTrue (!discardPile.contains (card), "{} has already been discarded.", card);
+    Arguments.checkIsFalse (liveDeck.contains (card), "{} is currently in the deck.", card);
+    Arguments.checkIsFalse (discardPile.contains (card), "{} has already been discarded.", card);
 
     discardPile.add (card);
   }
@@ -92,10 +92,25 @@ final class DefaultCardDealer implements CardDealer
   {
     Arguments.checkIsNotNull (cards, "cards");
     Arguments.checkIsTrue (baseDeck.containsAll (cards), "Unrecognized cards in [{}]", cards);
-    Arguments.checkIsTrue (!liveDeck.containsAll (cards), "Found one or more cards already in deck [{}]", cards);
-    Arguments.checkIsTrue (!discardPile.containsAll (cards), "Found one or more cards already discarded [{}]", cards);
+    Arguments.checkIsFalse (areAnyInDeck (cards), "Found one or more cards already in deck [{}]", cards);
+    Arguments.checkIsFalse (areAnyInDiscardPile (cards), "Found one or more cards already discarded [{}]", cards);
 
     discardPile.addAll (cards);
+  }
+
+  @Override
+  public void returnToDeck (final CardSet cards)
+  {
+    Arguments.checkIsNotNull (cards, "cards");
+    Arguments.checkIsTrue (baseDeck.containsAll (cards), "Unrecognized cards in [{}]", cards);
+    Arguments.checkIsFalse (areAnyInDeck (cards), "Found one or more cards already in deck [{}]", cards);
+    Arguments.checkIsFalse (areAnyInDiscardPile (cards), "Found one or more cards already discarded [{}]", cards);
+
+    // Shuffles the live deck only, after adding the specified cards to it. Discard pile is unaffected.
+    final ImmutableSet <Card> liveDeckCopy = ImmutableSet.<Card> builder ().addAll (liveDeck).addAll (cards).build ();
+    liveDeck.clear ();
+    liveDeck.addAll (Randomness.shuffle (liveDeckCopy));
+    liveDeckItr = liveDeck.iterator ();
   }
 
   @Override
@@ -144,6 +159,26 @@ final class DefaultCardDealer implements CardDealer
     return discardPile.size ();
   }
 
+  private boolean areAnyInDeck (final CardSet cards)
+  {
+    for (final Card card : cards)
+    {
+      if (liveDeck.contains (card)) return true;
+    }
+
+    return false;
+  }
+
+  private boolean areAnyInDiscardPile (final CardSet cards)
+  {
+    for (final Card card : cards)
+    {
+      if (discardPile.contains (card)) return true;
+    }
+
+    return false;
+  }
+
   private Optional <Card> findCardByName (final String name, final Iterable <Card> cards)
   {
     for (final Card card : cards)
@@ -160,9 +195,7 @@ final class DefaultCardDealer implements CardDealer
 
   private void reshuffle ()
   {
-    // @formatter:off [workaround for Eclipse 4.5 formatter bug; see 470977 for status]
     assert !discardPile.isEmpty () || !liveDeck.isEmpty ();
-    // @formatter:on
 
     // in case reshuffle is called early for any reason, add any remaining cards in liveDeck to discard pile
     // and log a warning message

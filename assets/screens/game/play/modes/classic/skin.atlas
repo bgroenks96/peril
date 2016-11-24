@@ -400,7 +400,7 @@ play-map-borders
   orig: 38, 38
   offset: 0, 0
   index: -1
-player-box-borders
+person-box-borders
   rotate: false
   xy: 1488, 1206
   size: 38, 38
@@ -559,7 +559,7 @@ detailed-report-icon
   orig: 20, 22
   offset: 0, 0
   index: -1
-spectator-icon
+icon-spectator
   rotate: false
   xy: 1326, 1146
   size: 18, 10
@@ -651,35 +651,35 @@ surrender-icon
   orig: 16, 22
   offset: 0, 0
   index: -1
-color-icon-ai-player-blue
+icon-ai-player-blue
   rotate: false
   xy: 992, 610
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-brown
+icon-ai-player-brown
   rotate: false
   xy: 1664, 1542
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-cyan
+icon-ai-player-cyan
   rotate: false
   xy: 1456, 1095
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-gold
+icon-ai-player-gold
   rotate: false
   xy: 962, 396
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-green
+icon-ai-player-green
   rotate: false
   xy: 78, 8
   size: 18, 18
@@ -693,105 +693,105 @@ icon-minus
   orig: 18, 6
   offset: 0, 0
   index: -1
-color-icon-ai-player-pink
+icon-ai-player-pink
   rotate: false
   xy: 1054, 684
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-purple
+icon-ai-player-purple
   rotate: false
   xy: 1998, 1806
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-red
+icon-ai-player-red
   rotate: false
   xy: 992, 590
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-silver
+icon-ai-player-silver
   rotate: false
   xy: 1684, 1542
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-teal
+icon-ai-player-teal
   rotate: false
   xy: 1456, 1075
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-blue
+icon-human-player-blue
   rotate: false
   xy: 98, 8
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-brown
+icon-human-player-brown
   rotate: false
   xy: 1998, 1786
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-cyan
+icon-human-player-cyan
   rotate: false
   xy: 992, 570
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-gold
+icon-human-player-gold
   rotate: false
   xy: 1704, 1542
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-green
+icon-human-player-green
   rotate: false
   xy: 1456, 1055
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-pink
+icon-human-player-pink
   rotate: false
   xy: 118, 8
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-purple
+icon-human-player-purple
   rotate: false
   xy: 1998, 1766
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-red
+icon-human-player-red
   rotate: false
   xy: 992, 550
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-silver
+icon-human-player-silver
   rotate: false
   xy: 1724, 1542
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-teal
+icon-human-player-teal
   rotate: false
   xy: 1456, 1035
   size: 18, 18

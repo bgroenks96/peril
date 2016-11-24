@@ -18,10 +18,18 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 
-public final class PlayerEndAttackPhaseRequestEvent implements PlayerRequestEvent
+public final class PlayerEndAttackPhaseRequestEvent implements InformRequestEvent
 {
+  @Override
+  public Class <? extends PlayerInformEvent> getInformType ()
+  {
+    return PlayerBeginAttackEvent.class;
+  }
+
   @Override
   public String toString ()
   {

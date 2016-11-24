@@ -18,37 +18,64 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.game.PersonLimits;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSuccessEvent;
 
-public final class SpectatorJoinGameSuccessEvent implements BroadcastSuccessEvent
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
+public final class SpectatorJoinGameSuccessEvent extends AbstractJoinGameSuccessEvent <SpectatorPacket>
 {
-  private final SpectatorPacket spectator;
-
-  public SpectatorJoinGameSuccessEvent (final SpectatorPacket spectator)
+  /**
+   * Convenience constructor for when person identity is unknown or not cared about, and there are no players in game or
+   * players in game are unknown or not cared about.
+   */
+  public SpectatorJoinGameSuccessEvent (final SpectatorPacket spectator,
+                                        final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                        final PersonLimits personLimits)
   {
-    Arguments.checkIsNotNull (spectator, "spectator");
-
-    this.spectator = spectator;
+    super (spectator, ImmutableSet.<PlayerPacket> of (), spectatorsInGame, personLimits);
   }
 
-  public SpectatorPacket getSpectator ()
+  /**
+   * Convenience constructor for when person identity is unknown or not cared about.
+   */
+  public SpectatorJoinGameSuccessEvent (final SpectatorPacket spectator,
+                                        final ImmutableSet <PlayerPacket> playersInGame,
+                                        final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                        final PersonLimits personLimits)
   {
-    return spectator;
+    super (spectator, playersInGame, spectatorsInGame, personLimits);
   }
 
-  @Override
-  public String toString ()
+  public SpectatorJoinGameSuccessEvent (final SpectatorPacket spectator,
+                                        final PersonIdentity identity,
+                                        final ImmutableSet <PlayerPacket> playersInGame,
+                                        final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                        final PersonLimits personLimits)
   {
-    return Strings.format ("{}: Spectator: [{}]", getClass ().getSimpleName (), spectator);
+    super (spectator, identity, playersInGame, spectatorsInGame, personLimits);
+  }
+
+  public ImmutableSet <SpectatorPacket> getOtherSpectatorsInGame ()
+  {
+    return ImmutableSet.copyOf (Sets.filter (getSpectatorsInGame (), new Predicate <SpectatorPacket> ()
+    {
+      @Override
+      public boolean apply (final SpectatorPacket input)
+      {
+        return input.isNot (getPerson ());
+      }
+    }));
   }
 
   @RequiredForNetworkSerialization
   private SpectatorJoinGameSuccessEvent ()
   {
-    spectator = null;
   }
 }

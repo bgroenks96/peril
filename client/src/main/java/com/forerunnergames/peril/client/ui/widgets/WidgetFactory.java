@@ -41,8 +41,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 import com.forerunnergames.peril.client.messages.StatusMessage;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBoxRow;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PersonBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PlayerPersonBoxRow;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.SpectatorPersonBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
@@ -53,9 +54,11 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle
 import com.forerunnergames.peril.client.ui.widgets.messagebox.ScrollbarStyle;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
-import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
+import com.forerunnergames.peril.client.ui.widgets.personicons.players.PlayerIcon;
+import com.forerunnergames.peril.client.ui.widgets.personicons.spectators.SpectatorIcon;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Message;
 
@@ -142,7 +145,7 @@ public interface WidgetFactory
 
   MessageBox <ChatBoxRow> createChatBox (final MBassador <Event> eventBus);
 
-  PlayerBox createPlayerBox ();
+  PersonBox createPersonBox ();
 
   ProgressBar createHorizontalProgressBar (final float min, final float max, final float stepSize, final String style);
 
@@ -190,9 +193,13 @@ public interface WidgetFactory
 
   StatusBoxRow createStatusMessageBoxRow (final StatusMessage message);
 
-  PlayerBoxRow createPlayerBoxRow (final PlayerPacket player);
+  PlayerPersonBoxRow createPlayerPersonBoxRow (final PlayerPacket player);
 
-  PlayerColorIcon createPlayerColorIcon (final PlayerPacket player);
+  SpectatorPersonBoxRow createSpectatorPersonBoxRow (final SpectatorPacket spectator);
+
+  PlayerIcon createPlayerIcon (final PlayerPacket player);
+
+  SpectatorIcon createSpectatorIcon (final SpectatorPacket spectator);
 
   MessageBoxRow <Message> createMessageBoxRow (final Message message, final MessageBoxRowStyle rowStyle);
 

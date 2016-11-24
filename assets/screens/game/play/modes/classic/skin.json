@@ -27,31 +27,31 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
-    "radio":                          { "up": "radio-on",                       "over": null, "down": "radio-off", "checked": "radio-on",  "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-blue":      { "up": "color-icon-ai-player-blue",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-brown":     { "up": "color-icon-ai-player-brown",     "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-cyan":      { "up": "color-icon-ai-player-cyan",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-gold":      { "up": "color-icon-ai-player-gold",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-green":     { "up": "color-icon-ai-player-green",     "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-pink":      { "up": "color-icon-ai-player-pink",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-purple":    { "up": "color-icon-ai-player-purple",    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-red":       { "up": "color-icon-ai-player-red",       "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-silver":    { "up": "color-icon-ai-player-silver",    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-ai-player-teal":      { "up": "color-icon-ai-player-teal",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-blue":   { "up": "color-icon-human-player-blue",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-brown":  { "up": "color-icon-human-player-brown",  "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-cyan":   { "up": "color-icon-human-player-cyan",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-gold":   { "up": "color-icon-human-player-gold",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-green":  { "up": "color-icon-human-player-green",  "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-pink":   { "up": "color-icon-human-player-pink",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-purple": { "up": "color-icon-human-player-purple", "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-red":    { "up": "color-icon-human-player-red",    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-silver": { "up": "color-icon-human-player-silver", "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "color-icon-human-player-teal":   { "up": "color-icon-human-player-teal",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "spectator-icon":                 { "up": "spectator-icon",                 "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "card-bronze":                    { "up": "card-bronze",                    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "card-silver":                    { "up": "card-gold",                      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
-    "card-gold":                      { "up": "card-silver",                    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null }
+    "radio":                    { "up": "radio-on",                 "over": null, "down": "radio-off", "checked": "radio-on",  "checkedOver": null, "disabled": null },
+    "icon-ai-player-blue":      { "up": "icon-ai-player-blue",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-brown":     { "up": "icon-ai-player-brown",     "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-cyan":      { "up": "icon-ai-player-cyan",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-gold":      { "up": "icon-ai-player-gold",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-green":     { "up": "icon-ai-player-green",     "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-pink":      { "up": "icon-ai-player-pink",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-purple":    { "up": "icon-ai-player-purple",    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-red":       { "up": "icon-ai-player-red",       "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-silver":    { "up": "icon-ai-player-silver",    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-ai-player-teal":      { "up": "icon-ai-player-teal",      "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-blue":   { "up": "icon-human-player-blue",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-brown":  { "up": "icon-human-player-brown",  "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-cyan":   { "up": "icon-human-player-cyan",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-gold":   { "up": "icon-human-player-gold",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-green":  { "up": "icon-human-player-green",  "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-pink":   { "up": "icon-human-player-pink",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-purple": { "up": "icon-human-player-purple", "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-red":    { "up": "icon-human-player-red",    "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-silver": { "up": "icon-human-player-silver", "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-human-player-teal":   { "up": "icon-human-player-teal",   "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "icon-spectator":           { "up": "icon-spectator",           "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "card-bronze":              { "up": "card-bronze",              "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "card-silver":              { "up": "card-gold",                "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null },
+    "card-gold":                { "up": "card-silver",              "over": null, "down": null,        "checked": null,        "checkedOver": null, "disabled": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
@@ -122,14 +122,14 @@
     "default":    { "background": null,                  "hScroll": null, "hScrollKnob": "scroll-knob", "vScroll": null, "vScrollKnob": "scroll-knob" },
     "status-box": { "background": "message-box-borders", "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" },
     "chat-box":   { "background": null,                  "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "scroll-knob" },
-    "player-box": { "background": "player-box-borders",  "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" }
+    "person-box": { "background": "person-box-borders",  "hScroll": null, "hScrollKnob": null,          "vScroll": null, "vScrollKnob": "v-scroll-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
     "default":    { "background": "list-background", "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
     "status-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
     "chat-box":   { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" },
-    "player-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" }
+    "person-box": { "background": null,              "fontColorUnselected": "light-gray", "fontColorSelected": "white", "selection": "list-selection", "font": "dejaVu-16" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
@@ -160,7 +160,7 @@
     "dialog-settings-title":             { "font": "dejaVu-18",     "fontColor": "white",      "background": null },
     "status-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
     "chat-box-message":                  { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
-    "player-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
+    "person-box-message":                { "font": "dejaVu-14",     "fontColor": "white",      "background": null },
     "army-movement-dialog-country-name": { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
     "army-movement-dialog-arrow":        { "font": "dejaVu-16",     "fontColor": "white",      "background": null },
     "battle-dialog-player-name":         { "font": "dejaVu-16",     "fontColor": "white",      "background": null },

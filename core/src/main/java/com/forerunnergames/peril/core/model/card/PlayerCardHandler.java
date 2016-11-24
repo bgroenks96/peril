@@ -26,6 +26,17 @@ interface PlayerCardHandler
 
   void removeCardsFromHand (final Id playerId, final CardSet cards);
 
+  /**
+   * Removes the player completely (from the perspective of PlayerCardHandler only).
+   *
+   * Note: {@link com.forerunnergames.peril.core.model.people.player.PlayerModel} will only remove the number of cards
+   * from the player's hand, if the player still exists. It is not the responsibility of {@link PlayerCardHandler} to
+   * completely remove a player from the game.
+   *
+   * @return Any cards in the player's hand, {@link CardSet} will be empty if there were no cards.
+   */
+  CardSet removePlayer (final Id playerId);
+
   CardSet getCardsInHand (final Id playerId);
 
   int countCardsInHand (final Id playerId);

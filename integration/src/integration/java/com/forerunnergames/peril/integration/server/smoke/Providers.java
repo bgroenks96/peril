@@ -20,7 +20,7 @@ package com.forerunnergames.peril.integration.server.smoke;
 
 import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
-import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.server.TestClient;
@@ -57,7 +57,7 @@ public class Providers
     final MBassador <Event> eventBus = EventBusFactory.create ();
     final int port = PORT_POOL.getAvailablePort ();
     final TestServerApplication server = TestServerApplicationFactory
-            .createTestServer (eventBus, GameServerType.DEDICATED, ClassicGameRules.DEFAULT_PLAYER_LIMIT,
+            .createTestServer (eventBus, GameServerType.DEDICATED, PersonLimits.classicModeDefaults (),
                                FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
     return new Object [] { eventBus, server, client,
@@ -69,7 +69,7 @@ public class Providers
     final MBassador <Event> eventBus = EventBusFactory.create ();
     final int port = PORT_POOL.getAvailablePort ();
     final TestServerApplication server = TestServerApplicationFactory
-            .createTestServer (eventBus, GameServerType.HOST_AND_PLAY, ClassicGameRules.DEFAULT_PLAYER_LIMIT,
+            .createTestServer (eventBus, GameServerType.HOST_AND_PLAY, PersonLimits.classicModeDefaults (),
                                FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
     return new Object [] { eventBus, server, client, new DefaultServerConfiguration ("localhost", port) };

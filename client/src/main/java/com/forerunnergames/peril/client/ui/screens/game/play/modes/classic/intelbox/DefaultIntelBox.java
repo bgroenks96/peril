@@ -9,9 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.client.ui.widgets.playercoloricons.PlayerColorIcon;
+import com.forerunnergames.peril.client.ui.widgets.personicons.PersonIcon;
+import com.forerunnergames.peril.client.ui.widgets.personicons.players.PlayerIcon;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -25,8 +28,8 @@ public final class DefaultIntelBox implements IntelBox
   private final Table intelBoxTable;
   private final Table titleTable;
   private final Label titleLabel;
-  private final Label playerNameSettingLabel;
-  private final Label playerNameTextLabel;
+  private final Label personNameSettingLabel;
+  private final Label personNameTextLabel;
   private final Label serverNameSettingLabel;
   private final Label serverNameTextLabel;
   private final Label playMapNameSettingLabel;
@@ -51,14 +54,14 @@ public final class DefaultIntelBox implements IntelBox
   private final Label totalReinforcementsTextLabel;
   private final Label detailedReportButtonLabel;
   private final ImageButton detailedReportButton;
-  private final Cell <Actor> playerColorIconCell;
-  private final Table playerNameTable;
-  private PlayerColorIcon playerColorIcon = PlayerColorIcon.NULL;
+  private final Cell <Actor> personIconCell;
+  private final Table personNameTable;
+  private PersonIcon personIcon = PlayerIcon.NULL;
   private int ownedCountries;
   @Nullable
   private GameServerConfiguration gameServerConfig;
   @Nullable
-  private PlayerPacket selfPlayer;
+  private PersonPacket self;
 
   public DefaultIntelBox (final ClassicModePlayScreenWidgetFactory widgetFactory,
                           final EventListener detailedReportButtonListener)
@@ -68,8 +71,8 @@ public final class DefaultIntelBox implements IntelBox
     this.widgetFactory = widgetFactory;
 
     titleLabel = widgetFactory.createIntelBoxTitleLabel ("Intel");
-    playerNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Player: ");
-    playerNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
+    personNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Player: ");
+    personNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
     serverNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Server: ");
     serverNameTextLabel = widgetFactory.createIntelBoxSettingTextWrappingLabel ("?");
     playMapNameSettingLabel = widgetFactory.createIntelBoxSettingNameLabel ("Map: ");
@@ -105,11 +108,11 @@ public final class DefaultIntelBox implements IntelBox
 
     intelBoxTable.row ().padLeft (16).spaceTop (10).spaceBottom (10).expandY ();
 
-    playerNameTable = new Table ();
-    playerNameTable.add (playerNameSettingLabel).fill ();
-    playerColorIconCell = playerNameTable.add (playerColorIcon.asActor ()).spaceRight (4);
-    playerNameTable.add (playerNameTextLabel).spaceLeft (4).expandX ().fill ();
-    intelBoxTable.add (playerNameTable).padRight (4).expandX ().fill ();
+    personNameTable = new Table ();
+    personNameTable.add (personNameSettingLabel).fill ();
+    personIconCell = personNameTable.add (personIcon.asActor ()).spaceRight (4);
+    personNameTable.add (personNameTextLabel).spaceLeft (4).expandX ().fill ();
+    intelBoxTable.add (personNameTable).padRight (4).expandX ().fill ();
 
     intelBoxTable.row ().padLeft (16).padRight (16).spaceTop (10).spaceBottom (10).expandY ();
 
@@ -183,16 +186,31 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void setSelfPlayer (final PlayerPacket player)
+  public void setSelf (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (player, "person");
 
-    selfPlayer = player;
+    self = player;
 
-    playerNameTextLabel.setText (player.getName ());
-    playerColorIcon = widgetFactory.createPlayerColorIcon (player);
-    playerColorIconCell.setActor (playerColorIcon.asActor ());
-    playerNameTable.invalidateHierarchy ();
+    personNameTextLabel.setText (player.getName ());
+    personIcon = widgetFactory.createPlayerIcon (player);
+    personIconCell.setActor (personIcon.asActor ());
+    personNameSettingLabel.setText ("Player: ");
+    personNameTable.invalidateHierarchy ();
+  }
+
+  @Override
+  public void setSelf (final SpectatorPacket spectator)
+  {
+    Arguments.checkIsNotNull (spectator, "person");
+
+    self = spectator;
+
+    personNameTextLabel.setText (spectator.getName ());
+    personIcon = widgetFactory.createSpectatorIcon (spectator);
+    personIconCell.setActor (personIcon.asActor ());
+    personNameSettingLabel.setText ("Spectator: ");
+    personNameTable.invalidateHierarchy ();
   }
 
   @Override
@@ -238,11 +256,11 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void setOwnedCountriesForSelf (final int countries, @Nullable final PlayerPacket player)
+  public void setOwnedCountriesForSelf (final int countries, @Nullable final PersonPacket person)
   {
     Arguments.checkIsNotNegative (countries, "countries");
 
-    if (gameServerConfig == null || !isSelf (player)) return;
+    if (gameServerConfig == null || !isSelf (person)) return;
 
     ownedCountries = countries;
 
@@ -250,17 +268,17 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void addOwnedCountryForSelf (@Nullable final PlayerPacket player)
+  public void addOwnedCountryForSelf (@Nullable final PersonPacket person)
   {
-    if (gameServerConfig == null || !isSelf (player)) return;
+    if (gameServerConfig == null || !isSelf (person)) return;
 
     setWinConditions (++ownedCountries, gameServerConfig);
   }
 
   @Override
-  public void removeOwnedCountryForSelf (@Nullable final PlayerPacket player)
+  public void removeOwnedCountryForSelf (@Nullable final PersonPacket person)
   {
-    if (gameServerConfig == null || !isSelf (player)) return;
+    if (gameServerConfig == null || !isSelf (person)) return;
 
     setWinConditions (--ownedCountries, gameServerConfig);
   }
@@ -268,7 +286,7 @@ public final class DefaultIntelBox implements IntelBox
   @Override
   public void clear ()
   {
-    playerNameTextLabel.setText ("?");
+    personNameTextLabel.setText ("?");
     serverNameTextLabel.setText ("?");
     playMapNameTextLabel.setText ("?");
     gameRoundTextLabel.setText ("?");
@@ -280,9 +298,9 @@ public final class DefaultIntelBox implements IntelBox
     subtotalReinforcementsTextLabel.setText ("?");
     tradeInReinforcementsTextLabel.setText ("?");
     totalReinforcementsTextLabel.setText ("?");
-    playerColorIcon = PlayerColorIcon.NULL;
-    playerColorIconCell.setActor (playerColorIcon.asActor ());
-    playerNameTable.invalidateHierarchy ();
+    personIcon = PlayerIcon.NULL;
+    personIconCell.setActor (personIcon.asActor ());
+    personNameTable.invalidateHierarchy ();
   }
 
   @Override
@@ -297,8 +315,8 @@ public final class DefaultIntelBox implements IntelBox
     intelBoxTable.setBackground (widgetFactory.createIntelBoxBackgroundDrawable ());
     titleTable.setBackground (widgetFactory.createIntelBoxTitleBackgroundDrawable ());
     titleLabel.setStyle (widgetFactory.createIntelBoxTitleLabelStyle ());
-    playerNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
-    playerNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
+    personNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
+    personNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
     serverNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
     serverNameTextLabel.setStyle (widgetFactory.createIntelBoxSettingTextWrappingLabelStyle ());
     playMapNameSettingLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
@@ -323,12 +341,12 @@ public final class DefaultIntelBox implements IntelBox
     totalReinforcementsTextLabel.setStyle (widgetFactory.createIntelBoxSettingNameLabelStyle ());
     detailedReportButtonLabel.setStyle (widgetFactory.createIntelBoxButtonTextLabelStyle ());
     detailedReportButton.setStyle (widgetFactory.createIntelBoxDetailedReportButtonStyle ());
-    playerColorIcon.refreshAssets ();
+    personIcon.refreshAssets ();
   }
 
-  private boolean isSelf (@Nullable final PlayerPacket player)
+  private boolean isSelf (@Nullable final PersonPacket person)
   {
-    return selfPlayer != null && player != null && player.is (selfPlayer);
+    return self != null && person != null && person.is (self);
   }
 
   private void setServerName (final String serverName)

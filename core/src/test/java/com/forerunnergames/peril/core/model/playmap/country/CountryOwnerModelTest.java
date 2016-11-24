@@ -389,7 +389,7 @@ public class CountryOwnerModelTest
 
   private static CountryOwnerModel createDefaultCountryOwnerModelWith (final CountryGraphModel countryGraphModel)
   {
-    final GameRules classicRules = new ClassicGameRules.Builder ().build ();
-    return new DefaultCountryOwnerModel (countryGraphModel, classicRules);
+    final GameRules rules = ClassicGameRules.defaults ();
+    return new DefaultCountryOwnerModel (countryGraphModel, rules);
   }
 }

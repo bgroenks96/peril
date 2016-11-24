@@ -27,11 +27,13 @@ public interface GameConfiguration
 {
   GameMode getGameMode ();
 
-  int getPlayerLimit ();
+  int getTotalPlayerLimit ();
 
   int getPlayerLimitFor (final PersonSentience sentience);
 
   int getSpectatorLimit ();
+
+  PersonLimits getPersonLimits ();
 
   int getWinPercentage ();
 

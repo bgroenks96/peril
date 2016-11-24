@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.success;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSourceTargetCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseSuccessEvent;
@@ -26,8 +27,6 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-
-import javax.annotation.Nullable;
 
 public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent implements
         PlayerResponseSuccessEvent, CountryOwnerChangedEvent
@@ -81,25 +80,48 @@ public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlaye
   }
 
   @Override
-  @Nullable
   public PlayerPacket getPreviousOwner ()
   {
     return previousTargetCountryOwner;
   }
 
+  @Override
+  public String getPreviousOwnerName ()
+  {
+    return previousTargetCountryOwner.getName ();
+  }
+
+  @Override
+  public PlayerColor getPreviousOwnerColor ()
+  {
+    return previousTargetCountryOwner.getColor ();
+  }
+
+  @Override
+  public boolean hasNewOwner ()
+  {
+    return true;
+  }
+
   /**
-   * @return the new target country owner; same as {@link #getPlayer()}
+   * @return the new target country owner; same as {@link #getPerson()}
    */
   @Override
   public PlayerPacket getNewOwner ()
   {
-    return getPlayer ();
+    return getPerson ();
+  }
+
+  @Override
+  public PlayerColor getNewOwnerColor ()
+  {
+    return getPlayerColor ();
   }
 
   @Override
   public String getNewOwnerName ()
   {
-    return getPlayerName ();
+    return getPersonName ();
   }
 
   public int getDeltaArmyCount ()

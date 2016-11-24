@@ -27,22 +27,26 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Reason>
 {
   private final String spectatorName;
+  private final int spectatorLimit;
 
   public enum Reason
   {
     GAME_IS_FULL,
     SPECTATING_DISABLED,
     INVALID_NAME,
-    DUPLICATE_NAME
+    DUPLICATE_PLAYER_NAME,
+    DUPLICATE_SPECTATOR_NAME
   }
 
-  public SpectatorJoinGameDeniedEvent (final String deniedName, final Reason reason)
+  public SpectatorJoinGameDeniedEvent (final String deniedName, final int spectatorLimit, final Reason reason)
   {
     super (reason);
 
     Arguments.checkIsNotNull (deniedName, "deniedName");
+    Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
 
     spectatorName = deniedName;
+    this.spectatorLimit = spectatorLimit;
   }
 
   public String getSpectatorName ()
@@ -50,15 +54,22 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
     return spectatorName;
   }
 
+  public int getSpectatorLimit ()
+  {
+    return spectatorLimit;
+  }
+
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | SpectatorName: {}", super.toString (), spectatorName);
+    return Strings.format ("{} | SpectatorName: [{}] | SpectatorLimit: [{}]", super.toString (), spectatorName,
+                           spectatorLimit);
   }
 
   @RequiredForNetworkSerialization
   private SpectatorJoinGameDeniedEvent ()
   {
     spectatorName = null;
+    spectatorLimit = 0;
   }
 }

@@ -18,13 +18,15 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerTradeInCardsRequestEvent implements PlayerRequestEvent
+public final class PlayerTradeInCardsRequestEvent implements InformRequestEvent
 {
   private final CardSetPacket tradeIn;
 
@@ -33,6 +35,12 @@ public final class PlayerTradeInCardsRequestEvent implements PlayerRequestEvent
     Arguments.checkIsNotNull (tradeIn, "tradeIn");
 
     this.tradeIn = tradeIn;
+  }
+
+  @Override
+  public Class <? extends PlayerInformEvent> getInformType ()
+  {
+    return PlayerCardTradeInAvailableEvent.class;
   }
 
   public CardSetPacket getTradeIn ()

@@ -33,6 +33,8 @@ public final class PlayScreenQuitDialog extends QuitDialog implements PlayMapBlo
   private static final String QUIT_DIALOG_TITLE_GAME_IN_PROGRESS = "Surrender & Quit?";
   private static final String QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS = "Are you sure you want to surrender & quit?\n"
           + "If you are the host, quitting will shut down the server for everyone.";
+  private static final String QUIT_DIALOG_TITLE_SPECTATOR = QUIT_DIALOG_TITLE_GAME_NOT_IN_PROGRESS;
+  private static final String QUIT_DIALOG_MESSAGE_SPECTATOR = QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS;
 
   public PlayScreenQuitDialog (final WidgetFactory widgetFactory,
                                final String message,
@@ -53,19 +55,23 @@ public final class PlayScreenQuitDialog extends QuitDialog implements PlayMapBlo
            stage, listener);
   }
 
-  public void show (final boolean isGameInProgress)
+  public void show (final boolean isGameInProgress, final boolean isSpectating)
   {
-    setTitle (getQuitDialogTitle (isGameInProgress));
-    show (getQuitDialogMessageText (isGameInProgress));
+    setTitle (getQuitDialogTitle (isGameInProgress, isSpectating));
+    show (getQuitDialogMessageText (isGameInProgress, isSpectating));
   }
 
-  private String getQuitDialogTitle (final boolean isGameInProgress)
+  private String getQuitDialogTitle (final boolean isGameInProgress, final boolean isSpectating)
   {
+    if (isSpectating) return QUIT_DIALOG_TITLE_SPECTATOR;
+
     return isGameInProgress ? QUIT_DIALOG_TITLE_GAME_IN_PROGRESS : QUIT_DIALOG_TITLE_GAME_NOT_IN_PROGRESS;
   }
 
-  private String getQuitDialogMessageText (final boolean isGameInProgress)
+  private String getQuitDialogMessageText (final boolean isGameInProgress, final boolean isSpectating)
   {
+    if (isSpectating) return QUIT_DIALOG_MESSAGE_SPECTATOR;
+
     return isGameInProgress ? QUIT_DIALOG_MESSAGE_GAME_IN_PROGRESS : QUIT_DIALOG_MESSAGE_GAME_NOT_IN_PROGRESS;
   }
 }

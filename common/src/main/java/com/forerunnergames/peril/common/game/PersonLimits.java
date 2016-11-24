@@ -19,34 +19,45 @@ package com.forerunnergames.peril.common.game;
 
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
-import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableMap;
 
+import javax.annotation.Nullable;
+
 public final class PersonLimits
 {
-  private final int playerLimit;
+  private final int totalPlayerLimit;
   private final int spectatorLimit;
-  private ImmutableMap <PersonSentience, Integer> playerLimits;
+  private ImmutableMap <PersonSentience, Integer> allPlayerLimits;
 
   public static Builder builder ()
   {
     return new Builder ();
   }
 
-  public int getPlayerLimit ()
+  public static PersonLimits classicModeDefaults ()
   {
-    return playerLimit;
+    return builder ().classicModeDefaults ().build ();
+  }
+
+  public static PersonLimits maxClassicModeHumanPlayersOnly ()
+  {
+    return builder ().humanPlayers (ClassicGameRules.MAX_HUMAN_PLAYERS).build ();
+  }
+
+  public int getTotalPlayerLimit ()
+  {
+    return totalPlayerLimit;
   }
 
   public int getPlayerLimitFor (final PersonSentience sentience)
   {
     Arguments.checkIsNotNull (sentience, "sentience");
 
-    final Integer playerLimit = playerLimits.get (sentience);
+    final Integer playerLimit = allPlayerLimits.get (sentience);
 
     if (playerLimit == null)
     {
@@ -65,8 +76,8 @@ public final class PersonLimits
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: PlayerLimit: [{}] | SpectatorLimit: [{}] | PlayerLimits: [{}]", getClass ()
-            .getSimpleName (), playerLimit, spectatorLimit, playerLimits);
+    return Strings.format ("{}: TotalPlayerLimit: [{}] | SpectatorLimit: [{}] | AllPlayerLimits: [{}]", getClass ()
+            .getSimpleName (), totalPlayerLimit, spectatorLimit, allPlayerLimits);
   }
 
   private PersonLimits (final int humanPlayerLimit, final int aiPlayerLimit, final int spectatorLimit)
@@ -75,8 +86,8 @@ public final class PersonLimits
     Arguments.checkIsNotNegative (aiPlayerLimit, "aiPlayerLimit");
     Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
 
-    playerLimit = humanPlayerLimit + aiPlayerLimit;
-    playerLimits = ImmutableMap.of (PersonSentience.HUMAN, humanPlayerLimit, PersonSentience.AI, aiPlayerLimit);
+    totalPlayerLimit = humanPlayerLimit + aiPlayerLimit;
+    allPlayerLimits = ImmutableMap.of (PersonSentience.HUMAN, humanPlayerLimit, PersonSentience.AI, aiPlayerLimit);
     this.spectatorLimit = spectatorLimit;
   }
 
@@ -84,17 +95,26 @@ public final class PersonLimits
   private PersonLimits ()
   {
     spectatorLimit = 0;
-    playerLimit = 0;
+    totalPlayerLimit = 0;
   }
 
   public static class Builder
   {
-    private int humanPlayerLimit = ClassicGameRules.DEFAULT_PLAYER_LIMIT;
-    private int aiPlayerLimit = GameSettings.DEFAULT_AI_PLAYER_LIMIT;
-    private int spectatorLimit = GameSettings.DEFAULT_SPECTATOR_LIMIT;
+    private int humanPlayerLimit;
+    private int aiPlayerLimit;
+    private int spectatorLimit;
 
-    public Builder humanPlayers (final int humanPlayerLimit)
+    public Builder classicModeDefaults ()
     {
+      return humanPlayers (ClassicGameRules.DEFAULT_HUMAN_PLAYER_LIMIT)
+              .aiPlayers (ClassicGameRules.DEFAULT_AI_PLAYER_LIMIT)
+              .spectators (ClassicGameRules.DEFAULT_SPECTATOR_LIMIT);
+    }
+
+    public Builder humanPlayers (@Nullable final Integer humanPlayerLimit)
+    {
+      if (humanPlayerLimit == null) return this;
+
       Arguments.checkIsNotNegative (humanPlayerLimit, "humanPlayerLimit");
 
       this.humanPlayerLimit = humanPlayerLimit;
@@ -102,8 +122,10 @@ public final class PersonLimits
       return this;
     }
 
-    public Builder aiPlayers (final int aiPlayerLimit)
+    public Builder aiPlayers (@Nullable final Integer aiPlayerLimit)
     {
+      if (aiPlayerLimit == null) return this;
+
       Arguments.checkIsNotNegative (aiPlayerLimit, "aiPlayerLimit");
 
       this.aiPlayerLimit = aiPlayerLimit;
@@ -111,11 +133,24 @@ public final class PersonLimits
       return this;
     }
 
-    public Builder spectators (final int spectatorLimit)
+    public Builder spectators (@Nullable final Integer spectatorLimit)
     {
+      if (spectatorLimit == null) return this;
+
       Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");
 
       this.spectatorLimit = spectatorLimit;
+
+      return this;
+    }
+
+    public Builder personLimits (final PersonLimits personLimits)
+    {
+      Arguments.checkIsNotNull (personLimits, "personLimits");
+
+      humanPlayerLimit = personLimits.getPlayerLimitFor (PersonSentience.HUMAN);
+      aiPlayerLimit = personLimits.getPlayerLimitFor (PersonSentience.AI);
+      spectatorLimit = personLimits.getSpectatorLimit ();
 
       return this;
     }

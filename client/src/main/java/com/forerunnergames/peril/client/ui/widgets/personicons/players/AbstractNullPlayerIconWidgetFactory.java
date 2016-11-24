@@ -15,27 +15,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
+package com.forerunnergames.peril.client.ui.widgets.personicons.players;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
-import com.forerunnergames.peril.client.settings.StyleSettings;
+import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
-abstract class AiPlayerColorIconWidgetFactory extends AbstractPlayerColorIconWidgetFactory
+abstract class AbstractNullPlayerIconWidgetFactory extends AbstractWidgetFactory implements PlayerIconWidgetFactory
 {
-  AiPlayerColorIconWidgetFactory (final AssetManager assetManager)
+  AbstractNullPlayerIconWidgetFactory (final AssetManager assetManager)
   {
     super (assetManager);
   }
 
   @Override
-  public Button.ButtonStyle createPlayerColorIconStyle (final PlayerColor color)
+  public Button createPlayerIconButton (final PlayerColor color)
+  {
+    return new Button (createPlayerIconStyle (color));
+  }
+
+  @Override
+  public Button.ButtonStyle createPlayerIconStyle (final PlayerColor color)
   {
     Arguments.checkIsNotNull (color, "color");
 
-    return createButtonStyle (StyleSettings.AI_PLAYER_COLOR_ICON_STYLE_PREFIX + color.toLowerCase ());
+    return new Button.ButtonStyle ();
+  }
+
+  @Override
+  public PlayerIcon createPersonIcon (final PlayerPacket person)
+  {
+    return PlayerIcon.NULL;
   }
 }

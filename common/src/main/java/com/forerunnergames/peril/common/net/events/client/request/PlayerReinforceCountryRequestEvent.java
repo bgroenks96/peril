@@ -18,12 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountryRequestEvent implements PlayerRequestEvent
+public final class PlayerReinforceCountryRequestEvent implements InformRequestEvent
 {
   private final String countryName;
   private final int reinforcementCount;
@@ -36,6 +38,12 @@ public final class PlayerReinforceCountryRequestEvent implements PlayerRequestEv
 
     this.countryName = countryName;
     this.reinforcementCount = reinforcementCount;
+  }
+
+  @Override
+  public Class <? extends PlayerInformEvent> getInformType ()
+  {
+    return PlayerBeginReinforcementEvent.class;
   }
 
   public String getCountryName ()

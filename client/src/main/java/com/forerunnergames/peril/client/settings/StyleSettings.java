@@ -72,9 +72,9 @@ public final class StyleSettings
   public static final String CHAT_BOX_SCROLLPANE_STYLE = "chat-box";
   public static final String CHAT_BOX_ROW_LABEL_STYLE = "chat-box-message";
 
-  // Player Box
-  public static final String PLAYER_BOX_SCROLLPANE_STYLE = "player-box";
-  public static final String PLAYER_BOX_ROW_LABEL_STYLE = "player-box-message";
+  // Person Box
+  public static final String PERSON_BOX_SCROLLPANE_STYLE = "person-box";
+  public static final String PERSON_BOX_ROW_LABEL_STYLE = "person-box-message";
 
   // Play Screen Intel Box
   public static final String INTEL_BOX_TITLE_LABEL_STYLE = "side-bar-title";
@@ -120,9 +120,10 @@ public final class StyleSettings
   // Play Screen Battle Result Dialogs (Victory & Defeat)
   public static final String BATTLE_RESULT_DIALOG_WINDOW_STYLE = "dialog-non-modal";
 
-  // Player Color Icons
-  public static final String HUMAN_PLAYER_COLOR_ICON_STYLE_PREFIX = "color-icon-human-player-";
-  public static final String AI_PLAYER_COLOR_ICON_STYLE_PREFIX = "color-icon-ai-player-";
+  // Person Icons
+  public static final String HUMAN_PLAYER_ICON_STYLE_PREFIX = "icon-human-player-";
+  public static final String AI_PLAYER_ICON_STYLE_PREFIX = "icon-ai-player-";
+  public static final String SPECTATOR_ICON_STYLE = "icon-spectator";
 
   private StyleSettings ()
   {

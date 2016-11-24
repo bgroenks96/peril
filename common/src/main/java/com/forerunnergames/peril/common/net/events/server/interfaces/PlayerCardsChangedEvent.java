@@ -21,7 +21,7 @@ import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotifi
 
 /**
  * All implementations of PlayerCardsChangedEvent should be constructed with an updated PlayerPacket (accessible via
- * {@link #getPlayer()} that contains the number of cards in the player's hand <b>after</b> the delta is applied.
+ * {@link #getPerson()} that contains the number of cards in the player's hand <b>after</b> the delta is applied.
  */
 public interface PlayerCardsChangedEvent extends PlayerEvent, BroadcastNotificationEvent
 {

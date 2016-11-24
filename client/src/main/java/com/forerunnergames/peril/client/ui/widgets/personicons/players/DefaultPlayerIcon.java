@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
+package com.forerunnergames.peril.client.ui.widgets.personicons.players;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -35,16 +35,16 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DefaultPlayerColorIcon implements PlayerColorIcon
+final class DefaultPlayerIcon implements PlayerIcon
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultPlayerColorIcon.class);
-  private final PlayerColorIconWidgetFactory widgetFactory;
+  private static final Logger log = LoggerFactory.getLogger (DefaultPlayerIcon.class);
+  private final PlayerIconWidgetFactory widgetFactory;
   private final ImmutableMap <PlayerColor, Button> colorsToIcons;
   private final Table table = new Table ();
   private final Cell <Button> iconCell;
   private PlayerColor activeColor;
 
-  public DefaultPlayerColorIcon (final PlayerColor activeColor, final PlayerColorIconWidgetFactory widgetFactory)
+  DefaultPlayerIcon (final PlayerColor activeColor, final PlayerIconWidgetFactory widgetFactory)
   {
     Arguments.checkIsNotNull (activeColor, "activeColor");
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
@@ -55,7 +55,7 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
 
     for (final PlayerColor color : PlayerColor.VALID_VALUES)
     {
-      colorsToIconsBuilder.put (color, widgetFactory.createPlayerColorIconButton (color));
+      colorsToIconsBuilder.put (color, widgetFactory.createPlayerIconButton (color));
     }
 
     colorsToIcons = colorsToIconsBuilder.build ();
@@ -78,9 +78,9 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
 
     activeColor = color;
 
-    final Button playerColorIcon = colorsToIcons.get (activeColor);
+    final Button playerIcon = colorsToIcons.get (activeColor);
 
-    iconCell.setActor (playerColorIcon).size (playerColorIcon.getPrefWidth (), playerColorIcon.getPrefHeight ());
+    iconCell.setActor (playerIcon).size (playerIcon.getPrefWidth (), playerIcon.getPrefHeight ());
     table.invalidateHierarchy ();
   }
 
@@ -90,7 +90,7 @@ public final class DefaultPlayerColorIcon implements PlayerColorIcon
   {
     for (final Map.Entry <PlayerColor, Button> entry : colorsToIcons.entrySet ())
     {
-      entry.getValue ().setStyle (widgetFactory.createPlayerColorIconStyle (entry.getKey ()));
+      entry.getValue ().setStyle (widgetFactory.createPlayerIconStyle (entry.getKey ()));
     }
   }
 

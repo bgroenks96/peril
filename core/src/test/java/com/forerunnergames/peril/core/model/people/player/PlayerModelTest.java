@@ -989,9 +989,9 @@ public class PlayerModelTest
   private static PlayerModel createPlayerModelWithLimitOf (final int playerLimit)
   {
     final GameRules gameRulesMock = mock (GameRules.class);
-    when (gameRulesMock.getMinPlayers ()).thenReturn (MIN_PLAYERS);
-    when (gameRulesMock.getMaxPlayers ()).thenReturn (MAX_PLAYERS);
-    when (gameRulesMock.getPlayerLimit ()).thenReturn (playerLimit);
+    when (gameRulesMock.getMinTotalPlayers ()).thenReturn (MIN_PLAYERS);
+    when (gameRulesMock.getMaxTotalPlayers ()).thenReturn (MAX_PLAYERS);
+    when (gameRulesMock.getTotalPlayerLimit ()).thenReturn (playerLimit);
     when (gameRulesMock.getMinArmiesInHand ()).thenReturn (MIN_ARMIES_IN_PLAYER_HAND);
     when (gameRulesMock.getMaxArmiesInHand ()).thenReturn (MAX_ARMIES_IN_PLAYER_HAND);
 

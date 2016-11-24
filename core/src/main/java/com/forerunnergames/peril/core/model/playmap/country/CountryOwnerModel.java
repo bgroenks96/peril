@@ -18,11 +18,18 @@
 package com.forerunnergames.peril.core.model.playmap.country;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
+
+import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 public interface CountryOwnerModel
 {
@@ -60,7 +67,9 @@ public interface CountryOwnerModel
 
   Id ownerOf (final Id countryId);
 
-  ImmutableSet <CountryPacket> getCountriesOwnedBy (final Id ownerId);
+  ImmutableSet <CountryPacket> getCountryPacketsOwnedBy (final Id ownerId);
+
+  ImmutableSet <Id> getCountriesOwnedBy (final Id ownerId);
 
   ImmutableSet <CountryPacket> getUnownedCountries ();
 
@@ -68,7 +77,14 @@ public interface CountryOwnerModel
 
   void unassignAllCountries ();
 
-  void unassignAllCountriesOwnedBy (final Id ownerId);
+  /**
+   *
+   * @param ownerPacket
+   *          The {@link PlayerPacket} represented by the specified ownerId. Used to pass the previous owner to the
+   *          {@link CountryOwnerMutation} set. The value of the specified owner {@link Id} must match that of the
+   *          specified owner {@link PlayerPacket}.
+   */
+  ImmutableSet <CountryOwnerMutation> unassignAllCountriesOwnedBy (final Id ownerId, final PlayerPacket ownerPacket);
 
   int countCountriesOwnedBy (final Id ownerId);
 
@@ -77,4 +93,78 @@ public interface CountryOwnerModel
   boolean ownedCountryCountIs (final int n);
 
   boolean ownedCountryCountIsAtLeast (final int n);
+
+  final class CountryOwnerMutation
+  {
+    private final CountryPacket country;
+    @Nullable
+    private final PlayerPacket previousOwner;
+    @Nullable
+    private final PlayerPacket newOwner;
+
+    CountryOwnerMutation (final CountryPacket country,
+                          @Nullable final PlayerPacket previousOwner,
+                          @Nullable final PlayerPacket newOwner)
+    {
+      Arguments.checkIsNotNull (country, "country");
+      Arguments
+              .checkIsFalse (Objects.equals (previousOwner, newOwner),
+                             "previousOwner [{}] and newOwner [{}] cannot be the same (otherwise no mutation occurred).");
+
+      this.country = country;
+      this.previousOwner = previousOwner;
+      this.newOwner = newOwner;
+    }
+
+    @Override
+    public int hashCode ()
+    {
+      return country.hashCode ();
+    }
+
+    @Override
+    public boolean equals (final Object o)
+    {
+      if (this == o) return true;
+      if (o == null || getClass () != o.getClass ()) return false;
+
+      final CountryOwnerMutation mutation = (CountryOwnerMutation) o;
+
+      return country.equals (mutation.country);
+    }
+
+    @Override
+    public String toString ()
+    {
+      return Strings.format ("{}: Country: [{}] | PreviousOwner: [{}] | NewOwner: [{}]", getClass ().getSimpleName (),
+                             country, previousOwner, newOwner);
+    }
+
+    public CountryPacket getCountry ()
+    {
+      return country;
+    }
+
+    public boolean hasPreviousOwnerId ()
+    {
+      return previousOwner != null;
+    }
+
+    @Nullable
+    public PlayerPacket getPreviousOwner ()
+    {
+      return previousOwner;
+    }
+
+    public boolean hasNewOwnerId ()
+    {
+      return newOwner != null;
+    }
+
+    @Nullable
+    public PlayerPacket getNewOwner ()
+    {
+      return newOwner;
+    }
+  }
 }

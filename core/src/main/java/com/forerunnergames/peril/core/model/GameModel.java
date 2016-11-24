@@ -22,6 +22,7 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
@@ -122,7 +123,6 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.core.events.DefaultEventFactory;
 import com.forerunnergames.peril.core.events.EventFactory;
-import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.model.battle.AttackOrder;
 import com.forerunnergames.peril.core.model.battle.AttackVector;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
@@ -230,6 +230,12 @@ public final class GameModel
     FORTIFY_VALID_VECTORS,
     FORTIFY_SOURCE_COUNTRY_ID,
     FORTIFY_TARGET_COUNTRY_ID
+  }
+
+  private enum GameStatus
+  {
+    GAME_OVER,
+    CONTINUE_PLAYING
   }
 
   GameModel (final PlayerModel playerModel,
@@ -385,7 +391,7 @@ public final class GameModel
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.info ("Skipping turn for player [{}].", event.getPlayerName ());
+    log.info ("Skipping turn for player [{}].", event.getPersonName ());
   }
 
   @StateTransitionCondition
@@ -574,14 +580,10 @@ public final class GameModel
         continue;
       }
 
-      publish (new PlayerJoinGameSuccessEvent (player, playerModel.getPlayerPackets (), rules.getPlayerLimit ()));
+      publish (new PlayerJoinGameSuccessEvent (player, playerModel.getPlayerPackets (), rules.getPersonLimits ()));
     }
   }
 
-  /**
-   * This method will be called after {@link InternalCommunicationHandler} has already handled the
-   * {@link InternalPlayerLeaveGameEvent}.
-   */
   @StateTransitionAction
   public void handlePlayerLeaveGame (final PlayerLeaveGameEvent event)
   {
@@ -589,13 +591,9 @@ public final class GameModel
 
     log.trace ("Event received [{}].", event);
 
-    // if the player is somehow still in the game, log a warning and return;
-    // this might indicate a bug in one of the event handlers
-    if (playerModel.existsPlayerWith (event.getPlayerName ()))
-    {
-      log.warn ("Received [{}], but player [{}] still exists.", event, event.getPlayer ());
-      return;
-    }
+    if (!playerModel.existsPlayerWith (event.getPersonName ())) return;
+
+    removePlayerFromGame (playerModel.playerWith (event.getPersonName ()));
   }
 
   @StateEntryAction
@@ -824,7 +822,7 @@ public final class GameModel
     }
     else
     {
-      publish (new EndReinforcementPhaseEvent (playerPacket, countryOwnerModel.getCountriesOwnedBy (playerId)));
+      publish (new EndReinforcementPhaseEvent (playerPacket, countryOwnerModel.getCountryPacketsOwnedBy (playerId)));
       log.info ("Player [{}] has no more armies in hand. Moving to next phase...", playerPacket);
     }
   }
@@ -972,7 +970,7 @@ public final class GameModel
   public void waitForPlayerToSelectAttackVector ()
   {
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> builder = ImmutableMultimap.builder ();
-    for (final CountryPacket country : countryOwnerModel.getCountriesOwnedBy (getCurrentPlayerId ()))
+    for (final CountryPacket country : countryOwnerModel.getCountryPacketsOwnedBy (getCurrentPlayerId ()))
     {
       final Id countryId = countryGraphModel.countryWith (country.getName ());
       builder.putAll (country, battleModel.getValidAttackTargetsFor (countryId, playMapModel));
@@ -1414,7 +1412,7 @@ public final class GameModel
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
     final Id currentPlayerId = getCurrentPlayerId ();
-    final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountriesOwnedBy (currentPlayerId);
+    final ImmutableSet <CountryPacket> ownedCountries = countryOwnerModel.getCountryPacketsOwnedBy (currentPlayerId);
     final ImmutableMultimap.Builder <CountryPacket, CountryPacket> validFortifyVectorBuilder = ImmutableSetMultimap
             .builder ();
     for (final CountryPacket country : ownedCountries)
@@ -1441,7 +1439,6 @@ public final class GameModel
     log.info ("Begin fortify phase for player [{}].", currentPlayer);
 
     publish (new BeginFortifyPhaseEvent (currentPlayer));
-    publish (new PlayerBeginFortificationWaitEvent (currentPlayer));
   }
 
   @StateExitAction
@@ -1470,6 +1467,7 @@ public final class GameModel
             .get (CacheKey.FORTIFY_VALID_VECTORS, ImmutableMultimap.class);
 
     publish (new PlayerBeginFortificationEvent (player, validFortifyVectors));
+    publish (new PlayerBeginFortificationWaitEvent (player));
   }
 
   @StateTransitionCondition
@@ -1731,6 +1729,13 @@ public final class GameModel
     return playerModel.playerWith (playerTurnModel.getCurrentTurn ());
   }
 
+  public boolean isCurrentPlayer (final Id playerId)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+
+    return getCurrentPlayerId ().is (playerId);
+  }
+
   public void dumpDataCacheToLog ()
   {
     log.debug ("CurrentTurn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getCurrentTurn (),
@@ -1755,6 +1760,57 @@ public final class GameModel
       playMapView.put (countryGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
     }
     return playMapView.build ();
+  }
+
+  private GameStatus removePlayerFromGame (final Id playerId)
+  {
+    // Ensure the player wasn't mistakenly already removed.
+    assert playerModel.existsPlayerWith (playerId);
+
+    final boolean wasCurrentPlayer = isCurrentPlayer (playerId);
+
+    cardModel.removePlayer (playerId);
+    playerTurnModel.decrementTurnCount ();
+
+    final ImmutableSet <CountryArmyModel.CountryArmiesMutation> countryArmiesMutations = countryArmyModel
+            .resetCountries (countryOwnerModel.getCountriesOwnedBy (playerId));
+    final ImmutableSet <CountryOwnerModel.CountryOwnerMutation> countryOwnerMutations = countryOwnerModel
+            .unassignAllCountriesOwnedBy (playerId, playerModel.playerPacketWith (playerId));
+    final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> turnOrderMutations = playerModel.remove (playerId);
+
+    for (final PlayerModel.PlayerTurnOrderMutation mutation : turnOrderMutations)
+    {
+      publish (new DefaultPlayerTurnOrderChangedEvent (mutation.getPlayer (), mutation.getOldTurnOrder ()));
+    }
+
+    for (final CountryArmyModel.CountryArmiesMutation mutation : countryArmiesMutations)
+    {
+      publish (new DefaultCountryArmiesChangedEvent (mutation.getCountry (), mutation.getDeltaArmies ()));
+    }
+
+    for (final CountryOwnerModel.CountryOwnerMutation mutation : countryOwnerMutations)
+    {
+      publish (new DefaultCountryOwnerChangedEvent (mutation.getCountry (), mutation.getNewOwner (),
+              mutation.getPreviousOwner ()));
+    }
+
+    // Removed player was the current player, so the current / active player has changed.
+    if (wasCurrentPlayer) publish (new ActivePlayerChangedEvent (getCurrentPlayerPacket ()));
+
+    return playerModel.playerCountIs (1) ? playerWinsGame (getCurrentPlayerId ()) : GameStatus.CONTINUE_PLAYING;
+  }
+
+  private GameStatus playerWinsGame (final Id playerId)
+  {
+    publish (new PlayerWinGameEvent (playerModel.playerPacketWith (playerId)));
+    publish (new EndGameEvent ());
+    return GameStatus.GAME_OVER;
+  }
+
+  private GameStatus playerLosesGame (final Id playerId)
+  {
+    publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
+    return removePlayerFromGame (playerId);
   }
 
   private boolean publishTradeInEventIfNecessary ()
@@ -1828,7 +1884,7 @@ public final class GameModel
   private <T extends PlayerInputRequestEvent> T getOriginalRequestFor (final ResponseRequestEvent event,
                                                                        final Class <T> originalRequestType)
   {
-    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.requestFor (event);
+    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.inputRequestFor (event);
     if (!originalRequest.isPresent ())
     {
       log.warn ("Unable to find request event matching response [{}].", event);
@@ -1840,7 +1896,7 @@ public final class GameModel
 
   private void republishRequestFor (final ResponseRequestEvent event)
   {
-    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.requestFor (event);
+    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.inputRequestFor (event);
     if (!originalRequest.isPresent ())
     {
       log.warn ("Unable to find request event matching response [{}].", event);
@@ -1854,25 +1910,18 @@ public final class GameModel
   private void checkPlayerGameStatus (final Id playerId)
   {
     final int playerCountryCount = countryOwnerModel.countCountriesOwnedBy (playerId);
-    if (playerCountryCount < rules.getMinPlayerCountryCount ())
-    {
-      publish (new PlayerLoseGameEvent (playerModel.playerPacketWith (playerId)));
-      final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> turnOrderMutations = playerModel.remove (playerId);
-      playerTurnModel.decrementTurnCount ();
-      for (final PlayerModel.PlayerTurnOrderMutation mutation : turnOrderMutations)
-      {
-        publish (new DefaultPlayerTurnOrderChangedEvent (mutation.getPlayer (), mutation.getOldTurnOrder ()));
-      }
-      return;
-    }
+    GameStatus status = GameStatus.CONTINUE_PLAYING;
 
-    if (playerCountryCount >= rules.getWinningCountryCount ())
-    {
-      // player won! huzzah!
-      publish (new PlayerWinGameEvent (playerModel.playerPacketWith (playerId)));
-      // end the game
-      publish (new EndGameEvent ());
-    }
+    if (playerCountryCount < rules.getMinPlayerCountryCount ()) status = playerLosesGame (playerId);
+
+    // Player losing game causes player to be removed from game, which can trigger
+    // another player winning the game if they are the sole remaining player, so we need to check GameStatus to make
+    // sure we don't make the player win twice if multiple win conditions are satisfied simultaneously.
+    // If the player already won from all other players losing and being removed, there is no need to
+    // check if the winning country count was satisfied.
+    if (status == GameStatus.GAME_OVER) return;
+
+    if (playerCountryCount >= rules.getWinningCountryCount ()) playerWinsGame (playerId);
   }
 
   /**
@@ -1923,7 +1972,7 @@ public final class GameModel
     {
       if (internalCommHandler == null)
       {
-        internalCommHandler = new InternalCommunicationHandler (playerModel, playMapModel, playerTurnModel, eventBus);
+        internalCommHandler = new InternalCommunicationHandler (playerModel, eventBus);
       }
 
       final EventFactory eventFactory = new DefaultEventFactory (playerModel, playMapModel, cardModel, gameRules);

@@ -24,6 +24,9 @@ import com.forerunnergames.tools.common.pool.Pools;
 import com.forerunnergames.tools.common.pool.RecyclableObjectPool;
 import com.forerunnergames.tools.net.NetworkConstants;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -37,17 +40,21 @@ public final class NetworkPortPool
 {
   private static final Logger log = LoggerFactory.getLogger (NetworkPortPool.class);
   private static final int PORT_POOL_SIZE = 20;
-  private static NetworkPortPool provider;
+  // Thread-safe singleton cache.
+  private static final Supplier <NetworkPortPool> SUPPLIER = Suppliers.memoize (new Supplier <NetworkPortPool> ()
+  {
+    @Override
+    public NetworkPortPool get ()
+    {
+      return new NetworkPortPool ();
+    }
+  });
   private final RecyclableObjectPool <Integer> portNumberPool;
 
+  // Thread-safe singleton cache.
   public static NetworkPortPool getInstance ()
   {
-    // lazy initialize of singleton instance
-    if (provider == null)
-    {
-      provider = new NetworkPortPool ();
-    }
-    return provider;
+    return SUPPLIER.get ();
   }
 
   public int getAvailablePort ()
@@ -106,7 +113,5 @@ public final class NetworkPortPool
       }
     });
     portNumberPool.allocate (PORT_POOL_SIZE);
-
-    provider = this;
   }
 }

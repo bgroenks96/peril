@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
+package com.forerunnergames.peril.core.events.internal.player;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 
-import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
-import com.forerunnergames.peril.common.game.PlayerColor;
-
-public interface PlayerColorIconWidgetFactory extends WidgetFactory
+public interface InboundPlayerInformRequestEvent <T extends InformRequestEvent, R extends PlayerInformEvent>
+        extends InboundPlayerRequestEvent <T>
 {
-  PlayerColorIcon createPlayerColorIcon (final PlayerColor activeColor);
-
-  Button createPlayerColorIconButton (final PlayerColor color);
-
-  Button.ButtonStyle createPlayerColorIconStyle (final PlayerColor color);
+  R getOriginalInformEvent ();
 }

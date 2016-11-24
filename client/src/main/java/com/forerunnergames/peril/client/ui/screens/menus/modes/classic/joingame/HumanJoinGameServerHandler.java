@@ -69,7 +69,7 @@ public final class HumanJoinGameServerHandler extends AbstractJoinGameServerHand
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (selfPlayerName, "selfPlayerName");
 
-    assert selfPlayerName.equals (event.getPlayerName ());
+    assert selfPlayerName.equals (event.getPersonName ());
 
     return event.hasIdentity (PersonIdentity.SELF);
   }

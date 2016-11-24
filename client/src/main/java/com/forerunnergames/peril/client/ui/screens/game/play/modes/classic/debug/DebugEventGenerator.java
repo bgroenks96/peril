@@ -21,6 +21,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.debu
 import com.forerunnergames.peril.client.messages.DefaultStatusMessage;
 import com.forerunnergames.peril.client.messages.StatusMessage;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
@@ -188,6 +189,13 @@ public final class DebugEventGenerator
     resetAvailablePlayerAttributeIterators ();
   }
 
+  public void makePlayerNameUnavailable (final String playerName)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+
+    availablePlayerNames.remove (playerName);
+  }
+
   String getRandomCountryName ()
   {
     return Randomness.getRandomElementFrom (playMap.getAllCountryNames ());
@@ -219,7 +227,7 @@ public final class DebugEventGenerator
     }
 
     eventBus.publish (new PlayerJoinGameSuccessEvent (player.get (), ImmutableSet.copyOf (unavailablePlayers),
-            ClassicGameRules.MAX_PLAYER_LIMIT));
+            PersonLimits.maxClassicModeHumanPlayersOnly ()));
   }
 
   void generateCountryArmiesChangedEvent ()

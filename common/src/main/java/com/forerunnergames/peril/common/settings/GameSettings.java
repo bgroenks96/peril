@@ -30,12 +30,6 @@ import java.util.regex.Pattern;
 
 public final class GameSettings
 {
-  public static final int MIN_SPECTATORS = 0;
-  public static final int MAX_SPECTATORS = 6;
-  public static final int DEFAULT_SPECTATOR_LIMIT = MIN_SPECTATORS;
-  public static final int MIN_HUMAN_PLAYERS = 0;
-  public static final int MIN_AI_PLAYERS = 0;
-  public static final int DEFAULT_AI_PLAYER_LIMIT = MIN_AI_PLAYERS;
   public static final int MIN_PLAYER_NAME_LENGTH = 1;
   public static final int MAX_PLAYER_NAME_LENGTH = 16;
   public static final int MIN_CLAN_ACRONYM_LENGTH = 1;
@@ -299,38 +293,6 @@ public final class GameSettings
     Arguments.checkIsNotNull (playMapName, "playMapName");
 
     return VALID_PLAY_MAP_NAME_PATTERN.matcher (playMapName).matches ();
-  }
-
-  // TODO Move to ClassicGameRules.
-  public static int getAiPlayersLowerBoundClassicMode (final int humanPlayers)
-  {
-    Arguments.checkLowerInclusiveBound (humanPlayers, MIN_HUMAN_PLAYERS, "humanPlayers",
-                                        "GameSettings.MIN_HUMAN_PLAYERS");
-    Arguments.checkUpperInclusiveBound (humanPlayers, ClassicGameRules.MAX_PLAYERS, "humanPlayers",
-                                        "GameSettings.MAX_HUMAN_PLAYERS");
-
-    final int minAiPlayers = Math.max (ClassicGameRules.MIN_PLAYERS - humanPlayers, MIN_AI_PLAYERS);
-
-    assert humanPlayers + minAiPlayers >= ClassicGameRules.MIN_PLAYERS;
-    assert humanPlayers + minAiPlayers <= ClassicGameRules.MAX_PLAYERS;
-
-    return minAiPlayers;
-  }
-
-  // TODO Move to ClassicGameRules.
-  public static int getAiPlayersUpperBoundClassicMode (final int humanPlayers)
-  {
-    Arguments.checkLowerInclusiveBound (humanPlayers, MIN_HUMAN_PLAYERS, "humanPlayers",
-                                        "GameSettings.MIN_HUMAN_PLAYERS");
-    Arguments.checkUpperInclusiveBound (humanPlayers, ClassicGameRules.MAX_PLAYERS, "humanPlayers",
-                                        "GameSettings.MAX_HUMAN_PLAYERS");
-
-    final int aiPlayers = ClassicGameRules.MAX_PLAYERS - humanPlayers;
-
-    assert humanPlayers + aiPlayers >= ClassicGameRules.MIN_PLAYERS;
-    assert humanPlayers + aiPlayers <= ClassicGameRules.MAX_PLAYERS;
-
-    return aiPlayers;
   }
 
   public static String getPlayerNameWithoutClanTag (final String playerName)

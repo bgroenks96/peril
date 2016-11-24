@@ -490,7 +490,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
 
       assert event.hasIdentity (PersonIdentity.SELF);
 
-      selfPlayer = event.getPlayer ();
+      selfPlayer = event.getPerson ();
 
       gameServerConfiguration = gameServerConfig;
       playMapMetadata = gameServerConfig.getPlayMapMetadata ();

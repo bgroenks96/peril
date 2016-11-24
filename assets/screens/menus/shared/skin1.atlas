@@ -211,7 +211,7 @@ checkbox-off-disabled
   orig: 20, 20
   offset: 0, 0
   index: -1
-color-icon-ai-player-blue
+icon-ai-player-blue
   rotate: false
   xy: 1240, 162
   size: 18, 18
@@ -525,119 +525,119 @@ radio-on
   orig: 20, 20
   offset: 0, 0
   index: -1
-color-icon-ai-player-brown
+icon-ai-player-brown
   rotate: false
   xy: 1307, 994
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-cyan
+icon-ai-player-cyan
   rotate: false
   xy: 1261, 992
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-gold
+icon-ai-player-gold
   rotate: false
   xy: 1280, 992
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-green
+icon-ai-player-green
   rotate: false
   xy: 1326, 994
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-pink
+icon-ai-player-pink
   rotate: false
   xy: 1345, 994
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-purple
+icon-ai-player-purple
   rotate: false
   xy: 1364, 994
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-red
+icon-ai-player-red
   rotate: false
   xy: 1383, 994
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-silver
+icon-ai-player-silver
   rotate: false
   xy: 1402, 994
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-ai-player-teal
+icon-ai-player-teal
   rotate: false
   xy: 1299, 975
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-blue
+icon-human-player-blue
   rotate: false
   xy: 1261, 973
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-brown
+icon-human-player-brown
   rotate: false
   xy: 1280, 973
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-cyan
+icon-human-player-cyan
   rotate: false
   xy: 1318, 975
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-gold
+icon-human-player-gold
   rotate: false
   xy: 1337, 975
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-green
+icon-human-player-green
   rotate: false
   xy: 1356, 975
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-pink
+icon-human-player-pink
   rotate: false
   xy: 1375, 975
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-purple
+icon-human-player-purple
   rotate: false
   xy: 1394, 975
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-red
+icon-human-player-red
   rotate: false
   xy: 1413, 975
   size: 18, 18
@@ -672,14 +672,14 @@ pirulen-18
   orig: 128, 128
   offset: 0, 0
   index: -1
-color-icon-human-player-silver
+icon-human-player-silver
   rotate: false
   xy: 1390, 1302
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
-color-icon-human-player-teal
+icon-human-player-teal
   rotate: false
   xy: 1390, 1283
   size: 18, 18

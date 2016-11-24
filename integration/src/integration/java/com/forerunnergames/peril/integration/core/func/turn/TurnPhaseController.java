@@ -70,7 +70,7 @@ public final class TurnPhaseController implements TestPhaseController
       public void onEventReceived (final Optional <BeginReinforcementPhaseEvent> event, final TestClient client)
       {
         if (!event.isPresent ()) return;
-        if (event.get ().getPlayer ().equals (current.getPlayer ())) verified.incrementAndGet ();
+        if (event.get ().getPerson ().equals (current.getPlayer ())) verified.incrementAndGet ();
       }
     };
 

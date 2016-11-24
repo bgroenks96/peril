@@ -22,6 +22,7 @@ import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
+import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -238,7 +239,8 @@ public final class CardSet implements Collection <Card>
   @Override
   public String toString ()
   {
-    return cards.toString ();
+    return Strings.format ("{}: Cards: [{}] | IsMatch: [{}] | Rules: [{}]", getClass ().getSimpleName (), cards,
+                           isMatch, rules);
   }
 
   /**

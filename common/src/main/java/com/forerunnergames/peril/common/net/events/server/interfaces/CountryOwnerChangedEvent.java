@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
@@ -30,7 +31,32 @@ public interface CountryOwnerChangedEvent extends CountryEvent, BroadcastNotific
   @Nullable
   PlayerPacket getPreviousOwner ();
 
+  /**
+   * @return Empty string if previous owner does not exist, i.e., {@link #hasPreviousOwner()} would return false,
+   *         otherwise the player name of the previous owner.
+   */
+  String getPreviousOwnerName ();
+
+  /**
+   * @return {@link PlayerColor#UNKNOWN} if previous owner does not exist, i.e., {@link #hasPreviousOwner()} would
+   *         return false, otherwise the {@link PlayerColor} of the previous owner.
+   */
+  PlayerColor getPreviousOwnerColor ();
+
+  boolean hasNewOwner ();
+
+  @Nullable
   PlayerPacket getNewOwner ();
 
+  /**
+   * @return {@link PlayerColor#UNKNOWN} if new owner does not exist, i.e., {@link #hasNewOwner()} would return false,
+   *         otherwise the {@link PlayerColor} of the new owner.
+   */
+  PlayerColor getNewOwnerColor ();
+
+  /**
+   * @return Empty string if new owner does not exist, i.e., {@link #hasNewOwner()} would return false, otherwise the
+   *         player name of the new owner.
+   */
   String getNewOwnerName ();
 }

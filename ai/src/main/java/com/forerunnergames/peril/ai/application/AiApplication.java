@@ -37,6 +37,8 @@ import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
 
+import de.matthiasmann.AsyncExecution;
+
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
@@ -49,18 +51,22 @@ public final class AiApplication extends DefaultApplication
   private final GameServerConfiguration gameServerConfig;
   private final MBassador <Event> externalEventBus;
   private final MBassador <Event> internalEventBus;
+  private final AsyncExecution mainThreadExecutor;
 
   public AiApplication (final GameServerConfiguration gameServerConfig,
                         final MBassador <Event> externalEventBus,
-                        final MBassador <Event> internalEventBus)
+                        final MBassador <Event> internalEventBus,
+                        final AsyncExecution mainThreadExecutor)
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (externalEventBus, "externalEventBus");
     Arguments.checkIsNotNull (internalEventBus, "internalEventBus");
+    Arguments.checkIsNotNull (mainThreadExecutor, "mainThreadExecutor");
 
     this.gameServerConfig = gameServerConfig;
     this.externalEventBus = externalEventBus;
     this.internalEventBus = internalEventBus;
+    this.mainThreadExecutor = mainThreadExecutor;
   }
 
   @Override
@@ -140,12 +146,26 @@ public final class AiApplication extends DefaultApplication
 
   private void connectToServer (final Remote fakeClient)
   {
-    externalEventBus.publishAsync (new ClientConnectionEvent (fakeClient));
+    mainThreadExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        externalEventBus.publish (new ClientConnectionEvent (fakeClient));
+      }
+    });
   }
 
   private void disconnectFromServer (final Remote fakeClient)
   {
-    externalEventBus.publishAsync (new ClientDisconnectionEvent (fakeClient));
+    mainThreadExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        externalEventBus.publish (new ClientDisconnectionEvent (fakeClient));
+      }
+    });
   }
 
   private void sendToServer (final AiCommunicationEvent event)
@@ -155,6 +175,13 @@ public final class AiApplication extends DefaultApplication
 
   private void sendToServer (final ClientEvent message, final Remote fakeClient)
   {
-    externalEventBus.publishAsync (new ClientCommunicationEvent (message, fakeClient));
+    mainThreadExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        externalEventBus.publish (new ClientCommunicationEvent (message, fakeClient));
+      }
+    });
   }
 }

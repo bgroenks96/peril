@@ -18,22 +18,20 @@
 
 package com.forerunnergames.peril.core.model;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerTurnOrderChangedEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.core.events.internal.player.InboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
-import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
-import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
@@ -57,26 +55,18 @@ class InternalCommunicationHandler
 {
   private static final Logger log = LoggerFactory.getLogger (InternalCommunicationHandler.class);
   private final PlayerModel playerModel;
-  private final PlayMapModel playMapModel;
-  private final PlayerTurnModel playerTurnModel;
   private final MBassador <Event> eventBus;
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
   private final Map <ResponseRequestEvent, PlayerInputRequestEvent> responseRequests = Maps.newHashMap ();
+  private final Map <InformRequestEvent, PlayerInformEvent> informRequests = Maps.newHashMap ();
   private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
 
-  InternalCommunicationHandler (final PlayerModel playerModel,
-                                final PlayMapModel playMapModel,
-                                final PlayerTurnModel playerTurnModel,
-                                final MBassador <Event> eventBus)
+  InternalCommunicationHandler (final PlayerModel playerModel, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (playMapModel, "playMapModel");
-    Arguments.checkIsNotNull (playerTurnModel, "playerTurnModel");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
-    this.playMapModel = playMapModel;
-    this.playerTurnModel = playerTurnModel;
     this.eventBus = eventBus;
   }
 
@@ -102,13 +92,23 @@ class InternalCommunicationHandler
   }
 
   /**
-   * Fetches the PlayerInputRequestEvent corresponding to this ResponseRequestEvent.
+   * Fetches the {@link PlayerInputRequestEvent} corresponding to this ResponseRequestEvent.
    */
-  Optional <PlayerInputRequestEvent> requestFor (final ResponseRequestEvent event)
+  Optional <PlayerInputRequestEvent> inputRequestFor (final ResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     return Optional.fromNullable (responseRequests.get (event));
+  }
+
+  /**
+   * Fetches the {@link PlayerInformEvent} corresponding to this {@link InformRequestEvent}.
+   */
+  Optional <PlayerInformEvent> informEventFor (final InformRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    return Optional.fromNullable (informRequests.get (event));
   }
 
   <T extends ServerEvent> Optional <T> lastOutboundEventOfType (final Class <T> type)
@@ -141,6 +141,7 @@ class InternalCommunicationHandler
 
     requestEvents.clear ();
     responseRequests.clear ();
+    informRequests.clear ();
   }
 
   @Handler
@@ -159,6 +160,14 @@ class InternalCommunicationHandler
     responseRequests.put (event.getRequestEvent (), event.getOriginalRequestEvent ());
   }
 
+  @Handler (priority = 1)
+  void onEvent (final InboundPlayerInformRequestEvent <? extends InformRequestEvent, ? extends PlayerInformEvent> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    informRequests.put (event.getRequestEvent (), event.getOriginalInformEvent ());
+  }
+
   @Handler (priority = 0)
   void onEvent (final InboundPlayerRequestEvent <? extends RequestEvent> event)
   {
@@ -167,7 +176,6 @@ class InternalCommunicationHandler
     log.debug ("Event received [{}]", event);
 
     requestEvents.put (event.getRequestEvent (), event.getPlayer ());
-
     eventBus.publish (event.getRequestEvent ());
   }
 
@@ -188,19 +196,6 @@ class InternalCommunicationHandler
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}]", event);
-
-    if (!playerModel.existsPlayerWith (event.getPlayerName ())) return;
-
-    final Id player = playerModel.idOf (event.getPlayerName ());
-    final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
-
-    countryOwnerModel.unassignAllCountriesOwnedBy (player);
-    final ImmutableSet <PlayerModel.PlayerTurnOrderMutation> turnOrderMutations = playerModel.remove (player);
-    playerTurnModel.decrementTurnCount ();
-    for (final PlayerModel.PlayerTurnOrderMutation mutation : turnOrderMutations)
-    {
-      eventBus.publish (new DefaultPlayerTurnOrderChangedEvent (mutation.getPlayer (), mutation.getOldTurnOrder ()));
-    }
 
     eventBus.publish (new PlayerLeaveGameEvent (event.getPlayer (), playerModel.getPlayerPackets ()));
   }

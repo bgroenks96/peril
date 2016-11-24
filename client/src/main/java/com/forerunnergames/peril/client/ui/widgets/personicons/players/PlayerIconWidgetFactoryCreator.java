@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
+package com.forerunnergames.peril.client.ui.widgets.personicons.players;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -29,13 +28,13 @@ import com.forerunnergames.tools.common.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PlayerColorIconWidgetFactoryCreator
+public final class PlayerIconWidgetFactoryCreator
 {
-  private static final Logger log = LoggerFactory.getLogger (PlayerColorIconWidgetFactoryCreator.class);
+  private static final Logger log = LoggerFactory.getLogger (PlayerIconWidgetFactoryCreator.class);
 
-  public static PlayerColorIconWidgetFactory create (final PlayerPacket player,
-                                                     final AssetDescriptor <Skin> skinAssetDescriptor,
-                                                     final AssetManager assetManager)
+  public static PlayerIconWidgetFactory create (final PlayerPacket player,
+                                                final AssetManager assetManager,
+                                                final AssetDescriptor <Skin> skinAssetDescriptor)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (skinAssetDescriptor, "skinAssetDescriptor");
@@ -45,7 +44,7 @@ public final class PlayerColorIconWidgetFactoryCreator
     {
       case HUMAN:
       {
-        return new HumanPlayerColorIconWidgetFactory (assetManager)
+        return new AbstractHumanPlayerIconWidgetFactory (assetManager)
         {
           @Override
           protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
@@ -56,7 +55,7 @@ public final class PlayerColorIconWidgetFactoryCreator
       }
       case AI:
       {
-        return new AiPlayerColorIconWidgetFactory (assetManager)
+        return new AbstractAiPlayerIconWidgetFactory (assetManager)
         {
           @Override
           protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
@@ -69,7 +68,7 @@ public final class PlayerColorIconWidgetFactoryCreator
       {
         log.warn ("Unrecognized sentience for player [{}].", player);
 
-        return new NullPlayerColorIconWidgetFactory (assetManager)
+        return new AbstractNullPlayerIconWidgetFactory (assetManager)
         {
           @Override
           protected AssetDescriptor <Skin> getSkinAssetDescriptor ()
@@ -81,7 +80,7 @@ public final class PlayerColorIconWidgetFactoryCreator
     }
   }
 
-  private PlayerColorIconWidgetFactoryCreator ()
+  private PlayerIconWidgetFactoryCreator ()
   {
     Classes.instantiationNotAllowed ();
   }

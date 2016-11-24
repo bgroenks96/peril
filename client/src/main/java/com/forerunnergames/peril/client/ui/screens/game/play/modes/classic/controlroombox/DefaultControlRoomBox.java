@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
@@ -19,52 +19,46 @@ public final class DefaultControlRoomBox implements ControlRoomBox
 {
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final ImmutableMap <Button, ImageButton> buttons;
+  private final ImmutableMap <Button, Label> buttonLabels;
   private final Table controlRoomBoxTable;
   private final Table titleTable;
   private final Label titleLabel;
-  private final Label tradeInButtonLabel;
-  private final Label fortifyButtonLabel;
-  private final Label endTurnButtonLabel;
-  private final Label mySettingsButtonLabel;
-  private final Label surrenderButtonLabel;
-  private final ImageButton tradeInButton;
-  private final ImageButton fortifyButton;
-  private final ImageButton endTurnButton;
-  private final ImageButton mySettingsButton;
-  private final ImageButton surrenderButton;
   @Nullable
-  private PlayerPacket selfPlayer;
+  private PersonPacket self;
 
   public DefaultControlRoomBox (final ClassicModePlayScreenWidgetFactory widgetFactory,
                                 final EventListener tradeInButtonListener,
                                 final EventListener fortifyButtonListener,
                                 final EventListener endTurnButtonListener,
                                 final EventListener mySettingsButtonListener,
-                                final EventListener surrenderButtonListener)
+                                final EventListener quitButtonListener)
   {
     Arguments.checkIsNotNull (tradeInButtonListener, "tradeInButtonListener");
     Arguments.checkIsNotNull (fortifyButtonListener, "fortifyButtonListener");
     Arguments.checkIsNotNull (endTurnButtonListener, "endTurnButtonListener");
     Arguments.checkIsNotNull (mySettingsButtonListener, "mySettingsButtonListener");
-    Arguments.checkIsNotNull (surrenderButtonListener, "surrenderButtonListener");
+    Arguments.checkIsNotNull (quitButtonListener, "quitButtonListener");
 
     this.widgetFactory = widgetFactory;
 
     titleLabel = widgetFactory.createControlRoomBoxTitleLabel ("Control Room");
-    tradeInButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Purchase Reinforcements");
-    tradeInButton = widgetFactory.createControlRoomBoxTradeInButton (tradeInButtonListener);
-    fortifyButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Post-Combat Maneuver");
-    fortifyButton = widgetFactory.createControlRoomBoxFortifyButton (fortifyButtonListener);
-    endTurnButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("End Turn");
-    endTurnButton = widgetFactory.createControlRoomBoxEndTurnButton (endTurnButtonListener);
-    mySettingsButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("My Settings");
-    mySettingsButton = widgetFactory.createControlRoomBoxMySettingsButton (mySettingsButtonListener);
-    surrenderButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Surrender & Quit");
-    surrenderButton = widgetFactory.createControlRoomBoxSurrenderButton (surrenderButtonListener);
+    final Label tradeInButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Purchase Reinforcements");
+    final ImageButton tradeInButton = widgetFactory.createControlRoomBoxTradeInButton (tradeInButtonListener);
+    final Label fortifyButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Post-Combat Maneuver");
+    final ImageButton fortifyButton = widgetFactory.createControlRoomBoxFortifyButton (fortifyButtonListener);
+    final Label endTurnButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("End Turn");
+    final ImageButton endTurnButton = widgetFactory.createControlRoomBoxEndTurnButton (endTurnButtonListener);
+    final Label mySettingsButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("My Settings");
+    final ImageButton mySettingsButton = widgetFactory.createControlRoomBoxMySettingsButton (mySettingsButtonListener);
+    final Label quitButtonLabel = widgetFactory.createControlRoomBoxButtonTextLabel ("Quit");
+    final ImageButton quitButton = widgetFactory.createControlRoomBoxQuitButton (quitButtonListener);
 
     buttons = ImmutableMap.of (Button.TRADE_IN, tradeInButton, Button.FORTIFY, fortifyButton, Button.END_TURN,
-                               endTurnButton, Button.MY_SETTINGS, mySettingsButton, Button.SURRENDER_AND_QUIT,
-                               surrenderButton);
+                               endTurnButton, Button.MY_SETTINGS, mySettingsButton, Button.QUIT, quitButton);
+
+    buttonLabels = ImmutableMap.of (Button.TRADE_IN, tradeInButtonLabel, Button.FORTIFY, fortifyButtonLabel,
+                                    Button.END_TURN, endTurnButtonLabel, Button.MY_SETTINGS, mySettingsButtonLabel,
+                                    Button.QUIT, quitButtonLabel);
 
     controlRoomBoxTable = new Table ().top ().left ().pad (4);
     controlRoomBoxTable.setBackground (widgetFactory.createControlRoomBoxBackgroundDrawable ());
@@ -97,8 +91,8 @@ public final class DefaultControlRoomBox implements ControlRoomBox
     controlRoomBoxTable.row ();
     controlRoomBoxTable.add ().expandY ();
     controlRoomBoxTable.row ();
-    controlRoomBoxTable.add (surrenderButton).padLeft (16).spaceRight (10).fill ();
-    controlRoomBoxTable.add (surrenderButtonLabel).spaceLeft (10).padRight (16).expandX ().fill ();
+    controlRoomBoxTable.add (quitButton).padLeft (16).spaceRight (10).fill ();
+    controlRoomBoxTable.add (quitButtonLabel).spaceLeft (10).padRight (16).expandX ().fill ();
     controlRoomBoxTable.row ();
     controlRoomBoxTable.add ().expandY ();
   }
@@ -120,21 +114,21 @@ public final class DefaultControlRoomBox implements ControlRoomBox
   }
 
   @Override
-  public void disableButtonForSelf (final Button button, final PlayerPacket player)
+  public void disableButtonForSelf (final Button button, final PersonPacket person)
   {
     Arguments.checkIsNotNull (button, "button");
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
 
-    if (isSelf (player)) disableButton (button);
+    if (isSelf (person)) disableButton (button);
   }
 
   @Override
-  public void disableButtonForEveryoneElse (final Button button, final PlayerPacket player)
+  public void disableButtonForEveryoneElse (final Button button, final PersonPacket person)
   {
     Arguments.checkIsNotNull (button, "button");
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
 
-    if (!isSelf (player)) disableButton (button);
+    if (!isSelf (person)) disableButton (button);
   }
 
   @Override
@@ -146,29 +140,47 @@ public final class DefaultControlRoomBox implements ControlRoomBox
   }
 
   @Override
-  public void enableButtonForSelf (final Button button, final PlayerPacket player)
+  public void enableButtonForSelf (final Button button, final PersonPacket person)
   {
     Arguments.checkIsNotNull (button, "button");
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
 
-    if (isSelf (player)) enableButton (button);
+    if (isSelf (person)) enableButton (button);
   }
 
   @Override
-  public void enableButtonForEveryoneElse (final Button button, final PlayerPacket player)
+  public void enableButtonForEveryoneElse (final Button button, final PersonPacket person)
   {
     Arguments.checkIsNotNull (button, "button");
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (person, "person");
 
-    if (!isSelf (player)) enableButton (button);
+    if (!isSelf (person)) enableButton (button);
   }
 
   @Override
-  public void setSelfPlayer (final PlayerPacket player)
+  public void setButtonText (final Button button, final String text)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (button, "button");
+    Arguments.checkIsNotNull (text, "text");
 
-    selfPlayer = player;
+    getButtonLabel (button).setText (text);
+    controlRoomBoxTable.invalidateHierarchy ();
+  }
+
+  @Override
+  public void setButtonTextForSelf (final Button button, final PersonPacket person, final String text)
+  {
+    Arguments.checkIsNotNull (person, "person");
+
+    if (isSelf (person)) setButtonText (button, text);
+  }
+
+  @Override
+  public void setSelf (final PersonPacket person)
+  {
+    Arguments.checkIsNotNull (person, "person");
+
+    self = person;
   }
 
   @Override
@@ -183,16 +195,17 @@ public final class DefaultControlRoomBox implements ControlRoomBox
     controlRoomBoxTable.setBackground (widgetFactory.createControlRoomBoxBackgroundDrawable ());
     titleTable.setBackground (widgetFactory.createControlRoomBoxTitleBackgroundDrawable ());
     titleLabel.setStyle (widgetFactory.createControlRoomBoxTitleLabelStyle ());
-    tradeInButton.setStyle (widgetFactory.createControlRoomBoxTradeInButtonStyle ());
-    tradeInButtonLabel.setStyle (widgetFactory.createControlRoomBoxButtonTextLabelStyle ());
-    fortifyButton.setStyle (widgetFactory.createControlRoomBoxFortifyButtonStyle ());
-    fortifyButtonLabel.setStyle (widgetFactory.createControlRoomBoxButtonTextLabelStyle ());
-    endTurnButton.setStyle (widgetFactory.createControlRoomBoxEndTurnButtonStyle ());
-    endTurnButtonLabel.setStyle (widgetFactory.createControlRoomBoxButtonTextLabelStyle ());
-    mySettingsButton.setStyle (widgetFactory.createControlRoomBoxMySettingsButtonStyle ());
-    mySettingsButtonLabel.setStyle (widgetFactory.createControlRoomBoxButtonTextLabelStyle ());
-    surrenderButton.setStyle (widgetFactory.createControlRoomBoxSurrenderButtonStyle ());
-    surrenderButtonLabel.setStyle (widgetFactory.createControlRoomBoxButtonTextLabelStyle ());
+
+    getButton (Button.TRADE_IN).setStyle (widgetFactory.createControlRoomBoxTradeInButtonStyle ());
+    getButton (Button.FORTIFY).setStyle (widgetFactory.createControlRoomBoxFortifyButtonStyle ());
+    getButton (Button.END_TURN).setStyle (widgetFactory.createControlRoomBoxEndTurnButtonStyle ());
+    getButton (Button.MY_SETTINGS).setStyle (widgetFactory.createControlRoomBoxMySettingsButtonStyle ());
+    getButton (Button.QUIT).setStyle (widgetFactory.createControlRoomBoxQuitButtonStyle ());
+
+    for (final Label buttonLabel : buttonLabels.values ())
+    {
+      buttonLabel.setStyle (widgetFactory.createControlRoomBoxButtonTextLabelStyle ());
+    }
   }
 
   private ImageButton getButton (final Button button)
@@ -208,10 +221,23 @@ public final class DefaultControlRoomBox implements ControlRoomBox
     return imageButton;
   }
 
-  private boolean isSelf (final PlayerPacket player)
+  private Label getButtonLabel (final Button button)
   {
-    Arguments.checkIsNotNull (player, "player");
+    final Label label = buttonLabels.get (button);
 
-    return selfPlayer != null && player.is (selfPlayer);
+    if (label == null)
+    {
+      throw new IllegalStateException (Strings.format ("{}: [{}] does not exist.", Button.class.getSimpleName (),
+                                                       button));
+    }
+
+    return label;
+  }
+
+  private boolean isSelf (final PersonPacket person)
+  {
+    Arguments.checkIsNotNull (person, "person");
+
+    return self != null && person.is (self);
   }
 }

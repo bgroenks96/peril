@@ -18,8 +18,10 @@
 
 package com.forerunnergames.peril.server.communicators;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
@@ -36,4 +38,8 @@ public interface CoreCommunicator
   <T extends ResponseRequestEvent, R extends PlayerInputRequestEvent> void publishPlayerResponseRequestEvent (final PlayerPacket player,
                                                                                                               final T responseRequestEvent,
                                                                                                               final R inputRequestEvent);
+
+  <T extends InformRequestEvent, R extends PlayerInformEvent> void publishPlayerInformRequestEvent (final PlayerPacket player,
+                                                                                                    final T informRequestEvent,
+                                                                                                    final R informEvent);
 }

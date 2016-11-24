@@ -21,8 +21,6 @@ package com.forerunnergames.peril.core.model.card;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -60,6 +58,18 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
     Arguments.checkIsNotNull (cards, "cards");
 
     remove (playerId, cards);
+  }
+
+  @Override
+  public CardSet removePlayer (final Id playerId)
+  {
+    Arguments.checkIsNotNull (playerId, "playerId");
+
+    final CardSet cards = getCardsInHand (playerId);
+    remove (playerId, cards);
+    playerHands.remove (playerId);
+
+    return cards;
   }
 
   @Override
@@ -111,13 +121,24 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
 
   private void remove (final Id playerId, final CardSet cards)
   {
-    Preconditions.checkIsTrue (hasCardsInHand (playerId, cards),
-                               Strings.format ("{} not in hand of {}", cards, playerId));
+    // Nothing to remove.
+    // This could also indicate the player is not registered yet, as registration only occurs when a card is first
+    // added to the player's hand, and an empty card set can be obtained when attempting to get cards in hand for a
+    // an unregistered player. Either way, we don't want to proceed.
+    if (cards.isEmpty ()) return;
+
+    assert playerHands.containsKey (playerId);
+    assert hasCardsInHand (playerId, cards);
 
     final CardSet hand = playerHands.get (playerId);
     final CardSet newHand = hand.difference (cards);
     playerHands.forcePut (playerId, newHand);
-    playerModel.removeCardsFromHandOf (playerId, cards.size ());
+
+    // When removing a player, we don't know if the player still exists in PlayerModel.
+    // If the player has already been removed, we don't care about removing the number of cards from their hand.
+    // Contrast this with #add, where we should always fail when adding a number cards to the hand of a non-existent
+    // player in PlayerModel.
+    if (playerModel.existsPlayerWith (playerId)) playerModel.removeCardsFromHandOf (playerId, cards.size ());
   }
 
   private Optional <CardSet> get (final Id playerId)
@@ -127,16 +148,14 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
 
   private boolean hasCardInHand (final Id playerId, final Card card)
   {
-    if (!playerHands.containsKey (playerId)) return false;
     final CardSet hand = playerHands.get (playerId);
-    return hand.contains (card);
+    return hand != null && hand.contains (card);
   }
 
   private boolean hasCardsInHand (final Id playerId, final CardSet cards)
   {
-    if (!playerHands.containsKey (playerId)) return false;
     final CardSet hand = playerHands.get (playerId);
-    return hand.containsAll (cards);
+    return hand != null && hand.containsAll (cards);
   }
 
   private CardSet newCardSet (final ImmutableSet <Card> cards)

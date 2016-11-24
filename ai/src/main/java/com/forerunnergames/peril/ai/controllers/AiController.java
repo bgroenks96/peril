@@ -152,7 +152,7 @@ public final class AiController extends ControllerAdapter
         Arguments.checkHasNoNullElements (players, "players");
         Arguments.checkIsNotNull (event, "event");
 
-        assert event.getPlayerName ().equals (playerName);
+        assert event.getPersonName ().equals (playerName);
         assert event.hasIdentity (PersonIdentity.SELF);
 
         gameLogicProcessor.activate ();

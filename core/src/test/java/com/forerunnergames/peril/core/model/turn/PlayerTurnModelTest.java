@@ -30,10 +30,9 @@ import org.junit.Test;
 
 public class PlayerTurnModelTest
 {
-  private static final int PLAYER_LIMIT = ClassicGameRules.MAX_PLAYER_LIMIT;
-  private static final int TURN_COUNT = PLAYER_LIMIT;
-  private static final PlayerTurnOrder LAST_TURN = PlayerTurnOrder.getNthValidTurnOrder (TURN_COUNT);
-  private static final GameRules RULES = new ClassicGameRules.Builder ().playerLimit (PLAYER_LIMIT).build ();
+  private static final GameRules RULES = ClassicGameRules.builder ()
+          .humanPlayerLimit (ClassicGameRules.MAX_HUMAN_PLAYER_LIMIT).build ();
+  private static final PlayerTurnOrder LAST_TURN = PlayerTurnOrder.getNthValidTurnOrder (RULES.getTotalPlayerLimit ());
   private PlayerTurnModel turnModel;
 
   @Before
@@ -85,7 +84,8 @@ public class PlayerTurnModelTest
   {
     advanceToLastTurn ();
     turnModel.decrementTurnCount ();
-    assertTrue (turnModel.isFirstTurn ());
+    assertTrue (turnModel.isLastTurn ());
+    assertEquals (LAST_TURN.previousValid (), turnModel.getCurrentTurn ());
   }
 
   @Test
@@ -117,7 +117,7 @@ public class PlayerTurnModelTest
     advanceToTurn (LAST_TURN.previousValid ());
     turnModel.decrementTurnCount ();
     turnModel.decrementTurnCount ();
-    assertEquals (PlayerTurnOrder.FIRST, turnModel.getCurrentTurn ());
+    assertEquals (LAST_TURN.previousValid ().previousValid (), turnModel.getCurrentTurn ());
   }
 
   @Test

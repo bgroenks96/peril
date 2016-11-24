@@ -105,7 +105,7 @@ abstract class AbstractAiProcessor implements AiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
-    return selfPlayer != null && selfPlayer.equals (event.getPlayer ());
+    return selfPlayer != null && selfPlayer.equals (event.getPerson ());
   }
 
   @Override
@@ -212,9 +212,9 @@ abstract class AbstractAiProcessor implements AiProcessor
     //
     // The only other solution would be to use a separate event bus per AI player to filter messages, so the original
     // recipient(s) intent is honored.
-    if (!event.hasIdentity (PersonIdentity.SELF) || !event.getPlayerName ().equals (playerName)) return;
+    if (!event.hasIdentity (PersonIdentity.SELF) || !event.getPersonName ().equals (playerName)) return;
 
-    selfPlayer = event.getPlayer ();
+    selfPlayer = event.getPerson ();
 
     log.trace ("Set self-identity of AI player [{}] to: [{}]", playerName, selfPlayer);
   }

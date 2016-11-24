@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
+import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -25,35 +26,34 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent implements CountryOwnerChangedEvent
 {
+  @Nullable
   private final PlayerPacket newOwner;
   @Nullable
   private final PlayerPacket previousOwner;
 
+  public DefaultCountryOwnerChangedEvent (final CountryPacket country, @Nullable final PlayerPacket newOwner)
+  {
+    this (country, newOwner, null);
+  }
+
   public DefaultCountryOwnerChangedEvent (final CountryPacket country,
-                                          final PlayerPacket newOwner,
-                                          final PlayerPacket previousOwner)
+                                          @Nullable final PlayerPacket newOwner,
+                                          @Nullable final PlayerPacket previousOwner)
   {
     super (country);
 
-    Arguments.checkIsNotNull (newOwner, "newOwner");
-    Arguments.checkIsNotNull (previousOwner, "previousOwner");
+    Arguments
+            .checkIsFalse (Objects.equals (previousOwner, newOwner),
+                           "previousOwner [{}] and newOwner [{}] cannot be the same (otherwise no ownership change occurred).");
 
     this.newOwner = newOwner;
     this.previousOwner = previousOwner;
-  }
-
-  public DefaultCountryOwnerChangedEvent (final CountryPacket country, final PlayerPacket newOwner)
-  {
-    super (country);
-
-    Arguments.checkIsNotNull (newOwner, "newOwner");
-
-    this.newOwner = newOwner;
-    previousOwner = null;
   }
 
   @Override
@@ -62,13 +62,32 @@ public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent 
     return previousOwner != null;
   }
 
-  @Override
   @Nullable
+  @Override
   public PlayerPacket getPreviousOwner ()
   {
     return previousOwner;
   }
 
+  @Override
+  public String getPreviousOwnerName ()
+  {
+    return previousOwner != null ? previousOwner.getName () : "";
+  }
+
+  @Override
+  public PlayerColor getPreviousOwnerColor ()
+  {
+    return previousOwner != null ? previousOwner.getColor () : PlayerColor.UNKNOWN;
+  }
+
+  @Override
+  public boolean hasNewOwner ()
+  {
+    return newOwner != null;
+  }
+
+  @Nullable
   @Override
   public PlayerPacket getNewOwner ()
   {
@@ -76,9 +95,15 @@ public final class DefaultCountryOwnerChangedEvent extends AbstractCountryEvent 
   }
 
   @Override
+  public PlayerColor getNewOwnerColor ()
+  {
+    return newOwner != null ? newOwner.getColor () : PlayerColor.UNKNOWN;
+  }
+
+  @Override
   public String getNewOwnerName ()
   {
-    return newOwner.getName ();
+    return newOwner != null ? newOwner.getName () : "";
   }
 
   @Override

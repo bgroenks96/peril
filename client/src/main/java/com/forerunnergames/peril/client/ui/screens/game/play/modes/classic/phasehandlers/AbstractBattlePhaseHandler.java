@@ -181,7 +181,7 @@ abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler imple
 
     log.debug ("Event received [{}].", event);
 
-    if (!isSelf (event.getPlayer ()))
+    if (!isSelf (event.getPerson ()))
     {
       log.debug ("Ignoring event because does not pertain to player [{}]. Event: [{}]", getSelfPlayer (), event);
       return;

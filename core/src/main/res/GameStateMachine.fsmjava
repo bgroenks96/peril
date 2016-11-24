@@ -226,8 +226,6 @@
           </state>
           <state name="PlayingGame">
             <onEntry action="gameModel.beginGame()"/>
-            <!-- A player leaving during the game should end the game, for now -->
-            <transition event="onPlayerLeaveGameEvent" nextState="EndGame"/>
             <!-- Ending the game can occur at any time during the game -->
             <transition event="onEndGameEvent" nextState="EndGame"/>
             <state name="DeterminePlayerTurnOrder">

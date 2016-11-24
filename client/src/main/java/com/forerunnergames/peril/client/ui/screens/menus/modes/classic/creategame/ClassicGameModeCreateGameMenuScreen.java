@@ -218,8 +218,8 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
     // @formatter:off
     spectatorLimitSelectBox = widgetFactory.createSpectatorsSelectBox ();
-    final Array <Integer> spectatorLimits = new Array <> (GameSettings.MAX_SPECTATORS - GameSettings.MIN_SPECTATORS + 1);
-    for (int i = GameSettings.MIN_SPECTATORS; i <= GameSettings.MAX_SPECTATORS; ++i)
+    final Array <Integer> spectatorLimits = new Array <> (ClassicGameRules.MAX_SPECTATORS - ClassicGameRules.MIN_SPECTATORS + 1);
+    for (int i = ClassicGameRules.MIN_SPECTATORS; i <= ClassicGameRules.MAX_SPECTATORS; ++i)
     {
       spectatorLimits.add (i);
     }
@@ -400,17 +400,15 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
                                                                                                          clanAcronym);
         final int humanPlayerLimit = getHumanPlayerLimit ();
         final int aiPlayerLimit = getAiPlayerLimit ();
-        final int totalPlayerLimit = getValidTotalPlayerLimit (humanPlayerLimit, aiPlayerLimit);
-        final int spectatorLimit = spectatorLimitSelectBox.getSelected ();
+        final int spectatorLimit = getSpectatorLimit ();
         final int winPercent = winPercentSelectBox.getSelected ();
         final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.valueOf (Strings
                 .toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
-        final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, totalPlayerLimit, winPercent,
+        final PersonLimits personLimits = PersonLimits.builder ().humanPlayers (humanPlayerLimit)
+                .aiPlayers (aiPlayerLimit).spectators (spectatorLimit).build ();
+        final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, personLimits, winPercent,
                                                              totalCountryCount, initialCountryAssignment);
-        final PersonLimits limits = PersonLimits.builder ().humanPlayers (humanPlayerLimit).aiPlayers (aiPlayerLimit)
-                .spectators (spectatorLimit).build ();
-        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, limits, winPercent,
-                initialCountryAssignment, currentPlayMap, gameRules);
+        final GameConfiguration gameConfig = new DefaultGameConfiguration (GameMode.CLASSIC, currentPlayMap, gameRules);
         final String serverName = serverNameTextField.getText ();
 
         if (!NetworkSettings.isValidServerName (serverName))
@@ -565,9 +563,11 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
     }
 
     // @formatter:off
-    final GameRules gameRules = new ClassicGameRules.Builder ()
+    final GameRules gameRules = ClassicGameRules.builder ()
             .totalCountryCount (totalCountryCount)
-            .playerLimit (getValidTotalPlayerLimit ())
+            .humanPlayerLimit (getHumanPlayerLimit ())
+            .aiPlayerLimit (getAiPlayerLimit ())
+            .spectatorLimit (getSpectatorLimit ())
             .winPercentage (ClassicGameRules.MAX_WIN_PERCENTAGE)
             .initialCountryAssignment (InitialCountryAssignment.valueOf (initialCountryAssignmentSelectBox.getSelected ().toUpperCase ()))
             .build ();
@@ -648,14 +648,14 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
   private boolean canIncreaseHumanPlayerLimit ()
   {
-    return getHumanPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT
-            && getValidTotalPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT;
+    return getHumanPlayerLimit () < ClassicGameRules.MAX_HUMAN_PLAYER_LIMIT
+            && getValidTotalPlayerLimit () < ClassicGameRules.MAX_TOTAL_PLAYER_LIMIT;
   }
 
   private boolean canIncreaseAiPlayerLimit ()
   {
-    return getAiPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT
-            && getValidTotalPlayerLimit () < ClassicGameRules.MAX_PLAYER_LIMIT;
+    return getAiPlayerLimit () < ClassicGameRules.MAX_AI_PLAYER_LIMIT
+            && getValidTotalPlayerLimit () < ClassicGameRules.MAX_TOTAL_PLAYER_LIMIT;
   }
 
   private int getHumanPlayerLimit ()
@@ -692,9 +692,16 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
     final int limit = humanPlayerLimit + aiPlayerLimit;
 
-    if (limit < ClassicGameRules.MIN_PLAYER_LIMIT) return ClassicGameRules.MIN_PLAYER_LIMIT;
-    if (limit > ClassicGameRules.MAX_PLAYER_LIMIT) return ClassicGameRules.MAX_PLAYER_LIMIT;
+    if (limit < ClassicGameRules.MIN_TOTAL_PLAYER_LIMIT) return ClassicGameRules.MIN_TOTAL_PLAYER_LIMIT;
+    if (limit > ClassicGameRules.MAX_TOTAL_PLAYER_LIMIT) return ClassicGameRules.MAX_TOTAL_PLAYER_LIMIT;
 
     return limit;
+  }
+
+  private int getSpectatorLimit ()
+  {
+    final Integer spectatorLimit = spectatorLimitSelectBox.getSelected ();
+
+    return spectatorLimit != null ? spectatorLimit : ClassicGameRules.MIN_SPECTATOR_LIMIT;
   }
 }

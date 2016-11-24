@@ -15,19 +15,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.client.ui.widgets.playercoloricons;
+package com.forerunnergames.peril.common.net.events.server.interfaces;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
+import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
-import com.forerunnergames.peril.common.game.PlayerColor;
-
-public interface PlayerColorIcon
+public interface PersonEvent <T extends PersonPacket> extends ServerEvent
 {
-  PlayerColorIcon NULL = new NullPlayerColorIcon ();
+  T getPerson ();
 
-  void setColor (final PlayerColor color);
+  String getPersonName ();
 
-  void refreshAssets ();
-
-  Actor asActor ();
+  PersonSentience getPersonSentience ();
 }

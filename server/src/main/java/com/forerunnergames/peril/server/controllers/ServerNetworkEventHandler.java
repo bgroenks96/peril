@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.server.controllers;
 
 import com.forerunnergames.peril.common.net.NetworkEventHandler;
+import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
@@ -113,6 +114,14 @@ public class ServerNetworkEventHandler extends NetworkEventHandler
 
   @Handler
   public void onEvent (final ResponseRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    controller.handleEvent (event, clientFor (event));
+  }
+
+  @Handler
+  public void onEvent (final InformRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

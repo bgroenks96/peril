@@ -50,12 +50,12 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.AttackerBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.PlayerNotificationDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.NotificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.quit.PlayScreenQuitDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.IntelBox;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementDialog;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playerbox.PlayerBox;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox.PersonBox;
 import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
@@ -321,15 +321,15 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     // @formatter:on
   }
 
-  public PlayerNotificationDialog createPlayerNotificationDialog (final WidgetFactory widgetFactory,
-                                                                  final Stage stage,
-                                                                  final DialogListener listener)
+  public NotificationDialog createNotificationDialog (final WidgetFactory widgetFactory,
+                                                      final Stage stage,
+                                                      final DialogListener listener)
   {
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (stage, "stage");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new PlayerNotificationDialog (widgetFactory, stage, listener);
+    return new NotificationDialog (widgetFactory, stage, listener);
   }
 
   public Label createIntelBoxTitleLabel (final String titleText)
@@ -492,26 +492,26 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_MY_SETTINGS_IMAGE_BUTTON_STYLE);
   }
 
-  public ImageButton createControlRoomBoxSurrenderButton (final EventListener listener)
+  public ImageButton createControlRoomBoxQuitButton (final EventListener listener)
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    return createImageButton (createControlRoomBoxSurrenderButtonStyle (), listener);
+    return createImageButton (createControlRoomBoxQuitButtonStyle (), listener);
   }
 
-  public ImageButton.ImageButtonStyle createControlRoomBoxSurrenderButtonStyle ()
+  public ImageButton.ImageButtonStyle createControlRoomBoxQuitButtonStyle ()
   {
     return createImageButtonStyle (StyleSettings.CONTROL_ROOM_BOX_SURRENDER_IMAGE_BUTTON_STYLE);
   }
 
   public ReinforcementDialog createReinforcementDialog (final Stage stage,
-                                                        final PlayerBox playerBox,
+                                                        final PersonBox personBox,
                                                         final CancellableDialogListener listener)
   {
     Arguments.checkIsNotNull (stage, "stage");
-    Arguments.checkIsNotNull (playerBox, "playerBox");
+    Arguments.checkIsNotNull (personBox, "personBox");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return new ReinforcementDialog (this, stage, playerBox, listener);
+    return new ReinforcementDialog (this, stage, personBox, listener);
   }
 }
