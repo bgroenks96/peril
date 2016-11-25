@@ -17,7 +17,7 @@
  */
 
 android {
-  buildToolsVersion '23.0.3'
+  buildToolsVersion "23.0.3"
   compileSdkVersion 23
 
   defaultConfig {

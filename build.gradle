@@ -27,15 +27,49 @@ buildscript {
   } else throw new GradleException ("Unable to retrieve latest LibGDX versions, please check your internet connection.")
 
   ext {
-    gdxVersion = json.libgdxSnapshot
+    // Gradle
+    gradleWrapperVersion = "3.2" // Run './gradlew wrapper' after changing.
+
+    // Gradle plugins
+    gradleVersionsPluginVersion = "0.13.0"
+    gradleDependencyManagementPluginVersion = "0.6.1.RELEASE"
+
+    // LibGDX
+    libGdxVersion = json.libgdxSnapshot
+
+    // RoboVM
     roboVMVersion = json.robovmVersion
     roboVMGradleVersion = json.robovmPluginVersion
-    androidToolsVersion = json.androidBuildtoolsVersion
-    androidSDKVersion = json.androidSDKVersion
-    androidGradleToolsVersion = "2.2.0"//json.androidGradleToolVersion
-    logbackClassicVersion = "1.1.3"
-    jcommanderVersion = "1.48"
+
+    // Android
+    androidGradleToolsVersion = "2.2.0" //json.androidGradleToolVersion
+    awsAndroidSdkS3Version = "2.3.3"
+
+    // Testing
+    junitVersion = "4.12"
+    testNGVersion = "6.9.13"
+    hamcrestAllVersion = "1.3"
+    mockitoCoreVersion = "2.2.22"
+
+    // Logging
+    slf4jVersion = "1.7.21"
+    logbackVersion = "1.1.7"
+
+    // Kryonet
+    kryonetVersion = "2.22.0-RC1"
+    kryoSerializersVersion = "0.41"
+
+    // StateForge
+    stateForgeStateMachineVersion = "3.6"
+    stateForgeStateMachineJCodeModelVersion = "1.0.2"
+
+    // Miscellaneous
     fgToolsVersion = "1.0.1-SNAPSHOT"
+    guavaVersion = "20.0"
+    mbassadorVersion = "1.3.0"
+    awsJavaSdkBomVersion = "1.11.60"
+    jcommanderVersion = "1.58"
+    jsr305Version = "3.0.1"
   }
 
   repositories {
@@ -48,7 +82,8 @@ buildscript {
   dependencies {
     classpath "com.android.tools.build:gradle:$androidGradleToolsVersion"
     classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradleVersion"
-    classpath "io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE"
+    classpath "io.spring.gradle:dependency-management-plugin:$gradleDependencyManagementPluginVersion"
+    classpath "com.github.ben-manes:gradle-versions-plugin:$gradleVersionsPluginVersion"
   }
 
   configurations.all {
@@ -56,12 +91,14 @@ buildscript {
   }
 }
 
-plugins {
-  id "com.github.ben-manes.versions" version "0.11.3"
+apply plugin: "com.github.ben-manes.versions"
+
+dependencyUpdates {
+  revision "release"
 }
 
 task wrapper (type: Wrapper) {
-  gradleVersion = "3.2"
+  gradleVersion = "$gradleWrapperVersion"
 }
 
 // Apply to parent project & all subprojects.
@@ -117,10 +154,10 @@ configure (subprojects - project (":android")) {
   targetCompatibility = projectTargetCompatibility
 
   dependencies {
-    testCompile "junit:junit:4.12"
-    testCompile "org.hamcrest:hamcrest-all:1.3"
-    testCompile "org.mockito:mockito-core:1.9.5"
-    testRuntime "ch.qos.logback:logback-classic:$logbackClassicVersion"
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.hamcrest:hamcrest-all:$hamcrestAllVersion"
+    testCompile "org.mockito:mockito-core:$mockitoCoreVersion"
+    testRuntime "ch.qos.logback:logback-classic:$logbackVersion"
   }
 
   test {
@@ -158,7 +195,7 @@ configure ([project (":client"), project (":desktop"), project (":ios"), project
 
   dependencyManagement {
     imports {
-      mavenBom "com.amazonaws:aws-java-sdk-bom:1.11.58"
+      mavenBom "com.amazonaws:aws-java-sdk-bom:$awsJavaSdkBomVersion"
     }
   }
 
@@ -170,17 +207,17 @@ configure ([project (":client"), project (":desktop"), project (":ios"), project
 project (":desktop") {
   dependencies {
     compile project (":client")
-    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$libGdxVersion"
+    compile "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-desktop"
+    compile "com.badlogicgames.gdx:gdx-tools:$libGdxVersion"
+    compile "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-desktop"
     compile "com.beust:jcommander:$jcommanderVersion"
-    runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
+    runtime "ch.qos.logback:logback-classic:$logbackVersion"
   }
 }
 
 project (":android") {
-  apply plugin: "android"
+  apply plugin: "com.android.application"
 
   configurations { natives }
 
@@ -188,20 +225,20 @@ project (":android") {
     compile (project (":client")) {
       exclude module: "aws-java-sdk-s3"
     }
-    compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
-    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
-    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
-    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
-    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-    compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi"
-    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
-    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
-    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
-    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
-    compile "org.slf4j:slf4j-android:1.7.13"
-    compile "com.amazonaws:aws-android-sdk-s3:2.3.3"
+    compile "com.badlogicgames.gdx:gdx-backend-android:$libGdxVersion"
+    natives "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-armeabi"
+    natives "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-arm64-v8a"
+    natives "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-x86"
+    natives "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-x86_64"
+    compile "com.badlogicgames.gdx:gdx-freetype:$libGdxVersion"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-armeabi"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-arm64-v8a"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-x86"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-x86_64"
+    compile "org.slf4j:slf4j-android:$slf4jVersion"
+    compile "com.amazonaws:aws-android-sdk-s3:$awsAndroidSdkS3Version"
   }
 }
 
@@ -210,12 +247,12 @@ project (":ios") {
 
   dependencies {
     compile project (":client")
-    compile "com.mobidevelop.robovm:robovm-rt:${roboVMVersion}"
-    compile "com.mobidevelop.robovm:robovm-cocoatouch:${roboVMVersion}"
-    compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-    compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-    runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
+    compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+    compile "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+    compile "com.badlogicgames.gdx:gdx-backend-robovm:$libGdxVersion"
+    compile "com.badlogicgames.gdx:gdx-platform:$libGdxVersion:natives-ios"
+    compile "com.badlogicgames.gdx:gdx-freetype-platform:$libGdxVersion:natives-ios"
+    runtime "ch.qos.logback:logback-classic:$logbackVersion"
   }
 }
 
@@ -225,14 +262,14 @@ project (":common") {
   dependencies {
     compile ("com.forerunnergames.tools:fg-tools-common:$fgToolsVersion")
     compile ("com.forerunnergames.tools:fg-tools-net:$fgToolsVersion")
-    compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
+    compile ("com.esotericsoftware:kryonet:$kryonetVersion") {
       exclude module: "kryo"
     }
-    compile "de.javakaffee:kryo-serializers:0.41"
-    compile "net.engio:mbassador:1.3.0"
-    compile "com.google.guava:guava:19.0"
-    compile "com.google.code.findbugs:jsr305:3.0.1"
-    compile "org.slf4j:slf4j-api:1.7.13"
+    compile "de.javakaffee:kryo-serializers:$kryoSerializersVersion"
+    compile "net.engio:mbassador:$mbassadorVersion"
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "com.google.code.findbugs:jsr305:$jsr305Version"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
   }
 }
 
@@ -241,7 +278,7 @@ project (":core") {
 
   dependencies {
     compile project (":common")
-    compile ("com.stateforge:statemachine:3.6") {
+    compile ("com.stateforge:statemachine:$stateForgeStateMachineVersion") {
       exclude module: "commons-io"
       exclude module: "junit"
     }
@@ -253,8 +290,8 @@ project (":core") {
 project (":client") {
   dependencies {
     compile project (":common")
-    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx:$libGdxVersion"
+    compile "com.badlogicgames.gdx:gdx-freetype:$libGdxVersion"
     testCompile project (":common").sourceSets.test.output
     testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
   }
@@ -267,7 +304,7 @@ project (":server") {
     compile "com.beust:jcommander:$jcommanderVersion"
     testCompile project (":common").sourceSets.test.output
     testCompileOnly files { project (":common").sourceSets.test.java.srcDirs } // IDEA workaround
-    runtime "ch.qos.logback:logback-classic:$logbackClassicVersion"
+    runtime "ch.qos.logback:logback-classic:$logbackVersion"
   }
 }
 
@@ -281,7 +318,7 @@ project (":integration") {
     testCompile project (":core")
     testCompile project (":server")
     testCompile project (":client")
-    testCompile "org.testng:testng:6.9.10"
+    testCompile "org.testng:testng:$testNGVersion"
   }
 
   test {

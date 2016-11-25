@@ -18,17 +18,12 @@
 
 package com.forerunnergames.peril.server.controllers;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
@@ -112,19 +107,16 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
-
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -196,30 +188,10 @@ public class MultiplayerControllerTest
     final Remote host = createHumanHost ();
     connect (host);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
 
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == host.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (host), argThat (successEventMatcher));
+    verify (mockHumanClientCommunicator, only ())
+            .sendTo (eq (host), argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), host)));
   }
 
   @Test
@@ -230,30 +202,11 @@ public class MultiplayerControllerTest
     final Remote client = createHumanClient ();
     connect (client);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), client);
 
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
+    verify (mockHumanClientCommunicator)
+            .sendTo (eq (client),
+                     argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), client)));
   }
 
   @Test
@@ -264,30 +217,11 @@ public class MultiplayerControllerTest
     final Remote client = createAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
     connect (client);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     communicateEventFromClient (new AiJoinGameServerRequestEvent (), client);
 
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockAiClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
+    verify (mockAiClientCommunicator)
+            .sendTo (eq (client),
+                     argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), client)));
   }
 
   @Test
@@ -312,24 +246,10 @@ public class MultiplayerControllerTest
         players.add (player);
         final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
                 ImmutableSet.copyOf (players), mpc.getPersonLimits ());
-        final BaseMatcher <PlayerJoinGameSuccessEvent> successEventMatcher = new BaseMatcher <PlayerJoinGameSuccessEvent> ()
-        {
-          @Override
-          public boolean matches (final Object arg0)
-          {
-            if (!(arg0 instanceof PlayerJoinGameSuccessEvent)) return false;
-            final PlayerJoinGameSuccessEvent event = (PlayerJoinGameSuccessEvent) arg0;
-            return event.getPerson ().equals (player) && event.getPlayersInGame ().equals (players);
-          }
-
-          @Override
-          public void describeTo (final Description arg0)
-          {
-          }
-        };
         communicateEventFromCore (successEvent);
-        verify (mockHumanClientCommunicator, times (players.size ())).sendTo (any (Remote.class),
-                                                                              argThat (successEventMatcher));
+        verify (mockHumanClientCommunicator, times (players.size ()))
+                .sendTo (any (Remote.class),
+                         argThat (new PlayerJoinGameSuccessEventMatcher (player, ImmutableSet.copyOf (players))));
         assertTrue (mpc.isPlayerInGame (player));
 
         return successEvent;
@@ -366,23 +286,10 @@ public class MultiplayerControllerTest
         players.add (player);
         final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (player,
                 ImmutableSet.copyOf (players), mpc.getPersonLimits ());
-        final BaseMatcher <PlayerJoinGameSuccessEvent> successEventMatcher = new BaseMatcher <PlayerJoinGameSuccessEvent> ()
-        {
-          @Override
-          public boolean matches (final Object arg0)
-          {
-            if (!(arg0 instanceof PlayerJoinGameSuccessEvent)) return false;
-            final PlayerJoinGameSuccessEvent event = (PlayerJoinGameSuccessEvent) arg0;
-            return event.getPerson ().equals (player) && event.getPlayersInGame ().equals (players);
-          }
-
-          @Override
-          public void describeTo (final Description arg0)
-          {
-          }
-        };
         communicateEventFromCore (successEvent);
-        verify (mockAiClientCommunicator, times (1)).sendTo (any (Remote.class), argThat (successEventMatcher));
+        verify (mockAiClientCommunicator, times (1))
+                .sendTo (any (Remote.class),
+                         argThat (new PlayerJoinGameSuccessEventMatcher (player, ImmutableSet.copyOf (players))));
         assertTrue (mpc.isPlayerInGame (player));
 
         return successEvent;
@@ -404,24 +311,8 @@ public class MultiplayerControllerTest
 
     final Remote client = addHumanClient ();
 
-    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
-        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
+    verify (mockHumanClientCommunicator, only ()).sendTo (eq (client),
+                                                          argThat (new JoinGameServerDeniedEventMatcher (client)));
     verify (mockConnector, only ()).disconnect (eq (client));
   }
 
@@ -430,30 +321,11 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).aiPlayerLimit (1).build (eventBus);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     final Remote client = addAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
 
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockAiClientCommunicator).sendTo (eq (client), argThat (successEventMatcher));
+    verify (mockAiClientCommunicator)
+            .sendTo (eq (client),
+                     argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), client)));
   }
 
   @Test
@@ -466,24 +338,8 @@ public class MultiplayerControllerTest
 
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
 
-    final BaseMatcher <JoinGameServerDeniedEvent> deniedEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
-        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchClientConfig.getClientAddress ().equals (host.getAddress ())
-                && matchClientConfig.getClientTcpPort () == host.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (host), argThat (deniedEventMatcher));
+    verify (mockHumanClientCommunicator, only ()).sendTo (eq (host),
+                                                          argThat (new JoinGameServerDeniedEventMatcher (host)));
   }
 
   @Test
@@ -494,30 +350,9 @@ public class MultiplayerControllerTest
     final Remote host = createHumanHost ();
     connect (host);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
-
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == host.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (host), argThat (successEventMatcher));
+    verify (mockHumanClientCommunicator, only ())
+            .sendTo (eq (host), argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), host)));
 
     final Remote client = addHumanClient ();
     verify (mockHumanClientCommunicator).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
@@ -532,30 +367,9 @@ public class MultiplayerControllerTest
     final Remote host = createHumanHost ();
     connect (host);
 
-    final ServerConfiguration serverConfig = createDefaultServerConfig ();
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
-
-    final BaseMatcher <JoinGameServerSuccessEvent> successEventMatcher = new BaseMatcher <JoinGameServerSuccessEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerSuccessEvent.class));
-        final JoinGameServerSuccessEvent matchEvent = (JoinGameServerSuccessEvent) arg0;
-        final ServerConfiguration matchServerConfig = matchEvent.getGameServerConfiguration ();
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-                && matchClientConfig.getClientAddress ().equals (host.getAddress ())
-                && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-                && matchClientConfig.getClientTcpPort () == host.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (host), argThat (successEventMatcher));
+    verify (mockHumanClientCommunicator, only ())
+            .sendTo (eq (host), argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), host)));
 
     final Remote duplicateHost = createHumanHost ();
     connect (duplicateHost);
@@ -570,24 +384,8 @@ public class MultiplayerControllerTest
 
     final Remote client = addHumanClientWithAddress ("");
 
-    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
-        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
+    verify (mockHumanClientCommunicator, only ()).sendTo (eq (client),
+                                                          argThat (new JoinGameServerDeniedEventMatcher (client)));
     verify (mockConnector, only ()).disconnect (eq (client));
   }
 
@@ -598,24 +396,8 @@ public class MultiplayerControllerTest
 
     final Remote client = addHumanClientWithAddress ("1.2.3.4");
 
-    final BaseMatcher <JoinGameServerDeniedEvent> denialEventMatcher = new BaseMatcher <JoinGameServerDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        assertThat (arg0, instanceOf (JoinGameServerDeniedEvent.class));
-        final JoinGameServerDeniedEvent matchEvent = (JoinGameServerDeniedEvent) arg0;
-        final ClientConfiguration matchClientConfig = matchEvent.getClientConfiguration ();
-        return matchClientConfig.getClientAddress ().equals (client.getAddress ())
-                && matchClientConfig.getClientTcpPort () == client.getPort ();
-      }
-
-      @Override
-      public void describeTo (final Description arg0)
-      {
-      }
-    };
-    verify (mockHumanClientCommunicator, only ()).sendTo (eq (client), argThat (denialEventMatcher));
+    verify (mockHumanClientCommunicator, only ()).sendTo (eq (client),
+                                                          argThat (new JoinGameServerDeniedEventMatcher (client)));
     verify (mockConnector, only ()).disconnect (eq (client));
   }
 
@@ -697,18 +479,17 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer (playerName1, mpc);
     final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer (playerName2, mpc);
 
-    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client),
-                                                 argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
-                                                                 new PersonIdentityMatcher (PersonIdentity.NON_SELF))));
+    verify (mockHumanClientCommunicator)
+            .sendTo (eq (clientPlayer1.client),
+                     argThat (new PlayerJoinGameSuccessEventIdentityMatcher (PersonIdentity.NON_SELF)));
 
-    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client),
-                                                 argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
-                                                                 new PersonIdentityMatcher (PersonIdentity.SELF))));
+    verify (mockHumanClientCommunicator)
+            .sendTo (eq (clientPlayer2.client),
+                     argThat (new PlayerJoinGameSuccessEventIdentityMatcher (PersonIdentity.SELF)));
 
-    verify (mockAiClientCommunicator).sendToAllExcept (eq (clientPlayer2.client),
-                                                       argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
-                                                                       new PersonIdentityMatcher (
-                                                                               PersonIdentity.NON_SELF))));
+    verify (mockAiClientCommunicator)
+            .sendToAllExcept (eq (clientPlayer2.client),
+                              argThat (new PlayerJoinGameSuccessEventIdentityMatcher (PersonIdentity.NON_SELF)));
 
     verifyZeroInteractions (mockSpectatorClientCommunicator);
 
@@ -725,14 +506,13 @@ public class MultiplayerControllerTest
     addAiClientAndMockPlayerToGameServer (playerName1, mpc);
     final ClientPlayerTuple clientPlayer2 = addAiClientAndMockPlayerToGameServer (playerName2, mpc);
 
-    verify (mockAiClientCommunicator).sendToAllExcept (eq (clientPlayer2.client),
-                                                       argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
-                                                                       new PersonIdentityMatcher (
-                                                                               PersonIdentity.NON_SELF))));
+    verify (mockAiClientCommunicator)
+            .sendToAllExcept (eq (clientPlayer2.client),
+                              argThat (new PlayerJoinGameSuccessEventIdentityMatcher (PersonIdentity.NON_SELF)));
 
-    verify (mockAiClientCommunicator).sendTo (eq (clientPlayer2.client),
-                                              argThat (allOf (Matchers.isA (PlayerJoinGameSuccessEvent.class),
-                                                              new PersonIdentityMatcher (PersonIdentity.SELF))));
+    verify (mockAiClientCommunicator)
+            .sendTo (eq (clientPlayer2.client),
+                     argThat (new PlayerJoinGameSuccessEventIdentityMatcher (PersonIdentity.SELF)));
 
     verifyZeroInteractions (mockHumanClientCommunicator);
     verifyZeroInteractions (mockSpectatorClientCommunicator);
@@ -822,8 +602,8 @@ public class MultiplayerControllerTest
     final Remote spectatorClient = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient, mpc);
     verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
-    verify (mockHumanClientCommunicator)
-            .sendTo (eq (clientPlayer.client ()), isA (SpectatorJoinGameSuccessEvent.class));
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()),
+                                                 isA (SpectatorJoinGameSuccessEvent.class));
     verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient), isA (SpectatorJoinGameSuccessEvent.class));
   }
 
@@ -833,25 +613,12 @@ public class MultiplayerControllerTest
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final Remote spectatorClient = addHumanClient ();
+
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestPlayer"), spectatorClient);
     verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
-    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
-        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
-                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_PLAYER_NAME);
-      }
 
-      @Override
-      public void describeTo (final Description arg0)
-      {
-        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_PLAYER_NAME);
-      }
-    };
+    final ArgumentMatcher <SpectatorJoinGameDeniedEvent> matcher = new SpectatorJoinGameDeniedEventMatcher (
+            SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_PLAYER_NAME);
     verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient), argThat (matcher));
     verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), argThat (matcher));
   }
@@ -861,28 +628,16 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+
     final Remote spectatorClient1 = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient1, mpc);
+
     final Remote spectatorClient2 = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestSpectator"), spectatorClient2);
-    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
-        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
-                .equals (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_SPECTATOR_NAME);
-      }
 
-      @Override
-      public void describeTo (final Description arg0)
-      {
-        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_SPECTATOR_NAME);
-      }
-    };
-    verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient2), argThat (matcher));
+    verify (mockSpectatorClientCommunicator)
+            .sendTo (eq (spectatorClient2), argThat (new SpectatorJoinGameDeniedEventMatcher (
+                    SpectatorJoinGameDeniedEvent.Reason.DUPLICATE_SPECTATOR_NAME)));
   }
 
   @Test
@@ -890,28 +645,16 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (1).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+
     final Remote spectatorClient1 = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator1", spectatorClient1, mpc);
+
     final Remote spectatorClient2 = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestSpectator2"), spectatorClient2);
-    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
-        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
-                .equals (SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
-      }
 
-      @Override
-      public void describeTo (final Description arg0)
-      {
-        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
-      }
-    };
-    verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient2), argThat (matcher));
+    verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient2),
+                                                     argThat (new SpectatorJoinGameDeniedEventMatcher (
+                                                             SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL)));
   }
 
   @Test
@@ -919,26 +662,13 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (0).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
+
     final Remote spectatorClient = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestSpectator"), spectatorClient);
-    final Matcher <SpectatorJoinGameDeniedEvent> matcher = new BaseMatcher <SpectatorJoinGameDeniedEvent> ()
-    {
-      @Override
-      public boolean matches (final Object arg0)
-      {
-        if (!(arg0 instanceof SpectatorJoinGameDeniedEvent)) return false;
-        return ((SpectatorJoinGameDeniedEvent) arg0).getReason ()
-                .equals (SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED);
-      }
 
-      @Override
-      public void describeTo (final Description arg0)
-      {
-        arg0.appendText (SpectatorJoinGameDeniedEvent.class.getSimpleName () + ": ")
-                .appendValue (SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED);
-      }
-    };
-    verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient), argThat (matcher));
+    verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient),
+                                                     argThat (new SpectatorJoinGameDeniedEventMatcher (
+                                                             SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED)));
   }
 
   @Test
@@ -1138,7 +868,8 @@ public class MultiplayerControllerTest
     // disconnect client
     disconnect (client);
     assertFalse (mpc.isClientInServer (client));
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player),
+            mpc.getPersonLimits ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (player));
   }
 
@@ -1154,7 +885,8 @@ public class MultiplayerControllerTest
     // disconnect client
     disconnect (client);
     assertFalse (mpc.isClientInServer (client));
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player),
+            mpc.getPersonLimits ()));
     verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (player));
   }
 
@@ -1167,7 +899,7 @@ public class MultiplayerControllerTest
     when (player.has (PersonSentience.HUMAN)).thenReturn (true);
     when (player.has (PersonSentience.AI)).thenReturn (false);
     when (player.is (eq (player))).thenReturn (true);
-    when (player.isNot (argThat (not (equalTo (player))))).thenReturn (true);
+    when (player.isNot (not (eq (player)))).thenReturn (true);
     when (player.toString ()).thenReturn (playerName);
 
     return player;
@@ -1182,7 +914,7 @@ public class MultiplayerControllerTest
     when (player.has (PersonSentience.AI)).thenReturn (true);
     when (player.has (PersonSentience.HUMAN)).thenReturn (false);
     when (player.is (eq (player))).thenReturn (true);
-    when (player.isNot (argThat (not (equalTo (player))))).thenReturn (true);
+    when (player.isNot (not (eq (player)))).thenReturn (true);
     when (player.toString ()).thenReturn (playerName);
 
     return player;
@@ -1197,7 +929,7 @@ public class MultiplayerControllerTest
     when (spectator.has (PersonSentience.HUMAN)).thenReturn (true);
     when (spectator.has (PersonSentience.AI)).thenReturn (false);
     when (spectator.is (eq (spectator))).thenReturn (true);
-    when (spectator.isNot (argThat (not (equalTo (spectator))))).thenReturn (true);
+    when (spectator.isNot (not (eq (spectator)))).thenReturn (true);
     when (spectator.toString ()).thenReturn (spectatorName);
 
     return spectator;
@@ -1245,7 +977,8 @@ public class MultiplayerControllerTest
     assert mpc.getPlayerLimitFor (PersonSentience.HUMAN) > 0;
     final PlayerPacket player = createMockHumanPlayer (playerName);
     communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName), client);
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player),
+            mpc.getPersonLimits ()));
     verify (mockHumanClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (player));
 
@@ -1260,7 +993,8 @@ public class MultiplayerControllerTest
     assert mpc.getPlayerLimitFor (PersonSentience.AI) > 0;
     final PlayerPacket player = createMockAiPlayer (playerName);
     communicateEventFromClient (new AiPlayerJoinGameRequestEvent (playerName), client);
-    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player), mpc.getPersonLimits ()));
+    communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player),
+            mpc.getPersonLimits ()));
     verify (mockAiClientCommunicator).sendTo (eq (client), isA (PlayerJoinGameSuccessEvent.class));
     assertTrue (mpc.isPlayerInGame (player));
 
@@ -1308,36 +1042,36 @@ public class MultiplayerControllerTest
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
-                        + eventHandler.lastEventType () + "] All events (newest to oldest): ["
-                        + eventHandler.getAllEvents () + "].", eventHandler.lastEventWasType (eventType));
+            + eventHandler.lastEventType () + "] All events (newest to oldest): [" + eventHandler.getAllEvents ()
+            + "].", eventHandler.lastEventWasType (eventType));
   }
 
   private void assertSecondToLastEventWas (final Event event)
   {
     assertEquals ("Expected second-to-last event was [" + event + "], but was [" + eventHandler.secondToLastEvent ()
-                          + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
+            + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
                   eventHandler.secondToLastEvent ());
   }
 
   private void assertLastEventWas (final Event event)
   {
     assertEquals ("Expected last event was [" + event + "], but was [" + eventHandler.lastEvent ()
-                          + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
+            + "] All events (newest to oldest): [" + eventHandler.getAllEvents () + "].", event,
                   eventHandler.lastEvent ());
   }
 
   private void assertEventFiredExactlyOnce (final Class <?> eventType)
   {
     assertTrue ("Expected event type [" + eventType.getSimpleName () + "] was fired exactly once, but was fired ["
-                        + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
-                        + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
+            + eventHandler.countOf (eventType) + "] times. All events (newest to oldest): ["
+            + eventHandler.getAllEvents () + "].", eventHandler.wasFiredExactlyOnce (eventType));
   }
 
   private void assertEventFiredExactlyOnce (final Event event)
   {
     assertTrue ("Expected event type [" + event.getClass ().getSimpleName ()
-                        + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
-                        + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
+            + "] was fired exactly once, but was fired [" + eventHandler.countOf (event.getClass ())
+            + "] times. All events (newest to oldest): [" + eventHandler.getAllEvents () + "].",
                 eventHandler.wasFiredExactlyOnce (event));
   }
 
@@ -1581,26 +1315,125 @@ public class MultiplayerControllerTest
     }
   }
 
-  private final class PersonIdentityMatcher extends BaseMatcher <PlayerJoinGameSuccessEvent>
+  private static final class JoinGameServerSuccessEventMatcher implements ArgumentMatcher <JoinGameServerSuccessEvent>
+  {
+    private final ServerConfiguration serverConfig;
+    private final Remote client;
+
+    JoinGameServerSuccessEventMatcher (final ServerConfiguration serverConfig, final Remote client)
+    {
+      Arguments.checkIsNotNull (serverConfig, "serverConfig");
+      Arguments.checkIsNotNull (client, "client");
+
+      this.serverConfig = serverConfig;
+      this.client = client;
+    }
+
+    @Override
+    public boolean matches (final JoinGameServerSuccessEvent argument)
+    {
+      final ServerConfiguration matchServerConfig = argument.getGameServerConfiguration ();
+      final ClientConfiguration matchClientConfig = argument.getClientConfiguration ();
+
+      return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
+              && matchClientConfig.getClientAddress ().equals (client.getAddress ())
+              && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
+              && matchClientConfig.getClientTcpPort () == client.getPort ();
+    }
+  }
+
+  private static final class PlayerJoinGameSuccessEventMatcher implements ArgumentMatcher <PlayerJoinGameSuccessEvent>
+  {
+    private final PlayerPacket player;
+    private final ImmutableSet <PlayerPacket> playersInGame;
+
+    PlayerJoinGameSuccessEventMatcher (final PlayerPacket player, final ImmutableSet <PlayerPacket> playersInGame)
+    {
+      Arguments.checkIsNotNull (player, "player");
+      Arguments.checkIsNotNull (playersInGame, "playersInGame");
+      Arguments.checkHasNoNullElements (playersInGame, "playersInGame");
+
+      this.player = player;
+      this.playersInGame = playersInGame;
+    }
+
+    @Override
+    public boolean matches (final PlayerJoinGameSuccessEvent argument)
+    {
+      return Objects.equals (argument.getPerson (), player)
+              && Objects.equals (argument.getPlayersInGame (), playersInGame);
+    }
+  }
+
+  private static final class JoinGameServerDeniedEventMatcher implements ArgumentMatcher <JoinGameServerDeniedEvent>
+  {
+    private final Remote client;
+
+    JoinGameServerDeniedEventMatcher (final Remote client)
+    {
+      Arguments.checkIsNotNull (client, "client");
+
+      this.client = client;
+    }
+
+    @Override
+    public boolean matches (final JoinGameServerDeniedEvent argument)
+    {
+      final ClientConfiguration matchClientConfig = argument.getClientConfiguration ();
+      return Objects.equals (matchClientConfig.getClientAddress (), client.getAddress ())
+              && matchClientConfig.getClientTcpPort () == client.getPort ();
+    }
+  }
+
+  private static final class SpectatorJoinGameDeniedEventMatcher
+          implements ArgumentMatcher <SpectatorJoinGameDeniedEvent>
+  {
+    private final SpectatorJoinGameDeniedEvent.Reason reason;
+
+    SpectatorJoinGameDeniedEventMatcher (final SpectatorJoinGameDeniedEvent.Reason reason)
+    {
+      Arguments.checkIsNotNull (reason, "reason");
+
+      this.reason = reason;
+    }
+
+    @Override
+    public boolean matches (final SpectatorJoinGameDeniedEvent argument)
+    {
+      return argument.getReason () == reason;
+    }
+
+    @Override
+    public String toString ()
+    {
+      return Strings.format ("{}: Reason for denial: [{}]", SpectatorJoinGameDeniedEvent.class.getSimpleName (),
+                             reason);
+    }
+  }
+
+  private final class PlayerJoinGameSuccessEventIdentityMatcher implements ArgumentMatcher <PlayerJoinGameSuccessEvent>
   {
     private final PersonIdentity identity;
 
-    PersonIdentityMatcher (final PersonIdentity identity)
+    PlayerJoinGameSuccessEventIdentityMatcher (final PersonIdentity identity)
     {
+      Arguments.checkIsNotNull (identity, "identity");
+
       this.identity = identity;
     }
 
     @Override
-    public boolean matches (final Object item)
+    public boolean matches (final PlayerJoinGameSuccessEvent argument)
     {
-      return item instanceof PlayerJoinGameSuccessEvent
-              && ((PlayerJoinGameSuccessEvent) item).getIdentity () == identity;
+      Arguments.checkIsNotNull (argument, "argument");
+
+      return argument.getIdentity () == identity;
     }
 
     @Override
-    public void describeTo (final Description description)
+    public String toString ()
     {
-      description.appendText (Strings.format ("matches {}: [{}].", identity.getClass ().getSimpleName (), identity));
+      return Strings.format ("matches {}: [{}].", identity.getClass ().getSimpleName (), identity);
     }
   }
 
@@ -1635,12 +1468,6 @@ public class MultiplayerControllerTest
       return client.equals (clientPlayerTuple.client) && player.equals (clientPlayerTuple.player);
     }
 
-    @Override
-    public String toString ()
-    {
-      return Strings.format ("{}: Client: {} | Player: {}", getClass ().getSimpleName (), client, player);
-    }
-
     public Remote client ()
     {
       return client;
@@ -1650,5 +1477,12 @@ public class MultiplayerControllerTest
     {
       return player;
     }
+
+    @Override
+    public String toString ()
+    {
+      return Strings.format ("{}: Client: {} | Player: {}", getClass ().getSimpleName (), client, player);
+    }
+
   }
 }
