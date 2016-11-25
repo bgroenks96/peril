@@ -45,6 +45,11 @@ interface Player extends Person
     }
   };
 
+  /**
+   * Creates an exact copy of this Player with a new name.
+   */
+  Player withNewName (final String newName);
+
   void addArmiesToHand (final int armies);
 
   void addArmyToHand ();

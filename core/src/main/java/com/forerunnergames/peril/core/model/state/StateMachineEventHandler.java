@@ -40,7 +40,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndIn
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -53,6 +52,8 @@ import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssig
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.core.model.state.events.RandomlyAssignPlayerCountriesEvent;
+import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
+import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.base.Optional;
@@ -113,10 +114,21 @@ public final class StateMachineEventHandler
   {
     final GameStateMachineOperatingParallel operatingState = context.getGameStateMachineOperatingParallel ();
     if (operatingState == null) throw new IllegalStateException ("State machine is not in operating state.");
-    final GameStateMachineGameHandlerState current = operatingState.getGameStateMachineGameHandlerContext ()
-            .getStateCurrent ();
-    if (current == null) throw new IllegalStateException ("State machine is not in main game state.");
-    return current.getName ();
+    final GameStateMachineGameHandlerContext currentContext = operatingState.getGameStateMachineGameHandlerContext ();
+    if (currentContext == null)
+    {
+      throw new IllegalStateException (
+              "Game handler context not available! active=" + operatingState.getActiveContext ());
+    }
+
+    final GameStateMachineGameHandlerState currentState = currentContext.getStateCurrent ();
+    final GameStateMachineGameHandlerState previousState = currentContext.getStatePrevious ();
+    if (currentState == null && previousState == null)
+    {
+      throw new IllegalStateException ("Current context has no state information available!");
+    }
+
+    return currentState != null ? currentState.getName () : previousState.getName ();
   }
 
   public Optional <Throwable> checkError ()
@@ -469,13 +481,28 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerLeaveGameEvent event)
+  public void onEvent (final SuspendGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerLeaveGameEvent (event);
+    context.onSuspendGameEvent (event);
+  }
+
+  @Handler
+  public void onEvent (final ResumeGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onResumeGameEvent (event);
+  }
+
+  private void dumpStateMachineDiagnosticInfo ()
+  {
+
   }
 
   private class CompositeStateMachineListener implements StateMachineListener

@@ -34,6 +34,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ public final class ClientPlayerMapping
 {
   private static final Logger log = LoggerFactory.getLogger (ClientPlayerMapping.class);
   private final BiMap <Remote, PlayerPacket> clientsToPlayers;
+  private final BiMap <UUID, PlayerPacket> serverIdsToPlayers;
   private final CoreCommunicator coreCommunicator;
 
   public ClientPlayerMapping (final CoreCommunicator coreCommunicator, final int playerLimit)
@@ -50,7 +53,8 @@ public final class ClientPlayerMapping
 
     this.coreCommunicator = coreCommunicator;
 
-    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap.<Remote, PlayerPacket> create (playerLimit));
+    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap. <Remote, PlayerPacket> create (playerLimit));
+    serverIdsToPlayers = Maps.synchronizedBiMap (HashBiMap. <UUID, PlayerPacket> create (playerLimit));
   }
 
   public Optional <PlayerPacket> put (final Remote client, final PlayerPacket player)
@@ -58,7 +62,9 @@ public final class ClientPlayerMapping
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (player, "player");
 
-    return Optional.fromNullable (clientsToPlayers.forcePut (client, player));
+    final Optional <PlayerPacket> previousPlayer = Optional.fromNullable (clientsToPlayers.forcePut (client, player));
+    serverIdsToPlayers.forcePut (UUID.randomUUID (), player);
+    return previousPlayer;
   }
 
   /**
@@ -93,13 +99,31 @@ public final class ClientPlayerMapping
     return Optional.fromNullable (clientsToPlayers.inverse ().get (player));
   }
 
+  public Optional <PlayerPacket> playerFor (final UUID serverPlayerId)
+  {
+    Arguments.checkIsNotNull (serverPlayerId, "serverPlayerId");
+
+    return Optional.fromNullable (serverIdsToPlayers.get (serverPlayerId));
+  }
+
+  public Optional <UUID> serverIdFor (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+    
+    return Optional.fromNullable (serverIdsToPlayers.inverse ().get (player));
+  }
+
   public boolean existsPlayerWith (final String name)
   {
+    Arguments.checkIsNotNull (name, "name");
+
     return playerWith (name).isPresent ();
   }
 
   public Optional <PlayerPacket> playerWith (final String name)
   {
+    Arguments.checkIsNotNull (name, "name");
+
     syncPlayerData ();
     for (final PlayerPacket player : clientsToPlayers.values ())
     {
@@ -111,19 +135,21 @@ public final class ClientPlayerMapping
   public ImmutableSet <PlayerPacket> humanPlayers ()
   {
     syncPlayerData ();
-    return ImmutableSet.copyOf (Collections2.filter (clientsToPlayers.values (), new PlayersBySentiencePredicate (
-            PersonSentience.HUMAN)));
+    return ImmutableSet.copyOf (Collections2.filter (clientsToPlayers.values (),
+                                                     new PlayersBySentiencePredicate (PersonSentience.HUMAN)));
   }
 
   public ImmutableSet <PlayerPacket> aiPlayers ()
   {
     syncPlayerData ();
-    return ImmutableSet.copyOf (Collections2.filter (clientsToPlayers.values (), new PlayersBySentiencePredicate (
-            PersonSentience.AI)));
+    return ImmutableSet.copyOf (Collections2.filter (clientsToPlayers.values (),
+                                                     new PlayersBySentiencePredicate (PersonSentience.AI)));
   }
 
   public ImmutableSet <PlayerPacket> humanPlayersExcept (final PlayerPacket player)
   {
+    Arguments.checkIsNotNull (player, "player");
+
     syncPlayerData ();
     return ImmutableSet.copyOf (Sets.filter (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)),
                                              new PlayersBySentiencePredicate (PersonSentience.HUMAN)));
@@ -131,6 +157,8 @@ public final class ClientPlayerMapping
 
   public ImmutableSet <PlayerPacket> aiPlayersExcept (final PlayerPacket player)
   {
+    Arguments.checkIsNotNull (player, "player");
+
     syncPlayerData ();
     return ImmutableSet.copyOf (Sets.filter (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)),
                                              new PlayersBySentiencePredicate (PersonSentience.AI)));
@@ -152,7 +180,13 @@ public final class ClientPlayerMapping
   {
     Arguments.checkIsNotNull (client, "client");
 
-    return Optional.fromNullable (clientsToPlayers.remove (client));
+    final Optional <PlayerPacket> removedPlayer = Optional.fromNullable (clientsToPlayers.remove (client));
+    if (removedPlayer.isPresent ())
+    {
+      serverIdsToPlayers.inverse ().remove (removedPlayer.get ());
+    }
+
+    return removedPlayer;
   }
 
   private void syncPlayerData ()
@@ -168,6 +202,7 @@ public final class ClientPlayerMapping
         log.warn ("Received player [{}] from core with no client mapping.", current);
         continue;
       }
+
       clientsToPlayers.forcePut (client.get (), current);
     }
   }
@@ -192,6 +227,8 @@ public final class ClientPlayerMapping
     @Override
     public boolean apply (final PlayerPacket input)
     {
+      Arguments.checkIsNotNull (input, "input");
+
       return input.has (sentience);
     }
   }

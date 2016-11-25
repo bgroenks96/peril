@@ -22,11 +22,11 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.defaults.AbstractInternalCommunicationEvent;
 import com.forerunnergames.tools.common.Arguments;
 
-public final class InternalPlayerLeaveGameEvent extends AbstractInternalCommunicationEvent
+public final class PlayerDisconnectedEvent extends AbstractInternalCommunicationEvent
 {
   private final PlayerPacket player;
 
-  public InternalPlayerLeaveGameEvent (final PlayerPacket player)
+  public PlayerDisconnectedEvent (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 

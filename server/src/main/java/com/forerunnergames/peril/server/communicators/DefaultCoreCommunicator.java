@@ -28,7 +28,7 @@ import com.forerunnergames.peril.core.events.internal.interfaces.InternalRespons
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.InternalPlayerLeaveGameEvent;
+import com.forerunnergames.peril.core.events.internal.player.PlayerDisconnectedEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.tools.common.Arguments;
@@ -76,7 +76,7 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   @Override
   public void notifyRemovePlayerFromGame (final PlayerPacket player)
   {
-    final InternalPlayerLeaveGameEvent leaveGameEvent = new InternalPlayerLeaveGameEvent (player);
+    final PlayerDisconnectedEvent leaveGameEvent = new PlayerDisconnectedEvent (player);
     eventBus.publish (leaveGameEvent);
   }
 
