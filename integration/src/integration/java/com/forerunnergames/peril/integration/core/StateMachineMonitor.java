@@ -75,6 +75,11 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
     assertEquals (stateMachine.getCurrentGameStateName (), stateName);
   }
 
+  public boolean currentStateIs (final String stateName)
+  {
+    return stateName.equals (stateMachine.getCurrentGameStateName ());
+  }
+
   /**
    * StateMachineMonitor keeps an internal queue of all states transitioned into by the state machine. This method
    * essentially polls that queue, so the returned value may or may not be the current state the state machine is in,
@@ -94,6 +99,26 @@ public final class StateMachineMonitor extends StateMachineEventAdapter
   public ImmutableList <String> dumpStateHistory ()
   {
     return ImmutableList.copyOf (stateChangeHistory);
+  }
+
+  public boolean waitForStateChangeWithCurrent (final String newStateName, final long timeoutMs)
+  {
+    if (currentStateIs (newStateName))
+    {
+      return true;
+    }
+
+    return waitForStateChange (newStateName, timeoutMs);
+  }
+
+  public boolean waitForStateChangeWithPrior (final String newStateName, final long timeoutMs)
+  {
+    if (entered (newStateName).atLeastOnce ())
+    {
+      return true;
+    }
+
+    return waitForStateChange (newStateName, timeoutMs);
   }
 
   public boolean waitForStateChange (final String newStateName, final long timeoutMs)

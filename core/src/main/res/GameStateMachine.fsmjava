@@ -155,6 +155,14 @@
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent"/>
       </event>
+      <event id="onSuspendGameEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.SuspendGameEvent"
+                   name="event"/>
+      </event>
+      <event id="onResumeGameEvent">
+        <parameter type="com.forerunnergames.peril.core.model.state.events.ResumeGameEvent"
+                   name="event"/>
+      </event>
       <event id="onEndGameEvent">
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent"
                    name="event"/>
@@ -176,16 +184,16 @@
         <parameter type="com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent"
                    name="event"/>
       </event>
+      <event id="onPlayerQuitGameRequestEvent">
+        <parameter type="com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent"
+                   name="event"/>
+      </event>
       <event id="onEndPlayerTurnEvent">
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent"
                    name="event"/>
       </event>
       <event id="onSkipPlayerTurnEvent">
         <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent"
-                   name="event"/>
-      </event>
-      <event id="onPlayerLeaveGameEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent"
                    name="event"/>
       </event>
     </eventSource>
@@ -211,9 +219,9 @@
         <!-- First parallel section -->
         <state name="PlayerHandler">
           <state name="WaitForPlayerEvent">
-            <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest (event)"
+            <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest(event)"
                         nextState="WaitForPlayerEvent"/>
-            <transition event="onPlayerLeaveGameEvent" action="gameModel.handlePlayerLeaveGame(event)"
+            <transition event="onPlayerQuitGameRequestEvent" action="gameModel.handlePlayerQuitGameRequest(event)"
                         nextState="WaitForPlayerEvent"/>
           </state>
         </state>
@@ -226,8 +234,11 @@
           </state>
           <state name="PlayingGame">
             <onEntry action="gameModel.beginGame()"/>
+            <onExit action="gameModel.endGame()" />
             <!-- Ending the game can occur at any time during the game -->
             <transition event="onEndGameEvent" nextState="EndGame"/>
+            <transition event="onSuspendGameEvent" nextState="Suspended"/>
+            <!-- Game States -->
             <state name="DeterminePlayerTurnOrder">
               <onEntry action="gameModel.determinePlayerTurnOrder()"/>
               <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies"/>
@@ -399,7 +410,16 @@
                 <transition event="onEndPlayerTurnEvent" nextState="PlayerTurn"/>
               </state>
             </state> <!-- End TurnPhase state -->
+            <!-- Resume history state -->
+            <state name="ResumeGame" kind="history">
+              <onEntry action="gameModel.resumeGame()"/>
+            </state>
           </state> <!-- End PlayingGame state -->
+          <state name="Suspended">
+            <onEntry action="gameModel.suspendGame()"/>
+            <transition event="onResumeGameEvent"
+                        nextState="ResumeGame"/>
+          </state>
           <state name="EndGame">
             <onEntry action="gameModel.endGame()"/>
             <transition event="onCreateGameEvent" condition="gameModel.isNotFull()" nextState="WaitForGameToBegin"/>

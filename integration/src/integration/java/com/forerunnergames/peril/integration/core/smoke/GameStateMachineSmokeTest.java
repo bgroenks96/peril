@@ -18,6 +18,9 @@
 
 package com.forerunnergames.peril.integration.core.smoke;
 
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.fail;
+
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -25,12 +28,16 @@ import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoi
 import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
+import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
+import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.peril.integration.core.CoreFactory;
-import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
+import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +57,7 @@ public class GameStateMachineSmokeTest
   // TODO: handle event bus errors
   private final MBassador <Event> eventBus = EventBusFactory.create ();
   private StateMachineEventHandler gameStateMachine;
+  private StateMachineMonitor monitor;
   private GameModel gameModel;
 
   @BeforeClass
@@ -63,15 +71,15 @@ public class GameStateMachineSmokeTest
     gameModel = builder.build ();
     config.setGameModel (gameModel);
     gameStateMachine = CoreFactory.createGameStateMachine (config);
+    monitor = new StateMachineMonitor (gameStateMachine, log);
     eventBus.subscribe (gameStateMachine);
   }
 
   @Test
   public void testCreateGame ()
   {
-    final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
     eventBus.publish (new CreateGameEvent ());
-    stateTest.checkCurrentStateIs ("WaitForGameToBegin");
+    monitor.checkCurrentStateIs ("WaitForGameToBegin");
   }
 
   @Test (dependsOnMethods = "testCreateGame", timeOut = 10000)
@@ -81,7 +89,6 @@ public class GameStateMachineSmokeTest
 
     try
     {
-      final StateMachineMonitor stateTest = new StateMachineMonitor (gameStateMachine, log);
       final int initialDelaySeconds = 1;
 
       executor.schedule (new Runnable ()
@@ -99,7 +106,56 @@ public class GameStateMachineSmokeTest
       }, initialDelaySeconds, TimeUnit.SECONDS);
 
       final long stateChangeTimeoutMs = 10000;
-      stateTest.waitForStateChange ("PlayingGame", stateChangeTimeoutMs);
+      monitor.waitForStateChange ("PlayingGame", stateChangeTimeoutMs);
+    }
+    finally
+    {
+      executor.shutdown ();
+    }
+  }
+
+  @Test (dependsOnMethods = "testPlayersJoinGame")
+  public void testSuspendGame ()
+  {
+    final int eventDelay = 1;
+    final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor ();
+    try
+    {
+      final CompletableFuture <String> initialState = new CompletableFuture <> ();
+      executor.schedule (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          initialState.complete (gameStateMachine.getCurrentGameStateName ());
+          eventBus.publish (new SuspendGameEvent ());
+        }
+      }, eventDelay, TimeUnit.SECONDS);
+
+      final long stateChangeTimeoutMs = 5000;
+      monitor.waitForStateChangeWithCurrent ("Suspended", stateChangeTimeoutMs);
+      executor.schedule (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          eventBus.publish (new ResumeGameEvent ());
+        }
+      }, eventDelay, TimeUnit.SECONDS);
+
+      assertNotEquals ("ResumeGame", initialState.get (), "Initial state should not be 'ResumeGame'!");
+      monitor.waitForStateChangeWithCurrent (initialState.get (), stateChangeTimeoutMs);
+      log.debug ("State History: [{}]", monitor.dumpStateHistory ());
+    }
+    catch (final InterruptedException e)
+    {
+      e.printStackTrace ();
+      fail (e.toString ());
+    }
+    catch (final ExecutionException e)
+    {
+      e.printStackTrace ();
+      fail (e.toString ());
     }
     finally
     {
@@ -109,7 +165,7 @@ public class GameStateMachineSmokeTest
 
   private static String getRandomPlayerName ()
   {
-    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron",
-                                            "Maddy", "Brittany", "Jonathan", "Adam", "Brian");
+    return Randomness.getRandomElementFrom ("Ben", "Bob", "Jerry", "Oscar", "Evelyn", "Josh", "Eliza", "Aaron", "Maddy",
+                                            "Brittany", "Jonathan", "Adam", "Brian");
   }
 }
