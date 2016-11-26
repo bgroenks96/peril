@@ -36,9 +36,10 @@ import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.GameSettings;
-import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
+import com.forerunnergames.peril.core.model.game.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModelFactory;
@@ -99,11 +100,10 @@ public class TestServerApplicationFactory
     final PlayMapModelFactory playMapModelFactory = new DefaultPlayMapModelFactory (gameRules);
     final CountryGraphModel countryGraphModel = CountryGraphModel.disjointCountryGraphFrom (countries);
     final ContinentGraphModel continentGraphModel = ContinentGraphModel.disjointContinentGraphFrom (continents, countryGraphModel);
-    final GameStateMachineConfig config = new GameStateMachineConfig ();
     final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
     final BattleModel battleModel = new DefaultBattleModel(playMapModel);
-    final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).eventBus (eventBus).build ();
-    config.setGameModel (gameModel);
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).eventBus (eventBus).build ();
+    final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (GameModel.create (gameModelConfig));
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
     return newTestServer (eventBus, type, gameMode, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
     // @formatter:on
@@ -154,9 +154,9 @@ public class TestServerApplicationFactory
     final MBassador <Event> aiEventBus = EventBusFactory.create ();
 
     final MultiplayerController multiplayerController = new MultiplayerController (gameServerConfig, serverController,
-            new HumanPlayerCommunicator (serverController), new AiPlayerCommunicator (new AiClientCommunicator (
-                    aiEventBus)), new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (
-                    eventBus), eventBus);
+            new HumanPlayerCommunicator (serverController),
+            new AiPlayerCommunicator (new AiClientCommunicator (aiEventBus)),
+            new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventBus);
 
     final AiApplication aiApplication = new AiApplication (gameServerConfig, eventBus, aiEventBus, mainThreadExecutor);
 

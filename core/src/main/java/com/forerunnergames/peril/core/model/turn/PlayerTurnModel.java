@@ -41,6 +41,12 @@ public interface PlayerTurnModel
 
   void resetTurnCount ();
 
+  int getRound ();
+
+  boolean isRoundIncreasing ();
+
+  void setRoundIncreasing (boolean shouldRoundsIncrease);
+
   @Override
   String toString ();
 }

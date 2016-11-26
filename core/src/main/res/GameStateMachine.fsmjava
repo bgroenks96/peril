@@ -23,9 +23,14 @@
                                      http://www.stateforge.com/xsd/StateMachineJava-v1.xsd">
   <!-- General settings -->
   <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
-    <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model"/>
+    <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model.game"/>
+    <object instance="initialPhase" class="InitialPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.init"/>
+    <object instance="turnPhase" class="TurnPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="reinforcePhase" class="ReinforcementPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="attackPhase" class="AttackPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="fortifyPhase" class="FortifyPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
   </settings>
-
+  
   <!-- Events -->
   <events>
     <eventSource name="Game">
@@ -233,134 +238,140 @@
             <transition event="onPlayerJoinGameSuccessEvent" condition="gameModel.isFull()" nextState="PlayingGame"/>
           </state>
           <state name="PlayingGame">
-            <onEntry action="gameModel.beginGame()"/>
-            <onExit action="gameModel.endGame()" />
+            <onEntry action="gameModel.begin()"/>
+            <onExit action="gameModel.end()" />
             <!-- Ending the game can occur at any time during the game -->
             <transition event="onEndGameEvent" nextState="EndGame"/>
             <transition event="onSuspendGameEvent" nextState="Suspended"/>
-            <!-- Game States -->
-            <state name="DeterminePlayerTurnOrder">
-              <onEntry action="gameModel.determinePlayerTurnOrder()"/>
-              <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies"/>
-            </state>
-            <state name="DistributeInitialArmies">
-              <onEntry action="gameModel.distributeInitialArmies()"/>
-              <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries"/>
-            </state>
-            <state name="AssignPlayerCountries">
-              <state name="WaitForCountryAssignmentToBegin">
-                <onEntry action="gameModel.waitForCountryAssignmentToBegin()"/>
-                <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries"/>
-                <transition event="onBeginManualCountryAssignmentEvent" nextState="ManuallyAssignPlayerCountries"/>
+            <!-- Initial Game Phase -->
+            <state name="InitialPhase">
+              <onEntry action="initialPhase.begin()"/>
+              <onExit action="initialPhase.end()"/>
+              <state name="DeterminePlayerTurnOrder">
+                <onEntry action="initialPhase.determinePlayerTurnOrder()"/>
+                <transition event="onDeterminePlayerTurnOrderCompleteEvent" nextState="DistributeInitialArmies"/>
               </state>
-              <state name="RandomlyAssignPlayerCountries">
-                <onEntry action="gameModel.randomlyAssignPlayerCountries()"/>
-                <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
+              <state name="DistributeInitialArmies">
+                <onEntry action="initialPhase.distributeInitialArmies()"/>
+                <transition event="onDistributeInitialArmiesCompleteEvent" nextState="AssignPlayerCountries"/>
               </state>
-              <state name="ManuallyAssignPlayerCountries">
-                <state name="WaitForPlayersToClaimInitialCountries">
-                  <onEntry action="gameModel.waitForPlayersToClaimInitialCountries()"/>
-                  <onExit action="gameModel.advancePlayerTurn()"/>
-                  <transition event="onPlayerClaimCountryResponseRequestEvent"
-                              condition="gameModel.verifyPlayerClaimCountryResponseRequest(event)"
-                              nextState="WaitForPlayersToClaimInitialCountries"/>
+              <state name="AssignPlayerCountries">
+                <state name="WaitForCountryAssignmentToBegin">
+                  <onEntry action="initialPhase.waitForCountryAssignmentToBegin()"/>
+                  <transition event="onRandomlyAssignPlayerCountriesEvent" nextState="RandomlyAssignPlayerCountries"/>
+                  <transition event="onBeginManualCountryAssignmentEvent" nextState="ManuallyAssignPlayerCountries"/>
+                </state>
+                <state name="RandomlyAssignPlayerCountries">
+                  <onEntry action="initialPhase.randomlyAssignPlayerCountries()"/>
                   <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
                 </state>
-              </state>
-            </state> <!-- End AssignPlayerCountries state -->
-            <state name="InitialReinforcementPhase">
-              <onEntry action="gameModel.beginInitialReinforcementPhase()"/>
-              <onExit action="gameModel.resetTurn()"/>
-              <state name="WaitForPlayersToReinforceInitialCountries">
-                <onEntry action="gameModel.waitForPlayersToReinforceInitialCountries()"/>
-                <onExit action="gameModel.advancePlayerTurn()"/>
-                <transition event="onSkipPlayerTurnEvent"
-                            action="gameModel.skipPlayerTurn(event)"
-                            nextState="WaitForPlayersToReinforceInitialCountries"/>
-                <transition event="onPlayerReinforceCountryRequestEvent"
-                            condition="gameModel.verifyPlayerInitialCountryReinforcements(event)"
-                            nextState="WaitForPlayersToReinforceInitialCountries"/>
-                <transition event="onEndInitialReinforcementPhaseEvent"
-                            nextState="TurnPhase"/>
-              </state>
-            </state> <!-- End InitialReinforcementPhase state -->
+                <state name="ManuallyAssignPlayerCountries">
+                  <state name="WaitForPlayersToClaimInitialCountries">
+                    <onEntry action="initialPhase.waitForPlayersToClaimInitialCountries()"/>
+                    <onExit action="initialPhase.advancePlayerTurn()"/>
+                    <transition event="onPlayerClaimCountryResponseRequestEvent"
+                                condition="initialPhase.verifyPlayerClaimCountryResponseRequest(event)"
+                                nextState="WaitForPlayersToClaimInitialCountries"/>
+                    <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
+                  </state>
+                </state>
+              </state> <!-- End AssignPlayerCountries state -->
+              <state name="InitialReinforcementPhase">
+                <onEntry action="initialPhase.beginInitialReinforcementPhase()"/>
+                <onExit action="initialPhase.resetTurn()"/>
+                <state name="WaitForPlayersToReinforceInitialCountries">
+                  <onEntry action="initialPhase.waitForPlayersToReinforceInitialCountries()"/>
+                  <onExit action="initialPhase.advancePlayerTurn()"/>
+                  <transition event="onSkipPlayerTurnEvent"
+                              action="initialPhase.skipPlayerTurn(event)"
+                              nextState="WaitForPlayersToReinforceInitialCountries"/>
+                  <transition event="onPlayerReinforceCountryRequestEvent"
+                              condition="initialPhase.verifyPlayerInitialCountryReinforcements(event)"
+                              nextState="WaitForPlayersToReinforceInitialCountries"/>
+                  <transition event="onEndInitialReinforcementPhaseEvent"
+                              nextState="TurnPhase"/>
+                </state>
+              </state> <!-- End InitialReinforcementPhase state -->
+            </state>
             <state name="TurnPhase">
+              <onEntry action="turnPhase.begin()"/>
+              <onExit action="turnPhase.end()"/>
               <state name="PlayerTurn">
-                <onEntry action="gameModel.beginPlayerTurn()"/>
+                <onEntry action="turnPhase.beginPlayerTurn()"/>
                 <transition event="onSkipPlayerTurnEvent"
-                            action="gameModel.skipPlayerTurn(event)"
+                            action="turnPhase.skipPlayerTurn(event)"
                             nextState="AdvancePlayerTurn"/>
                 <transition event="onEndPlayerTurnRequestEvent"
-                            condition="gameModel.verifyPlayerEndTurnRequest(event)"
+                            condition="turnPhase.verifyPlayerEndTurnRequest(event)"
                             nextState="AdvancePlayerTurn"/>
                 <state name="ReinforcementPhase">
-                  <onEntry action="gameModel.beginReinforcementPhase()"/>
-                  <onExit action="gameModel.endReinforcementPhase()"/>
+                  <onEntry action="reinforcePhase.begin()"/>
+                  <onExit action="reinforcePhase.end()"/>
                   <state name="WaitForPlayerToReinforceOrTradeIn">
                     <transition event="onPlayerReinforceCountryRequestEvent"
-                                condition="gameModel.verifyPlayerReinforceCountry(event)"
+                                condition="reinforcePhase.verifyPlayerReinforceCountry(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
                     <transition event="onPlayerTradeInCardsRequestEvent"
-                                condition="gameModel.verifyPlayerCardTradeIn(event)"
+                                condition="turnPhase.verifyPlayerCardTradeIn(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
                   </state>
                   <state name="WaitForPlayerToPlaceReinforcements">
-                    <onEntry action="gameModel.waitForPlayerToPlaceReinforcements()"/>
+                    <onEntry action="reinforcePhase.waitForPlayerToPlaceReinforcements()"/>
                     <transition event="onPlayerReinforceCountryRequestEvent"
-                                condition="gameModel.verifyPlayerReinforceCountry(event)"
+                                condition="reinforcePhase.verifyPlayerReinforceCountry(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
                     <transition event="onEndReinforcementPhaseEvent"
-                                action="gameModel.endReinforcementPhase()"
+                                action="reinforcePhase.end()"
                                 nextState="AttackPhase"/>
                   </state>
                 </state> <!-- End ReinforcementPhase state -->
                 <state name="AttackPhase">
-                  <onEntry action="gameModel.beginAttackPhase()"/>
-                  <onExit action="gameModel.endAttackPhase()"/>
+                  <onEntry action="attackPhase.begin()"/>
+                  <onExit action="attackPhase.end()"/>
                   <state name="WaitForPlayerToSelectAttackVector">
-                    <onEntry action="gameModel.waitForPlayerToSelectAttackVector()"/>
+                    <onEntry action="attackPhase.waitForPlayerToSelectAttackVector()"/>
                     <transition event="onPlayerSelectAttackVectorRequestEvent"
-                                condition="gameModel.verifyPlayerAttackVector(event)"
+                                condition="attackPhase.verifyPlayerAttackVector(event)"
                                 nextState="WaitForPlayerAttackOrder"/>
                     <transition event="onPlayerEndAttackPhaseRequestEvent"
-                                action="gameModel.processPlayerEndAttackPhase(event)"
+                                action="attackPhase.processPlayerEndAttackPhase(event)"
                                 nextState="FortifyPhase"/>
                   </state>
                   <state name="WaitForPlayerAttackOrder">
-                    <onEntry action="gameModel.waitForPlayerAttackOrder()">
-                      <timerStart timer="AttackerResponseTimer" duration="gameModel.getBattleResponseTimeoutMs()"/>
-                      <timerStart timer="DefenderResponseTimer" duration="gameModel.getBattleResponseTimeoutMs()"/>
+                    <onEntry action="attackPhase.waitForPlayerAttackOrder()">
+                      <timerStart timer="AttackerResponseTimer" duration="attackPhase.getBattleResponseTimeoutMs()"/>
+                      <timerStart timer="DefenderResponseTimer" duration="attackPhase.getBattleResponseTimeoutMs()"/>
                     </onEntry>
                     <onExit>
                       <timerStop timer="AttackerResponseTimer"/>
                       <timerStop timer="DefenderResponseTimer"/>
                     </onExit>
                     <transition event="onPlayerOrderAttackRequestEvent"
-                                condition="gameModel.verifyPlayerAttackOrder(event)"
+                                condition="attackPhase.verifyPlayerAttackOrder(event)"
                                 nextState="ProcessBattle">
                       <!-- Required to stop timer when condition is false. -->
                       <!-- Timer will be stopped in onExit when condition is true. -->
                       <timerStop timer="AttackerResponseTimer"/>
                     </transition>
                     <transition event="onPlayerOrderRetreatRequestEvent"
-                                action="gameModel.processPlayerRetreat(event)"
+                                action="attackPhase.processPlayerRetreat(event)"
                                 nextState="WaitForPlayerToSelectAttackVector"/>
                     <transition event="onPlayerDefendCountryResponseRequestEvent"
-                                condition="gameModel.verifyPlayerDefendCountryResponseRequest(event)"
+                                condition="attackPhase.verifyPlayerDefendCountryResponseRequest(event)"
                                 nextState="ProcessBattle">
                       <!-- Required to stop timer when condition is false. -->
                       <!-- Timer will be stopped in onExit when condition is true. -->
                       <timerStop timer="DefenderResponseTimer"/>
                     </transition>
                     <transition event="onAttackerResponseTimeout"
-                                condition="gameModel.handleAttackerTimeout()"
+                                condition="attackPhase.handleAttackerTimeout()"
                                 nextState="ProcessBattle">
                       <!-- Required to stop timer when condition is false. -->
                       <!-- Timer will be stopped in onExit when condition is true. -->
                       <timerStop timer="AttackerResponseTimer"/>
                     </transition>
                     <transition event="onDefenderResponseTimeout"
-                                condition="gameModel.handleDefenderTimeout()"
+                                condition="attackPhase.handleDefenderTimeout()"
                                 nextState="ProcessBattle">
                       <!-- Required to stop timer when condition is false. -->
                       <!-- Timer will be stopped in onExit when condition is true. -->
@@ -368,7 +379,7 @@
                     </transition>
                   </state>
                   <state name="ProcessBattle">
-                    <onEntry action="gameModel.processBattle()"/>
+                    <onEntry action="attackPhase.processBattle()"/>
                     <transition event="onBattleResultVictoryEvent"
                                 nextState="WaitForPlayerToOccupyCountry"/>
                     <transition event="onBattleResultDefeatEvent"
@@ -377,36 +388,36 @@
                                 nextState="WaitForPlayerAttackOrder"/>
                   </state>
                   <state name="WaitForPlayerToOccupyCountry">
-                    <onEntry action="gameModel.waitForPlayerToOccupyCountry()"/>
+                    <onEntry action="attackPhase.waitForPlayerToOccupyCountry()"/>
                     <transition event="onPlayerOccupyCountryResponseRequestEvent"
-                                condition="gameModel.verifyPlayerOccupyCountryResponseRequest(event)"
+                                condition="attackPhase.verifyPlayerOccupyCountryResponseRequest(event)"
                                 nextState="WaitForPlayerToSelectAttackVector"/>
                   </state>
                 </state> <!-- End AttackPhase state -->
                 <state name="FortifyPhase">
-                  <onEntry action="gameModel.beginFortifyPhase()"/>
-                  <onExit action="gameModel.endFortifyPhase()"/>
+                  <onEntry action="fortifyPhase.begin()"/>
+                  <onExit action="fortifyPhase.end()"/>
                   <transition event="onSkipFortifyPhaseEvent"
                               nextState="AdvancePlayerTurn"/>
                   <state name="WaitForPlayerToSelectFortifyVector">
-                    <onEntry action="gameModel.waitForPlayerToSelectFortifyVector()"/>
+                    <onEntry action="fortifyPhase.waitForPlayerToSelectFortifyVector()"/>
                     <transition event="onPlayerSelectFortifyVectorRequestEvent"
-                                condition="gameModel.verifyPlayerFortifyVectorSelection(event)"
+                                condition="fortifyPhase.verifyPlayerFortifyVectorSelection(event)"
                                 nextState="WaitForPlayerToFortifyCountry"/>
                   </state>
                   <state name="WaitForPlayerToFortifyCountry">
                     <transition event="onPlayerOrderFortifyRequestEvent"
-                                condition="gameModel.verifyPlayerFortifyOrder(event)"
+                                condition="fortifyPhase.verifyPlayerFortifyOrder(event)"
                                 nextState="AdvancePlayerTurn"/>
                     <transition event="onPlayerCancelFortifyRequestEvent"
-                                condition="gameModel.verifyPlayerCancelFortifyVector(event)"
+                                condition="fortifyPhase.verifyPlayerCancelFortifyVector(event)"
                                 nextState="WaitForPlayerToSelectFortifyVector"/>
                   </state>
                 </state> <!-- End FortifyPhase state -->
               </state> <!-- End PlayerTurn state -->
               <state name="AdvancePlayerTurn">
-                <onEntry action="gameModel.endPlayerTurn()"/>
-                <onExit action="gameModel.advancePlayerTurn()"/>
+                <onEntry action="turnPhase.endPlayerTurn()"/>
+                <onExit action="turnPhase.advancePlayerTurn()"/>
                 <transition event="onEndPlayerTurnEvent" nextState="PlayerTurn"/>
               </state>
             </state> <!-- End TurnPhase state -->
@@ -421,7 +432,6 @@
                         nextState="ResumeGame"/>
           </state>
           <state name="EndGame">
-            <onEntry action="gameModel.endGame()"/>
             <transition event="onCreateGameEvent" condition="gameModel.isNotFull()" nextState="WaitForGameToBegin"/>
             <transition event="onCreateGameEvent" condition="gameModel.isFull()" nextState="PlayingGame"/>
           </state>

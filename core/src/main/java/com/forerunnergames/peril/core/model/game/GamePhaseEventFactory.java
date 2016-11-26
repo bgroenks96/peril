@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.events;
+package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
@@ -26,7 +26,7 @@ import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
 
-public interface EventFactory
+public interface GamePhaseEventFactory
 {
   PlayerCardTradeInAvailableEvent createCardTradeInEventFor (final Id playerId,
                                                              final ImmutableSet <CardSet.Match> matches,

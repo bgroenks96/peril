@@ -49,6 +49,7 @@ public final class CountryGraphModel extends TerritoryGraphModel <Country>
     countryIdsToCountries = countryMapBuilder.build ();
   }
 
+  // TODO move somewhere else
   public static CountryGraphModel disjointCountryGraphFrom (final CountryFactory countries)
   {
     final DefaultGraphModel.Builder <Country> builder = DefaultGraphModel.builder ();

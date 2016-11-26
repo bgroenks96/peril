@@ -18,7 +18,9 @@
 
 package com.forerunnergames.peril.integration.core;
 
-import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
+import com.forerunnergames.peril.core.model.game.phase.GamePhaseHandlers;
 import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.tools.common.Arguments;
@@ -26,17 +28,17 @@ import com.forerunnergames.tools.common.Classes;
 
 public final class CoreFactory
 {
-  public static StateMachineEventHandler createDefaultGameStateMachine ()
+  public static GameStateMachineConfig createDefaultConfigurationFrom (final GameModel gameModel)
   {
-    return createGameStateMachine (new GameStateMachineConfig ());
+    final GameModelConfiguration gameModelConfig = gameModel.getConfiguration ();
+    return new GameStateMachineConfig (gameModel, GamePhaseHandlers.createDefault (gameModelConfig));
   }
 
   public static StateMachineEventHandler createGameStateMachine (final GameStateMachineConfig config)
   {
     Arguments.checkIsNotNull (config, "config");
 
-    final GameModel gameModel = config.getGameModel ();
-    return new StateMachineEventHandler (gameModel);
+    return new StateMachineEventHandler (config.gameModel, config.gamePhaseHandlers);
   }
 
   public static CountryFactory generateTestCountries (final int count)
@@ -58,19 +60,23 @@ public final class CoreFactory
 
   public static final class GameStateMachineConfig
   {
-    private GameModel gameModel;
+    private final GameModel gameModel;
+    private final GamePhaseHandlers gamePhaseHandlers;
+
+    public GameStateMachineConfig (final GameModel gameModel, final GamePhaseHandlers gamePhaseHandlers)
+    {
+      this.gameModel = gameModel;
+      this.gamePhaseHandlers = gamePhaseHandlers;
+    }
 
     public GameModel getGameModel ()
     {
       return gameModel;
     }
 
-    public GameStateMachineConfig setGameModel (final GameModel gameModel)
+    public GamePhaseHandlers getGamePhaseHandlers ()
     {
-      Arguments.checkIsNotNull (gameModel, "gameModel");
-
-      this.gameModel = gameModel;
-      return this;
+      return gamePhaseHandlers;
     }
   }
 }

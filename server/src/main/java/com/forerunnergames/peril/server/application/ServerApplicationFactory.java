@@ -32,13 +32,15 @@ import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.io.PlayMapMetadataFinder;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
-import com.forerunnergames.peril.core.model.GameModel;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
 import com.forerunnergames.peril.core.model.card.io.CardModelDataFactoryCreator;
+import com.forerunnergames.peril.core.model.game.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
+import com.forerunnergames.peril.core.model.game.phase.GamePhaseHandlers;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
@@ -103,15 +105,13 @@ public final class ServerApplicationFactory
 
     final CountryFactory countryFactory = dataFactory.createCountries (playMapMetadata);
 
-    final ContinentFactory continentFactory = dataFactory.createContinents (playMapMetadata,
-                                                                            new DefaultCountryIdResolver (
-                                                                                    countryFactory));
+    final ContinentFactory continentFactory = dataFactory
+            .createContinents (playMapMetadata, new DefaultCountryIdResolver (countryFactory));
 
     final CountryGraphModel countryGraphModel = dataFactory.createCountryGraphModel (playMapMetadata, countryFactory);
 
-    final ContinentGraphModel continentGraphModel = dataFactory.createContinentGraphModel (playMapMetadata,
-                                                                                           continentFactory,
-                                                                                           countryGraphModel);
+    final ContinentGraphModel continentGraphModel = dataFactory
+            .createContinentGraphModel (playMapMetadata, continentFactory, countryGraphModel);
 
     final ImmutableSet <Card> cards = CardModelDataFactoryCreator.create (args.gameMode).createCards (playMapMetadata);
 
@@ -129,11 +129,13 @@ public final class ServerApplicationFactory
     final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
     final BattleModel battleModel = new DefaultBattleModel (playMapModel);
 
-    final GameModel gameModel = GameModel.builder (gameRules).playMapModel (playMapModel).playerModel (playerModel)
-            .cardModel (cardModel).battleModel (battleModel).playerTurnModel (playerTurnModel)
-            .eventBus (serverEventBus).build ();
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules)
+            .playMapModel (playMapModel).playerModel (playerModel).cardModel (cardModel).battleModel (battleModel)
+            .playerTurnModel (playerTurnModel).eventBus (serverEventBus).build ();
 
-    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel);
+    final GameModel gameModel = GameModel.create (gameModelConfig);
+    final GamePhaseHandlers gamePhaseHandlers = GamePhaseHandlers.createDefault (gameModelConfig);
+    final StateMachineEventHandler gameStateMachine = new StateMachineEventHandler (gameModel, gamePhaseHandlers);
 
     final ExternalAddressResolver externalAddressResolver = new DefaultExternalAddressResolver (
             NetworkSettings.EXTERNAL_IP_RESOLVER_URL);
@@ -148,15 +150,16 @@ public final class ServerApplicationFactory
     final MBassador <Event> aiEventBus = EventBusFactory.create ();
 
     final Controller multiplayerController = new MultiplayerController (gameServerConfig, serverController,
-            new HumanPlayerCommunicator (serverController), new AiPlayerCommunicator (new AiClientCommunicator (
-                    aiEventBus)), new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (
-                    serverEventBus), serverEventBus);
+            new HumanPlayerCommunicator (serverController),
+            new AiPlayerCommunicator (new AiClientCommunicator (aiEventBus)),
+            new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (serverEventBus),
+            serverEventBus);
 
     final AiApplication aiApplication = new AiApplication (gameServerConfig, serverEventBus, aiEventBus,
             mainThreadExecutor);
 
-    return new ServerApplication (gameStateMachine, serverEventBus, mainThreadExecutor, serverController,
-            aiApplication, multiplayerController);
+    return new ServerApplication (gameStateMachine, serverEventBus, mainThreadExecutor, serverController, aiApplication,
+            multiplayerController);
   }
 
   private ServerApplicationFactory ()

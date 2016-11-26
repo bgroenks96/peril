@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model;
+package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // Handler class for internal communication events from server
-class InternalCommunicationHandler
+public class InternalCommunicationHandler
 {
   private static final Logger log = LoggerFactory.getLogger (InternalCommunicationHandler.class);
   private final PlayerModel playerModel;
@@ -61,7 +61,7 @@ class InternalCommunicationHandler
   private final Map <InformRequestEvent, PlayerInformEvent> informRequests = Maps.newHashMap ();
   private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
 
-  InternalCommunicationHandler (final PlayerModel playerModel, final MBassador <Event> eventBus)
+  public InternalCommunicationHandler (final PlayerModel playerModel, final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -70,13 +70,13 @@ class InternalCommunicationHandler
     this.eventBus = eventBus;
   }
 
-  boolean isSenderOf (final RequestEvent event, final PlayerPacket player)
+  public boolean isSenderOf (final RequestEvent event, final PlayerPacket player)
   {
     final Optional <PlayerPacket> sender = senderOf (event);
     return sender.isPresent () && sender.get ().is (player);
   }
 
-  boolean isNotSenderOf (final RequestEvent event, final PlayerPacket player)
+  public boolean isNotSenderOf (final RequestEvent event, final PlayerPacket player)
   {
     return !isSenderOf (event, player);
   }
@@ -84,7 +84,7 @@ class InternalCommunicationHandler
   /**
    * Fetches the PlayerPacket representing the player from whom this client request event was received.
    */
-  Optional <PlayerPacket> senderOf (final RequestEvent event)
+  public Optional <PlayerPacket> senderOf (final RequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -94,7 +94,7 @@ class InternalCommunicationHandler
   /**
    * Fetches the {@link PlayerInputRequestEvent} corresponding to this ResponseRequestEvent.
    */
-  Optional <PlayerInputRequestEvent> inputRequestFor (final ResponseRequestEvent event)
+  public Optional <PlayerInputRequestEvent> inputRequestFor (final ResponseRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -104,14 +104,14 @@ class InternalCommunicationHandler
   /**
    * Fetches the {@link PlayerInformEvent} corresponding to this {@link InformRequestEvent}.
    */
-  Optional <PlayerInformEvent> informEventFor (final InformRequestEvent event)
+  public Optional <PlayerInformEvent> informEventFor (final InformRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     return Optional.fromNullable (informRequests.get (event));
   }
 
-  <T extends ServerEvent> Optional <T> lastOutboundEventOfType (final Class <T> type)
+  public <T extends ServerEvent> Optional <T> lastOutboundEventOfType (final Class <T> type)
   {
     final Deque <ServerEvent> tempDeque = Queues.newArrayDeque ();
     Optional <T> maybe = Optional.absent ();
@@ -134,7 +134,7 @@ class InternalCommunicationHandler
   /**
    * This method should be called periodically to avoid stale request events from polluting the map caches.
    */
-  void clearEventCache ()
+  public void clearEventCache ()
   {
     log.debug ("Clearing internal event caches [{} RequestEvents] [{} ResponseRequestEvents].", requestEvents.size (),
                responseRequests.size ());

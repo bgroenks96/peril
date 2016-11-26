@@ -44,7 +44,8 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipF
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModel;
+import com.forerunnergames.peril.core.model.game.phase.GamePhaseHandlers;
 import com.forerunnergames.peril.core.model.state.events.BattleResultContinueEvent;
 import com.forerunnergames.peril.core.model.state.events.BattleResultDefeatEvent;
 import com.forerunnergames.peril.core.model.state.events.BattleResultVictoryEvent;
@@ -91,11 +92,13 @@ public final class StateMachineEventHandler
   private final CompositeStateMachineListener stateMachineListener = new CompositeStateMachineListener ();
   private Optional <Throwable> errorState = Optional.absent ();
 
-  public StateMachineEventHandler (final GameModel gameModel)
+  public StateMachineEventHandler (final GameModel gameModel, final GamePhaseHandlers gamePhaseHandlers)
   {
     Arguments.checkIsNotNull (gameModel, "gameModel");
 
-    context = new GameStateMachineContext (gameModel);
+    context = new GameStateMachineContext (gameModel, gamePhaseHandlers.getInitialPhaseHandler (),
+            gamePhaseHandlers.getTurnPhaseHandler (), gamePhaseHandlers.getReinforcePhaseHandler (),
+            gamePhaseHandlers.getAttackPhaseHandler (), gamePhaseHandlers.getFortifyPhaseHandler ());
     context.setObserver (stateMachineListener);
 
     context.setEndHandler (new IContextEnd ()
