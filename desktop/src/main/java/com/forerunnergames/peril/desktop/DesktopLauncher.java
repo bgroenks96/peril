@@ -21,6 +21,7 @@ package com.forerunnergames.peril.desktop;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl.LwjglGraphics;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -38,6 +39,7 @@ import com.google.common.base.Throwables;
 
 import java.awt.Dimension;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -57,31 +59,17 @@ public final class DesktopLauncher
       @Override
       public void uncaughtException (final Thread t, final Throwable e)
       {
-        final String errorMessage = Strings.format ("The client application has crashed!\n\nA crash file has been "
+        final String errorMessage = Strings.format (
+                                                    "The client application has crashed!\n\nA crash file has been "
                                                             + "created in \"{}\".\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                                                    CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
-                                                            .getRootCause (e).getMessage (), Strings.toString (e));
+                                                    CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                                                    Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
         log.error (errorMessage);
 
         if (Gdx.app != null) Gdx.app.exit ();
 
-        SwingUtilities.invokeLater (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            final JTextArea textArea = new JTextArea (errorMessage);
-            textArea.setLineWrap (true);
-            textArea.setWrapStyleWord (true);
-            textArea.setEditable (false);
-
-            final JScrollPane scrollPane = new JScrollPane (textArea);
-            scrollPane.setPreferredSize (new Dimension (1000, 382));
-
-            JOptionPane.showMessageDialog (null, scrollPane, "Peril", JOptionPane.ERROR_MESSAGE);
-          }
-        });
+        showSwingBackupDialog (JOptionPane.ERROR_MESSAGE, 1000, 382, "Error", errorMessage);
       }
     });
 
@@ -107,6 +95,7 @@ public final class DesktopLauncher
     config.title = GraphicsSettings.WINDOW_TITLE;
     config.useGL30 = GraphicsSettings.USE_OPENGL_CORE_PROFILE;
     config.useHDPI = GraphicsSettings.USE_HIGH_DPI;
+    config.allowSoftwareMode = true; // Try and avoid crashing on old, unsupported hardware.
 
     final CommandLineArgs jArgs = new CommandLineArgs ();
     final JCommander jCommander = new JCommander (jArgs);
@@ -134,5 +123,48 @@ public final class DesktopLauncher
     if (!jArgs.clanAcronym.isEmpty ()) InputSettings.INITIAL_CLAN_ACRONYM = jArgs.clanAcronym;
 
     new LwjglApplication (LibGdxGameFactory.create (), config);
+
+    // Show a warning if we're using software-rendering.
+    if (((LwjglGraphics) Gdx.graphics).isSoftwareMode ())
+    {
+      final String warningMessage = "Peril is now running in software rendering mode.\n\n"
+              + "It seems your video card does not support OpenGL hardware rendering. "
+              + "This will not provide an optimal gaming experience; "
+              + "performance and visuals may be severely degraded. "
+              + "If this doesn't seem right, please try updating your video card drivers.";
+
+      log.warn (warningMessage);
+
+      showSwingBackupDialog (JOptionPane.WARNING_MESSAGE, 650, 244, "Warning", warningMessage);
+    }
+  }
+
+  private static void showSwingBackupDialog (final int jOptionPaneMessageType,
+                                             final int width,
+                                             final int height,
+                                             final String title,
+                                             final String message)
+  {
+    SwingUtilities.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        final JTextArea textArea = new JTextArea (message);
+        textArea.setLineWrap (true);
+        textArea.setWrapStyleWord (true);
+        textArea.setEditable (false);
+
+        final JScrollPane scrollPane = new JScrollPane (textArea);
+        scrollPane.setPreferredSize (new Dimension (width, height));
+
+        final JOptionPane optionPane = new JOptionPane (scrollPane, jOptionPaneMessageType);
+        optionPane.setPreferredSize (new Dimension (width, height));
+
+        final JDialog dialog = optionPane.createDialog (title);
+        dialog.setAlwaysOnTop (true);
+        dialog.setVisible (true);
+      }
+    });
   }
 }
