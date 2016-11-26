@@ -450,16 +450,10 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
     clanAcronymCheckBox.setStyle (widgetFactory.createClanAcronymCheckBoxStyle ());
     final SelectBox.SelectBoxStyle winPercentSelectBoxStyle = widgetFactory.createWinPercentSelectBoxStyle ();
     winPercentSelectBox.setStyle (winPercentSelectBoxStyle);
-    winPercentSelectBox.getScrollPane ().setStyle (winPercentSelectBoxStyle.scrollStyle);
-    winPercentSelectBox.getList ().setStyle (winPercentSelectBoxStyle.listStyle);
     final SelectBox.SelectBoxStyle spectatorLimitSelectBoxStyle = widgetFactory.createSpectatorLimitSelectBoxStyle ();
     spectatorLimitSelectBox.setStyle (spectatorLimitSelectBoxStyle);
-    spectatorLimitSelectBox.getScrollPane ().setStyle (spectatorLimitSelectBoxStyle.scrollStyle);
-    spectatorLimitSelectBox.getList ().setStyle (spectatorLimitSelectBoxStyle.listStyle);
     final SelectBox.SelectBoxStyle initialCountryAssignmentSelectBoxStyle = widgetFactory.createInitialCountryAssignmentSelectBoxStyle ();
     initialCountryAssignmentSelectBox.setStyle (initialCountryAssignmentSelectBoxStyle);
-    initialCountryAssignmentSelectBox.getScrollPane ().setStyle (initialCountryAssignmentSelectBoxStyle.scrollStyle);
-    initialCountryAssignmentSelectBox.getList ().setStyle (initialCountryAssignmentSelectBoxStyle.listStyle);
     playMapNameLabel.setStyle (widgetFactory.createPlayMapNameLabelStyle ());
     customizeHumanPlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
     customizeAiPlayersButton.setStyle (widgetFactory.createCustomizePlayersButtonStyle ());
