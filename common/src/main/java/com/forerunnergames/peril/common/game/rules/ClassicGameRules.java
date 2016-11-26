@@ -842,7 +842,7 @@ public final class ClassicGameRules implements GameRules
     private int winPercentage = DEFAULT_WIN_PERCENTAGE;
     private int totalCountryCount = DEFAULT_TOTAL_COUNTRY_COUNT;
     private InitialCountryAssignment initialCountryAssignment = DEFAULT_INITIAL_COUNTRY_ASSIGNMENT;
-    private PersonLimits.Builder personLimitsBuilder = PersonLimits.builder ().classicModeDefaults ();
+    private final PersonLimits.Builder personLimitsBuilder = PersonLimits.builder ().classicModeDefaults ();
 
     public ClassicGameRules build ()
     {
