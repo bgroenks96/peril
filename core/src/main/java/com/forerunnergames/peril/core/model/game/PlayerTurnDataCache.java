@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.model;
+package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
@@ -31,27 +31,27 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class PlayerTurnDataCache <K>
+public class PlayerTurnDataCache <K>
 {
   private static final Logger log = LoggerFactory.getLogger (PlayerTurnDataCache.class);
 
   private final Map <K, Object> dataCache = Maps.newConcurrentMap ();
 
-  boolean isSet (final K key)
+  public boolean isSet (final K key)
   {
     Arguments.checkIsNotNull (key, "key");
 
     return dataCache.containsKey (key);
   }
 
-  boolean isNotSet (final K key)
+  public boolean isNotSet (final K key)
   {
     Arguments.checkIsNotNull (key, "key");
 
     return !dataCache.containsKey (key);
   }
 
-  void put (final K key, final Object value)
+  public void put (final K key, final Object value)
   {
     Arguments.checkIsNotNull (key, "key");
     Arguments.checkIsNotNull (value, "value");
@@ -65,7 +65,7 @@ class PlayerTurnDataCache <K>
     dataCache.put (key, value);
   }
 
-  <T> T get (final K key, final Class <T> valueType)
+  public <T> T get (final K key, final Class <T> valueType)
   {
     Arguments.checkIsNotNull (key, "key");
     Arguments.checkIsNotNull (valueType, "valueType");
@@ -74,7 +74,7 @@ class PlayerTurnDataCache <K>
     return valueType.cast (dataCache.get (key));
   }
 
-  <T> Optional <T> checkAndGet (final K key, final Class <T> valueType)
+  public <T> Optional <T> checkAndGet (final K key, final Class <T> valueType)
   {
     Arguments.checkIsNotNull (key, "key");
     Arguments.checkIsNotNull (valueType, "valueType");
@@ -82,14 +82,14 @@ class PlayerTurnDataCache <K>
     return Optional.fromNullable (valueType.cast (dataCache.get (key)));
   }
 
-  void clear (final K key)
+  public void clear (final K key)
   {
     Arguments.checkIsNotNull (key, "key");
 
     dataCache.remove (key);
   }
 
-  <T> Optional <T> clear (final K key, final Class <T> valueType)
+  public <T> Optional <T> clear (final K key, final Class <T> valueType)
   {
     Arguments.checkIsNotNull (key, "key");
     Arguments.checkIsNotNull (valueType, "valueType");
@@ -105,7 +105,7 @@ class PlayerTurnDataCache <K>
     return Optional.of (valueType.cast (dataCache.remove (key)));
   }
 
-  void clearAll ()
+  public void clearAll ()
   {
     dataCache.clear ();
   }

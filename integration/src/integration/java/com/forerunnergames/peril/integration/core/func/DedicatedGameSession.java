@@ -23,7 +23,8 @@ import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.GameServerType;
-import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.TestSessions.TestSession;
@@ -143,9 +144,10 @@ public class DedicatedGameSession implements TestSession
 
   private void initializeServer ()
   {
-    gameModel = GameModel.builder (gameRules).eventBus (eventBus).build ();
-    final GameStateMachineConfig config = new GameStateMachineConfig ();
-    config.setGameModel (gameModel);
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus)
+            .build ();
+    gameModel = GameModel.create (gameModelConfig);
+    final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);
     serverApplication = TestServerApplicationFactory.createTestServer (eventBus, GameServerType.DEDICATED, gameRules,
                                                                        stateMachine, serverAddress, serverPort);
@@ -162,8 +164,8 @@ public class DedicatedGameSession implements TestSession
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}", getClass ().getSimpleName (),
-                     sessionName, internalServerAddress, serverPort, gameRules.getInitialCountryAssignment ());
+    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
+                           getClass ().getSimpleName (), sessionName, internalServerAddress, serverPort,
+                           gameRules.getInitialCountryAssignment ());
   }
 }

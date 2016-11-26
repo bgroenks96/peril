@@ -25,7 +25,8 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.core.model.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModel;
+import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
@@ -63,13 +64,11 @@ public class GameStateMachineSmokeTest
   @BeforeClass
   public void setUp ()
   {
-    final GameStateMachineConfig config = new GameStateMachineConfig ();
     final GameRules rules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (TEST_COUNTRY_COUNT)
             .build ();
-    final GameModel.Builder builder = GameModel.builder (rules);
-    builder.eventBus (eventBus);
-    gameModel = builder.build ();
-    config.setGameModel (gameModel);
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (rules).eventBus (eventBus).build ();
+    gameModel = GameModel.create (gameModelConfig);
+    final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (gameModel);
     gameStateMachine = CoreFactory.createGameStateMachine (config);
     monitor = new StateMachineMonitor (gameStateMachine, log);
     eventBus.subscribe (gameStateMachine);

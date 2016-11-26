@@ -32,7 +32,7 @@ import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.model.GameModelTest;
+import com.forerunnergames.peril.core.model.game.GameModelTest;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;

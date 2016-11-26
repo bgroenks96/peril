@@ -30,7 +30,9 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
 {
   private final GameRules rules;
   private PlayerTurnOrder currentTurn = PlayerTurnOrder.FIRST;
-  private PlayerTurnOrder lastTurn;
+  private PlayerTurnOrder lastTurn = PlayerTurnOrder.UNKNOWN;
+  private int currentRound = 0;
+  private boolean isRoundIncreasing = true;
 
   public DefaultPlayerTurnModel (final GameRules rules)
   {
@@ -44,6 +46,10 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   public void advance ()
   {
     currentTurn = currentTurn.is (lastTurn) ? PlayerTurnOrder.FIRST : currentTurn.nextValid ();
+    if (isFirstTurn () && lastTurn == maxTurn ())
+    {
+      advanceRound ();
+    }
   }
 
   @Override
@@ -90,7 +96,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   @Override
   public void resetTurnCount ()
   {
-    lastTurn = PlayerTurnOrder.getNthValidTurnOrder (rules.getTotalPlayerLimit ());
+    lastTurn = maxTurn ();
 
     // currentTurn can never be invalidated here because lastTurn can only ever be decremented from this max value,
     // implying by logical deduction that this method can only ever increase lastTurn's position, or at worst leave it
@@ -113,5 +119,38 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   {
     return Strings.format ("{}: CurrentTurn: [{}] | LastTurn: [{}] | Rules: [{}]", getClass ().getSimpleName (),
                            currentTurn, lastTurn, rules);
+  }
+
+  @Override
+  public int getRound ()
+  {
+    return currentRound;
+  }
+
+  @Override
+  public boolean isRoundIncreasing ()
+  {
+    return isRoundIncreasing;
+  }
+
+  @Override
+  public void setRoundIncreasing (final boolean shouldRoundsIncrease)
+  {
+    isRoundIncreasing = shouldRoundsIncrease;
+  }
+
+  private PlayerTurnOrder maxTurn ()
+  {
+    return PlayerTurnOrder.getNthValidTurnOrder (rules.getTotalPlayerLimit ());
+  }
+
+  private void advanceRound ()
+  {
+    if (!isRoundIncreasing)
+    {
+      return;
+    }
+
+    currentRound++;
   }
 }

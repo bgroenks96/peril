@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.events;
+package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -29,9 +29,6 @@ import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
-import com.forerunnergames.peril.core.model.playmap.continent.ContinentOwnerModel;
-import com.forerunnergames.peril.core.model.playmap.country.CountryArmyModel;
-import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
@@ -40,20 +37,17 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class DefaultEventFactory implements EventFactory
+public final class DefaultGamePhaseEventFactory implements GamePhaseEventFactory
 {
   private final PlayerModel playerModel;
-  private final CountryGraphModel countryGraphModel;
   private final CountryOwnerModel countryOwnerModel;
-  private final CountryArmyModel countryArmyModel;
-  private final ContinentOwnerModel continentOwnerModel;
   private final CardModel cardModel;
   private final GameRules rules;
 
-  public DefaultEventFactory (final PlayerModel playerModel,
-                              final PlayMapModel playMapModel,
-                              final CardModel cardModel,
-                              final GameRules rules)
+  public DefaultGamePhaseEventFactory (final PlayerModel playerModel,
+                                       final PlayMapModel playMapModel,
+                                       final CardModel cardModel,
+                                       final GameRules rules)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (playMapModel, "playMapModel");
@@ -64,10 +58,7 @@ public final class DefaultEventFactory implements EventFactory
     this.cardModel = cardModel;
     this.rules = rules;
 
-    countryGraphModel = playMapModel.getCountryGraphModel ();
     countryOwnerModel = playMapModel.getCountryOwnerModel ();
-    countryArmyModel = playMapModel.getCountryArmyModel ();
-    continentOwnerModel = playMapModel.getContinentOwnerModel ();
   }
 
   @Override
