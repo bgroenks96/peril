@@ -1,4 +1,6 @@
 // Name of Continent, Names of All Adjacent Continents...
 
-"North America", "South America"
+"North America", "South America", "Greenland", "Alaska"
 "South America", "North America"
+"Greenland", "North America"
+"Alaska", "North America"

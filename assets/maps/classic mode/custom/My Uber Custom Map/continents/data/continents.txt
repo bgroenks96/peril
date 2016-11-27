@@ -1,4 +1,6 @@
 // Continent Name, Reinforcement Bonus, Names of Countries in Continent...
 
-"North America", 5, "Alaska", "Alberta", "Ontario", "Quebec", "Northwest Territory", "Greenland", "Eastern United States", "Western United States", "Central America"
+"North America", 10, "Alberta", "Ontario", "Quebec", "Northwest Territory", "Eastern United States", "Western United States", "Central America"
 "South America", 2, "Venezuela"
+"Greenland", 4, "Greenland"
+"Alaska", 3, "Alaska"
