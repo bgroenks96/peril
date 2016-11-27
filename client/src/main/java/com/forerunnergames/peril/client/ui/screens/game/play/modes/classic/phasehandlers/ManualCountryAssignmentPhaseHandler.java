@@ -74,8 +74,6 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-
-    if (isSelf (event.getPerson ())) verifyPreemptivePlayMapUpdates (event);
   }
 
   @Handler
@@ -147,19 +145,6 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
       {
         setCountryOwner (playerColor, countryName);
         changeCountryArmiesBy (1, countryName);
-      }
-    });
-  }
-
-  private void verifyPreemptivePlayMapUpdates (final PlayerClaimCountryResponseSuccessEvent event)
-  {
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        assert playerOwnsCountry (event.getPlayerColor (), event.getCountryName ());
-        assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
       }
     });
   }

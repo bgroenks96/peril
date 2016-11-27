@@ -189,7 +189,6 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     if (!isSelf (event.getPerson ())) return;
 
-    verifyPreemptiveUpdates (event);
     reset ();
   }
 
@@ -281,34 +280,6 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
         changeCountryArmiesBy (reinforcements, countryName);
       }
     });
-  }
-
-  private void verifyPreemptiveUpdates (final PlayerReinforceCountrySuccessEvent event)
-  {
-    assert trigger != null;
-
-    switch (trigger)
-    {
-      case COUNTRY_LEFT_CLICKED:
-      {
-        assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
-        break;
-      }
-      case REINFORCEMENTS_DIALOG_SUBMITTED:
-      {
-        Gdx.app.postRunnable (new Runnable ()
-        {
-          @Override
-          public void run ()
-          {
-            assert reinforcementDialog.getDisplayedArmiesInHand () == event.getPlayerArmiesInHand ();
-            assert reinforcementDialog.getCountryArmyCount () == event.getCountryArmyCount ();
-          }
-        });
-
-        break;
-      }
-    }
   }
 
   private void rollBackPreemptiveUpdates (final String countryName, final int reinforcements)
