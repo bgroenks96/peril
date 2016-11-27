@@ -62,6 +62,10 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
+  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox" level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
   <logger name="com.forerunnergames.peril.client.net" level="WARN">
     <appender-ref ref="STDOUT"/>
   </logger>
