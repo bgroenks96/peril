@@ -230,9 +230,8 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 
     if (!serverInformEvent.isReinforceableCountry (countryName))
     {
-      final String failureMessage = Strings
-              .format ("Not reinforcing country [{}] because not a valid response to [{}]", countryName,
-                       serverInformEvent);
+      final String failureMessage = Strings.format ("Not reinforcing country [{}] because not a valid response to [{}]",
+                                                    countryName, serverInformEvent);
       log.warn (failureMessage);
       return Result.failure (failureMessage);
     }
@@ -288,29 +287,28 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   {
     assert trigger != null;
 
-    // Make a defensive copy because it will be reset to null before the Runnable is executed.
-    final ReinforceTrigger trigger = this.trigger;
-
-    Gdx.app.postRunnable (new Runnable ()
+    switch (trigger)
     {
-      @Override
-      public void run ()
+      case COUNTRY_LEFT_CLICKED:
       {
-        switch (trigger)
+        assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
+        break;
+      }
+      case REINFORCEMENTS_DIALOG_SUBMITTED:
+      {
+        Gdx.app.postRunnable (new Runnable ()
         {
-          case REINFORCEMENTS_DIALOG_SUBMITTED:
+          @Override
+          public void run ()
           {
             assert reinforcementDialog.getDisplayedArmiesInHand () == event.getPlayerArmiesInHand ();
             assert reinforcementDialog.getCountryArmyCount () == event.getCountryArmyCount ();
-            break;
           }
-          case COUNTRY_LEFT_CLICKED:
-          {
-            assert countryArmyCountIs (event.getCountryArmyCount (), event.getCountryName ());
-          }
-        }
+        });
+
+        break;
       }
-    });
+    }
   }
 
   private void rollBackPreemptiveUpdates (final String countryName, final int reinforcements)
