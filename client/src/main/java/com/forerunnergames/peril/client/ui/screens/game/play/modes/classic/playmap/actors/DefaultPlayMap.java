@@ -47,18 +47,14 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class DefaultPlayMap implements PlayMap
 {
-  private final Logger log = LoggerFactory.getLogger (DefaultPlayMap.class);
   private final Group group = new Group ();
   private final ImmutableMap <String, Country> countryNamesToCountries;
   private final PlayMapInputDetection inputDetection;
   private final HoveredTerritoryText hoveredTerritoryText;
   private final PlayMapMetadata playMapMetadata;
-  private List <PlayMapInputListener> listeners = new ArrayList <> ();
+  private List <PlayMapInputListener> listeners = new ArrayList<> ();
   @Nullable
   private Country hoveredCountry = null;
   @Nullable
@@ -91,7 +87,7 @@ public final class DefaultPlayMap implements PlayMap
 
     group.addActor (backgroundImage);
 
-    final List <Country> countriesSortedByAtlasIndex = new ArrayList <> (countryNamesToCountries.values ());
+    final List <Country> countriesSortedByAtlasIndex = new ArrayList<> (countryNamesToCountries.values ());
 
     Collections.sort (countriesSortedByAtlasIndex, new Comparator <Country> ()
     {
@@ -341,7 +337,7 @@ public final class DefaultPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final List <PlayMapInputListener> listenersCopy = new ArrayList <> (listeners);
+    final List <PlayMapInputListener> listenersCopy = new ArrayList<> (listeners);
     listenersCopy.add (listener);
     listeners = listenersCopy;
   }
@@ -351,7 +347,7 @@ public final class DefaultPlayMap implements PlayMap
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final List <PlayMapInputListener> listenersCopy = new ArrayList <> (listeners);
+    final List <PlayMapInputListener> listenersCopy = new ArrayList<> (listeners);
     listenersCopy.remove (listener);
     listeners = listenersCopy;
   }
@@ -548,8 +544,6 @@ public final class DefaultPlayMap implements PlayMap
   @Override
   public void disable ()
   {
-    log.trace ("Disabling play map...");
-
     if (!isEnabled) return;
 
     hoveredTerritoryText.setVisible (false);
@@ -564,16 +558,12 @@ public final class DefaultPlayMap implements PlayMap
     }
 
     isEnabled = false;
-
-    log.trace ("Disabled play map");
   }
 
   @Override
   public void enable (final Vector2 currentMouseLocation)
   {
     Arguments.checkIsNotNull (currentMouseLocation, "currentMouseLocation");
-
-    log.trace ("Enabling play map...");
 
     if (isEnabled) return;
 
@@ -587,8 +577,6 @@ public final class DefaultPlayMap implements PlayMap
     isEnabled = true;
 
     onMouseMoved (currentMouseLocation);
-
-    log.trace ("Enabled play map");
   }
 
   @Override
@@ -609,8 +597,8 @@ public final class DefaultPlayMap implements PlayMap
 
     if (country == null)
     {
-      throw new IllegalStateException ("Cannot find " + DefaultCountry.class.getSimpleName () + " at "
-              + inputCoordinate + ".");
+      throw new IllegalStateException (
+              "Cannot find " + DefaultCountry.class.getSimpleName () + " at " + inputCoordinate + ".");
 
     }
 
