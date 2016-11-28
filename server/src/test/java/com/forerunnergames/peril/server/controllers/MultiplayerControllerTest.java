@@ -70,7 +70,6 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCou
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -85,13 +84,11 @@ import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicat
 import com.forerunnergames.peril.server.communicators.HumanPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
+import com.forerunnergames.peril.server.kryonet.KryonetRemoteClient;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.NetworkConstants;
-import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.client.ClientCommunicator;
-import com.forerunnergames.tools.net.client.ClientConnector;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
@@ -101,6 +98,9 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
+import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
+import com.forerunnergames.tools.net.server.remote.RemoteClientConnector;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -128,13 +128,13 @@ public class MultiplayerControllerTest
   private static final String DEFAULT_TEST_SERVER_ADDRESS = "server@test";
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
   private final EventBusHandler eventHandler = new EventBusHandler ();
-  private final ClientConnector mockConnector = mock (ClientConnector.class, Mockito.RETURNS_SMART_NULLS);
-  private final ClientCommunicator mockHumanClientCommunicator = mock (ClientCommunicator.class,
-                                                                       Mockito.RETURNS_SMART_NULLS);
-  private final ClientCommunicator mockAiClientCommunicator = mock (ClientCommunicator.class,
-                                                                    Mockito.RETURNS_SMART_NULLS);
-  private final ClientCommunicator mockSpectatorClientCommunicator = mock (ClientCommunicator.class,
-                                                                           Mockito.RETURNS_SMART_NULLS);
+  private final RemoteClientConnector mockConnector = mock (RemoteClientConnector.class, Mockito.RETURNS_SMART_NULLS);
+  private final RemoteClientCommunicator mockHumanClientCommunicator = mock (RemoteClientCommunicator.class,
+                                                                             Mockito.RETURNS_SMART_NULLS);
+  private final RemoteClientCommunicator mockAiClientCommunicator = mock (RemoteClientCommunicator.class,
+                                                                          Mockito.RETURNS_SMART_NULLS);
+  private final RemoteClientCommunicator mockSpectatorClientCommunicator = mock (RemoteClientCommunicator.class,
+                                                                                 Mockito.RETURNS_SMART_NULLS);
   private final PlayerCommunicator humanPlayerCommunicator = new HumanPlayerCommunicator (mockHumanClientCommunicator);
   private final PlayerCommunicator aiPlayerCommunicator = new AiPlayerCommunicator (mockAiClientCommunicator);
   private final SpectatorCommunicator spectatorCommunicator = new DefaultSpectatorCommunicator (
@@ -148,7 +148,7 @@ public class MultiplayerControllerTest
 
   // convenience method for fetching a new MultiplayerControllerBuilder
   // Note: package private visibility is intended; other test classes in package should have access.
-  static MultiplayerControllerBuilder builder (final ClientConnector connector,
+  static MultiplayerControllerBuilder builder (final RemoteClientConnector connector,
                                                final PlayerCommunicator humanPlayerCommunicator,
                                                final PlayerCommunicator aiPlayerCommunicator,
                                                final SpectatorCommunicator spectatorCommunicator,
@@ -185,7 +185,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
-    final Remote host = createHumanHost ();
+    final RemoteClient host = createHumanHost ();
     connect (host);
 
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
@@ -199,7 +199,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.build (eventBus);
 
-    final Remote client = createHumanClient ();
+    final RemoteClient client = createHumanClient ();
     connect (client);
 
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), client);
@@ -214,7 +214,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.aiPlayerLimit (1).build (eventBus);
 
-    final Remote client = createAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
+    final RemoteClient client = createAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
     connect (client);
 
     communicateEventFromClient (new AiJoinGameServerRequestEvent (), client);
@@ -229,14 +229,14 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
 
-    final Remote client1 = joinHumanClientToGameServer ();
-    final Remote client2 = joinHumanClientToGameServer ();
+    final RemoteClient client1 = joinHumanClientToGameServer ();
+    final RemoteClient client2 = joinHumanClientToGameServer ();
 
     final Set <PlayerPacket> players = Sets.newConcurrentHashSet ();
-    final Function <Remote, PlayerJoinGameSuccessEvent> clientJoinAsPlayer = new Function <Remote, PlayerJoinGameSuccessEvent> ()
+    final Function <RemoteClient, PlayerJoinGameSuccessEvent> clientJoinAsPlayer = new Function <RemoteClient, PlayerJoinGameSuccessEvent> ()
     {
       @Override
-      public PlayerJoinGameSuccessEvent apply (final Remote client)
+      public PlayerJoinGameSuccessEvent apply (final RemoteClient client)
       {
         final String playerName = "TestPlayer" + client.getConnectionId ();
         final PlayerPacket player = createMockHumanPlayer (playerName);
@@ -248,7 +248,7 @@ public class MultiplayerControllerTest
                 ImmutableSet.copyOf (players), mpc.getPersonLimits ());
         communicateEventFromCore (successEvent);
         verify (mockHumanClientCommunicator, times (players.size ()))
-                .sendTo (any (Remote.class),
+                .sendTo (any (RemoteClient.class),
                          argThat (new PlayerJoinGameSuccessEventMatcher (player, ImmutableSet.copyOf (players))));
         assertTrue (mpc.isPlayerInGame (player));
 
@@ -269,14 +269,16 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (2).build (eventBus);
 
-    final Remote client1 = joinAiClientToGameServer (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
-    final Remote client2 = joinAiClientToGameServer (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer2"));
+    final RemoteClient client1 = joinAiClientToGameServer (GameSettings
+            .getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
+    final RemoteClient client2 = joinAiClientToGameServer (GameSettings
+            .getAiPlayerNameWithMandatoryClanTag ("TestPlayer2"));
 
     final Set <PlayerPacket> players = Sets.newConcurrentHashSet ();
-    final Function <Remote, PlayerJoinGameSuccessEvent> clientJoinAsPlayer = new Function <Remote, PlayerJoinGameSuccessEvent> ()
+    final Function <RemoteClient, PlayerJoinGameSuccessEvent> clientJoinAsPlayer = new Function <RemoteClient, PlayerJoinGameSuccessEvent> ()
     {
       @Override
-      public PlayerJoinGameSuccessEvent apply (final Remote client)
+      public PlayerJoinGameSuccessEvent apply (final RemoteClient client)
       {
         final String playerName = client.getAddress ();
         final PlayerPacket player = createMockAiPlayer (playerName);
@@ -288,7 +290,7 @@ public class MultiplayerControllerTest
                 ImmutableSet.copyOf (players), mpc.getPersonLimits ());
         communicateEventFromCore (successEvent);
         verify (mockAiClientCommunicator, times (1))
-                .sendTo (any (Remote.class),
+                .sendTo (any (RemoteClient.class),
                          argThat (new PlayerJoinGameSuccessEventMatcher (player, ImmutableSet.copyOf (players))));
         assertTrue (mpc.isPlayerInGame (player));
 
@@ -309,7 +311,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
-    final Remote client = addHumanClient ();
+    final RemoteClient client = addHumanClient ();
 
     verify (mockHumanClientCommunicator, only ()).sendTo (eq (client),
                                                           argThat (new JoinGameServerDeniedEventMatcher (client)));
@@ -321,7 +323,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).aiPlayerLimit (1).build (eventBus);
 
-    final Remote client = addAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
+    final RemoteClient client = addAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
 
     verify (mockAiClientCommunicator)
             .sendTo (eq (client),
@@ -333,7 +335,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.gameServerType (GameServerType.DEDICATED).build (eventBus);
 
-    final Remote host = createHumanHost ();
+    final RemoteClient host = createHumanHost ();
     connect (host);
 
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
@@ -347,14 +349,14 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
-    final Remote host = createHumanHost ();
+    final RemoteClient host = createHumanHost ();
     connect (host);
 
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
     verify (mockHumanClientCommunicator, only ())
             .sendTo (eq (host), argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), host)));
 
-    final Remote client = addHumanClient ();
+    final RemoteClient client = addHumanClient ();
     verify (mockHumanClientCommunicator).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
   }
 
@@ -364,14 +366,14 @@ public class MultiplayerControllerTest
     // MPC still needs to be built in order to register the event bus
     mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
 
-    final Remote host = createHumanHost ();
+    final RemoteClient host = createHumanHost ();
     connect (host);
 
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), host);
     verify (mockHumanClientCommunicator, only ())
             .sendTo (eq (host), argThat (new JoinGameServerSuccessEventMatcher (createDefaultServerConfig (), host)));
 
-    final Remote duplicateHost = createHumanHost ();
+    final RemoteClient duplicateHost = createHumanHost ();
     connect (duplicateHost);
     communicateEventFromClient (new HumanJoinGameServerRequestEvent (), duplicateHost);
     verify (mockHumanClientCommunicator).sendTo (eq (duplicateHost), isA (JoinGameServerDeniedEvent.class));
@@ -382,7 +384,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.build (eventBus);
 
-    final Remote client = addHumanClientWithAddress ("");
+    final RemoteClient client = addHumanClientWithAddress ("");
 
     verify (mockHumanClientCommunicator, only ()).sendTo (eq (client),
                                                           argThat (new JoinGameServerDeniedEventMatcher (client)));
@@ -394,7 +396,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.serverAddress ("1.2.3.4").build (eventBus);
 
-    final Remote client = addHumanClientWithAddress ("1.2.3.4");
+    final RemoteClient client = addHumanClientWithAddress ("1.2.3.4");
 
     verify (mockHumanClientCommunicator, only ()).sendTo (eq (client),
                                                           argThat (new JoinGameServerDeniedEventMatcher (client)));
@@ -406,7 +408,7 @@ public class MultiplayerControllerTest
   {
     mpcBuilder.build (eventBus);
 
-    final Remote client = addHumanClient ();
+    final RemoteClient client = addHumanClient ();
     verify (mockHumanClientCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     final String playerName = "TestPlayer1";
@@ -421,7 +423,7 @@ public class MultiplayerControllerTest
     mpcBuilder.aiPlayerLimit (1).build (eventBus);
 
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
-    final Remote client = addAiClient (playerName);
+    final RemoteClient client = addAiClient (playerName);
     verify (mockAiClientCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     final ClientEvent event = new AiPlayerJoinGameRequestEvent (playerName);
@@ -435,7 +437,7 @@ public class MultiplayerControllerTest
     mpcBuilder.build (eventBus);
 
     // Connect client to server, but do not join client to game server.
-    final Remote client = createHumanClient ();
+    final RemoteClient client = createHumanClient ();
     connect (client);
 
     // Simulate bad request.
@@ -455,7 +457,7 @@ public class MultiplayerControllerTest
 
     // Connect client to server, but do not join client to game server.
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
-    final Remote client = createAiClient (playerName);
+    final RemoteClient client = createAiClient (playerName);
     connect (client);
 
     // Simulate bad request.
@@ -524,7 +526,7 @@ public class MultiplayerControllerTest
   public void testHumanPlayerJoinGameDenied ()
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
-    final Remote client = joinHumanClientToGameServer ();
+    final RemoteClient client = joinHumanClientToGameServer ();
 
     final String playerName = "TestPlayer1";
     communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName), client);
@@ -544,7 +546,7 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
-    final Remote client = joinAiClientToGameServer (playerName);
+    final RemoteClient client = joinAiClientToGameServer (playerName);
 
     communicateEventFromClient (new AiPlayerJoinGameRequestEvent (playerName), client);
 
@@ -599,7 +601,7 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
-    final Remote spectatorClient = addHumanClient ();
+    final RemoteClient spectatorClient = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient, mpc);
     verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
     verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()),
@@ -612,7 +614,7 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
-    final Remote spectatorClient = addHumanClient ();
+    final RemoteClient spectatorClient = addHumanClient ();
 
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestPlayer"), spectatorClient);
     verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()), isA (PlayerJoinGameSuccessEvent.class));
@@ -629,10 +631,10 @@ public class MultiplayerControllerTest
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
 
-    final Remote spectatorClient1 = addHumanClient ();
+    final RemoteClient spectatorClient1 = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient1, mpc);
 
-    final Remote spectatorClient2 = addHumanClient ();
+    final RemoteClient spectatorClient2 = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestSpectator"), spectatorClient2);
 
     verify (mockSpectatorClientCommunicator)
@@ -646,10 +648,10 @@ public class MultiplayerControllerTest
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (1).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
 
-    final Remote spectatorClient1 = addHumanClient ();
+    final RemoteClient spectatorClient1 = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator1", spectatorClient1, mpc);
 
-    final Remote spectatorClient2 = addHumanClient ();
+    final RemoteClient spectatorClient2 = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestSpectator2"), spectatorClient2);
 
     verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient2),
@@ -663,7 +665,7 @@ public class MultiplayerControllerTest
     final MultiplayerController mpc = mpcBuilder.spectatorLimit (0).build (eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
 
-    final Remote spectatorClient = addHumanClient ();
+    final RemoteClient spectatorClient = addHumanClient ();
     communicateEventFromClient (new SpectatorJoinGameRequestEvent ("TestSpectator"), spectatorClient);
 
     verify (mockSpectatorClientCommunicator).sendTo (eq (spectatorClient),
@@ -703,7 +705,7 @@ public class MultiplayerControllerTest
     // Create a game server with manual initial country assignment.
     mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL).build (eventBus);
 
-    final Remote client = joinHumanClientToGameServer ();
+    final RemoteClient client = joinHumanClientToGameServer ();
 
     // Simulate player/client claiming a country.
     final Event event = communicateEventFromClient (new PlayerClaimCountryResponseRequestEvent ("Test Country 1"),
@@ -861,7 +863,7 @@ public class MultiplayerControllerTest
   public void testHumanClientDisconnectAfterSendingPlayerJoinGameRequest ()
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
-    final Remote client = joinHumanClientToGameServer ();
+    final RemoteClient client = joinHumanClientToGameServer ();
     final String playerName = "TestPlayer";
     final PlayerPacket player = createMockHumanPlayer (playerName);
     communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName), client);
@@ -879,7 +881,7 @@ public class MultiplayerControllerTest
   {
     final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer");
-    final Remote client = joinAiClientToGameServer (playerName);
+    final RemoteClient client = joinAiClientToGameServer (playerName);
     final PlayerPacket player = createMockAiPlayer (playerName);
     communicateEventFromClient (new AiPlayerJoinGameRequestEvent (playerName), client);
     // disconnect client
@@ -938,7 +940,7 @@ public class MultiplayerControllerTest
   private ClientPlayerTuple addHumanClientAndMockPlayerToGameServer (final String playerName,
                                                                      final MultiplayerController mpc)
   {
-    final Remote client = joinHumanClientToGameServer ();
+    final RemoteClient client = joinHumanClientToGameServer ();
     final PlayerPacket player = addMockHumanPlayerToGameWithName (playerName, client, mpc);
 
     return new ClientPlayerTuple (client, player);
@@ -948,30 +950,30 @@ public class MultiplayerControllerTest
                                                                   final MultiplayerController mpc)
   {
     assert GameSettings.isValidAiPlayerNameWithMandatoryClanTag (playerName);
-    final Remote client = joinAiClientToGameServer (playerName);
+    final RemoteClient client = joinAiClientToGameServer (playerName);
     final PlayerPacket player = addMockAiPlayerToGameWithName (playerName, client, mpc);
 
     return new ClientPlayerTuple (client, player);
   }
 
-  private Remote joinHumanClientToGameServer ()
+  private RemoteClient joinHumanClientToGameServer ()
   {
-    final Remote client = addHumanClient ();
+    final RemoteClient client = addHumanClient ();
     verify (mockHumanClientCommunicator).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     return client;
   }
 
-  private Remote joinAiClientToGameServer (final String playerName)
+  private RemoteClient joinAiClientToGameServer (final String playerName)
   {
-    final Remote client = addAiClient (playerName);
+    final RemoteClient client = addAiClient (playerName);
     verify (mockAiClientCommunicator).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
 
     return client;
   }
 
   private PlayerPacket addMockHumanPlayerToGameWithName (final String playerName,
-                                                         final Remote client,
+                                                         final RemoteClient client,
                                                          final MultiplayerController mpc)
   {
     assert mpc.getPlayerLimitFor (PersonSentience.HUMAN) > 0;
@@ -986,7 +988,7 @@ public class MultiplayerControllerTest
   }
 
   private PlayerPacket addMockAiPlayerToGameWithName (final String playerName,
-                                                      final Remote client,
+                                                      final RemoteClient client,
                                                       final MultiplayerController mpc)
   {
     assert GameSettings.isValidAiPlayerNameWithMandatoryClanTag (playerName);
@@ -1002,7 +1004,7 @@ public class MultiplayerControllerTest
   }
 
   private SpectatorPacket addMockSpectatorToGameWithName (final String spectatorName,
-                                                          final Remote client,
+                                                          final RemoteClient client,
                                                           final MultiplayerController mpc)
   {
     assert mpc.getSpectatorLimit () > 0;
@@ -1075,9 +1077,9 @@ public class MultiplayerControllerTest
                 eventHandler.wasFiredExactlyOnce (event));
   }
 
-  private ClientCommunicationEvent communicateEventFromClient (final ClientEvent event, final Remote client)
+  private ClientCommunicationEvent communicateEventFromClient (final ClientEvent event, final RemoteClient client)
   {
-    final ClientCommunicationEvent clientCommunicationEvent = new ClientCommunicationEvent (event, client);
+    final ClientCommunicationEvent clientCommunicationEvent = new ClientCommunicationEvent (client, event);
     eventBus.publish (clientCommunicationEvent);
 
     return clientCommunicationEvent;
@@ -1088,14 +1090,14 @@ public class MultiplayerControllerTest
     eventBus.publish (event);
   }
 
-  private void connect (final Remote client)
+  private void connect (final RemoteClient client)
   {
     Arguments.checkIsNotNull (client, "client");
 
     eventBus.publish (new ClientConnectionEvent (client));
   }
 
-  private void disconnect (final Remote client)
+  private void disconnect (final RemoteClient client)
   {
     Arguments.checkIsNotNull (client, "client");
 
@@ -1107,65 +1109,65 @@ public class MultiplayerControllerTest
     return new DefaultServerConfiguration (DEFAULT_TEST_SERVER_ADDRESS, DEFAULT_TEST_SERVER_PORT);
   }
 
-  private Remote addHumanClient ()
+  private RemoteClient addHumanClient ()
   {
-    final Remote client = createHumanClient ();
+    final RemoteClient client = createHumanClient ();
     addHumanClient (client);
 
     return client;
   }
 
-  private Remote addHumanClientWithAddress (final String address)
+  private RemoteClient addHumanClientWithAddress (final String address)
   {
     Arguments.checkIsNotNull (address, "address");
 
-    final Remote client = createHumanClientWithAddress (address);
+    final RemoteClient client = createHumanClientWithAddress (address);
     addHumanClient (client);
 
     return client;
   }
 
-  private Remote createHumanClient ()
+  private RemoteClient createHumanClient ()
   {
     return createHumanClientWithAddress ("forerunner.games");
   }
 
-  private Remote createHumanClientWithAddress (final String address)
+  private RemoteClient createHumanClientWithAddress (final String address)
   {
     Arguments.checkIsNotNull (address, "address");
 
     final int port = 1000 + clientCount;
-    return new KryonetRemote (clientCount++, new InetSocketAddress (address, port));
+    return new KryonetRemoteClient (clientCount++, new InetSocketAddress (address, port));
   }
 
-  private Remote createHumanHost ()
+  private RemoteClient createHumanHost ()
   {
     return createHumanClientWithAddress (NetworkConstants.LOCALHOST_ADDRESS);
   }
 
-  private void addHumanClient (final Remote client)
+  private void addHumanClient (final RemoteClient client)
   {
     connect (client);
-    eventBus.publish (new ClientCommunicationEvent (new HumanJoinGameServerRequestEvent (), client));
+    eventBus.publish (new ClientCommunicationEvent (client, new HumanJoinGameServerRequestEvent ()));
   }
 
-  private Remote addAiClient (final String playerName)
+  private RemoteClient addAiClient (final String playerName)
   {
-    final Remote client = createAiClient (playerName);
+    final RemoteClient client = createAiClient (playerName);
     addAiClient (client);
 
     return client;
   }
 
-  private Remote createAiClient (final String playerName)
+  private RemoteClient createAiClient (final String playerName)
   {
     return new AiClient (playerName);
   }
 
-  private void addAiClient (final Remote client)
+  private void addAiClient (final RemoteClient client)
   {
     connect (client);
-    eventBus.publish (new ClientCommunicationEvent (new AiJoinGameServerRequestEvent (), client));
+    eventBus.publish (new ClientCommunicationEvent (client, new AiJoinGameServerRequestEvent ()));
   }
 
   /*
@@ -1173,7 +1175,7 @@ public class MultiplayerControllerTest
    */
   static class MultiplayerControllerBuilder
   {
-    private final ClientConnector connector;
+    private final RemoteClientConnector connector;
     private final PlayerCommunicator humanPlayerCommunicator;
     private final PlayerCommunicator aiPlayerCommunicator;
     private final SpectatorCommunicator spectatorCommunicator;
@@ -1301,7 +1303,7 @@ public class MultiplayerControllerTest
 
     // add game mode and/or initial-country-assignment later if needed
 
-    private MultiplayerControllerBuilder (final ClientConnector connector,
+    private MultiplayerControllerBuilder (final RemoteClientConnector connector,
                                           final PlayerCommunicator humanPlayerCommunicator,
                                           final PlayerCommunicator aiPlayerCommunicator,
                                           final SpectatorCommunicator spectatorCommunicator,
@@ -1318,9 +1320,9 @@ public class MultiplayerControllerTest
   private static final class JoinGameServerSuccessEventMatcher implements ArgumentMatcher <JoinGameServerSuccessEvent>
   {
     private final ServerConfiguration serverConfig;
-    private final Remote client;
+    private final RemoteClient client;
 
-    JoinGameServerSuccessEventMatcher (final ServerConfiguration serverConfig, final Remote client)
+    JoinGameServerSuccessEventMatcher (final ServerConfiguration serverConfig, final RemoteClient client)
     {
       Arguments.checkIsNotNull (serverConfig, "serverConfig");
       Arguments.checkIsNotNull (client, "client");
@@ -1335,10 +1337,10 @@ public class MultiplayerControllerTest
       final ServerConfiguration matchServerConfig = argument.getGameServerConfiguration ();
       final ClientConfiguration matchClientConfig = argument.getClientConfiguration ();
 
-      return matchServerConfig.getServerAddress ().equals (serverConfig.getServerAddress ())
-              && matchClientConfig.getClientAddress ().equals (client.getAddress ())
-              && matchServerConfig.getServerTcpPort () == serverConfig.getServerTcpPort ()
-              && matchClientConfig.getClientTcpPort () == client.getPort ();
+      return matchServerConfig.getAddress ().equals (serverConfig.getAddress ())
+              && matchClientConfig.getAddress ().equals (client.getAddress ())
+              && matchServerConfig.getPort () == serverConfig.getPort ()
+              && matchClientConfig.getPort () == client.getPort ();
     }
   }
 
@@ -1367,9 +1369,9 @@ public class MultiplayerControllerTest
 
   private static final class JoinGameServerDeniedEventMatcher implements ArgumentMatcher <JoinGameServerDeniedEvent>
   {
-    private final Remote client;
+    private final RemoteClient client;
 
-    JoinGameServerDeniedEventMatcher (final Remote client)
+    JoinGameServerDeniedEventMatcher (final RemoteClient client)
     {
       Arguments.checkIsNotNull (client, "client");
 
@@ -1380,8 +1382,8 @@ public class MultiplayerControllerTest
     public boolean matches (final JoinGameServerDeniedEvent argument)
     {
       final ClientConfiguration matchClientConfig = argument.getClientConfiguration ();
-      return Objects.equals (matchClientConfig.getClientAddress (), client.getAddress ())
-              && matchClientConfig.getClientTcpPort () == client.getPort ();
+      return Objects.equals (matchClientConfig.getAddress (), client.getAddress ())
+              && matchClientConfig.getPort () == client.getPort ();
     }
   }
 
@@ -1439,10 +1441,10 @@ public class MultiplayerControllerTest
 
   private final class ClientPlayerTuple
   {
-    private final Remote client;
+    private final RemoteClient client;
     private final PlayerPacket player;
 
-    ClientPlayerTuple (final Remote client, final PlayerPacket player)
+    ClientPlayerTuple (final RemoteClient client, final PlayerPacket player)
     {
       Arguments.checkIsNotNull (client, "client");
       Arguments.checkIsNotNull (player, "player");
@@ -1468,7 +1470,7 @@ public class MultiplayerControllerTest
       return client.equals (clientPlayerTuple.client) && player.equals (clientPlayerTuple.player);
     }
 
-    public Remote client ()
+    public RemoteClient client ()
     {
       return client;
     }

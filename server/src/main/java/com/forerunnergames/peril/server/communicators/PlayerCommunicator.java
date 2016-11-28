@@ -20,9 +20,9 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.client.ClientCommunicator;
+import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
 
-public interface PlayerCommunicator extends ClientCommunicator
+public interface PlayerCommunicator extends RemoteClientCommunicator
 {
   void sendToPlayer (final PlayerPacket player, final Event message, final ClientPlayerMapping mapping);
 

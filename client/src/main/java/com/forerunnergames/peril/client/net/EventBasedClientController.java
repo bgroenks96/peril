@@ -20,9 +20,9 @@ package com.forerunnergames.peril.client.net;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.AbstractClientController;
 import com.forerunnergames.tools.net.client.Client;
+import com.forerunnergames.tools.net.client.remote.RemoteServer;
 import com.forerunnergames.tools.net.events.local.ServerCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ServerConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
@@ -58,7 +58,7 @@ public final class EventBasedClientController extends AbstractClientController
   }
 
   @Override
-  protected void onConnectionTo (final Remote server)
+  protected void onConnectionTo (final RemoteServer server)
   {
     Arguments.checkIsNotNull (server, "server");
 
@@ -75,7 +75,7 @@ public final class EventBasedClientController extends AbstractClientController
   }
 
   @Override
-  protected void onDisconnectionFrom (final Remote server)
+  protected void onDisconnectionFrom (final RemoteServer server)
   {
     Arguments.checkIsNotNull (server, "server");
 
@@ -92,7 +92,7 @@ public final class EventBasedClientController extends AbstractClientController
   }
 
   @Override
-  protected void onCommunication (final Object object, final Remote server)
+  protected void onCommunication (final RemoteServer server, final Object object)
   {
     Arguments.checkIsNotNull (server, "server");
 
@@ -110,7 +110,7 @@ public final class EventBasedClientController extends AbstractClientController
           return;
         }
 
-        eventBus.publish (new ServerCommunicationEvent ((ServerEvent) object, server));
+        eventBus.publish (new ServerCommunicationEvent (server, (ServerEvent) object));
       }
     });
   }

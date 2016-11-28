@@ -27,10 +27,11 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.client.AbstractClientController;
 import com.forerunnergames.tools.net.client.Client;
+import com.forerunnergames.tools.net.client.remote.RemoteServer;
 
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
@@ -60,7 +61,7 @@ public class TestClient extends AbstractClientController
   private static final AtomicInteger clientCount = new AtomicInteger ();
   private final int clientId = clientCount.getAndIncrement ();
   private final ExecutorService exec = Executors.newCachedThreadPool ();
-  private final BlockingQueue <Event> inboundEventQueue = new LinkedBlockingQueue <> ();
+  private final BlockingQueue <Event> inboundEventQueue = new LinkedBlockingQueue<> ();
   private final Multimap <Class <?>, ClientEventCallback <?>> callbacks;
   private PlayerPacket player;
 
@@ -72,34 +73,33 @@ public class TestClient extends AbstractClientController
   }
 
   @Override
-  protected void onConnectionTo (final Remote server)
+  protected void onConnectionTo (final RemoteServer server)
   {
     Arguments.checkIsNotNull (server, "server");
   }
 
   @Override
-  protected void onDisconnectionFrom (final Remote server)
+  protected void onDisconnectionFrom (final RemoteServer server)
   {
     Arguments.checkIsNotNull (server, "server");
   }
 
   @Override
-  protected void onCommunication (final Object object, final Remote server)
+  protected void onCommunication (final RemoteServer server, final Object object)
   {
+    Arguments.checkIsNotNull (server, "server");
     Arguments.checkIsNotNull (object, "object");
-    Arguments.checkIsNotNull (server, "server");
 
     final Event event = (Event) object;
     log.trace ("[{}] Event received: [{}]", this, event);
     inboundEventQueue.add (event);
   }
 
-  public Result <String> connect (final String addr, final int tcpPort)
+  public Result <String> connect (final ServerConfiguration serverConfig)
   {
-    Arguments.checkIsNotNull (addr, "addr");
-    Arguments.checkIsNotNegative (tcpPort, "tcpPort");
+    Arguments.checkIsNotNull (serverConfig, "serverConfig");
 
-    return connectNow (addr, tcpPort, DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_MAX_ATTEMPTS);
+    return connectNow (serverConfig, DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_MAX_ATTEMPTS);
   }
 
   public void sendEvent (final Event event)
@@ -171,7 +171,7 @@ public class TestClient extends AbstractClientController
     Arguments.checkIsNotNull (type, "type");
     Arguments.checkIsNotNegative (waitTimeoutMillis, "waitTimeoutMillis");
 
-    final Exchanger <T> exchanger = new Exchanger <> ();
+    final Exchanger <T> exchanger = new Exchanger<> ();
     final AtomicBoolean keepAlive = new AtomicBoolean (true);
     exec.execute (new Runnable ()
     {
@@ -305,8 +305,8 @@ public class TestClient extends AbstractClientController
   {
     if (!callbacks.containsKey (event.getClass ())) return;
     final Collection <ClientEventCallback <?>> callbacks = this.callbacks.get (event.getClass ());
-    log.debug ("Dispatching event of type [{}] to {} registered callback handlers...", event.getClass ()
-            .getSimpleName (), callbacks.size ());
+    log.debug ("Dispatching event of type [{}] to {} registered callback handlers...",
+               event.getClass ().getSimpleName (), callbacks.size ());
     for (final ClientEventCallback callback : callbacks)
     {
       callback.onEventReceived (Optional.of (event), this);

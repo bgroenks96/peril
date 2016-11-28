@@ -21,7 +21,7 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Preconditions;
-import com.forerunnergames.tools.net.Remote;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
 
 import com.google.common.collect.Maps;
 
@@ -37,14 +37,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Uses {@link MBassador} to resolve the runtime types of various events. It is the responsibility of implementors to
  * provide {@link Handler} methods for the interested events. Remembers the original remote client sender called via
- * {@link #dispatch(Event, Remote)}, providing a mechanism to resolve the sender, for implementors to use, via
+ * {@link #dispatch(Event, RemoteClient)}, providing a mechanism to resolve the sender, for implementors to use, via
  * {@link #senderOfDispatchedEvent(Event)}.
  */
 public abstract class AbstractNetworkEventDispatcher implements NetworkEventDispatcher
 {
   private static final int CALL_LAST = Integer.MIN_VALUE;
   protected final Logger log = LoggerFactory.getLogger (getClass ());
-  private final Map <Event, Remote> eventClientCache = Maps.newConcurrentMap ();
+  private final Map <Event, RemoteClient> eventClientCache = Maps.newConcurrentMap ();
   private final MBassador <Event> internalEventBus;
 
   protected AbstractNetworkEventDispatcher (final Iterable <IPublicationErrorHandler> internalBusErrorHandlers)
@@ -62,7 +62,7 @@ public abstract class AbstractNetworkEventDispatcher implements NetworkEventDisp
   }
 
   @Override
-  public final void dispatch (final Event event, final Remote client)
+  public final void dispatch (final Event event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -79,7 +79,7 @@ public abstract class AbstractNetworkEventDispatcher implements NetworkEventDisp
     eventClientCache.clear ();
   }
 
-  protected final Remote senderOfDispatchedEvent (final Event event)
+  protected final RemoteClient senderOfDispatchedEvent (final Event event)
   {
     Arguments.checkIsNotNull (event, "event");
     Preconditions.checkIsTrue (eventClientCache.containsKey (event),

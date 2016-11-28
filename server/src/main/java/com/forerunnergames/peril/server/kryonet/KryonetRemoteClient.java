@@ -1,5 +1,6 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2011 - 2013 Aaron Mahan.
+ * Copyright © 2013 - 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,27 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.ai.net;
+package com.forerunnergames.peril.server.kryonet;
 
-import com.forerunnergames.tools.net.NullRemote;
+import com.forerunnergames.peril.common.net.kryonet.AbstractKryonetRemote;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.DefaultClientConfiguration;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
 
-/**
- * Fake {@link RemoteClient} that uses the specified player name for a fake address.
- *
- * Although {@link #hasAddress()} & {@link #hasAddressAndPort()} will return false, {@link #getAddress()} will return
- * the fake address, i.e., the specified player name.
- */
-public final class AiClient extends NullRemote implements RemoteClient
+import java.net.InetSocketAddress;
+
+import javax.annotation.Nullable;
+
+public final class KryonetRemoteClient extends AbstractKryonetRemote implements RemoteClient
 {
   private final ClientConfiguration config;
 
-  public AiClient (final String playerName)
+  public KryonetRemoteClient (final int connectionId, @Nullable final InetSocketAddress address)
   {
-    super (playerName);
+    super (connectionId, address);
 
-    config = new AiClientConfiguration (getAddress (), getPort ());
+    config = new DefaultClientConfiguration (getAddress (), getPort ());
   }
 
   @Override
@@ -44,8 +45,9 @@ public final class AiClient extends NullRemote implements RemoteClient
     return config;
   }
 
-  public String getPlayerName ()
+  @Override
+  public String toString ()
   {
-    return getAddress ();
+    return Strings.format ("{} | ClientConfiguration: [{}]", super.toString (), config);
   }
 }

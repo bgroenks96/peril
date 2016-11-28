@@ -38,6 +38,8 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.DefaultInternalAddressResolver;
 import com.forerunnergames.tools.net.InternalAddressResolver;
+import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,6 +59,7 @@ public class DedicatedGameSession implements TestSession
   private final GameRules gameRules;
   private final String serverAddress;
   private final String internalServerAddress;
+  private final ServerConfiguration internalServerConfig;
   private final String sessionName;
   private final int serverPort;
   private final TestClientPool clientPool = new TestClientPool ();
@@ -76,6 +79,7 @@ public class DedicatedGameSession implements TestSession
 
     serverPort = portPool.getAvailablePort ();
     internalServerAddress = internalAddressResolver.resolveIp ();
+    internalServerConfig = new DefaultServerConfiguration (internalServerAddress, serverPort);
   }
 
   @Override
@@ -158,14 +162,16 @@ public class DedicatedGameSession implements TestSession
   private void initializeClients ()
   {
     log.trace ("Connecting {} clients to server [{}]", gameRules.getTotalPlayerLimit (), serverPort);
-    clientPool.connectNew (internalServerAddress, serverPort, gameRules.getTotalPlayerLimit ());
+    clientPool.connectNew (internalServerConfig, gameRules.getTotalPlayerLimit ());
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Server Address: {}:{} | CountrySelectionMode: {}",
-                           getClass ().getSimpleName (), sessionName, internalServerAddress, serverPort,
+    return Strings.format (
+                           "{}: Name: [{}] | InternalServerConfig: [{}] | ServerAddress: [{}] | "
+                                   + "CountrySelectionMode: [{}]",
+                           getClass ().getSimpleName (), sessionName, internalServerConfig, serverAddress,
                            gameRules.getInitialCountryAssignment ());
   }
 }

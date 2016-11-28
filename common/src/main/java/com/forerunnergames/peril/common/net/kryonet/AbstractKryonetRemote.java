@@ -26,13 +26,13 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-public final class KryonetRemote implements Remote
+public abstract class AbstractKryonetRemote implements Remote
 {
   private final int connectionId;
   @Nullable
   private final InetSocketAddress address;
 
-  public KryonetRemote (final int connectionId, @Nullable final InetSocketAddress address)
+  protected AbstractKryonetRemote (final int connectionId, @Nullable final InetSocketAddress address)
   {
     this.connectionId = connectionId;
     this.address = address;
@@ -48,9 +48,9 @@ public final class KryonetRemote implements Remote
   public boolean equals (final Object obj)
   {
     if (this == obj) return true;
-    if (!(obj instanceof KryonetRemote)) return false;
+    if (!(obj instanceof AbstractKryonetRemote)) return false;
 
-    final KryonetRemote that = (KryonetRemote) obj;
+    final AbstractKryonetRemote that = (AbstractKryonetRemote) obj;
 
     return connectionId == that.connectionId;
   }
@@ -58,71 +58,72 @@ public final class KryonetRemote implements Remote
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Connection Id: {} | Address: {}", getClass ().getSimpleName (), connectionId, address);
+    return Strings.format ("{}: ConnectionId: [{}] | Address: [{}]", getClass ().getSimpleName (), connectionId,
+                           address);
   }
 
   @Override
-  public int getConnectionId ()
+  public final int getConnectionId ()
   {
     return connectionId;
   }
 
   @Override
-  public boolean hasConnectionId (final int connectionId)
+  public final boolean hasConnectionId (final int connectionId)
   {
     return connectionId == this.connectionId;
   }
 
   @Override
-  public boolean hasAddress ()
+  public final boolean hasAddress ()
   {
-    return address != null;
+    return !getAddress ().isEmpty ();
   }
 
   @Override
-  public boolean hasPort ()
+  public final boolean hasPort ()
   {
-    return address != null;
+    return getPort () != -1;
   }
 
   @Override
-  public boolean hasAddressAndPort ()
+  public final boolean hasAddressAndPort ()
   {
-    return address != null;
+    return hasAddress () && hasPort ();
   }
 
   @Override
-  public boolean hasPort (final int port)
+  public final boolean hasPort (final int port)
   {
-    return address != null && address.getPort () == port;
+    return getPort () == port;
   }
 
   @Override
-  public boolean has (final InetSocketAddress address)
+  public final boolean has (final InetSocketAddress address)
   {
     return Objects.equals (this.address, address);
   }
 
   @Override
-  public boolean is (final Remote remote)
+  public final boolean is (final Remote remote)
   {
     return equals (remote);
   }
 
   @Override
-  public boolean isNot (final Remote remote)
+  public final boolean isNot (final Remote remote)
   {
     return !is (remote);
   }
 
   @Override
-  public String getAddress ()
+  public final String getAddress ()
   {
     return address != null && address.getAddress () != null ? address.getAddress ().getHostAddress () : "";
   }
 
   @Override
-  public int getPort ()
+  public final int getPort ()
   {
     return address != null ? address.getPort () : -1;
   }

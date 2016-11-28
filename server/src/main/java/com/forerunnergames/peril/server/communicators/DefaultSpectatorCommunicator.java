@@ -22,8 +22,8 @@ import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.client.ClientCommunicator;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
+import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
 
 import com.google.common.base.Optional;
 
@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
 public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultSpectatorCommunicator.class);
-  private final ClientCommunicator clientCommunicator;
+  private final RemoteClientCommunicator clientCommunicator;
 
-  public DefaultSpectatorCommunicator (final ClientCommunicator clientCommunicator)
+  public DefaultSpectatorCommunicator (final RemoteClientCommunicator clientCommunicator)
   {
     Arguments.checkIsNotNull (clientCommunicator, "clientCommunicator");
 
@@ -51,7 +51,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (mapping, "mapping");
 
-    final Optional <Remote> clientQuery = mapping.clientFor (spectator);
+    final Optional <RemoteClient> clientQuery = mapping.clientFor (spectator);
 
     if (!clientQuery.isPresent ())
     {
@@ -90,7 +90,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   }
 
   @Override
-  public void sendTo (final Remote client, final Object msg)
+  public void sendTo (final RemoteClient client, final Object msg)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (msg, "msg");
@@ -107,7 +107,7 @@ public final class DefaultSpectatorCommunicator implements SpectatorCommunicator
   }
 
   @Override
-  public void sendToAllExcept (final Remote client, final Object msg)
+  public void sendToAllExcept (final RemoteClient client, final Object msg)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (msg, "msg");

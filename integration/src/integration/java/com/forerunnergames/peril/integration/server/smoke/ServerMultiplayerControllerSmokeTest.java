@@ -53,8 +53,7 @@ public class ServerMultiplayerControllerSmokeTest
   private final MBassador <Event> eventBus;
   private final TestServerApplication server;
   private final TestClient client;
-  private final String serverAddr;
-  private final int serverPort;
+  private final ServerConfiguration serverConfig;
   private final Kryo kryo;
 
   @Factory (dataProvider = "environmentProvider", dataProviderClass = Providers.class)
@@ -66,12 +65,12 @@ public class ServerMultiplayerControllerSmokeTest
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (server, "server");
     Arguments.checkIsNotNull (client, "client");
+    Arguments.checkIsNotNull (serverConfig, "serverConfig");
 
     this.eventBus = eventBus;
     this.server = server;
     this.client = client;
-    serverAddr = serverConfig.getServerAddress ();
-    serverPort = serverConfig.getServerTcpPort ();
+    this.serverConfig = serverConfig;
     kryo = server.getKryo ();
 
     client.initialize ();
@@ -81,8 +80,8 @@ public class ServerMultiplayerControllerSmokeTest
   @Test
   public void testConnectToServer ()
   {
-    log.debug ("Attempting to connect to server at: {}:{}", serverAddr, serverPort);
-    assertTrue (client.connect (serverAddr, serverPort).isSuccessful ());
+    log.debug ("Attempting to connect to server at: {}", serverConfig);
+    assertTrue (client.connect (serverConfig).isSuccessful ());
   }
 
   @Test (dependsOnMethods = "testConnectToServer")
@@ -135,6 +134,6 @@ public class ServerMultiplayerControllerSmokeTest
     log.trace ("Shutting down client/server...");
     if (client != null) client.dispose ();
     if (server != null) server.shutDown ();
-    NetworkPortPool.getInstance ().releasePort (serverPort);
+    NetworkPortPool.getInstance ().releasePort (serverConfig.getPort ());
   }
 }

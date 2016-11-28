@@ -27,6 +27,7 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Strings;
 
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -63,10 +64,9 @@ public class TestClientPool implements Iterable <TestClient>
     return clients.iterator ();
   }
 
-  public synchronized void connectNew (final String serverAddress, final int serverPort)
+  public synchronized void connectNew (final ServerConfiguration serverConfig)
   {
-    Arguments.checkIsNotNull (serverAddress, "serverAddress");
-    Arguments.checkIsNotNegative (serverPort, "serverPort");
+    Arguments.checkIsNotNull (serverConfig, "serverConfig");
 
     pendingOperationCount.incrementAndGet ();
     clientThreadPool.execute (new Runnable ()
@@ -76,7 +76,7 @@ public class TestClientPool implements Iterable <TestClient>
       {
         final TestClient newClient = new TestClient (new KryonetClient ());
         newClient.initialize ();
-        assertTrue (newClient.connect (serverAddress, serverPort).isSuccessful ());
+        assertTrue (newClient.connect (serverConfig).isSuccessful ());
         log.debug ("Successfully connected client [{}]", newClient.getClientId ());
         clients.add (newClient);
         pendingOperationCount.decrementAndGet ();
@@ -84,16 +84,15 @@ public class TestClientPool implements Iterable <TestClient>
     });
   }
 
-  public void connectNew (final String serverAddress, final int serverPort, final int count)
+  public void connectNew (final ServerConfiguration serverConfig, final int count)
   {
-    Arguments.checkIsNotNull (serverAddress, "serverAddress");
-    Arguments.checkIsNotNegative (serverPort, "serverPort");
+    Arguments.checkIsNotNull (serverConfig, "serverConfig");
     Arguments.checkIsNotNegative (count, "count");
 
     for (int i = 0; i < count; i++)
     {
-      log.debug ("Attempting to connect client {} to {}:{}", i, serverAddress, serverPort);
-      connectNew (serverAddress, serverPort);
+      log.debug ("Attempting to connect client {} to {}", i, serverConfig);
+      connectNew (serverConfig);
     }
   }
 

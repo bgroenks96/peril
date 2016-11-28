@@ -21,9 +21,9 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.client.ClientCommunicator;
+import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
 
-public interface SpectatorCommunicator extends ClientCommunicator
+public interface SpectatorCommunicator extends RemoteClientCommunicator
 {
   void sendToSpectator (final SpectatorPacket spectator, final Event message, final ClientSpectatorMapping mapping);
 

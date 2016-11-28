@@ -29,6 +29,7 @@ import com.forerunnergames.peril.integration.server.TestServerApplicationFactory
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.DefaultInternalAddressResolver;
 import com.forerunnergames.tools.net.InternalAddressResolver;
+import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
 
 import net.engio.mbassy.bus.MBassador;
@@ -61,7 +62,7 @@ public class Providers
                                FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
     return new Object [] { eventBus, server, client,
-                          new DefaultServerConfiguration (INTERNAL_ADDRESS_RESOLVER.resolveIp (), port) };
+                           new DefaultServerConfiguration (INTERNAL_ADDRESS_RESOLVER.resolveIp (), port) };
   }
 
   private static Object[] genParamsHostNPlay ()
@@ -72,6 +73,7 @@ public class Providers
             .createTestServer (eventBus, GameServerType.HOST_AND_PLAY, PersonLimits.classicModeDefaults (),
                                FAKE_EXTERNAL_SERVER_ADDRESS, port);
     final TestClient client = new TestClient (new KryonetClient ());
-    return new Object [] { eventBus, server, client, new DefaultServerConfiguration ("localhost", port) };
+    return new Object [] { eventBus, server, client,
+                           new DefaultServerConfiguration (NetworkConstants.LOCALHOST_NAME, port) };
   }
 }

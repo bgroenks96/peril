@@ -25,13 +25,14 @@ import com.esotericsoftware.kryonet.Listener;
 
 import com.forerunnergames.peril.common.net.kryonet.KryonetLogging;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
-import com.forerunnergames.peril.common.net.kryonet.KryonetRemote;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.NetworkListener;
 import com.forerunnergames.tools.net.client.Client;
+import com.forerunnergames.tools.net.client.remote.RemoteServer;
+import com.forerunnergames.tools.net.client.remote.RemoteServerListener;
+import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,13 +42,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class KryonetClient extends com.esotericsoftware.kryonet.Client implements Client
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
-  private final Map <NetworkListener, Listener> networkToKryonetListeners = new HashMap <> ();
+  private final Map <Integer, RemoteServer> connectionIdsToRemoteServers = new HashMap<> ();
+  private final Map <RemoteServerListener, Listener> remoteServerToKryonetListeners = new HashMap<> ();
   private final ExecutorService executorService = Executors.newSingleThreadExecutor ();
   private final Kryo kryo;
   private boolean isRunning = false;
@@ -87,125 +91,6 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
   }
 
   @Override
-  public void add (final NetworkListener networkListener)
-  {
-    Arguments.checkIsNotNull (networkListener, "networkListener");
-
-    final Listener kryonetListener = new Listener ()
-    {
-      @Override
-      public void connected (final Connection connection)
-      {
-        networkListener.connected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
-      }
-
-      @Override
-      public void disconnected (final Connection connection)
-      {
-        networkListener.disconnected (new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
-      }
-
-      @Override
-      public void received (final Connection connection, final Object object)
-      {
-        if (object instanceof FrameworkMessage) return;
-        if (object == null)
-        {
-          log.warn ("Received null object from server: [{}].", connection.getRemoteAddressTCP ());
-          return;
-        }
-
-        networkListener.received (object, new KryonetRemote (connection.getID (), connection.getRemoteAddressTCP ()));
-      }
-    };
-
-    addListener (kryonetListener);
-
-    networkToKryonetListeners.put (networkListener, kryonetListener);
-  }
-
-  @Override
-  public void remove (final NetworkListener networkListener)
-  {
-    Arguments.checkIsNotNull (networkListener, "networkListener");
-
-    removeListener (networkToKryonetListeners.remove (networkListener));
-  }
-
-  @Override
-  public void register (final Class <?> type)
-  {
-    Arguments.checkIsNotNull (type, "type");
-
-    kryo.register (type);
-
-    log.trace ("Registered class [{}] with the server for network serialization.", type);
-  }
-
-  @Override
-  public void shutDown ()
-  {
-    disconnect ();
-    stop ();
-  }
-
-  @Override
-  public Result <String> connectNow (final String address, final int tcpPort, final int timeoutMs, final int maxAttempts)
-  {
-    Arguments.checkIsNotNull (address, "address");
-    Arguments.checkIsNotNegative (tcpPort, "tcpPort");
-    Arguments.checkIsNotNegative (timeoutMs, "timeoutMs");
-    Arguments.checkLowerInclusiveBound (maxAttempts, 0, "maxAttempts");
-
-    if (isConnected ())
-    {
-      log.warn ("Cannot connect to the server because you are already connected.");
-      return Result.failure ("You are already connected to the server.");
-    }
-
-    log.info ("Connecting to server at address [{}] & port [{}] (TCP)...", address, tcpPort);
-
-    int connectionAttempts = 0;
-    Result <String> result;
-
-    do
-    {
-      ++connectionAttempts;
-
-      log.info ("[{}] connection attempt...", Strings.toMixedOrdinal (connectionAttempts));
-
-      result = connectNow (address, tcpPort, timeoutMs);
-    }
-    while (result.failed () && connectionAttempts < maxAttempts);
-
-    return result;
-  }
-
-  @Override
-  public Future <Result <String>> connectLater (final String address,
-                                                final int tcpPort,
-                                                final int timeoutMs,
-                                                final int maxAttempts)
-  {
-    return executorService.submit (new Callable <Result <String>> ()
-    {
-      @Override
-      public Result <String> call ()
-      {
-        return connectNow (address, tcpPort, timeoutMs, maxAttempts);
-      }
-    });
-  }
-
-  @Override
-  public void disconnect ()
-  {
-    if (!isConnected ()) return;
-
-    close ();
-  }
-
-  @Override
   public void send (final Object object)
   {
     Arguments.checkIsNotNull (object, "object");
@@ -229,23 +114,179 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
     log.debug ("Sent object [{}] to the server", object);
   }
 
-  private Result <String> connectNow (final String address, final int tcpPort, final int timeoutMs)
+  @Override
+  public void add (final RemoteServerListener listener)
   {
-    log.info ("Attempting to connect to server with address [{}] on port [{}] (TCP).", address, tcpPort);
+    Arguments.checkIsNotNull (listener, "listener");
+
+    final Listener kryonetListener = new Listener ()
+    {
+      @Override
+      public void connected (final Connection connection)
+      {
+        Arguments.checkIsNotNull (connection, "connection");
+
+        RemoteServer server = connectionIdsToRemoteServers.get (connection.getID ());
+
+        if (server != null)
+        {
+          log.error ("Connected to duplicate server [{}]! Connection: [{}]. Not notifying listener: [{}].", server,
+                     connection, listener);
+          return;
+        }
+
+        server = new KryonetRemoteServer (connection.getID (), connection.getRemoteAddressTCP ());
+        connectionIdsToRemoteServers.put (connection.getID (), server);
+
+        listener.connected (server);
+      }
+
+      @Override
+      public void disconnected (final Connection connection)
+      {
+        Arguments.checkIsNotNull (connection, "connection");
+
+        final RemoteServer server = connectionIdsToRemoteServers.get (connection.getID ());
+
+        if (server == null)
+        {
+          log.error ("Disconnected from non-connected server! Connection: [{}]. Not notifying listener: [{}].",
+                     connection, listener);
+          return;
+        }
+
+        connectionIdsToRemoteServers.remove (connection.getID ());
+
+        listener.disconnected (server);
+      }
+
+      @Override
+      public void received (final Connection connection, @Nullable final Object object)
+      {
+        Arguments.checkIsNotNull (connection, "connection");
+
+        final RemoteServer server = connectionIdsToRemoteServers.get (connection.getID ());
+
+        if (server == null)
+        {
+          log.error ("Received object [{}] from non-connected server! Connection: [{}]. Not notifying listener: [{}].",
+                     object, connection, listener);
+          return;
+        }
+
+        if (object instanceof FrameworkMessage) return;
+
+        if (object == null)
+        {
+          log.warn ("Received null object from server: [{}].", connection.getRemoteAddressTCP ());
+          return;
+        }
+
+        listener.received (server, object);
+      }
+    };
+
+    addListener (kryonetListener);
+
+    remoteServerToKryonetListeners.put (listener, kryonetListener);
+  }
+
+  @Override
+  public void remove (final RemoteServerListener listener)
+  {
+    Arguments.checkIsNotNull (listener, "listener");
+
+    removeListener (remoteServerToKryonetListeners.remove (listener));
+  }
+
+  @Override
+  public void register (final Class <?> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    kryo.register (type);
+
+    log.trace ("Registered class [{}] with the server for network serialization.", type);
+  }
+
+  @Override
+  public void shutDown ()
+  {
+    disconnect ();
+    stop ();
+  }
+
+  @Override
+  public Result <String> connectNow (final ServerConfiguration config, final int timeoutMs, final int maxAttempts)
+  {
+    Arguments.checkIsNotNull (config, "config");
+    Arguments.checkIsNotNegative (timeoutMs, "timeoutMs");
+    Arguments.checkLowerInclusiveBound (maxAttempts, 0, "maxAttempts");
+
+    if (isConnected ())
+    {
+      log.warn ("Cannot connect to the server because you are already connected.");
+      return Result.failure ("You are already connected to the server.");
+    }
+
+    log.info ("Connecting to server at address [{}] & port [{}] (TCP)...", config.getAddress (), config.getPort ());
+
+    int connectionAttempts = 0;
+    Result <String> result;
+
+    do
+    {
+      ++connectionAttempts;
+
+      log.info ("[{}] connection attempt...", Strings.toMixedOrdinal (connectionAttempts));
+
+      result = connectNow (config.getAddress (), config.getPort (), timeoutMs);
+    }
+    while (result.failed () && connectionAttempts < maxAttempts);
+
+    return result;
+  }
+
+  @Override
+  public Future <Result <String>> connectLater (final ServerConfiguration config,
+                                                final int timeoutMs,
+                                                final int maxAttempts)
+  {
+    return executorService.submit (new Callable <Result <String>> ()
+    {
+      @Override
+      public Result <String> call ()
+      {
+        return connectNow (config, timeoutMs, maxAttempts);
+      }
+    });
+  }
+
+  @Override
+  public void disconnect ()
+  {
+    if (!isConnected ()) return;
+
+    close ();
+  }
+
+  private Result <String> connectNow (final String address, final int port, final int timeoutMs)
+  {
+    log.info ("Attempting to connect to server with address [{}] on port [{}] (TCP).", address, port);
 
     try
     {
-      connect (timeoutMs, address, tcpPort);
+      connect (timeoutMs, address, port);
 
       // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <String> type.
       return isConnected () ? Result.<String> success () : Result.failure ("Unknown");
     }
     catch (final IOException e)
     {
-      log.info ("Failed to connect to server with address [{}] on port [{}] (TCP).", address, tcpPort);
+      log.info ("Failed to connect to server with address [{}] on port [{}] (TCP).", address, port);
       log.debug ("Failure reason: [{}]", Strings.toString (e));
 
-      return Result.failure ("Could not connect to server with address [" + address + "] on port [" + tcpPort
+      return Result.failure ("Could not connect to server with address [" + address + "] on port [" + port
               + "] (TCP). Details:\n\n" + Strings.toString (e));
     }
   }

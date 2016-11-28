@@ -37,13 +37,13 @@ public final class AiClientConfiguration implements ClientConfiguration
   }
 
   @Override
-  public String getClientAddress ()
+  public String getAddress ()
   {
     return fakeAddress;
   }
 
   @Override
-  public int getClientTcpPort ()
+  public int getPort ()
   {
     return fakePort;
   }

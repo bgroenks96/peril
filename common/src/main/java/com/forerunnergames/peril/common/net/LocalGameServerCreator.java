@@ -55,7 +55,7 @@ public final class LocalGameServerCreator implements GameServerCreator
     }
 
     log.info ("Launching your local host & play server \"{}\" on port {} (TCP)...", config.getGameServerName (),
-              config.getServerTcpPort ());
+              config.getPort ());
 
     try
     {
@@ -67,7 +67,7 @@ public final class LocalGameServerCreator implements GameServerCreator
                       "--game-mode", config.getGameMode ().name(),
                       "--server-type", config.getGameServerType ().name (),
                       "--title", config.getGameServerName (),
-                      "--port", String.valueOf (config.getServerTcpPort ()),
+                      "--port", String.valueOf (config.getPort ()),
                       "--human-players", String.valueOf (config.getPlayerLimitFor (PersonSentience.HUMAN)),
                       "--ai-players", String.valueOf (config.getPlayerLimitFor (PersonSentience.AI)),
                       "--spectators", String.valueOf (config.getSpectatorLimit ()),
@@ -97,7 +97,7 @@ public final class LocalGameServerCreator implements GameServerCreator
       isCreated = true;
 
       log.info ("Successfully launched your local host & play server \"{}\" on port {} (TCP)...",
-                config.getGameServerName (), config.getServerTcpPort ());
+                config.getGameServerName (), config.getPort ());
 
       return Result.success ();
     }
@@ -105,7 +105,7 @@ public final class LocalGameServerCreator implements GameServerCreator
     {
       destroyServerProcess ();
 
-      log.warn ("Failed to launch local server on port [{}] (TCP).", config.getServerTcpPort ());
+      log.warn ("Failed to launch local server on port [{}] (TCP).", config.getPort ());
       log.warn ("Failure reason: [{}]", Strings.toString (e));
 
       return Result.failure (Strings.toString (e));

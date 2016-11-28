@@ -95,7 +95,7 @@ public final class AiController extends ControllerAdapter
 
     log.debug ("[{}] received event: [{}].", playerName, event);
 
-    joinGameServerHandler.join (playerName, gameServerConfig.getServerAddress (), new JoinGameServerListenerAdapter ()
+    joinGameServerHandler.join (playerName, gameServerConfig.getAddress (), new JoinGameServerListenerAdapter ()
     {
       @Override
       public void onJoinStart (final String playerName, final ServerConfiguration config)

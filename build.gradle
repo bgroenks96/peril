@@ -64,7 +64,7 @@ buildscript {
     stateForgeStateMachineJCodeModelVersion = "1.0.2"
 
     // Miscellaneous
-    fgToolsVersion = "1.1.0"
+    fgToolsVersion = "1.1.1-SNAPSHOT"
     guavaVersion = "20.0"
     mbassadorVersion = "1.3.0"
     awsJavaSdkBomVersion = "1.11.60"

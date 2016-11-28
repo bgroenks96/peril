@@ -21,8 +21,8 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.client.ClientCommunicator;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
+import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
 
 import com.google.common.base.Optional;
 
@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 public final class AiPlayerCommunicator implements PlayerCommunicator
 {
   private static final Logger log = LoggerFactory.getLogger (AiPlayerCommunicator.class);
-  private final ClientCommunicator communicator;
+  private final RemoteClientCommunicator communicator;
 
-  public AiPlayerCommunicator (final ClientCommunicator communicator)
+  public AiPlayerCommunicator (final RemoteClientCommunicator communicator)
   {
     Arguments.checkIsNotNull (communicator, "communicator");
 
@@ -42,7 +42,7 @@ public final class AiPlayerCommunicator implements PlayerCommunicator
   }
 
   @Override
-  public void sendTo (final Remote client, final Object object)
+  public void sendTo (final RemoteClient client, final Object object)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
@@ -63,7 +63,7 @@ public final class AiPlayerCommunicator implements PlayerCommunicator
   }
 
   @Override
-  public void sendToAllExcept (final Remote client, final Object object)
+  public void sendToAllExcept (final RemoteClient client, final Object object)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
@@ -80,7 +80,7 @@ public final class AiPlayerCommunicator implements PlayerCommunicator
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (message, "message");
 
-    final Optional <Remote> clientQuery = mapping.clientFor (player);
+    final Optional <RemoteClient> clientQuery = mapping.clientFor (player);
 
     if (!clientQuery.isPresent ())
     {
@@ -111,7 +111,7 @@ public final class AiPlayerCommunicator implements PlayerCommunicator
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (message, "message");
 
-    final Optional <Remote> clientQuery = mapping.clientFor (player);
+    final Optional <RemoteClient> clientQuery = mapping.clientFor (player);
 
     if (!clientQuery.isPresent ())
     {

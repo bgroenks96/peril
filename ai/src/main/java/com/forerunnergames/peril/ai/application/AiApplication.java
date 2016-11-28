@@ -31,11 +31,11 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.Controller;
-import com.forerunnergames.tools.net.Remote;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
 
 import de.matthiasmann.AsyncExecution;
 
@@ -75,8 +75,8 @@ public final class AiApplication extends DefaultApplication
     for (int i = 1; i <= gameServerConfig.getPlayerLimitFor (PersonSentience.AI); ++i)
     {
       final String aiPlayerName = Strings.format ("DumbBot{}", i);
-      final Controller aiController = new AiController (
-              GameSettings.getAiPlayerNameWithMandatoryClanTag (aiPlayerName), gameServerConfig, internalEventBus);
+      final Controller aiController = new AiController (GameSettings.getAiPlayerNameWithMandatoryClanTag (aiPlayerName),
+              gameServerConfig, internalEventBus);
       internalEventBus.subscribe (aiController);
       add (aiController);
     }
@@ -111,7 +111,7 @@ public final class AiApplication extends DefaultApplication
 
     log.debug ("Event received [{}]", event);
 
-    final Remote fakeClient = new AiClient (event.getPlayerName ());
+    final RemoteClient fakeClient = new AiClient (event.getPlayerName ());
 
     log.info ("Creating fake server connection...");
 
@@ -144,7 +144,7 @@ public final class AiApplication extends DefaultApplication
     sendToServer (event);
   }
 
-  private void connectToServer (final Remote fakeClient)
+  private void connectToServer (final RemoteClient fakeClient)
   {
     mainThreadExecutor.invokeLater (new Runnable ()
     {
@@ -156,7 +156,7 @@ public final class AiApplication extends DefaultApplication
     });
   }
 
-  private void disconnectFromServer (final Remote fakeClient)
+  private void disconnectFromServer (final RemoteClient fakeClient)
   {
     mainThreadExecutor.invokeLater (new Runnable ()
     {
@@ -173,14 +173,14 @@ public final class AiApplication extends DefaultApplication
     sendToServer (event.getMessage (), new AiClient (event.getPlayerName ()));
   }
 
-  private void sendToServer (final ClientEvent message, final Remote fakeClient)
+  private void sendToServer (final ClientEvent message, final RemoteClient fakeClient)
   {
     mainThreadExecutor.invokeLater (new Runnable ()
     {
       @Override
       public void run ()
       {
-        externalEventBus.publish (new ClientCommunicationEvent (message, fakeClient));
+        externalEventBus.publish (new ClientCommunicationEvent (fakeClient, message));
       }
     });
   }

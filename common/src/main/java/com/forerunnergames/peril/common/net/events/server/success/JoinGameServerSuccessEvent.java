@@ -53,7 +53,7 @@ public final class JoinGameServerSuccessEvent implements DirectSuccessEvent
 
   public String getClientAddress ()
   {
-    return clientConfig.getClientAddress ();
+    return clientConfig.getAddress ();
   }
 
   @Override

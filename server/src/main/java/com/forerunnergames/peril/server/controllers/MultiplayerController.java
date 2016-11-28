@@ -75,8 +75,7 @@ import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.net.NetworkConstants;
-import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.client.ClientConnector;
+import com.forerunnergames.tools.net.NetworkTools;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.client.configuration.DefaultClientConfiguration;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
@@ -85,6 +84,8 @@ import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
+import com.forerunnergames.tools.net.server.remote.RemoteClientConnector;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
@@ -114,13 +115,13 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
   private final Multimap <PlayerPacket, PlayerInformEvent> playerInformEventCache = HashMultimap.create ();
-  private final Map <String, Remote> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, Remote> ());
-  private final Set <Remote> clientsInServer = Collections.synchronizedSet (new HashSet <Remote> ());
+  private final Map <String, RemoteClient> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, RemoteClient> ());
+  private final Set <RemoteClient> clientsInServer = Collections.synchronizedSet (new HashSet <RemoteClient> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientSpectatorMapping clientsToSpectators;
   private final ClientConnectorDaemon connectorDaemon = new ClientConnectorDaemon ();
   private final GameServerConfiguration gameServerConfig;
-  private final ClientConnector clientConnector;
+  private final RemoteClientConnector clientConnector;
   private final PlayerCommunicator humanPlayerCommunicator;
   private final PlayerCommunicator aiPlayerCommunicator;
   private final SpectatorCommunicator spectatorCommunicator;
@@ -130,11 +131,11 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   private boolean shouldShutDown = false;
   private int connectionTimeoutMillis = NetworkSettings.CLIENT_CONNECTION_TIMEOUT_MS;
   @Nullable
-  private Remote host = null;
+  private RemoteClient host = null;
   // @formatter:on
 
   public MultiplayerController (final GameServerConfiguration gameServerConfig,
-                                final ClientConnector clientConnector,
+                                final RemoteClientConnector clientConnector,
                                 final PlayerCommunicator humanPlayerCommunicator,
                                 final PlayerCommunicator aiPlayerCommunicator,
                                 final SpectatorCommunicator spectatorCommunicator,
@@ -195,7 +196,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   // ---------- Remote inbound ClientRequestEvent callbacks from NetworkEventDispatcher ---------- //
 
   @Override
-  public void handleEvent (final HumanJoinGameServerRequestEvent event, final Remote client)
+  public void handleEvent (final HumanJoinGameServerRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -205,7 +206,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
     // Clients should not be able to join if they do not have a valid ip address.
     // This reeks of hacking...
-    if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
+    if (!NetworkTools.isValidIpAddress (client.getAddress ()))
     {
       sendJoinGameServerDeniedToHumanClient (client, "Your IP address [" + client.getAddress () + "] is invalid.");
       return;
@@ -259,14 +260,14 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final AiJoinGameServerRequestEvent event, final Remote client)
+  public void handleEvent (final AiJoinGameServerRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
     // Check to make sure that this event is not coming from a real human client.
     // AI clients never have a valid address, while human clients must.
-    if (NetworkConstants.isValidIpAddress (client.getAddress ()))
+    if (NetworkTools.isValidIpAddress (client.getAddress ()))
     {
       // It's a human client. Send the denial to the human client.
       sendJoinGameServerDeniedToHumanClient (client, Strings.format ("Invalid AI client: [{}]", client));
@@ -287,7 +288,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final PlayerJoinGameRequestEvent event, final Remote client)
+  public void handleEvent (final PlayerJoinGameRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -326,12 +327,12 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final PlayerRejoinGameRequestEvent event, final Remote client)
+  public void handleEvent (final PlayerRejoinGameRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
-    if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
+    if (!NetworkTools.isValidIpAddress (client.getAddress ()))
     {
       sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ADDRESS));
       return;
@@ -354,7 +355,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final SpectatorJoinGameRequestEvent event, final Remote client)
+  public void handleEvent (final SpectatorJoinGameRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -394,7 +395,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final ChatMessageRequestEvent event, final Remote client)
+  public void handleEvent (final ChatMessageRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -440,7 +441,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final PlayerRequestEvent event, final Remote client)
+  public void handleEvent (final PlayerRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -473,7 +474,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final ResponseRequestEvent event, final Remote client)
+  public void handleEvent (final ResponseRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -513,7 +514,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Override
-  public void handleEvent (final InformRequestEvent event, final Remote client)
+  public void handleEvent (final InformRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -595,7 +596,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     return clientsToPlayers.clientFor (player).isPresent ();
   }
 
-  public boolean isClientInServer (final Remote client)
+  public boolean isClientInServer (final RemoteClient client)
   {
     Arguments.checkIsNotNull (client, "client");
 
@@ -622,7 +623,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
     log.trace ("Event received [{}]", event);
 
-    final Remote client = clientFrom (event);
+    final RemoteClient client = clientFrom (event);
 
     log.info ("Client [{}] disconnected.", client);
 
@@ -690,7 +691,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     }
 
     // fetch and remove player name from request cache
-    final Remote client = playerJoinGameRequestCache.remove (playerName);
+    final RemoteClient client = playerJoinGameRequestCache.remove (playerName);
 
     final PlayerPacket newPlayer = event.getPerson ();
 
@@ -738,7 +739,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     // this is to prevent failure under cases such as client disconnecting while join request is being processed
     if (!playerJoinGameRequestCache.containsKey (playerName)) return;
 
-    final Remote client = playerJoinGameRequestCache.get (playerName);
+    final RemoteClient client = playerJoinGameRequestCache.get (playerName);
 
     if (client instanceof AiClient)
     {
@@ -759,7 +760,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final Optional <Remote> client = clientsToPlayers.clientFor (event.getPerson ());
+    final Optional <RemoteClient> client = clientsToPlayers.clientFor (event.getPerson ());
     if (!client.isPresent ())
     {
       log.warn ("No client mapping for player in received event [{}].", event);
@@ -779,14 +780,14 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final Optional <Remote> optionalClient = clientsToPlayers.clientFor (event.getPerson ());
+    final Optional <RemoteClient> optionalClient = clientsToPlayers.clientFor (event.getPerson ());
     if (!optionalClient.isPresent ())
     {
       log.warn ("No client mapping for player in received event [{}].", event);
       return;
     }
 
-    final Remote client = optionalClient.get ();
+    final RemoteClient client = optionalClient.get ();
 
     // remove client/player mapping; keep client in server
     clientsToPlayers.remove (client);
@@ -807,8 +808,8 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     //
     // Also bypasses stage 1 of authenticating as a client via JoinGameServerRequestEvent because
     // the client already previously authenticated as a player, and is still connected to the server.
-    eventBus.publish (new ClientCommunicationEvent (new SpectatorJoinGameRequestEvent (event.getPersonName ()),
-            client));
+    eventBus.publish (new ClientCommunicationEvent (client,
+            new SpectatorJoinGameRequestEvent (event.getPersonName ())));
 
     // let handler for broadcast events handle forwarding the event
   }
@@ -896,7 +897,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     sendToAllSpectatorsExcept (spectator, nonSelfEvent);
   }
 
-  private void sendJoinGameServerSuccessToHumanClient (final Remote client)
+  private void sendJoinGameServerSuccessToHumanClient (final RemoteClient client)
   {
     final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig, createHumanClientConfig (client));
 
@@ -906,7 +907,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     log.info ("Client [{}] successfully joined game server.", client);
   }
 
-  private void sendJoinGameServerSuccessToAiClient (final Remote client)
+  private void sendJoinGameServerSuccessToAiClient (final RemoteClient client)
   {
     final Event successEvent = new JoinGameServerSuccessEvent (gameServerConfig, createAiClientConfig (client));
 
@@ -916,7 +917,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     log.info ("Client [{}] successfully joined game server.", client);
   }
 
-  private void sendJoinGameServerDeniedToHumanClient (final Remote client, final String reason)
+  private void sendJoinGameServerDeniedToHumanClient (final RemoteClient client, final String reason)
   {
     sendToHumanClient (client, new JoinGameServerDeniedEvent (createHumanClientConfig (client), reason));
     disconnectHuman (client);
@@ -924,14 +925,14 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
   }
 
-  private void sendJoinGameServerDeniedToAiClient (final Remote client, final String reason)
+  private void sendJoinGameServerDeniedToAiClient (final RemoteClient client, final String reason)
   {
     sendToAiClient (client, new JoinGameServerDeniedEvent (createAiClientConfig (client), reason));
 
     log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
   }
 
-  private void sendSpectatorJoinGameDenied (final Remote client,
+  private void sendSpectatorJoinGameDenied (final RemoteClient client,
                                             final String name,
                                             final SpectatorJoinGameDeniedEvent.Reason reason)
   {
@@ -941,22 +942,22 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
   // ---------- Internal event utility methods and types ---------- //
 
-  private boolean isLocalHost (final Remote client)
+  private boolean isLocalHost (final RemoteClient client)
   {
     return client.getAddress ().equals (NetworkConstants.LOCALHOST_ADDRESS);
   }
 
-  private ClientConfiguration createHumanClientConfig (final Remote client)
+  private ClientConfiguration createHumanClientConfig (final RemoteClient client)
   {
     return new DefaultClientConfiguration (client.getAddress (), client.getPort ());
   }
 
-  private ClientConfiguration createAiClientConfig (final Remote client)
+  private ClientConfiguration createAiClientConfig (final RemoteClient client)
   {
     return new AiClientConfiguration (client.getAddress (), client.getPort ());
   }
 
-  private void disconnect (final Remote client)
+  private void disconnect (final RemoteClient client)
   {
     if (client instanceof AiClient)
     {
@@ -967,7 +968,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     disconnectHuman (client);
   }
 
-  private void disconnectHuman (final Remote client)
+  private void disconnectHuman (final RemoteClient client)
   {
     clientConnector.disconnect (client);
   }
@@ -979,15 +980,15 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
   private boolean serverHasAddress ()
   {
-    return !gameServerConfig.getServerAddress ().isEmpty ();
+    return !gameServerConfig.getAddress ().isEmpty ();
   }
 
   private String getServerAddress ()
   {
-    return gameServerConfig.getServerAddress ();
+    return gameServerConfig.getAddress ();
   }
 
-  private void sendToClient (final Remote client, final Event message)
+  private void sendToClient (final RemoteClient client, final Event message)
   {
     if (client instanceof AiClient)
     {
@@ -999,17 +1000,17 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     }
   }
 
-  private void sendToHumanClient (final Remote client, final Event message)
+  private void sendToHumanClient (final RemoteClient client, final Event message)
   {
     humanPlayerCommunicator.sendTo (client, message);
   }
 
-  private void sendToAiClient (final Remote client, final Event message)
+  private void sendToAiClient (final RemoteClient client, final Event message)
   {
     aiPlayerCommunicator.sendTo (client, message);
   }
 
-  private void sendToSpectator (final Remote client, final Event message)
+  private void sendToSpectator (final RemoteClient client, final Event message)
   {
     spectatorCommunicator.sendTo (client, message);
   }
@@ -1064,7 +1065,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     sendToAllSpectators (message);
   }
 
-  private void remove (final Remote client)
+  private void remove (final RemoteClient client)
   {
     clientsInServer.remove (client);
     clientsToPlayers.remove (client); // remove from players, if client is a player
@@ -1171,7 +1172,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   {
     private final ExecutorService threadPool = Executors.newCachedThreadPool ();
 
-    public void onConnect (final Remote client)
+    public void onConnect (final RemoteClient client)
     {
       Arguments.checkIsNotNull (client, "client");
 
@@ -1180,9 +1181,9 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
     private class WaitForConnectionTask implements Runnable
     {
-      private final Remote client;
+      private final RemoteClient client;
 
-      WaitForConnectionTask (final Remote client)
+      WaitForConnectionTask (final RemoteClient client)
       {
         Arguments.checkIsNotNull (client, "client");
 

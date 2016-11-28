@@ -52,14 +52,14 @@ public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
 
   public String getClientAddress ()
   {
-    return clientConfig.getClientAddress ();
+    return clientConfig.getAddress ();
   }
 
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig, deniedEvent);
+    return Strings.format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig,
+                           deniedEvent);
   }
 
   @RequiredForNetworkSerialization

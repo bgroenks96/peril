@@ -19,15 +19,15 @@ package com.forerunnergames.peril.ai.net;
 
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.client.ClientCommunicator;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
+import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
 
 import net.engio.mbassy.bus.MBassador;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class AiClientCommunicator implements ClientCommunicator
+public final class AiClientCommunicator implements RemoteClientCommunicator
 {
   private static final Logger log = LoggerFactory.getLogger (AiClientCommunicator.class);
   private final MBassador <Event> internalEventBus;
@@ -40,7 +40,7 @@ public final class AiClientCommunicator implements ClientCommunicator
   }
 
   @Override
-  public void sendTo (final Remote client, final Object object)
+  public void sendTo (final RemoteClient client, final Object object)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");
@@ -57,7 +57,7 @@ public final class AiClientCommunicator implements ClientCommunicator
   }
 
   @Override
-  public void sendToAllExcept (final Remote client, final Object object)
+  public void sendToAllExcept (final RemoteClient client, final Object object)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (object, "object");

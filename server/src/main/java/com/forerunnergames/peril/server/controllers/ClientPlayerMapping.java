@@ -23,7 +23,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.Remote;
+import com.forerunnergames.tools.net.server.remote.RemoteClient;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public final class ClientPlayerMapping
 {
   private static final Logger log = LoggerFactory.getLogger (ClientPlayerMapping.class);
-  private final BiMap <Remote, PlayerPacket> clientsToPlayers;
+  private final BiMap <RemoteClient, PlayerPacket> clientsToPlayers;
   private final BiMap <UUID, PlayerPacket> serverIdsToPlayers;
   private final CoreCommunicator coreCommunicator;
 
@@ -53,11 +53,11 @@ public final class ClientPlayerMapping
 
     this.coreCommunicator = coreCommunicator;
 
-    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap. <Remote, PlayerPacket> create (playerLimit));
-    serverIdsToPlayers = Maps.synchronizedBiMap (HashBiMap. <UUID, PlayerPacket> create (playerLimit));
+    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap.<RemoteClient, PlayerPacket> create (playerLimit));
+    serverIdsToPlayers = Maps.synchronizedBiMap (HashBiMap.<UUID, PlayerPacket> create (playerLimit));
   }
 
-  public Optional <PlayerPacket> put (final Remote client, final PlayerPacket player)
+  public Optional <PlayerPacket> put (final RemoteClient client, final PlayerPacket player)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (player, "player");
@@ -74,7 +74,7 @@ public final class ClientPlayerMapping
    * @throws RegisteredClientPlayerNotFoundException
    *           if the player no longer exists in the core player model
    */
-  public Optional <PlayerPacket> playerFor (final Remote client) throws RegisteredClientPlayerNotFoundException
+  public Optional <PlayerPacket> playerFor (final RemoteClient client) throws RegisteredClientPlayerNotFoundException
   {
     Arguments.checkIsNotNull (client, "client");
 
@@ -91,7 +91,7 @@ public final class ClientPlayerMapping
     return newPlayerQuery;
   }
 
-  public Optional <Remote> clientFor (final PlayerPacket player)
+  public Optional <RemoteClient> clientFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
@@ -109,7 +109,7 @@ public final class ClientPlayerMapping
   public Optional <UUID> serverIdFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
-    
+
     return Optional.fromNullable (serverIdsToPlayers.inverse ().get (player));
   }
 
@@ -170,13 +170,13 @@ public final class ClientPlayerMapping
     return ImmutableSet.copyOf (clientsToPlayers.values ());
   }
 
-  public ImmutableSet <Remote> clients ()
+  public ImmutableSet <RemoteClient> clients ()
   {
     syncPlayerData ();
     return ImmutableSet.copyOf (clientsToPlayers.keySet ());
   }
 
-  public Optional <PlayerPacket> remove (final Remote client)
+  public Optional <PlayerPacket> remove (final RemoteClient client)
   {
     Arguments.checkIsNotNull (client, "client");
 
@@ -196,7 +196,7 @@ public final class ClientPlayerMapping
     {
       // PlayerPackets by contract must evaluate as equal for the same player, so get will work here even
       // with updated data.
-      final Optional <Remote> client = Optional.fromNullable (clientsToPlayers.inverse ().get (current));
+      final Optional <RemoteClient> client = Optional.fromNullable (clientsToPlayers.inverse ().get (current));
       if (!client.isPresent ())
       {
         log.warn ("Received player [{}] from core with no client mapping.", current);
@@ -241,7 +241,7 @@ public final class ClientPlayerMapping
   {
     final String message;
 
-    RegisteredClientPlayerNotFoundException (final String playerName, final Remote client)
+    RegisteredClientPlayerNotFoundException (final String playerName, final RemoteClient client)
     {
       Arguments.checkIsNotNull (playerName, "playerName");
       Arguments.checkIsNotNull (client, "client");

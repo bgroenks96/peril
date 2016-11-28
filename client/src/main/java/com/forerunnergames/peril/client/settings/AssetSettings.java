@@ -35,7 +35,7 @@ import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.net.NetworkConstants;
+import com.forerunnergames.tools.net.NetworkTools;
 
 import com.google.common.collect.ImmutableList;
 
@@ -215,7 +215,7 @@ public final class AssetSettings
     Arguments.checkIsNotNull (bucketPath, "bucketPath");
 
     return bucketPath.startsWith (S3_BUCKET_PATH_PREFIX)
-            && NetworkConstants.isValidDomainName (getS3BucketName (bucketPath));
+            && NetworkTools.isValidDomainName (getS3BucketName (bucketPath));
   }
 
   public static String getS3BucketName (final String bucketPath)

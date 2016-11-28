@@ -36,13 +36,12 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
+import com.forerunnergames.tools.net.client.remote.RemoteServerCommunicator;
+import com.forerunnergames.tools.net.client.remote.RemoteServerConnector;
 import com.forerunnergames.tools.net.events.local.ServerCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ServerConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
-import com.forerunnergames.tools.net.events.remote.RequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
-import com.forerunnergames.tools.net.server.ServerCommunicator;
-import com.forerunnergames.tools.net.server.ServerConnector;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
 import net.engio.mbassy.bus.MBassador;
@@ -57,24 +56,24 @@ import org.slf4j.LoggerFactory;
  *
  * This is accomplished in the following manner:
  *
- * 1) Subscribe to *RequestEvent's from the client UI logic.
- * 2) Send *RequestEvent's to the server wrapped in ClientCommunicationEvent's.
+ * 1) Subscribe to ClientRequestEvent's from the client UI logic.
+ * 2) Send ClientRequestEvent's to the server wrapped in ClientCommunicationEvent's.
  * 3) Listen for ServerCommunicationEvent's from the server.
- * 4) Unwrap ServerCommunicationEvent's and publish the *AnswerEvent's (*SuccessEvent or *DeniedEvent) to the client UI
- * logic via the event bus, so that the UI can update it's state to accurately reflect the current state of the server.
+ * 4) Unwrap ServerCommunicationEvent's and publish the ServerEvent's to the client UI logic via the event bus,
+ * so that the UI can update it's state to accurately reflect the current state of the server.
  */
 // @formatter:on
 public final class MultiplayerController extends ControllerAdapter
 {
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
   private final GameServerCreator gameServerCreator;
-  private final ServerConnector serverConnector;
-  private final ServerCommunicator serverCommunicator;
+  private final RemoteServerConnector serverConnector;
+  private final RemoteServerCommunicator serverCommunicator;
   private final MBassador <Event> eventBus;
 
   public MultiplayerController (final GameServerCreator gameServerCreator,
-                                final ServerConnector serverConnector,
-                                final ServerCommunicator serverCommunicator,
+                                final RemoteServerConnector serverConnector,
+                                final RemoteServerCommunicator serverCommunicator,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (gameServerCreator, "gameServerCreator");
@@ -191,17 +190,8 @@ public final class MultiplayerController extends ControllerAdapter
 
   private Result <String> connectToServer (final ServerConfiguration config)
   {
-    return connectToServer (config.getServerAddress (), config.getServerTcpPort (),
-                            NetworkSettings.SERVER_CONNECTION_TIMEOUT_MS,
-                            NetworkSettings.MAX_SERVER_CONNECTION_ATTEMPTS);
-  }
-
-  private Result <String> connectToServer (final String address,
-                                           final int tcpPort,
-                                           final int timeoutMs,
-                                           final int maxAttempts)
-  {
-    return serverConnector.connectNow (address, tcpPort, timeoutMs, maxAttempts);
+    return serverConnector.connectNow (config, NetworkSettings.SERVER_CONNECTION_TIMEOUT_MS,
+                                       NetworkSettings.MAX_SERVER_CONNECTION_ATTEMPTS);
   }
 
   private Result <String> createGameServer (final GameServerConfiguration config)
@@ -233,7 +223,7 @@ public final class MultiplayerController extends ControllerAdapter
     eventBus.publish (new CreateGameServerDeniedEvent (event, reason));
   }
 
-  private void sendToServer (final RequestEvent event)
+  private void sendToServer (final ClientRequestEvent event)
   {
     if (!serverConnector.isConnected ())
     {
