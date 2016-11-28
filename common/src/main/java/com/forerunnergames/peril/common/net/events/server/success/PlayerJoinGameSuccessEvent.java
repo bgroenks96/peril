@@ -20,7 +20,7 @@ package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.PlayerColor;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPersonJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -31,7 +31,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class PlayerJoinGameSuccessEvent extends AbstractJoinGameSuccessEvent <PlayerPacket> implements
+public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent<PlayerPacket> implements
         PlayerEvent
 {
   /**

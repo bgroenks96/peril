@@ -29,8 +29,8 @@ import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastSucces
 
 import com.google.common.collect.ImmutableSet;
 
-public abstract class AbstractJoinGameSuccessEvent <T extends PersonPacket> extends AbstractPersonEvent <T> implements
-        BroadcastSuccessEvent
+public abstract class AbstractPersonJoinGameSuccessEvent <T extends PersonPacket> extends AbstractPersonEvent <T>
+        implements BroadcastSuccessEvent
 {
   private final PersonLimits personLimits;
   private final PersonIdentity identity;
@@ -41,9 +41,9 @@ public abstract class AbstractJoinGameSuccessEvent <T extends PersonPacket> exte
    * Convenience constructor for when person identity is unknown or not cared about, and there are no spectators in game
    * or spectators in game are unknown or not cared about.
    */
-  protected AbstractJoinGameSuccessEvent (final T person,
-                                          final ImmutableSet <PlayerPacket> playersInGame,
-                                          final PersonLimits personLimits)
+  protected AbstractPersonJoinGameSuccessEvent (final T person,
+                                                final ImmutableSet <PlayerPacket> playersInGame,
+                                                final PersonLimits personLimits)
   {
     this (person, playersInGame, ImmutableSet.<SpectatorPacket> of (), personLimits);
   }
@@ -51,19 +51,19 @@ public abstract class AbstractJoinGameSuccessEvent <T extends PersonPacket> exte
   /**
    * Convenience constructor for when person identity is unknown or not cared about.
    */
-  protected AbstractJoinGameSuccessEvent (final T person,
-                                          final ImmutableSet <PlayerPacket> playersInGame,
-                                          final ImmutableSet <SpectatorPacket> spectatorsInGame,
-                                          final PersonLimits personLimits)
+  protected AbstractPersonJoinGameSuccessEvent (final T person,
+                                                final ImmutableSet <PlayerPacket> playersInGame,
+                                                final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                                final PersonLimits personLimits)
   {
     this (person, PersonIdentity.UNKNOWN, playersInGame, spectatorsInGame, personLimits);
   }
 
-  protected AbstractJoinGameSuccessEvent (final T person,
-                                          final PersonIdentity identity,
-                                          final ImmutableSet <PlayerPacket> playersInGame,
-                                          final ImmutableSet <SpectatorPacket> spectatorsInGame,
-                                          final PersonLimits personLimits)
+  protected AbstractPersonJoinGameSuccessEvent (final T person,
+                                                final PersonIdentity identity,
+                                                final ImmutableSet <PlayerPacket> playersInGame,
+                                                final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                                final PersonLimits personLimits)
   {
     super (person);
 
@@ -81,7 +81,7 @@ public abstract class AbstractJoinGameSuccessEvent <T extends PersonPacket> exte
   }
 
   @RequiredForNetworkSerialization
-  protected AbstractJoinGameSuccessEvent ()
+  protected AbstractPersonJoinGameSuccessEvent ()
   {
     identity = null;
     playersInGame = null;
@@ -159,10 +159,10 @@ public abstract class AbstractJoinGameSuccessEvent <T extends PersonPacket> exte
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{} | PersonIdentity: [{}] | PlayerCount: [{}] | SpectatorCount: [{}] | PlayersInGame: [{}] | "
-                             + "SpectatorsInGame: [{}] | PersonLimits: [{}]", super.toString (), identity,
-                     getPlayerCount (),
-                     getSpectatorCount (), playersInGame, spectatorsInGame, personLimits);
+    return Strings.format (
+                           "{} | PersonIdentity: [{}] | PlayerCount: [{}] | SpectatorCount: [{}] | PlayersInGame: [{}] | "
+                                   + "SpectatorsInGame: [{}] | PersonLimits: [{}]",
+                           super.toString (), identity, getPlayerCount (), getSpectatorCount (), playersInGame,
+                           spectatorsInGame, personLimits);
   }
 }

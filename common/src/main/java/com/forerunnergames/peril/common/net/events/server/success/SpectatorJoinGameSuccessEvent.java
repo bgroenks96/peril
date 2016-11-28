@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.game.PersonLimits;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPersonJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
@@ -29,7 +29,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class SpectatorJoinGameSuccessEvent extends AbstractJoinGameSuccessEvent <SpectatorPacket>
+public final class SpectatorJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent<SpectatorPacket>
 {
   /**
    * Convenience constructor for when person identity is unknown or not cared about, and there are no players in game or
