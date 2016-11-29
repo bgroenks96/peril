@@ -20,6 +20,9 @@ package com.forerunnergames.peril.server.controllers;
 
 import static com.forerunnergames.tools.net.events.EventFluency.clientFrom;
 
+import com.forerunnergames.peril.ai.events.AiDisconnectionEvent;
+import com.forerunnergames.peril.ai.net.AiClient;
+import com.forerunnergames.peril.ai.net.AiClientConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
@@ -71,13 +74,14 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 import com.forerunnergames.tools.net.NetworkConstants;
 import com.forerunnergames.tools.net.Remote;
-import com.forerunnergames.tools.net.client.ClientConfiguration;
 import com.forerunnergames.tools.net.client.ClientConnector;
-import com.forerunnergames.tools.net.client.DefaultClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
+import com.forerunnergames.tools.net.client.configuration.DefaultClientConfiguration;
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
 import com.google.common.base.Optional;
