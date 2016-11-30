@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net;
+package com.forerunnergames.peril.common.net.dispatchers;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.tools.common.Arguments;
@@ -31,13 +31,23 @@ import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.listener.Handler;
 
-public abstract class NetworkEventHandler
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Uses {@link MBassador} to resolve the runtime types of various events. It is the responsibility of implementors to
+ * provide {@link Handler} methods for the interested events. Remembers the original remote client sender called via
+ * {@link #dispatch(Event, Remote)}, providing a mechanism to resolve the sender, for implementors to use, via
+ * {@link #senderOfDispatchedEvent(Event)}.
+ */
+public abstract class AbstractNetworkEventDispatcher implements NetworkEventDispatcher
 {
-  protected static final int CALL_LAST = -1;
+  private static final int CALL_LAST = Integer.MIN_VALUE;
+  protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final Map <Event, Remote> eventClientCache = Maps.newConcurrentMap ();
   private final MBassador <Event> internalEventBus;
 
-  protected NetworkEventHandler (final Iterable <IPublicationErrorHandler> internalBusErrorHandlers)
+  protected AbstractNetworkEventDispatcher (final Iterable <IPublicationErrorHandler> internalBusErrorHandlers)
   {
     Arguments.checkIsNotNull (internalBusErrorHandlers, "internalBusErrorHandlers");
     Arguments.checkHasNoNullElements (internalBusErrorHandlers, "internalBusErrorHandlers");
@@ -45,7 +55,14 @@ public abstract class NetworkEventHandler
     internalEventBus = EventBusFactory.create (internalBusErrorHandlers);
   }
 
-  public final void handle (final Event event, final Remote client)
+  @Override
+  public final void initialize ()
+  {
+    internalEventBus.subscribe (this); // Subscribes this class and any children.
+  }
+
+  @Override
+  public final void dispatch (final Event event, final Remote client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -54,17 +71,19 @@ public abstract class NetworkEventHandler
     internalEventBus.publish (event);
   }
 
-  protected abstract void subscribe (final MBassador <Event> eventBus);
-
-  protected final void initialize ()
+  @Override
+  public void shutDown ()
   {
-    internalEventBus.subscribe (this);
-    subscribe (internalEventBus);
+    internalEventBus.unsubscribe (this);
+    internalEventBus.shutdown ();
+    eventClientCache.clear ();
   }
 
-  protected final Remote clientFor (final Event event)
+  protected final Remote senderOfDispatchedEvent (final Event event)
   {
-    Preconditions.checkIsTrue (eventClientCache.containsKey (event), "{} not registered.", event);
+    Arguments.checkIsNotNull (event, "event");
+    Preconditions.checkIsTrue (eventClientCache.containsKey (event),
+                               "Cannot resolve sender for event [{}] because event was never dispatched.", event);
 
     return eventClientCache.get (event);
   }
@@ -72,6 +91,7 @@ public abstract class NetworkEventHandler
   @Handler (priority = CALL_LAST)
   private void afterEvent (final Event anyEvent)
   {
+    assert anyEvent != null;
     eventClientCache.remove (anyEvent);
   }
 }

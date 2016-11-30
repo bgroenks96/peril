@@ -109,6 +109,7 @@ public final class KryonetRegistration
    */
   private static final ImmutableSet <String> EXCLUDED_PACKAGES = ImmutableSet.of (
           "com.forerunnergames.peril.common.net.kryonet",
+          "com.forerunnergames.peril.common.net.dispatchers",
           "com.forerunnergames.peril.common.playmap.io");
 
   /**
