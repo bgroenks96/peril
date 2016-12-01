@@ -29,6 +29,6 @@ public final class PlayerRejoinGameRequestEvent implements ClientRequestEvent
   @RequiredForNetworkSerialization
   private PlayerRejoinGameRequestEvent ()
   {
-    this.playerSecretId = null;
+    playerSecretId = null;
   }
 }

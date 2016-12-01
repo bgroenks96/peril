@@ -29,6 +29,6 @@ public class PlayerNotifyJoinGameEvent extends AbstractPlayerEvent implements Di
   @RequiredForNetworkSerialization
   private PlayerNotifyJoinGameEvent ()
   {
-    this.playerSecretId = null;
+    playerSecretId = null;
   }
 }

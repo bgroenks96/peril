@@ -54,7 +54,7 @@ final class DefaultPlayer extends AbstractPerson implements Player
   @Override
   public Player withNewName (final String newName)
   {
-    return new DefaultPlayer (newName, this.getId (), this.getSentience (), this.getColor (), this.getTurnOrder ());
+    return new DefaultPlayer (newName, getId (), getSentience (), getColor (), getTurnOrder ());
   }
 
   @Override

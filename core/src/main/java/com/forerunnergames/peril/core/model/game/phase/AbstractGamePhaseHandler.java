@@ -80,21 +80,21 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     this.gameModelConfig = gameModelConfig;
 
     // unpack game model configuration types
-    this.playerModel = gameModelConfig.getPlayerModel ();
-    this.playMapModel = gameModelConfig.getPlayMapModel ();
-    this.battleModel = gameModelConfig.getBattleModel ();
-    this.cardModel = gameModelConfig.getCardModel ();
-    this.playerTurnModel = gameModelConfig.getPlayerTurnModel ();
-    this.rules = gameModelConfig.getRules ();
-    this.turnDataCache = gameModelConfig.getTurnDataCache ();
-    this.internalCommHandler = gameModelConfig.getInternalCommunicationHandler ();
-    this.eventBus = gameModelConfig.getEventBus ();
+    playerModel = gameModelConfig.getPlayerModel ();
+    playMapModel = gameModelConfig.getPlayMapModel ();
+    battleModel = gameModelConfig.getBattleModel ();
+    cardModel = gameModelConfig.getCardModel ();
+    playerTurnModel = gameModelConfig.getPlayerTurnModel ();
+    rules = gameModelConfig.getRules ();
+    turnDataCache = gameModelConfig.getTurnDataCache ();
+    internalCommHandler = gameModelConfig.getInternalCommunicationHandler ();
+    eventBus = gameModelConfig.getEventBus ();
 
     // unpack play map model configuration types
-    this.countryGraphModel = playMapModel.getCountryGraphModel ();
-    this.countryOwnerModel = playMapModel.getCountryOwnerModel ();
-    this.countryArmyModel = playMapModel.getCountryArmyModel ();
-    this.continentOwnerModel = playMapModel.getContinentOwnerModel ();
+    countryGraphModel = playMapModel.getCountryGraphModel ();
+    countryOwnerModel = playMapModel.getCountryOwnerModel ();
+    countryArmyModel = playMapModel.getCountryArmyModel ();
+    continentOwnerModel = playMapModel.getContinentOwnerModel ();
   }
 
   @StateEntryAction
