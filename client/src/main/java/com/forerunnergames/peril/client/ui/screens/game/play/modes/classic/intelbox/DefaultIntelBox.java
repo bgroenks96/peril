@@ -188,7 +188,7 @@ public final class DefaultIntelBox implements IntelBox
   @Override
   public void setSelf (final PlayerPacket player)
   {
-    Arguments.checkIsNotNull (player, "person");
+    Arguments.checkIsNotNull (player, "player");
 
     self = player;
 
@@ -202,7 +202,7 @@ public final class DefaultIntelBox implements IntelBox
   @Override
   public void setSelf (final SpectatorPacket spectator)
   {
-    Arguments.checkIsNotNull (spectator, "person");
+    Arguments.checkIsNotNull (spectator, "spectator");
 
     self = spectator;
 
