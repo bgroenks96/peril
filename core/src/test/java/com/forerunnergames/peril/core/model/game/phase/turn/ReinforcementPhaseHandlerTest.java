@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 {
-  private static Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandlerTest.class);
+  private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandlerTest.class);
   private ReinforcementPhaseHandler reinforcementPhase;
   private TurnPhaseHandler turnPhaseHandler;
 

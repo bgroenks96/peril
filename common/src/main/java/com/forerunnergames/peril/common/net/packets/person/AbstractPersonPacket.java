@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public abstract class AbstractPersonPacket extends AbstractAssetPacket implements PersonPacket
 {
-  private PersonSentience sentience;
+  private final PersonSentience sentience;
 
   protected AbstractPersonPacket (final String name, final UUID id, final PersonSentience sentience)
   {
