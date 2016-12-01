@@ -55,7 +55,7 @@ abstract class AbstractAiProcessor implements AiProcessor
   private final String playerName;
   private final GameServerConfiguration gameServerConfig;
   private final MBassador <Event> eventBus;
-  private final boolean shouldDelayOutoingCommunication;
+  private final boolean shouldDelayOutgoingCommunication;
   @Nullable
   private PlayerPacket selfPlayer;
 
@@ -70,7 +70,7 @@ abstract class AbstractAiProcessor implements AiProcessor
     this.playerName = playerName;
     this.gameServerConfig = gameServerConfig;
     this.eventBus = eventBus;
-    shouldDelayOutoingCommunication = gameServerConfig.getPlayerLimitFor (PersonSentience.HUMAN) > 0
+    shouldDelayOutgoingCommunication = gameServerConfig.getPlayerLimitFor (PersonSentience.HUMAN) > 0
             || gameServerConfig.getSpectatorLimit () > 0;
   }
 
@@ -103,7 +103,7 @@ abstract class AbstractAiProcessor implements AiProcessor
 
     final Event aiCommunicationEvent = new AiCommunicationEvent (event, playerName);
 
-    if (!shouldDelayOutoingCommunication)
+    if (!shouldDelayOutgoingCommunication)
     {
       eventBus.publish (aiCommunicationEvent);
       return;
@@ -245,6 +245,6 @@ abstract class AbstractAiProcessor implements AiProcessor
                            "{}: PlayerName: [{]] | SelfPlayer: [{}] | GameServerConfig: [{}] | "
                                    + "ShouldDelayOutgoingCommunication: [{}] | OutgoingCommunicationDelaySeconds: [{}]",
                            getClass ().getSimpleName (), playerName, selfPlayer, gameServerConfig,
-                           shouldDelayOutoingCommunication, OUTGOING_COMMUNICATION_DELAY_SECONDS);
+                           shouldDelayOutgoingCommunication, OUTGOING_COMMUNICATION_DELAY_SECONDS);
   }
 }
