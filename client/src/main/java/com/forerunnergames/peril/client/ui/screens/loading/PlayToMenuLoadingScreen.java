@@ -58,8 +58,8 @@ public final class PlayToMenuLoadingScreen extends AbstractLoadingScreen
                                   final MBassador <Event> eventBus,
                                   final PlayMapFactory playMapFactory)
   {
-    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager, LoadingScreenStyle
-            .builder ().build ());
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager,
+           LoadingScreenStyle.builder ().build ());
 
     Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
 

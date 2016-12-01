@@ -89,9 +89,8 @@ public final class HumanJoinGameServerHandler extends AbstractJoinGameServerHand
   void onEvent (final ConnectToServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (isJoinGameIsInProgress (),
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (isJoinGameIsInProgress (), Strings
+            .format ("{}#join has not been called first.", JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.info ("Successfully connected to server [{}]", event);
@@ -105,9 +104,8 @@ public final class HumanJoinGameServerHandler extends AbstractJoinGameServerHand
   void onEvent (final ConnectToServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (isJoinGameIsInProgress (),
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (isJoinGameIsInProgress (), Strings
+            .format ("{}#join has not been called first.", JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
     log.error ("Could not connect to server: [{}]", event);

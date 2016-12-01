@@ -50,8 +50,8 @@ public final class AbsolutePlayMapGraphicsPathParser extends AbstractPlayMapGrap
       }
       default:
       {
-        throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           type));
+        throw new PlayMapLoadingException (
+                Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (), type));
       }
     }
   }

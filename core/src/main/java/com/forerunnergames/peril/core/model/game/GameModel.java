@@ -54,6 +54,25 @@ public final class GameModel extends AbstractGamePhaseHandler
     eventBus.subscribe (internalCommHandler);
   }
 
+  @Override
+  @StateExitAction
+  public void resetTurn ()
+  {
+    playerTurnModel.resetCurrentTurn ();
+  }
+
+  @Override
+  protected void onBegin ()
+  {
+    beginGame ();
+  }
+
+  @Override
+  protected void onEnd ()
+  {
+    endGame ();
+  }
+
   public static GameModel create (final GameRules rules)
   {
     Arguments.checkIsNotNull (rules, "rules");
@@ -132,13 +151,6 @@ public final class GameModel extends AbstractGamePhaseHandler
     publish (new PlayerQuitGameSuccessEvent (sender));
   }
 
-  @Override
-  @StateExitAction
-  public void resetTurn ()
-  {
-    playerTurnModel.resetCurrentTurn ();
-  }
-
   @StateTransitionCondition
   public boolean isFull ()
   {
@@ -199,18 +211,6 @@ public final class GameModel extends AbstractGamePhaseHandler
   {
     log.debug ("CurrentTurn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getCurrentTurn (),
                getCurrentPlayerId (), turnDataCache);
-  }
-
-  @Override
-  protected void onBegin ()
-  {
-    beginGame ();
-  }
-
-  @Override
-  protected void onEnd ()
-  {
-    endGame ();
   }
 
   private void beginGame ()

@@ -120,7 +120,7 @@ public class GameStateMachineSmokeTest
     final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor ();
     try
     {
-      final CompletableFuture <String> initialState = new CompletableFuture <> ();
+      final CompletableFuture <String> initialState = new CompletableFuture<> ();
       executor.schedule (new Runnable ()
       {
         @Override

@@ -129,6 +129,24 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     return active;
   }
 
+  public void advancePlayerTurn ()
+  {
+    playerTurnModel.advance ();
+  }
+
+  public void skipPlayerTurn (final SkipPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.info ("Skipping turn for player [{}].", event.getPersonName ());
+  }
+
+  @Override
+  public Id getCurrentPlayerId ()
+  {
+    return playerModel.playerWith (playerTurnModel.getCurrentTurn ());
+  }
+
   @Override
   public PlayerPacket getCurrentPlayerPacket ()
   {
@@ -200,27 +218,9 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     if (turnDataCache.isSet (CacheKey.PLAYER_OCCUPIED_COUNTRY)) clearCacheValues (CacheKey.PLAYER_OCCUPIED_COUNTRY);
   }
 
-  public void skipPlayerTurn (final SkipPlayerTurnEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.info ("Skipping turn for player [{}].", event.getPersonName ());
-  }
-
-  public void advancePlayerTurn ()
-  {
-    playerTurnModel.advance ();
-  }
-
   public void resetTurn ()
   {
     playerTurnModel.resetCurrentTurn ();
-  }
-
-  @Override
-  public Id getCurrentPlayerId ()
-  {
-    return playerModel.playerWith (playerTurnModel.getCurrentTurn ());
   }
 
   protected boolean isCurrentPlayer (final Id playerId)

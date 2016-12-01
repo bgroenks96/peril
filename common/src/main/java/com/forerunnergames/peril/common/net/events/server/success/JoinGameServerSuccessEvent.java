@@ -59,8 +59,8 @@ public final class JoinGameServerSuccessEvent implements DirectSuccessEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}",
-                           getClass ().getSimpleName (), gameServerConfig, clientConfig);
+    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {}", getClass ().getSimpleName (),
+                           gameServerConfig, clientConfig);
   }
 
   @RequiredForNetworkSerialization

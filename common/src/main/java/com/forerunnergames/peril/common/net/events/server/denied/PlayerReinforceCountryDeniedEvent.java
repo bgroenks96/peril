@@ -27,8 +27,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountryDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent implements
-        PlayerResponseDeniedEvent <Reason>
+public final class PlayerReinforceCountryDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
+        implements PlayerResponseDeniedEvent <Reason>
 {
   private final PlayerReinforceCountryRequestEvent originalRequest;
 

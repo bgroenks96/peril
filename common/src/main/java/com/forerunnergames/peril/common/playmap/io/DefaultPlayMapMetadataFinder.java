@@ -47,7 +47,8 @@ public final class DefaultPlayMapMetadataFinder implements PlayMapMetadataFinder
 
     for (final PlayMapMetadata playMapMetadata : playMapMetadatas)
     {
-      if (playMapMetadata.getName ().equalsIgnoreCase (playMapName) && playMapMetadata.getMode () == gameMode) return playMapMetadata;
+      if (playMapMetadata.getName ().equalsIgnoreCase (playMapName) && playMapMetadata.getMode () == gameMode)
+        return playMapMetadata;
     }
 
     throw new PlayMapLoadingException (Strings.format ("Cannot find any map named [{}] for {}: [{}] in {} set:\n\n{}",

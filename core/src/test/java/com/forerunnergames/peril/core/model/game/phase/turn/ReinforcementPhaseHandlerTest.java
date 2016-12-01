@@ -168,7 +168,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final int armiesInHand = testPlayerPacket.getArmiesInHand ();
 
     final PlayerTradeInCardsRequestEvent tradeInRequest = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet. <CardPacket>of ()));
+            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
     turnPhaseHandler.verifyPlayerCardTradeIn (tradeInRequest);
 
     final int count = armiesInHand;
@@ -378,7 +378,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final int armyCount = playerModel.getArmiesInHand (testPlayer);
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet. <CardPacket>of ()));
+            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
     turnPhaseHandler.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
@@ -410,7 +410,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final int reinforcementCount = playerModel.getArmiesInHand (testPlayer) + 1;
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet. <CardPacket>of ()));
+            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
     turnPhaseHandler.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (

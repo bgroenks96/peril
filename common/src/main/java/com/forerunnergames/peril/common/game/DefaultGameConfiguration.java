@@ -32,7 +32,9 @@ public final class DefaultGameConfiguration implements GameConfiguration
   private final PlayMapMetadata playMapMetadata;
   private final GameRules rules;
 
-  public DefaultGameConfiguration (final GameMode gameMode, final PlayMapMetadata playMapMetadata, final GameRules rules)
+  public DefaultGameConfiguration (final GameMode gameMode,
+                                   final PlayMapMetadata playMapMetadata,
+                                   final GameRules rules)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
@@ -126,11 +128,11 @@ public final class DefaultGameConfiguration implements GameConfiguration
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: GameMode: [{}] | PersonLimits: [{}] | WinPercentage: [{}] | "
+    return Strings.format (
+                           "{}: GameMode: [{}] | PersonLimits: [{}] | WinPercentage: [{}] | "
                                    + "InitialCountryAssignment: [{}] | PlayMapMetadata: [{}] | GameRules: {}",
-                           getClass ().getSimpleName (),
-                           gameMode, getPersonLimits (), getWinPercentage (), getInitialCountryAssignment (),
-                           playMapMetadata, rules);
+                           getClass ().getSimpleName (), gameMode, getPersonLimits (), getWinPercentage (),
+                           getInitialCountryAssignment (), playMapMetadata, rules);
   }
 
   @RequiredForNetworkSerialization

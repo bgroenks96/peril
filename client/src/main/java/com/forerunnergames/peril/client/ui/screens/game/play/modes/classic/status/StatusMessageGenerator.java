@@ -161,9 +161,8 @@ public final class StatusMessageGenerator
 
     everyoneElse (event.getPerson (), "{} joined the game.", event.getPersonName ());
 
-    everyoneElseIf (!event.gameIsFullPlayers (), event.getPerson (), "The game will begin when {}.",
-                    Strings.pluralize (event.getPlayersNeededToMakeGameFull (), "more player joins",
-                                       "more players join"));
+    everyoneElseIf (!event.gameIsFullPlayers (), event.getPerson (), "The game will begin when {}.", Strings
+            .pluralize (event.getPlayersNeededToMakeGameFull (), "more player joins", "more players join"));
   }
 
   @Handler
@@ -292,8 +291,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    you (event.getPerson (), "General, something went wrong! We were unable to reinforce {}.", event
-            .getOriginalRequest ().getCountryName ());
+    you (event.getPerson (), "General, something went wrong! We were unable to reinforce {}.",
+         event.getOriginalRequest ().getCountryName ());
 
     you (event.getPerson (), "General, choose a country to reinforce.", event.getPersonName ());
   }
@@ -351,11 +350,13 @@ public final class StatusMessageGenerator
 
     youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () == 3, event.getPerson (),
            "Congratulations, General, you have just enough matching cards to purchase {}! If you so desire, that is, "
-                   + "sir. Good things come to those who wait, General.", reinforcementsPhrase);
+                   + "sir. Good things come to those who wait, General.",
+           reinforcementsPhrase);
 
     youIf (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3, event.getPerson (),
            "General, you may now use 3 of your {} matching cards to purchase {}! If you so desire, that is, sir. "
-                   + "Fortune rewards the patient, General.", event.getPlayerCardsInHand (), reinforcementsPhrase);
+                   + "Fortune rewards the patient, General.",
+           event.getPlayerCardsInHand (), reinforcementsPhrase);
 
     youIf (event.isTradeInRequired (), event.getPerson (),
            "General, you now have so many matching cards that you must now use some of them to purchase {}!",
@@ -479,10 +480,10 @@ public final class StatusMessageGenerator
     final String defender = nameify (event.getDefendingPlayer (), LetterCase.LOWER);
     final String attackerCountry = event.getAttackingCountryName ();
     final String defenderCountry = event.getDefendingCountryName ();
-    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army", defenderLoss
-            + " armies");
-    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army", attackerLoss
-            + " armies");
+    final String defenderLossInWords = Strings.pluralizeWord (defenderLoss, "no armies", "an army",
+                                                              defenderLoss + " armies");
+    final String attackerLossInWords = Strings.pluralizeWord (attackerLoss, "no armies", "an army",
+                                                              attackerLoss + " armies");
 
     everyoneIf (bothLostArmies, "{} attacked {} in {} from {}, destroying {} & losing {}!", attacker, defender,
                 defenderCountry, attackerCountry, defenderLossInWords, attackerLossInWords);
@@ -507,8 +508,7 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyone ("{} retreated from attacking {} in {} from {}.",
-              nameify (event.getAttackingPlayer (), LetterCase.PROPER),
+    everyone ("{} retreated from attacking {} in {} from {}.", nameify (event.getAttackingPlayer (), LetterCase.PROPER),
               nameify (event.getDefendingPlayer (), LetterCase.LOWER), event.getDefendingCountryName (),
               event.getAttackingCountryName ());
   }
@@ -584,7 +584,8 @@ public final class StatusMessageGenerator
            "General, something went wrong! We were unable to occupy {} from {}.", event.getTargetCountryName (),
            event.getSourceCountryName ());
 
-    youIf (!event.hasOriginalRequest (), event.getPerson (), "General, something went wrong! We were unable to occupy.");
+    youIf (!event.hasOriginalRequest (), event.getPerson (),
+           "General, something went wrong! We were unable to occupy.");
   }
 
   @Handler
@@ -931,8 +932,8 @@ public final class StatusMessageGenerator
 
     checkLetterCase (letterCase);
 
-    return isSelf (person) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb : person.getName () + " "
-            + thirdPersonVerb;
+    return isSelf (person) ? Strings.toCase ("you", letterCase) + " " + secondPersonVerb
+            : person.getName () + " " + thirdPersonVerb;
   }
 
   private String nameifyPossessiveYour (@Nullable final PersonPacket person, final LetterCase letterCase)
@@ -997,8 +998,8 @@ public final class StatusMessageGenerator
   {
     if (letterCase == null || letterCase == LetterCase.NONE)
     {
-      throw new IllegalStateException (Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (),
-                                                       letterCase));
+      throw new IllegalStateException (
+              Strings.format ("Invalid {}: [{}]", LetterCase.class.getSimpleName (), letterCase));
     }
   }
 }

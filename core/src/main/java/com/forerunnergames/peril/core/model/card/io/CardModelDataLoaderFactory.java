@@ -49,9 +49,9 @@ public final class CardModelDataLoaderFactory
       }
       default:
       {
-        throw new PlayMapLoadingException (Strings.format ("Cannot create {} for {}: [{}].",
-                                                           CardModelDataLoader.class.getSimpleName (),
-                                                           PlayMapType.class.getSimpleName (), playMapType));
+        throw new PlayMapLoadingException (
+                Strings.format ("Cannot create {} for {}: [{}].", CardModelDataLoader.class.getSimpleName (),
+                                PlayMapType.class.getSimpleName (), playMapType));
       }
     }
 

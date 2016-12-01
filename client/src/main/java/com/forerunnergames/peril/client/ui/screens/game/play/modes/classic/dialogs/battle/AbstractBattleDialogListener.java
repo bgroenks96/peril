@@ -24,8 +24,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
 import com.forerunnergames.tools.common.Strings;
 
-public abstract class AbstractBattleDialogListener extends DefaultPlayScreenDialogListener implements
-        BattleDialogListener
+public abstract class AbstractBattleDialogListener extends DefaultPlayScreenDialogListener
+        implements BattleDialogListener
 {
   public AbstractBattleDialogListener (final CompositeDialog allDialogs,
                                        final PlayMap playMap,

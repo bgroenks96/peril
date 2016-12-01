@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgroundImageLoader
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultPlayMapBackgroundImageLoader.class);
-  private final Map <PlayMapMetadata, String> loadedImageFileNames = new HashMap <> ();
+  private final Map <PlayMapMetadata, String> loadedImageFileNames = new HashMap<> ();
   private final AssetManager assetManager;
 
   public DefaultPlayMapBackgroundImageLoader (final AssetManager assetManager)
@@ -53,8 +53,9 @@ public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgro
   public void load (final PlayMapMetadata playMapMetadata)
   {
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
-    Preconditions.checkIsTrue (!loadedImageFileNames.containsKey (playMapMetadata), Strings
-            .format ("Background image for play map [{}] was already loaded.", playMapMetadata));
+    Preconditions
+            .checkIsTrue (!loadedImageFileNames.containsKey (playMapMetadata),
+                          Strings.format ("Background image for play map [{}] was already loaded.", playMapMetadata));
 
     final PlayMapGraphicsPathParser pathParser = new RelativePlayMapGraphicsPathParser (playMapMetadata.getMode ());
     final String imageFileNamePath = pathParser.parseBackgroundImageFileNamePath (playMapMetadata);
@@ -88,8 +89,8 @@ public final class DefaultPlayMapBackgroundImageLoader implements PlayMapBackgro
 
     if (!assetManager.isLoaded (imageFileNamePath, AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_TYPE))
     {
-      throw new PlayMapLoadingException (Strings.format ("Background image [{}] for map [{}] is not loaded.",
-                                                         imageFileNamePath, playMapMetadata));
+      throw new PlayMapLoadingException (
+              Strings.format ("Background image [{}] for map [{}] is not loaded.", imageFileNamePath, playMapMetadata));
     }
 
     return new Image (assetManager.get (imageFileNamePath, AssetSettings.PLAY_MAP_BACKGROUND_IMAGE_TYPE));

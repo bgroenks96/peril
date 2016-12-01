@@ -41,7 +41,8 @@ public final class ExternalPlayMapMetadataLoader implements PlayMapMetadataLoade
   private final PlayMapType playMapType;
   private final PlayMapDataPathParser playMapDataPathParser;
 
-  public ExternalPlayMapMetadataLoader (final PlayMapType playMapType, final PlayMapDataPathParser playMapDataPathParser)
+  public ExternalPlayMapMetadataLoader (final PlayMapType playMapType,
+                                        final PlayMapDataPathParser playMapDataPathParser)
   {
     Arguments.checkIsNotNull (playMapType, "playMapType");
     Arguments.checkIsNotNull (playMapDataPathParser, "playMapDataPathParser");
@@ -62,7 +63,7 @@ public final class ExternalPlayMapMetadataLoader implements PlayMapMetadataLoade
       return ImmutableSet.of ();
     }
 
-    final Set <PlayMapMetadata> metadatas = new HashSet <> ();
+    final Set <PlayMapMetadata> metadatas = new HashSet<> ();
 
     for (final File childPathFile : childPathFiles)
     {
@@ -94,9 +95,8 @@ public final class ExternalPlayMapMetadataLoader implements PlayMapMetadataLoade
                                  final String playMapName,
                                  final File externalPlayMapsDirectory)
   {
-    throw new PlayMapLoadingException (Strings.format ("{} {} map name \'{}\'\n\nLocation:\n\n{}", prependedMessage,
-                                                       playMapType.name ().toLowerCase (),
-                                                       Strings.toProperCase (playMapName),
-                                                       externalPlayMapsDirectory.getAbsolutePath ()));
+    throw new PlayMapLoadingException (Strings
+            .format ("{} {} map name \'{}\'\n\nLocation:\n\n{}", prependedMessage, playMapType.name ().toLowerCase (),
+                     Strings.toProperCase (playMapName), externalPlayMapsDirectory.getAbsolutePath ()));
   }
 }

@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.common.settings;
 
 import com.forerunnergames.peril.common.game.DieFaceValue;
-import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.playmap.PlayMapDirectoryType;
 import com.forerunnergames.peril.common.playmap.PlayMapType;
 import com.forerunnergames.tools.common.Arguments;

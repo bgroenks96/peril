@@ -21,8 +21,8 @@ import com.forerunnergames.peril.client.input.MouseInput;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
 
-public class DefaultPlayScreenCancellableDialogListener extends DefaultPlayScreenDialogListener implements
-        PlayScreenCancellableDialogListener
+public class DefaultPlayScreenCancellableDialogListener extends DefaultPlayScreenDialogListener
+        implements PlayScreenCancellableDialogListener
 {
   public DefaultPlayScreenCancellableDialogListener (final CompositeDialog allDialogs,
                                                      final MouseInput mouseInput,

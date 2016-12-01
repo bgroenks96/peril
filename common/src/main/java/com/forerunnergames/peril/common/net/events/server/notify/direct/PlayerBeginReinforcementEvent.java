@@ -134,10 +134,10 @@ public final class PlayerBeginReinforcementEvent extends AbstractPlayerEvent imp
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | MaxArmiesPerCountry: {} | MinReinforcementsPlacedPerCountry: [{}] | "
+    return Strings.format (
+                           "{} | MaxArmiesPerCountry: {} | MinReinforcementsPlacedPerCountry: [{}] | "
                                    + "ReinforceableCountries: [{}] | PlayerOwnedCountryNamesToCountryArmyCounts: [{}]",
-                           super.toString (),
-                           maxArmiesPerCountry, minReinforcementsPlacedPerCountry,
+                           super.toString (), maxArmiesPerCountry, minReinforcementsPlacedPerCountry,
                            reinforceableCountryNamesToCountryArmyCounts, reinforceableCountryNamesToCountryArmyCounts);
   }
 

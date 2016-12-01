@@ -41,8 +41,8 @@ public final class TankTurret extends Actor
   @Override
   public void draw (final Batch batch, final float parentAlpha)
   {
-    batch.draw (tankTurret, getX (), Gdx.graphics.getHeight () - getY () - tankTurret.getRegionHeight (),
-                getOriginX (), getOriginY (), tankTurret.getRegionWidth (), tankTurret.getRegionHeight (),
-                getScaleX (), getScaleY (), getRotation ());
+    batch.draw (tankTurret, getX (), Gdx.graphics.getHeight () - getY () - tankTurret.getRegionHeight (), getOriginX (),
+                getOriginY (), tankTurret.getRegionWidth (), tankTurret.getRegionHeight (), getScaleX (), getScaleY (),
+                getRotation ());
   }
 }

@@ -43,8 +43,8 @@ public enum PlayerTurnOrder implements IterableEnum <PlayerTurnOrder>
   NINTH,
   TENTH;
 
-  private static final ImmutableSortedSet <PlayerTurnOrder> validSortedValues = ImmutableSortedSet.copyOf (Collections2
-          .filter (EnumSet.allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
+  private static final ImmutableSortedSet <PlayerTurnOrder> validSortedValues = ImmutableSortedSet
+          .copyOf (Collections2.filter (EnumSet.allOf (PlayerTurnOrder.class), new Predicate <PlayerTurnOrder> ()
           {
             @Override
             public boolean apply (final PlayerTurnOrder input)

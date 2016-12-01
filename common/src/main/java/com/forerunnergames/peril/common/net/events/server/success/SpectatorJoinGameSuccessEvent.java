@@ -29,7 +29,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class SpectatorJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent<SpectatorPacket>
+public final class SpectatorJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent <SpectatorPacket>
 {
   /**
    * Convenience constructor for when person identity is unknown or not cared about, and there are no players in game or

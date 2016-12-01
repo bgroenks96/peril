@@ -24,8 +24,8 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerOccupyCountryEvent implements
-        PlayerInputRequestEvent
+public final class PlayerOccupyCountryRequestEvent extends AbstractPlayerOccupyCountryEvent
+        implements PlayerInputRequestEvent
 {
   public PlayerOccupyCountryRequestEvent (final PlayerPacket player,
                                           final CountryPacket sourceCountry,

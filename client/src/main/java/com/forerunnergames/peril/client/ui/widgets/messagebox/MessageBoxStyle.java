@@ -110,10 +110,10 @@ public class MessageBoxStyle
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: ScrollPane Style: [{}] | Scrollbar Style: [{}] | Row Style: [{}] | Scroll V-Padding: [{}]"
-                             + " | Absolute V-Padding: [{}]", getClass ().getSimpleName (), scrollPaneStyle,
-                     scrollbarStyle,
-                     rowStyle, scrollVPadding, absoluteVPadding);
+    return Strings.format (
+                           "{}: ScrollPane Style: [{}] | Scrollbar Style: [{}] | Row Style: [{}] | Scroll V-Padding: [{}]"
+                                   + " | Absolute V-Padding: [{}]",
+                           getClass ().getSimpleName (), scrollPaneStyle, scrollbarStyle, rowStyle, scrollVPadding,
+                           absoluteVPadding);
   }
 }

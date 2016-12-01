@@ -90,6 +90,26 @@ public abstract class AbstractGamePhaseHandlerTest
   protected ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
   protected GameRules gameRules;
 
+  protected static ImmutableList <String> generateTestCountryNames (final int totalCountryCount)
+  {
+    final ImmutableList.Builder <String> countryNames = ImmutableList.builder ();
+    for (int i = 0; i < totalCountryCount; i++)
+    {
+      countryNames.add ("TestCountry-" + i);
+    }
+    return countryNames.build ();
+  }
+
+  protected static String playerNameFrom (final PlayerJoinGameDeniedEvent event)
+  {
+    return event.getPlayerName ();
+  }
+
+  protected static <T> T reasonFrom (final DeniedEvent <T> event)
+  {
+    return event.getReason ();
+  }
+
   public static CountryGraphModel createDefaultTestCountryGraph (final ImmutableList <String> countryNames)
   {
     final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
@@ -190,7 +210,7 @@ public abstract class AbstractGamePhaseHandlerTest
       final Class <? extends ServerRequestEvent> requestType = event.getRequestType ();
       final Constructor <? extends ServerRequestEvent> ctor = requestType.getDeclaredConstructor ();
       ctor.setAccessible (true);
-      eventBus.publish (new DefaultInboundPlayerResponseRequestEvent <> (mock (PlayerPacket.class), event,
+      eventBus.publish (new DefaultInboundPlayerResponseRequestEvent<> (mock (PlayerPacket.class), event,
               (PlayerInputRequestEvent) ctor.newInstance ()));
     }
     catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
@@ -290,26 +310,6 @@ public abstract class AbstractGamePhaseHandlerTest
             .createContinentGraphModelWith (continentFactory, countryGraphModel);
     playMapModel = new DefaultPlayMapModelFactory (gameRules).create (countryGraphModel, continentGraphModel);
     return playMapModel;
-  }
-
-  protected static ImmutableList <String> generateTestCountryNames (final int totalCountryCount)
-  {
-    final ImmutableList.Builder <String> countryNames = ImmutableList.builder ();
-    for (int i = 0; i < totalCountryCount; i++)
-    {
-      countryNames.add ("TestCountry-" + i);
-    }
-    return countryNames.build ();
-  }
-
-  protected static String playerNameFrom (final PlayerJoinGameDeniedEvent event)
-  {
-    return event.getPlayerName ();
-  }
-
-  protected static <T> T reasonFrom (final DeniedEvent <T> event)
-  {
-    return event.getReason ();
   }
 
   protected class CountryAdjacencyIndices

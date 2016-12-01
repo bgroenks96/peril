@@ -428,11 +428,8 @@ public abstract class AbstractArmyMovementDialog extends OkDialog implements Pla
 
   private static float calculateCountryImagePadding (final Image countryImagePostLayout, final float arrowWidth)
   {
-    return Math.max (0.0f,
-                     Math.min (arrowWidth,
-                               arrowWidth
-                                       - (COUNTRY_BOX_WIDTH - COUNTRY_BOX_INNER_PADDING * 2.0f - countryImagePostLayout
-                                               .getImageWidth ())));
+    return Math.max (0.0f, Math.min (arrowWidth, arrowWidth
+            - (COUNTRY_BOX_WIDTH - COUNTRY_BOX_INNER_PADDING * 2.0f - countryImagePostLayout.getImageWidth ())));
   }
 
   private static Image asImage (final Country country)

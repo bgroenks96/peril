@@ -23,9 +23,8 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
 /**
  * Represents pseudo-request events sent by the server to a client that has previously successfully joined the game as a
  * player, which contain information that the client must respond to, but has the freedom to respond with various types
- * of client requests, instead of just a single type. Should be answered by an
- * {@link InformRequestEvent}, which the server
- * should then answer with a {@link PlayerSuccessEvent} or {@link PlayerDeniedEvent}, but NOT a
+ * of client requests, instead of just a single type. Should be answered by an {@link InformRequestEvent}, which the
+ * server should then answer with a {@link PlayerSuccessEvent} or {@link PlayerDeniedEvent}, but NOT a
  * {@link PlayerResponseSuccessEvent} NOR a {@link PlayerResponseDeniedEvent}.
  *
  * Note:

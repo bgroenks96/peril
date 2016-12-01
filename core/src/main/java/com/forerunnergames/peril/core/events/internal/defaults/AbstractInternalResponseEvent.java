@@ -23,8 +23,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
-public abstract class AbstractInternalResponseEvent extends AbstractInternalCommunicationEvent implements
-        InternalResponseEvent
+public abstract class AbstractInternalResponseEvent extends AbstractInternalCommunicationEvent
+        implements InternalResponseEvent
 {
   private final Id requestEventId;
 

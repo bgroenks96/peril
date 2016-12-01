@@ -42,30 +42,6 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
   }
 
   /* (non-Javadoc)
-   * @see com.forerunnergames.peril.core.model.game.phase.turn.TurnPhaseHandler#verifyPlayerEndTurnRequest(com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent)
-   */
-  @Override
-  @StateTransitionCondition
-  public boolean verifyPlayerEndTurnRequest (final EndPlayerTurnRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    final PlayerPacket player = getCurrentPlayerPacket ();
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
-    if (!sender.isPresent () || player.isNot (sender.get ()))
-    {
-      publish (new EndPlayerTurnDeniedEvent (player, EndPlayerTurnDeniedEvent.Reason.NOT_IN_TURN));
-      return false;
-    }
-
-    publish (new EndPlayerTurnSuccessEvent (player));
-
-    return true;
-  }
-
-  /* (non-Javadoc)
    * @see com.forerunnergames.peril.core.model.game.phase.turn.TurnPhaseHandler#isFirstTurn()
    */
   @Override
@@ -130,6 +106,30 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
 
     final boolean shouldWaitForNextTradeIn = publishTradeInEventIfNecessary ();
     return !shouldWaitForNextTradeIn;
+  }
+
+  /* (non-Javadoc)
+   * @see com.forerunnergames.peril.core.model.game.phase.turn.TurnPhaseHandler#verifyPlayerEndTurnRequest(com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent)
+   */
+  @Override
+  @StateTransitionCondition
+  public boolean verifyPlayerEndTurnRequest (final EndPlayerTurnRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final PlayerPacket player = getCurrentPlayerPacket ();
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent () || player.isNot (sender.get ()))
+    {
+      publish (new EndPlayerTurnDeniedEvent (player, EndPlayerTurnDeniedEvent.Reason.NOT_IN_TURN));
+      return false;
+    }
+
+    publish (new EndPlayerTurnSuccessEvent (player));
+
+    return true;
   }
 
   @Override

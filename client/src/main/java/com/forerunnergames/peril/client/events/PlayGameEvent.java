@@ -117,9 +117,10 @@ public final class PlayGameEvent implements LocalEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Game Server Configuration: {} | Client Configuration: {} | Self Player: {} | "
-                                   + "Players: {} | Play Map Actor: {}", getClass ().getSimpleName (),
-                           gameServerConfig, clientConfig,
-                           selfPlayer, allPlayers, playMap);
+    return Strings.format (
+                           "{}: Game Server Configuration: {} | Client Configuration: {} | Self Player: {} | "
+                                   + "Players: {} | Play Map Actor: {}",
+                           getClass ().getSimpleName (), gameServerConfig, clientConfig, selfPlayer, allPlayers,
+                           playMap);
   }
 }

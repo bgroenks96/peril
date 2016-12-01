@@ -24,8 +24,8 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.annotations.AllowNegative;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryEvent implements
-        CountryArmiesChangedEvent
+public abstract class AbstractCountryArmiesChangedEvent extends AbstractCountryEvent
+        implements CountryArmiesChangedEvent
 {
   private final int deltaArmyCount;
 

@@ -351,11 +351,11 @@ abstract class AbstractDie implements Die
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: Index: {} | Current Face Value: {} | Current State: {}"
-                             + " | Current Outcome: {} | Touchable: {} | Spinning: {} | Default Face Value: {} | Default State: {}",
-                     getClass ().getSimpleName (), index, currentFaceValue, currentState, currentOutcome,
-                     button.isTouchable (), isSpinning, defaultFaceValue, DEFAULT_STATE);
+    return Strings.format (
+                           "{}: Index: {} | Current Face Value: {} | Current State: {}"
+                                   + " | Current Outcome: {} | Touchable: {} | Spinning: {} | Default Face Value: {} | Default State: {}",
+                           getClass ().getSimpleName (), index, currentFaceValue, currentState, currentOutcome,
+                           button.isTouchable (), isSpinning, defaultFaceValue, DEFAULT_STATE);
   }
 
   protected abstract ImageButton.ImageButtonStyle createDieImageButtonStyle (final DieState state,
@@ -387,10 +387,10 @@ abstract class AbstractDie implements Die
   {
     if (transitionActionsTable.contains (fromState, transition))
     {
-      throw new IllegalStateException (Strings.format ("Already registered a {} from {}: [{}] on {}: [{}].",
-                                                       DieStateTransitionAction.class.getSimpleName (),
-                                                       DieState.class.getSimpleName (), fromState,
-                                                       DieStateTransition.class.getSimpleName (), transition));
+      throw new IllegalStateException (
+              Strings.format ("Already registered a {} from {}: [{}] on {}: [{}].",
+                              DieStateTransitionAction.class.getSimpleName (), DieState.class.getSimpleName (),
+                              fromState, DieStateTransition.class.getSimpleName (), transition));
     }
 
     transitionActionsTable.put (fromState, transition, actionOnFromStateTransition);

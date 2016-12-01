@@ -229,14 +229,14 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
     // @formatter:on
     initialCountryAssignmentSelectBox = widgetFactory.createInitialCountryAssignmentSelectBox ();
-    final Array <String> initialCountryAssignments = new Array <> (InitialCountryAssignment.count ());
+    final Array <String> initialCountryAssignments = new Array<> (InitialCountryAssignment.count ());
     for (final InitialCountryAssignment initialCountryAssignment : InitialCountryAssignment.values ())
     {
       initialCountryAssignments.add (Strings.toProperCase (initialCountryAssignment.name ()));
     }
     initialCountryAssignmentSelectBox.setItems (initialCountryAssignments);
-    initialCountryAssignmentSelectBox.setSelected (Strings
-            .toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
+    initialCountryAssignmentSelectBox
+            .setSelected (Strings.toProperCase (InputSettings.INITIAL_CLASSIC_MODE_COUNTRY_ASSIGNMENT.name ()));
     // @formatter:on
 
     winPercentSelectBox = widgetFactory.createWinPercentSelectBox ();
@@ -378,9 +378,9 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
         if (!GameSettings.isValidPlayerNameWithoutClanTag (playerName))
         {
-          errorDialog.setMessage (new DefaultMessage (Strings
-                  .format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
-                           GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
+          errorDialog.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid player name: \'{}\'\n\nValid player name rules:\n\n{}", playerName,
+                                  GameSettings.VALID_PLAYER_NAME_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
@@ -389,9 +389,9 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
         if (!clanAcronymTextField.isDisabled () && !GameSettings.isValidHumanClanAcronym (clanAcronym))
         {
-          errorDialog.setMessage (new DefaultMessage (Strings
-                  .format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanAcronym,
-                           GameSettings.VALID_CLAN_ACRONYM_DESCRIPTION)));
+          errorDialog.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid clan tag: \'{}\'\n\nValid clan tag rules:\n\n{}", clanAcronym,
+                                  GameSettings.VALID_CLAN_ACRONYM_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
@@ -402,8 +402,8 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
         final int aiPlayerLimit = getAiPlayerLimit ();
         final int spectatorLimit = getSpectatorLimit ();
         final int winPercent = winPercentSelectBox.getSelected ();
-        final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.valueOf (Strings
-                .toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
+        final InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment
+                .valueOf (Strings.toCase (initialCountryAssignmentSelectBox.getSelected (), LetterCase.UPPER));
         final PersonLimits personLimits = PersonLimits.builder ().humanPlayers (humanPlayerLimit)
                 .aiPlayers (aiPlayerLimit).spectators (spectatorLimit).build ();
         final GameRules gameRules = GameRulesFactory.create (GameMode.CLASSIC, personLimits, winPercent,
@@ -413,9 +413,9 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
         if (!NetworkSettings.isValidServerName (serverName))
         {
-          errorDialog.setMessage (new DefaultMessage (Strings
-                  .format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}", serverName,
-                           NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
+          errorDialog.setMessage (new DefaultMessage (
+                  Strings.format ("Invalid server name: \'{}\'\n\nValid server name rules:\n\n{}", serverName,
+                                  NetworkSettings.VALID_SERVER_NAME_DESCRIPTION)));
           errorDialog.show ();
           return;
         }
@@ -513,9 +513,9 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
     }
     catch (final PlayMapLoadingException e)
     {
-      final String errorMessage = Strings
-              .format ("There was a problem loading map data.\n\nProblem:\n\n{}\n\nDetails\n\n{}", Throwables
-                      .getRootCause (e).getMessage (), Strings.toString (e));
+      final String errorMessage = Strings.format (
+                                                  "There was a problem loading map data.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
+                                                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
       log.error (errorMessage);
 
@@ -536,8 +536,8 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
     {
       final String errorMessage = Strings
               .format ("Could not read country data for {} map \'{}\'.\n\nProblem:\n\n{}\n\nDetails\n\n{}",
-                       currentPlayMap.getType ().name ().toLowerCase (), currentPlayMap.getName (), Throwables
-                               .getRootCause (e).getMessage (), Strings.toString (e));
+                       currentPlayMap.getType ().name ().toLowerCase (), currentPlayMap.getName (),
+                       Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
       log.error (errorMessage);
 
@@ -585,11 +585,13 @@ public final class ClassicGameModeCreateGameMenuScreen extends AbstractMenuScree
 
     if (winPercentSelectBox.getItems ().contains (InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT, true)) return;
 
-    errorDialog.setMessage (new DefaultMessage (Strings
-            .format ("{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\n"
-                             + "Please check your settings file.", InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT,
-                     getValidTotalPlayerLimit (), currentPlayMap.getType ().name ().toLowerCase (),
-                     currentPlayMap.getName ())));
+    errorDialog.setMessage (new DefaultMessage (Strings.format (
+                                                                "{} % is not a valid win percent for {} players on {} map: \'{}\'.\n\n"
+                                                                        + "Please check your settings file.",
+                                                                InputSettings.INITIAL_CLASSIC_MODE_WIN_PERCENT,
+                                                                getValidTotalPlayerLimit (),
+                                                                currentPlayMap.getType ().name ().toLowerCase (),
+                                                                currentPlayMap.getName ())));
 
     errorDialog.show ();
   }

@@ -24,13 +24,18 @@
   <!-- General settings -->
   <settings asynchronous="true" namespace="com.forerunnergames.peril.core.model.state">
     <object instance="gameModel" class="GameModel" namespace="com.forerunnergames.peril.core.model.game"/>
-    <object instance="initialPhase" class="InitialPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.init"/>
-    <object instance="turnPhase" class="TurnPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
-    <object instance="reinforcePhase" class="ReinforcementPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
-    <object instance="attackPhase" class="AttackPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
-    <object instance="fortifyPhase" class="FortifyPhaseHandler" namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="initialPhase" class="InitialPhaseHandler"
+            namespace="com.forerunnergames.peril.core.model.game.phase.init"/>
+    <object instance="turnPhase" class="TurnPhaseHandler"
+            namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="reinforcePhase" class="ReinforcementPhaseHandler"
+            namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="attackPhase" class="AttackPhaseHandler"
+            namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
+    <object instance="fortifyPhase" class="FortifyPhaseHandler"
+            namespace="com.forerunnergames.peril.core.model.game.phase.turn"/>
   </settings>
-  
+
   <!-- Events -->
   <events>
     <eventSource name="Game">
@@ -239,7 +244,7 @@
           </state>
           <state name="PlayingGame">
             <onEntry action="gameModel.begin()"/>
-            <onExit action="gameModel.end()" />
+            <onExit action="gameModel.end()"/>
             <!-- Ending the game can occur at any time during the game -->
             <transition event="onEndGameEvent" nextState="EndGame"/>
             <transition event="onSuspendGameEvent" nextState="Suspended"/>

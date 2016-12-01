@@ -58,7 +58,7 @@ public final class CreateGameEvent implements Event
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Server Name: {} | Game Configuration: {} | Player Name: {}", getClass ()
-            .getSimpleName (), serverName, gameConfig, playerName);
+    return Strings.format ("{}: Server Name: {} | Game Configuration: {} | Player Name: {}",
+                           getClass ().getSimpleName (), serverName, gameConfig, playerName);
   }
 }

@@ -34,12 +34,10 @@ import java.util.Comparator;
 
 public interface PlayerModel
 {
-  @Override
-  String toString ();
-
   void addArmiesToHandOf (final Id playerId, final int armies);
 
-  void addArmyToHandOf (final Id playerId);
+  void addArmyToHandOf (final Id playerId);  @Override
+  String toString ();
 
   void addCardsToHandOf (final Id playerId, final int cards);
 
@@ -279,13 +277,6 @@ public interface PlayerModel
       return player.equals (mutation.player);
     }
 
-    @Override
-    public String toString ()
-    {
-      return Strings.format ("{}: Player: [{}] | OldTurnOrder: [{}]", getClass ().getSimpleName (), player,
-                             oldTurnOrder);
-    }
-
     public int getNewTurnOrder ()
     {
       return player.getTurnOrder ();
@@ -294,11 +285,22 @@ public interface PlayerModel
     public int getOldTurnOrder ()
     {
       return oldTurnOrder;
+    }    @Override
+    public String toString ()
+    {
+      return Strings.format ("{}: Player: [{}] | OldTurnOrder: [{}]", getClass ().getSimpleName (), player,
+                             oldTurnOrder);
     }
 
     public PlayerPacket getPlayer ()
     {
       return player;
     }
+
+
+
   }
+
+
+
 }

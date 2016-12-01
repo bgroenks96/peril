@@ -19,7 +19,7 @@ public final class TestMonitor
 
   private static volatile TestMonitor current = null;
 
-  private final BlockingQueue <MonitorEvent <?>> errorQueue = new LinkedBlockingQueue <> ();
+  private final BlockingQueue <MonitorEvent <?>> errorQueue = new LinkedBlockingQueue<> ();
   private final AtomicInteger checkInCount = new AtomicInteger ();
 
   private final int expectedCheckInCount;
@@ -64,12 +64,12 @@ public final class TestMonitor
 
   public void failWith (final String message)
   {
-    errorQueue.add (new MonitorEvent <> (Optional.of (new AssertionError (message))));
+    errorQueue.add (new MonitorEvent<> (Optional.of (new AssertionError (message))));
   }
 
   public void failWith (final Throwable t)
   {
-    errorQueue.add (new MonitorEvent <> (Optional.of (t)));
+    errorQueue.add (new MonitorEvent<> (Optional.of (t)));
   }
 
   public void assertTrue (final boolean condition)
@@ -80,7 +80,7 @@ public final class TestMonitor
     }
     catch (final AssertionError e)
     {
-      errorQueue.add (new MonitorEvent <> (Optional.of (e)));
+      errorQueue.add (new MonitorEvent<> (Optional.of (e)));
       throw e;
     }
   }
@@ -93,7 +93,7 @@ public final class TestMonitor
     }
     catch (final AssertionError e)
     {
-      errorQueue.add (new MonitorEvent <> (Optional.of (e)));
+      errorQueue.add (new MonitorEvent<> (Optional.of (e)));
       throw e;
     }
   }
@@ -106,7 +106,7 @@ public final class TestMonitor
     }
     catch (final AssertionError e)
     {
-      errorQueue.add (new MonitorEvent <> (Optional.of (e)));
+      errorQueue.add (new MonitorEvent<> (Optional.of (e)));
       throw e;
     }
   }
@@ -119,7 +119,7 @@ public final class TestMonitor
     }
     catch (final AssertionError e)
     {
-      errorQueue.add (new MonitorEvent <> (Optional.of (e)));
+      errorQueue.add (new MonitorEvent<> (Optional.of (e)));
       throw e;
     }
   }

@@ -475,8 +475,8 @@ public final class GameLogicProcessor extends AbstractAiProcessor
 
     if (!isSelf (event)) return;
 
-    send (new PlayerOccupyCountryResponseRequestEvent (chooseRandomly (event.getMinOccupationArmyCount (),
-                                                                       event.getMaxOccupationArmyCount ())));
+    send (new PlayerOccupyCountryResponseRequestEvent (
+            chooseRandomly (event.getMinOccupationArmyCount (), event.getMaxOccupationArmyCount ())));
   }
 
   @Handler
@@ -576,8 +576,8 @@ public final class GameLogicProcessor extends AbstractAiProcessor
       return;
     }
 
-    send (new PlayerOrderFortifyRequestEvent (chooseRandomly (event.getMinDeltaArmyCount (),
-                                                              event.getMaxDeltaArmyCount ())));
+    send (new PlayerOrderFortifyRequestEvent (
+            chooseRandomly (event.getMinDeltaArmyCount (), event.getMaxDeltaArmyCount ())));
   }
 
   @Handler

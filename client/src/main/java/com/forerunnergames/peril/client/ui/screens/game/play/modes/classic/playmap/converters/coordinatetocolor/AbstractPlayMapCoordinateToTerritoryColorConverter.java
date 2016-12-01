@@ -27,11 +27,11 @@ import com.forerunnergames.tools.common.color.RgbaColor;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractPlayMapCoordinateToTerritoryColorConverter <T extends TerritoryColor <?>> implements
-        PlayMapCoordinateToTerritoryColorConverter <T>
+public abstract class AbstractPlayMapCoordinateToTerritoryColorConverter <T extends TerritoryColor <?>>
+        implements PlayMapCoordinateToTerritoryColorConverter <T>
 {
   private final PlayMapCoordinateToRgbaColorConverter converter;
-  private final Map <RgbaColor, T> rgbaToTerritoryColors = new HashMap <> ();
+  private final Map <RgbaColor, T> rgbaToTerritoryColors = new HashMap<> ();
 
   protected AbstractPlayMapCoordinateToTerritoryColorConverter (final PlayMapCoordinateToRgbaColorConverter converter)
   {

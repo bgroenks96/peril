@@ -69,9 +69,9 @@ public final class DefaultCardModel implements CardModel
   {
     Arguments.checkIsNotNull (playerId, "playerId");
     Arguments.checkIsNotNull (turnPhase, "turnPhase");
-    Preconditions.checkIsTrue (canAddCardToHand (playerId, turnPhase), Strings
-            .format ("Player [{}] has reached maximum cards in hand [{}] for [{}]", playerId,
-                     rules.getMaxCardsInHand (turnPhase), turnPhase));
+    Preconditions.checkIsTrue (canAddCardToHand (playerId, turnPhase),
+                               Strings.format ("Player [{}] has reached maximum cards in hand [{}] for [{}]", playerId,
+                                               rules.getMaxCardsInHand (turnPhase), turnPhase));
     Preconditions.checkIsTrue (cardDealer.canTake (), Strings
             .format ("Out of cards to give! PlayerId: [{}] | TurnPhase: [{}]", playerId, turnPhase));
 

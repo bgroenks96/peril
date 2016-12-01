@@ -510,7 +510,7 @@ public final class StateMachineEventHandler
 
   private class CompositeStateMachineListener implements StateMachineListener
   {
-    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList <> ();
+    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList<> ();
 
     CompositeStateMachineListener ()
     {

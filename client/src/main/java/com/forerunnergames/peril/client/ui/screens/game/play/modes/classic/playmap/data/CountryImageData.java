@@ -74,9 +74,10 @@ public final class CountryImageData
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Country Name: {} | Reference Destination: {} | Reference Text Upper Left: {} | "
-                                   + "Reference Size: {}", getClass ().getSimpleName (), countryName,
-                           referenceDestination,
-                           referenceTextUpperLeft, referenceSize);
+    return Strings.format (
+                           "{}: Country Name: {} | Reference Destination: {} | Reference Text Upper Left: {} | "
+                                   + "Reference Size: {}",
+                           getClass ().getSimpleName (), countryName, referenceDestination, referenceTextUpperLeft,
+                           referenceSize);
   }
 }

@@ -21,8 +21,8 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.play
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.colors.ContinentColor;
 import com.forerunnergames.tools.common.color.RgbaColor;
 
-public final class PlayMapCoordinateToContinentColorConverter extends
-        AbstractPlayMapCoordinateToTerritoryColorConverter <ContinentColor>
+public final class PlayMapCoordinateToContinentColorConverter
+        extends AbstractPlayMapCoordinateToTerritoryColorConverter <ContinentColor>
 {
   public PlayMapCoordinateToContinentColorConverter (final PlayMapCoordinateToRgbaColorConverter converter)
   {

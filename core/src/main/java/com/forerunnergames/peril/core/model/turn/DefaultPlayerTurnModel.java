@@ -104,23 +104,6 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
     assert !isCurrentTurnInvalid ();
   }
 
-  private boolean isCurrentTurnInvalid ()
-  {
-    return currentTurn.getPosition () > lastTurn.getPosition ();
-  }
-
-  private void fixCurrentTurn ()
-  {
-    currentTurn = lastTurn;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{}: CurrentTurn: [{}] | LastTurn: [{}] | Rules: [{}]", getClass ().getSimpleName (),
-                           currentTurn, lastTurn, rules);
-  }
-
   @Override
   public int getRound ()
   {
@@ -139,6 +122,16 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
     isRoundIncreasing = shouldRoundsIncrease;
   }
 
+  private boolean isCurrentTurnInvalid ()
+  {
+    return currentTurn.getPosition () > lastTurn.getPosition ();
+  }
+
+  private void fixCurrentTurn ()
+  {
+    currentTurn = lastTurn;
+  }
+
   private PlayerTurnOrder maxTurn ()
   {
     return PlayerTurnOrder.getNthValidTurnOrder (rules.getTotalPlayerLimit ());
@@ -152,5 +145,12 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
     }
 
     currentRound++;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: CurrentTurn: [{}] | LastTurn: [{}] | Rules: [{}]", getClass ().getSimpleName (),
+                           currentTurn, lastTurn, rules);
   }
 }

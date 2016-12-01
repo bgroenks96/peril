@@ -108,8 +108,8 @@ public final class DefaultPlayMapMetadata implements PlayMapMetadata
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Type: {} | Mode: {} | DirName: {} | DirType: {}", getClass ()
-            .getSimpleName (), name, type, mode, dirName, dirType);
+    return Strings.format ("{}: Name: {} | Type: {} | Mode: {} | DirName: {} | DirType: {}",
+                           getClass ().getSimpleName (), name, type, mode, dirName, dirType);
   }
 
   @RequiredForNetworkSerialization

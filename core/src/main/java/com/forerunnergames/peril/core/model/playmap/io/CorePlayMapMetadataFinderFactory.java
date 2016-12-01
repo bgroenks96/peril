@@ -30,8 +30,8 @@ public final class CorePlayMapMetadataFinderFactory
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
 
-    return new DefaultPlayMapMetadataFinder (gameMode, new CorePlayMapMetadataLoaderFactory (gameMode)
-            .create (PlayMapType.STOCK, PlayMapType.CUSTOM).load ());
+    return new DefaultPlayMapMetadataFinder (gameMode,
+            new CorePlayMapMetadataLoaderFactory (gameMode).create (PlayMapType.STOCK, PlayMapType.CUSTOM).load ());
   }
 
   private CorePlayMapMetadataFinderFactory ()

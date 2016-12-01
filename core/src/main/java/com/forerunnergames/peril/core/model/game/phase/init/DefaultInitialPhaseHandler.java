@@ -157,7 +157,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
       return;
     }
 
-    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryGraphModel.getCountryIds ()));
+    final List <Id> countries = Randomness.shuffle (new HashSet<> (countryGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules
             .getInitialPlayerCountryDistribution (players.size ());

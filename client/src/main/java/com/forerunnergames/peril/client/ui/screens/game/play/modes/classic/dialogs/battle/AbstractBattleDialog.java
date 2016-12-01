@@ -472,7 +472,8 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   {
     synchronized (showBattleResultCompleteTask)
     {
-      final float seconds = (showBattleResultCompleteTask.getExecuteTimeMillis () - (System.nanoTime () / 1000000L)) / 1000.0f;
+      final float seconds = (showBattleResultCompleteTask.getExecuteTimeMillis () - (System.nanoTime () / 1000000L))
+              / 1000.0f;
       return seconds > 0.0f ? seconds : 0.0f;
     }
   }
@@ -584,8 +585,10 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
 
   private void setCountryImages (final Country attackingCountry, final Country defendingCountry)
   {
-    setCountryImage (attackingCountry, attackingCountryArmyText, attackingCountryArmyTextEffects, attackingCountryStack);
-    setCountryImage (defendingCountry, defendingCountryArmyText, defendingCountryArmyTextEffects, defendingCountryStack);
+    setCountryImage (attackingCountry, attackingCountryArmyText, attackingCountryArmyTextEffects,
+                     attackingCountryStack);
+    setCountryImage (defendingCountry, defendingCountryArmyText, defendingCountryArmyTextEffects,
+                     defendingCountryStack);
   }
 
   private void setCountryImage (final Country country,

@@ -31,8 +31,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent<PlayerPacket> implements
-        PlayerEvent
+public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent <PlayerPacket>
+        implements PlayerEvent
 {
   /**
    * Convenience constructor for when person identity is unknown or not cared about, and there are no spectators in game

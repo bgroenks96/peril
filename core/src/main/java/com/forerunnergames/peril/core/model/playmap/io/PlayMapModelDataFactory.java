@@ -29,7 +29,8 @@ public interface PlayMapModelDataFactory
 
   ContinentFactory createContinents (final PlayMapMetadata playMapMetadata, final CountryIdResolver countryIdResolver);
 
-  CountryGraphModel createCountryGraphModel (final PlayMapMetadata playMapMetadata, final CountryFactory countryFactory);
+  CountryGraphModel createCountryGraphModel (final PlayMapMetadata playMapMetadata,
+                                             final CountryFactory countryFactory);
 
   ContinentGraphModel createContinentGraphModel (final PlayMapMetadata playMapMetadata,
                                                  final ContinentFactory continentFactory,

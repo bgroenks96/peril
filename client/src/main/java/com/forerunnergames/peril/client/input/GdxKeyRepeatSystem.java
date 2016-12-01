@@ -60,7 +60,7 @@ public class GdxKeyRepeatSystem
     this.input = input;
     this.listener = listener;
     keyRepeatTimer = new Timer ();
-    keyRepeatTasks = new IntMap <> ();
+    keyRepeatTasks = new IntMap<> ();
     repeatingKeys = new IntArray ();
     keyRepeatRates = new IntFloatMap ();
     keyRepeatStartDelays = new IntFloatMap ();
@@ -544,9 +544,10 @@ public class GdxKeyRepeatSystem
   {
     if (currentRepeatingKeyTask != null && !currentRepeatingKeyTask.isScheduled ())
     {
-      keyRepeatTimer.scheduleTask (currentRepeatingKeyTask, keyRepeatStartDelays
-              .get (currentRepeatingGdxKeyCode, DEFAULT_KEY_REPEAT_START_DELAY_SECONDS), keyRepeatRates
-              .get (currentRepeatingGdxKeyCode, DEFAULT_KEY_REPEAT_RATE_SECONDS));
+      keyRepeatTimer.scheduleTask (currentRepeatingKeyTask,
+                                   keyRepeatStartDelays.get (currentRepeatingGdxKeyCode,
+                                                             DEFAULT_KEY_REPEAT_START_DELAY_SECONDS),
+                                   keyRepeatRates.get (currentRepeatingGdxKeyCode, DEFAULT_KEY_REPEAT_RATE_SECONDS));
     }
   }
 

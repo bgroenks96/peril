@@ -48,7 +48,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultMessageBox.class);
   private static final int MAX_ROWS = 100;
-  private final Map <Actor, T> rowCache = new LinkedHashMap <> ();
+  private final Map <Actor, T> rowCache = new LinkedHashMap<> ();
   private final MessageBoxStyle style;
   private final WidgetFactory widgetFactory;
   private final ScrollPane scrollPane;
@@ -66,8 +66,8 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 
     configureTable ();
 
-    scrollPane = new ScrollPane (table, widgetFactory.createScrollPaneStyle (style.getScrollPaneStyle (),
-                                                                             style.getScrollbarStyle ()))
+    scrollPane = new ScrollPane (table,
+            widgetFactory.createScrollPaneStyle (style.getScrollPaneStyle (), style.getScrollbarStyle ()))
     {
       private final int scissorsDeltaY = 2 + DefaultMessageBox.this.style.getScrollPaddingBottom ();
       private final int scissorsDeltaHeight = 1 - DefaultMessageBox.this.style.getScrollPaddingTop ()
@@ -252,9 +252,9 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Style: [{}] | ScrollPane: [{}] | ScrollPane Child Widget: [{}] | Row Cache: [{}] | "
-                                   + "Max Rows: [{}] | WidgetFactory: [{}]", getClass ().getSimpleName (), style,
-                           scrollPane, table, rowCache,
-                           MAX_ROWS, widgetFactory);
+    return Strings.format (
+                           "{}: Style: [{}] | ScrollPane: [{}] | ScrollPane Child Widget: [{}] | Row Cache: [{}] | "
+                                   + "Max Rows: [{}] | WidgetFactory: [{}]",
+                           getClass ().getSimpleName (), style, scrollPane, table, rowCache, MAX_ROWS, widgetFactory);
   }
 }

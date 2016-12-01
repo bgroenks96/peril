@@ -44,7 +44,8 @@ public final class InternalPlayMapMetadataLoader implements PlayMapMetadataLoade
   private final PlayMapType playMapType;
   private final PlayMapDataPathParser playMapDataPathParser;
 
-  public InternalPlayMapMetadataLoader (final PlayMapType playMapType, final PlayMapDataPathParser playMapDataPathParser)
+  public InternalPlayMapMetadataLoader (final PlayMapType playMapType,
+                                        final PlayMapDataPathParser playMapDataPathParser)
   {
     Arguments.checkIsNotNull (playMapType, "playMapType");
     Arguments.checkIsNotNull (playMapDataPathParser, "playMapDataPathParser");
@@ -75,7 +76,7 @@ public final class InternalPlayMapMetadataLoader implements PlayMapMetadataLoade
       return ImmutableSet.of ();
     }
 
-    final Set <PlayMapMetadata> metadatas = new HashSet <> ();
+    final Set <PlayMapMetadata> metadatas = new HashSet<> ();
 
     for (final String rawPlayMapDirectoryName : rawPlayMapDirectoryNames)
     {

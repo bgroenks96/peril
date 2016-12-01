@@ -46,9 +46,8 @@ public final class DebugPackets
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNegative (countryArmyCount, "countryArmyCount");
 
-    return new DefaultPendingBattleActorPacket (asPlayerPacket (playerName), asCountryPacket (countryName,
-                                                                                              countryArmyCount),
-            ClassicGameRules.ABSOLUTE_ATTACKER_DIE_RANGE);
+    return new DefaultPendingBattleActorPacket (asPlayerPacket (playerName),
+            asCountryPacket (countryName, countryArmyCount), ClassicGameRules.ABSOLUTE_ATTACKER_DIE_RANGE);
   }
 
   static PendingBattleActorPacket asDefenderPendingBattleActorPacket (final String playerName,
@@ -59,9 +58,8 @@ public final class DebugPackets
     Arguments.checkIsNotNull (countryName, "countryName");
     Arguments.checkIsNotNegative (countryArmyCount, "countryArmyCount");
 
-    return new DefaultPendingBattleActorPacket (asPlayerPacket (playerName), asCountryPacket (countryName,
-                                                                                              countryArmyCount),
-            ClassicGameRules.ABSOLUTE_DEFENDER_DIE_RANGE);
+    return new DefaultPendingBattleActorPacket (asPlayerPacket (playerName),
+            asCountryPacket (countryName, countryArmyCount), ClassicGameRules.ABSOLUTE_DEFENDER_DIE_RANGE);
   }
 
   static CountryPacket asCountryPacket (final String countryName, final int armyCount)

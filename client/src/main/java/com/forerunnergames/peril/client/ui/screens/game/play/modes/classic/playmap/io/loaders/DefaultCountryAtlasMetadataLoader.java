@@ -101,7 +101,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex))
         {
           log.trace ("Ignoring potential country atlas file [{}] for play map [{}] because although it's a valid country "
-                             + "atlas *image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
+                  + "atlas *image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
                      childPathFile, playMapMetadata, expectedAtlasIndex);
           continue;
         }
@@ -113,7 +113,7 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
         if (AssetSettings.isValidCountryAtlasImageFileName (childPathFile.getName (), expectedAtlasIndex - 1))
         {
           log.trace ("Ignoring child path file [{}] for play map [{}] because although it's a valid country atlas "
-                             + "*image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
+                  + "*image* file, we're looking for the country atlas *pack* file for atlas index [{}].",
                      childPathFile, playMapMetadata, expectedAtlasIndex);
           continue;
         }
@@ -132,8 +132,9 @@ public final class DefaultCountryAtlasMetadataLoader implements CountryAtlasMeta
                                     externalCountryAtlasesDirectory, playMapMetadata, expectedAtlasIndex);
         }
 
-        final CountryAtlasMetadata countryAtlasMetadata = new DefaultCountryAtlasMetadata (new AssetDescriptor <> (
-                relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class), playMapMetadata);
+        final CountryAtlasMetadata countryAtlasMetadata = new DefaultCountryAtlasMetadata (
+                new AssetDescriptor<> (relativeCountryAtlasesPath + rawCountryAtlasFileName, TextureAtlas.class),
+                playMapMetadata);
 
         if (!countryAtlasMetadatas.add (countryAtlasMetadata))
         {

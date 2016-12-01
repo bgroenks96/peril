@@ -27,8 +27,8 @@ import com.forerunnergames.peril.common.playmap.io.AbstractPlayMapDataPathParser
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-abstract class AbstractPlayMapGraphicsPathParser extends AbstractPlayMapDataPathParser implements
-        PlayMapGraphicsPathParser
+abstract class AbstractPlayMapGraphicsPathParser extends AbstractPlayMapDataPathParser
+        implements PlayMapGraphicsPathParser
 {
   AbstractPlayMapGraphicsPathParser (final GameMode gameMode)
   {
@@ -97,8 +97,8 @@ abstract class AbstractPlayMapGraphicsPathParser extends AbstractPlayMapDataPath
       }
       default:
       {
-        throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           metadata.getType ()));
+        throw new PlayMapLoadingException (
+                Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (), metadata.getType ()));
       }
     }
   }

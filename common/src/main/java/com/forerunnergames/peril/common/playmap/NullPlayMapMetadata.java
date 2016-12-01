@@ -84,7 +84,7 @@ final class NullPlayMapMetadata implements PlayMapMetadata
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Name: {} | Type: {} | Mode: {} | DirName: {} | DirType: {}", getClass ()
-            .getSimpleName (), NAME, TYPE, MODE, DIR_NAME, DIR_TYPE);
+    return Strings.format ("{}: Name: {} | Type: {} | Mode: {} | DirName: {} | DirType: {}",
+                           getClass ().getSimpleName (), NAME, TYPE, MODE, DIR_NAME, DIR_TYPE);
   }
 }

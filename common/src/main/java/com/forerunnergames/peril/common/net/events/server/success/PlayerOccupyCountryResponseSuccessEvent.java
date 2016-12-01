@@ -28,8 +28,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent implements
-        PlayerResponseSuccessEvent, CountryOwnerChangedEvent
+public final class PlayerOccupyCountryResponseSuccessEvent extends AbstractPlayerSourceTargetCountryEvent
+        implements PlayerResponseSuccessEvent, CountryOwnerChangedEvent
 {
   private final PlayerPacket previousTargetCountryOwner;
   private final int deltaArmyCount;

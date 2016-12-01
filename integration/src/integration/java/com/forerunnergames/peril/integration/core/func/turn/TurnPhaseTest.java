@@ -7,8 +7,8 @@ import static org.testng.Assert.assertTrue;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.integration.TestSessions;
-import com.forerunnergames.peril.integration.TestUtil;
 import com.forerunnergames.peril.integration.TestSessions.TestSession;
+import com.forerunnergames.peril.integration.TestUtil;
 import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
@@ -38,7 +38,7 @@ public final class TurnPhaseTest
   {
     final String fullMethodName = Strings.format ("{}_{}", getClass ().getSimpleName (), method.getName ());
     return new Object [] [] { { TestSessions.createUniqueNameFrom (fullMethodName),
-                               LoggerFactory.getLogger (fullMethodName) } };
+                                LoggerFactory.getLogger (fullMethodName) } };
   }
 
   @AfterClass

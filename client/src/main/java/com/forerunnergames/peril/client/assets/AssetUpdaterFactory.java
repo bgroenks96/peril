@@ -46,17 +46,19 @@ public final class AssetUpdaterFactory
     }
     catch (final InvalidPathException e)
     {
-      throw new RuntimeException (
-              Strings.format ("Absolute updated assets directory [{}] is not a valid filesystem path, nor a valid "
-                                      + "Amazon S3 bucket path.\n\n{}", AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION,
-                              Throwables.getStackTraceAsString (e)));
+      throw new RuntimeException (Strings.format (
+                                                  "Absolute updated assets directory [{}] is not a valid filesystem path, nor a valid "
+                                                          + "Amazon S3 bucket path.\n\n{}",
+                                                  AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION,
+                                                  Throwables.getStackTraceAsString (e)));
     }
 
     if (!Files.isDirectory (path))
     {
-      throw new RuntimeException (
-              Strings.format ("Absolute updated assets directory [{}] is not a valid filesystem directory, "
-                      + "nor a valid Amazon S3 bucket path.", AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION));
+      throw new RuntimeException (Strings.format (
+                                                  "Absolute updated assets directory [{}] is not a valid filesystem directory, "
+                                                          + "nor a valid Amazon S3 bucket path.",
+                                                  AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION));
     }
 
     return new LocalAssetUpdater ();

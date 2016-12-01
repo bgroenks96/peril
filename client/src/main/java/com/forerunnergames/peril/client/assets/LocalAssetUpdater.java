@@ -51,8 +51,8 @@ public final class LocalAssetUpdater implements AssetUpdater
     if (!AssetSettings.UPDATE_ASSETS)
     {
       log.warn ("Assets are not being updated.\nTo change this behavior, change {} in {} from false to true.\n"
-                        + "Make sure to back up any customizations you made to any assets first, as your changes "
-                        + "will be overwritten.", ClientApplicationProperties.UPDATE_ASSETS_KEY,
+              + "Make sure to back up any customizations you made to any assets first, as your changes "
+              + "will be overwritten.", ClientApplicationProperties.UPDATE_ASSETS_KEY,
                 ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME);
       return;
     }
@@ -94,11 +94,10 @@ public final class LocalAssetUpdater implements AssetUpdater
         }
         catch (final Exception e)
         {
-          final String errorMessage = "Failed to update assets from: ["
-                  + AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION + "].\n" + "Make sure that "
-                  + ClientApplicationProperties.UPDATED_ASSETS_LOCATION_KEY + " is properly set in ["
-                  + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "].\n" + "Also, "
-                  + ClientApplicationProperties.UPDATE_ASSETS_KEY
+          final String errorMessage = "Failed to update assets from: [" + AssetSettings.ABSOLUTE_UPDATED_ASSETS_LOCATION
+                  + "].\n" + "Make sure that " + ClientApplicationProperties.UPDATED_ASSETS_LOCATION_KEY
+                  + " is properly set in [" + ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME + "].\n"
+                  + "Also, " + ClientApplicationProperties.UPDATE_ASSETS_KEY
                   + " must be set to true (in the same file) the first time you run the game.\n"
                   + "If you already tried all of that, you can set " + ClientApplicationProperties.UPDATE_ASSETS_KEY
                   + " to false.\nIn that case, you still need to make sure that you have a copy of all assets in "

@@ -65,8 +65,8 @@ public final class CorePlayMapMetadataLoaderFactory implements PlayMapMetadataLo
         }
         default:
         {
-          throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].",
-                                                             PlayMapType.class.getSimpleName (), playMapType));
+          throw new PlayMapLoadingException (
+                  Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (), playMapType));
         }
       }
     }

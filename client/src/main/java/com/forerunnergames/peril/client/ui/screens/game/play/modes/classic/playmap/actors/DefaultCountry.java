@@ -362,11 +362,12 @@ public final class DefaultCountry implements Country
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Name: {} | Primary Image State: {} | Secondary Image State: {}"
+    return Strings.format (
+                           "{} | Name: {} | Primary Image State: {} | Secondary Image State: {}"
                                    + " | Primary Image: {}  | Secondary Image: {} | Enabled: {} | "
                                    + "Image Data: {} | Army Text: {} | Primary Images: {} " + "| Secondary Images: {}",
                            getClass ().getSimpleName (), group.getName (), primaryImageState, secondaryImageState,
-                           primaryImage, secondaryImage,
-                           isEnabled, imageData, armyText, primaryImages, secondaryImages);
+                           primaryImage, secondaryImage, isEnabled, imageData, armyText, primaryImages,
+                           secondaryImages);
   }
 }

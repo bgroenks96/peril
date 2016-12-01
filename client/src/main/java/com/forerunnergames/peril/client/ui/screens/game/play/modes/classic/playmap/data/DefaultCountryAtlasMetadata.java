@@ -75,7 +75,8 @@ public final class DefaultCountryAtlasMetadata implements CountryAtlasMetadata
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: {}: {} | {}: {}", getClass ().getSimpleName (), assetDescriptor.getClass ()
-            .getSimpleName (), assetDescriptor, playMapMetadata.getClass ().getSimpleName (), playMapMetadata);
+    return Strings.format ("{}: {}: {} | {}: {}", getClass ().getSimpleName (),
+                           assetDescriptor.getClass ().getSimpleName (), assetDescriptor,
+                           playMapMetadata.getClass ().getSimpleName (), playMapMetadata);
   }
 }

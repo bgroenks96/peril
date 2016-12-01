@@ -190,8 +190,8 @@ public final class KryonetRegistration
     Classes.instantiationNotAllowed ();
   }
 
-  private static final class PackageToClassInfosFunction implements
-          Function <String, ImmutableSet <ClassPath.ClassInfo>>
+  private static final class PackageToClassInfosFunction
+          implements Function <String, ImmutableSet <ClassPath.ClassInfo>>
   {
     @Override
     public ImmutableSet <ClassPath.ClassInfo> apply (final String input)

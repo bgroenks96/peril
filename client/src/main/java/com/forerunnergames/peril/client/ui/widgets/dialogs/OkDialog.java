@@ -308,18 +308,6 @@ public class OkDialog implements Dialog
     delegate.refreshAssets ();
   }
 
-  @Override
-  public void onKeyDownRepeating (final int keyCode)
-  {
-    // Empty base implementation
-  }
-
-  @Override
-  public void onKeyUp (final int keyCode)
-  {
-    // Empty base implementation
-  }
-
   protected void addButtons ()
   {
     delegate.addButtons ();
@@ -328,6 +316,10 @@ public class OkDialog implements Dialog
   protected final void addTextButton (final String buttonText, final DialogAction dialogAction)
   {
     delegate.addTextButton (buttonText, dialogAction);
+  }  @Override
+  public void onKeyDownRepeating (final int keyCode)
+  {
+    // Empty base implementation
   }
 
   protected final TextButton addTextButton (final String buttonText,
@@ -340,6 +332,10 @@ public class OkDialog implements Dialog
   protected final Button addButton (final String style, final DialogAction dialogAction, final EventListener listener)
   {
     return delegate.addButton (style, dialogAction, listener);
+  }  @Override
+  public void onKeyUp (final int keyCode)
+  {
+    // Empty base implementation
   }
 
   protected final ImageButton addImageButton (final String style,
@@ -381,7 +377,7 @@ public class OkDialog implements Dialog
 
   private final class DelegateDialog extends com.badlogic.gdx.scenes.scene2d.ui.Dialog
   {
-    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap <> ();
+    private final Map <Button, String> buttonsToButtonStyleNames = new HashMap<> ();
     private final WidgetFactory widgetFactory;
     private final DialogStyle dialogStyle;
     private final Stage stage;
@@ -478,16 +474,15 @@ public class OkDialog implements Dialog
       setPosition (positionX, positionY);
       clearActions ();
 
-      super.show (stage,
-                  Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade),
-                                    Actions.run (new Runnable ()
-                                    {
-                                      @Override
-                                      public void run ()
-                                      {
-                                        listener.onShow ();
-                                      }
-                                    })));
+      super.show (stage, Actions.sequence (Actions.alpha (0), Actions.fadeIn (0.2f, Interpolation.fade),
+                                           Actions.run (new Runnable ()
+                                           {
+                                             @Override
+                                             public void run ()
+                                             {
+                                               listener.onShow ();
+                                             }
+                                           })));
 
       return this;
     }
@@ -656,7 +651,9 @@ public class OkDialog implements Dialog
       return button;
     }
 
-    public ImageButton addImageButton (final String style, final DialogAction dialogAction, final EventListener listener)
+    public ImageButton addImageButton (final String style,
+                                       final DialogAction dialogAction,
+                                       final EventListener listener)
     {
       Arguments.checkIsNotNull (style, "style");
       Arguments.checkIsNotNull (dialogAction, "dialogAction");
@@ -937,4 +934,9 @@ public class OkDialog implements Dialog
       getCell (getButtonTable ()).right ();
     }
   }
+
+
+
+
+
 }

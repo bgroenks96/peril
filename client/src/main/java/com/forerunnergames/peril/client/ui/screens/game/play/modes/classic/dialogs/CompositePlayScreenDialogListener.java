@@ -85,7 +85,7 @@ public final class CompositePlayScreenDialogListener implements PlayScreenDialog
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap <> (
+    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap<> (
             listenerClassesToListeners);
     copy.put (listener.getClass (), listener);
     listenerClassesToListeners = MutableClassToInstanceMap.create (copy);
@@ -96,7 +96,7 @@ public final class CompositePlayScreenDialogListener implements PlayScreenDialog
     Arguments.checkIsNotNull (listeners, "listeners");
     Arguments.checkHasNoNullElements (listeners, "listeners");
 
-    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap <> (
+    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap<> (
             listenerClassesToListeners);
 
     for (final PlayScreenDialogListener listener : listeners)
@@ -111,7 +111,7 @@ public final class CompositePlayScreenDialogListener implements PlayScreenDialog
   {
     Arguments.checkIsNotNull (listener, "listener");
 
-    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap <> (
+    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap<> (
             listenerClassesToListeners);
     copy.remove (listener.getClass ());
     listenerClassesToListeners = MutableClassToInstanceMap.create (copy);
@@ -122,7 +122,7 @@ public final class CompositePlayScreenDialogListener implements PlayScreenDialog
     Arguments.checkIsNotNull (listeners, "listeners");
     Arguments.checkHasNoNullElements (listeners, "listeners");
 
-    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap <> (
+    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap<> (
             listenerClassesToListeners);
 
     for (final PlayScreenDialogListener listener : listeners)
@@ -139,7 +139,7 @@ public final class CompositePlayScreenDialogListener implements PlayScreenDialog
     Arguments.checkIsNotNull (listenerClasses, "listenerClasses");
     Arguments.checkHasNoNullElements (listenerClasses, "listenerClasses");
 
-    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap <> (
+    final Map <Class <? extends PlayScreenDialogListener>, PlayScreenDialogListener> copy = new HashMap<> (
             listenerClassesToListeners);
 
     for (final Class <? extends PlayScreenDialogListener> listenerClass : listenerClasses)

@@ -103,7 +103,7 @@ final class DefaultPlayerIcon implements PlayerIcon
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Active color: {} | Icon Cell: {} | Colors to Icons: {} | Table: {}", getClass ()
-            .getSimpleName (), activeColor, iconCell, colorsToIcons, table);
+    return Strings.format ("{}: Active color: {} | Icon Cell: {} | Colors to Icons: {} | Table: {}",
+                           getClass ().getSimpleName (), activeColor, iconCell, colorsToIcons, table);
   }
 }

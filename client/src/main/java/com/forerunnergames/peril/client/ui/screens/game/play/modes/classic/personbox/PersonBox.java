@@ -46,9 +46,9 @@ public final class PersonBox extends DefaultMessageBox <PersonBoxRow <? extends 
 {
   private static final Logger log = LoggerFactory.getLogger (PersonBox.class);
   private final WidgetFactory widgetFactory;
-  private final Collection <PlayerPacket> players = new HashSet <> ();
-  private final Collection <SpectatorPacket> spectators = new LinkedHashSet <> ();
-  private final Map <String, Integer> playerNamesToRowIndices = new HashMap <> ();
+  private final Collection <PlayerPacket> players = new HashSet<> ();
+  private final Collection <SpectatorPacket> spectators = new LinkedHashSet<> ();
+  private final Map <String, Integer> playerNamesToRowIndices = new HashMap<> ();
   @Nullable
   private PlayerPacket highlightedPlayer;
 
@@ -239,8 +239,8 @@ public final class PersonBox extends DefaultMessageBox <PersonBoxRow <? extends 
   {
     if (!players.remove (player))
     {
-      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player,
-                PersonBox.class.getSimpleName (), PersonBox.class.getSimpleName ());
+      log.warn ("Not removing player [{}] from {}. (Player not found in {}.)", player, PersonBox.class.getSimpleName (),
+                PersonBox.class.getSimpleName ());
     }
   }
 

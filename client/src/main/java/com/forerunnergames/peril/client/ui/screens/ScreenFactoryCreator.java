@@ -53,8 +53,10 @@ public final class ScreenFactoryCreator
   {
     Arguments.checkIsNotNull (screenChanger, "screenChanger");
 
-    return new ScreenFactory (screenChanger, new LibGdxScreenSize (Gdx.graphics, ScreenSettings.REFERENCE_SCREEN_WIDTH,
-            ScreenSettings.REFERENCE_SCREEN_HEIGHT), new LibGdxMouseInput (Gdx.input),
-            SpriteBatchFactory.create (assetManager), assetManager, assetUpdater, eventBus);
+    return new ScreenFactory (screenChanger,
+            new LibGdxScreenSize (Gdx.graphics, ScreenSettings.REFERENCE_SCREEN_WIDTH,
+                    ScreenSettings.REFERENCE_SCREEN_HEIGHT),
+            new LibGdxMouseInput (Gdx.input), SpriteBatchFactory.create (assetManager), assetManager, assetUpdater,
+            eventBus);
   }
 }

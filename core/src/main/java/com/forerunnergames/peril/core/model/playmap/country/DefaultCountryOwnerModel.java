@@ -25,9 +25,9 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.MutatorResult;
+import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.MutatorResult.MutatorCallback;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -39,7 +39,7 @@ import java.util.Map;
 public final class DefaultCountryOwnerModel implements CountryOwnerModel
 {
   private final CountryGraphModel countryGraphModel;
-  private final Map <Id, Id> countryIdsToOwnerIds = new HashMap <> ();
+  private final Map <Id, Id> countryIdsToOwnerIds = new HashMap<> ();
 
   public DefaultCountryOwnerModel (final CountryGraphModel countryGraphModel, final GameRules rules)
   {
@@ -296,8 +296,8 @@ public final class DefaultCountryOwnerModel implements CountryOwnerModel
       // This would indicate a serious bug.
       if (result.failed ())
       {
-        throw new IllegalStateException (Strings.format ("Could not unassign countryId [{}] from owner [{}]",
-                                                         countryId, ownerId));
+        throw new IllegalStateException (
+                Strings.format ("Could not unassign countryId [{}] from owner [{}]", countryId, ownerId));
       }
 
       // Sanity check.

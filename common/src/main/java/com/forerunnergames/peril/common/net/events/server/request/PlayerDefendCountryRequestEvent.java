@@ -24,8 +24,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryRequestEvent extends AbstractBattleEvent implements BattleSetupEvent,
-        PlayerInputRequestEvent
+public final class PlayerDefendCountryRequestEvent extends AbstractBattleEvent
+        implements BattleSetupEvent, PlayerInputRequestEvent
 
 {
   public PlayerDefendCountryRequestEvent (final PendingBattleActorPacket attacker,

@@ -55,8 +55,9 @@ public final class DefaultCountryAtlasesLoader implements CountryAtlasesLoader
   public void load (final PlayMapMetadata playMapMetadata)
   {
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
-    Preconditions.checkIsTrue (!playMapMetadataToCountryAtlasesMetadata.containsKey (playMapMetadata), Strings
-            .format ("Country atlases were already loaded for play map [{}].", playMapMetadata));
+    Preconditions
+            .checkIsTrue (!playMapMetadataToCountryAtlasesMetadata.containsKey (playMapMetadata),
+                          Strings.format ("Country atlases were already loaded for play map [{}].", playMapMetadata));
 
     for (final CountryAtlasMetadata countryAtlasMetadata : countryAtlasMetadataLoader.load (playMapMetadata))
     {

@@ -201,7 +201,7 @@ public final class MenuScreenWidgetFactory extends AbstractWidgetFactory
     final ImageTextButton menuChoiceButton = new ImageTextButton (choiceText, createMenuChoiceStyle ());
 
     final Stack singlePlayerButtonStack = new Stack ();
-    singlePlayerButtonStack.add (new Container <> (menuChoiceButton.getLabel ()).left ().padLeft (60));
+    singlePlayerButtonStack.add (new Container<> (menuChoiceButton.getLabel ()).left ().padLeft (60));
     singlePlayerButtonStack.add (menuChoiceButton.getImage ());
     menuChoiceButton.clearChildren ();
     menuChoiceButton.add (singlePlayerButtonStack).fill ().expand ();

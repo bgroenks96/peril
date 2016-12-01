@@ -203,9 +203,10 @@ abstract class PersonBoxRow <T extends PersonIcon, U extends PersonPacket> imple
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Person: [{}] | Highlighting: [{}] | Person Icon: [{}] | Message: [{}] |  "
+    return Strings.format (
+                           "{} | Person: [{}] | Highlighting: [{}] | Person Icon: [{}] | Message: [{}] |  "
                                    + "Message Row: [{}] | Row Style: [{}] | Table: [{}] | Stack: [{}]",
-                           super.toString (), person,
-                           highlighting, personIcon, message, messageRowLeft, rowStyle, table, stack);
+                           super.toString (), person, highlighting, personIcon, message, messageRowLeft, rowStyle,
+                           table, stack);
   }
 }

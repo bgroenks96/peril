@@ -27,7 +27,7 @@ import java.util.HashSet;
 
 public final class CompositeGamePhaseHandler implements GamePhaseHandler
 {
-  private Collection <GamePhaseHandler> handlers = new HashSet <> ();
+  private Collection <GamePhaseHandler> handlers = new HashSet<> ();
 
   public CompositeGamePhaseHandler (final GamePhaseHandler... handlers)
   {
@@ -163,7 +163,7 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (handlers);
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet<> (handlers);
     handlersCopy.add (dialog);
     handlers = handlersCopy;
   }
@@ -173,7 +173,7 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
     Arguments.checkIsNotNull (handlers, "handlers");
     Arguments.checkHasNoNullElements (handlers, "handlers");
 
-    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (this.handlers);
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet<> (this.handlers);
     handlersCopy.addAll (Arrays.asList (handlers));
     this.handlers = handlersCopy;
   }
@@ -182,7 +182,7 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (handlers);
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet<> (handlers);
     handlersCopy.remove (dialog);
     handlers = handlersCopy;
   }
@@ -192,7 +192,7 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
     Arguments.checkIsNotNull (handlers, "handlers");
     Arguments.checkHasNoNullElements (handlers, "handlers");
 
-    final Collection <GamePhaseHandler> handlersCopy = new HashSet <> (this.handlers);
+    final Collection <GamePhaseHandler> handlersCopy = new HashSet<> (this.handlers);
     handlersCopy.removeAll (Arrays.asList (handlers));
     this.handlers = handlersCopy;
   }

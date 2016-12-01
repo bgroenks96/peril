@@ -24,8 +24,8 @@ import com.forerunnergames.peril.common.net.messages.CommandMessage;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class CommandMessageRequestEvent extends AbstractMessageEvent <CommandMessage> implements
-        CommandMessageEvent, ClientRequestEvent
+public final class CommandMessageRequestEvent extends AbstractMessageEvent <CommandMessage>
+        implements CommandMessageEvent, ClientRequestEvent
 {
   public CommandMessageRequestEvent (final CommandMessage message)
   {

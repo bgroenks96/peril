@@ -53,8 +53,8 @@ public enum ScreenId
       }
       default:
       {
-        throw new UnsupportedOperationException (Strings.format ("Unsupported {}: [{}].", mode.getClass ()
-                .getSimpleName (), mode));
+        throw new UnsupportedOperationException (
+                Strings.format ("Unsupported {}: [{}].", mode.getClass ().getSimpleName (), mode));
       }
     }
   }

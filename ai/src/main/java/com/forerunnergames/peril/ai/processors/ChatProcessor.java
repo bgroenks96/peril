@@ -128,10 +128,8 @@ public final class ChatProcessor extends AbstractAiProcessor
 
     final String playerName = event.getPersonName ();
 
-    sayOneOfWhenOther (event,
-                       Strings.format ("Hi {}.", deTag (playerName)),
-                       Strings.format ("Hello {}. Ready to lose?", deTag (playerName),
-                                       Strings.format ("Ready to lose, {}?")));
+    sayOneOfWhenOther (event, Strings.format ("Hi {}.", deTag (playerName)), Strings
+            .format ("Hello {}. Ready to lose?", deTag (playerName), Strings.format ("Ready to lose, {}?")));
 
     if (!hasClan (playerName)) return;
 

@@ -26,8 +26,8 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
-public final class CommandMessageDeniedEvent extends AbstractMessageEvent <CommandMessage> implements
-        CommandMessageEvent, DeniedEvent <String>
+public final class CommandMessageDeniedEvent extends AbstractMessageEvent <CommandMessage>
+        implements CommandMessageEvent, DeniedEvent <String>
 {
   private final String reason;
 

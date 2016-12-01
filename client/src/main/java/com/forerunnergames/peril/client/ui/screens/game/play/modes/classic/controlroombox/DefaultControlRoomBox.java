@@ -214,8 +214,8 @@ public final class DefaultControlRoomBox implements ControlRoomBox
 
     if (imageButton == null)
     {
-      throw new IllegalStateException (Strings.format ("{}: [{}] does not exist.", Button.class.getSimpleName (),
-                                                       button));
+      throw new IllegalStateException (
+              Strings.format ("{}: [{}] does not exist.", Button.class.getSimpleName (), button));
     }
 
     return imageButton;
@@ -227,8 +227,8 @@ public final class DefaultControlRoomBox implements ControlRoomBox
 
     if (label == null)
     {
-      throw new IllegalStateException (Strings.format ("{}: [{}] does not exist.", Button.class.getSimpleName (),
-                                                       button));
+      throw new IllegalStateException (
+              Strings.format ("{}: [{}] does not exist.", Button.class.getSimpleName (), button));
     }
 
     return label;

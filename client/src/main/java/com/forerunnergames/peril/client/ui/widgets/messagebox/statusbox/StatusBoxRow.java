@@ -25,7 +25,9 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBoxRowStyle
 
 public final class StatusBoxRow extends LabelMessageBoxRow <StatusMessage>
 {
-  public StatusBoxRow (final StatusMessage message, final MessageBoxRowStyle rowStyle, final WidgetFactory widgetFactory)
+  public StatusBoxRow (final StatusMessage message,
+                       final MessageBoxRowStyle rowStyle,
+                       final WidgetFactory widgetFactory)
   {
     super (message, rowStyle, widgetFactory);
   }

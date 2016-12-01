@@ -97,17 +97,17 @@ public final class Tank2 extends Actor implements Unit
     {
       case FORWARD:
       {
-        body.addAction (Actions.sequence (Actions.moveBy (bodyForwardVector.x
-                                                  * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, -bodyForwardVector.y
-                                                  * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
-                                          Actions.run (new Runnable ()
-                                          {
-                                            @Override
-                                            public void run ()
-                                            {
-                                              Tank2.this.movementDirection = MovementDirection.NONE;
-                                            }
-                                          })));
+        body.addAction (Actions
+                .sequence (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                           -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                           Actions.run (new Runnable ()
+                           {
+                             @Override
+                             public void run ()
+                             {
+                               Tank2.this.movementDirection = MovementDirection.NONE;
+                             }
+                           })));
 
         turret.addAction (Actions.moveBy (bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
                                           -bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
@@ -116,17 +116,17 @@ public final class Tank2 extends Actor implements Unit
       }
       case REVERSE:
       {
-        body.addAction (Actions.sequence (Actions.moveBy (-bodyForwardVector.x
-                                                  * BattleGridSettings.BATTLE_GRID_CELL_WIDTH, bodyForwardVector.y
-                                                  * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
-                                          Actions.run (new Runnable ()
-                                          {
-                                            @Override
-                                            public void run ()
-                                            {
-                                              Tank2.this.movementDirection = MovementDirection.NONE;
-                                            }
-                                          })));
+        body.addAction (Actions
+                .sequence (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
+                                           bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1),
+                           Actions.run (new Runnable ()
+                           {
+                             @Override
+                             public void run ()
+                             {
+                               Tank2.this.movementDirection = MovementDirection.NONE;
+                             }
+                           })));
 
         turret.addAction (Actions.moveBy (-bodyForwardVector.x * BattleGridSettings.BATTLE_GRID_CELL_WIDTH,
                                           bodyForwardVector.y * BattleGridSettings.BATTLE_GRID_CELL_HEIGHT, 1));
@@ -507,9 +507,13 @@ public final class Tank2 extends Actor implements Unit
 
   private void clampPosition ()
   {
-    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
-    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX) currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
-    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
-    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX) currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
+    if (currentPosition.x < BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX)
+      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MIN_INDEX;
+    if (currentPosition.x > BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX)
+      currentPosition.x = BattleGridSettings.BATTLE_GRID_COLUMN_MAX_INDEX;
+    if (currentPosition.y < BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX)
+      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MIN_INDEX;
+    if (currentPosition.y > BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX)
+      currentPosition.y = BattleGridSettings.BATTLE_GRID_ROW_MAX_INDEX;
   }
 }

@@ -24,9 +24,9 @@ import com.forerunnergames.tools.common.id.Id;
  * A battle actor (player + country) that does not yet have a final die count. The final die count is guaranteed to be
  * within the range of {@link #getDieRange()}.
  *
- * {@see com.forerunnergames.peril.core.model.battle.FinalBattleActor} {@see
- * com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket} {@see
- * com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket}
+ * {@see com.forerunnergames.peril.core.model.battle.FinalBattleActor}
+ * {@see com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket}
+ * {@see com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket}
  */
 public interface PendingBattleActor
 {

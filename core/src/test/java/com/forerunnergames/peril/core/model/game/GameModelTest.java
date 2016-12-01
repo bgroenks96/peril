@@ -34,6 +34,11 @@ import org.junit.Test;
 
 public class GameModelTest extends AbstractGamePhaseHandlerTest
 {
+  @Override
+  protected void setupTest ()
+  {
+  }
+
   @Test
   public void testHandlePlayerJoinGameRequestFailed ()
   {
@@ -76,10 +81,5 @@ public class GameModelTest extends AbstractGamePhaseHandlerTest
     addMaxPlayers ();
 
     assertTrue (gameModel.isFull ());
-  }
-
-  @Override
-  protected void setupTest ()
-  {
   }
 }

@@ -65,8 +65,8 @@ public final class EventBusFactory
     Arguments.checkIsNotNull (unhandledEventHandlers, "unhandledEventHandlers");
     Arguments.checkHasNoNullElements (unhandledEventHandlers, "unhandledEventHandlers");
 
-    final MBassador <Event> eventBus = new MBassador <> (new PublicationErrorDispatcher (
-            ImmutableSet.copyOf (publicationErrorHandlers)));
+    final MBassador <Event> eventBus = new MBassador<> (
+            new PublicationErrorDispatcher (ImmutableSet.copyOf (publicationErrorHandlers)));
 
     eventBus.subscribe (new UnhandledEventDispatcher (ImmutableSet.copyOf (unhandledEventHandlers)));
 

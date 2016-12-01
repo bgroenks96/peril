@@ -76,8 +76,8 @@ public final class PersonLimits
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: TotalPlayerLimit: [{}] | SpectatorLimit: [{}] | AllPlayerLimits: [{}]", getClass ()
-            .getSimpleName (), totalPlayerLimit, spectatorLimit, allPlayerLimits);
+    return Strings.format ("{}: TotalPlayerLimit: [{}] | SpectatorLimit: [{}] | AllPlayerLimits: [{}]",
+                           getClass ().getSimpleName (), totalPlayerLimit, spectatorLimit, allPlayerLimits);
   }
 
   private PersonLimits (final int humanPlayerLimit, final int aiPlayerLimit, final int spectatorLimit)

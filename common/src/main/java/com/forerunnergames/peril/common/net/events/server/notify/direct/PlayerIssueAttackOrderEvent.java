@@ -24,8 +24,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInfor
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerIssueAttackOrderEvent extends AbstractBattleEvent implements BattleSetupEvent,
-        PlayerInformEvent
+public final class PlayerIssueAttackOrderEvent extends AbstractBattleEvent
+        implements BattleSetupEvent, PlayerInformEvent
 {
   public PlayerIssueAttackOrderEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {

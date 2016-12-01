@@ -24,8 +24,7 @@ import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class DefaultPlayerTurnOrderChangedEvent extends AbstractPlayerEvent implements
-        PlayerTurnOrderChangedEvent
+public final class DefaultPlayerTurnOrderChangedEvent extends AbstractPlayerEvent implements PlayerTurnOrderChangedEvent
 {
   private final int oldTurnOrder;
 

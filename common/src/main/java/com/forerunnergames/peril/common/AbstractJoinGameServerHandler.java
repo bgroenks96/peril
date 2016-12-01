@@ -53,7 +53,7 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
 {
   protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final MBassador <Event> eventBus;
-  private final Set <PlayerPacket> players = new HashSet <> ();
+  private final Set <PlayerPacket> players = new HashSet<> ();
   @Nullable
   private String selfPlayerName = null;
   @Nullable
@@ -137,9 +137,8 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
   final void onEvent (final JoinGameServerSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (isJoinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (isJoinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                       JoinGameServerHandler.class.getSimpleName ()));
 
     assert selfPlayerName != null;
     if (!isSelf (event, selfPlayerName)) return;
@@ -158,9 +157,8 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
   final void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (isJoinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (isJoinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                       JoinGameServerHandler.class.getSimpleName ()));
 
     log.trace ("Event received [{}]", event);
 
@@ -189,9 +187,8 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
   final void onEvent (final JoinGameServerDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (isJoinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (isJoinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                       JoinGameServerHandler.class.getSimpleName ()));
 
     assert selfPlayerName != null;
     if (!isSelf (event, selfPlayerName)) return;
@@ -211,9 +208,8 @@ public abstract class AbstractJoinGameServerHandler implements JoinGameServerHan
   final void onEvent (final PlayerJoinGameDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Preconditions.checkIsTrue (isJoinGameIsInProgress,
-                               Strings.format ("{}#join has not been called first.",
-                                               JoinGameServerHandler.class.getSimpleName ()));
+    Preconditions.checkIsTrue (isJoinGameIsInProgress, Strings.format ("{}#join has not been called first.",
+                                                                       JoinGameServerHandler.class.getSimpleName ()));
 
     assert selfPlayerName != null;
     if (!isSelf (event, selfPlayerName)) return;

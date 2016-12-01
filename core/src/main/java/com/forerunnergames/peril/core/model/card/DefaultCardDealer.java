@@ -119,7 +119,8 @@ final class DefaultCardDealer implements CardDealer
     Arguments.checkIsNotNull (name, "name");
 
     final Optional <Card> card = findCardByName (name, baseDeck);
-    if (!card.isPresent ()) throw new IllegalStateException (Strings.format ("Could not find card with name: {}", name));
+    if (!card.isPresent ())
+      throw new IllegalStateException (Strings.format ("Could not find card with name: {}", name));
     return card.get ();
   }
 

@@ -35,8 +35,8 @@ import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
 import com.forerunnergames.tools.common.Result;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.Result.ReturnStatus;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.common.id.IdGenerator;
 
@@ -596,8 +596,8 @@ public class PlayerModelTest
 
     addNPlayersTo (playerModel, MAX_PLAYERS);
 
-    final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (PlayerFactory
-            .builder ("TestPlayerX", PersonSentience.HUMAN).toFactory ());
+    final ImmutableSet <PlayerJoinGameStatus> results = playerModel
+            .requestToAdd (PlayerFactory.builder ("TestPlayerX", PersonSentience.HUMAN).toFactory ());
     assertTrue (singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.GAME_IS_FULL));
   }
 
@@ -623,8 +623,8 @@ public class PlayerModelTest
     final Player player = PlayerFactory.createHuman (invalidName);
 
     final ImmutableSet <PlayerJoinGameStatus> results = playerModel.requestToAdd (factoryFrom (player));
-    assertTrue (Strings.format ("{}", singleResultFrom (results).getFailureReason ()), singleResultFrom (results)
-            .failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
+    assertTrue (Strings.format ("{}", singleResultFrom (results).getFailureReason ()),
+                singleResultFrom (results).failedBecauseOf (PlayerJoinGameDeniedEvent.Reason.INVALID_NAME));
     assertTrue (playerModel.isEmpty ());
   }
 
@@ -870,7 +870,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {
@@ -896,7 +896,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {
@@ -931,7 +931,7 @@ public class PlayerModelTest
   {
     final PlayerModel playerModel = createPlayerModelWithLimitOf (MAX_PLAYERS);
     addNPlayersTo (playerModel, playerModel.getPlayerLimit ());
-    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap <> ();
+    final Map <Id, PlayerTurnOrder> originalTurnOrders = new HashMap<> ();
     PlayerTurnOrder turnOrder = PlayerTurnOrder.FIRST;
     for (final Id player : playerModel.getPlayerIds ())
     {

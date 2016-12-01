@@ -71,9 +71,10 @@ public final class SplashScreen extends AbstractLoadingScreen
                        final AssetManager assetManager,
                        final MBassador <Event> eventBus)
   {
-    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager, LoadingScreenStyle
-            .builder ().loadingTitleTextVerticalSpacer (394).loadingTitleTextLabelSize (560, 62)
-            .progressBarSize (560, 20).loadingStatusInitialText ("Please wait for asset updating to begin...").build ());
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager,
+           LoadingScreenStyle.builder ().loadingTitleTextVerticalSpacer (394).loadingTitleTextLabelSize (560, 62)
+                   .progressBarSize (560, 20).loadingStatusInitialText ("Please wait for asset updating to begin...")
+                   .build ());
 
     Arguments.checkIsNotNull (widgetFactory, "widgetFactory");
     Arguments.checkIsNotNull (assetUpdater, "assetUpdater");
@@ -170,8 +171,8 @@ public final class SplashScreen extends AbstractLoadingScreen
     catch (final RuntimeException e)
     {
       handleError ("A crash file has been created in \"{}\".\n\nThere was a problem updating a game resource.\n\n"
-              + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
-              .getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
+              + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                   Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
     }
   }
 
@@ -211,12 +212,12 @@ public final class SplashScreen extends AbstractLoadingScreen
     {
       if (InputSettings.AUTO_JOIN_GAME && InputSettings.AUTO_CREATE_GAME)
       {
-        throw new IllegalStateException (
-                Strings.format ("Cannot auto-join & auto-create a game simultaneously.\n\n"
-                                        + "Please disable either '{}', '{}', or both in:\n\n{}.",
-                                ClientApplicationProperties.AUTO_JOIN_GAME_KEY,
-                                ClientApplicationProperties.AUTO_CREATE_GAME_KEY,
-                                ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
+        throw new IllegalStateException (Strings.format (
+                                                         "Cannot auto-join & auto-create a game simultaneously.\n\n"
+                                                                 + "Please disable either '{}', '{}', or both in:\n\n{}.",
+                                                         ClientApplicationProperties.AUTO_JOIN_GAME_KEY,
+                                                         ClientApplicationProperties.AUTO_CREATE_GAME_KEY,
+                                                         ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME));
       }
       else if (InputSettings.AUTO_JOIN_GAME)
       {
@@ -238,8 +239,8 @@ public final class SplashScreen extends AbstractLoadingScreen
     catch (final GdxRuntimeException e)
     {
       handleError ("A crash file has been created in \"{}\".\n\nThe application encountered a problem.\n\n"
-              + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY, Throwables
-              .getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
+              + "Problem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                   Throwables.getRootCause (e).getMessage (), Throwables.getStackTraceAsString (e));
     }
   }
 

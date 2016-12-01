@@ -60,8 +60,8 @@ public final class Widgets
       }
       default:
       {
-        throw new IllegalStateException ("Unknown " + CellPadding.class.getSimpleName () + " value [" + paddingType
-                + "]");
+        throw new IllegalStateException (
+                "Unknown " + CellPadding.class.getSimpleName () + " value [" + paddingType + "]");
       }
     }
   }

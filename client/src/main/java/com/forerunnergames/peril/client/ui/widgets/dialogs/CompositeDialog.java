@@ -385,7 +385,7 @@ public final class CompositeDialog extends KeyRepeatListenerAdapter implements D
   {
     Arguments.checkIsNotNull (dialog, "dialog");
 
-    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap <> (dialogClassesToDialogs);
+    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap<> (dialogClassesToDialogs);
     copy.put (dialog.getClass (), dialog);
     dialogClassesToDialogs = MutableClassToInstanceMap.create (copy);
   }
@@ -395,7 +395,7 @@ public final class CompositeDialog extends KeyRepeatListenerAdapter implements D
     Arguments.checkIsNotNull (dialogs, "dialogs");
     Arguments.checkHasNoNullElements (dialogs, "dialogs");
 
-    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap <> (dialogClassesToDialogs);
+    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap<> (dialogClassesToDialogs);
 
     for (final Dialog dialog : dialogs)
     {
@@ -411,7 +411,7 @@ public final class CompositeDialog extends KeyRepeatListenerAdapter implements D
     Arguments.checkIsNotNull (dialogClasses, "dialogClasses");
     Arguments.checkHasNoNullElements (dialogClasses, "dialogClasses");
 
-    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap <> (dialogClassesToDialogs);
+    final Map <Class <? extends Dialog>, Dialog> copy = new HashMap<> (dialogClassesToDialogs);
 
     for (final Class <? extends Dialog> dialogClass : dialogClasses)
     {

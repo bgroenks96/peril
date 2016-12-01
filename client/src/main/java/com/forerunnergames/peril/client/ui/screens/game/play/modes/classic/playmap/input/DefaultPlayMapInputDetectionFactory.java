@@ -92,9 +92,9 @@ public final class DefaultPlayMapInputDetectionFactory implements PlayMapInputDe
   {
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
     Arguments.checkIsNotNull (playMapReferenceSize, "playMapReferenceSize");
-    Preconditions.checkIsTrue (isFinishedLoadingAssets (playMapMetadata), Strings
-            .format ("Assets must finish loading before creating {} for play map [{}].",
-                     PlayMapInputDetection.class.getSimpleName (), playMapMetadata));
+    Preconditions.checkIsTrue (isFinishedLoadingAssets (playMapMetadata),
+                               Strings.format ("Assets must finish loading before creating {} for play map [{}].",
+                                               PlayMapInputDetection.class.getSimpleName (), playMapMetadata));
 
     // @formatter:off
 

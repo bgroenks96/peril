@@ -61,7 +61,7 @@ final class DefaultSpectatorIcon implements SpectatorIcon
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Icon: [{}] Icon Cell: [{}] | Table: [{}] | Widget Factory: [{}]", getClass ()
-            .getSimpleName (), icon, iconCell, table, widgetFactory);
+    return Strings.format ("{}: Icon: [{}] Icon Cell: [{}] | Table: [{}] | Widget Factory: [{}]",
+                           getClass ().getSimpleName (), icon, iconCell, table, widgetFactory);
   }
 }

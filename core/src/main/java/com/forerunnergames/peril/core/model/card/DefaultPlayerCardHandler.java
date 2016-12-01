@@ -112,8 +112,8 @@ final class DefaultPlayerCardHandler implements PlayerCardHandler
   private void add (final Id playerId, final Card card)
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit type cast
-    final CardSet hand = playerHands.containsKey (playerId) ? playerHands.get (playerId) : newCardSet (ImmutableSet
-            .<Card> of ());
+    final CardSet hand = playerHands.containsKey (playerId) ? playerHands.get (playerId)
+            : newCardSet (ImmutableSet.<Card> of ());
     final CardSet newHand = hand.merge (new CardSet (rules, card));
     playerHands.forcePut (playerId, newHand);
     playerModel.addCardToHandOf (playerId);

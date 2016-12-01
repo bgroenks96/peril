@@ -84,8 +84,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private static final Logger log = LoggerFactory.getLogger (MenuToPlayLoadingScreen.class);
   private static final String QUIT_DIALOG_MESSAGE = "Are you sure you want to quit the current game?";
   private final ResetProgressListener goToPlayToMenuLoadingScreenListener = new GoToPlayToMenuLoadingScreenListener ();
-  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList <> ();
-  private final Set <PlayerPacket> players = new HashSet <> ();
+  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList<> ();
+  private final Set <PlayerPacket> players = new HashSet<> ();
   private final PlayMapFactory playMapFactory;
   private final JoinGameServerHandler joinGameServerHandler;
   private final CreateGameServerHandler createGameServerHandler;
@@ -109,8 +109,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
                                   final MBassador <Event> eventBus,
                                   final PlayMapFactory playMapFactory)
   {
-    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager, LoadingScreenStyle
-            .builder ().quitDialogMessageText (QUIT_DIALOG_MESSAGE).build ());
+    super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus, assetManager,
+           LoadingScreenStyle.builder ().quitDialogMessageText (QUIT_DIALOG_MESSAGE).build ());
 
     Arguments.checkIsNotNull (eventBus, "eventBus");
     Arguments.checkIsNotNull (playMapFactory, "playMapFactory");
@@ -293,10 +293,9 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     assert playMapMetadata != null;
 
     handleError ("A crash file has been created in \"{}\".\n\nThere was a problem loading resources for {} map \'{}\'."
-                         + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
-                 CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
-                 playMapMetadata.getType ().name ().toLowerCase (), playMapMetadata.getName (), Throwables
-                         .getRootCause (e).getMessage (), Strings.toString (e));
+            + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
+                 playMapMetadata.getType ().name ().toLowerCase (), playMapMetadata.getName (),
+                 Throwables.getRootCause (e).getMessage (), Strings.toString (e));
   }
 
   private final class DefaultCreateGameServerListener implements CreateGameServerListener
@@ -419,7 +418,9 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
 
     @Override
-    public void onConnectToServerFailure (final String playerName, final ServerConfiguration config, final String reason)
+    public void onConnectToServerFailure (final String playerName,
+                                          final ServerConfiguration config,
+                                          final String reason)
     {
       Arguments.checkIsNotNull (playerName, "playerName");
       Arguments.checkIsNotNull (config, "config");
@@ -567,8 +568,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     {
       if (playMap.equals (PlayMap.NULL))
       {
-        log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (), playMap.getClass ()
-                .getSimpleName ());
+        log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (),
+                  playMap.getClass ().getSimpleName ());
         return;
       }
 

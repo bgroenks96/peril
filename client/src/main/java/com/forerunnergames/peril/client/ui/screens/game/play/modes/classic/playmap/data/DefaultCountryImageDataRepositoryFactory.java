@@ -43,7 +43,7 @@ public final class DefaultCountryImageDataRepositoryFactory implements CountryIm
     final PlayMapGraphicsPathParser playMapGraphicsPathParser = new AbsolutePlayMapGraphicsPathParser (
             playMapMetadata.getMode ());
 
-    return new DefaultCountryImageDataRepository (countryImageDataLoader.load (playMapGraphicsPathParser
-            .parseCountryImageDataFileNamePath (playMapMetadata)));
+    return new DefaultCountryImageDataRepository (countryImageDataLoader
+            .load (playMapGraphicsPathParser.parseCountryImageDataFileNamePath (playMapMetadata)));
   }
 }

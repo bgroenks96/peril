@@ -33,8 +33,8 @@ import com.forerunnergames.tools.common.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ShaderProgramLoader extends
-        AsynchronousAssetLoader <ShaderProgram, ShaderProgramLoader.FragmentShaderParameter>
+public final class ShaderProgramLoader
+        extends AsynchronousAssetLoader <ShaderProgram, ShaderProgramLoader.FragmentShaderParameter>
 {
   private static final Logger log = LoggerFactory.getLogger (ShaderProgramLoader.class);
   private FileHandle fragmentShader;

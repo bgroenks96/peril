@@ -35,8 +35,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTerritoryGraphDataLoader <T extends Territory, U extends TerritoryGraphModel <T>> extends
-        AbstractDataLoader <U>
+public abstract class AbstractTerritoryGraphDataLoader <T extends Territory, U extends TerritoryGraphModel <T>>
+        extends AbstractDataLoader <U>
 {
   private static final Logger log = LoggerFactory.getLogger (AbstractTerritoryGraphDataLoader.class);
   private final DefaultGraphModel.Builder <T> adjListBuilder = DefaultGraphModel.builder ();
@@ -81,7 +81,7 @@ public abstract class AbstractTerritoryGraphDataLoader <T extends Territory, U e
   @Override
   protected boolean readData ()
   {
-    lineData = new ArrayList <> (streamParser.getNextRemainingQuotedStringsOnLine ());
+    lineData = new ArrayList<> (streamParser.getNextRemainingQuotedStringsOnLine ());
     return !streamParser.isEndOfFile ();
   }
 

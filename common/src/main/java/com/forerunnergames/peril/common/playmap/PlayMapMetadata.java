@@ -74,7 +74,7 @@ public interface PlayMapMetadata
    *         4) Internal play map resource & directory name is {@link PlayMapDirectoryType#EXTERNAL}, convert spaces to underscores.
    *            This case is actually not possible.
    *
-   * </pre>
+   *         </pre>
    */
   boolean isDirType (final PlayMapDirectoryType dirType);
 

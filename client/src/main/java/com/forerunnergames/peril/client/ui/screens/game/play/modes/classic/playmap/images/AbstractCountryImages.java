@@ -61,9 +61,8 @@ public abstract class AbstractCountryImages <E extends Enum <E> & CountryImageSt
   public final void show (final E state)
   {
     Arguments.checkIsNotNull (state, "state");
-    Preconditions.checkIsTrue (imageStatesToImages.containsKey (state),
-                               "Cannot find " + CountryImage.class.getSimpleName () + " for "
-                                       + state.getClass ().getSimpleName () + " [" + state + "].");
+    Preconditions.checkIsTrue (imageStatesToImages.containsKey (state), "Cannot find "
+            + CountryImage.class.getSimpleName () + " for " + state.getClass ().getSimpleName () + " [" + state + "].");
 
     imageStatesToImages.get (state).setVisible (true);
   }
@@ -104,7 +103,7 @@ public abstract class AbstractCountryImages <E extends Enum <E> & CountryImageSt
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Country Image States => Country Images: {} | Atlas Index: {}", getClass ()
-            .getSimpleName (), Strings.toString (imageStatesToImages), atlasIndex);
+    return Strings.format ("{} | Country Image States => Country Images: {} | Atlas Index: {}",
+                           getClass ().getSimpleName (), Strings.toString (imageStatesToImages), atlasIndex);
   }
 }

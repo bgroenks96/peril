@@ -49,8 +49,8 @@ public final class CorePlayMapDataPathParser extends AbstractPlayMapDataPathPars
       }
       default:
       {
-        throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           metadata.getType ()));
+        throw new PlayMapLoadingException (
+                Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (), metadata.getType ()));
       }
     }
   }
@@ -73,8 +73,8 @@ public final class CorePlayMapDataPathParser extends AbstractPlayMapDataPathPars
       }
       default:
       {
-        throw new PlayMapLoadingException (Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (),
-                                                           type));
+        throw new PlayMapLoadingException (
+                Strings.format ("Unsupported {}: [{}].", PlayMapType.class.getSimpleName (), type));
       }
     }
   }

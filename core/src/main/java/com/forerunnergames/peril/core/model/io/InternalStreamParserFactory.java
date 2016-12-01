@@ -34,8 +34,8 @@ public final class InternalStreamParserFactory implements StreamParserFactory
 
     final InputStream inputStream = InternalStreamParserFactory.class.getResourceAsStream (fileName);
 
-    if (inputStream == null) throw new RuntimeException (new FileNotFoundException (
-            "Could not find model resource file: [" + fileName + "]."));
+    if (inputStream == null) throw new RuntimeException (
+            new FileNotFoundException ("Could not find model resource file: [" + fileName + "]."));
 
     // @formatter:off
     return new StreamParser (inputStream)

@@ -79,9 +79,8 @@ public class ContinentGraphModelTest
 
     for (final Continent testContinent : defaultTestContinents)
     {
-      assertTrue (modelTest.continentPacketWith (testContinent.getId ()).is (ContinentPackets
-                                                                                     .from (testContinent, ImmutableSet
-                                                                                             .<CountryPacket> of ())));
+      assertTrue (modelTest.continentPacketWith (testContinent.getId ())
+              .is (ContinentPackets.from (testContinent, ImmutableSet.<CountryPacket> of ())));
     }
   }
 

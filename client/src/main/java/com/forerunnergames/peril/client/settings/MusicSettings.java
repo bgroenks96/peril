@@ -28,8 +28,8 @@ public final class MusicSettings
   public static final float VOLUME_EQUALITY_EPSILON = VOLUME_INCREMENT / 100.0f;
   public static final float FADE_VOLUME_DURATION_SECONDS = 6.0f;
   public static final float FADE_VOLUME_INTERVAL_SECONDS = 1.0f / 60.0f;
-  public static final int FADE_VOLUME_REPEAT_COUNT = Math.round (1.0f / FADE_VOLUME_INTERVAL_SECONDS
-          * FADE_VOLUME_DURATION_SECONDS);
+  public static final int FADE_VOLUME_REPEAT_COUNT = Math
+          .round (1.0f / FADE_VOLUME_INTERVAL_SECONDS * FADE_VOLUME_DURATION_SECONDS);
   public static boolean IS_ENABLED = true;
   public static float INITIAL_VOLUME = MAX_VOLUME;
 

@@ -76,8 +76,8 @@ public final class S3AssetUpdater implements AssetUpdater
     if (!AssetSettings.UPDATE_ASSETS)
     {
       log.warn ("Assets are not being updated.\nTo change this behavior, change {} in {} from false to true.\n"
-                        + "Make sure to back up any customizations you made to any assets first, as your changes "
-                        + "will be overwritten.", ClientApplicationProperties.UPDATE_ASSETS_KEY,
+              + "Make sure to back up any customizations you made to any assets first, as your changes "
+              + "will be overwritten.", ClientApplicationProperties.UPDATE_ASSETS_KEY,
                 ClientApplicationProperties.PROPERTIES_FILE_PATH_AND_NAME);
       return;
     }
@@ -114,9 +114,9 @@ public final class S3AssetUpdater implements AssetUpdater
 
           log.info ("Downloading new assets to [{}]...", destinationDirectory);
 
-          downloadInProgress = transferManager
-                  .downloadDirectory (bucketName, AssetSettings.INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY,
-                                      destinationDirectory);
+          downloadInProgress = transferManager.downloadDirectory (bucketName,
+                                                                  AssetSettings.INITIAL_S3_ASSETS_DOWNLOAD_SUBDIRECTORY,
+                                                                  destinationDirectory);
 
           log.info ("Successfully updated assets.");
         }
@@ -160,8 +160,8 @@ public final class S3AssetUpdater implements AssetUpdater
   {
     if (assetUpdatingFuture != null && !assetUpdatingFuture.isDone ()) assetUpdatingFuture.cancel (true);
 
-    if (downloadInProgress != null
-            && (downloadInProgress.getState () == Transfer.TransferState.InProgress || downloadInProgress.getState () == Transfer.TransferState.Waiting))
+    if (downloadInProgress != null && (downloadInProgress.getState () == Transfer.TransferState.InProgress
+            || downloadInProgress.getState () == Transfer.TransferState.Waiting))
     {
       try
       {

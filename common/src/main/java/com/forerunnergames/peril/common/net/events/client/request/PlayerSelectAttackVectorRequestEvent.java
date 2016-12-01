@@ -58,8 +58,8 @@ public final class PlayerSelectAttackVectorRequestEvent implements InformRequest
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {}", getClass ().getSimpleName (),
-                           sourceCountryName, targetCountryName);
+    return Strings.format ("{}: SourceCountry: {} | TargetCountry: {}", getClass ().getSimpleName (), sourceCountryName,
+                           targetCountryName);
   }
 
   @RequiredForNetworkSerialization

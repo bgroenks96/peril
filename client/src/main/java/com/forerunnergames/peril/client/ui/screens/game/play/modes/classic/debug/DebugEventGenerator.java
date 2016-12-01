@@ -93,10 +93,10 @@ public final class DebugEventGenerator
   // @formatter:on
 
   private final MBassador <Event> eventBus;
-  private final Set <String> availablePlayerNames = new HashSet <> ();
-  private final Set <PlayerColor> availablePlayerColors = new HashSet <> ();
-  private final Set <Integer> availablePlayerTurnOrders = new HashSet <> ();
-  private final Collection <PlayerPacket> unavailablePlayers = new ArrayList <> ();
+  private final Set <String> availablePlayerNames = new HashSet<> ();
+  private final Set <PlayerColor> availablePlayerColors = new HashSet<> ();
+  private final Set <Integer> availablePlayerTurnOrders = new HashSet<> ();
+  private final Collection <PlayerPacket> unavailablePlayers = new ArrayList<> ();
   private Iterator <PlayerColor> playerColorIterator;
   private Iterator <Integer> playerTurnOrderIterator;
   private PlayMap playMap;
@@ -239,8 +239,8 @@ public final class DebugEventGenerator
 
   void generatePlayerClaimCountryResponseSuccessEvent ()
   {
-    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createRandomPlayer (), DebugPackets
-            .asCountryPacket (getRandomCountryName ()), 1));
+    eventBus.publish (new PlayerClaimCountryResponseSuccessEvent (createRandomPlayer (),
+            DebugPackets.asCountryPacket (getRandomCountryName ()), 1));
   }
 
   void resetPlayers ()

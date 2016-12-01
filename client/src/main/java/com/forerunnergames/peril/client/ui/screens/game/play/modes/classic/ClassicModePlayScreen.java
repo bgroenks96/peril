@@ -660,8 +660,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
         intelBox.addOwnedCountryForSelf (event.getNewOwner ());
         intelBox.removeOwnedCountryForSelf (event.getPreviousOwner ());
         playMap.setCountryState (event.getCountryName (),
-                                 event.hasNewOwner () ? CountryPrimaryImageState.fromPlayerColor (event
-                                         .getNewOwnerColor ()) : CountryPrimaryImageState.UNOWNED);
+                                 event.hasNewOwner ()
+                                         ? CountryPrimaryImageState.fromPlayerColor (event.getNewOwnerColor ())
+                                         : CountryPrimaryImageState.UNOWNED);
       }
     });
   }
@@ -876,7 +877,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
           notificationDialog.showForSelf (event.getPerson (),
                                           "Congratulations, sir, you have just enough matching cards to "
                                                   + "purchase {}! If you so desire, that is, sir. Good things come to "
-                                                  + "those who wait, General.", reinforcementsPhrase);
+                                                  + "those who wait, General.",
+                                          reinforcementsPhrase);
         }
         else if (!event.isTradeInRequired () && event.getPlayerCardsInHand () > 3)
         {
@@ -893,7 +895,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
           notificationDialog.setTitleForSelf (event.getPerson (), "Ahem, General");
           notificationDialog.showForSelf (event.getPerson (),
                                           "You now have so many matching cards that you must now use some of them to "
-                                                  + "purchase {}!", reinforcementsPhrase);
+                                                  + "purchase {}!",
+                                          reinforcementsPhrase);
         }
       }
     });
@@ -922,12 +925,13 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
         notificationDialog.showForEveryoneElse (event.getPerson (),
                                                 "{} used 3 cards to purchase {}!\n\n{} has {} remaining.\n\nThe next "
-                                                        + "purchase will yield {}.", event.getPersonName (), Strings
-                                                        .pluralizeS (event.getTradeInBonus (),
-                                                                     "additional reinforcement"), event
-                                                        .getPersonName (), Strings.pluralizeSZeroIsNo (event
-                                                        .getPlayerCardsInHand (), "card"), Strings.pluralizeS (event
-                                                        .getNextTradeInBonus (), "reinforcement"));
+                                                        + "purchase will yield {}.",
+                                                event.getPersonName (),
+                                                Strings.pluralizeS (event.getTradeInBonus (),
+                                                                    "additional reinforcement"),
+                                                event.getPersonName (),
+                                                Strings.pluralizeSZeroIsNo (event.getPlayerCardsInHand (), "card"),
+                                                Strings.pluralizeS (event.getNextTradeInBonus (), "reinforcement"));
       }
     });
   }
@@ -1248,9 +1252,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
     {
       case GAME_IS_FULL:
       {
-        reason = Strings
-                .format ("the maximum number of spectators allowed by this server ({}) has already been reached.",
-                         event.getSpectatorLimit ());
+        reason = Strings.format (
+                                 "the maximum number of spectators allowed by this server ({}) has already been reached.",
+                                 event.getSpectatorLimit ());
         break;
       }
       case SPECTATING_DISABLED:

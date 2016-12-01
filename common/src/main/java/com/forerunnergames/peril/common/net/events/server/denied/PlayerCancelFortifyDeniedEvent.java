@@ -23,8 +23,8 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-public final class PlayerCancelFortifyDeniedEvent extends
-        AbstractPlayerDeniedEvent <PlayerCancelFortifyDeniedEvent.Reason>
+public final class PlayerCancelFortifyDeniedEvent
+        extends AbstractPlayerDeniedEvent <PlayerCancelFortifyDeniedEvent.Reason>
 {
   private final CountryPacket sourceCountry;
   private final CountryPacket targetCountry;
