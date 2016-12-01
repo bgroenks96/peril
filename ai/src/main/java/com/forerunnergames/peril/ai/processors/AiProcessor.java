@@ -40,6 +40,12 @@ public interface AiProcessor
   void deactivate ();
 
   /**
+   * First calls {@link #deactivate()}, and then permanently shuts down this processor and any resources it may be using
+   * (thread pools, etc).
+   */
+  void shutDown ();
+
+  /**
    * Sends the specified request to the server. It could be a request initiated solely by the AI client before joining
    * as a player (ClientRequestEvent), or after joining as a player (PlayerRequestEvent), or a response to a request
    * initiated by the server (ResponseRequestEvent}.

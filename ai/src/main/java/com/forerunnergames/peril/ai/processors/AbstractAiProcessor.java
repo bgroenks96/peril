@@ -37,6 +37,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -74,15 +75,25 @@ abstract class AbstractAiProcessor implements AiProcessor
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void activate ()
   {
     eventBus.subscribe (this);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void deactivate ()
   {
     eventBus.unsubscribe (this);
+  }
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void shutDown ()
+  {
+    deactivate ();
+    executor.shutdown ();
   }
 
   @Override
@@ -90,14 +101,22 @@ abstract class AbstractAiProcessor implements AiProcessor
   {
     Arguments.checkIsNotNull (event, "event");
 
+    final Event aiCommunicationEvent = new AiCommunicationEvent (event, playerName);
+
+    if (!shouldDelayOutoingCommunication)
+    {
+      eventBus.publish (aiCommunicationEvent);
+      return;
+    }
+
     executor.schedule (new Runnable ()
     {
       @Override
       public void run ()
       {
-        eventBus.publish (new AiCommunicationEvent (event, playerName));
+        eventBus.publish (aiCommunicationEvent);
       }
-    }, shouldDelayOutoingCommunication ? OUTGOING_COMMUNICATION_DELAY_SECONDS : 0, TimeUnit.SECONDS);
+    }, OUTGOING_COMMUNICATION_DELAY_SECONDS, TimeUnit.SECONDS);
   }
 
   @Override
@@ -222,11 +241,10 @@ abstract class AbstractAiProcessor implements AiProcessor
   @Override
   public String toString ()
   {
-    return Strings
-            .format ("{}: PlayerName: [{]] | SelfPlayer: [{}] | GameServerConfig: [{}] | "
-                             + "ShouldDelayOutgoingCommunication: [{}] | OutgoingCommunicationDelaySeconds: [{}]",
-                     getClass ().getSimpleName (), playerName, selfPlayer, gameServerConfig,
-                     shouldDelayOutoingCommunication,
-                     OUTGOING_COMMUNICATION_DELAY_SECONDS);
+    return Strings.format (
+                           "{}: PlayerName: [{]] | SelfPlayer: [{}] | GameServerConfig: [{}] | "
+                                   + "ShouldDelayOutgoingCommunication: [{}] | OutgoingCommunicationDelaySeconds: [{}]",
+                           getClass ().getSimpleName (), playerName, selfPlayer, gameServerConfig,
+                           shouldDelayOutoingCommunication, OUTGOING_COMMUNICATION_DELAY_SECONDS);
   }
 }
