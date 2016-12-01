@@ -192,6 +192,8 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     shouldShutDown = true;
   }
 
+  // ---------- Remote inbound ClientRequestEvent callbacks from NetworkEventDispatcher ---------- //
+
   @Override
   public void handleEvent (final HumanJoinGameServerRequestEvent event, final Remote client)
   {
@@ -321,6 +323,34 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     playerJoinGameRequestCache.put (event.getPlayerName (), client);
 
     eventBus.publish (event);
+  }
+
+  @Override
+  public void handleEvent (final PlayerRejoinGameRequestEvent event, final Remote client)
+  {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (client, "client");
+
+    if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
+    {
+      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ADDRESS));
+      return;
+    }
+
+    final UUID playerServerId = event.getPlayerSecretId ();
+    if (playerServerId == null)
+    {
+      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ID));
+      return;
+    }
+
+    final Optional <PlayerPacket> mappedPlayer = clientsToPlayers.playerFor (playerServerId);
+    if (!mappedPlayer.isPresent ())
+    {
+      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.PLAYER_NOT_IN_GAME));
+      return;
+    }
+
   }
 
   @Override
@@ -522,7 +552,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     handlePlayerInformRequestFor (event.getInformType (), event, player);
   }
 
-  // ---------- inbound events from core module ---------- //
+  // ---------- Public getters and setters ---------- //
 
   public void setClientConnectTimeout (final int connectionTimeoutMillis)
   {
@@ -572,198 +602,10 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     return clientsInServer.contains (client);
   }
 
-  // ---------- remote inbound/outbound event communication ---------- //
-
-  @Handler (priority = Integer.MIN_VALUE)
-  public void onEvent (final BroadcastEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    // PlayerJoinGameSuccessEvent requires special processing.
-    if (event instanceof PlayerJoinGameSuccessEvent) return;
-
-    log.trace ("Event received [{}]", event);
-
-    sendToAllPlayersAndSpectators (event);
-  }
-
-  @Handler (priority = Integer.MIN_VALUE)
-  public void onEvent (final DirectPlayerEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    sendToPlayer (event.getPerson (), event);
-  }
+  // ---------- Remote inbound client event communication ---------- //
 
   @Handler
-  public void onEvent (final PlayerJoinGameSuccessEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final String playerName = event.getPersonName ();
-
-    // if no client mapping is available, silently ignore success event and tell core to remove this player
-    // this shouldn't happen, since this would imply that core processed a player join game request without
-    // server receiving one... so basically the result of a bug or a hack.
-    if (!playerJoinGameRequestCache.containsKey (playerName))
-    {
-      log.warn ("No client join game request in cache for player: {}. Player will be removed.", playerName);
-      coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
-      return;
-    }
-
-    // fetch and remove player name from request cache
-    final Remote client = playerJoinGameRequestCache.remove (playerName);
-
-    final PlayerPacket newPlayer = event.getPerson ();
-
-    // only add a player/client mapping if the client still exists in the game server
-    if (clientsInServer.contains (client))
-    {
-      final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
-      if (oldPlayer.isPresent ())
-      {
-        // this generally shouldn't happen... but if it does, log a warning message
-        log.warn ("Overwrote previous player mapping for client [{}] | old player: [{}] | new player: [{}]", client,
-                  oldPlayer.get (), newPlayer);
-      }
-    }
-    else
-    {
-      // this should cover the case where the client disconnected before the successful join game request was processed.
-      // core will be notified that the player has left. The subsequent PlayerLeaveGameEvent will be ignored since there
-      // will be no client mapping for the disconnected player.
-      log.warn ("Client [{}] for player [{}] is no longer connected to the server. Player will be removed.", client,
-                event.getPersonName ());
-      coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
-      return;
-    }
-
-    final Optional <UUID> playerServerId = clientsToPlayers.serverIdFor (newPlayer);
-    if (!playerServerId.isPresent ())
-    {
-      Exceptions.throwIllegalState ("No server uuid found for player [{}].", newPlayer);
-    }
-
-    sendPlayerJoinGameSuccessEvent (event, new PlayerNotifyJoinGameEvent (newPlayer, playerServerId.get ()));
-  }
-
-  // ---------- inbound client event callbacks from NetworkEventDispatcher ---------- //
-
-  @Handler
-  public void onEvent (final PlayerJoinGameDeniedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    final String playerName = event.getPlayerName ();
-
-    // if no client mapping is available, silently ignore denied event
-    // this is to prevent failure under cases such as client disconnecting while join request is being processed
-    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
-
-    final Remote client = playerJoinGameRequestCache.get (playerName);
-
-    if (client instanceof AiClient)
-    {
-      sendToAiClient (client, event);
-      disconnectAi ((AiClient) client);
-    }
-    else
-    {
-      sendToHumanClient (client, event);
-      disconnectHuman (client);
-    }
-
-    playerJoinGameRequestCache.remove (playerName);
-  }
-
-  @Handler
-  public void onEvent (final PlayerLeaveGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final Optional <Remote> client = clientsToPlayers.clientFor (event.getPerson ());
-    if (!client.isPresent ())
-    {
-      log.warn ("No client mapping for player in received event [{}].", event);
-      return;
-    }
-    // remove client mapping
-    remove (client.get ());
-
-    playerInputRequestEventCache.removeAll (event.getPerson ());
-    playerInformEventCache.removeAll (event.getPerson ());
-
-    // let handler for broadcast events handle forwarding the event
-  }
-
-  @Handler
-  public void onEvent (final PlayerLoseGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final Optional <Remote> optionalClient = clientsToPlayers.clientFor (event.getPerson ());
-    if (!optionalClient.isPresent ())
-    {
-      log.warn ("No client mapping for player in received event [{}].", event);
-      return;
-    }
-
-    final Remote client = optionalClient.get ();
-
-    // remove client/player mapping; keep client in server
-    clientsToPlayers.remove (client);
-
-    // Don't make AI spectators, just remove them completely.
-    if (event.getPersonSentience () == PersonSentience.AI)
-    {
-      // This will eventually trigger a ClientDisconnectionEvent, as well as give AiApplication a chance to remove the
-      // AiController instance. The ClientDisconnectionEvent handler in MultiplayerController will handle the details
-      // of removing the AI client from the server.
-      eventBus.publish (new AiDisconnectionEvent (event.getPersonName ()));
-      return;
-    }
-
-    // Add client as a spectator, simulating the request coming from the client since we want to automate it
-    // server-side. This will allow the networking system to correctly process the request to become a spectator,
-    // instead of directly adding them, which would duplicate code and be extremely bug-prone.
-    //
-    // Also bypasses stage 1 of authenticating as a client via JoinGameServerRequestEvent because
-    // the client already previously authenticated as a player, and is still connected to the server.
-    eventBus.publish (new ClientCommunicationEvent (new SpectatorJoinGameRequestEvent (event.getPersonName ()),
-            client));
-
-    // let handler for broadcast events handle forwarding the event
-  }
-
-  @Handler
-  public void onEvent (final PlayerInputRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final boolean wasAdded = playerInputRequestEventCache.put (event.getPerson (), event);
-    assert wasAdded;
-
-    // let handler for direct player event handle forwarding the event
-  }
-
-  @Handler
-  public void onEvent (final PlayerInformEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final boolean wasAdded = playerInformEventCache.put (event.getPerson (), event);
-    assert wasAdded;
-
-    // let handler for direct player event handle forwarding the event
-  }
-
-  @Handler
-  public void onEvent (final ClientConnectionEvent event)
+  void onEvent (final ClientConnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -774,7 +616,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   }
 
   @Handler
-  public void onEvent (final ClientDisconnectionEvent event)
+  void onEvent (final ClientDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -828,49 +670,195 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     networkEventDispatcher.dispatch (event.getMessage (), event.getRemote ());
   }
 
-  void handleEvent (final PlayerRejoinGameRequestEvent event, final Remote client)
+  // ---------- Local inbound events from core module ---------- //
+
+  @Handler
+  void onEvent (final PlayerJoinGameSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsNotNull (client, "client");
 
-    if (!NetworkConstants.isValidIpAddress (client.getAddress ()))
+    final String playerName = event.getPersonName ();
+
+    // if no client mapping is available, silently ignore success event and tell core to remove this player
+    // this shouldn't happen, since this would imply that core processed a player join game request without
+    // server receiving one... so basically the result of a bug or a hack.
+    if (!playerJoinGameRequestCache.containsKey (playerName))
     {
-      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ADDRESS));
+      log.warn ("No client join game request in cache for player: {}. Player will be removed.", playerName);
+      coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
       return;
     }
 
-    final UUID playerServerId = event.getPlayerSecretId ();
-    if (playerServerId == null)
+    // fetch and remove player name from request cache
+    final Remote client = playerJoinGameRequestCache.remove (playerName);
+
+    final PlayerPacket newPlayer = event.getPerson ();
+
+    // only add a player/client mapping if the client still exists in the game server
+    if (clientsInServer.contains (client))
     {
-      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ID));
+      final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
+      if (oldPlayer.isPresent ())
+      {
+        // this generally shouldn't happen... but if it does, log a warning message
+        log.warn ("Overwrote previous player mapping for client [{}] | old player: [{}] | new player: [{}]", client,
+                  oldPlayer.get (), newPlayer);
+      }
+    }
+    else
+    {
+      // this should cover the case where the client disconnected before the successful join game request was processed.
+      // core will be notified that the player has left. The subsequent PlayerLeaveGameEvent will be ignored since there
+      // will be no client mapping for the disconnected player.
+      log.warn ("Client [{}] for player [{}] is no longer connected to the server. Player will be removed.", client,
+                event.getPersonName ());
+      coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
       return;
     }
 
-    final Optional <PlayerPacket> mappedPlayer = clientsToPlayers.playerFor (playerServerId);
-    if (!mappedPlayer.isPresent ())
+    final Optional <UUID> playerServerId = clientsToPlayers.serverIdFor (newPlayer);
+    if (!playerServerId.isPresent ())
     {
-      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.PLAYER_NOT_IN_GAME));
+      Exceptions.throwIllegalState ("No server uuid found for player [{}].", newPlayer);
+    }
+
+    sendPlayerJoinGameSuccessEvent (event, new PlayerNotifyJoinGameEvent (newPlayer, playerServerId.get ()));
+  }
+
+  @Handler
+  void onEvent (final PlayerJoinGameDeniedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final String playerName = event.getPlayerName ();
+
+    // if no client mapping is available, silently ignore denied event
+    // this is to prevent failure under cases such as client disconnecting while join request is being processed
+    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
+
+    final Remote client = playerJoinGameRequestCache.get (playerName);
+
+    if (client instanceof AiClient)
+    {
+      sendToAiClient (client, event);
+      disconnectAi ((AiClient) client);
+    }
+    else
+    {
+      sendToHumanClient (client, event);
+      disconnectHuman (client);
+    }
+
+    playerJoinGameRequestCache.remove (playerName);
+  }
+
+  @Handler
+  void onEvent (final PlayerLeaveGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final Optional <Remote> client = clientsToPlayers.clientFor (event.getPerson ());
+    if (!client.isPresent ())
+    {
+      log.warn ("No client mapping for player in received event [{}].", event);
+      return;
+    }
+    // remove client mapping
+    remove (client.get ());
+
+    playerInputRequestEventCache.removeAll (event.getPerson ());
+    playerInformEventCache.removeAll (event.getPerson ());
+
+    // let handler for broadcast events handle forwarding the event
+  }
+
+  @Handler
+  void onEvent (final PlayerLoseGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final Optional <Remote> optionalClient = clientsToPlayers.clientFor (event.getPerson ());
+    if (!optionalClient.isPresent ())
+    {
+      log.warn ("No client mapping for player in received event [{}].", event);
       return;
     }
 
+    final Remote client = optionalClient.get ();
+
+    // remove client/player mapping; keep client in server
+    clientsToPlayers.remove (client);
+
+    // Don't make AI spectators, just remove them completely.
+    if (event.getPersonSentience () == PersonSentience.AI)
+    {
+      // This will eventually trigger a ClientDisconnectionEvent, as well as give AiApplication a chance to remove the
+      // AiController instance. The ClientDisconnectionEvent handler in MultiplayerController will handle the details
+      // of removing the AI client from the server.
+      eventBus.publish (new AiDisconnectionEvent (event.getPersonName ()));
+      return;
+    }
+
+    // Add client as a spectator, simulating the request coming from the client since we want to automate it
+    // server-side. This will allow the networking system to correctly process the request to become a spectator,
+    // instead of directly adding them, which would duplicate code and be extremely bug-prone.
+    //
+    // Also bypasses stage 1 of authenticating as a client via JoinGameServerRequestEvent because
+    // the client already previously authenticated as a player, and is still connected to the server.
+    eventBus.publish (new ClientCommunicationEvent (new SpectatorJoinGameRequestEvent (event.getPersonName ()),
+            client));
+
+    // let handler for broadcast events handle forwarding the event
   }
 
-  // ---------- outbound server responses requiring special processing ---------- //
-
-  private static boolean isLocalHost (final Remote client)
+  @Handler
+  void onEvent (final PlayerInputRequestEvent event)
   {
-    return client.getAddress ().equals (NetworkConstants.LOCALHOST_ADDRESS);
+    Arguments.checkIsNotNull (event, "event");
+
+    final boolean wasAdded = playerInputRequestEventCache.put (event.getPerson (), event);
+    assert wasAdded;
+
+    // let handler for direct player event handle forwarding the event
   }
 
-  private static ClientConfiguration createHumanClientConfig (final Remote client)
+  @Handler
+  void onEvent (final PlayerInformEvent event)
   {
-    return new DefaultClientConfiguration (client.getAddress (), client.getPort ());
+    Arguments.checkIsNotNull (event, "event");
+
+    final boolean wasAdded = playerInformEventCache.put (event.getPerson (), event);
+    assert wasAdded;
+
+    // let handler for direct player event handle forwarding the event
   }
 
-  private static ClientConfiguration createAiClientConfig (final Remote client)
+  @Handler (priority = Integer.MIN_VALUE)
+  void onEvent (final BroadcastEvent event)
   {
-    return new AiClientConfiguration (client.getAddress (), client.getPort ());
+    Arguments.checkIsNotNull (event, "event");
+
+    // PlayerJoinGameSuccessEvent requires special processing.
+    if (event instanceof PlayerJoinGameSuccessEvent) return;
+
+    log.trace ("Event received [{}]", event);
+
+    sendToAllPlayersAndSpectators (event);
   }
+
+  @Handler (priority = Integer.MIN_VALUE)
+  void onEvent (final DirectPlayerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    sendToPlayer (event.getPerson (), event);
+  }
+
+  // ---------- Outbound server responses requiring special processing ---------- //
 
   private void sendPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event,
                                                final PlayerNotifyJoinGameEvent directNotifyEvent)
@@ -928,8 +916,6 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     log.info ("Client [{}] successfully joined game server.", client);
   }
 
-  // ---------- internal event utility methods and types ---------- //
-
   private void sendJoinGameServerDeniedToHumanClient (final Remote client, final String reason)
   {
     sendToHumanClient (client, new JoinGameServerDeniedEvent (createHumanClientConfig (client), reason));
@@ -951,6 +937,23 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   {
     sendToSpectator (client, new SpectatorJoinGameDeniedEvent (name, getSpectatorLimit (), reason));
     disconnectHuman (client);
+  }
+
+  // ---------- Internal event utility methods and types ---------- //
+
+  private boolean isLocalHost (final Remote client)
+  {
+    return client.getAddress ().equals (NetworkConstants.LOCALHOST_ADDRESS);
+  }
+
+  private ClientConfiguration createHumanClientConfig (final Remote client)
+  {
+    return new DefaultClientConfiguration (client.getAddress (), client.getPort ());
+  }
+
+  private ClientConfiguration createAiClientConfig (final Remote client)
+  {
+    return new AiClientConfiguration (client.getAddress (), client.getPort ());
   }
 
   private void disconnect (final Remote client)
