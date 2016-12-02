@@ -25,8 +25,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.graph.DefaultGraph;
+import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -39,7 +39,7 @@ public final class ContinentGraphModel extends TerritoryGraphModel <Continent>
   private final ImmutableMap <Id, Id> countryIdsToContinentIds;
   private final CountryGraphModel countryGraphModel;
 
-  ContinentGraphModel (final GraphModel <Continent> continentGraph, final CountryGraphModel countryGraphModel)
+  ContinentGraphModel (final Graph <Continent> continentGraph, final CountryGraphModel countryGraphModel)
   {
     super (continentGraph);
 
@@ -65,7 +65,7 @@ public final class ContinentGraphModel extends TerritoryGraphModel <Continent>
   public static ContinentGraphModel disjointContinentGraphFrom (final ContinentFactory continents,
                                                                 final CountryGraphModel countryGraphModel)
   {
-    final DefaultGraphModel.Builder <Continent> builder = DefaultGraphModel.builder ();
+    final DefaultGraph.Builder <Continent> builder = DefaultGraph.builder ();
     for (final Continent continent : continents.getContinents ())
     {
       builder.addNode (continent);

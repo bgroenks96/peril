@@ -25,7 +25,7 @@ import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.playmap.country.CountryFactory;
 import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
+import com.forerunnergames.tools.common.graph.DefaultGraph;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
@@ -41,7 +41,7 @@ public class ContinentGraphModelTest
   static ContinentGraphModel createContinentGraphModelWith (final ImmutableSet <Continent> continents,
                                                             final CountryGraphModel countryGraphModel)
   {
-    final DefaultGraphModel.Builder <Continent> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
+    final DefaultGraph.Builder <Continent> nonConnectedGraphBuilder = DefaultGraph.builder ();
     for (final Continent Continent : continents)
     {
       nonConnectedGraphBuilder.addNode (Continent);

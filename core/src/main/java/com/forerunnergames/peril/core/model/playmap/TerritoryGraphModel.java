@@ -21,7 +21,7 @@ import com.forerunnergames.peril.core.model.playmap.territory.Territory;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableBiMap;
@@ -30,13 +30,13 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
 
-public abstract class TerritoryGraphModel <T extends Territory> implements GraphModel <Id>
+public abstract class TerritoryGraphModel <T extends Territory> implements Graph <Id>
 {
-  private final GraphModel <T> territoryGraph;
+  private final Graph <T> territoryGraph;
   private final ImmutableBiMap <Id, T> territoryIdsToCountries;
   private final ImmutableMap <Id, ImmutableSet <Id>> territoryIdsToAdjacentCountries;
 
-  protected TerritoryGraphModel (final GraphModel <T> territoryGraph)
+  protected TerritoryGraphModel (final Graph <T> territoryGraph)
   {
     Arguments.checkIsNotNull (territoryGraph, "territoryGraph");
     Arguments.checkHasNoNullElements (territoryGraph, "territoryGraph");

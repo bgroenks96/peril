@@ -19,7 +19,8 @@ package com.forerunnergames.peril.core.model.playmap.country;
 
 import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.playmap.io.AbstractTerritoryGraphDataLoader;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.graph.Graph;
 
 public final class CountryGraphDataLoader extends AbstractTerritoryGraphDataLoader <Country, CountryGraphModel>
 {
@@ -29,8 +30,10 @@ public final class CountryGraphDataLoader extends AbstractTerritoryGraphDataLoad
   }
 
   @Override
-  protected CountryGraphModel createGraphModel (final GraphModel <Country> internalGraphModel)
+  protected CountryGraphModel createGraphModel (final Graph <Country> graph)
   {
-    return new CountryGraphModel (internalGraphModel);
+    Arguments.checkIsNotNull (graph, "graph");
+
+    return new CountryGraphModel (graph);
   }
 }

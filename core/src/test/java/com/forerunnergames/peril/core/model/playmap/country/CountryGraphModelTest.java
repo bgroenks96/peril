@@ -21,8 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.graph.DefaultGraph;
+import com.forerunnergames.tools.common.graph.Graph;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -39,7 +39,7 @@ public class CountryGraphModelTest
 
   static CountryGraphModel createDisjointCountryGraphModelWith (final ImmutableSet <Country> countries)
   {
-    final DefaultGraphModel.Builder <Country> nonConnectedGraphBuilder = DefaultGraphModel.builder ();
+    final DefaultGraph.Builder <Country> nonConnectedGraphBuilder = DefaultGraph.builder ();
     for (final Country country : countries)
     {
       nonConnectedGraphBuilder.addNode (country);
@@ -52,9 +52,9 @@ public class CountryGraphModelTest
     return createDisjointCountryGraphModelWith (countries.getCountries ());
   }
 
-  public static CountryGraphModel createCountryGraphModelFrom (final GraphModel <String> countryNameGraph)
+  public static CountryGraphModel createCountryGraphModelFrom (final Graph <String> countryNameGraph)
   {
-    final DefaultGraphModel.Builder <Country> graphBuilder = DefaultGraphModel.builder ();
+    final DefaultGraph.Builder <Country> graphBuilder = DefaultGraph.builder ();
     final Map <String, Country> namesToCountries = Maps.newHashMap ();
     for (final String node : countryNameGraph)
     {

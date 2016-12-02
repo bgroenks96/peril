@@ -45,8 +45,8 @@ import com.forerunnergames.peril.core.model.turn.DefaultPlayerTurnModel;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.graph.DefaultGraph;
+import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
@@ -112,7 +112,7 @@ public abstract class AbstractGamePhaseHandlerTest
 
   public static CountryGraphModel createDefaultTestCountryGraph (final ImmutableList <String> countryNames)
   {
-    final DefaultGraphModel.Builder <String> countryNameGraphBuilder = DefaultGraphModel.builder ();
+    final DefaultGraph.Builder <String> countryNameGraphBuilder = DefaultGraph.builder ();
     // set every node adjacent to country 0
     for (int i = 1; i < countryNames.size (); i++)
     {
@@ -125,7 +125,7 @@ public abstract class AbstractGamePhaseHandlerTest
     }
     // complete the cycle by setting country 1 adjacent to last country
     countryNameGraphBuilder.setAdjacent (countryNames.get (countryNames.size () - 1), countryNames.get (1));
-    final GraphModel <String> countryNameGraph = countryNameGraphBuilder.build ();
+    final Graph <String> countryNameGraph = countryNameGraphBuilder.build ();
     return CountryGraphModelTest.createCountryGraphModelFrom (countryNameGraph);
   }
 

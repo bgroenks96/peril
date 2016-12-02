@@ -22,8 +22,8 @@ import com.forerunnergames.peril.common.io.StreamParserFactory;
 import com.forerunnergames.peril.core.model.playmap.TerritoryGraphModel;
 import com.forerunnergames.peril.core.model.playmap.territory.Territory;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.graph.DefaultGraph;
+import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.io.StreamParser;
 
 import com.google.common.collect.ImmutableMap;
@@ -39,7 +39,7 @@ public abstract class AbstractTerritoryGraphDataLoader <T extends Territory, U e
         extends AbstractDataLoader <U>
 {
   private static final Logger log = LoggerFactory.getLogger (AbstractTerritoryGraphDataLoader.class);
-  private final DefaultGraphModel.Builder <T> adjListBuilder = DefaultGraphModel.builder ();
+  private final DefaultGraph.Builder <T> adjListBuilder = DefaultGraph.builder ();
   private final StreamParserFactory streamParserFactory;
   private final ImmutableMap <String, T> namesToData;
   private StreamParser streamParser;
@@ -113,5 +113,5 @@ public abstract class AbstractTerritoryGraphDataLoader <T extends Territory, U e
     log.debug ("Successfully loaded graph data for {}: {}", firstName, lineData);
   }
 
-  protected abstract U createGraphModel (final GraphModel <T> internalGraphModel);
+  protected abstract U createGraphModel (final Graph <T> graph);
 }

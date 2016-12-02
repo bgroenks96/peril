@@ -21,8 +21,8 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.playmap.TerritoryGraphModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
-import com.forerunnergames.tools.common.graph.DefaultGraphModel;
-import com.forerunnergames.tools.common.graph.GraphModel;
+import com.forerunnergames.tools.common.graph.DefaultGraph;
+import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.base.Optional;
@@ -33,7 +33,7 @@ public final class CountryGraphModel extends TerritoryGraphModel <Country>
 {
   private final ImmutableMap <Id, Country> countryIdsToCountries;
 
-  CountryGraphModel (final GraphModel <Country> countryGraph)
+  CountryGraphModel (final Graph <Country> countryGraph)
   {
     super (countryGraph);
 
@@ -52,7 +52,7 @@ public final class CountryGraphModel extends TerritoryGraphModel <Country>
   // TODO move somewhere else
   public static CountryGraphModel disjointCountryGraphFrom (final CountryFactory countries)
   {
-    final DefaultGraphModel.Builder <Country> builder = DefaultGraphModel.builder ();
+    final DefaultGraph.Builder <Country> builder = DefaultGraph.builder ();
     for (final Country country : countries.getCountries ())
     {
       builder.addNode (country);
