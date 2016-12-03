@@ -59,7 +59,6 @@ notifications:
     on_success: change
     on_failure: always
   slack:
-    on_start: always
     on_success: always
     on_failure: always
     on_pull_requests: true
