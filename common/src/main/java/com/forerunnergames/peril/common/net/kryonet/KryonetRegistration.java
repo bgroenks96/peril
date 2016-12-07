@@ -46,6 +46,7 @@ import de.javakaffee.kryoserializers.guava.ImmutableSortedSetSerializer;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.Comparator;
 import java.util.UUID;
 
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -127,7 +128,7 @@ public final class KryonetRegistration
   /**
    * The final Kryonet registration class set.
    */
-  public static final ImmutableSet <Class <?>> CLASSES = FluentIterable
+  public static final ImmutableSortedSet <Class <?>> CLASSES = FluentIterable
             .from (INCLUDED_PACKAGES)
             .transformAndConcat (new PackageToClassInfosFunction ())
             .filter (new RemoveExcludedClassInfosPredicate (EXCLUDED_PACKAGES))
@@ -137,9 +138,14 @@ public final class KryonetRegistration
             .append (INCLUDED_CLASSES)
             .transformAndConcat (new AddInnerClassesFunction ())
             .filter (new RemoveNonConcreteClassesPredicate ())
-            .toSet ();
+            .toSortedSet (new CanonicalClassNameComparator());
 
   // @formatter:on
+
+  static
+  {
+    log.trace ("Registration classes: {}", CLASSES);
+  }
 
   @SuppressWarnings ({ "rawtypes", "unchecked" })
   public static void initialize (final Kryo kryo)
@@ -274,6 +280,18 @@ public final class KryonetRegistration
     public boolean apply (final Class <?> input)
     {
       return !input.isInterface () && !Modifier.isAbstract (input.getModifiers ());
+    }
+  }
+
+  private static final class CanonicalClassNameComparator implements Comparator <Class <?>>
+  {
+    @Override
+    public int compare (final Class <?> o1, final Class <?> o2)
+    {
+      Arguments.checkIsNotNull (o1, "o1");
+      Arguments.checkIsNotNull (o2, "o2");
+
+      return StringUtils.compare (o1.getCanonicalName (), o2.getCanonicalName ());
     }
   }
 }
