@@ -121,7 +121,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   private static final int DEFAULT_MESSAGE_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_HORIZONTAL_SCROLLBAR_HEIGHT = 14;
   private static final int DEFAULT_SELECT_BOX_VERTICAL_SCROLLBAR_WIDTH = 14;
-  private static final int DEFAULT_TEXTFIELD_MAX_CHARS = 80;
+  private static final int DEFAULT_TEXTFIELD_MAX_CHARS = 160;
   private static final int DEFAULT_TEXTFIELD_HEIGHT = 24;
   private static final int DEFAULT_TEXTFIELD_PADDING_LEFT = 0;
   private static final int DEFAULT_TEXTFIELD_PADDING_RIGHT = 0;
