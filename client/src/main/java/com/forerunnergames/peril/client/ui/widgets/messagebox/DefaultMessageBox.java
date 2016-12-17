@@ -53,6 +53,7 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   private final WidgetFactory widgetFactory;
   private final ScrollPane scrollPane;
   private final Table table;
+  private boolean autoScroll = true;
 
   public DefaultMessageBox (final MessageBoxStyle style, final WidgetFactory widgetFactory)
   {
@@ -100,16 +101,16 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
       public void enter (final InputEvent event, final float x, final float y, final int pointer, final Actor fromActor)
       {
         if (scrollPane.getStage () == null) return;
-
         scrollPane.getStage ().setScrollFocus (scrollPane);
+        autoScroll = false;
       }
 
       @Override
       public void exit (final InputEvent event, final float x, final float y, final int pointer, final Actor toActor)
       {
         if (scrollPane.getStage () == null) return;
-
         scrollPane.getStage ().setScrollFocus (null);
+        autoScroll = true;
       }
     });
   }
@@ -133,6 +134,8 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   @Override
   public void showLastRow ()
   {
+    if (!autoScroll) return;
+
     scrollPane.setScrollY (scrollPane.getMaxY ());
   }
 
@@ -254,7 +257,8 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
   {
     return Strings.format (
                            "{}: Style: [{}] | ScrollPane: [{}] | ScrollPane Child Widget: [{}] | Row Cache: [{}] | "
-                                   + "Max Rows: [{}] | WidgetFactory: [{}]",
-                           getClass ().getSimpleName (), style, scrollPane, table, rowCache, MAX_ROWS, widgetFactory);
+                                   + "Max Rows: [{}] | Show Last Row: [{}] | WidgetFactory: [{}]",
+                           getClass ().getSimpleName (), style, scrollPane, table, rowCache, MAX_ROWS, autoScroll,
+                           widgetFactory);
   }
 }
