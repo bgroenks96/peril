@@ -17,7 +17,7 @@
  */
 
 project.ext.mainClassName = "com.forerunnergames.peril.desktop.DesktopLauncher"
-project.ext.assetsDir = new File ("../android/assets");
+project.ext.assetsDir = new File ("../android/assets")
 
 task run (dependsOn: classes, type: JavaExec) {
   main = project.mainClassName
@@ -37,7 +37,7 @@ task dist (type: Jar, dependsOn: classes) {
   from files (sourceSets.main.output.resourcesDir)
   from { configurations.compile.collect { zipTree (it) } }
   from { configurations.runtime.collect { zipTree (it) } }
-  from files (project.assetsDir);
+  from files (project.assetsDir)
 
   manifest {
     attributes "Main-Class": project.mainClassName
@@ -53,7 +53,7 @@ eclipse {
 task afterEclipseImport (description: "Post processing after project generation", group: "IDE") {
   doLast {
     def classpath = new XmlParser ().parse (file (".classpath"))
-    new Node (classpath, "classpathentry", [kind: "src", path: "assets"]);
+    new Node (classpath, "classpathentry", [kind: "src", path: "assets"])
     def writer = new FileWriter (file (".classpath"))
     def printer = new XmlNodePrinter (new PrintWriter (writer))
     printer.setPreserveWhitespace (true)
