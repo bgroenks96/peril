@@ -214,6 +214,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
   {
     disconnect ();
     stop ();
+    executorService.shutdown ();
   }
 
   @Override
