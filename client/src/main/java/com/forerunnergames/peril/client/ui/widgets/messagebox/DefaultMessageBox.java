@@ -234,6 +234,8 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
     iterator.remove ();
     log.trace ("Removed old row [{}].", entryToRemove.getValue ());
 
+    final float removedRowHeight = table.getCell (entryToRemove.getKey ()).getActorHeight ();
+
     // Reset table
     table.clear ();
     configureTable ();
@@ -247,6 +249,15 @@ public class DefaultMessageBox <T extends MessageBoxRow <? extends Message>> imp
 
     table.layout ();
     scrollPane.layout ();
+
+    // Scroll up by the height of the removed row to follow the messages that were moved up.
+    // Keeps the messages from appearing as if they are moving when not auto scrolling.
+    // Also bypasses scrolling animation so it's virtually instantaneous.
+    if (!autoScroll && !scrollPane.isDragging ())
+    {
+      scrollPane.setScrollY (scrollPane.getScrollY () - removedRowHeight);
+      scrollPane.updateVisualScroll ();
+    }
 
     log.trace ("Limit old rows (after): Number of rows in cache: {}", getRows ().size ());
     log.trace ("Limit old rows (after): Number of rows in table: {}", table.getRows ());
