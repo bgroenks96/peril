@@ -40,7 +40,8 @@
     </discriminator>
     <sift>
       <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <!-- Inject the timestamp 'bySecond' variable to virtually guarantee a unique filename -->
+        <!-- Inject the timestamp 'bySecond' variable to virtually guarantee a unique filename. -->
+        <!-- All parent directories will be created if they don't exist. -->
         <file>${user.home}/peril/crashes/crash-${bySecond}.txt</file>
         <append>false</append> <!-- If crash.txt already exists erase the contents. -->
         <encoder>
@@ -50,7 +51,7 @@
     </sift>
   </appender>
 
-  <logger name="com.forerunnergames.peril" level="TRACE">
+  <logger name="com.forerunnergames.peril" level="TRACE" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
@@ -58,27 +59,30 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.client.ui.widgets.messagebox" level="WARN">
+  <logger name="com.forerunnergames.peril.client.ui.widgets.messagebox" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox" level="WARN">
+  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.personbox" level="WARN"
+          additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.client.net" level="WARN">
+  <logger name="com.forerunnergames.peril.client.net" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice" level="WARN">
+  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice" level="WARN"
+          additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status" level="WARN">
+  <logger name="com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status" level="WARN"
+          additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.tools" level="TRACE">
+  <logger name="com.forerunnergames.tools" level="TRACE" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 

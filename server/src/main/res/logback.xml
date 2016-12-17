@@ -40,7 +40,8 @@
     </discriminator>
     <sift>
       <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <!-- Inject the timestamp 'bySecond' variable to virtually guarantee a unique filename -->
+        <!-- Inject the timestamp 'bySecond' variable to virtually guarantee a unique filename. -->
+        <!-- All parent directories will be created if they don't exist. -->
         <file>${user.home}/peril/crashes/crash-${bySecond}.txt</file>
         <append>false</append> <!-- If crash.txt already exists erase the contents. -->
         <encoder>
@@ -50,7 +51,7 @@
     </sift>
   </appender>
 
-  <logger name="com.forerunnergames.peril" level="TRACE">
+  <logger name="com.forerunnergames.peril" level="TRACE" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
@@ -58,31 +59,31 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.core.model.InternalCommunicationHandler" level="WARN">
+  <logger name="com.forerunnergames.peril.core.model.InternalCommunicationHandler" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.ai.net.AiClientCommunicator" level="WARN">
+  <logger name="com.forerunnergames.peril.ai.net.AiClientCommunicator" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.ai.processors" level="WARN">
+  <logger name="com.forerunnergames.peril.ai.processors" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.server.controllers" level="WARN">
+  <logger name="com.forerunnergames.peril.server.controllers" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.server.communicators" level="WARN">
+  <logger name="com.forerunnergames.peril.server.communicators" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.server.kryonet" level="WARN">
+  <logger name="com.forerunnergames.peril.server.kryonet" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.tools" level="TRACE">
+  <logger name="com.forerunnergames.tools" level="TRACE" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
@@ -90,4 +91,3 @@
     <appender-ref ref="SIFT"/> <!-- Write to file only for errors. -->
   </root>
 </configuration>
-
