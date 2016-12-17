@@ -585,6 +585,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       final ScreenId playScreen = ScreenId.fromGameMode (gameServerConfiguration.getGameMode ());
       final ImmutableList <ServerEvent> unhandledServerEventsCopy = ImmutableList.copyOf (unhandledServerEvents);
 
+      log.trace ("Unhandled server events: [{}]", unhandledServerEventsCopy);
+
       toScreen (playScreen);
 
       // The play screen is now active & can therefore receive events.

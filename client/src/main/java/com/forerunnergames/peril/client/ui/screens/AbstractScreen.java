@@ -51,9 +51,12 @@ import com.forerunnergames.tools.common.Event;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractScreen extends AbstractScreenInputAdapter
 {
+  private final Logger log = LoggerFactory.getLogger (getClass ());
   private final WidgetFactory widgetFactory;
   private final ScreenChanger screenChanger;
   private final ScreenSize screenSize;
@@ -249,12 +252,16 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
   {
     Arguments.checkIsNotNull (event, "event");
 
+    log.debug ("Publishing event [{}].", event);
+
     eventBus.publish (event);
   }
 
   protected final void publishAsync (final Event event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Publishing async event [{}].", event);
 
     eventBus.publishAsync (event);
   }
