@@ -44,6 +44,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +61,8 @@ public final class DesktopLauncher
       @Override
       public void uncaughtException (final Thread t, final Throwable e)
       {
+        if (Gdx.app != null) Gdx.app.exit ();
+
         final String errorMessage = Strings.format (
                                                     "The client application has crashed!\n\nA crash file has been "
                                                             + "created in \"{}\".\n\nProblem:\n\n{}\n\nDetails:\n\n{}",
@@ -66,8 +70,6 @@ public final class DesktopLauncher
                                                     Throwables.getRootCause (e).getMessage (), Strings.toString (e));
 
         log.error (errorMessage);
-
-        if (Gdx.app != null) Gdx.app.exit ();
 
         showSwingBackupDialog (JOptionPane.ERROR_MESSAGE, 1000, 382, "Error", errorMessage);
       }
@@ -96,6 +98,8 @@ public final class DesktopLauncher
     config.useGL30 = GraphicsSettings.USE_OPENGL_CORE_PROFILE;
     config.useHDPI = GraphicsSettings.USE_HIGH_DPI;
     config.allowSoftwareMode = true; // Try and avoid crashing on old, unsupported hardware.
+    config.forceExit = false; // Allow shutting down the game while still showing the swing backup dialog in case of
+                              // unhandled errors.
 
     final CommandLineArgs jArgs = new CommandLineArgs ();
     final JCommander jCommander = new JCommander (jArgs);
@@ -150,6 +154,15 @@ public final class DesktopLauncher
       @Override
       public void run ()
       {
+        try
+        {
+          UIManager.setLookAndFeel (UIManager.getSystemLookAndFeelClassName ());
+        }
+        catch (final UnsupportedLookAndFeelException | ReflectiveOperationException e)
+        {
+          log.warn ("Could not set native look & feel for swing backup dialog.", e);
+        }
+
         final JTextArea textArea = new JTextArea (message);
         textArea.setLineWrap (true);
         textArea.setWrapStyleWord (true);
@@ -164,6 +177,8 @@ public final class DesktopLauncher
         final JDialog dialog = optionPane.createDialog (title);
         dialog.setAlwaysOnTop (true);
         dialog.setVisible (true);
+
+        if (jOptionPaneMessageType == JOptionPane.ERROR_MESSAGE) System.exit (1);
       }
     });
   }
