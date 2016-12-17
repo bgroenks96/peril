@@ -31,7 +31,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   private final GameRules rules;
   private PlayerTurnOrder currentTurn = PlayerTurnOrder.FIRST;
   private PlayerTurnOrder lastTurn = PlayerTurnOrder.UNKNOWN;
-  private int currentRound = 0;
+  private int currentRound = 1;
   private boolean isRoundIncreasing = true;
 
   public DefaultPlayerTurnModel (final GameRules rules)
