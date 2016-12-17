@@ -475,52 +475,53 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
+    final ScreenShaker screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
+
     // @formatter:off
+
+    final AttackDialog attackDialog = widgetFactory.createAttackDialog (getStage (), event.getGameRules (),
+            screenShaker, allDialogListeners.get (DefaultAttackDialogListener.class));
+
+    final DefendDialog defendDialog = widgetFactory.createDefendDialog (getStage (), event.getGameRules (),
+            screenShaker, allDialogListeners.get (DefaultDefendDialogListener.class));
+
+    allDialogs.add (attackDialog, defendDialog);
+
+    attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog,
+            allDialogs.get (AttackerBattleResultDialog.class), getEventBus ());
+
+    defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog,
+            allDialogs.get (DefenderBattleResultDialog.class), getEventBus ());
+
+    // @formatter:on
+
+    gamePhaseHandlers.add (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
+
+    if (DEBUG)
+    {
+      debugInputProcessor = new DefaultDebugInputProcessor (debugEventGenerator, widgetFactory, getMouseInput (),
+              playMap, statusBox, chatBox, personBox, allDialogs, getEventBus ());
+
+      addInputProcessor (debugInputProcessor);
+    }
+
+    updatePlayMap (event.getPlayMap ());
+
+    intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
+    intelBox.setClientConfiguration (event.getClientConfiguration ());
+    intelBox.setOwnedCountriesForSelf (0, event.getSelfPlayer ());
+    intelBox.setSelf (event.getSelfPlayer ());
+    controlRoomBox.setSelf (event.getSelfPlayer ());
+    gamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
+    notificationDialog.setSelf (event.getSelfPlayer ());
+    debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        final ScreenShaker screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
-
-        final AttackDialog attackDialog = widgetFactory.createAttackDialog (getStage (), event.getGameRules (),
-                screenShaker, allDialogListeners.get (DefaultAttackDialogListener.class));
-
-        final DefendDialog defendDialog = widgetFactory.createDefendDialog (getStage (), event.getGameRules (),
-                screenShaker, allDialogListeners.get (DefaultDefendDialogListener.class));
-
-        allDialogs.add (attackDialog, defendDialog);
-
-        attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog,
-                allDialogs.get (AttackerBattleResultDialog.class), getEventBus ());
-
-        defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog,
-                allDialogs.get (DefenderBattleResultDialog.class), getEventBus ());
-
-        // @formatter:on
-
-        gamePhaseHandlers.add (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
-
-        if (DEBUG)
-        {
-          debugInputProcessor = new DefaultDebugInputProcessor (debugEventGenerator, widgetFactory, getMouseInput (),
-                  playMap, statusBox, chatBox, personBox, allDialogs, getEventBus ());
-
-          addInputProcessor (debugInputProcessor);
-        }
-
-        updatePlayMap (event.getPlayMap ());
-
-        intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
-        intelBox.setClientConfiguration (event.getClientConfiguration ());
-        intelBox.setOwnedCountriesForSelf (0, event.getSelfPlayer ());
-        intelBox.setSelf (event.getSelfPlayer ());
-        controlRoomBox.setSelf (event.getSelfPlayer ());
         personBox.setPlayers (event.getAllPlayers ());
-        gamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
-        notificationDialog.setSelf (event.getSelfPlayer ());
-        debugEventGenerator.makePlayersUnavailable (event.getAllPlayers ());
       }
     });
   }
@@ -1297,12 +1298,21 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private void updatePlayMap (final PlayMap playMap)
   {
     this.playMap = playMap;
-    playMapCell.setActor (playMap.asActor ());
+
     intelBox.setPlayMapMetadata (playMap.getPlayMapMetadata ());
     gamePhaseHandlers.setPlayMap (playMap);
     allDialogListeners.setPlayMap (playMap);
     debugInputProcessor.setPlayMap (playMap);
-    playMap.onMouseMoved (getMousePosition ());
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playMapCell.setActor (playMap.asActor ());
+        playMap.onMouseMoved (getMousePosition ());
+      }
+    });
   }
 
   private void quitGame ()

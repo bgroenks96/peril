@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -60,6 +61,8 @@ public final class DefaultIntelBox implements IntelBox
   private int ownedCountries;
   @Nullable
   private GameServerConfiguration gameServerConfig;
+  @Nullable
+  private PlayMapMetadata playMapMetadata;
   @Nullable
   private PersonPacket self;
 
@@ -192,11 +195,18 @@ public final class DefaultIntelBox implements IntelBox
 
     self = player;
 
-    personNameTextLabel.setText (player.getName ());
-    personIcon = widgetFactory.createPlayerIcon (player);
-    personIconCell.setActor (personIcon.asActor ());
-    personNameSettingLabel.setText ("Player: ");
-    personNameTable.invalidateHierarchy ();
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        personNameTextLabel.setText (player.getName ());
+        personIcon = widgetFactory.createPlayerIcon (player);
+        personIconCell.setActor (personIcon.asActor ());
+        personNameSettingLabel.setText ("Player: ");
+        personNameTable.invalidateHierarchy ();
+      }
+    });
   }
 
   @Override
@@ -206,11 +216,18 @@ public final class DefaultIntelBox implements IntelBox
 
     self = spectator;
 
-    personNameTextLabel.setText (spectator.getName ());
-    personIcon = widgetFactory.createSpectatorIcon (spectator);
-    personIconCell.setActor (personIcon.asActor ());
-    personNameSettingLabel.setText ("Spectator: ");
-    personNameTable.invalidateHierarchy ();
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        personNameTextLabel.setText (spectator.getName ());
+        personIcon = widgetFactory.createSpectatorIcon (spectator);
+        personIconCell.setActor (personIcon.asActor ());
+        personNameSettingLabel.setText ("Spectator: ");
+        personNameTable.invalidateHierarchy ();
+      }
+    });
   }
 
   @Override
@@ -220,9 +237,16 @@ public final class DefaultIntelBox implements IntelBox
 
     gameServerConfig = config;
 
-    setPlayMapMetadata (config.getPlayMapMetadata ());
-    setServerName (config.getGameServerName ());
-    setWinConditions (ownedCountries, config);
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        setPlayMapMetadata (config.getPlayMapMetadata ());
+        setServerName (config.getGameServerName ());
+        setWinConditions (ownedCountries, config);
+      }
+    });
   }
 
   @Override
@@ -236,7 +260,16 @@ public final class DefaultIntelBox implements IntelBox
   {
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
 
-    playMapNameTextLabel.setText (playMapMetadata.getName ());
+    this.playMapMetadata = playMapMetadata;
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        playMapNameTextLabel.setText (playMapMetadata.getName ());
+      }
+    });
   }
 
   @Override
@@ -264,7 +297,14 @@ public final class DefaultIntelBox implements IntelBox
 
     ownedCountries = countries;
 
-    setWinConditions (countries, gameServerConfig);
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        setWinConditions (countries, gameServerConfig);
+      }
+    });
   }
 
   @Override
