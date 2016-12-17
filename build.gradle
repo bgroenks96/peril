@@ -260,8 +260,6 @@ project (":ios") {
 }
 
 project (":common") {
-  apply plugin: "groovy"
-
   dependencies {
     compile ("com.forerunnergames.tools:fg-tools-common:$fgToolsVersion") {
       exclude module: "guava" // TODO Remove when https://github.com/google/guava/issues/2152 is fixed.
@@ -287,8 +285,6 @@ project (":common") {
 }
 
 project (":core") {
-  apply plugin: "groovy"
-
   dependencies {
     compile project (":common")
     compile ("com.stateforge:statemachine:$stateForgeStateMachineVersion") {
