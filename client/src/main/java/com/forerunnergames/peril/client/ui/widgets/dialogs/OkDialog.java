@@ -131,6 +131,18 @@ public class OkDialog implements Dialog
   }
 
   @Override
+  public void onKeyDownRepeating (final int keyCode)
+  {
+    // Empty base implementation
+  }
+
+  @Override
+  public void onKeyUp (final int keyCode)
+  {
+    // Empty base implementation
+  }
+
+  @Override
   @OverridingMethodsMustInvokeSuper
   public void show ()
   {
@@ -316,10 +328,6 @@ public class OkDialog implements Dialog
   protected final void addTextButton (final String buttonText, final DialogAction dialogAction)
   {
     delegate.addTextButton (buttonText, dialogAction);
-  }  @Override
-  public void onKeyDownRepeating (final int keyCode)
-  {
-    // Empty base implementation
   }
 
   protected final TextButton addTextButton (final String buttonText,
@@ -332,10 +340,6 @@ public class OkDialog implements Dialog
   protected final Button addButton (final String style, final DialogAction dialogAction, final EventListener listener)
   {
     return delegate.addButton (style, dialogAction, listener);
-  }  @Override
-  public void onKeyUp (final int keyCode)
-  {
-    // Empty base implementation
   }
 
   protected final ImageButton addImageButton (final String style,
@@ -934,9 +938,4 @@ public class OkDialog implements Dialog
       getCell (getButtonTable ()).right ();
     }
   }
-
-
-
-
-
 }
