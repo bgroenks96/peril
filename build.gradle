@@ -65,7 +65,7 @@ buildscript {
 
     // Miscellaneous
     fgToolsVersion = "1.1.1-SNAPSHOT"
-    guavaVersion = "20.0-SNAPSHOT" // TODO Use latest release when https://github.com/google/guava/issues/2152 is fixed.
+    guavaVersion = "v20.0-bugfix" // TODO Use 20.0 release when https://github.com/google/guava/issues/2152 is fixed.
     mbassadorVersion = "1.3.0"
     awsJavaSdkBomVersion = "1.11.60"
     jcommanderVersion = "1.58"
@@ -115,9 +115,6 @@ allprojects {
   }
 
   repositories {
-    // TODO Remove when https://github.com/google/guava/issues/2152 is fixed.
-    flatDir dirs: [new File ("libs").absolutePath]
-
     mavenLocal ()
     jcenter ()
     mavenCentral ()
@@ -125,6 +122,9 @@ allprojects {
     maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     maven { url "http://oss.jfrog.org/artifactory/oss-snapshot-local/" }
     maven { url "http://dl.bintray.com/forerunnergames/repository" }
+
+    // TODO Remove when https://github.com/google/guava/issues/2152 is fixed.
+    maven { url 'https://jitpack.io' }
   }
 
   // Show recursive dependency tree.
@@ -274,7 +274,7 @@ project (":common") {
     compile "net.engio:mbassador:$mbassadorVersion"
 
     // TODO Remove when https://github.com/google/guava/issues/2152 is fixed.
-    compile ":guava:$guavaVersion"
+    compile "com.github.forerunnergames.guava:guava:$guavaVersion"
 
     // TODO Uncomment when https://github.com/google/guava/issues/2152 is fixed.
     // compile "com.google.guava:guava:$guavaVersion"
