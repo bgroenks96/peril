@@ -274,7 +274,7 @@ project (":common") {
     compile "net.engio:mbassador:$mbassadorVersion"
 
     // TODO Remove when https://github.com/google/guava/issues/2152 is fixed.
-    compile "com.github.forerunnergames.guava:guava:$guavaVersion"
+    compile "com.forerunnergames.guava:guava:$guavaVersion"
 
     // TODO Uncomment when https://github.com/google/guava/issues/2152 is fixed.
     // compile "com.google.guava:guava:$guavaVersion"
