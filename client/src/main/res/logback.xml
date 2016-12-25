@@ -59,6 +59,10 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
+  <logger name="com.forerunnergames.peril.client.net" level="TRACE" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
   <logger name="com.forerunnergames.peril.client.ui.widgets.messagebox" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>

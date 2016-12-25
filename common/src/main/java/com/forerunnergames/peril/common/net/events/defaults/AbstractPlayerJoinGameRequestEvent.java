@@ -93,7 +93,10 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: PlayerName: [{}] | PlayerSentience: [{}]", getClass ().getSimpleName (), playerName,
-                           playerSentience);
+    return hasSecretId ()
+            ? Strings.format ("{}: PlayerName: [{}] | PlayerSentience: [{}] | PlayerSecretId: [{}]",
+                              getClass ().getSimpleName (), playerName, playerSentience, playerSecretId)
+            : Strings.format ("{}: PlayerName: [{}] | PlayerSentience: [{}]", getClass ().getSimpleName (), playerName,
+                              playerSentience);
   }
 }

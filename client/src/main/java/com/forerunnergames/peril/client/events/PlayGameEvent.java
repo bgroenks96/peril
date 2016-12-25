@@ -30,17 +30,21 @@ import com.forerunnergames.tools.net.events.local.LocalEvent;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.UUID;
+
 public final class PlayGameEvent implements LocalEvent
 {
   private final GameServerConfiguration gameServerConfig;
   private final ClientConfiguration clientConfig;
   private final PlayerPacket selfPlayer;
+  private final UUID selfPlayerSecretId;
   private final ImmutableSet <PlayerPacket> allPlayers;
   private final PlayMap playMap;
 
   public PlayGameEvent (final GameServerConfiguration gameServerConfig,
                         final ClientConfiguration clientConfig,
                         final PlayerPacket selfPlayer,
+                        final UUID selfPlayerSecretId,
                         final ImmutableSet <PlayerPacket> allPlayers,
                         final PlayMap playMap)
 
@@ -48,6 +52,7 @@ public final class PlayGameEvent implements LocalEvent
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
     Arguments.checkIsNotNull (clientConfig, "clientConfig");
     Arguments.checkIsNotNull (selfPlayer, "selfPlayer");
+    Arguments.checkIsNotNull (selfPlayerSecretId, "selfPlayerSecretId");
     Arguments.checkIsNotNull (allPlayers, "allPlayers");
     Arguments.checkHasNoNullElements (allPlayers, "allPlayers");
     Arguments.checkIsNotNull (playMap, "playMap");
@@ -55,6 +60,7 @@ public final class PlayGameEvent implements LocalEvent
     this.gameServerConfig = gameServerConfig;
     this.clientConfig = clientConfig;
     this.selfPlayer = selfPlayer;
+    this.selfPlayerSecretId = selfPlayerSecretId;
     this.allPlayers = allPlayers;
     this.playMap = playMap;
   }
@@ -77,6 +83,11 @@ public final class PlayGameEvent implements LocalEvent
   public PlayerPacket getSelfPlayer ()
   {
     return selfPlayer;
+  }
+
+  public UUID getSelfPlayerSecretId ()
+  {
+    return selfPlayerSecretId;
   }
 
   public String getSelfPlayerName ()
@@ -119,8 +130,8 @@ public final class PlayGameEvent implements LocalEvent
   {
     return Strings.format (
                            "{}: Game Server Configuration: {} | Client Configuration: {} | Self Player: {} | "
-                                   + "Players: {} | Play Map Actor: {}",
-                           getClass ().getSimpleName (), gameServerConfig, clientConfig, selfPlayer, allPlayers,
-                           playMap);
+                                   + "Self Player Secret ID: {} | Players: {} | Play Map Actor: {}",
+                           getClass ().getSimpleName (), gameServerConfig, clientConfig, selfPlayer, selfPlayerSecretId,
+                           allPlayers, playMap);
   }
 }

@@ -29,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import com.forerunnergames.peril.client.events.DisconnectFromServerEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayMapRequestEvent;
@@ -203,6 +204,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
       public void changed (final ChangeEvent event, final Actor actor)
       {
         // TODO Implement detailed report button.
+
+        publish (new DisconnectFromServerEvent ());
 
         log.debug ("Clicked detailed report button");
       }
@@ -574,8 +577,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
     log.debug ("Event received [{}].", event);
 
     // See the PlayGameEvent handler for the self player.
-    // This event handler is only for third parties.
-    assert !event.hasIdentity (PersonIdentity.SELF);
+    // This event handler is only for third parties;
+    // It will also be called on reconnect!
+    // assert !event.hasIdentity (PersonIdentity.SELF);
 
     Gdx.app.postRunnable (new Runnable ()
     {

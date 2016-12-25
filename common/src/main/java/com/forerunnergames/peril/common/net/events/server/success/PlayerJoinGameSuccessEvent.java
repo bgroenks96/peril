@@ -26,6 +26,7 @@ import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.base.Predicate;
@@ -138,6 +139,17 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
   public boolean hasSecretId ()
   {
     return playerSecretId != null && getIdentity () == PersonIdentity.SELF;
+  }
+
+  @Override
+  public String toString ()
+  {
+    if (!this.hasSecretId ())
+    {
+      return super.toString ();
+    }
+
+    return Strings.format ("{} | PlayerSecretId: {}", super.toString (), playerSecretId);
   }
 
   @RequiredForNetworkSerialization

@@ -51,6 +51,7 @@ import com.forerunnergames.tools.common.Event;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,6 +303,16 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
     Arguments.checkIsNotNull (listener, "listener");
 
     return widgetFactory.createQuitDialog (message, stage, listener);
+  }
+
+  protected final Dialog createConfirmDialog (final String title,
+                                              final String message,
+                                              final CancellableDialogListener listener)
+  {
+    Arguments.checkIsNotNull (message, "message");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return widgetFactory.createConfirmDialog (title, message, stage, listener);
   }
 
   protected final Dialog createErrorDialog (final DialogListener listener)

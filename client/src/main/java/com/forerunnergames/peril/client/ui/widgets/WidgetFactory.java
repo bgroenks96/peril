@@ -98,6 +98,11 @@ public interface WidgetFactory
 
   Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener);
 
+  Dialog createConfirmDialog (final String title,
+                              final String message,
+                              final Stage stage,
+                              final CancellableDialogListener listener);
+
   Label createLabel (final String text, final int alignment, final String labelStyle);
 
   Label createLabel (final String text, final int alignment, final Label.LabelStyle labelStyle);

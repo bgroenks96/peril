@@ -28,9 +28,19 @@ import com.forerunnergames.peril.client.events.ConnectToServerSuccessEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
+import com.forerunnergames.peril.client.events.DisconnectFromServerEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
+import com.forerunnergames.peril.client.events.ReconnectToServerEvent;
+import com.forerunnergames.peril.client.io.GameServerCacheManager;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.classic.joingame.HumanJoinGameServerHandler;
+import com.forerunnergames.peril.common.JoinGameServerHandler;
+import com.forerunnergames.peril.common.JoinGameServerListenerAdapter;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerCreator;
+import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -43,6 +53,8 @@ import com.forerunnergames.tools.net.events.local.ServerConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
+
+import java.util.UUID;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -70,6 +82,11 @@ public final class MultiplayerController extends ControllerAdapter
   private final RemoteServerConnector serverConnector;
   private final RemoteServerCommunicator serverCommunicator;
   private final MBassador <Event> eventBus;
+  private final JoinGameServerHandler rejoinGameServerHandler;
+  private String lastPlayerName;
+  private UUID lastPlayerSecretId;
+  private ServerConfiguration lastServerConfig;
+  private boolean isQuitInProgress = false;
 
   public MultiplayerController (final GameServerCreator gameServerCreator,
                                 final RemoteServerConnector serverConnector,
@@ -85,6 +102,7 @@ public final class MultiplayerController extends ControllerAdapter
     this.serverConnector = serverConnector;
     this.serverCommunicator = serverCommunicator;
     this.eventBus = eventBus;
+    this.rejoinGameServerHandler = new HumanJoinGameServerHandler (eventBus);
   }
 
   @Override
@@ -118,7 +136,16 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event [{}] received.", event);
     log.info ("Disconnected from server [{}].", serverFrom (event));
 
-    eventBus.publish (new QuitGameEvent ());
+    if (isQuitInProgress) return;
+
+    if (!canReconnect ())
+    {
+      log.warn ("Unable to reconnect to server: LastServerConfig: [{}] | LastPlayer: [Name: {}, SecretId: {}]",
+                lastServerConfig, lastPlayerName, lastPlayerSecretId);
+      return;
+    }
+
+    eventBus.publish (new ReconnectToServerEvent (lastPlayerName, lastPlayerSecretId, lastServerConfig));
   }
 
   @Handler
@@ -140,6 +167,24 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
+  public void onEvent (final DisconnectFromServerEvent event)
+  {
+    log.debug ("Event received [{}]", event);
+
+    disconnectFromServer ();
+  }
+
+  @Handler
+  public void onEvent (final ReconnectToServerEvent event)
+  {
+    log.debug ("Event received [{}]", event);
+
+    rejoinGameServerHandler.join (event.getPlayerName (), event.getServerConfiguration ().getAddress (),
+                                  new ReconnectHandler (event.getPlayerSecretId ()));
+    eventBus.publish (new ConnectToServerRequestEvent (event.getServerConfiguration ()));
+  }
+
+  @Handler
   public void onEvent (final ConnectToServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -147,6 +192,7 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event received [{}].", event);
 
     final Result <String> result = connectToServer (event.getServerConfiguration ());
+    lastServerConfig = event.getServerConfiguration ();
 
     if (result.isFailure ())
     {
@@ -184,8 +230,21 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Event received [{}].", event);
 
+    isQuitInProgress = true;
     if (connectedToServer ()) disconnectFromServer ();
     if (gameServerIsCreated ()) destroyGameServer ();
+    isQuitInProgress = false;
+  }
+
+  @Handler
+  public void onEvent (final PlayerJoinGameSuccessEvent event)
+  {
+    if (!event.hasSecretId ()) return;
+
+    lastPlayerName = event.getPersonName ();
+    lastPlayerSecretId = event.getPlayerSecretId ();
+
+    GameServerCacheManager.writeToCache (lastPlayerName, lastPlayerSecretId, lastServerConfig);
   }
 
   private Result <String> connectToServer (final ServerConfiguration config)
@@ -244,5 +303,38 @@ public final class MultiplayerController extends ControllerAdapter
   private boolean gameServerIsCreated ()
   {
     return gameServerCreator.isCreated ();
+  }
+
+  private boolean canReconnect ()
+  {
+    return lastPlayerName != null && lastPlayerSecretId != null && lastServerConfig != null;
+  }
+
+  private final class ReconnectHandler extends JoinGameServerListenerAdapter
+  {
+    private final UUID playerSecretId;
+
+    ReconnectHandler (final UUID playerSecretId)
+    {
+      this.playerSecretId = playerSecretId;
+    }
+
+    @Override
+    public void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event)
+    {
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (event, "event");
+
+      eventBus.publish (new HumanPlayerJoinGameRequestEvent (playerName, playerSecretId));
+    }
+
+    @Override
+    public void onJoinGameServerFailure (final String playerName, final JoinGameServerDeniedEvent event)
+    {
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (event, "event");
+
+      log.debug ("Failed to join game server [{}]", event);
+    }
   }
 }

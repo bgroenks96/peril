@@ -26,6 +26,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import com.forerunnergames.peril.client.input.MouseInput;
+import com.forerunnergames.peril.client.io.GameServerCacheManager;
+import com.forerunnergames.peril.client.io.GameServerCacheManager.CachedGameSession;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -40,6 +42,7 @@ import net.engio.mbassy.bus.MBassador;
 public final class MainMenuScreen extends AbstractMenuScreen
 {
   private final Dialog quitDialog;
+  private final Dialog reconnectDialog;
 
   public MainMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                          final ScreenChanger screenChanger,
@@ -58,6 +61,23 @@ public final class MainMenuScreen extends AbstractMenuScreen
         Gdx.app.exit ();
       }
     });
+
+    reconnectDialog = createConfirmDialog ("RECONNECT?",
+                                           "It looks like you were in the middle of a game! Would you like to return to the control room, general?",
+                                           new CancellableDialogListenerAdapter ()
+                                           {
+                                             @Override
+                                             public void onSubmit ()
+                                             {
+                                               final CachedGameSession session = GameServerCacheManager
+                                                       .readFromCache ();
+
+                                               GameServerCacheManager.deleteCache ();
+
+                                               // TODO: launch loading screen with reconnect join game handling instead
+                                               // of normal handling
+                                             }
+                                           });
 
     addTitle ("MAIN MENU", Align.left, 60);
 
@@ -93,6 +113,17 @@ public final class MainMenuScreen extends AbstractMenuScreen
         quitDialog.show ();
       }
     });
+  }
+
+  @Override
+  public void show ()
+  {
+    if (GameServerCacheManager.existsCachedSession ())
+    {
+      reconnectDialog.show ();
+    }
+
+    super.show ();
   }
 
   @Override
