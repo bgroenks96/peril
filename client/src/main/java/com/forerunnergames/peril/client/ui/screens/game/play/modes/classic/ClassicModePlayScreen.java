@@ -475,6 +475,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
+    isSpectating.set (false);
+
     final ScreenShaker screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
 
     // @formatter:off
@@ -571,7 +573,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    if (event.hasIdentity (PersonIdentity.SELF)) isSpectating.set (false);
+    // See the PlayGameEvent handler for the self player.
+    // This event handler is only for third parties.
+    assert !event.hasIdentity (PersonIdentity.SELF);
 
     Gdx.app.postRunnable (new Runnable ()
     {
