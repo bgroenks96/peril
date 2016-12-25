@@ -35,21 +35,21 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerReque
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerRejoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerRejoinGameDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerQuitGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerNotifyJoinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerQuitGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.messages.DefaultChatMessage;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultSpectatorPacket;
@@ -64,6 +64,7 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
+import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping.RegisteredClientSpectatorNotFoundException;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatchListener;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatcher;
@@ -81,6 +82,7 @@ import com.forerunnergames.tools.net.client.configuration.DefaultClientConfigura
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.DirectEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
@@ -88,14 +90,11 @@ import com.forerunnergames.tools.net.server.remote.RemoteClient;
 import com.forerunnergames.tools.net.server.remote.RemoteClientConnector;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -113,9 +112,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 {
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
-  private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache = HashMultimap.create ();
-  private final Multimap <PlayerPacket, PlayerInformEvent> playerInformEventCache = HashMultimap.create ();
-  private final Map <String, RemoteClient> playerJoinGameRequestCache = Collections.synchronizedMap (new HashMap <String, RemoteClient> ());
+  private final MultiplayerControllerEventCache eventCache = new MultiplayerControllerEventCache();
   private final Set <RemoteClient> clientsInServer = Collections.synchronizedSet (new HashSet <RemoteClient> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientSpectatorMapping clientsToSpectators;
@@ -317,41 +314,50 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     }
 
     // spam guard: if client request is already being processed, ignore new request event
-    if (playerJoinGameRequestCache.containsKey (event.getPlayerName ())) return;
+    if (eventCache.isPendingJoin (event.getPlayerName ())) return;
 
     log.trace ("Received [{}] from player [{}]", event, event.getPlayerName ());
 
-    playerJoinGameRequestCache.put (event.getPlayerName (), client);
+    // if the join request includes a player server id, process as a rejoin attempt;
+    // otherwise, forward the request to core as a new join attempt
+    if (event.hasSecretId ())
+    {
+      handlePlayerRejoinAttempt (client, event);
+      return;
+    }
 
+    // add player to pending join request cache and forward event to core module
+    eventCache.addPendingPlayerJoin (event.getPlayerName (), client);
     eventBus.publish (event);
   }
 
   @Override
-  public void handleEvent (final PlayerRejoinGameRequestEvent event, final RemoteClient client)
+  public void handleEvent (final PlayerQuitGameRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
-    if (!NetworkTools.isValidIpAddress (client.getAddress ()))
+    Optional <PlayerPacket> playerMaybe = Optional.absent ();
+    try
     {
-      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ADDRESS));
+      playerMaybe = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+    }
+
+    if (!playerMaybe.isPresent ())
+    {
+      sendToClient (client, new PlayerQuitGameDeniedEvent (PlayerQuitGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
       return;
     }
 
-    final UUID playerServerId = event.getPlayerSecretId ();
-    if (playerServerId == null)
-    {
-      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.INVALID_ID));
-      return;
-    }
-
-    final Optional <PlayerPacket> mappedPlayer = clientsToPlayers.playerFor (playerServerId);
-    if (!mappedPlayer.isPresent ())
-    {
-      sendToClient (client, new PlayerRejoinGameDeniedEvent (PlayerRejoinGameDeniedEvent.Reason.PLAYER_NOT_IN_GAME));
-      return;
-    }
-
+    final PlayerPacket player = playerMaybe.get ();
+    sendToAllPlayersAndSpectators (new PlayerQuitGameSuccessEvent (player, clientsToPlayers.players (),
+            clientsToPlayers.unmappedPlayers ()));
+    removeAndUnmapPlayer (client);
+    disconnect (client);
   }
 
   @Override
@@ -603,6 +609,11 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     return clientsInServer.contains (client);
   }
 
+  Optional <UUID> getPlayerServerId (final PlayerPacket player)
+  {
+    return clientsToPlayers.serverIdFor (player);
+  }
+
   // ---------- Remote inbound client event communication ---------- //
 
   @Handler
@@ -643,21 +654,24 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
       log.error ("Error resolving client to spectator.", e);
     }
 
-    // client is a player
-    if (playerQuery.isPresent ())
+    final boolean isUnexpectedDisconnect = playerQuery.isPresent ();
+    if (isUnexpectedDisconnect)
     {
       final PlayerPacket disconnectedPlayer = playerQuery.get ();
-      coreCommunicator.notifyRemovePlayerFromGame (disconnectedPlayer);
-      // let the leave game event handle removing the player
-      return;
+      final PlayerDisconnectEvent disconnectEvent = new PlayerDisconnectEvent (disconnectedPlayer);
+      sendToAllPlayersExcept (disconnectedPlayer, disconnectEvent);
+      sendToAllSpectators (disconnectEvent);
     }
 
+    // NOTE: this is no longer necessary (I *think*) because this is an expected case when a player quits
+    // voluntarily... processing of PlayerQuitGameRequestEvent will finish before this handler is executed
     // if client is neither a player nor a spectator, log a warning
-    if (!playerQuery.isPresent () && !spectatorQuery.isPresent ())
-    {
-      log.warn ("Client [{}] disconnected but did not exist as a player or spectator.", client);
-    }
+    // if (!playerQuery.isPresent () && !spectatorQuery.isPresent ())
+    // {
+    // log.warn ("Client [{}] disconnected but did not exist as a player or spectator.", client);
+    // }
 
+    // removes the client from the server/mapping, if necessary
     remove (client);
   }
 
@@ -683,22 +697,22 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     // if no client mapping is available, silently ignore success event and tell core to remove this player
     // this shouldn't happen, since this would imply that core processed a player join game request without
     // server receiving one... so basically the result of a bug or a hack.
-    if (!playerJoinGameRequestCache.containsKey (playerName))
+    if (!eventCache.isPendingJoin (playerName))
     {
       log.warn ("No client join game request in cache for player: {}. Player will be removed.", playerName);
-      coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
+      // coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
       return;
     }
 
     // fetch and remove player name from request cache
-    final RemoteClient client = playerJoinGameRequestCache.remove (playerName);
+    final RemoteClient client = eventCache.removePendingPlayerJoin (playerName);
 
     final PlayerPacket newPlayer = event.getPerson ();
 
     // only add a player/client mapping if the client still exists in the game server
     if (clientsInServer.contains (client))
     {
-      final Optional <PlayerPacket> oldPlayer = clientsToPlayers.put (client, newPlayer);
+      final Optional <PlayerPacket> oldPlayer = clientsToPlayers.bind (client, newPlayer);
       if (oldPlayer.isPresent ())
       {
         // this generally shouldn't happen... but if it does, log a warning message
@@ -713,7 +727,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
       // will be no client mapping for the disconnected player.
       log.warn ("Client [{}] for player [{}] is no longer connected to the server. Player will be removed.", client,
                 event.getPersonName ());
-      coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
+      // coreCommunicator.notifyRemovePlayerFromGame (event.getPerson ());
       return;
     }
 
@@ -723,7 +737,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
       Exceptions.throwIllegalState ("No server uuid found for player [{}].", newPlayer);
     }
 
-    sendPlayerJoinGameSuccessEvent (event, new PlayerNotifyJoinGameEvent (newPlayer, playerServerId.get ()));
+    sendPlayerJoinGameSuccessEvent (event);
   }
 
   @Handler
@@ -737,9 +751,9 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
     // if no client mapping is available, silently ignore denied event
     // this is to prevent failure under cases such as client disconnecting while join request is being processed
-    if (!playerJoinGameRequestCache.containsKey (playerName)) return;
+    if (!eventCache.isPendingJoin (playerName)) return;
 
-    final RemoteClient client = playerJoinGameRequestCache.get (playerName);
+    final RemoteClient client = eventCache.pendingClientFor (playerName);
 
     if (client instanceof AiClient)
     {
@@ -752,27 +766,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
       disconnectHuman (client);
     }
 
-    playerJoinGameRequestCache.remove (playerName);
-  }
-
-  @Handler
-  void onEvent (final PlayerLeaveGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final Optional <RemoteClient> client = clientsToPlayers.clientFor (event.getPerson ());
-    if (!client.isPresent ())
-    {
-      log.warn ("No client mapping for player in received event [{}].", event);
-      return;
-    }
-    // remove client mapping
-    remove (client.get ());
-
-    playerInputRequestEventCache.removeAll (event.getPerson ());
-    playerInformEventCache.removeAll (event.getPerson ());
-
-    // let handler for broadcast events handle forwarding the event
+    eventCache.removePendingPlayerJoin (playerName);
   }
 
   @Handler
@@ -790,7 +784,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     final RemoteClient client = optionalClient.get ();
 
     // remove client/player mapping; keep client in server
-    clientsToPlayers.remove (client);
+    clientsToPlayers.unbind (client);
 
     // Don't make AI spectators, just remove them completely.
     if (event.getPersonSentience () == PersonSentience.AI)
@@ -805,7 +799,6 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     // Add client as a spectator, simulating the request coming from the client since we want to automate it
     // server-side. This will allow the networking system to correctly process the request to become a spectator,
     // instead of directly adding them, which would duplicate code and be extremely bug-prone.
-    //
     // Also bypasses stage 1 of authenticating as a client via JoinGameServerRequestEvent because
     // the client already previously authenticated as a player, and is still connected to the server.
     eventBus.publish (new ClientCommunicationEvent (client,
@@ -819,7 +812,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final boolean wasAdded = playerInputRequestEventCache.put (event.getPerson (), event);
+    final boolean wasAdded = eventCache.add (event.getPerson (), event);
     assert wasAdded;
 
     // let handler for direct player event handle forwarding the event
@@ -830,7 +823,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final boolean wasAdded = playerInformEventCache.put (event.getPerson (), event);
+    final boolean wasAdded = eventCache.add (event.getPerson (), event);
     assert wasAdded;
 
     // let handler for direct player event handle forwarding the event
@@ -861,8 +854,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
   // ---------- Outbound server responses requiring special processing ---------- //
 
-  private void sendPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent event,
-                                               final PlayerNotifyJoinGameEvent directNotifyEvent)
+  private void sendPlayerJoinGameSuccessEvent (final PlayerJoinGameSuccessEvent successEvent)
   {
     // Get updated players & spectators in game; don't use stale values from the event.
     // PlayerJoinGameSuccessEvent#getPlayersInGame could be outdated.
@@ -870,14 +862,16 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     final ImmutableSet <PlayerPacket> playersInGame = clientsToPlayers.players ();
     final ImmutableSet <SpectatorPacket> spectatorsInGame = clientsToSpectators.spectators ();
 
-    final PlayerJoinGameSuccessEvent nonSelfEvent = new PlayerJoinGameSuccessEvent (event.getPerson (),
-            PersonIdentity.NON_SELF, playersInGame, spectatorsInGame, event.getPersonLimits ());
-    final PlayerJoinGameSuccessEvent selfEvent = new PlayerJoinGameSuccessEvent (event.getPerson (),
-            PersonIdentity.SELF, playersInGame, spectatorsInGame, event.getPersonLimits ());
+    final PlayerJoinGameSuccessEvent nonSelfEvent = new PlayerJoinGameSuccessEvent (successEvent.getPerson (),
+            PersonIdentity.NON_SELF, playersInGame, spectatorsInGame, successEvent.getPersonLimits ());
 
-    sendToAllPlayersExcept (event.getPerson (), nonSelfEvent);
-    sendToPlayer (event.getPerson (), selfEvent);
-    sendToPlayer (event.getPerson (), directNotifyEvent);
+    final Optional <UUID> selfServerId = clientsToPlayers.serverIdFor (successEvent.getPerson ());
+    assert selfServerId.isPresent ();
+    final PlayerJoinGameSuccessEvent selfEvent = new PlayerJoinGameSuccessEvent (successEvent.getPerson (),
+            selfServerId.get (), playersInGame, spectatorsInGame, successEvent.getPersonLimits ());
+
+    sendToAllPlayersExcept (successEvent.getPerson (), nonSelfEvent);
+    sendToPlayer (successEvent.getPerson (), selfEvent);
     sendToAllSpectators (nonSelfEvent);
   }
 
@@ -1034,6 +1028,8 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
         aiPlayerCommunicator.sendToPlayer (player, message, clientsToPlayers);
         break;
       }
+      default:
+        break;
     }
   }
 
@@ -1068,8 +1064,30 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   private void remove (final RemoteClient client)
   {
     clientsInServer.remove (client);
-    clientsToPlayers.remove (client); // remove from players, if client is a player
+    clientsToPlayers.unbind (client); // unbind client from player, if client is a player
     clientsToSpectators.remove (client); // remove from spectators, if client is a spectator
+  }
+
+  private void removeAndUnmapPlayer (final RemoteClient client)
+  {
+    Optional <PlayerPacket> player = Optional.absent ();
+    try
+    {
+      player = clientsToPlayers.playerFor (client);
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving client to player.", e);
+    }
+
+    remove (client);
+
+    if (!player.isPresent ())
+    {
+      return;
+    }
+
+    clientsToPlayers.unmap (player.get ());
   }
 
   private boolean isHostConnected ()
@@ -1085,7 +1103,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   private boolean waitingForResponseToInputEventFromPlayer (final Class <? extends ServerRequestEvent> requestClass,
                                                             final PlayerPacket player)
   {
-    for (final PlayerInputRequestEvent request : playerInputRequestEventCache.get (player))
+    for (final PlayerInputRequestEvent request : eventCache.inputRequestsFor (player))
     {
       if (requestClass.isInstance (request)) return true;
     }
@@ -1096,7 +1114,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
   private boolean waitingForRequestToInformEventFromPlayer (final Class <? extends PlayerInformEvent> informClass,
                                                             final PlayerPacket player)
   {
-    for (final PlayerInformEvent informEvent : playerInformEventCache.get (player))
+    for (final PlayerInformEvent informEvent : eventCache.informEventsFor (player))
     {
       if (informClass.isInstance (informEvent)) return true;
     }
@@ -1130,15 +1148,71 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     return new DefaultSpectatorPacket (name, UUID.randomUUID ());
   }
 
+  private void handlePlayerRejoinAttempt (final RemoteClient client, final PlayerJoinGameRequestEvent event)
+  {
+    assert event.hasSecretId ();
+
+    // check if address is valid or not
+    if (!NetworkTools.isValidIpAddress (client.getAddress ()))
+    {
+      sendToClient (client, new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+              PlayerJoinGameDeniedEvent.Reason.INVALID_ADDRESS));
+      return;
+    }
+
+    final UUID playerServerId = event.getPlayerSecretId ();
+    final Optional <PlayerPacket> mappedPlayerMaybe = clientsToPlayers.playerFor (playerServerId);
+    if (!mappedPlayerMaybe.isPresent ())
+    {
+      sendToClient (client, new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+              PlayerJoinGameDeniedEvent.Reason.INVALID_ID));
+      return;
+    }
+
+    final PlayerPacket mappedPlayer = mappedPlayerMaybe.get ();
+    if (!mappedPlayer.hasName (event.getPlayerName ()))
+    {
+      sendToClient (client, new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+              PlayerJoinGameDeniedEvent.Reason.NAME_MISMATCH));
+      return;
+    }
+
+    clientsToPlayers.bind (client, mappedPlayer);
+
+    PlayerPacket updatedPlayer;
+    try
+    {
+      updatedPlayer = clientsToPlayers.playerFor (client).get ();
+    }
+    catch (final RegisteredClientPlayerNotFoundException e)
+    {
+      log.error ("Error resolving player for client.", e);
+      clientsToPlayers.unbind (client);
+      return;
+    }
+
+    final PlayerJoinGameSuccessEvent successEvent = new PlayerJoinGameSuccessEvent (updatedPlayer,
+            clientsToPlayers.players (), gameServerConfig.getPersonLimits ());
+    sendPlayerJoinGameSuccessEvent (successEvent);
+
+    if (!eventCache.hasPendingEvents (updatedPlayer))
+    {
+      return;
+    }
+
+    coreCommunicator.notifyResumeGame ();
+    resendPendingDirectEventsFor (updatedPlayer);
+  }
+
   private void handlePlayerResponseRequestTo (final Class <? extends ServerRequestEvent> requestClass,
                                               final ResponseRequestEvent responseRequest,
                                               final PlayerPacket player)
   {
-    for (final PlayerInputRequestEvent request : playerInputRequestEventCache.get (player))
+    for (final PlayerInputRequestEvent request : eventCache.inputRequestsFor (player))
     {
       if (requestClass.isInstance (request))
       {
-        final boolean wasRemoved = playerInputRequestEventCache.remove (player, request);
+        final boolean wasRemoved = eventCache.remove (player, request);
         assert wasRemoved;
         coreCommunicator.publishPlayerResponseRequestEvent (player, responseRequest, request);
         return;
@@ -1153,11 +1227,11 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
                                              final InformRequestEvent informRequest,
                                              final PlayerPacket player)
   {
-    for (final PlayerInformEvent informEvent : playerInformEventCache.get (player))
+    for (final PlayerInformEvent informEvent : eventCache.informEventsFor (player))
     {
       if (informClass.isInstance (informEvent))
       {
-        final boolean wasRemoved = playerInformEventCache.remove (player, informEvent);
+        final boolean wasRemoved = eventCache.remove (player, informEvent);
         assert wasRemoved;
         coreCommunicator.publishPlayerInformRequestEvent (player, informRequest, informEvent);
         return;
@@ -1166,6 +1240,15 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
 
     log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding inform event of type [{}] was sent to that player.",
               informRequest, player, informClass);
+  }
+
+  private void resendPendingDirectEventsFor (final PlayerPacket player)
+  {
+    for (final DirectEvent event : Sets.union (eventCache.informEventsFor (player),
+                                               eventCache.inputRequestsFor (player)))
+    {
+      sendToPlayer (player, event);
+    }
   }
 
   private final class ClientConnectorDaemon

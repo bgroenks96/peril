@@ -20,9 +20,15 @@ package com.forerunnergames.peril.common.net.events.client.interfaces;
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
+import java.util.UUID;
+
 public interface PlayerJoinGameRequestEvent extends ClientRequestEvent
 {
   String getPlayerName ();
 
   PersonSentience getPlayerSentience ();
+
+  UUID getPlayerSecretId ();
+
+  boolean hasSecretId ();
 }

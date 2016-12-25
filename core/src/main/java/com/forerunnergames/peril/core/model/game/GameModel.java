@@ -20,13 +20,10 @@ package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerQuitGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerQuitGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -37,7 +34,6 @@ import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAct
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.tools.common.Arguments;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
 import org.slf4j.Logger;
@@ -130,25 +126,6 @@ public final class GameModel extends AbstractGamePhaseHandler
 
       publish (new PlayerJoinGameSuccessEvent (player, playerModel.getPlayerPackets (), rules.getPersonLimits ()));
     }
-  }
-
-  @StateTransitionAction
-  public void handlePlayerQuitGameRequest (final PlayerQuitGameRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}].", event);
-
-    final Optional <PlayerPacket> senderMaybe = internalCommHandler.senderOf (event);
-    if (!senderMaybe.isPresent ())
-    {
-      publish (new PlayerQuitGameDeniedEvent (PlayerQuitGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
-      return;
-    }
-
-    final PlayerPacket sender = senderMaybe.get ();
-    // removePlayerFromGame (playerModel.idOf (sender.getName ()));
-    publish (new PlayerQuitGameSuccessEvent (sender));
   }
 
   @StateTransitionCondition

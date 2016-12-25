@@ -231,8 +231,6 @@
           <state name="WaitForPlayerEvent">
             <transition event="onPlayerJoinGameRequestEvent" action="gameModel.handlePlayerJoinGameRequest(event)"
                         nextState="WaitForPlayerEvent"/>
-            <transition event="onPlayerQuitGameRequestEvent" action="gameModel.handlePlayerQuitGameRequest(event)"
-                        nextState="WaitForPlayerEvent"/>
           </state>
         </state>
 

@@ -6,7 +6,7 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerReque
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerRejoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
@@ -19,7 +19,7 @@ public interface ClientRequestEventDispatchListener
 
   void handleEvent (final PlayerJoinGameRequestEvent event, final RemoteClient client);
 
-  void handleEvent (final PlayerRejoinGameRequestEvent event, final RemoteClient client);
+  void handleEvent (final PlayerQuitGameRequestEvent event, final RemoteClient client);
 
   void handleEvent (final SpectatorJoinGameRequestEvent event, final RemoteClient client);
 
