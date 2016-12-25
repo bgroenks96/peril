@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -99,6 +100,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private ClientConfiguration clientConfiguration;
   @Nullable
   private PlayerPacket selfPlayer;
+  @Nullable
+  private UUID selfPlayerSecretId;
 
   public MenuToPlayLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
                                   final ScreenChanger screenChanger,
@@ -490,8 +493,10 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
                  gameServerConfig, ClientConfiguration.class.getSimpleName (), clientConfig, players);
 
       assert event.hasIdentity (PersonIdentity.SELF);
+      assert event.hasSecretId ();
 
       selfPlayer = event.getPerson ();
+      selfPlayerSecretId = event.getPlayerSecretId ();
 
       gameServerConfiguration = gameServerConfig;
       playMapMetadata = gameServerConfig.getPlayMapMetadata ();
@@ -576,12 +581,13 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       assert gameServerConfiguration != null;
       assert clientConfiguration != null;
       assert selfPlayer != null;
+      assert selfPlayerSecretId != null;
 
       // gameServerConfiguration, clientConfiguration, selfPlayer must be used here because
       // they will be made null in #hide during the call to #toScreen.
       // unhandledServerEvents will also be cleared, so make a defensive copy.
       final PlayGameEvent playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, selfPlayer,
-              ImmutableSet.copyOf (players), playMap);
+              selfPlayerSecretId, ImmutableSet.copyOf (players), playMap);
       final ScreenId playScreen = ScreenId.fromGameMode (gameServerConfiguration.getGameMode ());
       final ImmutableList <ServerEvent> unhandledServerEventsCopy = ImmutableList.copyOf (unhandledServerEvents);
 

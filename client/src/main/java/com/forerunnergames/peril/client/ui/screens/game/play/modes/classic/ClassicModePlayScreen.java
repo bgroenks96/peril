@@ -489,6 +489,11 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
+    isSpectating.set (false);
+
+    playerSecretId = event.getSelfPlayerSecretId ();
+    playerName = event.getSelfPlayerName ();
+
     final ScreenShaker screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
 
     // @formatter:off
