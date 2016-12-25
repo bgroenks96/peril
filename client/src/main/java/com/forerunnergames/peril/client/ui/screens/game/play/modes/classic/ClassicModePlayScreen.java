@@ -77,6 +77,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phase
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.images.CountryPrimaryImageState;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.status.StatusMessageGenerator;
+import com.forerunnergames.peril.client.ui.screens.menus.modes.classic.joingame.HumanJoinGameServerHandler;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
@@ -84,10 +85,13 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
+import com.forerunnergames.peril.common.JoinGameServerHandler;
+import com.forerunnergames.peril.common.JoinGameServerListenerAdapter;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
@@ -118,6 +122,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipF
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
@@ -130,7 +135,9 @@ import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.net.events.local.LocalEvent;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nullable;
@@ -170,6 +177,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private BattlePhaseHandler attackingBattlePhaseHandler = BattlePhaseHandler.NULL;
   private BattlePhaseHandler defendingBattlePhaseHandler = BattlePhaseHandler.NULL;
   private DebugInputProcessor debugInputProcessor = DebugInputProcessor.NULL;
+  private JoinGameServerHandler joinGameServerHandler;
+  UUID playerSecretId;
+  volatile String playerName;
   @Nullable
   private PlayerCardTradeInAvailableEvent tradeInEvent; // TODO Production: Remove.
 
@@ -192,6 +202,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
     this.widgetFactory = widgetFactory;
     this.debugEventGenerator = debugEventGenerator;
 
+    joinGameServerHandler = new HumanJoinGameServerHandler (eventBus);
+
     playMapTableForegroundImage = widgetFactory.createPlayMapTableForegroundImage ();
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
@@ -203,6 +215,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
       public void changed (final ChangeEvent event, final Actor actor)
       {
         // TODO Implement detailed report button.
+
+        publish (new DisconnectFromServerEvent ());
 
         log.debug ("Clicked detailed report button");
       }
@@ -571,7 +585,13 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    if (event.hasIdentity (PersonIdentity.SELF)) isSpectating.set (false);
+    if (event.hasIdentity (PersonIdentity.SELF))
+    {
+      assert event.hasSecretId ();
+      playerSecretId = event.getPlayerSecretId ();
+      playerName = event.getPersonName ();
+      isSpectating.set (false);
+    }
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -1207,6 +1227,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     isGameInProgress.set (false);
 
+    publish (new ReconnectToServerEvent (joinGameServerHandler, playerName, new DisconnectHandler ()));
+
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
@@ -1531,6 +1553,38 @@ public final class ClassicModePlayScreen extends AbstractScreen
     public void onSubmit ()
     {
       reinforcementPhaseHandler.execute ();
+    }
+  }
+
+  private final class DisconnectHandler extends JoinGameServerListenerAdapter
+  {
+    @Override
+    public void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event)
+    {
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (event, "event");
+
+      publish (new HumanPlayerJoinGameRequestEvent (playerName, playerSecretId));
+    }
+  }
+
+  public static final class DisconnectFromServerEvent implements LocalEvent
+  {
+  }
+
+  public static final class ReconnectToServerEvent implements LocalEvent
+  {
+    public final JoinGameServerHandler joinGameServerHandler;
+    public final String playerName;
+    public final DisconnectHandler handler;
+
+    public ReconnectToServerEvent (final JoinGameServerHandler joinGameServerHandler,
+                                   final String playerName,
+                                   final DisconnectHandler handler)
+    {
+      this.joinGameServerHandler = joinGameServerHandler;
+      this.playerName = playerName;
+      this.handler = handler;
     }
   }
 }

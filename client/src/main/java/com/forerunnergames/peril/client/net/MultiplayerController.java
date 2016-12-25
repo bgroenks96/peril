@@ -29,6 +29,8 @@ import com.forerunnergames.peril.client.events.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreen.DisconnectFromServerEvent;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreen.ReconnectToServerEvent;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerCreator;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
@@ -70,6 +72,7 @@ public final class MultiplayerController extends ControllerAdapter
   private final RemoteServerConnector serverConnector;
   private final RemoteServerCommunicator serverCommunicator;
   private final MBassador <Event> eventBus;
+  private ServerConfiguration cachedServerConfig;
 
   public MultiplayerController (final GameServerCreator gameServerCreator,
                                 final RemoteServerConnector serverConnector,
@@ -140,6 +143,18 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
+  public void onEvent (final DisconnectFromServerEvent event)
+  {
+    disconnectFromServer ();
+  }
+
+  @Handler
+  public void onEvent (final ReconnectToServerEvent event)
+  {
+    event.joinGameServerHandler.join (event.playerName, cachedServerConfig.getAddress (), event.handler);
+  }
+
+  @Handler
   public void onEvent (final ConnectToServerRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -147,6 +162,7 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event received [{}].", event);
 
     final Result <String> result = connectToServer (event.getServerConfiguration ());
+    cachedServerConfig = event.getServerConfiguration ();
 
     if (result.isFailure ())
     {
